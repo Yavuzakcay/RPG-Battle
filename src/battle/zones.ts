@@ -11,6 +11,7 @@
  *   Zorlu arazi birikmez: altıgen maliyeti alanların ve zeminin en büyüğü.
  * - Dokunulamaz çağrılar (Flaming Sphere, ruh sürüsü) alanlardan etkilenmez.
  */
+import { sourceDown } from './sourceDown';
 import { isPlantZone, soyPlantWalker } from './altSoySurum';
 import { freeShapeFor, freeShapeProblem, pathProblem } from './freeShape';
 import { cageOpenEvents, cageStepBlocked, castCageHexes } from './forcecage';
@@ -307,7 +308,9 @@ export function zoneTurnEvents(state: BattleState, id: string, phase: 'start' | 
   if (!c.pos || !state.map) return pulled;
   const k19 = globalRule(state, 'spellsK19');
   const here = strongestPerSpell((state.map.zones ?? []).filter((z) => (bodyInZone(state, z, c, c.pos) || (phase === 'end' && !!z.endHexes?.some((h) => sameHex(h, c.pos as Offset))))
-    && zoneSpecOf(z)?.on?.includes(phase) && !(k19 && zoneSpecOf(z)?.casterTurn)));
+    && zoneSpecOf(z)?.on?.includes(phase) && !(k19 && zoneSpecOf(z)?.casterTurn)
+    // Görev B94 (A2): büyücüsü düşmüşken duran alan (Holy Nimbus).
+    && !(z.pausedIfCasterDown && sourceDown(state.combatants[z.casterId]))));
   return [...pulled, ...chain(state, here.map((z) => (s: BattleState) => { const live = liveZone(s, z.id); return live ? triggerEvents(s, live, id, rng) : []; }))];
 }
 

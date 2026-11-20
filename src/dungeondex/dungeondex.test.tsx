@@ -195,3 +195,30 @@ describe('Dungeondex: Sınıflar kategorisi (Görev DX-S)', () => {
     } finally { setLang('tr'); dex = buildDex({ ...extras, mapNames: {} }); }
   });
 });
+
+describe('Kitap kabuğu: prospektüs sağ sayfada, EN etiketleri', () => {
+  it('büyü/eşya/feat kartında prospektüs bölümleri; EN arayüzde yalnız Türkçe satır yok, veri satırları İngilizce', () => {
+    const tr = html({ cat: 'buyu', id: 'fireball' });
+    expect(tr).toContain('data-key="ne"');
+    expect(tr).toContain('data-key="durum"');
+    expect(html({ cat: 'esya', id: 'alchemists-fire' })).toContain('class="pro"');
+    setLang('en');
+    try {
+      const en = html({ cat: 'buyu', id: 'fireball' });
+      expect(en).toContain('Active ingredients');
+      expect(en).toContain('8d6 fire');
+      expect(en).not.toContain('data-key="ne"'); // yalnız Türkçe paragraf EN'de gizli
+      expect(en).not.toContain(t().common.descTrOnly);
+    } finally { setLang('tr'); }
+  });
+  it('canavar teması ve harita adı EN karşılığıyla (kimlik aynı)', () => {
+    setLang('en');
+    try {
+      const d = buildDex({ ...extras, mapNames: { orman: t().gm.mapInfo['magara']!.name } });
+      const g = d.canavar.find((e) => e.id === 'goblin-warrior')!;
+      expect(g.tags).toContain('Goblinoids and small folk');
+      expect(g.tags.some((x) => /[ğüşıöçĞÜŞİÖÇ]/.test(x))).toBe(false);
+      expect(t().gm.mapInfo['magara']!.name).toBe('Cave');
+    } finally { setLang('tr'); dex = buildDex({ ...extras, mapNames: {} }); }
+  });
+});

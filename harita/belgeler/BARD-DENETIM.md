@@ -97,7 +97,7 @@ Tarih: 2026-11-20. Yalnız denetim: kod, veri ve test değişmedi. Kural sürüm
 | B11 | Her Bard seviyesinde bir cantrip ve bir hazır büyü değiştirilebilir | Oluşturucuda her zaman serbest düzenleme (seviye başına bir sınırı yok) | sapma | `builder.ts` (sınır yok) | 4971 genel **[bilinen]** |
 | B12 | ASI 4/8/12/16, Epic Boon 19 | `advancement.ts` SRD tablosundan; yuvalar oluşturucuda | tam | `advancement.ts:33-39` | — |
 | B13 | Alt sınıf seviye 3 (College of Lore) | Oluşturucu 3+ seviyede ister; varsayılan `college-of-lore` (`alt-sinif-gorunum.json:11`); mekanik fikstürde | tam | `alt-sinif-gorunum.json` | AS2 |
-| B14 | Serüven'de seviye atlayınca seçimler (Expertise 9, Discoveries 6, cantrip 4/10, hazır büyü, Magical Secrets) | `level_up` yalnız `sheet.level` artırır (`seruven_leveled`): yeni Expertise, cantrip, hazır büyü ve Discoveries seçimi sorulmaz, oluşturucuya gidilmedikçe eksik kalır; otomatik özellikler (Font, Countercharm, Superior Inspiration, Words of Creation) gelir | yok **[bilinen]** | `seruven.ts:284-290, 397` | 4971 (M4 "Karar bekleyen") |
+| B14 | Serüven'de seviye atlayınca seçimler (Expertise 9, Discoveries 6, cantrip 4/10, hazır büyü, Magical Secrets) | `level_up` yalnız `sheet.level` artırır (`seruven_leveled`): yeni Expertise, cantrip, hazır büyü ve Discoveries seçimi sorulmaz, oluşturucuya gidilmedikçe eksik kalır; otomatik özellikler (Font, Countercharm, Superior Inspiration, Words of Creation) gelir | **düzeldi (B94)** ← yok **[bilinen]** | `seruven.ts:284-290, 397` | 4971 (M4 "Karar bekleyen") |
 
 ## C) Dinlenme, Serüven, kayıt
 
@@ -105,7 +105,7 @@ Tarih: 2026-11-20. Yalnız denetim: kod, veri ve test değişmedi. Kural sürüm
 |---|---|---|---|---|---|
 | C1 | Bardic Inspiration: uzun dinlenmede hepsi; 5+ kısa dinlenmede de | `rechargeResources` probe: seviye 4 kısa → 0, seviye 5 kısa → 3, uzun → 3 | tam | probe | 5808 |
 | C2 | Slotlar uzun dinlenmede (Font ile ayrıca) | Genel dinlenme kuralı; slotlar uzun dinlenmede dolar | tam | `rules/rest.ts`, `characterRest.ts` | — |
-| C3 | Bard seviyesi kazanınca bir cantrip ve bir hazır büyü değişimi; uzun dinlenmede değişim **yok** (Cleric/Druid'den farklı) | Karakter listesi/oluşturucuda serbest düzenleme; Serüven'de değişim yok | sapma | B11, B14 | 4971 **[bilinen]** |
+| C3 | Bard seviyesi kazanınca bir cantrip ve bir hazır büyü değişimi; uzun dinlenmede değişim **yok** (Cleric/Druid'den farklı) | Karakter listesi/oluşturucuda serbest düzenleme; Serüven'de değişim yok | **düzeldi (B94)** ← sapma | B11, B14 | 4971 **[bilinen]** |
 | C4 | Kaynak kayıt/yükleme | `bardicInspiration` karakter `status.resources` içinde (en çok + harcanan, H-SLOT); savaş sonu karaktere yazılır; gerçek kaydet-yükle turu bu denetimde denenmedi | tam (kod okumasıyla) | `characterRest.ts`; DECISIONS H-SLOT | 4621 |
 | C5 | Dostta kalan Bardic Inspiration zarı 1 saat sürer (savaşlar arası) | Zar savaş durumunda süren etkidir; savaş sonu karaktere yazılmaz (kod okumasından çıkarım; savaşlar arası taşınan etki yok) | sapma | — | yok (çıkarım) |
 | C6 | Dinlenmede Bard özelliği değişimi/kaynak: Font geri alımı kısa dinlenme | Kısa dinlenme yolculuk motorunda aynı fonksiyon (`shortRest`); Serüven kısa dinlenme sınırı ayrı | kısmi | `journey/engine.ts` | K19B V6 |
@@ -159,3 +159,12 @@ Sıra etkiye göre; "Sürüm" sütunu: oluşturucu/arayüz değişimleri kural s
 | K2 | Serüven seviye atlamasında Bard seçimleri (Expertise 9, Discoveries 6, cantrip 4/10, hazır büyü, Magical Secrets) (B14, **bilinen**) | Ürün akışı: DECISIONS M4 "Karar bekleyen"; kayıt/oluşturucu bağı |
 | K3 | Alet yetkinliği (3 müzik aleti) modeli (B2) | Karakter modeli genişlemesi; savaşa etkisi yok |
 | K4 | Savaşlar arası Bardic Inspiration zarı taşınması (1 saat, C5) | Süren etkileri karakter durumuna yazmak yeni sistem |
+
+## B94 düzeltmeleri
+
+Görev B94 (2026-11-20). Sürüm sütunu: "94" = kural sürümü 94 (`B94_VERSION`), 93 ve altı eski davranışta; "sürümsüz" = veri/arayüz/oluşturucu/metin.
+
+| Satır | Şimdi | Sürüm | Test |
+|---|---|---|---|
+| B14 | Serüven seviye atlamada Bard seçimleri ortak yardımcıyla (`set_choices`; seviyede 1 cantrip + 1 hazır büyü; Expertise, Discoveries, Magical Secrets eklenir) | sürümsüz | levelChoices.test.ts |
+| C3 | Seviye atlamada bir cantrip/hazır büyü değişimi Serüven'de (`data/secim-degisim.json` bard) | sürümsüz | levelChoices.test.ts |

@@ -5,7 +5,7 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { loadMonsters, monsters } from '../data';
-import { t, useLang } from '../i18n';
+import { t, useLang, type Lang } from '../i18n';
 import { APP_NAME } from '../app/appName';
 import notice from '../../NOTICE?raw';
 import {
@@ -17,6 +17,8 @@ import { bookData } from '../dungeondex/book/kitapData';
 import { storedDexCover } from '../ui/dexCoverSetting';
 import { IconBook } from '../ui/icons';
 import { GlyphBadges, GlyphText } from '../ui/glyph/Glyph';
+import { buyuProspektus, esyaProspektus, featProspektus, type ProSection } from '../dungeondex/prospektus';
+import { ProspektusSections } from '../dungeondex/prospektus/ProspektusSections';
 import './dungeondex.css';
 
 const BASE = import.meta.env.BASE_URL;
@@ -62,7 +64,12 @@ export function Dungeondex(props: { onBack: () => void; /** Testler: hazır ek v
     return () => { live = false; };
   }, [wantMaps]);
 
-  const dex = useMemo(() => (extras ? buildDex({ ...extras, mapNames }) : null), [extras, mapNames, lang]);
+  // Harita adları dile göre (Game Master harita seçicisiyle aynı tablo `gm.mapInfo`; yoksa haritanın kendi adı).
+  const dex = useMemo(() => {
+    if (!extras) return null;
+    const info = t().gm.mapInfo;
+    return buildDex({ ...extras, mapNames: Object.fromEntries(Object.entries(mapNames).map(([id, n]) => [id, info[id]?.name ?? n])) });
+  }, [extras, mapNames, lang]);
   const list = view.cat && view.cat !== 'lisans' && dex ? dex[view.cat] : [];
   const filters = useMemo(() => (view.cat && view.cat !== 'lisans' ? dexFilters(view.cat, list) : []), [view.cat, list]);
   const found = useMemo(() => dexSearch(list, query, sel), [list, query, sel]);
@@ -207,9 +214,22 @@ function Text(props: { d: DexText | undefined; className?: string }) {
   return <p className={props.className}>{desc ? <GlyphText text={s.text} /> : s.text}{s.trOnly && <span className="dex-tronly"> ({t().common.descTrOnly})</span>}</p>;
 }
 
+/**
+ * Prospektüs bölümleri (kabuğun sağ sayfası): kimliği prospektüs verisiyle aynı olan eşya, büyü ve feat; diğerlerinde yok.
+ * EN arayüzde yalnız Türkçe yazılmış satırlar gösterilmez (`spellDescriptionShown` ile aynı kural: EN karşılığı yoksa gizli);
+ * veri satırları ve durum rozeti kalır.
+ */
+function proSections(e: DexEntry, lang: Lang): ProSection[] | null {
+  const P = t().dex.pro;
+  const s = e.cat === 'esya' ? esyaProspektus(e.id, P, lang) : e.cat === 'buyu' ? buyuProspektus(e.id, P, lang) : e.cat === 'feat' ? featProspektus(e.id, P, lang) : null;
+  return s && lang === 'en' ? s.map((x) => ({ ...x, rows: x.rows.filter((r) => !r.trOnly) })) : s;
+}
+
 function Card(props: { entry: DexEntry; onLink: (l: DexLink) => void }) {
   const L = t().dex;
+  const lang = useLang();
   const e = props.entry;
+  const pro = proSections(e, lang);
   return (
     <article className="dex-card" data-testid="dex-card" aria-label={e.name}>
       <h2>{e.name}<GlyphBadges list={e.glif} /></h2>
@@ -222,6 +242,7 @@ function Card(props: { entry: DexEntry; onLink: (l: DexLink) => void }) {
       {e.facts.length > 0 && (
         <dl className="dex-facts">{e.facts.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
       )}
+      {pro && <ProspektusSections sections={pro} />}
       {e.sections.map((s) => (
         <section key={s.title} className="dex-sec">
           <h3>{s.title}</h3>

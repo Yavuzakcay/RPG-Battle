@@ -1,5 +1,5 @@
 {
-  "_not": "Görev B93 (A2): Serüven'de seviye atlama ve uzun dinlenmede seçim değişimi (SRD 5.2.1 sınıf metinleri: 'Whenever you gain a <class> level, you can replace one…', 'Whenever you finish a Long Rest, you can change…'). Kod sınıf adı içermez (src/rules/levelChoices.ts); sınıf burada yazılınca bağlanır. Alanlar: cantrip ve hazir = spellNames'in 0. ve 1+ seviye büyüleri; spellbook, invocations, metamagic, expertise, advancements, subclassId, pactWeapon, weaponMasteries = sayfa alanları; secenek = featureChoices anahtarı (':' ile başlayan desen anahtar sonu, '/' ile biten desen anahtar başı). Değer: seviye = seviye atlamada, dinlenme = uzun dinlenmeden sonra çıkarılabilecek (değiştirilebilecek) seçim sayısı (sayı ya da 'hepsi'). Yazılmayan alan yalnız eklenir (boş yer doldurulur, çıkarılamaz). Yeni seçim (sayı artışı) her zaman serbest; sınırları oluşturucu kuralları denetler (characterIssues). Bard, Druid, Ranger, Paladin sonraki görevde bağlanacak.",
+  "_not": "Görev B93 (A2): Serüven'de seviye atlama ve uzun dinlenmede seçim değişimi (SRD 5.2.1 sınıf metinleri: 'Whenever you gain a <class> level, you can replace one…', 'Whenever you finish a Long Rest, you can change…'). Kod sınıf adı içermez (src/rules/levelChoices.ts); sınıf burada yazılınca bağlanır. Alanlar: cantrip ve hazir = spellNames'in 0. ve 1+ seviye büyüleri; spellbook, invocations, metamagic, expertise, advancements, subclassId, pactWeapon, weaponMasteries = sayfa alanları; secenek = featureChoices anahtarı (':' ile başlayan desen anahtar sonu, '/' ile biten desen anahtar başı). Değer: seviye = seviye atlamada, dinlenme = uzun dinlenmeden sonra çıkarılabilecek (değiştirilebilecek) seçim sayısı (sayı ya da 'hepsi'). Yazılmayan alan yalnız eklenir (boş yer doldurulur, çıkarılamaz). Yeni seçim (sayı artışı) her zaman serbest; sınırları oluşturucu kuralları denetler (characterIssues). Görev B94: Bard, Druid, Ranger, Paladin bağlandı; stil = advancements'taki Fighting Style yuvası seçimi (feat ya da Blessed/Druidic Warrior), advancements = diğer yuvalar (ASI/feat/Epic Boon; değişmez). Blessed/Druidic Warrior cantrip'leri cantrip anahtarında.",
   "siniflar": {
     "cleric": {
       "cantrip": { "seviye": 1 },
@@ -20,6 +20,28 @@
       "hazir": { "seviye": 1 },
       "invocations": { "seviye": 1 },
       "secenek": { "warlock:mystic-arcanum/": { "seviye": 1 }, ":fiendish-resilience": { "dinlenme": "hepsi" } }
+    },
+    "bard": {
+      "cantrip": { "seviye": 1 },
+      "hazir": { "seviye": 1 }
+    },
+    "druid": {
+      "cantrip": { "seviye": 1 },
+      "hazir": { "dinlenme": "hepsi" },
+      "secenek": { ":circle-of-the-land-spells": { "dinlenme": "hepsi" } }
+    },
+    "ranger": {
+      "cantrip": { "seviye": 1 },
+      "hazir": { "dinlenme": 1 },
+      "stil": { "seviye": 1 },
+      "weaponMasteries": { "dinlenme": "hepsi" },
+      "secenek": { ":hunters-prey": { "dinlenme": "hepsi" }, ":defensive-tactics": { "dinlenme": "hepsi" } }
+    },
+    "paladin": {
+      "cantrip": { "seviye": 1 },
+      "hazir": { "dinlenme": 1 },
+      "stil": { "seviye": 1 },
+      "weaponMasteries": { "dinlenme": "hepsi" }
     }
   }
 }

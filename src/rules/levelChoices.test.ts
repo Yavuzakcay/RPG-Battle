@@ -6,7 +6,7 @@ import { recommendedSpells } from '../screens/builderDefaults';
 import { choiceIssues, executeSeruven, type SeruvenState } from '../journey/seruven';
 import type { CharacterSheet } from './stats';
 
-const SUB: Record<string, string> = { cleric: 'life-domain', sorcerer: 'draconic-sorcery', wizard: 'evoker', warlock: 'fiend-patron', fighter: 'champion' };
+const SUB: Record<string, string> = { paladin: 'oath-of-devotion', ranger: 'hunter', bard: 'college-of-lore', druid: 'circle-of-the-land', cleric: 'life-domain', sorcerer: 'draconic-sorcery', wizard: 'evoker', warlock: 'fiend-patron', fighter: 'champion' };
 const sheetOf = (classId: string, level: number, patch: Partial<CharacterSheet> = {}): CharacterSheet => {
   const base: CharacterSheet = { ...blankCharacter('x').sheet, name: 'Deneme', classId, level, baseScores: suggestedScores(classId), subclassId: SUB[classId],
     ...(classId === 'sorcerer' ? { metamagic: ['careful', 'distant'] } : {}), ...patch };
@@ -22,9 +22,9 @@ const spellIssues = (s: CharacterSheet) => choiceIssues(s).filter((x) => !x.star
 const cantrips = (s: CharacterSheet) => (s.spellNames ?? []).filter((n) => ['Fire Bolt', 'Light', 'Mage Hand', 'Prestidigitation', 'Ray of Frost', 'Shocking Grasp', 'Minor Illusion', 'Sacred Flame', 'Guidance', 'Thaumaturgy', 'Eldritch Blast', 'Toll the Dead', 'Spare the Dying', 'Resistance', 'Mending', 'Message', 'Acid Splash', 'Chill Touch', 'Poison Spray', 'Blade Ward', 'Friends', 'True Strike', 'Word of Radiance', 'Sorcerous Burst', 'Dancing Lights', 'Elementalism', 'Shillelagh', 'Starry Wisp', 'Thunderclap'].includes(n));
 
 describe('A2: seçim değişimi kuralları (veriden)', () => {
-  it('yalnız verisi olan sınıflar bağlı (Cleric, Sorcerer, Wizard, Warlock); kural kodda sınıf adı olmadan veriden', () => {
-    for (const c of ['cleric', 'sorcerer', 'wizard', 'warlock']) expect(choicesBound(c)).toBe(true);
-    for (const c of ['bard', 'druid', 'ranger', 'paladin', 'fighter']) expect(choicesBound(c)).toBe(false);
+  it('yalnız verisi olan sınıflar bağlı (Cleric, Sorcerer, Wizard, Warlock; B94: Bard, Druid, Ranger, Paladin); kural kodda sınıf adı olmadan veriden', () => {
+    for (const c of ['cleric', 'sorcerer', 'wizard', 'warlock', 'bard', 'druid', 'ranger', 'paladin']) expect(choicesBound(c)).toBe(true);
+    for (const c of ['fighter']) expect(choicesBound(c)).toBe(false);
     expect(ruleFor('cleric', 'hazir').dinlenme).toBe('hepsi');
     expect(ruleFor('warlock', 'secenek:warlock:mystic-arcanum/6').seviye).toBe(1);
     expect(ruleFor('warlock', 'secenek:warlock/fiend:fiendish-resilience').dinlenme).toBe('hepsi');
@@ -90,5 +90,34 @@ describe('A2: Serüven set_choices', () => {
   it('bağlı olmayan sınıf reddedilir (sonraki görev)', () => {
     const s = begin(sheetOf('fighter', 3), { rests: 1 });
     expect(executeSeruven(s, { type: 'set_choices', memberId: 'p1', sheet: {} }).ok).toBe(false);
+  });
+});
+
+describe('Görev B94 (A1): Bard, Druid, Ranger, Paladin seçim değişimi (SRD 5.2.1)', () => {
+  it('Bard: seviyede bir cantrip ve bir hazır büyü; dinlenmede değişim yok; Expertise yalnız eklenir (s. 32)', () => {
+    expect(fitChanges('bard', { cantrip: 1, hazir: 1 }, { seviye: true, dinlenme: false }, {}).ok).toBe(true);
+    expect(fitChanges('bard', { hazir: 1 }, { seviye: false, dinlenme: true }, {}).ok).toBe(false);
+    expect(fitChanges('bard', { expertise: 1 }, { seviye: true, dinlenme: true }, {}).ok).toBe(false);
+  });
+  it('Druid: seviyede bir cantrip, uzun dinlenmede hazır listenin hepsi; Primal Order değişmez; Circle of the Land arazisi dinlenmede (s. 41–42, 46)', () => {
+    expect(fitChanges('druid', { hazir: 6 }, { seviye: false, dinlenme: true }, {}).ok).toBe(true);
+    expect(fitChanges('druid', { cantrip: 1 }, { seviye: false, dinlenme: true }, {}).ok).toBe(false);
+    expect(fitChanges('druid', { 'secenek:druid:primal-order': 1 }, { seviye: true, dinlenme: true }, {}).ok).toBe(false);
+    expect(ruleFor('druid', 'secenek:druid/circle-of-the-land:circle-of-the-land-spells').dinlenme).toBe('hepsi');
+  });
+  it('Ranger ve Paladin: uzun dinlenmede bir hazır büyü ve bütün ustalıklar; seviyede Fighting Style ve bir yuva cantrip\'i (s. 54, 58)', () => {
+    for (const c of ['ranger', 'paladin']) {
+      expect(fitChanges(c, { hazir: 1, weaponMasteries: 2 }, { seviye: false, dinlenme: true }, {}).ok).toBe(true);
+      expect(fitChanges(c, { hazir: 2 }, { seviye: false, dinlenme: true }, {}).ok).toBe(false);
+      expect(fitChanges(c, { stil: 1, cantrip: 1 }, { seviye: true, dinlenme: false }, {}).ok).toBe(true);
+      expect(fitChanges(c, { stil: 1 }, { seviye: false, dinlenme: true }, {}).ok).toBe(false);
+      expect(fitChanges(c, { advancements: 1 }, { seviye: true, dinlenme: true }, {}).ok).toBe(false);
+    }
+    expect(ruleFor('ranger', 'secenek:ranger/hunter:hunters-prey').dinlenme).toBe('hepsi');
+  });
+  it('changeCounts: Fighting Style yuvası (feat ya da Blessed Warrior) `stil`, ASI/feat yuvası `advancements`', () => {
+    const a = sheetOf('paladin', 4, { advancements: [{ level: 2, featId: 'defense' }, { level: 4, featId: 'ability-score-improvement', abilities: { str: 2 } }] });
+    expect(changeCounts(a, { ...a, advancements: [{ level: 2, featId: 'blessed-warrior' }, a.advancements![1]!] })).toEqual({ stil: 1 });
+    expect(changeCounts(a, { ...a, advancements: [a.advancements![0]!, { level: 4, featId: 'ability-score-improvement', abilities: { cha: 2 } }] })).toEqual({ advancements: 1 });
   });
 });

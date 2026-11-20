@@ -2,6 +2,7 @@
  * Olayları duruma uygular. Saf fonksiyondur: aynı olaylar aynı sırayla uygulanınca
  * her cihazda ve sunucuda tamamen aynı durum çıkar.
  */
+import { sourceDown } from './sourceDown';
 import nesneAgirlik from '../../data/nesne-agirlik.json';
 import { BOON_TURN_REFILL } from './boons';
 import { syncRiders } from './mounted';
@@ -230,10 +231,8 @@ function pruneEffects(state: BattleState): BattleState {
       // Kuyruk 19: Incapacitated olunca biten etki (Superior Defense).
       if (e.breakOnIncapacitated && c.conditions.some((x) => ['Incapacitated', 'Stunned', 'Paralyzed', 'Unconscious', 'Petrified'].includes(x))) return false;
       // Görev B93 (Turn Undead): kaynak Incapacitated, 0 HP ya da ölü.
-      if (e.endsIfSourceDown) {
-        const src = state.combatants[e.sourceId];
-        if (!src || src.life === 'dead' || src.hp <= 0 || src.conditions.some((x) => ['Incapacitated', 'Stunned', 'Paralyzed', 'Unconscious', 'Petrified'].includes(x))) return false;
-      }
+      // Görev B94 (A2): tek yardımcı `sourceDown` (aynı koşul).
+      if (e.endsIfSourceDown && sourceDown(state.combatants[e.sourceId])) return false;
       if (e.concentration && state.combatants[e.sourceId]?.concentration?.spell !== e.concentration) return false;
       return true;
     });
@@ -399,6 +398,8 @@ function pruneZones(state: BattleState): BattleState {
     if (z.until !== undefined && z.until < state.round) return false;
     const caster = state.combatants[z.casterId];
     if (z.concentration && caster?.concentration?.spell !== z.concentration) return false;
+    // Görev B94 (A2, sürüm 94+): büyücüsü Incapacitated olunca ya da ölünce biten alan (Nature's Sanctuary).
+    if (z.endsIfCasterDown && sourceDown(caster)) return false;
     if (z.anchorId) {
       const a = state.combatants[z.anchorId];
       if (!a || a.summon?.gone || a.hp <= 0 || !a.pos) return false;
