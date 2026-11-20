@@ -19,7 +19,15 @@ import { ITEM_KINDS, ITEM_TIERS, itemKind, itemTier, type ItemKind, type ItemTie
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail } from '../../ui/equipmentText';
 import { getLang, t } from '../../i18n';
 import { Fold, InfoPop, toggle } from './shared';
+import { GlyphBadges, GlyphText } from '../../ui/glyph/Glyph';
+import { itemGlyphs } from '../../ui/glyph/glyphs';
 import { RecoBar, RecoTag, useRecoSets } from './Reco';
+import type { Item } from '../../data';
+
+/** Ortak simgeler (glif): eşya özeti ham SRD metnine (`it.text`) düşmediyse simgeli; düştüyse metin aynen. */
+const rawFallback = (it: Item): boolean => !!it.text && itemSummary(it).includes(it.text);
+const itemSumNode = (it: Item) => (rawFallback(it) ? itemSummary(it) : <GlyphText text={itemSummary(it)} />);
+const itemDescPart = (it: Item): string | undefined => (rawFallback(it) ? undefined : itemDetail(it));
 
 type SetFn = (patch: Partial<CharacterSheet>) => void;
 
@@ -204,8 +212,8 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
           <ul className="eq-list">
             {chosenItems.map((it) => (
               <li key={it.name} className="eq-row on">
-                <span className="eq-main"><b>{it.name}</b><small>{itemSummary(it)}</small>{lb(it.weight, it.weightApprox)}</span>
-                <InfoPop text={itemDetail(it)} />
+                <span className="eq-main"><b>{it.name}<GlyphBadges list={itemGlyphs(it)} /></b><small>{itemSumNode(it)}</small>{lb(it.weight, it.weightApprox)}</span>
+                <InfoPop text={itemDetail(it)} desc={itemDescPart(it)} />
                 <button className="ghost eq-remove" aria-label={W.removeItem(it.name)} onClick={() => set({ itemNames: toggle(s.itemNames, it.name, false) })}>×</button>
               </li>
             ))}
@@ -238,7 +246,7 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
                           {/* Görev K4: uyum (attunement) sınırı: dördüncü uyumlu eşya seçilemez; nedeni ipucunda ve listenin üstünde. */}
                           <input type="checkbox" checked={false} disabled={locked}
                             onChange={(e: { target: { checked: boolean } }) => set({ itemNames: toggle(s.itemNames, it.name, e.target.checked) })} />
-                          <span><b>{it.name}</b><small>{itemSummary(it)}</small>{it.attunement && <small className="mute">{W.attuneTag}</small>}{lb(it.weight, it.weightApprox)}</span>
+                          <span><b>{it.name}<GlyphBadges list={itemGlyphs(it)} /></b><small>{itemSumNode(it)}</small>{it.attunement && <small className="mute">{W.attuneTag}</small>}{lb(it.weight, it.weightApprox)}</span>
                         </label>
                       );
                     })}

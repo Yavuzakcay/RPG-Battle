@@ -80,4 +80,41 @@ describe('Ranger ID4: maske düzeltmeleri veride', () => {
       expect(PUL.has(n), n).toBe(true);
     }
   });
+
+  // `ekle` kutuları [x0, y0, x1, y1] uç hariç (scripts/dragonborn-desen-v2.py `_kutular`); `haric` kutu ya da çokgen.
+  type Duz = { ekle?: number[][]; haric?: Array<number[] | number[][]> };
+  const J = (pulDuz as unknown as { jetonlar: Record<string, Duz> }).jetonlar;
+  const ekleOf = (n: string): Set<string> => {
+    const px = new Set<string>();
+    for (const [x0, y0, x1, y1] of J[n]!.ekle! as [number, number, number, number][]) for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) px.add(`${x},${y}`);
+    return px;
+  };
+  /** Nokta (piksel merkezi) haric alanında mı: kutu ya da çokgen (çift-tek kuralı). */
+  const inHaric = (n: string, x: number, y: number): boolean => (J[n]!.haric ?? []).some((h) => {
+    if (!Array.isArray(h[0])) { const [x0, y0, x1, y1] = h as number[]; return x >= x0! && x < x1! && y >= y0! && y < y1!; }
+    const p = h as number[][]; let inside = false;
+    for (let i = 0, j = p.length - 1; i < p.length; j = i++) {
+      const [xi, yi] = p[i]!; const [xj, yj] = p[j]!;
+      if ((yi! > y + 0.5) !== (yj! > y + 0.5) && x + 0.5 < ((xj! - xi!) * (y + 0.5 - yi!)) / (yj! - yi!) + xi!) inside = !inside;
+    }
+    return inside;
+  });
+
+  it('Dragonborn erkek: ekle yalnız doldurulan macenta artığının 17 pikseli (yoldaş kanadının pikselleri değil)', () => {
+    const px = ekleOf('dragonborn-erkek-ranger-ID4');
+    expect(px.size).toBe(17);
+    for (const k of ['105,93', '105,94', '106,94']) expect(px.has(k), k).toBe(false);
+  });
+
+  it('Dragonborn kadın: ekle tam çene altındaki 28 piksel; kanat çokgenine ve yoldaş kutusuna taşmaz', () => {
+    const px = ekleOf('dragonborn-kadin-ranger-ID4');
+    const exp = [[105, 78], [106, 78], [107, 78], ...[78, 79, 80].map((y) => [110, y]), ...[111, 112].flatMap((x) => [77, 78, 79, 80].map((y) => [x, y])),
+      ...[113, 114].flatMap((x) => [77, 78, 79, 80, 81, 82, 83].map((y) => [x, y]))].map(([x, y]) => `${x},${y}`);
+    expect(exp).toHaveLength(28);
+    expect([...px].sort()).toEqual([...exp].sort());
+    // Denetim gerçek: kanat çokgeninin içi ve yoldaş kutusu yakalanır.
+    expect(inHaric('dragonborn-kadin-ranger-ID4', 50, 60)).toBe(true);
+    expect(inHaric('dragonborn-kadin-ranger-ID4', 190, 100)).toBe(true);
+    for (const k of px) { const [x, y] = k.split(',').map(Number) as [number, number]; expect(inHaric('dragonborn-kadin-ranger-ID4', x, y), k).toBe(false); }
+  });
 });

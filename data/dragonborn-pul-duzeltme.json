@@ -210,8 +210,8 @@
     [176, 100, 200, 150],
     [[20, 30], [84, 30], [88, 45], [94, 64], [99, 76], [105, 86], [111, 94], [114, 102], [100, 106], [86, 108], [70, 114], [62, 118], [61, 127], [50, 127], [44, 121], [36, 128], [33, 148], [18, 148]]
    ],
-   "ekle": [[105, 89, 111, 95]],
-   "neden": "kılıç ağzı (çokgen), yavru ejderha kalıntısı ve yoldaş ejderin sol kanadı (çokgen; Ranger ID4: kanat yoldaşın, boyanmaz); ekle: baş ile kanat arasındaki macenta anahtar renk artığı (jetonun kendisinde, boyun hizasında mor leke) pul tonuna boyanır"
+   "ekle": [[105, 89, 110, 90], [107, 90, 111, 91], [108, 91, 111, 93], [110, 93, 111, 95]],
+   "neden": "kılıç ağzı (çokgen), yavru ejderha kalıntısı ve yoldaş ejderin sol kanadı (çokgen; Ranger ID4: kanat yoldaşın, boyanmaz); ekle: baş ile kanat arasındaki eski macenta anahtar renk artığının 17 pikseli (ham jetonda komşu ten/pul ortalaması #8c8ca4 ile dolduruldu, DECISIONS.md) pul tonuna boyanır; kutular yalnız bu 17 piksel (yoldaş kanadının 3 pikseli boyanmaz)"
   },
   "dragonborn-kadin-ranger-ID4": {
    "haric": [
@@ -224,7 +224,8 @@
     [176, 85, 215, 150],
     [[20, 28], [88, 28], [90, 46], [94, 66], [98, 79], [104, 89], [112, 98], [116, 104], [100, 108], [80, 113], [60, 122], [40, 126], [22, 134]]
    ],
-   "neden": "kılıç ağzı (çokgen), yavru ejderha kalıntısı ve yoldaş ejderin sol kanadı (çokgen; Ranger ID4: kanat yoldaşın, boyanmaz)"
+   "ekle": [[111, 77, 115, 78], [105, 78, 108, 79], [110, 78, 115, 81], [113, 81, 115, 84]],
+   "neden": "kılıç ağzı (çokgen), yavru ejderha kalıntısı ve yoldaş ejderin sol kanadı (çokgen; Ranger ID4: kanat yoldaşın, boyanmaz); ekle: çene altında maskenin kroma tavanına takılan 28 lavanta ten pikseli (x 105–114, y 77–83; her yanı boyalı maske deliği), kutular yalnız bu 28 piksel"
   },
   "dragonborn-erkek-paladin-ID10": {
    "yalniz": [

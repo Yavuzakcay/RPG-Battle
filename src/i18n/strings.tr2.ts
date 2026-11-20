@@ -27,6 +27,7 @@ export const TR_EXTRA = {
     video: 'Savaş sonu videosu', videoHelp: 'Savaş bitince kısa bir video oynar.',
     preview: 'Hamle önizlemesi', previewHelp: 'Hedef seçince sonucu önceden gösterir.', detail: 'Ayrıntı', short: 'Kısa', full: 'Tam',
     dexCover: 'Kapak animasyonu', dexCoverHelp: 'Dungeondex açılırken kapak canlanır.',
+    glyphs: 'Açıklama simgeleri', glyphsHelp: 'Açıklamalarda okul, eylem ve hasar türü simgeleri.',
     city: 'Şehir görünümü', cityHelp: 'Şehirde üstten harita görünür.', tint: 'Harita rengi', tintHelp: 'Savaş haritası yerleşimin rengini alır.',
     book: 'Keşif Defteri', bookCount: (a: number, b: number) => `${a}/${b}`, bookOpen: 'Aç', bookBack: 'Ayarlar', bookEmpty: 'Henüz keşfedilen yok.',
     advanced: 'Gelişmiş', advancedHelp: 'Çoğu oyuncunun buna dokunması gerekmez.', packs: (n: number) => `Yüklü paket: ${n}`,

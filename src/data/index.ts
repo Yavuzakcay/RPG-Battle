@@ -68,7 +68,7 @@ export const spellDescriptionOf = (id: string, lang: Lang): string | undefined =
 export const spellDescriptionShown = (id: string, lang: Lang): string | undefined => descriptionShown(spellDescriptions, id, lang);
 /**
  * Görev SD4: Türkçe açıklamalar (`data/aciklamalar-tr.json`; ad İngilizce kalır, açıklama Türkçe). Tür → kimlik → metin;
- * `loadClassData` doldurur, yüklenene dek boş. EN arayüzde gösterilmez (yalnız Türkçe notu çıkar).
+ * `loadClassData` doldurur, yüklenene dek boş. EN arayüzde İngilizce karşılığı gösterilir (`enAciklama`).
  */
 /** `buyuSecenek`: büyü seçeneğinin Game Master notu (anahtar `<büyü kimliği>/<seçenek>`; Control Water, sürüm 84). */
 /** `canavar`: Kuyruk A İş 4, canavar özellik/eylemi (anahtar `<canavar>/<tür>:<ad-slug>`, liste `data/canavar-ozellik.json`). */
@@ -86,6 +86,22 @@ export function loadMonsterDescriptions(): Promise<void> {
   });
   return monsterDescLoading;
 }
+/**
+ * Görev EN-ACIKLAMA: İngilizce açıklamalar (`data/aciklamalar-en.json`, aynı tür ve kimlikler; SRD 5.2.1 metni ya da çeviri,
+ * `node scripts/en-aciklama-uret.mjs`). `loadClassData` tembel parçayla doldurur; canavar özellikleri ayrı dosyada
+ * (`data/aciklamalar-en-canavar.json`), yalnız Dungeondex `loadEnMonsterDescriptions` ile yükler. Kayıt yoksa undefined.
+ */
+export const enDescriptions: Record<AciklamaTuru, Record<string, string>> = { buyu: {}, esya: {}, tur: {}, yetenek: {}, altsinif: {}, invocation: {}, buyuSecenek: {}, durum: {}, canavar: {} };
+export const enAciklama = (tur: AciklamaTuru, id: string): string | undefined => enDescriptions[tur][id];
+/** Dile göre açıklama: tr → Türkçe, en → İngilizce (yoksa undefined; "yalnız Türkçe" notu arayüzün işi). */
+export const aciklamaOf = (tur: AciklamaTuru, id: string, lang: Lang): string | undefined => (lang === 'en' ? enAciklama(tur, id) : trAciklama(tur, id));
+let enMonsterLoading: Promise<void> | null = null;
+export function loadEnMonsterDescriptions(): Promise<void> {
+  enMonsterLoading ??= import('../../data/aciklamalar-en-canavar.json').then((m) => {
+    Object.assign(enDescriptions.canavar, (m.default as unknown as { canavar: Record<string, string> }).canavar);
+  });
+  return enMonsterLoading;
+}
 let classLoading: Promise<void> | null = null;
 export const classDataLoaded = () => classData.progression.length > 0;
 export function loadClassData(): Promise<void> {
@@ -94,7 +110,8 @@ export function loadClassData(): Promise<void> {
     import('../../data/srd/weapons.json'), import('../../data/subclasses.json'), import('../../data/spells-45.json'),
     import('../../data/items-srd.json'), import('../../data/spells-69.json'), import('../../data/karadul.json'), import('../../data/imza.json'),
     import('../../data/spells.json'), import('../../data/buyu-betimleme.json'), import('../../data/aciklamalar-tr.json'),
-  ]).then(([p, m, f, w, sc, s45, isrd, s69, kd, imza, s03, bet, atr]) => {
+    import('../../data/aciklamalar-en.json'),
+  ]).then(([p, m, f, w, sc, s45, isrd, s69, kd, imza, s03, bet, atr, aen]) => {
     if (classDataLoaded()) return;
     // Kuyruk B2: büyü betimlemeleri (yalnız görünüm; ana parçaya girmez, sınıf verisiyle tembel gelir).
     const { _aciklama: _a, ...descriptions } = bet.default as unknown as SpellDescriptions & { _aciklama?: unknown };
@@ -102,6 +119,9 @@ export function loadClassData(): Promise<void> {
     // Görev SD4: Türkçe açıklamalar (büyü, eşya, tür özelliği, sınıf/alt sınıf özelliği, Invocation).
     const { _aciklama: _b, ...turler } = atr.default as unknown as Record<string, unknown>;
     for (const k of Object.keys(trDescriptions) as AciklamaTuru[]) Object.assign(trDescriptions[k], (turler[k] ?? {}) as Record<string, string>);
+    // Görev EN-ACIKLAMA: İngilizce açıklamalar (canavar hariç; o yalnız Dungeondex'te).
+    const enTurler = aen.default as unknown as Record<string, unknown>;
+    for (const k of Object.keys(enDescriptions) as AciklamaTuru[]) if (k !== 'canavar') Object.assign(enDescriptions[k], (enTurler[k] ?? {}) as Record<string, string>);
     // Kuyruk 19 (görev 7): SRD'nin geri kalan eşyaları (ana parça sınırı; oluşturucu ve savaştan önce yüklenir).
     const moreItems = (isrd.default as unknown as Item[]).filter((x) => !items.some((y) => y.id === x.id));
     items.push(...moreItems);

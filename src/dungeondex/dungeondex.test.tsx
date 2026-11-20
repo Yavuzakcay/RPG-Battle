@@ -61,10 +61,13 @@ describe('Dungeondex kataloğu', () => {
       }
     }
   });
-  it('EN arayüz: açıklama Türkçe metin + "yalnız Türkçe" notu; EN metni varsa o', () => {
+  // Görev EN-ACIKLAMA: EN karşılığı (data/aciklamalar-en.json) artık var; yoksa Türkçe metin + "yalnız Türkçe" notu.
+  it('EN arayüz: EN metni varsa o; yoksa Türkçe metin + "yalnız Türkçe" notu', () => {
     const fb = dex.buyu.find((e) => e.id === 'fireball')!;
     expect(shownText(fb.desc, 'tr')).toEqual({ text: fb.desc!.tr, trOnly: false });
-    expect(shownText(fb.desc, 'en')).toEqual({ text: fb.desc!.tr, trOnly: true });
+    expect(shownText(fb.desc, 'en')).toEqual({ text: fb.desc!.en, trOnly: false });
+    expect(fb.desc!.en).toMatch(/8d6 Fire damage/);
+    expect(shownText({ tr: 'a' }, 'en')).toEqual({ text: 'a', trOnly: true });
     expect(shownText({ tr: 'a', en: 'b' }, 'en')).toEqual({ text: 'b', trOnly: false });
   });
   it('arama (TR ve EN ad, aksan duyarsız) ve süzgeçler', () => {
@@ -97,7 +100,7 @@ describe('Dungeondex ekranı', () => {
     expect(lic).toContain(APP_NAME.replace('&', '&amp;'));
     expect(notice).toContain('SRD 5.2.1');
   });
-  it('kayıt kartı: ad İngilizce, açıklama Türkçe, bağlantılar; EN arayüzde not', () => {
+  it('kayıt kartı: ad İngilizce, açıklama Türkçe, bağlantılar; EN arayüzde İngilizce açıklama', () => {
     const m = html({ cat: 'buyu', id: 'fireball' });
     expect(m).toContain('data-testid="dex-card"');
     expect(m).toContain('Fireball');
@@ -107,7 +110,8 @@ describe('Dungeondex ekranı', () => {
     try {
       dex = buildDex({ ...extras, mapNames: {} });
       const e = html({ cat: 'buyu', id: 'fireball' });
-      expect(e).toContain(t().common.descTrOnly);
+      expect(e).toContain('8d6 Fire damage');
+      expect(e).not.toContain(t().common.descTrOnly);
       expect(e).toContain('Spells');
     } finally { setLang('tr'); }
   });
@@ -169,7 +173,8 @@ describe('Dungeondex: Sınıflar kategorisi (Görev DX-S)', () => {
   it('SRD İngilizce ham metni ve sayfa numarası yok', () => {
     const raw = (srdClasses.classes as Array<{ features: Array<{ text?: string }>; source: { page: number } }>).flatMap((c) => c.features.map((f) => f.text ?? ''))
       .filter((x) => x.length > 30).map((x) => x.slice(0, 40));
-    const all = JSON.stringify(dex.sinif);
+    // Görev EN-ACIKLAMA: `en` alanı SRD İngilizce metnini taşıyabilir (EN arayüz); Türkçe alanlarda ham metin yok.
+    const all = JSON.stringify(dex.sinif, (k, v) => (k === 'en' ? undefined : v));
     for (const r of raw) expect(all.includes(r), r).toBe(false);
     expect(all).not.toMatch(/"(page|source|srdPage)"/);
     for (const e of dex.sinif) for (const d of [e.desc, e.summary, ...e.sections.flatMap((s) => s.rows.map((r) => r.text))]) {
@@ -179,13 +184,13 @@ describe('Dungeondex: Sınıflar kategorisi (Görev DX-S)', () => {
     expect(m).toContain('Rage');
     expect(m).not.toMatch(/s\. ?\d{2,3}\b|page \d/i);
   });
-  it('EN arayüz: başlıklar İngilizce, Türkçe açıklama "yalnız Türkçe" notuyla', () => {
+  it('EN arayüz: başlıklar İngilizce, açıklamalar İngilizce', () => {
     setLang('en');
     try {
       dex = buildDex({ ...extras, mapNames: {} });
       const m = html({ cat: 'sinif', id: 'barbarian' });
       expect(m).toContain('Hit Point Die');
-      expect(m).toContain(t().common.descTrOnly);
+      expect(m).not.toContain(t().common.descTrOnly);
       expect(m).toContain('Classes');
     } finally { setLang('tr'); dex = buildDex({ ...extras, mapNames: {} }); }
   });

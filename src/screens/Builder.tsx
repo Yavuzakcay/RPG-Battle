@@ -6,6 +6,7 @@
  */
 import { StoryStep } from './builder/Story';
 import { SpellComps, componentsInfo } from '../ui/SpellComps';
+import { spellRitual } from '../rules/spellComponents';
 import { eligibleForms, shapeLimits } from '../battle/druid';
 import { eligibleCantrips, invocationKit, invocationSlots, LESSON_FEATS, parseInvocation } from '../rules/invocations';
 import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react';
@@ -54,6 +55,8 @@ import { MI_LISTS, backgroundOf, backgroundSkills, backgrounds, bonusesOf, magic
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail, weaponSummary } from '../ui/equipmentText';
 import { getLang, t } from '../i18n';
 import { Fold, InfoPop, InfoTip, toggle } from './builder/shared';
+import { GlyphBadges, GlyphText } from '../ui/glyph/Glyph';
+import { spellGlyphs } from '../ui/glyph/glyphs';
 import { recommendedAsi, reSuggestAfterBackground, reSuggestAfterLevel, reSuggestAfterClassSwitch, withRecommendedAsi, withSuggestions } from './builderDefaults';
 import onerilen from '../../data/onerilen-baslangic.json';
 import { EquipmentStep } from './builder/Equipment';
@@ -1041,7 +1044,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
     if (!sp || kit.alwaysPrepared.includes(x.name)) return null;
     return (
       <li key={x.id} className={`spell-row${on ? ' on' : ''}`} title={sp.mechanics.unsupported ?? sp.mechanics.approx ?? undefined}>
-        <span className="spell-name">{x.name}<RecoTag show={on && !!reco?.spells.includes(x.name)} /><InfoPop text={`${describeTr('buyu', sp.id) ?? ''} ${componentsInfo(sp)}`.trim()} /><SpellComps spell={sp} />{sp.mechanics.unsupported ? <InfoTip text={T.spellNotWorking} /> : null}
+        <span className="spell-name">{x.name}<GlyphBadges list={spellGlyphs(sp, spellRitual(sp))} /><RecoTag show={on && !!reco?.spells.includes(x.name)} /><InfoPop text={`${describeTr('buyu', sp.id) ?? ''} ${componentsInfo(sp)}`.trim()} desc={describeTr('buyu', sp.id)} /><SpellComps spell={sp} />{sp.mechanics.unsupported ? <InfoTip text={T.spellNotWorking} /> : null}
           {/* Kuyruk MB7: güncel sürümde savaşta çalışan büyü (Phantom Steed `mb7`) savaş dışı sayılmaz. */}{(sp.mechanics.mb7?.offCombat ?? sp.mechanics.offCombat) ? <small className="tag-offcombat" title={T.spellOffCombatTip}>{T.spellOffCombat}</small> : null}</span>
         {book && x.level > 0 && (
           <button className={`badge book${inBook ? ' on' : ''}`} aria-pressed={inBook} disabled={!inBook && cnt.book.length >= (lim.spellbook ?? 0)}
@@ -1072,8 +1075,8 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
         {chosen.map((n) => {
           const sp = spells.find((x) => x.name === n);
           return (
-            <li key={n} className="eq-row on"><span className="eq-main"><b>{n}<RecoTag show={!!reco?.spells.includes(n)} /></b><small>{(sp?.level ?? 0) === 0 ? W.cantripGroup : W.levelGroup(sp?.level ?? 0)}</small></span>
-              {sp && <SpellComps spell={sp} compact />}{sp && <InfoPop text={`${describeTr('buyu', sp.id) ?? ''} ${componentsInfo(sp)}`.trim()} />}
+            <li key={n} className="eq-row on"><span className="eq-main"><b>{n}{sp && <GlyphBadges list={spellGlyphs(sp, spellRitual(sp))} />}<RecoTag show={!!reco?.spells.includes(n)} /></b><small>{(sp?.level ?? 0) === 0 ? W.cantripGroup : W.levelGroup(sp?.level ?? 0)}</small></span>
+              {sp && <SpellComps spell={sp} compact />}{sp && <InfoPop text={`${describeTr('buyu', sp.id) ?? ''} ${componentsInfo(sp)}`.trim()} desc={describeTr('buyu', sp.id)} />}
               <button className="ghost eq-remove" aria-label={W.removeItem(n)} onClick={() => toggleSpell(n, false)}>×</button></li>
           );
         })}
@@ -1429,7 +1432,7 @@ function FeatCard(props: { id: string; selected?: boolean }) {
   return (
     <div className={`feat-card${props.selected ? ' selected' : ''}`}>
       <b>{f?.name ?? props.id}</b> {detail && <InfoPop text={detail} />}
-      {info ? <p>{info.what}</p> : lang === 'tr' && <p className="mute">{T.featNoTr}</p>}
+      {info ? <p><GlyphText text={info.what} /></p> : lang === 'tr' && <p className="mute">{T.featNoTr}</p>}
     </div>
   );
 }

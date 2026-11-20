@@ -30,6 +30,8 @@ export interface TargetLine {
   teleportedTo?: Offset;
   /** Avantaj/dezavantaj kaynakları ("yükseklik: avantaj"). */
   reasons: string[];
+  /** Hedefe gelen hasar türleri (kuru çalıştırma olaylarının `damageType`'ı; çip, ortak simgeli). */
+  dtypes: string[];
 }
 
 export interface MovePreview {
@@ -61,6 +63,17 @@ function mountLine(state: BattleState, cmd: Command, p: CommandPreview): MovePre
   const fell = (e.type === 'dismounted' && (e.toFt ?? a.altitudeFt ?? 0) > 0 && flySpeed(a) <= 0) || undefined;
   return { kind: e.type === 'mounted' ? 'mount' : 'dismount', costFt: e.cost * 5, leftFt: left,
     ...(e.type === 'mounted' && e.control === 'kontrollu' ? { control: 'kontrollu' as const } : {}), ...(fell ? { fell } : {}) };
+}
+
+/** Hedefe gelen hasar türleri, olay sırasıyla (saldırı, alan/kurtarma, ek hasar, süregelen hasar; ikinci tür dahil). */
+export function damageTypesOf(events: BattleEvent[], targetId: string): string[] {
+  const out = new Set<string>();
+  for (const e of events) {
+    const x = e as { targetId?: string; damageType?: unknown; secondary?: { type?: unknown } };
+    if (x.targetId !== targetId) continue;
+    for (const d of [x.damageType, x.secondary?.type]) if (typeof d === 'string' && d && d !== 'none') out.add(d.toLowerCase());
+  }
+  return [...out];
 }
 
 const reasonsOf = (events: BattleEvent[], targetId: string): string[] => {
@@ -110,6 +123,7 @@ export function movePreview(state: BattleState, cmd: Command, ctx: CommandContex
         conditions: Object.entries(t.conditions).filter(([, v]) => v > 0.01).map(([k]) => k),
         ...(t.movedTo ? { movedTo: t.movedTo } : {}), ...(t.teleportedTo ? { teleportedTo: t.teleportedTo } : {}),
         reasons: reasonsOf(p.events, t.id),
+        dtypes: t.damage.max > 0 ? damageTypesOf(p.events, t.id) : [],
       };
     }),
     friendlyFire: p.friendlyFire, selfDamage: p.selfDamage,

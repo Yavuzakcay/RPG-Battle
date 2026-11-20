@@ -7,6 +7,7 @@ import { sheetAvatar } from '../../battle/avatar';
 import { AvatarBadge } from '../../ui/Avatar';
 import { getLang, t } from '../../i18n';
 import { sheetModel, signed, type SheetModel } from './sheetModel';
+import { GlyphText } from '../../ui/glyph/Glyph';
 import { alignmentEnabled } from '../../app/features';
 import { storedCarryRule } from '../../ui/carrySetting';
 import './sheet.css';
@@ -73,7 +74,7 @@ export function SheetView(props: { c: SavedCharacter; model?: SheetModel }) {
         <h2>{S.features}</h2>
         <ul className="sheet-features">
           {(['class', 'subclass', 'species'] as const).flatMap((g) => byLevel(g)).map((f) => (
-            <li key={`${f.from}${f.name}${f.level}`}><b>{f.name}</b> <small>{f.level}</small>{f.text ? <span> {f.text}</span> : null}</li>
+            <li key={`${f.from}${f.name}${f.level}`}><b>{f.name}</b> <small>{f.level}</small>{f.text ? <span> <GlyphText text={f.text} /></span> : null}</li>
           ))}
         </ul>
         {lang !== 'tr' && m.features.some((f) => f.text) === false && <p className="sheet-sub">{S.trOnly}</p>}

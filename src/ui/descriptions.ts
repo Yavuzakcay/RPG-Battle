@@ -5,7 +5,7 @@
 import { ilkelOzet } from './ilkelOzet';
 import data from '../../data/aciklamalar.json';
 import srdSpecies from '../../data/srd/species.json';
-import { trAciklama } from '../data';
+import { aciklamaOf } from '../data';
 import { findSubclass } from '../rules/subclasses';
 import type { Weapon } from '../data/types';
 import type { Lang } from '../i18n/strings';
@@ -19,8 +19,8 @@ const firstSentence = (t: string) => (t.match(/^.+?[.!?](\s|$)/)?.[0] ?? t).trim
 
 /** Sınıf ya da alt sınıf özelliğinin tek cümlelik özeti (yoksa boş). */
 export function featureSummary(f: { key: string; id: string; from: 'class' | 'subclass' }, classId: string, subclassId: string | undefined, lang: Lang): string {
-  // Görev SD4: elle yazılmış Türkçe açıklama (data/aciklamalar-tr.json) önce; yalnız Türkçe arayüzde.
-  const sd4 = lang === 'tr' ? trAciklama(f.from === 'subclass' ? 'altsinif' : 'yetenek', f.key) : undefined;
+  // Görev SD4 / EN-ACIKLAMA: elle yazılmış açıklama (data/aciklamalar-tr.json; EN arayüzde aciklamalar-en.json) önce.
+  const sd4 = aciklamaOf(f.from === 'subclass' ? 'altsinif' : 'yetenek', f.key, lang);
   if (sd4) return sd4;
   if (f.from === 'subclass') {
     const feat = findSubclass(classId, subclassId)?.features.find((x) => x.id === f.id);
@@ -53,11 +53,10 @@ export const classBlurb = (id: string, lang: Lang): string => (data as unknown a
 export const raceBlurb = (id: string, lang: Lang): string => (data as unknown as { races: Texts }).races?.[lang]?.[id] ?? '';
 
 /**
- * Görev SD4: türün SRD özelliklerinin Türkçe açıklamaları ("Breath Weapon: …", ad İngilizce) satır satır (ⓘ metni).
- * İngilizce arayüzde boş (açıklama yalnız Türkçe; ⓘ başka metin gösterir).
+ * Görev SD4 / EN-ACIKLAMA: türün SRD özelliklerinin açıklamaları ("Breath Weapon: …", ad İngilizce) satır satır (ⓘ metni);
+ * dil arayüzün dili (EN'de SRD metni). Açıklaması olmayan özellik atlanır.
  */
 export function raceTraitLines(raceId: string, lang: Lang): string[] {
-  if (lang !== 'tr') return [];
   const race = srdSpecies.species.find((x) => x.id === raceId);
-  return (race?.traits ?? []).flatMap((tr) => { const d = trAciklama('tur', `${raceId}/${tr.id}`); return d ? [`${tr.name}: ${d}`] : []; });
+  return (race?.traits ?? []).flatMap((tr) => { const d = aciklamaOf('tur', `${raceId}/${tr.id}`, lang); return d ? [`${tr.name}: ${d}`] : []; });
 }

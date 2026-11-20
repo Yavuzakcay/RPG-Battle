@@ -7,17 +7,19 @@ import { useState } from 'react';
 import { OBJECTS } from '../../battle/objectData';
 import { AGIRLIK, objectWeightLb } from '../../battle/nesneAgirlik';
 import type { MapObject } from '../../battle/types';
-import { trAciklama } from '../../data';
+import { aciklamaOf } from '../../data';
 import { getLang, t } from '../../i18n';
+import { GlyphText } from '../glyph/Glyph';
 
 const step = (lb: number): number => (lb < 20 ? 0.5 : lb < 100 ? 5 : 25);
 const clampLb = (n: number): number => Math.min(AGIRLIK.maxLb, Math.max(AGIRLIK.minLb, Math.round(n * 10) / 10));
 
-/** Nesne türünün Türkçe açıklaması (yoksa undefined). */
+/** Nesne türünün açıklaması, arayüz dilinde (yoksa undefined). */
 export function objectDescription(kind: MapObject['kind']): string | undefined {
   const id = OBJECTS[kind]?.srd?.split(':')[1];
   // SRD kimliği çoğul olabilir (potions-of-healing); eşya kaydı tekil (potion-of-healing).
-  return id ? trAciklama('esya', id) ?? trAciklama('esya', id.replace(/^potions-/, 'potion-')) : undefined;
+  const lang = getLang();
+  return id ? aciklamaOf('esya', id, lang) ?? aciklamaOf('esya', id.replace(/^potions-/, 'potion-'), lang) : undefined;
 }
 
 export function ObjectCard(props: {
@@ -34,7 +36,7 @@ export function ObjectCard(props: {
   return (
     <div className="gm-tool object-card-panel" role="dialog" aria-label={def?.en ?? props.obj.kind}>
       <strong className="gm-tool-title">{def?.icon} {en ? def?.en : def?.tr} <small>{en ? def?.tr : def?.en}</small></strong>
-      <p className="object-desc">{desc ?? N.noDesc}</p>
+      <p className="object-desc">{desc ? <GlyphText text={desc} /> : N.noDesc}</p>
       {props.weightOn && (
         <div className="object-weight" role="group" aria-label={N.weight}>
           <span>{N.weight}</span>
