@@ -1,0 +1,51 @@
+{
+ "_not": "KQ6-12: elle hale kararları (anahtar = <sınıf>-<kod>, iki cinsiyete de uygulanır). karar: ciz (hale yok → kodla çiz; tespit 'tam' derse çizilmez), dokunma (sanattaki hale kalır, Gece Gözyaşı halesiz varyantı üretilmez), gemini (Gece Gözyaşı halesiz varyantı Gemini düzeltmesi bekliyor; hale şimdilik görünür). 'bekleyen' betik tarafından yazılır (karar bekliyor).",
+ "kararlar": {
+  "barbarian-ID1": {
+   "karar": "ciz",
+   "not": "kasklı jeton, sanatta hale yok"
+  },
+  "bard-ID5": {
+   "karar": "ciz",
+   "not": "şapkalı jeton, sanatta hale yok"
+  },
+  "barbarian-ID2": {
+   "karar": "dokunma",
+   "not": "hale sanatta var"
+  },
+  "barbarian-ID4": {
+   "karar": "dokunma",
+   "not": "hale sanatta var"
+  },
+  "paladin-ID8": {
+   "karar": "gemini",
+   "not": "Gemini düzeltmesi bekliyor (hale kaska değiyor)"
+  },
+  "warlock-WL-3": {
+   "karar": "gemini",
+   "not": "Gemini düzeltmesi bekliyor (hale başlığa değiyor)"
+  }
+ },
+ "bekleyen": {
+  "celestial-erkek-warlock-WL-8": {
+   "neden": "Gulyabani: altın teller olduğu gibi, hale/taç çizilmez (kullanıcı, 2026-11-19)",
+   "durum": "taç yok",
+   "karar": "dokunma"
+  },
+  "celestial-kadin-fighter-ID3": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor",
+   "oneri": "b",
+   "oneriNot": "hale yok; kardeş: erkek-fighter-ID3: rx 26, ry 7, renk #dbe094; en üst piksel y=34",
+   "karar": "ertele"
+  },
+  "celestial-kadin-fighter-ID4": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor",
+   "oneri": "b",
+   "oneriNot": "hale yok; kardeş: erkek-fighter-ID4: rx 26, ry 7, renk #dcdf8b; en üst piksel y=34",
+   "karar": "ertele"
+  }
+ },
+ "_karar_notu": "KQ6-15: hale-oneri kararları. ertele: hale konumu betikle güvenilir değil (figürün en üst pikseline göre yerleştirme tüy/süs/şapkada kayıyor, başın üstünde boşluk bırakıyor); dokunma: asıl jeton olduğu gibi. Hiçbir jetona hale çizilmedi."
+}

@@ -1,0 +1,268 @@
+[
+ {
+  "etiket": "İlk ölçüm (3116efd)",
+  "surum": 82,
+  "satir": 6587,
+  "sonuc": {
+   "doğru": 6312,
+   "yanlış": 235,
+   "çökme": 9,
+   "uygulanmıyor": 2,
+   "karar bekliyor": 29
+  },
+  "bulgu": {
+   "B01": 72,
+   "B02": 38,
+   "B08": 2,
+   "B04": 4,
+   "K01": 20,
+   "K03": 3,
+   "B18": 1,
+   "B17": 1,
+   "K02": 2,
+   "B07": 1,
+   "B16": 4,
+   "B19": 3,
+   "B15": 1,
+   "B20": 1,
+   "B10": 14,
+   "K04": 2,
+   "U02": 1,
+   "B05": 68,
+   "B12": 1,
+   "U01": 1,
+   "B06": 10,
+   "B09": 6,
+   "B11": 1,
+   "B03": 5,
+   "B13": 3,
+   "B14": 1,
+   "Ç01": 9
+  }
+ },
+ {
+  "etiket": "Kahin/ölçüm düzeltmesi, sürüm 82",
+  "surum": 82,
+  "satir": 6587,
+  "sonuc": {
+   "doğru": 6321,
+   "yanlış": 235,
+   "çökme": 0,
+   "uygulanmıyor": 2,
+   "karar bekliyor": 29
+  },
+  "bulgu": {
+   "B01": 72,
+   "B02": 38,
+   "B08": 2,
+   "B04": 4,
+   "K01": 20,
+   "K03": 3,
+   "B18": 1,
+   "B17": 1,
+   "K02": 2,
+   "B07": 1,
+   "B16": 4,
+   "B19": 3,
+   "B15": 1,
+   "B20": 1,
+   "B10": 14,
+   "K04": 2,
+   "U02": 1,
+   "B05": 68,
+   "B12": 1,
+   "U01": 1,
+   "B06": 10,
+   "B09": 6,
+   "B11": 1,
+   "B03": 5,
+   "B13": 3,
+   "B14": 1
+  }
+ },
+ {
+  "etiket": "Grup 1 sonrası (Ç01, B01, B02, B03, B05)",
+  "surum": 83,
+  "satir": 6587,
+  "sonuc": {
+   "doğru": 6501,
+   "yanlış": 55,
+   "çökme": 0,
+   "uygulanmıyor": 2,
+   "karar bekliyor": 29
+  },
+  "bulgu": {
+   "B08": 2,
+   "B04": 4,
+   "K01": 20,
+   "K03": 3,
+   "B18": 1,
+   "B17": 1,
+   "K02": 2,
+   "B07": 1,
+   "B16": 4,
+   "B19": 3,
+   "B15": 1,
+   "B20": 4,
+   "B10": 14,
+   "K04": 2,
+   "U02": 1,
+   "B12": 1,
+   "U01": 1,
+   "B06": 10,
+   "B01": 1,
+   "B09": 6,
+   "B13": 3,
+   "B14": 1
+  }
+ },
+ {
+  "etiket": "Grup 2 sonrası (B07, B09, B11, B12, B17, B19, U01)",
+  "surum": 83,
+  "satir": 6587,
+  "sonuc": {
+   "doğru": 6514,
+   "yanlış": 43,
+   "çökme": 0,
+   "uygulanmıyor": 1,
+   "karar bekliyor": 29
+  },
+  "bulgu": {
+   "B08": 2,
+   "B04": 4,
+   "K01": 20,
+   "K03": 3,
+   "B18": 1,
+   "K02": 2,
+   "B16": 4,
+   "B15": 1,
+   "B20": 4,
+   "B10": 14,
+   "K04": 2,
+   "U02": 1,
+   "B06": 10,
+   "B01": 1,
+   "B13": 3,
+   "B14": 1
+  }
+ },
+ {
+  "etiket": "Grup 3 sonrası (B04, B06, B08, B10, B13, B14, B15, B16, B18, B20)",
+  "surum": 83,
+  "satir": 6587,
+  "sonuc": {
+   "doğru": 6554,
+   "yanlış": 3,
+   "çökme": 0,
+   "uygulanmıyor": 1,
+   "karar bekliyor": 29
+  },
+  "bulgu": {
+   "K01": 22,
+   "K03": 3,
+   "K02": 2,
+   "B22": 2,
+   "K04": 2,
+   "U02": 1,
+   "B23": 1
+  }
+ },
+ {
+  "etiket": "Karşılaştırma: sürüm 82, son kahinle",
+  "surum": 82,
+  "satir": 6589,
+  "sonuc": {
+   "doğru": 6340,
+   "yanlış": 247,
+   "çökme": 0,
+   "uygulanmıyor": 2,
+   "karar bekliyor": 0
+  },
+  "bulgu": {
+   "B01": 72,
+   "B02": 38,
+   "B08": 2,
+   "B04": 4,
+   "K01": 26,
+   "K03": 3,
+   "B18": 1,
+   "B17": 1,
+   "K02": 2,
+   "B07": 1,
+   "B16": 2,
+   "B19": 3,
+   "B15": 1,
+   "B21": 2,
+   "B20": 5,
+   "B22": 2,
+   "K04": 2,
+   "U02": 1,
+   "B05": 65,
+   "B12": 1,
+   "U01": 1,
+   "B09": 6,
+   "B03": 5,
+   "B13": 1,
+   "B14": 1,
+   "B23": 1
+  }
+ },
+ {
+  "etiket": "Kararlar sonrası (K01, K02, K03, K04)",
+  "surum": 83,
+  "satir": 6587,
+  "sonuc": {
+   "doğru": 6583,
+   "yanlış": 3,
+   "çökme": 0,
+   "uygulanmıyor": 1,
+   "karar bekliyor": 0
+  },
+  "bulgu": {
+   "B22": 2,
+   "U02": 1,
+   "B23": 1
+  }
+ },
+ {
+  "etiket": "Son ölçüm (B21, B22, B23, G02)",
+  "surum": 83,
+  "satir": 6589,
+  "sonuc": {
+   "doğru": 6588,
+   "yanlış": 0,
+   "çökme": 0,
+   "uygulanmıyor": 1,
+   "karar bekliyor": 0
+  },
+  "bulgu": {
+   "U02": 1
+  }
+ },
+ {
+  "etiket": "Control Water dört seçenek (+4 satır)",
+  "surum": 84,
+  "satir": 6606,
+  "sonuc": {
+   "doğru": 6606,
+   "yanlış": 0,
+   "çökme": 0,
+   "uygulanmıyor": 0,
+   "karar bekliyor": 0
+  },
+  "bulgu": {}
+ },
+ {
+  "etiket": "WS87 Wild Shape (sürüm 87)",
+  "surum": 87,
+  "satir": 6606,
+  "sonuc": {
+   "doğru": 6606,
+   "yanlış": 0,
+   "çökme": 0,
+   "uygulanmıyor": 0,
+   "karar bekliyor": 0
+  },
+  "bulgu": {}
+ }
+]

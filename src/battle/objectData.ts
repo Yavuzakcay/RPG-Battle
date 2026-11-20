@@ -11,6 +11,7 @@ import type { Offset } from '../rules/hex';
 interface ObjectTerrain { movement: 'normal' | 'difficult' | 'blocked'; cover: 0 | 2 | 5; blocksSight: boolean }
 export interface ObjectDef {
   tr: string; en: string; ac: number; hp: number; material: string; size: string; icon: string; aiRisk: number;
+  /** Kuyruk KQ3 NA1: ağırlık (lb), dekor işareti (SRD karşılığı yok), büyülü eşya. */ agirlikLb?: number; dekor?: boolean; buyulu?: boolean; srd?: string;
   flammable?: boolean; carryable?: boolean; door?: boolean; /** Kuyruk 36 */ key?: boolean; weapon?: { damage: string; damageType: string }; explodes?: boolean; ignites?: boolean; onBreak?: 'oil' | 'fire'; defaultState?: ObjectState;
   /** Görev K26: iki kat hasar alınan türler (buz: ateş). */ vulnerable?: string[];
   /** Kuyruk K68a (sürüm 52): yapı yüksekliği (ft; Earthquake çöküşü). Yoksa yapı değil. */ yukseklikFt?: number;

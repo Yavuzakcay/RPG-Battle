@@ -126,7 +126,8 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
         ...(save.success ? [] : [{ type: 'action_used' as const, actorId: id, kind: 'action' as const, what: e.name }])];
     }
     // Kuyruk 19: Conjure Elemental tutsağı: tur başında save; başarısızsa hasar, başarılıysa serbest.
-    if (e.startSave) {
+    // Mekanik matris K04 (sürüm 83): yakalandığı turun başında tekrar save yok (`skip`).
+    if (e.startSave && !(e.startSave.skip && e.startSave.skip.round === current.round && e.startSave.skip.turnIndex === current.turnIndex)) {
       const ss = e.startSave;
       const r = resolveSave({ extra: saveDice(c, ss.ability), modifier: c.saves[ss.ability], dc: ss.dc, mode: saveMode('normal', c, ss.ability) }, rollTag(rng, { by: c.id }));
       const d = !r.success ? rollDice(ss.dice, rollTag(rng, { kind: 'damage', by: e.sourceId })) : null;

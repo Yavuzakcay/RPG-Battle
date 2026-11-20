@@ -321,7 +321,7 @@
       }
     },
     "drow:faerie-fire": {
-      "name": "Faerie Fire (Drow)",
+      "name": "Faerie Fire (Dark Elf)",
       "feature": "species:elf/elven-lineage",
       "race": "elf",
       "lineage": "drow",
@@ -335,7 +335,7 @@
       "freeSpell": "Faerie Fire"
     },
     "drow:darkness": {
-      "name": "Darkness (Drow)",
+      "name": "Darkness (Dark Elf)",
       "feature": "species:elf/elven-lineage",
       "race": "elf",
       "lineage": "drow",

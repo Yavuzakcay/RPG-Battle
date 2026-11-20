@@ -5,6 +5,7 @@
  * ipucu rozetleri, önizleme açık/kapalı ve ayrıntı (Kısa/Tam). Saf çekirdek + ince depo katmanı (testte bellek deposu).
  */
 import table from '../../data/yuzey-etkilesimleri.json';
+import { roomOverlay } from '../oda/active';
 
 export interface DiscoveryStore {
   profil: string;
@@ -78,8 +79,15 @@ export function saveStore(s: DiscoveryStore): void {
 export const exportStore = (s: DiscoveryStore): string => JSON.stringify(s, null, 1);
 export const importStore = (text: string): DiscoveryStore => normalize(JSON.parse(text));
 
-export function loadSettings(): PreviewSettings {
+/** Cihazın saklanan ayarı (yazma bunun üstünden). */
+function loadStored(): PreviewSettings {
   try { return { ...DEFAULT_SETTINGS, ...(JSON.parse(localStorage.getItem(SET_KEY) ?? '{}') as Partial<PreviewSettings>) }; } catch { return DEFAULT_SETTINGS; }
+}
+/** Görev OD1: etkin odada keşif modu ve ipucu rozetleri odanın değeri; önizleme açık/ayrıntı oyuncunun kendi ayarı. */
+export function loadSettings(): PreviewSettings {
+  const o = roomOverlay();
+  const s = loadStored();
+  return o ? { ...s, ...(o.kesif !== undefined ? { discovery: o.kesif } : {}), ...(o.ipucu !== undefined ? { hints: o.ipucu } : {}) } : s;
 }
 export function saveSettings(p: PreviewSettings): void {
   try { localStorage.setItem(SET_KEY, JSON.stringify(p)); } catch { /* bu oturumda */ }

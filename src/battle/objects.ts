@@ -18,6 +18,7 @@
  *   - kolu çek (eylem; yürüyen merdiveni durdurur, Kuyruk 21 D2b).
  * Bütün sonuçlar olaylarda; zarlar rng'den (zar defteri, replay). Saf.
  */
+import { carriersOf, liftPlan, nesneOn, putEvents } from './nesneAgirlik';
 import { executeAttackPanel, panelAreaEvents } from './walls';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { adjustDamage } from '../rules/damage';
@@ -188,6 +189,11 @@ export function executeObjectUse(state: BattleState, actor: Combatant, objectId:
   const obj = live(state, objectId);
   if (!obj) return fail('Nesne yok.');
   // Kuyruk P12 (sürüm 43+): taşınan büyü kitabını kendi altıgenine bırak (serbest nesne etkileşimi).
+  if (action === 'put' && nesneOn(state) && carriersOf(obj).includes(actor.id)) {
+    // Kuyruk KQ3 NA1 (sürüm 80): taşınan her nesne bırakılır (serbest nesne etkileşimi); ortak yükte yalnız kendi payından çıkar.
+    const ev = putEvents(state, actor, obj);
+    return typeof ev === 'string' ? fail(ev) : finish(state, ev);
+  }
   if (action === 'put') {
     if (obj.kind !== 'spellbook' || !p12On(state)) return fail('Bu nesne bırakılmaz.');
     if (obj.carriedBy !== actor.id || !actor.pos) return fail('Nesneyi taşımıyorsun.');
@@ -249,7 +255,12 @@ export function executeObjectUse(state: BattleState, actor: Combatant, objectId:
     if (actor.civilian || actor.summon) return fail('Bu savaşçı nesne taşımaz.');
     // Kuyruk 36: doğaçlama silah (SRD Improvised Weapons: yetkinliksiz, STR; hasar zarı veriden).
     const arm = def.weapon ? improvisedOption(actor, def.tr, def.weapon) : undefined;
-    return finish(state, [{ type: 'object_changed', objectId: obj.id, carriedBy: actor.id, label: `${name} alındı`, ...(arm ? { arm } : {}) }]);
+    // Kuyruk KQ3 NA1 (sürüm 80): kapasiteyi aşan nesne tek kişiye reddedilir; yeterliyse bitişik dostlar yükü paylaşır.
+    const plan = nesneOn(state) ? liftPlan(state, actor, obj) : { helpers: [] as string[] };
+    if ('problem' in plan) return fail(plan.problem);
+    const helpers = plan.helpers.map((id) => state.combatants[id]?.name ?? id);
+    return finish(state, [{ type: 'object_changed', objectId: obj.id, carriedBy: actor.id, ...(plan.helpers.length ? { carriers: plan.helpers } : {}),
+      label: plan.helpers.length ? `${name} alındı (yük paylaşıldı: ${helpers.join(', ')})` : `${name} alındı`, ...(arm ? { arm } : {}) }]);
   }
   return fail('Bu nesneyle bu yapılamaz.');
 }
@@ -297,13 +308,13 @@ export function objectRisk(state: BattleState, h: Offset): number {
 }
 
 /** Görev S2: haritanın hazır nesneleri (savaş başında; kimlik tür + sıra). */
-export function presetObjects(list: Array<{ id?: string; kind: string; at: Offset; state?: string; lockDc?: number; gizli?: boolean; bulDc?: number; flag?: string }>): MapObject[] {
+export function presetObjects(list: Array<{ id?: string; kind: string; at: Offset; state?: string; lockDc?: number; gizli?: boolean; bulDc?: number; flag?: string; agirlikLb?: number }>): MapObject[] {
   const n: Record<string, number> = {};
   return list.filter((o) => OBJECTS[o.kind as ObjectKind]).map((o) => {
     const kind = o.kind as ObjectKind;
     n[kind] = (n[kind] ?? 0) + 1;
     const st = (o.state as ObjectState | undefined) ?? OBJECTS[kind].defaultState;
-    return { id: o.id ?? `${kind}:${n[kind]}`, kind, at: o.at, hp: OBJECTS[kind].hp, ...(st ? { state: st } : {}), ...(o.lockDc ? { lockDc: o.lockDc } : {}),
+    return { id: o.id ?? `${kind}:${n[kind]}`, kind, at: o.at, hp: OBJECTS[kind].hp, ...(st ? { state: st } : {}), ...(o.lockDc ? { lockDc: o.lockDc } : {}), ...(o.agirlikLb ? { agirlikLb: o.agirlikLb } : {}),
       ...(o.gizli ? { gizli: true, ...(o.bulDc ? { findDc: o.bulDc } : {}), ...(o.flag ? { flag: o.flag } : {}) } : {}) };
   });
 }

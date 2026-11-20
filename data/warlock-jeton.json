@@ -1,0 +1,70 @@
+{
+ "note": "Görev WZ-BAGLA/BAGLA-3/TOPLU-KESIM (jetonlar kesildi): warlock alt sınıfı → WL jetonu (public/characters/<irk>-<erkek|kadin>-warlock-<WL-id>.webp). altSiniflar: alt sınıf kimliği → hücre; kimlikler Türkçe adla doğrulandı (fiend-patron fikstür, imza_astrolog data/imza.json, kalanı icerik-liste.txt). Yeni kimlik/hücre yalnız burada değişir (kodda sabit yok). irklar: jetonu üretilmiş ırk×cinsiyet (yoksa alt sınıf jetonu atanmaz, geliştirici günlüğünde \"eksik\" yazılır). maskeHazir: jetonların ten/soy maskesi üretildi mi; false iken soy/ten boyası gereken karakter sınıf-genel jetonu kullanır. cozulemeyen: kimliği çözülemeyen hücre → kullanıcı yerelde altSiniflar'a ekler.",
+ "sinif": "warlock",
+ "irklar": {
+    "dragonborn": ["erkek", "kadin"],
+  "human": [
+   "erkek",
+   "kadin"
+  ],
+  "elf": [
+   "erkek",
+   "kadin"
+  ],
+  "dwarf": [
+   "erkek",
+   "kadin"
+  ],
+  "halfling": [
+   "erkek",
+   "kadin"
+  ],
+  "gnome": [
+   "erkek",
+   "kadin"
+  ],
+  "orc": [
+   "erkek",
+   "kadin"
+  ],
+  "tiefling": [
+   "erkek",
+   "kadin"
+  ],
+  "goliath": [
+   "erkek",
+   "kadin"
+  ],
+  "celestial": [
+   "erkek",
+   "kadin"
+  ]
+ },
+ "altSiniflar": {
+  "fiend-patron": "WL-1",
+  "cin": "WL-2",
+  "muhterem": "WL-3",
+  "hortlak": "WL-4",
+  "kargisci": "WL-5",
+  "kraken": "WL-6",
+  "melek": "WL-7",
+  "gulyabani": "WL-8",
+  "paradoks": "WL-9",
+  "ruhsar": "WL-10",
+  "imza_astrolog": "WL-11"
+ },
+ "hucreAdi": {
+  "WL-1": "İblis Hamisi",
+  "WL-2": "Cin",
+  "WL-3": "Muhterem",
+  "WL-4": "Hortlak",
+  "WL-5": "Kargışçı",
+  "WL-6": "Kraken",
+  "WL-7": "Melek",
+  "WL-8": "Gulyabani (dikey uzun hücre)",
+  "WL-9": "Paradoks",
+  "WL-10": "Ruhsar",
+  "WL-11": "Astrolog (imza)"
+ },
+ "cozulemeyen": []
+}

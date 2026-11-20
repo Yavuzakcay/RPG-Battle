@@ -24,7 +24,9 @@ export type ReactionTrigger = 'hit' | 'targeted' | 'leave' | 'cast' | 'damaged' 
   /** Kuyruk K54 (imza): iskalanan saldırı, dosta isabet/hedef, dostun düşmesi. */
   | 'miss' | 'ally'
   /** Kuyruk S1: tepki değil, büyünün seçim istemi (`rules/choice.ts`). */
-  | 'choice';
+  | 'choice'
+  /** Hazırla (Ready, sürüm 90): hazırlanan eylemin tetiği (SRD 5.2.1 s.186). */
+  | 'ready';
 
 export interface ReactionRequest {
   /** Tepkiyi verecek yaratık. */

@@ -264,15 +264,15 @@ export function surfaceReactionEvents(next: BattleState, events: BattleEvent[], 
  * fıçısı, barut patlaması). Bayrak kapalıysa boş.
  */
 export function elementReactionEvents(state: BattleState, element: 'fire' | 'cold' | 'lightning', hexes: Offset[], actorId: string, label: string,
-  rng: Rng, damage: number | null = null, dc = 10): BattleEvent[] {
+  rng: Rng, damage: number | null = null, dc = 10, serbest = false): BattleEvent[] {
   if (!surfacesReact(state)) return [];
   // Kuyruk K55 (sürüm 26): nesne olaylarının ateşi de tek çözücüden.
-  if (resolverHook && resolverHook.on(state)) return resolverHook.run(state, element, hexes, actorId, label, rng, damage, dc);
+  if (resolverHook && resolverHook.on(state)) return resolverHook.run(state, element, hexes, actorId, label, rng, damage, dc, serbest);
   return reactTo(state, { element, hexes, actorId, dc, damage, hitIds: new Set(), label }, rng);
 }
 
 /** Kuyruk K55: çözücü kaydı (döngüsel içe aktarma yok; `hexResolver.ts` yüklenince kaydolur). */
-type ResolverHook = { on: (s: BattleState) => boolean; run: (s: BattleState, element: string, hexes: Offset[], actorId: string, label: string, rng: Rng, damage: number | null, dc: number) => BattleEvent[] };
+type ResolverHook = { on: (s: BattleState) => boolean; run: (s: BattleState, element: string, hexes: Offset[], actorId: string, label: string, rng: Rng, damage: number | null, dc: number, serbest?: boolean) => BattleEvent[] };
 let resolverHook: ResolverHook | null = null;
 export const registerResolver = (h: ResolverHook): void => { resolverHook = h; };
 

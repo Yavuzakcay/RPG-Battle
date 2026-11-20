@@ -19,5 +19,15 @@
     "orc": 1.2,
     "dragonborn": 1.25,
     "goliath": 1.4
+  },
+  "okunabilirlik": {
+    "not": "Serüven öncesi (yalnız arayüz): dar ekranda jeton okunabilirliği. Ekran pikseli cinsinden alt sınırlar; mekanik ve tıklama alanı (tek altıgen) değişmez. darEkranAltigenPx: ekrandaki altıgen MIN_HEX_PX'ten (44) darsa (telefon dikey) küçük haritada da kamera açılır ve varsayılan yakınlaştırma altıgeni bu genişliğe getirir. minJetonPx: jetonun ekrandaki en küçük çapı (Tiny/Small yalnız görselde büyür, en çok Medium kadar). minHpPx: HP çubuğunun ekrandaki en küçük kalınlığı (hpDunya: dünya biriminde varsayılan kalınlık). minRozetPx: durum rozetinin ekrandaki en küçük yazı boyu (rozetDunya: dünya biriminde yazı boyu), rozetAzami: rozet büyütme üst sınırı.",
+    "darEkranAltigenPx": 56,
+    "minJetonPx": 18,
+    "minHpPx": 5,
+    "hpDunya": 8,
+    "minRozetPx": 12,
+    "rozetDunya": 18,
+    "rozetAzami": 2.2
   }
 }

@@ -1,0 +1,87 @@
+irk,sinif,cinsiyet,alt_soy,sebep
+celestial,barbarian,erkek,sınıf-genel,maske yok
+celestial,barbarian,erkek,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+celestial,barbarian,kadin,sınıf-genel,maske yok
+celestial,barbarian,kadin,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+celestial,bard,erkek,sınıf-genel,maske yok
+celestial,bard,erkek,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+celestial,bard,kadin,sınıf-genel,maske yok
+celestial,bard,kadin,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+gnome,cleric,erkek,mezar-alani,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+celestial,cleric,erkek,sınıf-genel,maske yok
+celestial,cleric,erkek,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+celestial,cleric,kadin,sınıf-genel,maske yok
+celestial,cleric,kadin,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+dragonborn,druid,kadin,curuyus-cemberi,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+tiefling,druid,erkek,curuyus-cemberi,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+tiefling,druid,kadin,curuyus-cemberi,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+celestial,druid,erkek,sınıf-genel,maske yok
+celestial,druid,erkek,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+celestial,druid,kadin,sınıf-genel,maske yok
+celestial,druid,kadin,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+human,fighter,erkek,pehlivan,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+celestial,fighter,erkek,sınıf-genel,maske yok
+celestial,fighter,erkek,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+celestial,fighter,kadin,sınıf-genel,maske yok
+celestial,fighter,kadin,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+elf,monk,erkek,olumsuzluk-disiplini,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+elf,monk,kadin,olumsuzluk-disiplini,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+gnome,monk,kadin,olumsuzluk-disiplini,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+human,monk,kadin,olumsuzluk-disiplini,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+celestial,monk,erkek,sınıf-genel,maske yok
+celestial,monk,erkek,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+celestial,monk,kadin,sınıf-genel,maske yok
+celestial,monk,kadin,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+elf,paladin,erkek,asi-yemin-bozan,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+elf,paladin,kadin,asi-yemin-bozan,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+gnome,paladin,erkek,asi-yemin-bozan,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+gnome,paladin,erkek,muhafiz-yemini,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+gnome,paladin,kadin,asi-yemin-bozan,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+goliath,paladin,erkek,muhafiz-yemini,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+goliath,paladin,kadin,muhafiz-yemini,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+human,paladin,erkek,asi-yemin-bozan,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+human,paladin,kadin,asi-yemin-bozan,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+celestial,paladin,erkek,sınıf-genel,maske yok
+celestial,paladin,erkek,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+celestial,paladin,kadin,sınıf-genel,maske yok
+celestial,paladin,kadin,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+celestial,ranger,erkek,sınıf-genel,maske yok
+celestial,ranger,erkek,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+celestial,ranger,kadin,sınıf-genel,maske yok
+celestial,ranger,kadin,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+dragonborn,rogue,erkek,kamufle,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+dragonborn,rogue,kadin,kamufle,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+celestial,rogue,erkek,sınıf-genel,maske yok
+celestial,rogue,erkek,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+celestial,rogue,kadin,sınıf-genel,maske yok
+celestial,rogue,kadin,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+elf,sorcerer,erkek,lanetli,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+elf,sorcerer,kadin,lanetli,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+gnome,sorcerer,erkek,lanetli,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+gnome,sorcerer,erkek,imza_dunganga,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+gnome,sorcerer,kadin,lanetli,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+human,sorcerer,erkek,lanetli,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+human,sorcerer,erkek,imza_dunganga,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+tiefling,sorcerer,erkek,lanetli,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+celestial,sorcerer,erkek,sınıf-genel,maske yok
+celestial,sorcerer,erkek,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+celestial,sorcerer,kadin,sınıf-genel,maske yok
+celestial,sorcerer,kadin,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+dragonborn,warlock,erkek,ruhsar,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+dragonborn,warlock,kadin,ruhsar,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+elf,warlock,erkek,ruhsar,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+elf,warlock,kadin,ruhsar,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+gnome,warlock,erkek,ruhsar,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+gnome,warlock,kadin,ruhsar,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+goliath,warlock,kadin,hortlak,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+goliath,warlock,kadin,gulyabani,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+human,warlock,erkek,ruhsar,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+human,warlock,kadin,ruhsar,"bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)"
+celestial,warlock,erkek,sınıf-genel,maske yok
+celestial,warlock,erkek,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+celestial,warlock,kadin,sınıf-genel,maske yok
+celestial,warlock,kadin,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+celestial,wizard,erkek,sınıf-genel,maske yok
+celestial,wizard,erkek,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"
+celestial,wizard,kadin,sınıf-genel,maske yok
+celestial,wizard,kadin,Gariban (GR),"Celestial: hale işi ayrı, bağlanmadı; maske yok"

@@ -2,6 +2,315 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## ÖN-DÜZELTME TABANI — Dungeondex öncesi denge turu (2026-11-18)
+
+> **Durum (kullanıcı kararı, 2026-11-18): düzeltme turları (liste/çarpan ayarı) mekanik matris düzeltmelerinden (Restrained DEX save, görünmezlik hedefleme, Counterspell, alan büyüleri) sonraya ertelendi.** Bu düzeltmeler savaş sonuçlarını değiştireceğinden şimdi ayarlanan listeler boşa giderdi. Bu bölüm yalnız **ölçüm tabanıdır**: aşağıdaki taban tabloları **orijinal listelerle** (commit 085e318, hiçbir düzeltme uygulanmadan) ölçüldü; aralık dışı satırlar ve bant dışı haritalar listelenir, liste/çarpan düzeltmesi yapılmaz. Görev sırasında denenmiş tur 1–3 düzeltmeleri (commit 5705637, d9fa4c6, 811278d, 8011702) **geri alındı** (taban yeniden üretilebilsin diye); ne denendiği ve ne sonuç verdiği "Geri alınan düzeltme denemeleri" altında saklıdır. Mekanik matris düzeltmelerinden sonra aynı komutlarla yeniden ölçüp bu tabanla karşılaştırın, ardından düzeltme turlarını yapın.
+
+Kural sürümü 82 (değişmedi), kayıt sürümü değişmedi, `data/monsters.json` değişmedi. Kullanıcı tam ölçümü bu görev için açıkça istedi (hafif doğrulama modunun tam ölçüm yasağı bu görev için kalktı). Ölçüm 100 tohum (zincir: 30), iki taraf da yapay zekâ, standart parti = Bor/Mira/Tavi/Sela/Kael. Koşucu: `scripts/denge-turu.mjs` (iş kuyruğu; çıktılar `sim-sonuc/denge-turu*/`, git'e girmez); özet: `scripts/denge-turu-ozet.mjs`. Hedef bantları bu dosyadaki mevcut bantlar: sim ve bölge partisi kazanma %60–80; `sim:a2` Normal %45–65, Kolay %70–85; boss Normal %45–65, Kolay %70–85; zincir Normal %45–65; hapishane zinciri Normal %55–65, Kolay %75–85 (K36); `sim:k26` Normal %60–80 (K18 H7).
+
+**Kapsam ve okuma kararları (belirsizlikte en makul okuma; DECISIONS.md'de de):**
+
+- **Kapsam daraltması (süre):** `data/sim-senaryolar.json` 74 senaryo içeriyor; tek senaryo × 100 tohum bu makinede (4 çekirdek) 2,5–12 dakika sürüyor, 74 senaryo × 9 parti × 3 seviye günlerce sürerdi. `npm run sim` için dört standart senaryo (Çöl, Kale, Mağara, Orman; A2/K59/MB8 ölçümlerinin de kullandığı küme): 5. seviyede dördü × 9 parti, 3. ve 1. seviyede Çöl + Orman × 9 parti ile en yavaş ikisi (Kale, Mağara) yalnız standart partiyle. `sim:a2` Çöl + Orman + Kale (Kale: HS1 sonrası ayrı ölçüldü; Mağara ölçülmedi). Bölge üreteci 1/5/9. seviye (13/17/20 ölçülmedi). K59 ızgarası 3. seviye, yalnız Çöl. Diğer ölçümler istendiği gibi.
+- **Referans parti:** bir senaryo listesi bütün partilere ortak olduğundan hedef `standart` parti (sim, boss, bölge, zincir, hapishane, k26) ve üç partinin ortalaması (`sim:a2`, K41'deki okuma: her partinin ölçülen senaryolardaki ortalaması, sonra üç partinin ortalaması). Sınıf partileri (barbar, yanel, paladin, monk, fighter, rogue, ranger, buyucu) raporlanır, aralık dışı olanlar işaretlenir; sınıf dengesi liste ayarıyla kapanmaz (K41 bulgusu), bu satırlar düzeltme turlarında da "açık" kalır.
+- **Boss listeleri:** `data/sim-boss.json` listeleri `sim:boss` ölçümüne özgü; oyundaki Taht Salonu, Saray Avlusu ve Müdür Kulesi savaşları senaryo listelerini kullanır (`k34-kale-taht-salonu`, `k34-beyaz-sehir-saray-avlusu`, `k36-mudur`). Yalnız Volkan Normal listesi senaryo listesiyle aynı olmak zorunda (`src/sim/bossData.test.ts`).
+- **Ölçüm ortamı:** 4 çekirdek, 16 GB; uzun koşular arka planda (düşük öncelikle), vite izleyici sınırı (`fs.inotify.max_user_watches`) konteynerde 524288'e çıkarıldı (yalnız ölçüm ortamı, depoya girmez). Satırlar tekrarlanabilir (tohum 1–100, zincir 1–30).
+
+### Ölçüm sayıları (taban)
+
+| Grup | Ölçüm (hücre/birim) | Biten | Not |
+|---|---:|---:|---|
+| `sim` (parti × senaryo × seviye) | 76 | 76 | Seviye 5: 36 (9 parti × 4 senaryo); seviye 3: 20; seviye 1: 20 (9 parti × Çöl/Orman + Kale ve Mağara yalnız standart) |
+| `sim:a2` (parti × seviye × zorluk × senaryo) | 36 | 36 | 3 parti × 2 seviye × 2 zorluk × 3 senaryo (Çöl, Orman, Kale) |
+| `sim:bolge` (bölge × seviye) | 21 | 21 | 7 bölge × seviye 1/5/9 |
+| `sim:boss` | 8 | 8 | 4 boss × Normal/Kolay |
+| `sim:zincir` | 3 | 3 | Kuzey yolu, Derinlikler mantar, Derinlikler lav (30 tohum) |
+| `sim:hapishane` | 2 | 2 | Normal, Kolay |
+| `sim:k26` | 16 | 16 | 8 harita × Normal/Kolay |
+| K59 ızgarası | 24 | 24 | 12 sınıf × (SRD alt sınıf + ev/imza alt sınıfı), 3. seviye, Çöl |
+| **Toplam** | **186** | **186** | |
+
+### Aralık dışı satırlar ve bant dışı haritalar (özet; düzeltme yapılmadı)
+
+| Grup | Aralık dışı / ölçülen | Satırlar |
+|---|---:|---|
+| `sim` (parti × senaryo × seviye hücresi) | 38 / 76 | Referans (standart) parti: 5. seviye Çöl ↑%90, Kale ↓%18, Mağara ↑%83; 3. seviye Kale ↑%91; 1. seviye Kale ↑%96 (5/20 standart hücre). Sınıf partileri: Büyücü her yerde ↑ (%94–100); Kale 5. seviyede standart dahil 8 parti ↓ (%12–41); Çöl 5. seviyede yanel/monk/fighter ↑, rogue ↓; Mağara 5. seviyede barbar/yanel/monk/fighter/ranger ↑; Çöl 3. seviyede rogue/ranger ↓; Çöl 1. seviyede monk/rogue ↓, barbar ↑; Orman'da barbar (1, 3), paladin/ranger (1) ↑. Ayrıntı yukarıdaki §1. |
+| `sim:a2` (parti × senaryo hücresi) | 28 / 36 | Üç parti ortalaması (K41 okuması): **Kolay 7 %61 ↓**; Normal 7 %45, Normal 9 %47, Kolay 9 %85 bantta (kenarda). Hücre bazında Çöl 9 ↑ (Normal klasik %93 / ates %90; Kolay %98–100), Kale 9 Normal ↓ (%21 / %3 / %36), a2-karma Kale 7 ↓ (%0 / %6), a2-karma Çöl/Orman 7 ↓. |
+| `sim:bolge` | 18 / 21 | Bantta yalnız Batı Kıyısı 9 (%65), Çöl 9 (%76), Volkan 9 (%69). Seviye 1 ve 5 hemen her bölgede ↑ (%82–100), Buzul 9 ↓%44, Dağ 9 ↓%23, Bataklık 9 ↑%93, Orman 9 ↑%88. |
+| `sim:boss` | 8 / 8 | Beyaz Şehir ↓ (Normal %17, Kolay %40), Hapishane Müdür Kulesi ↓ (%40 / %50), Kral Kalesi Taht Salonu ↓ (%0 / %0), Volkan ↑ (%85 / %87). |
+| `sim:zincir` | 2 / 3 | Kuzey yolu: ilk gün ↓%37; Derinlikler mantar ↑%100; lav %47 aralıkta. |
+| `sim:hapishane` | 2 / 2 | Normal ↑%87 (hedef %55–65), Kolay ↑%97 (hedef %75–85). |
+| `sim:k26` (Normal, 3. seviye) | 4 / 8 harita | **Bant dışı haritalar:** `k29-buzul-kamp` ↑%94, `k29-dag-karakol` ↓%25, `k29-dag-kayalik` ↑%90, `k29-dag-nobetci` ↑%100. Aralıkta: buzul-acik %80, buzul-kayalik %67, buzul-tapinak %71, dag-kopru %68. |
+| K59 (Çöl, ±5; sinyal) | 5 / 12 alt sınıf | monk Yaşlı Bilge Disiplini −13, warlock Astrolog −13, rogue İnfazcı −8, sorcerer Dunganga −8, paladin Hızır Yemini +14. |
+
+**Bant dışı haritalar (tümü):** `kale` / Kale ve avlu (1. seviye ↑, 3. seviye ↑, 5. seviye ↓: HS1 sonrası tutarsız liste ilerlemesi); Çöl ve Mağara (5. seviye ↑); boss haritaları (Taht Salonu, Saray Avlusu, Müdür Kulesi, Volkan); Hapishane Adası dış halka / iskele (zincir ↑); Mantar Mağarası ve yürüyen merdiven (Derinlikler mantar dalı ↑); Kuzey yolu'nun Orman/Mağara/Kale durakları (zincir ↓); `k29-buzul-kamp`, `k29-dag-karakol`, `k29-dag-kayalik`, `k29-dag-nobetci`; bölge haritalarında yukarıdaki 18 hücre.
+
+### 1. `npm run sim` — taban (hedef parti kazanma %60–80, 100 tohum)
+
+Beraberlik (20 tur) parantezde (b%). `(b)` sütunu yoksa 0. Aralık dışı **kalın** + yön (↑ kolay, ↓ zor). Ölçülmeyen hücre "–".
+
+#### Seviye 1
+
+| Parti | Çöl | Kale | Mağara | Orman | Ort. | Durum |
+|---|---:|---:|---:|---:|---:|---|
+| standart | 71 | **96** ↑ | 75 | 78 | 80 | aralık dışı: Kale kolay |
+| barbar | **86** ↑ | – | – | **93** ↑ | 90 | aralık dışı: Çöl kolay, Orman kolay |
+| yanel | 70 | – | – | 79 (b1) | 75 | aralıkta |
+| paladin | 79 | – | – | **87** ↑ | 83 | aralık dışı: Orman kolay |
+| monk | **51** ↓ | – | – | 70 | 61 | aralık dışı: Çöl zor |
+| fighter | 78 | – | – | 78 | 78 | aralıkta |
+| rogue | **57** ↓ (b1) | – | – | 74 | 66 | aralık dışı: Çöl zor |
+| ranger | 80 | – | – | **89** ↑ | 85 | aralık dışı: Orman kolay |
+| buyucu | **94** ↑ | – | – | **95** ↑ | 95 | aralık dışı: Çöl kolay, Orman kolay |
+
+#### Seviye 3
+
+| Parti | Çöl | Kale | Mağara | Orman | Ort. | Durum |
+|---|---:|---:|---:|---:|---:|---|
+| standart | 71 (b3) | **91** ↑ (b2) | 76 | 67 | 76 | aralık dışı: Kale kolay |
+| barbar | 76 (b1) | – | – | **87** ↑ | 82 | aralık dışı: Orman kolay |
+| yanel | 66 (b4) | – | – | 73 | 70 | aralıkta |
+| paladin | 66 (b3) | – | – | 75 | 71 | aralıkta |
+| monk | 73 (b3) | – | – | 73 | 73 | aralıkta |
+| fighter | 60 | – | – | 74 | 67 | aralıkta |
+| rogue | **40** ↓ (b1) | – | – | 72 | 56 | aralık dışı: Çöl zor |
+| ranger | **54** ↓ (b1) | – | – | 78 | 66 | aralık dışı: Çöl zor |
+| buyucu | **99** ↑ (b1) | – | – | **100** ↑ | 100 | aralık dışı: Çöl kolay, Orman kolay |
+
+#### Seviye 5
+
+| Parti | Çöl | Kale | Mağara | Orman | Ort. | Durum |
+|---|---:|---:|---:|---:|---:|---|
+| standart | **90** ↑ | **18** ↓ | **83** ↑ (b5) | 67 | 65 | aralık dışı: Çöl kolay, Kale zor, Mağara kolay |
+| barbar | 76 | **26** ↓ | **88** ↑ (b1) | 72 | 66 | aralık dışı: Kale zor, Mağara kolay |
+| yanel | **91** ↑ (b1) | **21** ↓ | **85** ↑ (b6) | 70 | 67 | aralık dışı: Çöl kolay, Kale zor, Mağara kolay |
+| paladin | 72 | **12** ↓ | 80 (b8) | 73 | 59 | aralık dışı: Kale zor |
+| monk | **84** ↑ (b1) | **41** ↓ | **89** ↑ (b3) | 71 | 71 | aralık dışı: Çöl kolay, Kale zor, Mağara kolay |
+| fighter | **82** ↑ (b1) | **19** ↓ | **83** ↑ (b2) | 65 | 62 | aralık dışı: Çöl kolay, Kale zor, Mağara kolay |
+| rogue | **54** ↓ (b1) | **18** ↓ | 67 (b5) | 63 | 51 | aralık dışı: Çöl zor, Kale zor |
+| ranger | 69 (b1) | **22** ↓ | **89** ↑ (b2) | 72 | 63 | aralık dışı: Kale zor, Mağara kolay |
+| buyucu | **100** ↑ | **94** ↑ | **100** ↑ | **100** ↑ | 99 | aralık dışı: Çöl kolay, Kale kolay, Mağara kolay, Orman kolay |
+
+**Aralık dışı sim satırları** (hücre = parti × senaryo; ↑ kolay, ↓ zor):
+
+- Seviye 5 (23/36 hücre): standart: Çöl ↑%90, Kale ↓%18, Mağara ↑%83; barbar: Kale ↓%26, Mağara ↑%88; yanel: Çöl ↑%91, Kale ↓%21, Mağara ↑%85; paladin: Kale ↓%12; monk: Çöl ↑%84, Kale ↓%41, Mağara ↑%89; fighter: Çöl ↑%82, Kale ↓%19, Mağara ↑%83; rogue: Çöl ↓%54, Kale ↓%18; ranger: Kale ↓%22, Mağara ↑%89; buyucu: Çöl ↑%100, Kale ↑%94, Mağara ↑%100, Orman ↑%100
+- Seviye 3 (6/20 hücre): standart: Kale ↑%91; barbar: Orman ↑%87; rogue: Çöl ↓%40; ranger: Çöl ↓%54; buyucu: Çöl ↑%99, Orman ↑%100
+- Seviye 1 (9/20 hücre): standart: Kale ↑%96; barbar: Çöl ↑%86, Orman ↑%93; paladin: Orman ↑%87; monk: Çöl ↓%51; rogue: Çöl ↓%57; ranger: Orman ↑%89; buyucu: Çöl ↑%94, Orman ↑%95
+
+Okuma: **Kale (Kale ve avlu, HS1 sonrası) standart parti için 5. seviyede %18 (çok zor), 1. ve 3. seviyede %96 / %91 (çok kolay)**: liste ilerlemesi tutarsız, harita 15×7 → 31×17 olunca eski listeler anlamını yitirdi (HS1 notu "denge ölçülmedi" demişti). 5. seviyede Çöl (%90) ve Mağara (%83) standart parti için kolay. Sınıf partilerinden Büyücü her yerde %94–100 (K41 bulgusu: liste ayarıyla kapanmaz), Rogue/Ranger/Monk Çöl'de zor.
+
+### 2. `npm run sim:a2` — seviye 7 ve 9 (taban; Normal %45–65, Kolay %70–85)
+
+| Parti | Sv | Zorluk | Çöl | Kale | Mağara | Orman | Ort. (ölçülenler) |
+|---|---:|---|---:|---:|---:|---:|---:|
+| klasik | 7 | Normal | 50 | 51 | – | **41** ↓ | 47 |
+| karma | 7 | Normal | **9** ↓ | **0** ↓ | – | **36** ↓ | **15** ↓ |
+| ates | 7 | Normal | **72** ↑ | **76** ↑ | – | **68** ↑ | **72** ↑ |
+| klasik | 7 | Kolay | 75 | **69** ↓ | – | **54** ↓ | **66** ↓ |
+| karma | 7 | Kolay | **41** ↓ | **6** ↓ | – | **45** ↓ (z3) | **31** ↓ |
+| ates | 7 | Kolay | **93** ↑ | 83 | – | 80 (z1) | 85 |
+| klasik | 9 | Normal | **93** ↑ | **21** ↓ | – | **32** ↓ (z3) | 49 |
+| karma | 9 | Normal | 59 | **3** ↓ | – | **24** ↓ (z8) | **29** ↓ |
+| ates | 9 | Normal | **90** ↑ | **36** ↓ | – | 65 (z3) | 64 |
+| klasik | 9 | Kolay | **99** ↑ | **66** ↓ | – | **98** ↑ | **88** ↑ |
+| karma | 9 | Kolay | **98** ↑ | **41** ↓ | – | 73 (z27) | 71 |
+| ates | 9 | Kolay | **100** ↑ | **89** ↑ | – | **99** ↑ | **96** ↑ |
+
+Üç parti ortalaması:
+- Normal 7: 45 (47, 15, 72)
+- Kolay 7: **61** ↓ (66, 31, 85)
+- Normal 9: 47 (49, 29, 64)
+- Kolay 9: 85 (88, 71, 96)
+
+Senaryo bazlı üç parti ortalaması (bilgi; bant üç parti × tüm ölçülen senaryoların ortalamasına uygulanır, K41 okuması):
+
+| Sv | Zorluk | Çöl | Kale | Orman |
+|---:|---|---:|---:|---:|
+| 7 | Normal | **44** ↓ | **42** ↓ | 48 |
+| 7 | Kolay | 70 | **53** ↓ | **60** ↓ |
+| 9 | Normal | **81** ↑ | **20** ↓ | **40** ↓ |
+| 9 | Kolay | **99** ↑ | **65** ↓ | **90** ↑ |
+
+Okuma: üç parti ortalaması K41 okumasıyla Normal 7 ve 9 hedefte (bant kenarında), **Kolay 7 düşük (%61)**, Kolay 9 bant üst kenarında (%85). Senaryo bazında Çöl 9 çok kolay (Normal %81, Kolay %99), **Kale (HS1 sonrası) 9. seviyede çok zor (Normal %20)**, a2-karma partisi Kale'de %0–6 (Normal/Kolay 7). Ortalama telafi sayıldığından satır bazlı sapmalar "açık".
+
+### 3. `npm run sim:bolge` — bölge karşılaşma üreteci (taban; %60–80, 100 tohum)
+
+| Bölge | Sv 1 | Sv 5 | Sv 9 | Durum |
+|---|---:|---:|---:|---|
+| Bataklık | **100** ↑ | **86** ↑ | **93** ↑ | aralık dışı 1: kolay, 5: kolay, 9: kolay |
+| Batı Kıyısı | **99** ↑ | **97** ↑ | 65 | aralık dışı 1: kolay, 5: kolay |
+| Buzul | **95** ↑ | **87** ↑ | **44** ↓ | aralık dışı 1: kolay, 5: kolay, 9: zor |
+| Çöl | **82** ↑ | **100** ↑ | 76 | aralık dışı 1: kolay, 5: kolay |
+| Dağ | **98** ↑ | **88** ↑ | **23** ↓ | aralık dışı 1: kolay, 5: kolay, 9: zor |
+| Orman | **100** ↑ | **98** ↑ | **88** ↑ | aralık dışı 1: kolay, 5: kolay, 9: kolay |
+| Volkan | **88** ↑ | **98** ↑ | 69 | aralık dışı 1: kolay, 5: kolay |
+
+**Aralık dışı bölge hücreleri (18/21):** Bataklık 1. seviye ↑%100; Bataklık 5. seviye ↑%86; Bataklık 9. seviye ↑%93; Batı Kıyısı 1. seviye ↑%99; Batı Kıyısı 5. seviye ↑%97; Buzul 1. seviye ↑%95; Buzul 5. seviye ↑%87; Buzul 9. seviye ↓%44; Dağ 1. seviye ↑%98; Dağ 5. seviye ↑%88; Dağ 9. seviye ↓%23; Orman 1. seviye ↑%100; Orman 5. seviye ↑%98; Orman 9. seviye ↑%88; Volkan 1. seviye ↑%88; Volkan 5. seviye ↑%98; Çöl 1. seviye ↑%82; Çöl 5. seviye ↑%100.
+
+Okuma: seviye 1 ve 5 hemen hemen her bölgede çok kolay (`seviyeCarpani` yalnız 9 ve 13 için tanımlı), seviye 9 bölgeye göre %23–93 dağılıyor (Dağ %23, Buzul %44 zor; Bataklık %93, Orman %88 kolay). Ölçülmeyenler: 13/17/20. seviye.
+
+### 4. `npm run sim:boss` — taban (Normal %45–65, Kolay %70–85)
+
+| Boss | Seviye | Zorluk | Kazanma | Durum |
+|---|---:|---|---:|---|
+| Beyaz Şehir — Saray Avlusu (muhafız komutanı) | 5 | Kolay | 40% (40/100) | **aralık dışı (zor)** |
+| Beyaz Şehir — Saray Avlusu (muhafız komutanı) | 5 | Normal | 17% (17/100) | **aralık dışı (zor)** |
+| Hapishane Adası — Müdür Kulesi | 3 | Kolay | 50% (50/100) | **aralık dışı (zor)** |
+| Hapishane Adası — Müdür Kulesi | 3 | Normal | 40% (40/100) | **aralık dışı (zor)** |
+| Kral Kalesi — Taht Salonu (saray büyücüsü) | 5 | Kolay | 0% (0/100) | **aralık dışı (zor)** |
+| Kral Kalesi — Taht Salonu (saray büyücüsü) | 5 | Normal | 0% (0/100) | **aralık dışı (zor)** |
+| Volkan — uyuyan Young Red Dragon | 5 | Kolay | 87% (87/100) | **aralık dışı (kolay)** |
+| Volkan — uyuyan Young Red Dragon | 5 | Normal | 85% (85/100) | **aralık dışı (kolay)** |
+
+**Kral Kalesi (Taht Salonu) %0 / %0**: iki Mage (SRD: Cone of Cold günde 1, Fireball günde 2, her Mage için) ilk turda 5. seviye partiyi düşürüyor (tohum 4: tur 1'de 5 PC 0 HP, düşmanlar neredeyse hasarsız); ayrıca K8 yüksek zemin avantajıyla kürsüden Heavy Crossbow. K43 ölçümünde (%55) bu yoktu (kural sürümü ve Mage büyü eylemleri o zamandan beri değişti). Not: `data/sim-boss.json` listeleri `sim:boss` ölçümüne özgü; oyundaki boss savaşları senaryo listelerini kullanır (yalnız Volkan Normal listesi senaryo listesine eşit olmak zorunda: `src/sim/bossData.test.ts`).
+
+### 5. Zincir ve hapishane (taban)
+
+| Ölçüm | Parti, seviye | Sonuç | Hedef | Durum |
+|---|---|---:|---|---|
+| `sim:zincir -- 30` Kuzey yolu: ilk gün (3 savaş: Orman → Mağara (satır içi liste) → Kale), Normal | standart, 3 | **%37** ↓ (1.57/3 savaş; durak başına ölüm 0.33 / 0.23 / 0.33) | Normal %45–65 | **aralık dışı (zor)** |
+| `sim:zincir` Derinlikler, dal mantar (6 savaş; `mesale` ve `hazine` satır içi liste), Normal | standart, 5 | **%100** ↑ (6.00/6 savaş) | Normal %45–65 | **aralık dışı (kolay)** |
+| `sim:zincir` Derinlikler, dal lav (3 savaş), Normal | standart, 5 | %47 (2.47/3 savaş) | Normal %45–65 | aralıkta |
+| `sim:hapishane -- 100` zincir (kaçış), Normal | standart, 3 | **%87** ↑ (hücre 100, dış halka 93, iskele 94; Müdür isteğe bağlı 65) | %55–65 (K36) | **aralık dışı (kolay)** |
+| `sim:hapishane -- 100 --kolay` zincir | standart, 3 | **%97** ↑ | %75–85 | **aralık dışı (kolay)** |
+
+Okuma: Kuzey yolu'nda üç savaşın her biri sim bandının ortasında (≈%70) kazanılsa bile üçü birlikte ≈%35 eder; zincir bandına (%45–65) girmek için her savaşın ≈%77–86 olması gerekir, bu da sınıf partilerini sim bandının üstüne çıkarır. Derinlikler mantar dalında `mesale` ve `hazine` düğümleri satır içi (zayıf) listeyle (`data/seferler.json`) neredeyse hep geçiliyor.
+
+### 6. `npm run sim:k26 -- 100 --seviye 3` — Buzul ve Dağ haritaları (taban; Normal hedefi %60–80, K18 H7)
+
+| Harita | Normal düşmanlar | Normal | Kolay düşmanlar | Kolay | Durum |
+|---|---|---:|---|---:|---|
+| k29-buzul-acik | winter-wolf ×2, polar-bear ×1, wolf ×1 | 80 | winter-wolf ×1, polar-bear ×1, wolf ×1 | 100 | aralıkta |
+| k29-buzul-kamp | bandit-captain ×1, scout ×3, bandit ×3 | **94** ↑ (z1) | bandit-captain ×1, scout ×2, bandit ×3 | 97 | **bant dışı (kolay)** |
+| k29-buzul-kayalik | winter-wolf ×2, ice-mephit ×3 | 67 | winter-wolf ×2, ice-mephit ×2 | 79 | aralıkta |
+| k29-buzul-tapinak | ice-mephit ×3, ghoul ×2, winter-wolf ×1 | 71 | ice-mephit ×2, ghoul ×2, winter-wolf ×1 | 90 | aralıkta |
+| k29-dag-karakol | bandit-captain ×2, scout ×3, bandit ×4 | **25** ↓ (z1) | bandit-captain ×2, scout ×3, bandit ×3 | 48 | **bant dışı (zor)** |
+| k29-dag-kayalik | griffon ×2, harpy ×3 | **90** ↑ | griffon ×2, harpy ×2 | 96 | **bant dışı (kolay)** |
+| k29-dag-kopru | ogre ×2, hobgoblin-warrior ×4 | 68 (z11) | ogre ×2, hobgoblin-warrior ×3 | 88 (z4) | aralıkta |
+| k29-dag-nobetci | ghoul ×4, skeleton ×4 | **100** ↑ | ghoul ×3, skeleton ×4 | 100 | **bant dışı (kolay)** |
+
+**Bant dışı haritalar (4/8):** k29-buzul-kamp (%94); k29-dag-karakol (%25); k29-dag-kayalik (%90); k29-dag-nobetci (%100). Kolay sütunu bilgi içindir (Kolay için ayrı bant tanımlı değil). Liste düzeltmesi yapılmadı.
+
+### 7. K59 alt sınıf denge ızgarası (3. seviye, yalnız Çöl; `src/sim/k59Denge.ts --kap` + `scripts/k59-denge-tablo.mjs`)
+
+Her alt sınıf SRD karşılığıyla karşılaştırılır; "Fark" = kazanma − SRD karşılığı (puan). Betiğin kendi durum sütunu üç senaryo (Çöl/Orman/Mağara) ister; yalnız Çöl ölçüldüğünden "Aralık dışı: 0" çıktısı boş bir sonuçtur. Durum sütunu burada Çöl farkına ±5 puan toleransıyla elle hesaplandı (K59 ile aynı tolerans).
+
+| Sınıf | Alt sınıf | SRD karşılığı | Sv | Senaryolar (Çöl/Orman/Mağara) | Kazanma | SRD | Fark | Durum (Çöl, ±5) |
+|---|---|---|---:|---|---:|---:|---:|---|
+| barbarian | path-of-the-berserker | — | 3 | 37 / – / – | 37% | 37% | — | SRD (taban) |
+| barbarian | Geride Kalanın Yolu | path-of-the-berserker | 3 | 42 / – / – | 42% | 37% | +5 | aralıkta |
+| bard | Şair Koleji | college-of-lore | 3 | 48 / – / – | 48% | 46% | +2 | aralıkta |
+| bard | college-of-lore | — | 3 | 46 / – / – | 46% | 46% | — | SRD (taban) |
+| cleric | Birlik Manastırı | life-domain | 3 | 70 / – / – | 70% | 66% | +4 | aralıkta |
+| cleric | life-domain | — | 3 | 66 / – / – | 66% | 66% | — | SRD (taban) |
+| druid | Karadul Çemberi | circle-of-the-land | 3 | 63 / – / – | 63% | 60% | +3 | aralıkta |
+| druid | circle-of-the-land | — | 3 | 60 / – / – | 60% | 60% | — | SRD (taban) |
+| fighter | champion | — | 3 | 29 / – / – | 29% | 29% | — | SRD (taban) |
+| fighter | İmparator | champion | 3 | 26 / – / – | 26% | 29% | -3 | aralıkta |
+| monk | warrior-of-the-open-hand | — | 3 | 43 / – / – | 43% | 43% | — | SRD (taban) |
+| monk | Yaşlı Bilge Disiplini | warrior-of-the-open-hand | 3 | 30 / – / – | 30% | 43% | -13 | **aralık dışı (zayıf)** |
+| paladin | Hızır Yemini | oath-of-devotion | 3 | 58 / – / – | 58% | 44% | +14 | **aralık dışı (güçlü)** |
+| paladin | oath-of-devotion | — | 3 | 44 / – / – | 44% | 44% | — | SRD (taban) |
+| ranger | hunter | — | 3 | 35 / – / – | 35% | 35% | — | SRD (taban) |
+| ranger | Çiftçi | hunter | 3 | 34 / – / – | 34% | 35% | -1 | aralıkta |
+| rogue | İnfazcı | thief | 3 | 16 / – / – | 16% | 24% | -8 | **aralık dışı (zayıf)** |
+| rogue | thief | — | 3 | 24 / – / – | 24% | 24% | — | SRD (taban) |
+| sorcerer | draconic-sorcery | — | 3 | 38 / – / – | 38% | 38% | — | SRD (taban) |
+| sorcerer | Dunganga | draconic-sorcery | 3 | 30 / – / – | 30% | 38% | -8 | **aralık dışı (zayıf)** |
+| warlock | fiend-patron | — | 3 | 58 / – / – | 58% | 58% | — | SRD (taban) |
+| warlock | Astrolog | fiend-patron | 3 | 45 / – / – | 45% | 58% | -13 | **aralık dışı (zayıf)** |
+| wizard | evoker | — | 3 | 23 / – / – | 23% | 23% | — | SRD (taban) |
+| wizard | Harita Öğretisi | evoker | 3 | 22 / – / – | 22% | 23% | -1 | aralıkta |
+
+**Aralık dışı alt sınıflar (Çöl, SRD karşılığına göre ±5; 5):** monk (Yaşlı Bilge Disiplini) -13; paladin (Hızır Yemini) +14; rogue (İnfazcı) -8; sorcerer (Dunganga) -8; warlock (Astrolog) -13. Yalnız Çöl ölçüldüğü için bu bir sinyaldir, hüküm değildir; K60 ince ayarıyla üç senaryolu karşılaştırma yapılmalı.
+
+### Geri alınan düzeltme denemeleri (referans; eski mekaniklerle ölçüldü)
+
+Görev kullanıcı kararından önce üç düzeltme turu işlemişti (commit 5705637 tur 1, d9fa4c6 tur 2, 811278d ve 8011702 tur 3). Düzeltme turları ertelendiği için bu değişikliklerin hepsi **geri alındı** (veri dosyaları ve `src/journey/encounter.ts` + testi commit 085e318 durumuna döndü); böylece yukarıdaki taban orijinal listelerle yeniden üretilebilir ve mekanik matris düzeltmelerinin etkisi tek başına görülebilir. Aşağıdakiler mekanik matris düzeltmelerinden **önceki** mekaniklerle ölçülmüş denemelerdir; yalnız başlangıç noktası olarak saklanır, düzeltmelerden sonra yeniden ölçülmeden kullanılmamalı. Yöntem: aday listeler `sim:liste` ile 40–60 tohumda elendi (aynı tohumlar 1–40/60, doğrulama 1–100: doğrulama bağımsız değil; elemeye göre 5–8 puanlık düşüşler görüldü), seçilenler veriye yazılıp 100 tohumla yeniden ölçüldü.
+
+**Denenen değişiklikler (085e318 → tur 3 sonu):**
+
+| Dosya | Satır | Önce (taban, 085e318) | Deneme (tur 1–3, HEAD öncesi) |
+|---|---|---|---|
+| `data/sim-senaryolar.json` | `col` 5. seviye | giant-scorpion ×2, mummy ×2, manticore ×2, gnoll-warrior ×4, giant-hyena ×1, scout ×2, death-dog ×1 | giant-scorpion ×3, mummy ×3, manticore ×2, gnoll-warrior ×4, giant-hyena ×1, scout ×2, death-dog ×1 |
+| `data/sim-senaryolar.json` | `volkan-ejder` 5. seviye | wyvern ×1, magmin ×2 | wyvern ×2, magmin ×3 |
+| `data/sim-senaryolar.json` | `magara` 5. seviye | troll ×1, giant-spider ×2, ghoul ×1, darkmantle ×1, ettercap ×1, ogre ×1, grimlock ×1 | troll ×1, giant-spider ×2, ghoul ×1, darkmantle ×1, ettercap ×1, ogre ×2 |
+| `data/sim-senaryolar.json` | `derin-merdiven` 5. seviye | ghast ×3, skeleton ×4, wight ×1 | wraith ×2, ghast ×3, wight ×2, mummy ×1 |
+| `data/sim-senaryolar.json` | `kale` 1. seviye | goblin-warrior ×4, guard ×2 | goblin-warrior ×6, guard ×2 |
+| `data/sim-senaryolar.json` | `kale` 3. seviye | hobgoblin-warrior ×3, goblin-warrior ×3, bugbear-warrior ×1 | hobgoblin-warrior ×3, goblin-warrior ×3, bugbear-warrior ×2 |
+| `data/sim-senaryolar.json` | `kale` 5. seviye | hobgoblin-warrior ×4, goblin-warrior ×4, hobgoblin-captain ×1, bugbear-stalker ×1, berserker ×3, warrior-veteran ×2, bugbear-warrior ×2 | hobgoblin-warrior ×3, goblin-warrior ×4, hobgoblin-captain ×1, bugbear-stalker ×1, berserker ×2, warrior-veteran ×2, bugbear-warrior ×1 |
+| `data/sim-senaryolar.json` | `derin-mantar` 5. seviye | ettercap ×2, giant-spider ×3, violet-fungus ×2, shrieker-fungus ×1 | ettercap ×2, giant-spider ×3, violet-fungus ×2, shrieker-fungus ×1, phase-spider ×2 |
+| `data/sim-senaryolar.json` | `k36-dis-halka` 3. seviye | guard ×3 | guard ×3, bandit ×2 |
+| `data/sim-senaryolar.json` | `k36-iskele` 3. seviye | guard ×1, bandit ×1 | guard ×2, bandit ×2 |
+| `data/sim-boss.json` | beyaz-sehir Normal | gladiator ×3, knight ×4, warrior-veteran ×3 | gladiator ×2, knight ×3, warrior-veteran ×3 |
+| `data/sim-boss.json` | beyaz-sehir Kolay | gladiator ×2, knight ×4, warrior-veteran ×3, guard ×1 | gladiator ×2, knight ×2, warrior-veteran ×2 |
+| `data/sim-boss.json` | kale Normal | mage ×2, knight ×3, warrior-veteran ×2, guard ×1 | mage ×1, knight ×1, warrior-veteran ×2, guard ×2 |
+| `data/sim-boss.json` | kale Kolay | mage ×2, knight ×2, warrior-veteran ×2, berserker ×1 | mage ×1, warrior-veteran ×1, guard ×3 |
+| `data/sim-boss.json` | hapishane Normal | gladiator ×2, knight ×3, warrior-veteran ×2, guard ×1 | gladiator ×2, knight ×2, warrior-veteran ×2, guard ×1 |
+| `data/sim-boss.json` | hapishane Kolay | gladiator ×2, knight ×2, warrior-veteran ×2, guard ×2 | gladiator ×2, knight ×1, warrior-veteran ×1, guard ×2 |
+| `data/sim-boss.json` | volkan Normal | wyvern ×1, magmin ×2 | wyvern ×2, magmin ×3 |
+| `data/sim-boss.json` | volkan Kolay | wyvern ×1 | wyvern ×1, magmin ×3 |
+| `data/sim-a2.json` Kolay | col 7. seviye | chimera ×1, manticore ×3, giant-scorpion ×1, gnoll-warrior ×4 | chimera ×1, manticore ×2, giant-scorpion ×1, gnoll-warrior ×4 |
+| `data/sim-a2.json` Kolay | col 9. seviye | wyvern ×2, chimera ×1, mummy ×1, gnoll-warrior ×4 | wyvern ×2, chimera ×1, giant-scorpion ×1, mummy ×2, gnoll-warrior ×4 |
+| `data/sim-a2.json` Kolay | orman 7. seviye | troll ×1, owlbear ×3, werewolf ×2, dire-wolf ×3 | troll ×1, owlbear ×2, werewolf ×2, dire-wolf ×3 |
+| `data/sim-a2.json` Kolay | orman 9. seviye | troll ×1, owlbear ×2, werebear ×1, dire-wolf ×3, giant-spider ×2 | troll ×1, owlbear ×2, werebear ×1, werewolf ×1, dire-wolf ×3, giant-spider ×2 |
+| `data/bolge-karsilasma.json` | `seviyeCarpani` | {"9": 1.3, "13": 0.8} | {"1": 1.8, "5": 1.5, "9": 1.2, "13": 0.8} |
+| | `buzul` bölge `carpan` | 1 | 0.85, `seviyeDuzeltme` {"1": 1.24, "5": 1.29, "9": 0.84} |
+| | `dag` bölge `carpan` | 1 | 0.9, `seviyeDuzeltme` {"1": 1.17, "5": 0.93, "9": 0.93} |
+| | `orman` bölge `carpan` | 1 | 1.2, `seviyeDuzeltme` {"1": 1.08} |
+| | `col` bölge `carpan` | 1 | 0.95, `seviyeDuzeltme` {"1": 0.76, "5": 1.1, "9": 1.18} |
+| | `bataklik` bölge `carpan` | 1 | 1.4, `seviyeDuzeltme` {"5": 0.74} |
+| | `bati-kiyisi` bölge `carpan` | 1 | 0.95, `seviyeDuzeltme` {"1": 0.89, "5": 1.07} |
+| | `volkan` bölge `carpan` | 1 | 0.85, `seviyeDuzeltme` {"9": 1.22} |
+
+Ayrıca kod: `src/journey/encounter.ts` `regionLevelFactor` + `Region.seviyeDuzeltme` (bölge × seviye hücre düzeltmesi; yoksa 1, geriye uyumlu) ve testi. Gerekçe: iki etkenli çarpan (bölge × seviye) 21 hücreyi tek tek hedefe oturtamadı (en iyi uyumla 7/21); hücre düzeltmesiyle tur 2'de 18/21'e çıktı.
+
+**Deneme listeleriyle ölçülen sonuçlar (100 tohum; zincir 30; taban → deneme):**
+
+| Satır | Taban | Deneme | Hedef | Not |
+|---|---:|---:|---|---|
+| `sim` standart, 5. seviye Çöl | %90 ↑ | %66 | %60–80 | tur 1 |
+| `sim` standart, 5. seviye Kale | %18 ↓ | %60 | %60–80 | tur 1 |
+| `sim` standart, 5. seviye Mağara | %83 ↑ | %71 | %60–80 | tur 1 |
+| `sim` standart, 1. seviye Kale | %96 ↑ | %61 | %60–80 | tur 1 |
+| `sim` standart, 3. seviye Kale | %91 ↑ | %72 | %60–80 | tur 1 |
+| `sim` barbar, 5. seviye Çöl / Kale / Mağara | %76 / %26 ↓ / %88 ↑ | %45 ↓ / %55 ↓ / %76 | %60–80 | sınıf partisi; yalnız barbar ve yanel yeniden ölçüldü, kalan 18 hücre ölçülmedi |
+| `sim` yanel, 5. seviye Çöl / Kale / Mağara | %91 ↑ / %21 ↓ / %85 ↑ | %70 / %61 / %76 | %60–80 | sınıf partisi |
+| boss Beyaz Şehir Normal / Kolay | %17 / %40 | %53 / %84 | %45–65 / %70–85 | tur 1 |
+| boss Hapishane Müdür Kulesi Normal / Kolay | %40 / %50 | %58 / %82 | %45–65 / %70–85 | tur 1 |
+| boss Kral Kalesi Normal / Kolay | %0 / %0 | %52 / %81 | %45–65 / %70–85 | tur 1, Kolay tur 3 (tur 1: %68, tur 2: %63) |
+| boss Volkan Normal / Kolay | %85 / %87 | %57 / %84 | %45–65 / %70–85 | tur 1, Kolay tur 2 (tur 1: %64) |
+| `sim:a2` üç parti ortalaması Kolay 7 | %61 ↓ | %72 | %70–85 | tur 1 (yalnız Çöl/Orman Kolay listeleri); Normal listeleri değişmedi (%45 / %47) |
+| `sim:a2` üç parti ortalaması Kolay 9 | %85 | %82 | %70–85 | tur 1 |
+| `sim:bolge` aralık dışı hücre | 18 / 21 | 1 / 21 | %60–80 | tur 2: 18/21 bantta; tur 3: Buzul 5 %62, Dağ 1 %80; Dağ 5 %81 (tur 3 çarpanı 0,93 ölçülmeden iş durduruldu) |
+| `sim:hapishane` zincir Normal / Kolay | %87 ↑ / %97 ↑ | %52 / %82 | %55–65 / %75–85 | tur 2 (Normal −3: gürültü içinde; Kolay bantta) |
+| `sim:zincir` Kuzey yolu: ilk gün | %37 ↓ | %33 ↓ | %45–65 | Kale 3. seviye sertleşince zincir biraz daha zorlaştı; yapısal sınır (aşağıda) |
+| `sim:zincir` Derinlikler mantar | %100 ↑ | %77 ↑ | %45–65 | tur 3 (derin-mantar + derin-merdiven 5. seviye) |
+| `sim:k26` dört bant dışı harita | — | — | %60–80 | uygulanmadı; yalnız aday eleme (aşağıda) |
+
+**Aday elemeden notlar (40 tohum, uygulanmadı / yalnız referans):**
+
+- `sim:k26` Normal: Buzul Kamp `bandit-captain 2, scout 3, bandit 3` %65 (`bandit-captain 1, scout 3, bandit 5` %85); Dağ Karakol `bandit-captain 2, scout 2, bandit 3` %70 (`bandit-captain 1, scout 3, bandit 4` %83); Dağ Kayalık `griffon 2, harpy 4` %68 (`griffon 3, harpy 3` %40); Dağ Nöbetçi: Ghast/Wight eklemeleri (`ghoul 3, ghast 1, skeleton 4` ve `ghoul 2, ghast 2, skeleton 4`) hâlâ %100.
+- Hapishane zinciri: Normal/Kolay çifti (40 tohum) en iyi `k36-dis-halka` 3. seviye `guard 3, bandit 2` + `k36-iskele` 3. seviye `guard 2, bandit 2` ile (%60 / %80) çıktı, 100 tohumda %52 / %82; Kolay hapishanede "bir nöbetçi eksik" kuralı (`HAPIS.kolay.eksik`, önce `guard`) Normal–Kolay farkını %30'a açıyor, iki bandı birlikte tutturmak dar bir pencere.
+- Derinlikler yürüyen merdiven (`derin-merdiven`, harita varyantı `merdiven-yuruyen`): yürüyen merdiven yakın dövüşçüleri geri kaydırdığından Wight/Ghast/Mummy/Vampire Spawn'lı hiçbir 9 düşmanlı liste %100'ün altına inmedi; yalnız uçan Wraith (×2) ölümleri artırıyor (%35–40 ≥1 ölüm). Haritada en çok 9 düşman yerleşiyor.
+- Derinlikler mantar (`derin-mantar`): uygulanan `ettercap 2, giant-spider 3, violet-fungus 2, shrieker-fungus 1, phase-spider 2` tarama %65 (zincirde dalın tamamı %77); aynı eleme: `ettercap 2, giant-spider 2, … phase-spider 2` %83, `ettercap 1, giant-spider 3, … phase-spider 2` %78, `ettercap 3, giant-spider 4, phase-spider 2, …` %57, `phase-spider ×1` varyantları %88–93.
+- Bölge: seviye çarpanı tablosunda yalnız 1/5/9/13 anahtarı var; ara seviyeler (2–4, 6–8, 10–12) ve 14+ çarpansız (×1) kalır, komşu seviyelerden çok daha kolay çıkar (öneri: log-doğrusal enterpolasyon).
+
+### Canavar verisi ve yapay zekâ önerileri (`data/monsters.json` ve canavar büyü/özellik verisi **değişmedi**; yalnız öneri)
+
+1. **Mage (CR 6) — Cone of Cold ve Fireball ilk turda parti bitiriyor.** SRD 5.2.1 Mage büyüleri `data/canavar-buyuleri.json`'da: Cone of Cold günde 1, Fireball günde 2 (her Mage için). İki Mage'li listede ilk turda iki koni (60 ft, 8d8 soğuk) + Fireball 5 kişilik 5. seviye partiyi düşürüyor (Taht Salonu tohum 4: tur 1'de 5 PC 0 HP). Düzeltme turlarında liste çözümü denendi (boss listelerinde en çok 1 Mage, Taht Salonu %0 → %52). Öneri (denge/YZ, ileride): yapay zekâ aynı turda aynı hedefleri vuran ikinci kuvvetli alan büyüsünü (ikinci Mage) ertelesin ya da günlük tek kullanımı partinin tamamı yakınken değil ≥ 3 hedef kapsarken harcasın; ya da Mage'in koni sayısı ürün kararıyla sınırlansın. Bu, mekanik matris düzeltmelerinden (alan büyüleri, Counterspell) etkilenecek: düzeltmelerden sonra yeniden ölç.
+2. **K8 yüksek zemin avantajı + kürsüdeki Heavy Crossbow.** Taht Salonu'nda kürsü (yükseklik 1) K8 (kural sürümü 59+) ile menzilli düşmana kalıcı avantaj veriyor; Knight/Guard Heavy Crossbow kürsüden ateşliyor. Öneri: harita kuralında kürsü yüksekliğini düşürmek ya da kürsüden inme eşiği (`data/dikey.json` `yuksekZemin` ft eşiği).
+3. **Sınıf partileri (liste ayarıyla kapanmaz, K41 bulgusu):** Büyücü partisi (`buyucu`, 6 kişi) her senaryoda %94–100; Rogue/Ranger/Monk Çöl 3. seviyede %40–54 (Çöl'ün gnoll/hyena kalabalığı ve Rogue/Ranger'ın tek hedef hasarı). Öneri: Büyücü için alan kontrolü (Sleep, Hypnotic Pattern, Web) bağışıklığı olan canavar payı (Undead/Construct), Rogue/Ranger için çok düşmanlı Çöl listesinde alan/koruma desteği. Mekanik matris düzeltmelerinden (görünmezlik hedefleme, Restrained DEX save) sonra yeniden ölç.
+4. **Bölge karşılaşma üreteci:** iki etkenli çarpan (bölge × seviye) 21 hücreyi tek tek hedefe oturtamıyor; öneri: bölge × seviye hücre düzeltmesi (denendi: tur 2'de 18/21 bantta; `Region.seviyeDuzeltme`, geri alındı). Seviye çarpanı tablosunda yalnız 1/5/9/13 var: **ara seviyeler (2–4, 6–8, 10–12) ve 14+ çarpansız (×1) kalıyor**, komşu seviyelerden çok daha kolay çıkıyor; öneri `levelMultiplier`'ı komşu anahtarlar arasında log-doğrusal enterpolasyona çevirmek (17 ve 20 için de açık anahtar). 13/17/20. seviye ölçülmedi.
+5. **Derinlikler seferi (mantar dalı):** `data/seferler.json` `derinlikler` düğümleri `mesale` ve `hazine` satır içi düşman listesi taşıyor (senaryo listesini geçersiz kılıyor); mantar dalı bu iki düğümde neredeyse hiç kaybetmiyor. Yürüyen merdiven haritası (`merdiven-yuruyen`) yakın dövüşçüleri geri kaydırdığı için yalnız uçan/menzilli düşmanlar zorluk üretiyor. Öneri: iki satır içi listeyi ve `derin-merdiven` düşmanlarını bu haritaya göre (uçan/menzilli ağırlıklı) yeniden kurmak.
+6. **Kuzey yolu: ilk gün (zincir):** `data/yolculuk/ilk-gun.json` Mağara durağında satır içi `enemies` taşıyor. Üç savaşın her biri sim bandının ortasında (≈%70) olsa da zincir ≈%35 eder; zincir bandı (%45–65) için ya durak listeleri ≈%77–86'ya çıkarılmalı ya da zincir bandı/dinlenme politikası (`data/yolculuk/ayarlar.json`: kamp/han dinlenmeleri) yeniden düşünülmeli (ürün kararı).
+7. **a2:** Kale (HS1 sonrası) 7/9. seviye listeleri ve Çöl 9 listeleri ayrı ayrı yeniden kurulmalı: Kale 9 Normal %20, Çöl 9 Normal %81 / Kolay %99 (üç parti ortalaması bandı bu farkları telafi ediyor).
+
+## HS1 notu (2026-11-22): klasik Kale kaldırıldı, `kale` / `kale-gece` senaryoları Kale ve avlu'ya bağlandı
+
+- `data/sim-senaryolar.json` `kale` ve `kale-gece`: harita `kale` (15×7, gündüz/gece) → **`kale-avlu`** (31×17, gündüz; gece varyantı yok, `kale-gece` de gündüz). Senaryo kimlikleri ve düşman listeleri (`enemies.1…20`) **değişmedi**; `data/sim-a2.json`, `sim-boss.json`, K59 dumanı vb. aynı senaryo kimlikleriyle çalışır.
+- **Denge farkı ölçülmedi** (hafif doğrulama modu; tam ölçüm "Dungeondex öncesi tam test turu" görevine kalır). Harita 15×7'den 31×17'ye büyüdüğü için (mesafe, siper, başlangıç bölgeleri) Kale senaryolarının kazanma oranları eski tablodaki değerlerden farklı çıkacaktır; bu dosyadaki eski "Kale" satırları HS1 öncesi ölçümdür.
+- `dungeon-merdiven` senaryosu Yürüyen merdiven varyantına yönlendirildi (aynı zemin, ek `conveyor` kuralı).
+
 ## Kuyruk MB8: binek hattı denge ölçümü (2026-11-12; ölçüm, denge ayarı yok)
 
 Kural sürümü 74 (değişmedi). 5. seviye standart parti, 100 tohum, aynı tohumlar; partinin ilk üyesi savaş başında Warhorse'un üstünde (`src/sim/binekStart.ts` `mountedStart`; binicinin kim olduğu inisiyatif sırasına göre değişir). Komut: `npx vite-node src/sim/binekDengeRun.ts -- 100 col,kale,magara,orman --kip yok|bagimsiz|kontrollu`. Hedef parti kazanma %60–80. "Binek" sütunu: savaş sonunda at ayakta / binici hâlâ üstünde. Canavar verisi ve düşman listeleri değişmedi.
@@ -504,7 +813,7 @@ Sıra (DENGE kuralı): YZ → eksik/planlı özellik → küçük sayısal ayar.
 | Harita Öğretisi (Wizard) | 7: −19, 11: −19, 15: −22, 20: −10 | Evokasyon'un hazır hasar büyüleri (Empowered Evocation, Overchannel) ↔ Harita'nın konum/zemin eylemleri; YZ zemin/duvarın değerini hasar gibi ölçmüyor | YZ'de duvar/zemin eyleminin "önlenen hasar" değeri (ayrı kuyruk); sayısal: Çizili Duvar HP'si ya da kullanım sayısı |
 | Dunganga (Sorcerer) | 3: −8, 7: −16, 11: −13, 15: −9, 20: −8 | Ejderha Büyücülüğü'nün Elemental Affinity hasarı ↔ Dunganga'nın kontrol eylemleri (30 ft); Sepet hasarla bozuluyor, dostlar sepetteki düşmana vuruyor | Ninni menzili 30 → 60 ft ya da Sepet'in hasarla bozulmaması (veri); YZ'de sepetteki hedefi atlama |
 | Yaşlı Bilge Disiplini (Monk) | 3: −5, 7: −5, 11: −21, 15: −20, 20: −12 | 11+ seviyede Açık El'in (Quivering Palm vb.) gücü; Zihin Gücü kiplerinin değeri düşük | 11+ özelliklerinin YZ kullanımı incelenmeli; sayısal: Zihin Gücü hasar zarı |
-| Birlik Manastırı (Cleric) | 7: −12, 11: −15, 20: −6 | Yaşam'ın iyileştirme ekleri ↔ Bağ/Havuz; havuz toplu hasarda erken bitebiliyor | Ortak Şifa seviyesi 8 → 6 ya da havuz koruması (Yıkılmaz Birlik) erken seviyede |
+| Birlik Manastırı (Cleric) | 7: −12, 11: −15, 20: −6 | Yaşam'ın iyileştirme ekleri ↔ Bağ/Havuz; havuz toplu hasarda erken bitebiliyor | Ortak Şifa seviyesi 8 → 6 ya da havuz koruması (Barış Azizi, eski adı Yıkılmaz Birlik) erken seviyede |
 | Şair Koleji (Bard) | 3: −11, 15: +8 | 3. sv Bilgi'nin Cutting Words tepkisi ↔ Mısra'nın Bardic Inspiration harcaması; 15'te Ölümsüz Dize güçlü | Mısra: Hiciv'in ilham harcamaması ya da zarın +1 adım büyümesi (3. sv) |
 | İmparator (Fighter) | 11: −9, 15: +27, 20: +17 | 15+ seviyede Ölümsüz Taht + Ferman zinciri çok güçlü (partiye avantaj aurası) | Ölümsüz Taht süresi 10 → 1 tur ya da yarıçap 30 → 15 ft (veri) |
 | Hızır Yemini (Paladin) | 3: +10, 11: +6, 20: +17 | 3. sv Tam Zamanında (yarı hasar + dost koruması); 20. sv Yetişen Yol + Mucize | Tam Zamanında hasar payı 0,5 → 0,75 (kodda sabit; veriye bağlanmalı), Yetişen Yol direnci kısıt |
@@ -741,7 +1050,7 @@ Standart parti, 3. seviye, 30 tohum, ev kuralı `moralSistemi` açık (Moral tam
 
 ## Kuyruk K54b sonrası: Harita, Dunganga, Birlik, İnfazcı (2026-11-05)
 
-Aynı ölçüm (K50): `npm run sim:imza -- 100 --alt <id> --seviye 7 --senaryo col,orman`, kural sürümü 27, ev kuralı açık. SRD satırları yeniden ölçüldü, değişmedi. Sayı ayarı yapılmadı (K59). 7. seviyede K54b eklemelerinin bir kısmı yok: Çizili Duvar (10), Kuşbakışı Plan (14), Kâbus (14), Dunganga Çağrısı (18), Ortak Şifa (8), Yıkılmaz Birlik (17), Müdahale (9), Peşini Bırakmayan (13).
+Aynı ölçüm (K50): `npm run sim:imza -- 100 --alt <id> --seviye 7 --senaryo col,orman`, kural sürümü 27, ev kuralı açık. SRD satırları yeniden ölçüldü, değişmedi. Sayı ayarı yapılmadı (K59). 7. seviyede K54b eklemelerinin bir kısmı yok: Çizili Duvar (10), Kuşbakışı Plan (14), Kâbus (14), Dunganga Çağrısı (18), Ortak Şifa (8), Barış Azizi (17), Müdahale (9), Peşini Bırakmayan (13).
 
 | İmza | SRD | K50 (2. ölçüm) | K54b, YZ ipucu kısıtsız | K54b son | Sapma K50 → son | Durum |
 |---|---|---|---|---|---|---|

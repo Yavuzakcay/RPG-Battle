@@ -2,6 +2,7 @@
  * Görev SD3: oluşturucu adımlarının ortak küçük parçaları (yalnızca Builder parçasında).
  */
 import { useState, type ReactNode } from 'react';
+import { GlyphText } from '../../ui/glyph/Glyph';
 
 export function toggle<T>(list: T[], x: T, on: boolean): T[] {
   return on ? (list.includes(x) ? list : [...list, x]) : list.filter((y) => y !== x);
@@ -12,15 +13,20 @@ export function InfoTip(props: { text: string }) {
   return <span className="info-tip" title={props.text} aria-label={props.text}>ⓘ</span>;
 }
 
-/** Dokununca açılan ⓘ (SD3): İngilizce kural adı ve ayrıntı yalnızca burada görünür; dokunmatikte de çalışır. */
-export function InfoPop(props: { text: string; label?: string }) {
+/**
+ * Dokununca açılan ⓘ (SD3): İngilizce kural adı ve ayrıntı yalnızca burada görünür; dokunmatikte de çalışır. `desc`: metnin
+ * açıklama olan baş kısmı (ortak simgeler, glif, yalnız bu kısımda; kalan metin ve `title` aynen).
+ */
+export function InfoPop(props: { text: string; label?: string; desc?: string }) {
   const [open, setOpen] = useState(false);
   if (!props.text) return null;
   return (
     <span className="info-pop-wrap">
       <button type="button" className={`info-tip info-pop-btn${open ? ' on' : ''}`} aria-expanded={open} aria-label={props.label ?? props.text} title={props.text}
         onClick={(e: { stopPropagation: () => void }) => { e.stopPropagation(); setOpen((o) => !o); }}>ⓘ</button>
-      {open && <span className="term-pop" role="tooltip">{props.text}</span>}
+      {open && <span className="term-pop" role="tooltip">
+        {props.desc && props.text.startsWith(props.desc) ? <><GlyphText text={props.desc} />{props.text.slice(props.desc.length)}</> : props.text}
+      </span>}
     </span>
   );
 }

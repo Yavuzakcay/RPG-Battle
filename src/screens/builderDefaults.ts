@@ -244,3 +244,84 @@ export function reSuggestAfterLevel(before: SavedCharacter, after: SavedCharacte
   if (isAutoSpells(before)) c = withSpells(c);
   return { ...c, sheet: withRecommendedAsi(c.sheet) };
 }
+
+// ------------------------------------------------------------------ SD11: açık "Önerilen" etiketi ve toplu doldur/temizle
+
+export type RecoPart = 'skills' | 'spells' | 'kit' | 'class' | 'bonuses' | 'asi' | 'all';
+const ALL_PARTS: Exclude<RecoPart, 'all'>[] = ['bonuses', 'class', 'skills', 'kit', 'spells', 'asi'];
+
+/** Önerilen alt sınıf kimliği (yalnız alt sınıf gereken seviyede; `withClassChoices` ile aynı seçim). */
+export function recommendedSubclassId(sheet: CharacterSheet): string | undefined {
+  if (!needsSubclass(sheet)) return undefined;
+  return defaultSubclass(sheet.classId) ?? subclassesOf(sheet.classId).find((x) => !x.ev && !packExperimental(x))?.id;
+}
+
+/** Etiket için öneri kümeleri: etiket, seçili öğe bu kümelerdeyse gösterilir (oyuncu çıkarınca kalanlarda sürer, kendi eklediğinde yok). */
+export function recoSets(c: SavedCharacter) {
+  const s = c.sheet;
+  let spells: string[] = [];
+  try { spells = recommendedSpells(s).spellNames; } catch { /* sınıf verisi yok */ }
+  const kit = recommendedKit(s.classId);
+  return {
+    skills: recommendedSkills(s.classId, s.level, s.subclassId, backgroundSkills(s)) as string[],
+    spells,
+    armor: kit.armorName, shield: kit.shield, weapons: kit.weapons.map((w) => w.name),
+    subclass: recommendedSubclassId(s),
+    bonuses: recommendedBonuses(s.classId, backgroundById(s.backgroundId)),
+  };
+}
+
+const withoutAsi = (s: CharacterSheet): CharacterSheet => {
+  const slots = advancementSlots(s.classId, s.level, s.subclassId).filter((x) => x.kind === 'asi').map((x) => x.level);
+  const list = (s.advancements ?? []).filter((a) => !(slots.includes(a.level) && !isStyleChoice(a.featId)));
+  return { ...s, advancements: list };
+};
+
+/** Bölümü önerilenle doldurur (mevcut seçimin üstüne yazar). */
+export function applyReco(c: SavedCharacter, part: RecoPart): SavedCharacter {
+  if (part === 'all') return ALL_PARTS.reduce((x, p) => applyReco(x, p), c);
+  const s = c.sheet;
+  switch (part) {
+    case 'bonuses': return { ...c, sheet: { ...s, backgroundBonuses: recommendedBonuses(s.classId, backgroundById(s.backgroundId)) } };
+    case 'skills': return { ...c, classSkills: recommendedSkills(s.classId, s.level, s.subclassId, backgroundSkills(s)) };
+    case 'kit': return withKit({ ...c, sheet: { ...s, offHand: undefined } });
+    case 'spells': return withSpells({ ...c, sheet: { ...s, spellNames: [], spellbook: undefined } });
+    case 'class': return withClassChoices({ ...c, sheet: { ...s, subclassId: undefined, metamagic: [], invocations: [] } });
+    case 'asi': return { ...c, sheet: withRecommendedAsi(withoutAsi(s)) };
+  }
+}
+
+/** Bölümü boşaltır. */
+export function clearReco(c: SavedCharacter, part: RecoPart): SavedCharacter {
+  if (part === 'all') return ALL_PARTS.reduce((x, p) => clearReco(x, p), c);
+  const s = c.sheet;
+  switch (part) {
+    case 'bonuses': return { ...c, sheet: { ...s, backgroundBonuses: {} } };
+    case 'skills': return { ...c, classSkills: [] };
+    case 'kit': return { ...c, sheet: { ...s, armorName: 'Zırhsız', shield: false, weapons: [], offHand: undefined, weaponMasteries: undefined } };
+    case 'spells': return { ...c, sheet: { ...s, spellNames: [], spellbook: undefined } };
+    case 'class': return { ...c, sheet: { ...s, subclassId: undefined, metamagic: [], invocations: [] } };
+    case 'asi': return { ...c, sheet: withoutAsi(s) };
+  }
+}
+
+const pick = (c: SavedCharacter, part: Exclude<RecoPart, 'all'>): unknown => {
+  const s = c.sheet;
+  switch (part) {
+    case 'bonuses': return Object.entries(s.backgroundBonuses ?? {}).filter(([, v]) => v).sort();
+    case 'skills': return [...c.classSkills].sort();
+    case 'kit': return [s.armorName, !!s.shield, (s.weapons ?? []).map((w) => w.name).sort()];
+    case 'spells': return [...(s.spellNames ?? [])].sort();
+    case 'class': return [s.subclassId ?? null, [...(s.metamagic ?? [])].sort(), [...(s.invocations ?? [])].sort()];
+    case 'asi': return JSON.stringify((s.advancements ?? []).filter((a) => !isStyleChoice(a.featId)));
+  }
+};
+/** Bölümde oyuncunun önerilenden farklı (dolu) seçimi var mı: doldururken tek satır onay gerekir. */
+export function recoWouldOverwrite(c: SavedCharacter, part: RecoPart): boolean {
+  const parts = part === 'all' ? ALL_PARTS : [part];
+  return parts.some((p) => {
+    const cur = pick(c, p);
+    const empty = Array.isArray(cur) ? cur.length === 0 || (p === 'kit' && cur[0] === 'Zırhsız' && !cur[1] && (cur[2] as unknown[]).length === 0) || (p === 'class' && cur[0] === null && (cur[1] as unknown[]).length === 0 && (cur[2] as unknown[]).length === 0) : cur === '[]';
+    return !empty && JSON.stringify(cur) !== JSON.stringify(pick(applyReco(c, p), p));
+  });
+}

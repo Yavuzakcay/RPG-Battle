@@ -31,11 +31,15 @@ import { distance, type Offset } from '../rules/hex';
 import { executeMonsterArea, monsterAreaEvents } from './areaAttack';
 import type { BattleEvent, BattleState, Combatant, MultiStep } from './types';
 import multiData from '../../data/multiattack.json';
+import { srdKayit } from './srdD1';
+import { turnKey } from './economy';
+import { ws87On } from './wildShape87Surum';
 import { a2AreaDamage, withA2Extras } from './ridersA2';
 import { castWithoutAction } from './castHook';
 import { possessSpecOf, possessionProblem, possessionStartEvents } from './possession';
 import { effectiveAc, wardSources } from './divine';
 import { afterAttackReactions, corrodeEvents, hitReactions, targetedHookReactions, targetedReactions, type HitOutcome } from './reactions';
+import { formMonsterId } from './shapeMonsterCore';
 
 
 /** Tek bir canavar saldırısını çözer ve olaylarını döndürür. */
@@ -57,8 +61,8 @@ export function monsterAttackEvents(
   const possWhy = poss ? possessionProblem(state, actor, target, poss) : null;
   if (possWhy) return fail(`${atk.name}: ${possWhy}`);
   // Kuyruk 19 (srdK19): Rust Monster Antennae: metal silah aşınması (DEX save; `reactions.ts` `corrodeEvents`).
-  if (globalRule(state, 'srdK19') && actor.monsterId === 'rust-monster' && atk.name === 'Antennae') {
-    return { ok: true, events: corrodeEvents(actor, target, atk.save?.dc ?? 11, rng) };
+  if (globalRule(state, 'srdK19') && formMonsterId(actor) === 'rust-monster' && atk.name === 'Antennae') {
+    return { ok: true, events: corrodeEvents(actor, target, atk.save?.dc ?? 11, rng, state) };
   }
   // Kuyruk 19 (srdK19): Redirect Attack canavar saldırı zarlarında da (yer değiştiren dosta gider).
   if (!atk.save && !opportunity) {
@@ -96,7 +100,7 @@ export function monsterAttackEvents(
       rollTag(rng, { by: target.id }),
     );
     // Kuyruk A2 (sürüm 30+): hasarsız save saldırısına veriden hasar (Yarı-Ejderha nefesi).
-    const a2d = !atk.damageDice ? a2AreaDamage(state, actor.monsterId, atk.name) : undefined;
+    const a2d = !atk.damageDice ? a2AreaDamage(state, formMonsterId(actor), atk.name) : undefined;
     const sDice = atk.damageDice ?? a2d?.dice;
     const sType = atk.damageType ?? a2d?.type;
     const raw = sDice ? rollDice(sDice, rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };
@@ -114,12 +118,12 @@ export function monsterAttackEvents(
       ...(save.extra ? { bonusDice: save.extra } : {}),
     });
     // Süreli etki (Dreadful Glare, Stunning Screech…): save başarısızsa durum.
-    const effect = attackEffect(actor.monsterId, atk.name);
+    const effect = attackEffect(formMonsterId(actor), atk.name);
     if (effect && !save.success && fx.hpAfter > 0) events.push(timedCondition(state, target.id, effect, actor.id, `${actor.name}: ${atk.name}`));
     // Rider durum etkileri (Prone, yakalama, süreli durumlar; attack-riders.json): save başarısızsa.
-    if (!save.success) events.push(...riderConditionEvents(state, actor, { ...target, hp: fx.hpAfter }, riderOf(actor.monsterId, atk.name), atk.name, rng));
+    if (!save.success) events.push(...riderConditionEvents(state, actor, { ...target, hp: fx.hpAfter }, riderOf(formMonsterId(actor), atk.name), atk.name, rng));
     // Kuyruk 19: kalıcı azalmalar (Life Drain save başarısızsa).
-    if (!save.success) events.push(...drainEvents(state, actor, target, riderOf(actor.monsterId, atk.name), adj.amount, atk.damageType ?? '', [], atk.name, rng));
+    if (!save.success) events.push(...drainEvents(state, actor, target, riderOf(formMonsterId(actor), atk.name), adj.amount, atk.damageType ?? '', [], atk.name, rng));
     // Kuyruk K64a: ele geçirme (başarısızsa başlar, başarılıysa bağışıklık; SRD 24 saat = savaş sonuna dek).
     if (poss && fx.hpAfter > 0) events.push(...(save.success
       ? [{ type: 'possession_resisted', possessorId: actor.id, hostId: target.id, label: atk.name } as BattleEvent]
@@ -159,7 +163,7 @@ export function monsterAttackEvents(
     const targetAc = effectiveAc(state, target) + inReach.cover + (atk.ranged && k19i ? Math.max(0, ...(target.effects ?? []).map((e) => e.acRanged ?? 0)) : 0);
     // Ek etkiler (rider, data/attack-riders.json): koşulu tutarsa hasar ifadesi değişir (Bloodied sürü, avantajlı Chimera).
     // Kuyruk A2 (sürüm 30+): veriden ek hasar (Kültist +1 nekrotik, Yarı-Ejderha pençesi).
-    const spec = withA2Extras(state, riderOf(actor.monsterId, atk.name), actor.monsterId, atk.name);
+    const spec = withA2Extras(state, riderOf(formMonsterId(actor), atk.name), formMonsterId(actor), atk.name);
     const swap = riderReplace(spec, mode, actor, target);
     const dmgDice = swap?.dice ?? atk.damageDice;
     const dmgType0 = swap?.type ?? atk.damageType;
@@ -237,7 +241,7 @@ export function monsterAttackEvents(
     // Görev F: Multiattack Defense işareti (hedefe isabet eden bu tur diğer saldırılarında dezavantajlı).
     events.push(...afterAttackMarks(state, actor, target, hit));
     // Süreli etki (Wyvern zehri, Ghoul felci…): isabette, varsa hedefin kurtarma zarından sonra.
-    if (hit) events.push(...attackEffectEvents(state, actor, { ...target, hp: fx.hpAfter }, actor.monsterId, atk.name, rng));
+    if (hit) events.push(...attackEffectEvents(state, actor, { ...target, hp: fx.hpAfter }, formMonsterId(actor), atk.name, rng));
     // Rider durum etkileri (Prone, yakalama, hücum, süreli durumlar; attack-riders.json): isabette.
     if (hit) events.push(...riderConditionEvents(state, actor, { ...target, hp: fx.hpAfter }, spec, atk.name, rng));
   }
@@ -274,16 +278,39 @@ export function executeMonsterAttack(
 export interface MultiSpec {
   total: number; names?: string[]; max?: Record<string, number>; extra?: string[]; extraTwice?: boolean;
   replace?: Array<{ name?: string; spell?: string; level?: number; cost: number }>; heads?: boolean;
+  /** Görev D1 (86+): bu tur yetenek (`mab:<ability>`) kullanıldıysa saldırı sayısı `total` (Clay Golem Hasten). */
+  ifUsed?: { ability: string; total: number };
+  /**
+   * Görev WS87 (87+): "ya … ya da …" Multiattack'ı (Barbed Devil, Medusa): iki ayrı bileşim, ad → sayı. Plansız düğme
+   * yalnız bir seçeneği yapar, plan tek seçeneğe sığmalı. 86 ve altında yok sayılır (eski: hepsi / karışım).
+   */
+  secenekler?: Array<Record<string, number>>;
 }
 export function multiSpecOf(state: BattleState, actor: Combatant): MultiSpec | null {
-  if (!actor.monsterId || !globalRule(state, 'srdK19')) return null;
-  return ((multiData as Record<string, unknown>)[actor.monsterId] as MultiSpec | undefined) ?? null;
+  // Görev WS91: biçimdeyken (Polymorph) biçimin planı.
+  const id = formMonsterId(actor);
+  if (!id || !globalRule(state, 'srdK19')) return null;
+  // Görev D1: plan savaşın kural sürümünde (85 ve altı: Clay Golem hep 3).
+  const rec = (multiData as Record<string, unknown>)[id] as MultiSpec | undefined;
+  const at = rec ? srdKayit('data/multiattack.json', id, rec, state.kuralSurumu ?? 1) : null;
+  if (at?.secenekler && !ws87On(state)) { const { secenekler: _s, ...rest } = at; return rest; }
+  return at;
 }
-/** Hydra: Multiattack'taki ısırık sayısı baş sayısı kadar (Multiple Heads; savaşçıda `heads`). */
-export const multiTotal = (spec: MultiSpec, actor: Combatant): number => (spec.heads ? actor.heads ?? spec.total : spec.total);
+/** Görev WS87 (87+): Multiattack seçenekleri (`srdK19`'dan bağımsız: plansız düğme SRD sayısını yapar). */
+export function multiOptionsAt(state: BattleState, actor: Combatant): Array<Record<string, number>> | null {
+  const id = formMonsterId(actor);
+  if (!id || !ws87On(state)) return null;
+  return ((multiData as Record<string, unknown>)[id] as MultiSpec | undefined)?.secenekler ?? null;
+}
+/** Görev D1: koşullu yetenek (Hasten) bu tur kullanıldı mı (`trait_turn` `mab:<ability>`). */
+const ifUsedNow = (spec: MultiSpec, actor: Combatant, state?: BattleState): boolean =>
+  !!spec.ifUsed && !!state && actor.traitTurns?.[`mab:${spec.ifUsed.ability}`] === turnKey(state);
+/** Hydra: Multiattack'taki ısırık sayısı baş sayısı kadar (Multiple Heads; savaşçıda `heads`). Görev D1: Hasten turunda `ifUsed.total`. */
+export const multiTotal = (spec: MultiSpec, actor: Combatant, state?: BattleState): number =>
+  (spec.heads ? actor.heads ?? spec.total : ifUsedNow(spec, actor, state) ? (spec.ifUsed as { total: number }).total : spec.total);
 
 /** Planın SRD kurallarına uygunluğu (hata metni ya da null). */
-export function multiPlanProblem(spec: MultiSpec, actor: Combatant, plan: MultiStep[]): string | null {
+export function multiPlanProblem(spec: MultiSpec, actor: Combatant, plan: MultiStep[], state?: BattleState): string | null {
   let used = 0;
   const per: Record<string, number> = {};
   const extras: Record<string, number> = {};
@@ -310,13 +337,17 @@ export function multiPlanProblem(spec: MultiSpec, actor: Combatant, plan: MultiS
     }
     return `${st.attack ?? st.spell ?? '?'} bu yaratığın Multiattack'ında yok.`;
   }
-  if (used > multiTotal(spec, actor)) return `Multiattack en çok ${multiTotal(spec, actor)} saldırı.`;
+  if (used > multiTotal(spec, actor, state)) return `Multiattack en çok ${multiTotal(spec, actor, state)} saldırı.`;
+  // Görev WS87 (87+): seçenekli Multiattack'ta bileşim tek seçeneğe sığmalı (Claws + Hurl Flame karışımı yok).
+  if (spec.secenekler && !spec.secenekler.some((o) => Object.entries(per).every(([n, k]) => k <= (o[n] ?? 0)))) {
+    return `Multiattack seçeneklerinden birini seç: ${spec.secenekler.map((o) => Object.entries(o).map(([n, k]) => `${k}× ${n}`).join(' + ')).join(' ya da ')}.`;
+  }
   return null;
 }
 
 /** Planı adım adım yürütür (her adım ayrı hedef; saldıran düşerse durur). */
 function executeMultiPlan(state: BattleState, actor: Combatant, targetId: string, plan: MultiStep[], spec: MultiSpec, rng: Rng): CommandResult {
-  const bad = multiPlanProblem(spec, actor, plan);
+  const bad = multiPlanProblem(spec, actor, plan, state);
   if (bad) return fail(bad);
   const events: BattleEvent[] = [];
   let current = state;
@@ -348,6 +379,17 @@ function executeMultiPlan(state: BattleState, actor: Combatant, targetId: string
   return finish(state, events);
 }
 
+/** Plansız Multiattack'ın seçeneği (87+; seçenek yoksa null): hedefe saldırıları ulaşan ilk seçenek, yoksa ilki. */
+export function multiOptionChoice(state: BattleState, actor: Combatant, target: Combatant | undefined): Record<string, number> | null {
+  const opts = multiOptionsAt(state, actor);
+  if (!opts?.length) return null;
+  const reaches = (o: Record<string, number>) => !!target && Object.keys(o).every((n) => {
+    const a = actor.attacks.find((x) => x.name === n);
+    return !!a && (!!a.area || checkReach(state, actor, target, monsterAttackReach(a)).ok);
+  });
+  return opts.find(reaches) ?? opts[0] ?? null;
+}
+
 export function executeMultiattack(state: BattleState, actor: Combatant, targetId: string, rng: Rng, plan?: MultiStep[]): CommandResult {
   if (!actor.multiattack) return fail('Bu yaratığın Multiattack\'ı yok.');
   const spec = plan?.length ? multiSpecOf(state, actor) : null;
@@ -356,10 +398,18 @@ export function executeMultiattack(state: BattleState, actor: Combatant, targetI
   if ('ok' in first) return first;
   const events: BattleEvent[] = [];
   let current = state;
+  // Görev D1 (86+): plansız Multiattack'ta da Hasten turunda ek saldırı (Clay Golem: 2 → 3).
+  const sp = multiSpecOf(state, actor);
+  const plus = sp && ifUsedNow(sp, actor, state) ? (sp.ifUsed as { total: number }).total - sp.total : 0;
+  const plusAt = plus > 0 ? actor.attacks.findIndex((a) => a.name === sp?.names?.[0]) : -1;
+  // Görev WS87 (87+): "ya … ya da …" Multiattack'ta tek seçenek (Barbed Devil 4 → 2, Medusa 6 → 3): hedefe hepsi ulaşan
+  // ilk seçenek, yoksa ilk seçenek.
+  const opt = multiOptionChoice(state, actor, first);
   for (let i = 0; i < actor.attacks.length; i++) {
     const atk = actor.attacks[i];
     if (!atk || atk.recharge) continue;
-    for (let k = 0; k < atk.repeat; k++) {
+    const times = opt ? opt[atk.name] ?? 0 : atk.repeat + (i === plusAt ? plus : 0);
+    for (let k = 0; k < times; k++) {
       const t = current.combatants[targetId];
       // Tepkiyle (Hellish Rebuke, Retaliation) düşen saldıran devam edemez.
       if ((current.combatants[actor.id]?.hp ?? 0) <= 0) break;

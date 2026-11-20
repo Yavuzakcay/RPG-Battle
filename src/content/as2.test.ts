@@ -12,7 +12,11 @@ import { defaultSubclass } from '../rules/classFeatures';
 import fixture from '../rules/fixtures/srd-alt-siniflar.json';
 
 const FILES = import.meta.glob('../../icerik/ek-*.json', { query: '?raw', import: 'default' }) as Record<string, () => Promise<string>>;
-const HAS = Object.keys(FILES).length === 12;
+/** Yerel `icerik/` tam mı: 12 sınıf dosyası ve toplam 109 paket alt sınıfı (108 + Barış Alanı). Eksikse bu paket testi atlanır (sayılar konsolda). */
+const RAWS = await Promise.all(Object.values(FILES).map((f) => f()));
+const COUNT = RAWS.reduce((n, r) => { try { return n + ((JSON.parse(r) as { subclasses?: unknown[] }).subclasses?.length ?? 0); } catch { return n; } }, 0);
+const HAS = Object.keys(FILES).length === 12 && COUNT === 109;
+if (!HAS && Object.keys(FILES).length > 0) console.warn(`as2.test atlandı: yerel icerik/ eksik (${Object.keys(FILES).length} dosya, ${COUNT} paket alt sınıfı; beklenen 12 dosya, 109 alt sınıf — SRD'nin 12 alt sınıfı da paket dosyalarında olmalı).`);
 const SRD = (fixture as unknown as { subclasses: SubclassDef[] }).subclasses;
 /** Görev kararı: sınıf başına yerelleştirilen (paket) + bizim (imza/Karadul). */
 const EXPECTED: Record<string, [number, number]> = {

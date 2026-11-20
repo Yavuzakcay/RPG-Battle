@@ -85,7 +85,7 @@ Mevcut Klasik görsellerle uyumlu olmalı:
 | Görsel | Stil |
 |---|---|
 | `public/maps/orman/orman-yol.webp` | ağaç tepeleri, çalılar, dere |
-| `public/maps/kale/kale-klasik.webp` | taş sur, avlu, sandık ve variller |
+| `public/maps/kale/kale-avlu.webp` | taş sur, avlu, sandık ve variller |
 | `public/maps/yeralti/yeralti-magara.webp` | koyu mağara, camgöbeği/mor kristal ve mantar ışıkları |
 
 Gemini'ye stil örneği olarak haritanın Klasik eşini verin; prompt dosyası hangisini vereceğinizi yazar. Aynalanabilir haritalarda (Orman yolu, Mağara) oyun görseli yatay çevirebilir; bu yüzden yönlü işaret ya da yazı olmamalı.

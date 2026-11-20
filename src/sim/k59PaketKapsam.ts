@@ -64,7 +64,7 @@ for (const [path, pack] of Object.entries(FIXTURES).sort(([a], [b]) => a.localeC
         const sc = SCENARIOS.find((s) => s.id === ['col', 'kale', 'magara', 'orman'][seed % 4]);
         const foes: Combatant[] = [];
         for (const [id, n] of Object.entries(sc ? enemiesAt(sc, Math.min(20, level)) : {})) for (let i = 1; i <= n && foes.length < 6; i++) foes.push(combatantFromMonster(getMonster(id), { id: `${id}-${i}`, name: id }));
-        const session = createMapBattle([...pcs, ...foes], { mapId: 'ortamlar-diyari', variantId: 'gunduz', mirrored: false, houseRules: ALL_HOUSE }, rng);
+        const session = createMapBattle([...pcs, ...foes], { mapId: 'kale-avlu', variantId: 'gunduz', mirrored: false, houseRules: ALL_HOUSE }, rng);
         const r = execute(session.state, { type: 'start_battle' }, { playerId: 'gm', isGm: true }, rng);
         if (!r.ok) throw new Error(r.error);
         const startJson = JSON.stringify(r.state);

@@ -59,7 +59,6 @@ def _duvar(ft, oda=None, sur=False):
 
 _KALE_ODALAR = (15, [(22, 4, 24, 6), (22, 10, 24, 12)])
 ONAYLI: dict = {
-    'kale': _duvar(30, sur=True),
     'kale-baskini': _duvar(30, _KALE_ODALAR, sur=True),
     'kale-avlu': _duvar(30, _KALE_ODALAR, sur=True),
     'kale-ic-avlu': _duvar(30, sur=True),
@@ -81,12 +80,10 @@ ONAYLI: dict = {
     'volkanik-demirhane': _duvar(20),
     'isinlanma-salonu': _duvar(20),
     'lav-tapinagi': _duvar(20),
-    'ortamlar-diyari': _duvar(20),
 }
 
 # --- 3. Öneri: 23 duvarlı açık haritanın kategorisi (duvar boyu, kapalı alan tavanı, gerekçe) -------------------------------
 KATEGORI = {
-    'kale': ('kale', 30, 15, 'kale suru; iç bina odaları'),
     'kale-baskini': ('kale', 30, 15, 'kale suru ve kuleler; iç bina odaları'),
     'kale-avlu': ('kale', 30, 15, 'avlu suru; avlu çevresi binalar'),
     'kale-ic-avlu': ('kale', 30, 15, 'kale iç avlu suru; bina odaları'),
@@ -108,7 +105,6 @@ KATEGORI = {
     'isinlanma-salonu': ('acik-ustlu', 20, None, 'açık üstlü salon (K68b kullanıcı kararı); duvar varsayılan'),
     'lav-tapinagi': ('acik-ustlu', 20, None, 'açık üstlü tapınak (K68b kullanıcı kararı); duvar varsayılan'),
     'volkanik-demirhane': ('acik-ustlu', 20, None, 'açık üstlü demirhane (K68b kullanıcı kararı); duvar varsayılan'),
-    'ortamlar-diyari': ('vitrin', 20, None, 'vitrin/test haritası; varsayılan'),
 }
 
 AXIAL = [(1, 0), (1, -1), (0, -1), (-1, 0), (-1, 1), (0, 1)]

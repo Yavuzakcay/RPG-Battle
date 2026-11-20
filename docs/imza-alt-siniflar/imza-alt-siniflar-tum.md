@@ -126,7 +126,7 @@ Yükü paylaşan bir manastır: dostlarını birbirine bağlar, acıyı da cesar
 - **Teselli Nöbeti (2):** Bağlı dostların geçici can ve biraz cesaret kazanır.
 - **Birlik Can Havuzu (6):** Bağlı dostların canı tek bir havuzda toplanır, hasar havuzdan düşer. Dikkat: havuz biterse bağlı herkes ölür.
 - **Ortak Şifa (8):** Birini iyileştirince diğer bağlı dostlar da biraz iyileşir.
-- **Yıkılmaz Birlik (17):** Havuz bitecekken ayakta kalır ve herkesin cesareti tazelenir.
+- **Barış Azizi (17):** Havuz bitecekken ayakta kalır ve herkesin cesareti tazelenir.
 
 ## Warlock: Astrolog / Astrologer (taslak v1, onay bekliyor)
 Yıldızlarla sözleşmeli yazgı okuyucusu: dostlarına uğur, düşmanlarına uğursuzluk getirir. Açık gökyüzünde güçlü, kapalı yerde zayıf.

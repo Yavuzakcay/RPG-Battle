@@ -68,7 +68,8 @@ async function pickMap(page, id) {
   }
   await page.click(`[data-map="${id}"]`);
 }
-await page.click('button.role >> nth=1');
+// Görev D3: OD1'den beri Game Master kartı "Oda kur"u açar; harita seçiciye hızlı savaş kartıyla (KH1 `check:harita` gibi).
+await page.click('[data-testid="home-quick"]');
 await wait(1500);
 d = await debug();
 check('Game Master kurulumunda yalnızca menü müziği', d.playing.join() === 'menu:menu-dark', d);

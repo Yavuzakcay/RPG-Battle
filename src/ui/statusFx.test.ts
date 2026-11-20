@@ -122,7 +122,7 @@ describe('jeton filtreleri', () => {
 
 describe('eski kayıtlar', () => {
   it('kayıt sürümü değişmedi (18); eski kayıttaki durumlar efekt ve filtreye dönüşür', () => {
-    expect(SAVE_VERSION).toBe(22); // Kuyruk 43: eşya kullanımı ve dikkat dağıtma olayları (item_used, distracted) için 22
+    expect(SAVE_VERSION).toBe(24); // Hazırla (Ready) olayları için 24 (Kuyruk 43: item_used, distracted için 22–23)
     const state = setup('Düz', { A: { conditions: ['Paralyzed', 'Charmed'] }, B: { conditions: ['Petrified'] } });
     const r = restoreSession(JSON.stringify({ version: 12, savedAt: '', events: [{ type: 'battle_started', state }] }));
     expect(r.ok).toBe(true);

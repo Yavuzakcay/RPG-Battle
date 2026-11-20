@@ -1,7 +1,23 @@
 # Paket bütçesi (Kuyruk K57)
 
 Ana parça (`dist/assets/index-*.js`, giriş ekranının yüklediği tek JavaScript dosyası) sınırı `data/paket-siniri.json`
-`anaParcaKb`; `npm run build` sonunda `scripts/paket-siniri.mjs` denetler. K57'de sınır **500 → 420 kB**.
+`anaParcaKb`; `npm run build` sonunda `scripts/paket-siniri.mjs` denetler. K57'de sınır **500 → 420 kB**; Kuyruk KQ4 PB1'de **420 → 450 kB**; 2026-11-19 kullanıcı kararıyla (2026-11-18) **450 → 500 kB** (geçmiş: 440 → 500 → 420 → 450 → 500; geçerli 500). Yeni kod yine tembel parçalara girer.
+
+## Serüven öncesi (2026-11-20): 462,63 → 436,24 kB
+
+Geçerli sınır `data/paket-siniri.json` **500 kB** (build denetler; CLAUDE.md'deki 420 kB K57'den kalma eski değerdi, düzeltildi).
+Ölçüm `scripts/paket-siniri.mjs` (dosya baytı / 1000); Vite çıktısında 457,64 → 431,27 kB (gzip 151,8 → 143,3 kB).
+
+| Taşınan | Ana parçadan çıkan (işlenmiş bayt) | Nereye |
+|---|---|---|
+| `data/efekt-baglama.json` + `efekt-sprites.json` + `ui/statusFx.ts` | 18 606 + 2 348 + 4 573 | `statusFx-*.js` (savaş). Tek bağ `wingAnim.ts → statusFx.MAX_ANIMATED` idi; sabit `ui/effectsSetting.ts`'e taşındı. |
+| `data/dragonborn-kanat-kok.json` + `kanat-esleme.json` | 9 674 + 3 299 | `dragonborn-kanat-kok-*.js` 7,4 kB + `kanat-esleme-*.js` 4,0 kB; `ui/wingData.ts` `loadWingData` (sınıf verisiyle birlikte yüklenir). |
+| `data/aciklamalar-tr.json` `canavar` (≈214 kB ham) | — (zaten tembeldi) | `aciklamalar-tr-canavar-*.js` 199 kB yalnız Dungeondex'te; sınıf verisiyle gelen `aciklamalar-tr-*.js` 298 → 99 kB. |
+
+Ana parçanın en büyükleri (sonra): react-dom 133,4 k · `strings.ts` 75,4 k · `Screens.tsx` 33,4 k · `races.json` 21,6 k ·
+`builder.ts` 18,8 k · `App.tsx` 18,5 k · `classFeatures.ts` 14,1 k · `ses.json` 13,9 k · `Avatar.tsx` 13,1 k · `tint.ts` 11,2 k.
+
+## K57
 
 | | Önce (main 459ef5d + K57 Görev 1–2) | Sonra |
 |---|---|---|

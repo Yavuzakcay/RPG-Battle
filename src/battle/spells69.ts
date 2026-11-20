@@ -24,6 +24,8 @@ import { pickArea } from './areaAttack';
 import { timedCondition } from './durations';
 import { combatantFromMonster } from './create';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
+import { matrisOn } from './matrisSurum';
+import { lateSummonEvents } from './monsterSetup';
 
 type M = Spell['mechanics'] & {
   extraTargets?: number; extraWithinFt?: number; dustAtZero?: boolean; notBelowOne?: boolean; maxHpDrain?: boolean; cures?: string[];
@@ -77,8 +79,12 @@ export function after69(before: BattleState, state: BattleState, actor: Combatan
   // Chain Lightning: birincil hedefin 30 ft'indeki en çok 3 düşman (aynı DC) save yapar.
   if (m.extraTargets && target.id) {
     const first = cur.combatants[target.id];
+    // Mekanik matris B12 (sürüm 83+): SRD 5.2.1 "One additional bolt leaps from the first target to another target for each
+    // spell slot level above 6." Yapımın slot seviyesi `slot_spent` olayından. 82 ve altı: hep 3.
+    const castLevel = events.find((e): e is Extract<BattleEvent, { type: 'slot_spent' }> => e.type === 'slot_spent' && e.actorId === actor.id)?.level ?? spell.level;
+    const bolts = m.extraTargets + (matrisOn(before) ? Math.max(0, castLevel - spell.level) : 0);
     const others = first ? Object.values(cur.combatants).filter((c) => c.id !== first.id && c.id !== actor.id && c.side !== actor.side && c.hp > 0 && ft(first, c) <= (m.extraWithinFt ?? 30))
-      .slice(0, m.extraTargets) : [];
+      .slice(0, bolts) : [];
     const fake: Combatant = { ...actor, attacks: [{ name: spell.name, bonus: 0, damageDice: m.damage, damageType: m.damageType, save: { ability: m.save as 'dex', dc: actor.spellSaveDc ?? 15, halfOnSave: true }, repeat: 0, ranged: true, range: [600, 600], text: spell.name } as unknown as Combatant['attacks'][number]], rechargeUsed: [] };
     for (const o of others) { const r = monsterAttackEvents(cur, fake, o, 0, rng); if (r.ok) add(r.events); }
   }
@@ -91,8 +97,9 @@ export function after69(before: BattleState, state: BattleState, actor: Combatan
   if (m.riseZombie) for (const e of [...out]) if (e.type === 'save_resolved' && e.targetHpAfter === 0) {
     const t = cur.combatants[e.targetId];
     if (!t || t.creatureType !== 'humanoid' || !t.pos) continue;
-    const z = combatantFromMonster(getMonster('zombie'), { id: `${t.id}-zombie`, name: `Zombi (${t.name})` });
-    add([{ type: 'summoned', ownerId: actor.id, spell: spell.name, combatant: { ...z, side: actor.side, pos: t.pos, initiative: actor.initiative, summon: { by: actor.id, spellId: spell.id, spell: spell.name, level: spell.level, turn: 'after-owner' } }, index: cur.order.indexOf(actor.id) + 1 }]);
+    const z = combatantFromMonster(getMonster('zombie'), { id: `${t.id}-zombie`, name: `Zombi (${t.name})`, kuralSurumu: cur.kuralSurumu ?? 1 });
+    // Görev D2 (88+): zombi savaş başındaki gibi canavar özellikleri ve yetenekleriyle (Zombie: Exhaustion/Poisoned bağışıklığı).
+    add(lateSummonEvents(cur, { type: 'summoned', ownerId: actor.id, spell: spell.name, combatant: { ...z, side: actor.side, pos: t.pos, initiative: actor.initiative, summon: { by: actor.id, spellId: spell.id, spell: spell.name, level: spell.level, turn: 'after-owner' } }, index: cur.order.indexOf(actor.id) + 1 }));
   }
   // Heal ve Power Word Heal: durumlar biter.
   if (m.cures && m.kind === 'heal') for (const e of [...out]) if (e.type === 'healed') {

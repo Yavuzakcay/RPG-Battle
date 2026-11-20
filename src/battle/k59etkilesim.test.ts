@@ -1,7 +1,7 @@
 /**
  * Kuyruk K59 Görev 2: sistemler arası etkileşimler (yeni mekanik yok; mevcut davranış testle sabitlenir).
  *  1. Moral Çökmüş × Birlik can havuzu × Ortak Can (paket ilkeli): havuza düşen hasar, Omuz Ver'i çökmüş veremez,
- *     havuzdaki dost ikinci havuza katılmaz, Yıkılmaz Birlik bir kez, havuz biterse çökmüş de ölür.
+ *     havuzdaki dost ikinci havuza katılmaz, Barış Azizi bir kez, havuz biterse çökmüş de ölür.
  *  2. Karadul Örümcek Biçimi × aura: geçici can yığılmaz (yüksek olan), biçim aura canıyla sürer, bırakınca geçici can
  *     sıfır; pasif kurtulma aurası biçimde de geçer.
  *  3. Işınlanma × geçici engel × yüzey: engel altıgenine ışınlanılamaz, görüşü kesen engelin arkasına görüş isteyen
@@ -94,14 +94,14 @@ describe('K59 G2.1: Moral Çökmüş × Birlik can havuzu × Ortak Can', () => {
     expect(members(x.state, fresh).some((id) => inPool.has(id))).toBe(false);
     for (const id of inPool) expect(x.state.combatants[id]!.poolId).toBe(r.state.combatants[id]!.poolId);
   });
-  it('havuz 0: Yıkılmaz Birlik bir kez tutar; sonra çökmüş üye dahil hepsi ölür; ölü havuz diğer havuza dokunmaz', () => {
+  it('havuz 0: Barış Azizi bir kez tutar; sonra çökmüş üye dahil hepsi ölür; ölü havuz diğer havuza dokunmaz', () => {
     const r = setup();
     const pool = Object.values(r.state.hpPools ?? {})[0]!;
     let s = applyEvents(r.state, [{ type: 'effect_added', targetId: 'C', effect: COLLAPSE }]);
     s = applyEvents(s, [hit('C', 999)]);
     expect(s.hpPools![pool.id]!.hp).toBeGreaterThan(0);
     expect(s.combatants.C!.life).not.toBe('dead');
-    // Yıkılmaz Birlik üyelerin Motivasyonunu doldurur: komut sonunda çökme biter.
+    // Barış Azizi üyelerin Motivasyonunu doldurur: komut sonunda çökme biter.
     expect(s.combatants.C!.moral).toBe(s.combatants.C!.moralMax);
     expect(moraleAfterEvents(r.state, s, []).some((e) => e.type === 'effect_ended' && e.targetId === 'C' && e.effectId === 'moral:cokmus')).toBe(true);
     s = applyEvents(s, [hit('D', 999)]);

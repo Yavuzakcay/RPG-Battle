@@ -1,0 +1,552 @@
+{
+ "not": "scripts/tiefling-kalan.py",
+ "parametre": {
+  "tonFark": 15,
+  "kromaAlt": 28,
+  "kromaOran": 0.55,
+  "Lmin": 18,
+  "minBilesen": 40,
+  "delik": 12,
+  "dusukKroma": 25,
+  "kiyafetPx": 200,
+  "kiyafetOran": 0.1,
+  "tonDisiPx": 150,
+  "koyuTonFark": 22,
+  "koyuKromaMin": 6,
+  "yariOran": 0.3,
+  "yariPx": 250,
+  "griKroma": 15,
+  "koyuL": 25,
+  "koyuPay": 0.5,
+  "kiyafetPxSiki": 300,
+  "kiyafetOranSiki": 0.15,
+  "tonDisiSiki": 300
+ },
+ "kromaKomsu": 32,
+ "elleMaske": {
+  "tiefling-erkek-ranger-ID9": {
+   "tonH": 14,
+   "tenKroma": 48.6,
+   "simdikiMaske": 5236,
+   "oneri": 2675,
+   "cikan": 2561,
+   "eklenen": 0,
+   "elleKutu": {
+    "haric": [
+     [
+      75,
+      100,
+      185,
+      152
+     ],
+     [
+      170,
+      168,
+      232,
+      202
+     ]
+    ],
+    "tonHaric": [
+     [
+      88,
+      12,
+      190,
+      56
+     ]
+    ]
+   }
+  },
+  "tiefling-erkek-wizard-GR": {
+   "tonH": 359,
+   "tenKroma": 41.7,
+   "simdikiMaske": 10421,
+   "oneri": 2610,
+   "cikan": 8082,
+   "eklenen": 271,
+   "elleKutu": null
+  },
+  "tiefling-male-rogue": {
+   "tonH": 356,
+   "tenKroma": 45.1,
+   "simdikiMaske": 4420,
+   "oneri": 1955,
+   "cikan": 2625,
+   "eklenen": 160,
+   "elleKutu": null
+  }
+ },
+ "kiyafetListesi": [
+  {
+   "jeton": "tiefling-erkek-wizard-GR",
+   "maske": 10421,
+   "dusukKromaKiyafet": 7707,
+   "oran": 0.74,
+   "tonDisi": 82,
+   "tonH": 359
+  },
+  {
+   "jeton": "tiefling-kadin-bard-ID3",
+   "maske": 7389,
+   "dusukKromaKiyafet": 2635,
+   "oran": 0.36,
+   "tonDisi": 398,
+   "tonH": 4
+  },
+  {
+   "jeton": "tiefling-kadin-sorcerer-SC-5",
+   "maske": 3156,
+   "dusukKromaKiyafet": 2942,
+   "oran": 0.93,
+   "tonDisi": 0,
+   "tonH": 289
+  },
+  {
+   "jeton": "tiefling-erkek-bard-ID3",
+   "maske": 7979,
+   "dusukKromaKiyafet": 2827,
+   "oran": 0.35,
+   "tonDisi": 106,
+   "tonH": 357
+  },
+  {
+   "jeton": "tiefling-kadin-rogue-ID3",
+   "maske": 2318,
+   "dusukKromaKiyafet": 2191,
+   "oran": 0.95,
+   "tonDisi": 0,
+   "tonH": 309
+  },
+  {
+   "jeton": "tiefling-erkek-rogue-ID3",
+   "maske": 8815,
+   "dusukKromaKiyafet": 1218,
+   "oran": 0.14,
+   "tonDisi": 886,
+   "tonH": 351
+  },
+  {
+   "jeton": "tiefling-kadin-paladin-ID3",
+   "maske": 4438,
+   "dusukKromaKiyafet": 1905,
+   "oran": 0.43,
+   "tonDisi": 15,
+   "tonH": 350
+  },
+  {
+   "jeton": "tiefling-kadin-sorcerer-SC-6",
+   "maske": 4695,
+   "dusukKromaKiyafet": 1301,
+   "oran": 0.28,
+   "tonDisi": 597,
+   "tonH": 357
+  },
+  {
+   "jeton": "tiefling-kadin-warlock-WL-4",
+   "maske": 3221,
+   "dusukKromaKiyafet": 1752,
+   "oran": 0.54,
+   "tonDisi": 24,
+   "tonH": 35
+  },
+  {
+   "jeton": "tiefling-kadin-fighter-ID7",
+   "maske": 4007,
+   "dusukKromaKiyafet": 1612,
+   "oran": 0.4,
+   "tonDisi": 37,
+   "tonH": 354
+  },
+  {
+   "jeton": "tiefling-kadin-warlock-WL-11",
+   "maske": 4981,
+   "dusukKromaKiyafet": 0,
+   "oran": 0.0,
+   "tonDisi": 1430,
+   "tonH": 4
+  },
+  {
+   "jeton": "tiefling-kadin-warlock-WL-9",
+   "maske": 4898,
+   "dusukKromaKiyafet": 0,
+   "oran": 0.0,
+   "tonDisi": 1346,
+   "tonH": 7
+  },
+  {
+   "jeton": "tiefling-kadin-barbarian-ID3",
+   "maske": 4717,
+   "dusukKromaKiyafet": 1089,
+   "oran": 0.23,
+   "tonDisi": 248,
+   "tonH": 351
+  },
+  {
+   "jeton": "tiefling-kadin-monk-ID2",
+   "maske": 3704,
+   "dusukKromaKiyafet": 1151,
+   "oran": 0.31,
+   "tonDisi": 73,
+   "tonH": 3
+  },
+  {
+   "jeton": "tiefling-kadin-bard-ID1",
+   "maske": 4206,
+   "dusukKromaKiyafet": 1144,
+   "oran": 0.27,
+   "tonDisi": 76,
+   "tonH": 2
+  },
+  {
+   "jeton": "tiefling-erkek-warlock-WL-11",
+   "maske": 4506,
+   "dusukKromaKiyafet": 552,
+   "oran": 0.12,
+   "tonDisi": 616,
+   "tonH": 0
+  },
+  {
+   "jeton": "tiefling-erkek-fighter-ID2",
+   "maske": 1449,
+   "dusukKromaKiyafet": 1156,
+   "oran": 0.8,
+   "tonDisi": 0,
+   "tonH": 288
+  },
+  {
+   "jeton": "tiefling-kadin-warlock-WL-5",
+   "maske": 5307,
+   "dusukKromaKiyafet": 0,
+   "oran": 0.0,
+   "tonDisi": 1121,
+   "tonH": 6
+  },
+  {
+   "jeton": "tiefling-kadin-monk-ID8",
+   "maske": 3159,
+   "dusukKromaKiyafet": 1086,
+   "oran": 0.34,
+   "tonDisi": 21,
+   "tonH": 356
+  },
+  {
+   "jeton": "tiefling-kadin-warlock-WL-8",
+   "maske": 1763,
+   "dusukKromaKiyafet": 994,
+   "oran": 0.56,
+   "tonDisi": 111,
+   "tonH": 28
+  },
+  {
+   "jeton": "tiefling-erkek-warlock-WL-9",
+   "maske": 4655,
+   "dusukKromaKiyafet": 41,
+   "oran": 0.01,
+   "tonDisi": 1023,
+   "tonH": 4
+  },
+  {
+   "jeton": "tiefling-erkek-paladin-ID7",
+   "maske": 4169,
+   "dusukKromaKiyafet": 0,
+   "oran": 0.0,
+   "tonDisi": 1043,
+   "tonH": 347
+  },
+  {
+   "jeton": "tiefling-kadin-warlock-WL-2",
+   "maske": 4950,
+   "dusukKromaKiyafet": 0,
+   "oran": 0.0,
+   "tonDisi": 1017,
+   "tonH": 3
+  },
+  {
+   "jeton": "tiefling-kadin-monk-ID1",
+   "maske": 4549,
+   "dusukKromaKiyafet": 947,
+   "oran": 0.21,
+   "tonDisi": 55,
+   "tonH": 3
+  },
+  {
+   "jeton": "tiefling-kadin-bard-ID7",
+   "maske": 4487,
+   "dusukKromaKiyafet": 966,
+   "oran": 0.22,
+   "tonDisi": 22,
+   "tonH": 1
+  },
+  {
+   "jeton": "tiefling-kadin-monk-ID7",
+   "maske": 4358,
+   "dusukKromaKiyafet": 934,
+   "oran": 0.21,
+   "tonDisi": 50,
+   "tonH": 4
+  },
+  {
+   "jeton": "tiefling-erkek-warlock-WL-7",
+   "maske": 4065,
+   "dusukKromaKiyafet": 30,
+   "oran": 0.01,
+   "tonDisi": 923,
+   "tonH": 5
+  },
+  {
+   "jeton": "tiefling-female-rogue",
+   "maske": 2937,
+   "dusukKromaKiyafet": 946,
+   "oran": 0.32,
+   "tonDisi": 6,
+   "tonH": 354
+  },
+  {
+   "jeton": "tiefling-kadin-warlock-WL-3",
+   "maske": 4594,
+   "dusukKromaKiyafet": 501,
+   "oran": 0.11,
+   "tonDisi": 408,
+   "tonH": 354
+  },
+  {
+   "jeton": "tiefling-erkek-warlock-WL-5",
+   "maske": 4895,
+   "dusukKromaKiyafet": 0,
+   "oran": 0.0,
+   "tonDisi": 899,
+   "tonH": 2
+  },
+  {
+   "jeton": "tiefling-kadin-warlock-WL-1",
+   "maske": 4603,
+   "dusukKromaKiyafet": 0,
+   "oran": 0.0,
+   "tonDisi": 881,
+   "tonH": 4
+  },
+  {
+   "jeton": "tiefling-kadin-warlock-WL-7",
+   "maske": 3430,
+   "dusukKromaKiyafet": 724,
+   "oran": 0.21,
+   "tonDisi": 156,
+   "tonH": 7
+  },
+  {
+   "jeton": "tiefling-kadin-paladin-ID5",
+   "maske": 3938,
+   "dusukKromaKiyafet": 72,
+   "oran": 0.02,
+   "tonDisi": 770,
+   "tonH": 356
+  },
+  {
+   "jeton": "tiefling-kadin-paladin-ID7",
+   "maske": 3299,
+   "dusukKromaKiyafet": 27,
+   "oran": 0.01,
+   "tonDisi": 812,
+   "tonH": 355
+  },
+  {
+   "jeton": "tiefling-kadin-wizard-WZ-B5",
+   "maske": 3901,
+   "dusukKromaKiyafet": 0,
+   "oran": 0.0,
+   "tonDisi": 805,
+   "tonH": 358
+  },
+  {
+   "jeton": "tiefling-kadin-paladin-ID6",
+   "maske": 3278,
+   "dusukKromaKiyafet": 25,
+   "oran": 0.01,
+   "tonDisi": 769,
+   "tonH": 356
+  },
+  {
+   "jeton": "tiefling-female-warlock",
+   "maske": 3922,
+   "dusukKromaKiyafet": 165,
+   "oran": 0.04,
+   "tonDisi": 608,
+   "tonH": 356
+  },
+  {
+   "jeton": "tiefling-erkek-ranger-ID9",
+   "maske": 5236,
+   "dusukKromaKiyafet": 0,
+   "oran": 0.0,
+   "tonDisi": 759,
+   "tonH": 14
+  },
+  {
+   "jeton": "tiefling-kadin-paladin-ID10",
+   "maske": 4186,
+   "dusukKromaKiyafet": 424,
+   "oran": 0.1,
+   "tonDisi": 324,
+   "tonH": 1
+  },
+  {
+   "jeton": "tiefling-kadin-rogue-ID2",
+   "maske": 4386,
+   "dusukKromaKiyafet": 410,
+   "oran": 0.09,
+   "tonDisi": 338,
+   "tonH": 357
+  },
+  {
+   "jeton": "tiefling-kadin-rogue-ID10",
+   "maske": 4736,
+   "dusukKromaKiyafet": 281,
+   "oran": 0.06,
+   "tonDisi": 465,
+   "tonH": 356
+  },
+  {
+   "jeton": "tiefling-female-paladin",
+   "maske": 3457,
+   "dusukKromaKiyafet": 414,
+   "oran": 0.12,
+   "tonDisi": 316,
+   "tonH": 360
+  },
+  {
+   "jeton": "tiefling-kadin-wizard-WZ-A3",
+   "maske": 3561,
+   "dusukKromaKiyafet": 580,
+   "oran": 0.16,
+   "tonDisi": 147,
+   "tonH": 3
+  },
+  {
+   "jeton": "tiefling-female-sorcerer",
+   "maske": 4341,
+   "dusukKromaKiyafet": 93,
+   "oran": 0.02,
+   "tonDisi": 610,
+   "tonH": 356
+  },
+  {
+   "jeton": "tiefling-kadin-wizard-WZ-A2",
+   "maske": 4638,
+   "dusukKromaKiyafet": 66,
+   "oran": 0.01,
+   "tonDisi": 621,
+   "tonH": 0
+  },
+  {
+   "jeton": "tiefling-kadin-bard-ID4",
+   "maske": 3650,
+   "dusukKromaKiyafet": 574,
+   "oran": 0.16,
+   "tonDisi": 107,
+   "tonH": 3
+  },
+  {
+   "jeton": "tiefling-kadin-barbarian-ID7",
+   "maske": 3327,
+   "dusukKromaKiyafet": 551,
+   "oran": 0.17,
+   "tonDisi": 108,
+   "tonH": 356
+  },
+  {
+   "jeton": "tiefling-kadin-wizard-WZ-B6",
+   "maske": 4158,
+   "dusukKromaKiyafet": 0,
+   "oran": 0.0,
+   "tonDisi": 612,
+   "tonH": 359
+  },
+  {
+   "jeton": "tiefling-erkek-warlock-WL-1",
+   "maske": 4027,
+   "dusukKromaKiyafet": 43,
+   "oran": 0.01,
+   "tonDisi": 564,
+   "tonH": 3
+  },
+  {
+   "jeton": "tiefling-kadin-rogue-ID9",
+   "maske": 4032,
+   "dusukKromaKiyafet": 132,
+   "oran": 0.03,
+   "tonDisi": 475,
+   "tonH": 358
+  },
+  {
+   "jeton": "tiefling-erkek-warlock-WL-2",
+   "maske": 5096,
+   "dusukKromaKiyafet": 27,
+   "oran": 0.01,
+   "tonDisi": 552,
+   "tonH": 0
+  },
+  {
+   "jeton": "tiefling-kadin-rogue-ID6",
+   "maske": 4520,
+   "dusukKromaKiyafet": 72,
+   "oran": 0.02,
+   "tonDisi": 487,
+   "tonH": 358
+  },
+  {
+   "jeton": "tiefling-kadin-wizard-WZ-A1",
+   "maske": 4465,
+   "dusukKromaKiyafet": 0,
+   "oran": 0.0,
+   "tonDisi": 548,
+   "tonH": 0
+  },
+  {
+   "jeton": "tiefling-kadin-rogue-ID1",
+   "maske": 3770,
+   "dusukKromaKiyafet": 227,
+   "oran": 0.06,
+   "tonDisi": 313,
+   "tonH": 358
+  },
+  {
+   "jeton": "tiefling-kadin-wizard-WZ-B3",
+   "maske": 3761,
+   "dusukKromaKiyafet": 0,
+   "oran": 0.0,
+   "tonDisi": 534,
+   "tonH": 358
+  },
+  {
+   "jeton": "tiefling-kadin-paladin-ID9",
+   "maske": 3255,
+   "dusukKromaKiyafet": 100,
+   "oran": 0.03,
+   "tonDisi": 430,
+   "tonH": 359
+  },
+  {
+   "jeton": "tiefling-kadin-wizard-WZ-B2",
+   "maske": 2979,
+   "dusukKromaKiyafet": 0,
+   "oran": 0.0,
+   "tonDisi": 393,
+   "tonH": 359
+  },
+  {
+   "jeton": "tiefling-erkek-wizard-WZ-A8",
+   "maske": 4034,
+   "dusukKromaKiyafet": 0,
+   "oran": 0.0,
+   "tonDisi": 321,
+   "tonH": 360
+  },
+  {
+   "jeton": "tiefling-erkek-fighter-ID4",
+   "maske": 4811,
+   "dusukKromaKiyafet": 0,
+   "oran": 0.0,
+   "tonDisi": 314,
+   "tonH": 13
+  }
+ ]
+}

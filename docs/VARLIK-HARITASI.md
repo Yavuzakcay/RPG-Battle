@@ -13,12 +13,11 @@
 | Çöl (`col`) | 6 | 11 | 0 |
 | Dağ (`dag`) | 5 | 10 | 0 |
 | Deniz (`deniz`) | 2 | 4 | 0 |
-| Kale (`kale`) | 3 | 4 | 0 |
+| Kale (`kale`) | 2 | 2 | 0 |
 | Orman (`orman`) | 7 | 12 | 0 |
 | Şehir (`sehir`) | 2 | 3 | 0 |
 | Yeraltı (`yeralti`) | 3 | 5 | 0 |
 | Volkan (`volkan`) | 5 | 5 | 0 |
-| Vitrin (`vitrin`) | 1 | 1 | 0 |
 | Derinlikler (`derinlikler`) | 4 | 4 | 2 |
 | Yerleşimler (`yerlesim`) | 8 | 14 | 0 |
 | Hapishane Adası (`hapishane`) | 4 | 4 | 0 |
@@ -86,7 +85,6 @@ Klasik kale, kale ve avlu, Kale Baskını seferi.
 
 | Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
-| `kale` | `kale-klasik` | `kale` | `harita/kale/kale-klasik.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski); 2 görsel / 2 varyant |
 | `kale-avlu` | `kale-avlu` | `kale` | `harita/kale/kale-avlu.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
 | `kale-baskini` | `kale-baskini` | `kale` | `harita/kale/kale-baskini.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
 
@@ -119,7 +117,7 @@ Zindan, mağara ve geniş mağara.
 
 | Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
 |---|---|---|---|---|---|---|---|---|
-| `dungeon` | `yeralti-zindan` | `yeralti` | `harita/yeralti/yeralti-zindan.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski); 3 görsel / 4 varyant |
+| `dungeon` | `yeralti-zindan` | `yeralti` | `harita/yeralti/yeralti-zindan.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski); 3 görsel / 3 varyant |
 | `magara` | `yeralti-magara` | `yeralti` | `harita/yeralti/yeralti-magara.json` | yok | var | yok | yok | tamam; kaynak: yok (mevcut görsel elle/eski) |
 | `magara-genis` | `yeralti-magara-genis` | `yeralti` | `harita/yeralti/yeralti-magara-genis.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
 
@@ -140,14 +138,6 @@ Klasik Volkan (boss: uyuyan ejderha) ve Volkan Seferi haritaları; ödül sahnes
 | Ad | Görsel | Kaynak referans | İşlenmiş | Veri |
 |---|---|---|---|---|
 | Volkan Seferi ödül sahnesi | `volkan-hazine` | `harita/volkan/gorsel/volkan-hazine.jpg` | volkan-hazine.webp (178 kB) | data/seferler.json odulSahnesi |
-
-## Vitrin (`vitrin`)
-
-Test/vitrin haritası Ortamlar Diyarı (denge dışı).
-
-| Kimlik | Ad | Bölge | JSON | Görsel (jpg) | Webp | Önizleme | Prompt | Durum |
-|---|---|---|---|---|---|---|---|---|
-| `ortamlar-diyari` | `vitrin-ortamlar-diyari` | `vitrin` | `harita/vitrin/vitrin-ortamlar-diyari.json` | yok | var | var | var | tamam; kaynak: yok (mevcut görsel elle/eski) |
 
 ## Derinlikler (`derinlikler`)
 

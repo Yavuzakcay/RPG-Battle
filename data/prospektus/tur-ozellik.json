@@ -1,0 +1,172 @@
+{
+ "_aciklama": "Dungeondex prospektüsü, tür özellikleri (kimlik `<tür>/<özellik>`, srdIds `species:` öneki olmadan). ne/nasil/risk/kimler SRD 5.2.1'den Türkçe özet.",
+ "kayitlar": {
+  "dragonborn/draconic-ancestry": {
+   "ne": "Bir ejderha atası seçersin. Bu seçim Breath Weapon'ın ve Damage Resistance'ın hasar türünü, ayrıca görünüşünü belirler. Siyah ve bakır asit, mavi ve tunç yıldırım, pirinç, altın ve kırmızı ateş, yeşil zehir, gümüş ve beyaz soğuk demektir.",
+   "nasil": "Seçim karakter oluşturulurken yapılır."
+  },
+  "dragonborn/breath-weapon": {
+   "ne": "Büyülü bir enerji nefesi verirsin: 15 ft koni ya da 5 ft genişliğinde 30 ft çizgi. Alandaki her yaratık DEX kurtarma zarı atar; başarısızsa 1d10 hasar alır, başarılıysa yarısını. Hasar türü Draconic Ancestry'den gelir.",
+   "nasil": "Kendi turunda Attack eylemini kullanırken saldırılarından birinin yerine yapılır; şekli her seferinde seçersin. Kurtarma DC'si 8 + CON değiştiricin + Proficiency Bonus. Hasar karakter seviyesi 5'te 2d10, 11'de 3d10, 17'de 4d10 olur.",
+   "risk": "Bir saldırının yerini alır; ayrı bir eylem değildir. Başarılı kurtarma zarında bile yarı hasar verir."
+  },
+  "dragonborn/damage-resistance": {
+   "ne": "Draconic Ancestry'de seçtiğin ejderhanın hasar türüne karşı direncin olur; o türden aldığın hasar yarıya iner.",
+   "risk": "Yalnız tek bir hasar türüne karşı işler."
+  },
+  "dragonborn/darkvision": {
+   "ne": "60 ft menzilli Darkvision'ın vardır: bu uzaklıkta loş ışığı parlak, karanlığı loş ışık gibi görürsün.",
+   "risk": "Menzil dışında karanlık yine karanlıktır."
+  },
+  "dragonborn/draconic-flight": {
+   "ne": "Karakter seviyesi 5'ten itibaren sırtında hayaletimsi kanatlar çıkarıp geçici olarak uçabilirsin; kanatlar açıkken uçuş hızın yürüme hızına eşittir. Kanatlar Breath Weapon'ınla aynı enerjiden görünür.",
+   "nasil": "Bonus eylemle açılır; 10 dakika ya da sen eylem harcamadan kapatana dek sürer. Kullandıktan sonra Long Rest bitirene dek yeniden kullanılamaz.",
+   "risk": "Incapacitated olursan kanatlar hemen kaybolur.",
+   "kimler": "Karakter seviyesi 5'in altındakiler kullanamaz."
+  },
+  "dwarf/darkvision": {
+   "ne": "120 ft menzilli Darkvision'ın vardır: bu uzaklıkta loş ışığı parlak, karanlığı loş ışık gibi görürsün. Çoğu türün iki katı menzildir.",
+   "risk": "Menzil dışında karanlık yine karanlıktır."
+  },
+  "dwarf/dwarven-resilience": {
+   "ne": "Zehir hasarına direncin vardır. Poisoned durumundan kaçınmak ya da kurtulmak için attığın kurtarma zarlarında avantajın olur."
+  },
+  "dwarf/dwarven-toughness": {
+   "ne": "En yüksek canın 1 artar ve her seviye atladığında 1 daha artar; yani seviye başına fazladan 1 can kazanırsın."
+  },
+  "dwarf/stonecunning": {
+   "ne": "Taşın titreşimlerinden yakındakileri sezersin: 10 dakika boyunca 60 ft menzilli Tremorsense kazanırsın.",
+   "nasil": "Bonus eylemle başlatılır.",
+   "risk": "Tremorsense'i kullanmak için doğal ya da işlenmiş bir taş yüzeyin üstünde olmalı ya da ona dokunmalısın."
+  },
+  "elf/darkvision": {
+   "ne": "60 ft menzilli Darkvision'ın vardır: bu uzaklıkta loş ışığı parlak, karanlığı loş ışık gibi görürsün.",
+   "risk": "Menzil dışında karanlık yine karanlıktır."
+  },
+  "elf/elven-lineage": {
+   "ne": "Bir Elf soyu seçer, onun 1. seviye faydasını alırsın. Drow: daha uzun Darkvision ve Dancing Lights; High Elf: Prestidigitation (Long Rest'te başka bir Wizard cantrip'iyle değiştirilebilir); Wood Elf: daha yüksek hız ve Druidcraft.",
+   "nasil": "Karakter seviyesi 3 ve 5'te soyunun büyüsünü öğrenirsin (Drow: Faerie Fire, Darkness; High Elf: Detect Magic, Misty Step; Wood Elf: Longstrider, Pass without Trace). Bu büyüler hep hazırdır, Long Rest başına bir kez slotsuz yapılır, uygun slotla da yapılabilir. Büyü yeteneği INT, WIS ya da CHA'dır; soyu seçerken belirlenir."
+  },
+  "elf/fey-ancestry": {
+   "ne": "Charmed durumundan kaçınmak ya da kurtulmak için attığın kurtarma zarlarında avantajın olur."
+  },
+  "elf/keen-senses": {
+   "ne": "Insight, Perception ya da Survival becerilerinden birinde yetkin olursun; hangisi olacağını sen seçersin.",
+   "nasil": "Seçim karakter oluşturulurken yapılır."
+  },
+  "elf/trance": {
+   "ne": "Uyumana gerek yoktur ve büyü seni uyutamaz. Bilincin açık kalan transa benzer bir meditasyonla Long Rest'i 4 saatte bitirebilirsin."
+  },
+  "gnome/darkvision": {
+   "ne": "60 ft menzilli Darkvision'ın vardır: bu uzaklıkta loş ışığı parlak, karanlığı loş ışık gibi görürsün.",
+   "risk": "Menzil dışında karanlık yine karanlıktır."
+  },
+  "gnome/gnomish-cunning": {
+   "ne": "INT, WIS ve CHA kurtarma zarlarının hepsinde avantajın olur; zihne yönelik etkilere karşı dirençlisin."
+  },
+  "gnome/gnomish-lineage": {
+   "ne": "Bir Gnome soyu seçersin: Forest Gnome ya da Rock Gnome. Seçtiğin soy sana doğaüstü yetenekler (büyüler) verir.",
+   "nasil": "Bu özellikle yaptığın büyülerde büyü yeteneği INT, WIS ya da CHA olur; soyu seçerken belirlenir."
+  },
+  "gnome/forest-gnome": {
+   "ne": "Minor Illusion cantrip'ini bilirsin. Ayrıca Speak with Animals büyüsü her zaman hazırdır.",
+   "nasil": "Speak with Animals'ı Proficiency Bonus'un kadar slotsuz yaparsın; harcanan kullanımlar Long Rest'te yenilenir. Slotun varsa onunla da yapabilirsin."
+  },
+  "gnome/rock-gnome": {
+   "ne": "Mending ve Prestidigitation cantrip'lerini bilirsin. Prestidigitation'ı uzun süre yaparak oyuncak, çakmak ya da müzik kutusu gibi minik bir kurmalı alet yapabilirsin; alet Prestidigitation'ın seçtiğin bir etkisini üretir.",
+   "nasil": "Alet, sen ya da başka bir yaratık dokunup bonus eylem harcayınca çalışır. Etkinin içinde seçenek varsa (yakma ya da söndürme gibi) aleti yaparken birini seçersin.",
+   "risk": "Aynı anda sınırlı sayıda aletin olabilir; aletler bir süre sonra ya da dokunarak sökünce dağılır."
+  },
+  "goliath/giant-ancestry": {
+   "ne": "Dev soyundan gelirsin ve şu doğaüstü faydalardan birini seçersin: Cloud's Jaunt, Fire's Burn, Frost's Chill, Hill's Tumble, Stone's Endurance ya da Storm's Thunder.",
+   "nasil": "Seçtiğin faydayı Proficiency Bonus'un kadar kullanırsın; harcanan kullanımların hepsi Long Rest'te yenilenir.",
+   "risk": "Yalnızca bir fayda seçilir."
+  },
+  "goliath/clouds-jaunt": {
+   "ne": "Bulut devi mirası: görebildiğin boş bir yere büyüyle kısa bir mesafe ışınlanırsın.",
+   "nasil": "Bonus eylemle kullanılır; Giant Ancestry kullanımı harcar.",
+   "risk": "Varış yeri boş olmalı ve görülebilmelidir."
+  },
+  "goliath/fires-burn": {
+   "ne": "Ateş devi mirası: saldırı zarıyla bir hedefi vurup hasar verdiğinde o hedefe ek ateş hasarı da verebilirsin.",
+   "nasil": "İsabet ve hasardan sonra seçersin; Giant Ancestry kullanımı harcar.",
+   "risk": "Yalnız saldırı zarlı isabetlerde işler."
+  },
+  "goliath/frosts-chill": {
+   "ne": "Buz devi mirası: saldırı zarıyla bir hedefi vurup hasar verdiğinde ona ek soğuk hasarı verir ve bir sonraki turunun başına dek hızını düşürürsün.",
+   "nasil": "İsabet ve hasardan sonra seçersin; Giant Ancestry kullanımı harcar.",
+   "risk": "Yalnız saldırı zarlı isabetlerde işler."
+  },
+  "goliath/hills-tumble": {
+   "ne": "Tepe devi mirası: Large ya da daha küçük bir yaratığı saldırı zarıyla vurup hasar verdiğinde onu Prone durumuna düşürebilirsin.",
+   "nasil": "İsabet ve hasardan sonra seçersin; Giant Ancestry kullanımı harcar.",
+   "risk": "Large'dan büyük yaratıklarda işlemez."
+  },
+  "goliath/stones-endurance": {
+   "ne": "Taş devi mirası: hasar aldığında zar atar, sonuca CON değiştiricini ekler ve aldığın hasarı bu toplam kadar azaltırsın.",
+   "nasil": "Hasar aldığında tepki olarak kullanılır; Giant Ancestry kullanımı harcar.",
+   "risk": "Tepki harcar; o tur başka tepki kullanamazsın."
+  },
+  "goliath/storms-thunder": {
+   "ne": "Fırtına devi mirası: yakınındaki bir yaratık sana hasar verdiğinde ona gök gürültüsü hasarı verirsin.",
+   "nasil": "Hasar aldığında tepki olarak kullanılır; Giant Ancestry kullanımı harcar.",
+   "risk": "Tepki harcar; saldırgan belli bir mesafe içinde olmalıdır."
+  },
+  "goliath/large-form": {
+   "ne": "Karakter seviyesi 5'ten itibaren boyunu Large'a çıkarabilirsin. Bu sürede STR kontrollerinde avantajın olur ve hızın 10 ft artar.",
+   "nasil": "Bonus eylemle; 10 dakika ya da sen eylem harcamadan bitirene dek sürer. Kullandıktan sonra Long Rest bitirene dek yeniden kullanılamaz.",
+   "risk": "Yeterince geniş bir yerde olmalısın.",
+   "kimler": "Karakter seviyesi 5'in altındakiler kullanamaz."
+  },
+  "goliath/powerful-build": {
+   "ne": "Grappled durumundan kurtulmak için yaptığın yetenek kontrollerinde avantajın olur. Taşıma kapasiten hesaplanırken bir boyut büyük sayılırsın."
+  },
+  "halfling/brave": {
+   "ne": "Frightened durumundan kaçınmak ya da kurtulmak için attığın kurtarma zarlarında avantajın olur."
+  },
+  "halfling/halfling-nimbleness": {
+   "ne": "Senden bir boyut büyük herhangi bir yaratığın bulunduğu yerin içinden geçebilirsin.",
+   "risk": "Geçtiğin yaratığın yerinde duramazsın."
+  },
+  "halfling/luck": {
+   "ne": "Bir D20 Testinde (saldırı zarı, kurtarma zarı ya da yetenek kontrolü) d20'de 1 gelirse zarı yeniden atabilirsin.",
+   "risk": "Yeniden atılan sonucu kullanmak zorundasın; yalnız doğal 1'de işler."
+  },
+  "halfling/naturally-stealthy": {
+   "ne": "Seni yalnızca senden en az bir boyut büyük bir yaratık örtüyor olsa bile Hide eylemini yapabilirsin."
+  },
+  "human/resourceful": {
+   "ne": "Her Long Rest bitirdiğinde Heroic Inspiration kazanırsın."
+  },
+  "human/skillful": {
+   "ne": "Seçtiğin bir beceride yetkinlik kazanırsın."
+  },
+  "human/versatile": {
+   "ne": "Seçtiğin bir köken (Origin) feat'ini kazanırsın. Önerilen Skilled'dir."
+  },
+  "orc/adrenaline-rush": {
+   "ne": "Dash eylemini bonus eylem olarak yapabilirsin; böyle yaptığında Proficiency Bonus'un kadar geçici can kazanırsın."
+  },
+  "orc/darkvision": {
+   "ne": "120 ft menzilli Darkvision'ın vardır: bu uzaklıkta loş ışığı parlak, karanlığı loş ışık gibi görürsün.",
+   "risk": "Menzil dışında karanlık yine karanlıktır."
+  },
+  "orc/relentless-endurance": {
+   "ne": "Canın 0'a indiğinde ama doğrudan ölmediğinde, 0 yerine 1 canda kalabilirsin.",
+   "nasil": "Kullandıktan sonra Long Rest bitirene dek yeniden kullanılamaz.",
+   "risk": "Doğrudan öldüren hasarda işe yaramaz."
+  },
+  "tiefling/darkvision": {
+   "ne": "60 ft menzilli Darkvision'ın vardır: bu uzaklıkta loş ışığı parlak, karanlığı loş ışık gibi görürsün.",
+   "risk": "Menzil dışında karanlık yine karanlıktır."
+  },
+  "tiefling/fiendish-legacy": {
+   "ne": "Bir iblis mirası seçer, onun 1. seviye faydasını alırsın. Abyssal: zehir hasarına direnç ve Poison Spray; Chthonic: nekrotik hasara direnç ve Chill Touch; Infernal: ateş hasarına direnç ve Fire Bolt.",
+   "nasil": "Karakter seviyesi 3 ve 5'te mirasının büyüsünü öğrenirsin (Abyssal: Ray of Sickness, Hold Person; Chthonic: False Life, Ray of Enfeeblement; Infernal: Hellish Rebuke, Darkness). Bu büyüler hep hazırdır, Long Rest başına bir kez slotsuz yapılır, uygun slotla da yapılabilir. Büyü yeteneği INT, WIS ya da CHA'dır; mirası seçerken belirlenir."
+  },
+  "tiefling/otherworldly-presence": {
+   "ne": "Thaumaturgy cantrip'ini bilirsin.",
+   "nasil": "Bu özellikle yaptığında Thaumaturgy, Fiendish Legacy için seçtiğin büyü yeteneğini kullanır."
+  }
+ }
+}

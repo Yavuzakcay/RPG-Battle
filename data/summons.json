@@ -1,5 +1,5 @@
 {
-  "_aciklama": "Çağırma büyüleri ve çağrılan yaratıkların stat blokları (Görev R3; SRD 5.2.1). `summons` anahtarı büyünün kimliği (data/spells.json `id`), `srd` büyünün SRD kaydı. `turn`: own = kendi inisiyatifini atar ve kendi turunda oynar (Find Familiar), after-owner = sahibinin inisiyatifini paylaşır ve turunu sahibinin hemen ardından oynar (Find Steed, Summon Dragon). `rangeFt`: çağırma yeri sahibine en çok bu uzaklıkta boş altıgen. `setup`: ritüel (1 saat), yalnızca savaş öncesinde (kurulumda) yapılır. `replace`: aynı büyünün önceki yaratığı kaybolur (tek familiar, tek at, yeni Summon Dragon). `endsOnOwnerDeath`: sahibi ölünce kaybolur. `durationRounds`: süre (tur; 1 saat = 600). `canAttack: false`: saldırı yapamaz (familiar). `choice`: büyü yapılırken seçilen (yaratık türü ya da nefes hasar türü). `forms`: familiar biçimleri, data/monsters.json kimlikleri (CR 0 Beast; SRD listesi). Yaratıklarda `ac`/`hp` formülü: base + perLevel × (büyü seviyesi − fromLevel); büyü seviyesi yukarı slotta slot seviyesidir. Saldırıda `bonus: spellAttack` sahibinin büyü saldırı bonusu, `dc: spellSaveDc` sahibinin büyü save DC'si, `plusLevel` hasara büyü seviyesi eklenir, `repeat: halfLevel` Multiattack'ta büyü seviyesinin yarısı kadar. `typeByChoice`: hasar türü seçilen yaratık türünden, `type: choice` seçilen hasar türü. `unsupported`: motorun uygulamadığı özellikler (bilgi). `area` (Görev R4): alanlı saldırının şekli (rules/areaParse.ts AttackArea); Draconic Spirit'in nefesi 30 ft koni. `setupSlot` (Görev S1): kurulumda yapılır ama slot harcar (Animate Dead: döküm süresi 1 dakika, ritüel değil). Görev B2: `intangible` dokunulamaz (hedef alınmaz, alanlardan etkilenmez; Flaming Sphere, Conjure Animals), `zoneRadius` yaratıkla yürüyen büyü alanının yarıçapı (altıgen; kuralı büyünün `mechanics.zone`), `count` yaratık sayısı base + perLevel × (slot − büyü seviyesi) (Animate Dead), saldırıda `diceFromLevel` zar sayısı o seviyeden sonra seviye başına +1. Kuyruk MB7 (kural sürümü 70+): `mount` binek kuralı (`kural`: sahip = yalnız çağıran / dost = her dost biner, `enBuyukBinici` boyut, `minSeviye` çağıranın seviyesi); `mount` olmayan çağrıya binilmez. `kontrol`: kontrollu = kontrollü binek (MB2, kural sürümü 74+: binicinin turunda hareket eder; SRD Find Steed \"functions as a controlled mount\", Phantom Steed Riding Horse), yoksa bağımsız. `speedFt` yürüme hızı, `endsOnDamage` hasar alınca kaybolur (Phantom Steed). Phantom Steed büyüsü `mb7` bloğuyla 70+'da çağırmadır (68–69'da savaş dışı).",
+  "_aciklama": "Çağırma büyüleri ve çağrılan yaratıkların stat blokları (Görev R3; SRD 5.2.1). `summons` anahtarı büyünün kimliği (data/spells.json `id`), `srd` büyünün SRD kaydı. `turn`: own = kendi inisiyatifini atar ve kendi turunda oynar (Find Familiar), after-owner = sahibinin inisiyatifini paylaşır ve turunu sahibinin hemen ardından oynar (Find Steed, Summon Dragon). `rangeFt`: çağırma yeri sahibine en çok bu uzaklıkta boş altıgen. `setup`: ritüel (1 saat), yalnızca savaş öncesinde (kurulumda) yapılır. `replace`: aynı büyünün önceki yaratığı kaybolur (tek familiar, tek at, yeni Summon Dragon). `endsOnOwnerDeath`: sahibi ölünce kaybolur. `durationRounds`: süre (tur; 1 saat = 600). `canAttack: false`: saldırı yapamaz (familiar). `choice`: büyü yapılırken seçilen (yaratık türü ya da nefes hasar türü). `forms`: familiar biçimleri, data/monsters.json kimlikleri (CR 0 Beast; SRD listesi). Yaratıklarda `ac`/`hp` formülü: base + perLevel × (büyü seviyesi − fromLevel); büyü seviyesi yukarı slotta slot seviyesidir. Saldırıda `bonus: spellAttack` sahibinin büyü saldırı bonusu, `dc: spellSaveDc` sahibinin büyü save DC'si, `plusLevel` hasara büyü seviyesi eklenir, `repeat: halfLevel` Multiattack'ta büyü seviyesinin yarısı kadar. `typeByChoice`: hasar türü seçilen yaratık türünden, `type: choice` seçilen hasar türü. `unsupported`: motorun uygulamadığı özellikler (bilgi). `area` (Görev R4): alanlı saldırının şekli (rules/areaParse.ts AttackArea); Draconic Spirit'in nefesi 30 ft koni. `setupSlot` (Görev S1): kurulumda yapılır ama slot harcar (Animate Dead: döküm süresi 1 dakika, ritüel değil). Görev B2: `intangible` dokunulamaz (hedef alınmaz, alanlardan etkilenmez; Flaming Sphere, Conjure Animals), `zoneRadius` yaratıkla yürüyen büyü alanının yarıçapı (altıgen; kuralı büyünün `mechanics.zone`), `count` yaratık sayısı base + perLevel × (slot − büyü seviyesi) (Animate Dead), saldırıda `diceFromLevel` zar sayısı o seviyeden sonra seviye başına +1. Kuyruk MB7 (kural sürümü 70+): `mount` binek kuralı (`kural`: sahip = yalnız çağıran / dost = her dost biner, `enBuyukBinici` boyut, `minSeviye` çağıranın seviyesi); `mount` olmayan çağrıya binilmez. `kontrol`: kontrollu = kontrollü binek (MB2, kural sürümü 74+: binicinin turunda hareket eder; SRD Find Steed \"functions as a controlled mount\", Phantom Steed Riding Horse), yoksa bağımsız. `speedFt` yürüme hızı, `endsOnDamage` hasar alınca kaybolur (Phantom Steed). Phantom Steed büyüsü `mb7` bloğuyla 70+'da çağırmadır (68–69'da savaş dışı). Görev D2 (kural sürümü 88; SRD 5.2.1, eski değerler data/srd-duzeltme.json `surum: 88`): yaratıkta `swimFt` yüzme hızı, `immunities` hasar bağışıklıkları, `unsupported` içinde motorun okuduğu \"Duyu: Blindsight N ft\" ve \"Durum bağışıklığı: …\" notları (canavarla aynı biçim); Find Familiar `forms` SRD \"or another Beast that has a Challenge Rating of 0\" ile 24 biçim. Otherworldly Steed'in Life Bond'u ve bonus eylemleri veride değil, `src/battle/steed.ts`'te (Kuyruk 19).",
   "summons": {
     "find-familiar": {
       "srd": "spells:find-familiar",
@@ -27,7 +27,20 @@
         "rat",
         "raven",
         "spider",
-        "weasel"
+        "weasel",
+        "baboon",
+        "badger",
+        "crab",
+        "deer",
+        "eagle",
+        "giant-fire-beetle",
+        "goat",
+        "hyena",
+        "jackal",
+        "piranha",
+        "scorpion",
+        "seahorse",
+        "vulture"
       ]
     },
     "find-steed": {
@@ -304,12 +317,12 @@
           }
         }
       ],
+      "sharedResistance": true,
       "unsupported": [
-        "Shared Resistances",
-        "durum bağışıklıkları (Charmed, Frightened, Poisoned)",
-        "Blindsight",
-        "yüzme hızı"
-      ]
+        "Duyu: Blindsight 30 ft",
+        "Durum bağışıklığı: Charmed, Frightened, Poisoned"
+      ],
+      "swimFt": 30
     },
     "flaming-sphere": {
       "srd": "spells:flaming-sphere",
@@ -541,7 +554,15 @@
           "plusMod": true
         }
       },
-      "k19": "Kuyruk 19 (spellsK19): Large 2, Huge 3 nesne sayılır (seçim: en çok Medium/Large/Huge, kalan Medium); Large 20 HP 2d6+3+değiştirici, Huge 40 HP 2d12+3+değiştirici (yukarı slotta +1 zar); sahibi bonus eylemle emretmezse turunda yalnızca Kaçın. 0 HP'de nesne biçimine dönüş ve artan hasarın nesneye geçmesi: nesne savaş dışı kalır (yaratık kaybolur; Game Master)."
+      "k19": "Kuyruk 19 (spellsK19): Large 2, Huge 3 nesne sayılır (seçim: en çok Medium/Large/Huge, kalan Medium); Large 20 HP 2d6+3+değiştirici, Huge 40 HP 2d12+3+değiştirici (yukarı slotta +1 zar); sahibi bonus eylemle emretmezse turunda yalnızca Kaçın. 0 HP'de nesne biçimine dönüş ve artan hasarın nesneye geçmesi: nesne savaş dışı kalır (yaratık kaybolur; Game Master).",
+      "immunities": [
+        "poison",
+        "psychic"
+      ],
+      "unsupported": [
+        "Duyu: Blindsight 30 ft",
+        "Durum bağışıklığı: Charmed, Exhaustion, Frightened, Paralyzed, Poisoned"
+      ]
     },
     "arcane-hand": {
       "srd": "spells:arcane-hand",

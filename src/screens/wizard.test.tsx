@@ -54,13 +54,13 @@ describe('sihirbaz adımları ve eksikler', () => {
     expect(clearInvalidSubclass(fighter({ level: 3, subclassId: 'champion' })).cleared).toBeNull();
     expect(html(bad, 'character')).toContain('Kayıtlı alt sınıf (evoker) bu sınıfta bulunamadı');
   });
-  it('büyücü olmayan sınıfta Büyüler adımı yok (6 adım), büyücüde 7 adım (Görev K3: kimlik + tür + sınıf tek adım)', () => {
+  it('büyücü olmayan sınıfta Büyüler adımı yok (7 adım), büyücüde 8 adım (Görev K3: kimlik + tür + sınıf tek adım; CK1: Hikâye adımı)', () => {
     expect(wizardSteps(fighter().sheet)).not.toContain('spells');
-    expect(wizardSteps(fighter().sheet)).toHaveLength(6);
-    expect(wizardSteps(fighter({ classId: 'wizard' }).sheet)).toHaveLength(7);
+    expect(wizardSteps(fighter().sheet)).toHaveLength(7);
+    expect(wizardSteps(fighter({ classId: 'wizard' }).sheet)).toHaveLength(8);
     expect(wizardSteps(fighter().sheet)[0]).toBe('character');
-    expect(html(fighter(), 'character')).toContain('1 / 6 · Karakter');
-    expect(html(fighter({ classId: 'wizard' }), 'scores')).toContain('2 / 7 · Puanlar');
+    expect(html(fighter(), 'character')).toContain('1 / 7 · Karakter');
+    expect(html(fighter({ classId: 'wizard' }), 'scores')).toContain('2 / 8 · Puanlar');
   });
   it('geçmişten gelen beceri kilitli: sınıf düğmesi yok, tekrar seçilemez; sayaçlar', () => {
     const c = withSkills(fighter({}, { classSkills: ['perception'], otherSkills: ['athletics'] }));
@@ -93,11 +93,13 @@ describe('sihirbaz adımları ve eksikler', () => {
     expect(m).toContain('Yetenek puanı bonusu türden değil, geçmişten gelir.');
   });
   it('Görev K3: jeton önizlemesi tür, sınıf ve görünüm değişince değişir', () => {
-    const src = (p: Partial<SavedCharacter['sheet']>) => /class="token-preview wiz-preview-side"[\s\S]*?characters\/([a-z-]+\.webp)/.exec(html(fighter(p), 'character'))?.[1];
-    expect(src({})).toBe('human-male-fighter.webp');
-    expect(src({ raceId: 'elf', lineageId: 'drow' })).toBe('elf-male-fighter.webp');
-    expect(src({ classId: 'wizard' })).toBe('human-male-wizard.webp');
-    expect(src({ gender: 'kadin' })).toBe('human-female-fighter.webp');
+    const src = (p: Partial<SavedCharacter['sheet']>) => /class="token-preview wiz-preview-side"[\s\S]*?characters\/([A-Za-z0-9-]+\.webp)/.exec(html(fighter(p), 'character'))?.[1];
+    // KQ6: yeni karakter seviye 1 → Gariban (GR) jetonu; seviye 3+ alt sınıfsız → sınıf-genel jeton.
+    expect(src({})).toBe('human-erkek-fighter-GR.webp');
+    expect(src({ raceId: 'elf', lineageId: 'drow' })).toBe('elf-erkek-fighter-GR.webp');
+    expect(src({ classId: 'wizard' })).toBe('human-erkek-wizard-GR.webp');
+    expect(src({ gender: 'kadin' })).toBe('human-kadin-fighter-GR.webp');
+    expect(src({ level: 3 })).toBe('human-male-fighter.webp');
     expect(html(fighter(), 'character')).toContain('wiz-preview-mobile');
   });
   it('Görev K3: soy kartları özetiyle; seçilen Elf/Gnome/Goliath soyu özette görünür', () => {

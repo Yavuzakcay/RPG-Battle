@@ -10,9 +10,7 @@ export const CUSTOM_ATTACK_MAX = 300;
 export const CUSTOM_NAME_MAX = 50;
 
 /**
- * Kuyruk 38: seviye sınırı. Varsayılan 5 (Aşama 1); Game Master "Üst seviye" açıkken Kuyruk 19'dan beri 20 (SRD'nin tamamı;
- * önce 10). Eski kayıtlardaki karakterler yüklenir ve seviyeleri korunur (oluşturucu yalnızca yeni seçimi sınırlar).
+ * Karakter seviye sınırı (tek sabit): 20, SRD'nin tamamı. Kullanıcı kararı 2026-11-19: Kuyruk 38'in 5. seviye sınırı ve
+ * "Üst seviye (6–20)" anahtarı kalktı; oluşturucu ve Serüven seviye atlaması her zaman 1–20.
  */
-export const LEVEL_CAP = 5;
-export const UPPER_LEVEL_CAP = 20;
-export const levelCap = (upper: boolean): number => (upper ? UPPER_LEVEL_CAP : LEVEL_CAP);
+export const LEVEL_CAP = 20;

@@ -4,6 +4,9 @@
  * SRD 5.2.1 "Character Creation": standart dizi 15, 14, 13, 12, 10, 8; point buy 27 puan,
  * skorlar 8–15, maliyet tablosu aşağıda. Ability bonusları geçmişten (+2/+1 veya +1/+1/+1).
  */
+import { LEVEL_CAP } from '../app/limits';
+import { cleanStory, type Hikaye } from './story';
+import ALT_SOY_GORUNUM from '../../data/alt-soy-gorunum.json';
 import type { Alignment } from './alignment';
 import { invocationKit, invocationProblems, invocationSlots, parseInvocation } from './invocations';
 import { armor, classes, getClass, items, races, spells, weapons } from '../data';
@@ -46,7 +49,13 @@ export interface SavedCharacter {
   levelLog?: Array<{ from: number; to: number; at: string; by: 'gm' }>;
   /** Kuyruk K51: hizalanma (ev kuralı `hizalanma`); yoksa 0/0 (eski kayıt). */
   hizalanma?: Alignment;
-  /** Kuyruk K51: karakter kayıt sürümü (yoksa 1; 2 = hizalanma alanı tanınır). */
+  /** SD8 eki (yalnız görünüm): karakterin seçtiği zar ('klasik', 'sinif', 'irk', açılmış tema kimliği); yoksa oyuncu profili yedeği, o da yoksa sınıf zarı. Otomatik değiştirilmez. */
+  zar?: string;
+  /** SD8 eki: açılmış Alignment zarları (`hizalanma-<kare>`, tekrarsız); açılan zar kalıcıdır. */
+  hizalanmaZarlar?: string[];
+  /** Kuyruk KQ4 CK1: isteğe bağlı hikâye metinleri (boş alanlar yazılmaz); yoksa eski kayıt. */
+  hikaye?: Hikaye;
+  /** Kuyruk K51: karakter kayıt sürümü (yoksa 1; 2 = hizalanma alanı, 3 = hikâye alanı tanınır). */
   surum?: number;
   /**
    * Görev K17: oluşturucu taslağı; sınıf değişince eski sınıfın seçimleri burada sınıf kimliğiyle saklanır (eski sınıfa
@@ -302,14 +311,15 @@ export function switchClass(c: SavedCharacter, id: string, opts: { baseScores?: 
 
 /** Görev K17: kayda giden karakter: taslak alanı ve başka sınıfa ait seçimler yazılmaz. */
 export function savableCharacter(c: SavedCharacter): SavedCharacter {
-  const { classDrafts: _drafts, ...rest } = c;
-  return { ...rest, sheet: classScoped(c.sheet) };
+  const { classDrafts: _drafts, hikaye: story, ...rest } = c;
+  const hikaye = cleanStory(story);
+  return { ...rest, ...(hikaye ? { hikaye } : {}), sheet: classScoped(c.sheet) };
 }
 
 /** Formdaki bütün sorunlar (boşsa karakter kaydedilebilir ve savaşa girebilir). */
 /** Görev K1: sihirbazın adımları (oluşturucu ekranı; sorunlar adıma bağlanır). */
 /** Görev K3: kimlik, tür (soy) ve sınıf tek ilk adımda (`character`). */
-export type BuilderStep = 'character' | 'scores' | 'skills' | 'progress' | 'equipment' | 'spells' | 'summary' | 'alignment';
+export type BuilderStep = 'character' | 'scores' | 'skills' | 'progress' | 'equipment' | 'spells' | 'story' | 'summary' | 'alignment';
 export interface CharacterIssue { step: BuilderStep; text: string }
 
 /** Karakterin sorunları (kaydetmeyi engeller), her biri ilgili sihirbaz adımıyla. Kurallar `characterProblems` ile aynı. */
@@ -325,10 +335,12 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
   const race = races.find((r) => r.id === s.raceId);
   if (!race) push(I().raceMissing);
   if (!classes.some((k) => k.id === s.classId)) push(I().classMissing);
-  if (!Number.isInteger(s.level) || s.level < 1 || s.level > 20) push(I().levelRange);
+  if (!Number.isInteger(s.level) || s.level < 1 || s.level > LEVEL_CAP) push(I().levelRange);
   if (race?.lineages && race.lineages.length > 0 && !race.lineageOptional && !race.lineages.some((l) => l.id === s.lineageId)) {
     push(I().lineageMissing(race.name));
   }
+  // SD5: Sur Dışı'nda Sürgün kültürü seçimi zorunlu (yalnız görünüm; ton buradan gelir).
+  if (race?.id === 'human' && s.lineageId === ALT_SOY_GORUNUM.ten.surgun.kultur && !ALT_SOY_GORUNUM.ten.surgun.secenekler.includes(s.exileCulture ?? '')) push(I().exileMissing);
   step = 'scores';
   if (c.method === 'standard' && !usesStandardArray(s.baseScores)) push(I().standardArray);
   if (c.method === 'roll' && !usesRolled(s.baseScores, c.rolled)) push(c.rolled ? I().rolledArray : I().rollNeeded);
@@ -339,7 +351,7 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
   }
   step = 'skills';
   if (classes.some((k) => k.id === s.classId)) {
-    const level = Number.isInteger(s.level) && s.level >= 1 && s.level <= 20 ? s.level : 1;
+    const level = Number.isInteger(s.level) && s.level >= 1 && s.level <= LEVEL_CAP ? s.level : 1;
     const skillProblem = classSkillProblem(s.classId, c.classSkills, classKit(s.classId, level, s.subclassId).extraClassSkills);
     if (skillProblem) push(I().classSkills(skillProblem));
   }
@@ -361,7 +373,7 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
   }
   for (const w of s.weapons ?? []) if (!weapons.some((x) => x.name === w.name)) push(I().weaponUnknown(w.name));
   step = 'spells';
-  if (classes.some((k) => k.id === s.classId) && s.level >= 1 && s.level <= 20) {
+  if (classes.some((k) => k.id === s.classId) && s.level >= 1 && s.level <= LEVEL_CAP) {
     const alt = alternativeCantrips(s);
     const own = new Set(spellOptions(s.classId, s.level));
     const allowed = new Set([...spellOptions(s.classId, s.level, s.subclassId), ...alt.options]);

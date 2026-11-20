@@ -1,0 +1,13 @@
+{
+  "_aciklama": "Kuyruk KQ3 NA1 (kural sürümü 80): nesne ağırlığı ve taşıma. Kapasite = STR × capacityPerStr (data/tasima.json: 15) × boyut çarpanı (Powerful Build dahil, savaşçıda carryCapLb), itme/sürükleme/kaldırma sınırı = STR × dragPerStr (30). Taşıma yükü oda kuralı kapalıyken ('off') ağırlık sınırı yoktur. Ağırlık sınıfı (hafif/orta/ağır) nesne ağırlığından: itme çarpanı ve fırlatma menzili `nesne-hareket.json` sınıf tablosundan, fırlatma menzili ayrıca `firlatma` basamaklarından.",
+  "minLb": 0.5,
+  "maxLb": 5000,
+  "taserSayisiEn": 6,
+  "grupHizCarpani": 0.5,
+  "sinif": { "hafifEnFazlaLb": 50, "ortaEnFazlaLb": 150 },
+  "firlatma": [
+    { "enFazlaLb": 10, "ft": 30 },
+    { "enFazlaLb": 50, "ft": 20 },
+    { "enFazlaLb": 150, "ft": 10 }
+  ]
+}

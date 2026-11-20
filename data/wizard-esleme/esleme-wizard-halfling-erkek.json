@@ -1,0 +1,237 @@
+{
+ "irk": "halfling",
+ "cinsiyet": "erkek",
+ "hucreler": {
+  "WZ-A1": {
+   "kaynak": "sayfa A",
+   "arkaPlan": "green",
+   "zeminSapma": 7.3,
+   "icDelik": 0,
+   "kenaraDegiyor": false,
+   "bboxKaynak": [
+    32,
+    46,
+    618,
+    677
+   ],
+   "yukseklikPx": 234,
+   "ustBosluk": 14
+  },
+  "WZ-A2": {
+   "kaynak": "sayfa A",
+   "arkaPlan": "green",
+   "zeminSapma": 7.7,
+   "icDelik": 5,
+   "kenaraDegiyor": false,
+   "bboxKaynak": [
+    94,
+    46,
+    652,
+    671
+   ],
+   "yukseklikPx": 232,
+   "ustBosluk": 16
+  },
+  "WZ-A3": {
+   "kaynak": "sayfa A",
+   "arkaPlan": "magenta",
+   "zeminSapma": 6.5,
+   "icDelik": 0,
+   "kenaraDegiyor": false,
+   "bboxKaynak": [
+    167,
+    30,
+    647,
+    677
+   ],
+   "yukseklikPx": 240,
+   "ustBosluk": 8
+  },
+  "WZ-A4": {
+   "kaynak": "sayfa A",
+   "arkaPlan": "green",
+   "zeminSapma": 7.9,
+   "icDelik": 3,
+   "kenaraDegiyor": false,
+   "bboxKaynak": [
+    89,
+    46,
+    635,
+    676
+   ],
+   "yukseklikPx": 234,
+   "ustBosluk": 14
+  },
+  "WZ-A5": {
+   "kaynak": "sayfa A",
+   "arkaPlan": "green",
+   "zeminSapma": 7.7,
+   "icDelik": 1,
+   "kenaraDegiyor": false,
+   "bboxKaynak": [
+    25,
+    59,
+    656,
+    672
+   ],
+   "yukseklikPx": 227,
+   "ustBosluk": 21
+  },
+  "WZ-A6": {
+   "kaynak": "sayfa A",
+   "arkaPlan": "green",
+   "zeminSapma": 6.8,
+   "icDelik": 3,
+   "kenaraDegiyor": false,
+   "bboxKaynak": [
+    18,
+    62,
+    673,
+    653
+   ],
+   "yukseklikPx": 219,
+   "ustBosluk": 29
+  },
+  "WZ-A7": {
+   "kaynak": "sayfa A",
+   "arkaPlan": "green",
+   "zeminSapma": 7.4,
+   "icDelik": 0,
+   "kenaraDegiyor": false,
+   "bboxKaynak": [
+    43,
+    56,
+    642,
+    679
+   ],
+   "yukseklikPx": 231,
+   "ustBosluk": 17
+  },
+  "WZ-A8": {
+   "kaynak": "sayfa A",
+   "arkaPlan": "green",
+   "zeminSapma": 7.7,
+   "icDelik": 2,
+   "kenaraDegiyor": false,
+   "bboxKaynak": [
+    183,
+    62,
+    650,
+    666
+   ],
+   "yukseklikPx": 224,
+   "ustBosluk": 24
+  },
+  "WZ-B1": {
+   "kaynak": "sayfa B",
+   "arkaPlan": "green",
+   "zeminSapma": 15.4,
+   "icDelik": 13,
+   "kenaraDegiyor": false,
+   "bboxKaynak": [
+    6,
+    56,
+    677,
+    680
+   ],
+   "yukseklikPx": 234,
+   "ustBosluk": 14
+  },
+  "WZ-B2": {
+   "kaynak": "sayfa B",
+   "arkaPlan": "green",
+   "zeminSapma": 16.3,
+   "icDelik": 0,
+   "kenaraDegiyor": false,
+   "bboxKaynak": [
+    91,
+    60,
+    660,
+    665
+   ],
+   "yukseklikPx": 227,
+   "ustBosluk": 21
+  },
+  "WZ-B3": {
+   "kaynak": "sayfa B",
+   "arkaPlan": "green",
+   "zeminSapma": 16.7,
+   "icDelik": 1,
+   "kenaraDegiyor": false,
+   "bboxKaynak": [
+    52,
+    74,
+    643,
+    651
+   ],
+   "yukseklikPx": 217,
+   "ustBosluk": 31
+  },
+  "WZ-B4": {
+   "kaynak": "sayfa B",
+   "arkaPlan": "green",
+   "zeminSapma": 15.8,
+   "icDelik": 0,
+   "kenaraDegiyor": false,
+   "bboxKaynak": [
+    35,
+    51,
+    653,
+    651
+   ],
+   "yukseklikPx": 225,
+   "ustBosluk": 23
+  },
+  "WZ-B5": {
+   "kaynak": "sayfa B",
+   "arkaPlan": "green",
+   "zeminSapma": 14.1,
+   "icDelik": 3,
+   "kenaraDegiyor": false,
+   "bboxKaynak": [
+    22,
+    70,
+    668,
+    666
+   ],
+   "yukseklikPx": 224,
+   "ustBosluk": 24
+  },
+  "WZ-B6": {
+   "kaynak": "sayfa B",
+   "arkaPlan": "green",
+   "zeminSapma": 15.2,
+   "icDelik": 3,
+   "kenaraDegiyor": false,
+   "bboxKaynak": [
+    128,
+    66,
+    591,
+    680
+   ],
+   "yukseklikPx": 231,
+   "ustBosluk": 17
+  },
+  "WZ-B7": {
+   "kaynak": "sayfa B",
+   "arkaPlan": "green",
+   "zeminSapma": 14.1,
+   "icDelik": 0,
+   "kenaraDegiyor": false,
+   "bboxKaynak": [
+    22,
+    62,
+    685,
+    680
+   ],
+   "yukseklikPx": 232,
+   "ustBosluk": 16
+  }
+ },
+ "atilan": [
+  "WZ-B8 (boş hücre)"
+ ],
+ "yamali": [],
+ "olcekA": 0.3709,
+ "olcekB": 0.3756
+}
