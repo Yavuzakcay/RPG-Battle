@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev B95 (A): Barbarian, Fighter, Monk, Rogue Serüven seçimleri (2026-11-20; sürümsüz, kural ve kayıt sürümü değişmedi)
+
+Kaynak: `harita/belgeler/{BARBARIAN,FIGHTER,MONK,ROGUE}-DENETIM.md` "Görev B95" bölümleri. Ölçüt SRD 5.2.1.
+- **Bağlama (veri):** B93'ün ortak yardımcısı (`src/rules/levelChoices.ts`, `data/secim-degisim.json`); yeni yol yazılmadı. Barbarian uzun dinlenmede bir Weapon Mastery (s. 29), Fighter seviyede Fighting Style (s. 47) ve uzun dinlenmede bir ustalık (s. 48), Rogue uzun dinlenmede bütün ustalıklar (s. 62), Monk boş kayıt. Alt sınıf, ASI/feat, Epic Boon, Expertise (Rogue 6, s. 61) ve yeni ustalık hakkı yalnız eklenir. Artık on iki sınıfın hepsi bağlı.
+- **Alt sınıf otomatik atanmaz (kullanıcı kararı):** Serüven'de alt sınıf seviyesine çıkan karakterin alt sınıfı boş kalır ve istenir: Builder seçim kipinde boş alt sınıf açılışta da olsa eksik sayılır (diğer açılış sorunları yine yok sayılır); `migrateSubclasses` yalnız karakter listesinde (eski kayıt) kalır. Eksik seçim (alt sınıf, boş yuva, ustalık, Expertise) varken "Seçimler" düğmesi öne çıkar (`pendingChoices`, sınıf adsız).
+- **Ustalık seçici seçim kipinde:** Serüven seçim kipinde donanım adımı yoktu; Ranger/Paladin'in (B94) ve yeni bağlanan sınıfların ustalık değişimi arayüzden yapılamıyordu. Karakter adımına hak kadar yuvalı seçici eklendi (`MasteryPick`); izin denetimi motorda (`set_choices`).
+- **Yaklaşık:** `stil` anahtarı Fighting Style yuvalarını birlikte sayar; Champion'ın Additional Fighting Style yuvası da seviye başına bir değişime girer.
+- **Bekleyen:** B (sürümlü düzeltmeler) `birlesik`'te kural sürümü 95 (Swarm) ve 96 (genel savaş düzeltmesi) olmadığı için yapılmadı. C maddeleri (Stroke of Luck sorusu ve kritik, Monk silahıyla bonus vuruş modeli, YZ'nin Intimidating Presence/Patient Defense/Step of the Wind/Wholeness of Body/Superior Defense/Quivering Palm/Cunning Strike kullanması) ertelendi, karar gerekli.
+- **Test değişikliği:** `levelChoices.test.ts` "bağlı olmayan sınıf" testi Fighter yerine bilinmeyen sınıf kimliğiyle (Fighter artık bağlı).
+
 ## Eşya ikon hattı (2026-11-20; yalnız görsel, kural ve kayıt sürümü değişmedi)
 
 - `npm run esya-ikon` (`scripts/esya-ikon.mjs`, sharp): manifest `data/esya-ikon-sayfalar.json` + `assets-ham/esya/` (depo dışı) → `public/esya/<kimlik>.webp` (256) ve `public/esya/kucuk/` (96); varyant kimliğinde `/` → `--`. Zemin dört köşeden; kenardan taşkın dolgu, yarı saydam kenarda zeminden ayrıştırma (unmix) + 6 px despill; kapalı deliklerde yalnız zemine çok yakın yeşil silinir (cam iç hacmi kalır); en büyük bileşenin %6'sı altı atılır (`hepsiniTut` hariç). Hücre kırpımı her yöne %15 genişletilir, yalnız ağırlık merkezi asıl hücrede olan bileşen tutulur (silah-4 plate armor, donanım-05 çadır komşuya taşıyordu). Kırpma kutusu α > 48 (yaygın parıltı kuyruğu kesilir). `--kontrol` etiketli kontrol görselleri `harita/belgeler/ESYA-IKON-KONTROL/`.

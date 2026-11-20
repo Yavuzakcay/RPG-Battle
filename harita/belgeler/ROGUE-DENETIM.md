@@ -180,3 +180,11 @@ Sıra etkiye göre. "Sürüm" sütunu: savaş davranışı değişiyorsa **günc
 - **P4** (`zzTmpRogue4`): Steady Aim + Withdraw kayması (3 altıgen), Withdraw sonrası bonus Dash ve yine kayma.
 - **P5** (`zzTmpRogue5`): `economyCost` `object_use`: 2. seviye eylem, 3. seviye Thief bonus eylem (Fast Hands).
 - Probe ile **doğru** bulunanlar (regresyon notu): Sneak Attack tablosu ve koşulları, Expertise/Weapon Mastery/ASI/Epic Boon sayıları, Slippery Mind, Cunning Action, Steady Aim'in hız 0'ı, Cunning Strike DC'leri ve bedelleri, Trip (Huge'da etkisiz), Poison (kitle), Improved iki etki, Daze/Obscure süreleri, Knock Out'un hasarla bitmesi, Elusive'in üç durumu, Stroke of Luck kaynağı, Fast Hands Utilize, alt sınıf işaretlerinin seviyeleri.
+
+## Görev B95 (2026-11-20)
+
+**A) Sürümsüz (yapıldı).** `data/secim-degisim.json`'a `rogue` kaydı eklendi; Serüven'de "Seçimler" düğmesi çıkar ve B93'ün ortak yardımcısıyla (`src/rules/levelChoices.ts`, `set_choices`) seçim yapılır. Yeni seçimler (alt sınıf 3. seviyede, ASI/feat ve Epic Boon yuvaları, yeni Weapon Mastery hakkı; 6. seviye Expertise, SRD 5.2.1 s. 61; uzun dinlenmede bütün ustalıklar değişir, s. 62 "change the kinds of weapons you chose") yalnız eklenir; eksik seçim varken düğme "Seçimler (seçim bekliyor)" olur (`pendingChoices`). Serüven'de alt sınıf **otomatik atanmaz**: seçim kipinde (Builder `choices`) boş alt sınıf açılışta da olsa eksik sayılır, Kaydet onu ister. Seçim kipine Weapon Mastery seçicisi eklendi (donanım adımı bu kipte yok). Test: `src/rules/levelChoices.test.ts` "Görev B95 (A)", `src/screens/b95Secim.test.tsx`.
+
+**B) Sürümlü (bekliyor).** Kapı: `birlesik`'te kural sürümü 95 ve 96 yok (güncel 94); Uncanny Dodge'un yalnız görülen saldırgana, Second-Story Work atlaması (gerçek etkiyle test), Steady Aim sonrası hız 0'da Withdraw/Tactical Shift kayması, fırlatılan Javelin'in Sneak Attack almaması, Cunning Strike'ın yan el/fırsat saldırısı/Ready'de seçilmesi yapılmadı.
+
+**C) Ertelendi, karar gerekli.** Stroke of Luck (SRD 5.2.1 s. 63) oyuncuya sorulsun mu ve 20'ye çevrilen saldırı kritik sayılsın mı (s. 6 "Rolling 20" yorumu); yapay zekânın Cunning Strike seçeneklerini kullanması (s. 63; YZ davranışı denge değiştirir, denge turuna kalır).
