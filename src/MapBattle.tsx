@@ -606,8 +606,10 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     if (f?.effect.kind === 'divineSpark' || f?.effect.kind === 'inspire' || f?.effect.kind === 'leash' || f?.effect.kind === 'celestialHeal' || f?.effect.kind === 'karadulGaze' || (f && featTargeted(f))) return { type: 'use_feature', actorId: me.id, feature: f.key, targetId: c.id };
     const pool = f?.resource ? resourceLeft(me, f.resource) : 0;
     const missing = Math.max(0, c.maxHp - c.hp);
-    const cure = f?.effect.kind === 'healPool' && missing === 0 && pool >= f.effect.cureCost && f.effect.cures.some((x) => c.conditions.includes(x));
-    return { type: 'use_feature', actorId: me.id, feature: featureKey ?? '', targetId: c.id, amount: Math.min(pool, missing), ...(cure ? { cure: true } : {}) };
+    // Görev B94 (PALADIN E1; SRD 5.2.1 s. 54): kaldırılabilir durum varsa aynı kullanımda temizle + kalan havuzla iyileştir.
+    const cure = f?.effect.kind === 'healPool' && pool >= f.effect.cureCost && f.effect.cures.some((x) => c.conditions.includes(x));
+    const cost = cure && f?.effect.kind === 'healPool' ? f.effect.cureCost : 0;
+    return { type: 'use_feature', actorId: me.id, feature: featureKey ?? '', targetId: c.id, amount: Math.min(pool - cost, missing), ...(cure ? { cure: true } : {}) };
   };
   // Kuyruk K54: yaratık + altıgen isteyen imza eylemi (Zihin Gücü: Fırlat): parlama denetimi kendi altıgeniyle,
   // hedefe tıklanınca altıgen seçimine geçer.

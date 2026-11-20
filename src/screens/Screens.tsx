@@ -275,7 +275,7 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
             const r = shortRestStatus(sheet, props.c.status, Math.min(dice, left), Math.random, recover);
             setNote(R.shortDone(r.rolls.join(' + '), r.healed));
             props.onUpdate({ ...props.c, status: r.status });
-          }}>{R.short}</button>
+          }} disabled={s.hp < 1} title={s.hp < 1 ? R.shortNeedsHp : undefined}>{R.short}</button>
           {((): JSX.Element | null => {
             // Görev B93: Font of Magic savaş dışında (slot ↔ Sorcery Point; SRD 5.2.1 s. 66).
             if (s.resources.sorceryPoints === undefined) return null;

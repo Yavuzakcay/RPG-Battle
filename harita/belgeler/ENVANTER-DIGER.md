@@ -47,6 +47,7 @@ Kaynak: `src/rules/conditions.ts`, `data/conditions.json`, `src/rules/exhaustion
 | Durum | Sınıf | Neden |
 |---|---|---|
 | Blinded, Charmed, Deafened, Incapacitated, Paralyzed, Petrified, Poisoned, Prone, Restrained, Stunned, Unconscious, Exhaustion | ÇALIŞIR | kural sürümü 2 (K16E) ve sonrası |
+| ↳ güncelleme 2026-11-20 | KISMİ | Genel savaş denetimi (sürüm 94) bu satırı düzeltti: Unconscious Prone içermiyor; Poisoned yetenek kontrolü dezavantajı ve pasif Algı ±5 yok; Petrified hasar direnci, Poisoned bağışıklığı ve Exhaustion bağışıklığı yok; Shove Prone bağışıklığına bakmıyor. Ayrıntı ve düzeltme planı `harita/belgeler/GENEL-SAVAS-DENETIM.md` §2 (B3, B4, B28, B29, B32, B39–B41) |
 | Frightened | ÇALIŞIR | görüş hattı koşulu, kontrol dezavantajı, yaklaşma yasağı (sürüm 2) |
 | Invisible | KISMİ | "görmeyi gerektiren etki" denetimi genel değil (büyü hedeflemesi yalnız görüş hattına bakar) |
 | Grappled | KISMİ | **yakalananın, yakalayan dışındaki hedeflere saldırı dezavantajı yok** (`conditions.ts` saldırı kipi listesinde yok). Hız 0, kaçış, sürükleme ve oyuncu yakalama komutu var |

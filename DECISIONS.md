@@ -2,6 +2,39 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## GENEL-SAVAS-DENETIM düzeltmeleri, sürümsüz grup (2026-11-20; kural ve kayıt sürümü değişmedi)
+
+Kaynak `harita/belgeler/GENEL-SAVAS-DENETIM.md`. Kullanıcı kuralı: SRD 5.2.1 ölçüttür; oyun mekaniğini kökten bozan madde uygulanmaz,
+"ertelendi, karar gerekli" yazılır. Sürümlü grup (ölüm save'i, Unconscious + Prone, direnç/zayıflık, Poisoned, Petrified, gizlenme,
+Ready bayrakları, alan geçişi, stabilize) kapıyı bekliyor: `birlesik`'te kural sürümü 94 (Swarm 95 henüz yok).
+
+- **Dinlenme SRD 5.2.1'e (savaş dışı, `src/rules/rest.ts`, `src/rules/characterRest.ts`):**
+  - Uzun dinlenme harcanan **bütün** HP zarlarını geri verir (SRD s. 185 Long Rest "Regain All HP … all spent Hit Point Dice";
+    eskiden 2014 kuralı, yarısı en az 1). Denetim G5.
+  - Kısa dinlenmede HP zarı başına **en az 1 HP** (s. 187 Short Rest "minimum of 1 Hit Point"; eskiden en az 0). Denetim G2.
+  - 0 HP'de **kısa dinlenme başlamaz** (s. 187 "To start a Short Rest, you must have at least 1 Hit Point"): zar harcanmaz, kısa
+    dinlenme kaynakları dolmaz; karakter listesinde düğme kapalı, açıklama `player.rest.shortNeedsHp` (TR/EN). Yolculukta 0 HP üye kısa
+    dinlenmeden yararlanmaz. Denetim G1.
+  - **Ertelendi, karar gerekli:** 0 HP'de **uzun dinlenme** yasağı (s. 185 "To start a Long Rest, you must have at least 1 Hit
+    Point"; denetim G6, D21). Doğrudan uygulanırsa 0 HP'deki karakter kalıcı olarak 0'da kalır (savaş dışı iyileşme yolu yalnız
+    iksir/tapınak); Serüven `bozgundaYenidenDene` (bütün parti 0 HP → uzun dinlenme) ve Hapishane `dragBack` kırılır. SRD'nin kendi
+    çıkışı ("A Stable creature that isn't healed regains 1 Hit Point after 1d4 hours", s. 18) savaş sonunda ölmekte/stabil ayrımının
+    kayda yazılmasını (D21) ve savaş dışı zaman modelini ister; Kolay `reviveOneHp` ev kuralıyla birlikte karara bağlanmalı.
+  - Testler: `rest.test.ts` (zar başına en az 1, 0 HP, bütün HP zarları), `characterRest.test.ts` (uzun dinlenme `fullStatus`).
+    Beklentiler eski 2014 kuralını sabitliyordu; SRD 5.2.1 s. 185/187'ye göre güncellendi. Denge (`sim:zincir`) ölçülmedi (kullanıcı:
+    denge simülasyonu yok); kısa dinlenme ev kuralı sınırı (2) değişmedi.
+- **Yanlış atıf düzeltmesi:** aşağıdaki "Dinlenme" kararındaki "harcanan HP zarlarının yarısı geri gelir (SRD 5.2.1)" satırı yanlış
+  atıftı: o kural 2014 SRD'sinindir; SRD 5.2.1 s. 185 bütününü verir. Eski satır geçmiş kaydı olarak duruyor, bu karar onu geçersiz kılar.
+- **Long Jump notu düzeltmesi:** K68a'daki "⚠ Long Jump'ta Game Master seçenekleri (alçak engel DC 10 Athletics, zorlu araziye inişte
+  DC 10 Acrobatics) yok" satırında zorlu araziye iniş Game Master seçeneği **değil, zorunlu** kuraldır (SRD s. 185: "If you land in
+  Difficult Terrain, you must succeed on a DC 10 Dexterity (Acrobatics) check or have the Prone condition"); yalnız alçak engel
+  Game Master seçeneğidir. Uygulanması sürümlü (denetim E11/F14), sürümlü grupla.
+- **Eski belgeler:** `harita/belgeler/READY-DURUM.md` (sürüm 87 anı, "Ready yok") başına güncelleme notu; `Y1-ENVANTER.md` #13 Ready
+  satırı (mekanik sürüm 90'dan beri var, YZ kullanmıyor); `docs/SRD-DENETIM.md` "Durumlar (15)" tam → kısmi (`scripts/srd-denetim.ts`
+  ile yeniden üretildi; canavar durum bağışıklığı sayısı güncel veriden 75 → 98); `ENVANTER-DIGER.md` durum satırına güncelleme.
+- **Ertelenen, karar bekleyen (uygulanmadı):** `nightVision` varsayılanı ve `darkness` haritaları (H3, H4, H12), Knocking Out (D10),
+  yapay zekânın Dash yapmaması (A45; denge etkisi), 0 HP uzun dinlenme (G6/D21). Belgede "Karar gerekli" ve satırlarında işaretli.
+
 ## Görev SWARM95: SRD Swarm altıgen işgali + sürü parçacıkları (2026-11-20; kural sürümü 95 `SWARM95_VERSION`)
 
 Tek kural sürümü 95 (`src/battle/swarm95Surum.ts`, `swarm95On`); 94 ve altı kayıt/replay eski davranışta (sürü yaratıkların içinden geçer, başka yaratığın altıgeninde duramaz). Olay biçimi değişmedi, kayıt sürümü aynı. Ölçüt SRD 5.2.1 Swarm: "The swarm can occupy another creature's space and vice versa, and the swarm can move through any opening large enough for a Tiny …".
@@ -33,6 +66,7 @@ Tek kural sürümü 94 (`src/battle/b94Surum.ts`, `b94On`); 93 ve altı kayıt/r
   - A2 (sürümlü): "Incapacitated ya da ölünce biten/duran etki" tek yardımcıda `src/battle/sourceDown.ts` (`sourceDown`: yok, ölü, 0 HP ya da Incapacitated içeren durum). Bağlı: B93 Turn Undead (`endsIfSourceDown`, aynı koşul), Nature's Sanctuary (alan `endsIfCasterDown`: biter), Holy Nimbus (alan `pausedIfCasterDown`: Paladin düşmüşken tetiklenmez, kalkınca sürer; Aura of Protection'a bağlı olduğu için bitmez), Aura of Protection: 94+ savaşta Paladin'in kendi bonusu save'lerden çıkarılır (`create.ts` `unbakeOwnAura`, işaret `auraOwnLive`) ve aura yolundan gelir (`auras.ts` `ownAuraOf`; Incapacitated/0 HP iken 0); anahtar `auraOfProtection` kapalıyken de kendi bonusu (eski toplamla aynı). Karakter sayfası gösterimi (`combatantFromSheet`) değişmedi.
 - **B. Bard** (sürümlü 94 dışı belirtildi): Magical Discoveries 10+'da da sayıya girmez (`discoveryCap` artık null değil; başka liste cantrip'i önce Discoveries sayılır; sürümsüz, oluşturucu). Magical Secrets yalnız 1+ seviye büyüleri açar, başka listeden cantrip yalnız Discoveries ile (sürümsüz). Font of Inspiration: savaş menüsü kullanım 0 iken slotla verir (sürümsüz, arayüz); Cutting Words kullanım bitince Font ile en düşük slotla ödenir. Cutting Words tetikleri: saldırıya ek olarak save'li büyü/alan hasar zarı (hasar bir kez atılır, bütün hedeflerden düşer; öneri yalnız dost etkilenecekken ve ağır hasarda) ve düşmanın başarılı kaçış kontrolü (grapple, kısıtlama; GM'in tekil beceri kontrolü kapsam dışı, tek olay döndüren API). Countercharm alan/aura save'lerinde de (`against`); `saveEffect` harita/efsanevi yolu ikinci şans desteklemediği için ertelendi. Bardic Inspiration hedefi Bard'ı görebilmeli ya da duyabilmeli. Words of Creation ikinci hedefi `targetIds` ile seçilir (motor; arayüz seçicisi ertelendi).
 - **C. Druid** (sürümlü 94 dışı belirtildi; Wild Shape hariç): Land's Aid alandaki 0 HP'deki dostu da iyileştirip kaldırır. Natural Recovery slotsuz büyüsü yalnız seçili arazinin Circle Spells'inden (`freeSpellList.alwaysPreparedOnly`; savaşçı oluşturulurken kurulum sürümü bilinmediği için eşleşen eski kayıtlar `freeSpellsPre94`'te taşınır, `startBattle` 93 ve altında geri ekler, 94+'ta atar). Wild Companion familiar'ı Fey. Nature's Sanctuary taşınırken yeni yer Druid'in 120 ft'inde. YZ: Land's Aid ve Nature's Sanctuary basit kurallarla (`src/battle/ai/b94.ts`); Wild Resurgence/Wild Companion YZ'si denge kararı olduğu için ertelendi. Primal Strike B93-A'da, Beast Spells malzeme kapısı WS92'de düzelmişti (tekrarlanmadı). Improved Potent Spellcasting Druid listesi süzgeci ertelendi (menzil hesabına sürüm taşınmıyor). Sürümsüz: başlangıç önerisine Sickle, EN/TR özellik özetleri.
+- **D. Paladin** (sürümlü 94 dışı belirtildi): Sacred Weapon tek silaha bağlı (`choice` ya da ilk yakın dövüş silahı; Magic Weapon'ın `enchantBy` alanı), silah bırakılınca güçlendirme ve ışığı biter, ışık 20 + 20 ft parlak/loş; Radiant seçimi otomatik kaldı. Holy Nimbus kullanım yokken 5. seviye slotla eylemsiz yenilenir, aura güneş ışığı, Paladin düşmüşken durur (A2). Abjure Foes'ta Frightened hedef turunda yalnız hareket ya da eylem ya da bonus eylem (`oneEconomy`). Divine Sense süresi 10 dakika ve Incapacitated olunca biter. Smite of Protection aurada kaldıkça (dinamik `coverAura`). YZ: Holy Nimbus, Abjure Foes (≥ 2 düşman), Lay On Hands ile durum temizleme (`paladinChoice94`); YZ Holy Nimbus için slot harcamaz. Sürümsüz: Lay On Hands arayüzü yaralı + durumlu hedefte temizle + iyileştir; Divine Sense/Abjure Foes/Holy Nimbus ipucu metinleri. Oath of Devotion 9/13/17 eksikliği fikstür (düzeltme konusu değil). Restoring Touch durum seçici ve Lay On Hands düşmana (K3) karar/arayüz işi olarak kaldı.
 
 ## Dungeondex Kitap kabuğu: prospektüs sağ sayfada, EN etiketleri (2026-11-20; yalnız arayüz, metin ve veri; kural ve kayıt sürümü değişmedi)
 
@@ -7054,7 +7088,7 @@ Mobil 390×844 (hazırlık 155 ms; kapalı göz 202.9,365.8 px, geniş göz 207.
   - Biten savaşta oyuncu karakterlerinin HP'si, kaynakları ve slotları kayıtlı karaktere yazılır. Sonraki savaş bu durumla başlar.
   - 0 HP'deki ya da ölü karakter partiye alınamaz. Ölü için "Diriltildi say" düğmesi var.
 - **Kısa dinlenme:** HP zarı harcanır (zar + CON); kısa dinlenmede yenilenen kaynaklar dolar; Warlock slotları dolar.
-- **Uzun dinlenme:** Her şey dolar; harcanan HP zarlarının yarısı geri gelir (SRD 5.2.1).
+- **Uzun dinlenme:** Her şey dolar; harcanan HP zarlarının yarısı geri gelir (SRD 5.2.1). ⚠ Yanlış atıf (2014 kuralı); 2026-11-20 "GENEL-SAVAS-DENETIM düzeltmeleri, sürümsüz grup" kararı: SRD 5.2.1 s. 185 bütün HP zarları.
 - **Arayüz:** Karakter listesi ve Game Master kurulumu ("Herkes uzun dinlensin").
 - **Kayıt sürümü 7:** kaynak kaydı biçimi. 3–7 yüklenir; eski üç alanlı kaynak nesnesi aynı okunur (test).
 

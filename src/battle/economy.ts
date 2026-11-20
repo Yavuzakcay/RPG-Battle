@@ -165,6 +165,14 @@ export function actionAttacks(actor: Combatant, pact: boolean): number {
   return pact ? Math.max(actor.attacksPerAction, actor.pactAttacks ?? 0) : actor.attacksPerAction;
 }
 
+/** Görev B94 (Abjure Foes, `oneEconomy`): bu tur başka bir hak (hareket, eylem, bonus eylem) kullanıldı mı. */
+export function oneEconomyUsed(actor: Combatant, want: 'move' | 'action' | 'bonus'): boolean {
+  if (!actor.effects?.some((x) => x.oneEconomy)) return false;
+  const e = actor.economy;
+  return (want !== 'move' && actor.movementUsed > 0) || (want !== 'action' && !!e.action) || (want !== 'bonus' && !!e.bonus);
+}
+export const oneEconomyText = 'Korkmuş (Abjure Foes): bu tur yalnız hareket ya da eylem ya da bonus eylemden biri.';
+
 export function economyCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
   const cost = baseCost(state, actor, cmd);
   if (!cost.ok || cost.event?.type !== 'action_used') return cost;
@@ -179,6 +187,8 @@ export function economyCost(state: BattleState, actor: Combatant, cmd: Command):
   if ((cost.event.kind === 'action' || cost.event.kind === 'bonus') && actor.effects?.some((x) => x.noActBonus)) return fail('Zehirli bulutun etkisinde: bu tur eylem ve bonus eylem yapılamaz.');
   // Kuyruk 19: Confusion: bonus eylem yok.
   if (cost.event.kind === 'bonus' && actor.effects?.some((x) => x.noBonus)) return fail('Bu durumda bonus eylem yapılamaz (Confusion).');
+  // Görev B94 (Abjure Foes): yalnız hareket ya da eylem ya da bonus eylem.
+  if ((cost.event.kind === 'action' || cost.event.kind === 'bonus') && oneEconomyUsed(actor, cost.event.kind)) return fail(oneEconomyText);
   if (slowed && cost.event.kind === 'action' && e.bonus) return fail('Slow: bu tur bonus eylem kullanıldı, eylem yapılamaz.');
   if (slowed && cost.event.kind === 'bonus' && e.action) return fail('Slow: bu tur eylem kullanıldı, bonus eylem yapılamaz.');
   if (slowed && cost.event.kind === 'action' && cmd.type === 'attack') return { ok: true, event: { ...cost.event, attacksLeft: 0 } };

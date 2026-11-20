@@ -54,7 +54,7 @@ const tr = {
     rest: {
       status: (hp: number, max: number, dice: number, level: number) => `Durum: HP ${hp}/${max} · HP zarı ${dice}/${level}`,
       resources: (list: string) => `Kalan: ${list}`, slots: (list: string) => `Slotlar: ${list}`,
-      rested: 'Dinlenmiş.', dead: 'Öldü (dinlenme diriltmez).', down: '0 HP: savaşa girmeden önce dinlenmeli.',
+      rested: 'Dinlenmiş.', dead: 'Öldü (dinlenme diriltmez).', down: '0 HP: savaşa girmeden önce dinlenmeli.', shortNeedsHp: 'Kısa dinlenme için en az 1 HP gerekir (uzun dinlenme ya da iyileştirme).',
       short: 'Kısa dinlenme', long: 'Uzun dinlenme', revive: 'Diriltildi say',
       dice: 'Harcanacak HP zarı', spend: (n: number) => `${n} zar harca ve dinlen`,
       shortDone: (rolls: string, healed: number) => `Kısa dinlenme: ${rolls || 'zar yok'} → +${healed} HP; kısa dinlenmede yenilenen kaynaklar doldu.`,
