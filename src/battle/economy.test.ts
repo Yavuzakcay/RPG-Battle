@@ -77,7 +77,9 @@ describe('büyüler', () => {
     expect(ok(execute(heal.state, { type: 'cast_spell', actorId: 'A', spellName: 'Fire Bolt', targetId: 'B' }, P1, scripted([20, 15], [10, 1], [10, 1]))).ok).toBe(true);
   });
   it('tepki büyüsü (Shield) başkasının turunda yapılır, turlar arası bir kez; kendi turunda yenilenir', () => {
-    const s = advanceTo(setup('Düz', { A: caster }), 'B');
+    // Kural sürümü 82: komutla tepki büyüsü (eski kayıt yolu). 83+'da tepki büyüsü yalnız tetiğiyle yapılır (mekanik
+    // matris B04; red testi matris83.test.ts); tepki hakkı ekonomisi aynı.
+    const s = { ...advanceTo(setup('Düz', { A: caster }), 'B'), kuralSurumu: 82 };
     const shield: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Shield' };
     const r = ok(execute(s, shield, P1, scripted()));
     expect(r.state.combatants.A?.economy.reaction).toBe(true);

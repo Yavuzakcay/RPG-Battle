@@ -203,7 +203,7 @@
       "light": "Soft late-morning sunlight from the upper left, dappled light under the canopy, short soft shadows to the lower right."
     },
     "kale-avlu": {
-      "style": "kale/kale-klasik.webp",
+      "style": "kale/kale-avlu.webp",
       "tr": "Gündüz kale ve avlu: batıda çayır ve hendek, ortada kapılı sur, içeride taş döşeli avlu, köşede kule, doğuda kapalı odalar ve koridorlar. Merdiven ve kat yok.",
       "en": "A daytime castle and courtyard: a meadow and moat in the west, a curtain wall with a gate in the middle, a flagstone courtyard inside, a corner tower, closed rooms and corridors in the east. No stairs and no upper floors.",
       "light": "Clear daylight from the upper left, crisp short shadows to the lower right."
@@ -215,7 +215,7 @@
       "light": "Dark cave lit only by glowing cyan and violet crystals and faint bioluminescent mushrooms; areas far from crystals are dim but still readable."
     },
     "kale-baskini": {
-      "style": "kale/kale-klasik.webp",
+      "style": "kale/kale-avlu.webp",
       "tr": "Şafak vakti kale baskını: batıda sık ağaçlı orman kenarı ve çalılar, hendek ve açık dış kapı, taş döşeli avlu ortasında suyla çevrili kuyu, doğuda iç bina (koğuş, koridor, mahzen) ve iki köşe kulesi. Fıçılar, masa, sandık ve mangal yerlerinde.",
       "en": "A castle raid at dawn: a dense forest edge with brush in the west, a moat and an open outer gate, a flagstone courtyard with a well ringed by shallow water in the middle, an inner building in the east (barracks, corridor, cellar) and two corner towers. Barrels, a table, a chest and a brazier in place.",
       "light": "Cool dawn light from the upper left, long soft shadows to the lower right, a faint warm glow from the brazier."

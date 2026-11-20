@@ -35,7 +35,7 @@ export function trackPools(before: BattleState, after: BattleState, event: Battl
     const hp = Math.max(0, Math.min(pool.max, pool.hp + delta));
     next = { ...next, hpPools: { ...next.hpPools, [pool.id]: { ...pool, hp } } };
     if (hp > 0) continue;
-    // Kuyruk K54b: Yıkılmaz Birlik: sahibinin kaynağı ve tepkisi duruyorsa havuz bir kez ayakta kalır.
+    // Kuyruk K54b: Barış Azizi: sahibinin kaynağı ve tepkisi duruyorsa havuz bir kez ayakta kalır.
     const held = holdPool(next, pool);
     if (held) { next = held; continue; }
     // Havuz bitti: bütün üyeler düşer.
@@ -49,7 +49,7 @@ export function trackPools(before: BattleState, after: BattleState, event: Battl
   return next;
 }
 
-/** Yıkılmaz Birlik: koşullar tutuyorsa havuz `guard.hp` ile kalır (sahibin kaynağı −1, tepkisi harcanır, üyelerin Motivasyonu dolar). */
+/** Barış Azizi: koşullar tutuyorsa havuz `guard.hp` ile kalır (sahibin kaynağı −1, tepkisi harcanır, üyelerin Motivasyonu dolar). */
 function holdPool(state: BattleState, pool: HpPool): BattleState | null {
   const g = pool.guard;
   const o = g ? state.combatants[g.ownerId] : undefined;

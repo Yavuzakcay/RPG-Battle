@@ -20,8 +20,8 @@ const TRAVEL_MS = 320;
 type Pt = { x: number; y: number };
 interface Geo { hexCenter: (o: Offset) => Pt; tokenCenter: (c: Combatant) => Pt; hexW: number; hexH: number }
 
-/** Tek şerit karesi: animasyonlu (`fx-play`, steps) ya da statik tek kare. */
-function Strip({ s, x, y, w, h, animated, delay = 0, loop, hold, rotate, cx, cy, tint, outline, className, hue, style }: {
+/** Tek şerit karesi: animasyonlu (`fx-play`, steps) ya da statik tek kare. Görsel galerisi (`src/ui/galeri/`) de kullanır. */
+export function Strip({ s, x, y, w, h, animated, delay = 0, loop, hold, rotate, cx, cy, tint, outline, className, hue, style }: {
   s: FxSprite; x: number; y: number; w: number; h: number; animated: boolean; delay?: number; loop?: boolean;
   /** Kuyruk E4c: tek seferlik ama kalıcı doku: kareler sırayla oynar, son karede kalır (normal tek seferlik animasyon sonunda boşa kayardı). */
   hold?: boolean; rotate?: number; cx?: number; cy?: number;

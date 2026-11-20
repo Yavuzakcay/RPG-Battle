@@ -1,0 +1,305 @@
+{
+ "_aciklama": "Dungeondex prospektüsü, silahlar (harita/belgeler/DUNGEONDEX-PROSPEKTUS.md). kayitlar: kimlik = SRD kimliği; ne/nasil/risk/kimler SRD 5.2.1'den Türkçe özet (adlar İngilizce, SD4); maliyet ve ustalik data/srd/weapons.json'dan (test denetler). ozellik: silah özelliklerinin Türkçe açıklaması (SRD Equipment > Weapons > Properties).",
+ "ozellik": {
+  "light": "Attack eyleminde Light silahla saldırınca aynı tur bonus eylemle başka bir Light silahla bir ek saldırı yapılır; ek saldırının hasarına yetenek değiştiricisi (negatif değilse) eklenmez.",
+  "finesse": "Saldırı ve hasar zarlarında STR ya da DEX değiştiricisinden biri seçilir; iki zarda da aynısı kullanılır.",
+  "heavy": "Yakın dövüş silahında STR, menzilli silahta DEX değeri en az 13 değilse saldırı zarları dezavantajlıdır.",
+  "thrown": "Silah fırlatılarak menzilli saldırı yapılır ve çekmek saldırının parçasıdır; yakın dövüş silahı fırlatılırken yakın dövüşteki yetenek değiştiricisi kullanılır.",
+  "versatile": "Tek elle ya da iki elle kullanılır; parantezdeki hasar iki elle yapılan yakın dövüş saldırısında geçerlidir.",
+  "reach": "Silahla saldırırken ve fırsat saldırısı erişimi hesaplanırken erişime 5 ft eklenir.",
+  "two-handed": "Saldırırken iki el gerekir.",
+  "loading": "Bir eylem, bonus eylem ya da tepkiyle normalde kaç saldırı yapılabilirse yapılsın yalnız tek mühimmat atılır.",
+  "ammunition": "Menzilli saldırı için uygun mühimmat gerekir; her saldırı birini harcar, çekmek saldırının parçasıdır (tek elli silahı doldurmak boş el ister). Savaştan sonra 1 dakikada harcananın yarısı (aşağı yuvarlanır) toplanır."
+ },
+ "kayitlar": {
+  "dagger": {
+   "ne": "Küçük, çok yönlü bıçak: Finesse sayesinde STR ya da DEX'le vurur, Light ile ikinci el saldırısına uygundur, gerektiğinde fırlatılır.",
+   "nasil": "Hasar: 1d4 delici. Saldırı ve hasar için STR ya da DEX değiştiricisinden biri seçilir; ikisinde aynısı kullanılır. Attack eyleminde bununla saldırınca aynı tur bonus eylemle başka bir Light silahla ek saldırı yapılabilir; ek saldırının hasarına yetenek değiştiricisi (negatif değilse) eklenmez. Fırlatılabilir: normal menzil 20 ft, uzun menzil 60 ft; silahı çekmek saldırının parçasıdır; fırlatırken yakın dövüşteki yetenek değiştiricisi kullanılır. Nick ustalığıyla Light ek saldırısı bonus eylem yerine Attack eyleminin içinde yapılır (turda bir kez). Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "Normal menzilin ötesindeki hedefe saldırı dezavantajlı, uzun menzilin ötesine saldırı yapılamaz.",
+   "kimler": "Herkes kullanabilir; ancak Simple silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "2 GP",
+   "ustalik": "Nick"
+  },
+  "handaxe": {
+   "ne": "Hafif balta: Light olduğu için iki silahla dövüşe uygundur, fırlatılarak menzilden de kesici hasar verir.",
+   "nasil": "Hasar: 1d6 kesici. Attack eyleminde bununla saldırınca aynı tur bonus eylemle başka bir Light silahla ek saldırı yapılabilir; ek saldırının hasarına yetenek değiştiricisi (negatif değilse) eklenmez. Fırlatılabilir: normal menzil 20 ft, uzun menzil 60 ft; silahı çekmek saldırının parçasıdır; fırlatırken yakın dövüşteki yetenek değiştiricisi kullanılır. Vex ustalığıyla isabet edip hasar verince aynı hedefe bir sonraki saldırı avantajlıdır. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "Normal menzilin ötesindeki hedefe saldırı dezavantajlı, uzun menzilin ötesine saldırı yapılamaz.",
+   "kimler": "Herkes kullanabilir; ancak Simple silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "5 GP",
+   "ustalik": "Vex"
+  },
+  "javelin": {
+   "ne": "Fırlatmalık mızrak: Thrown sayesinde basit silahlar arasında en uzak fırlatma menzilini sunar; yakın dövüşte de kullanılır.",
+   "nasil": "Hasar: 1d6 delici. Fırlatılabilir: normal menzil 30 ft, uzun menzil 120 ft; silahı çekmek saldırının parçasıdır; fırlatırken yakın dövüşteki yetenek değiştiricisi kullanılır. Slow ustalığıyla hasar verilen hedefin hızı senin bir sonraki turunun başına dek düşer. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "Normal menzilin ötesindeki hedefe saldırı dezavantajlı, uzun menzilin ötesine saldırı yapılamaz.",
+   "kimler": "Herkes kullanabilir; ancak Simple silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "5 SP",
+   "ustalik": "Slow"
+  },
+  "mace": {
+   "ne": "Ek özelliği olmayan, tek elle kullanılan sağlam bir ezici silah; diğer el serbest kalır.",
+   "nasil": "Hasar: 1d6 ezici. Sap ustalığıyla isabet alan hedefin bir sonraki saldırısı dezavantajlıdır. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "kimler": "Herkes kullanabilir; ancak Simple silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "5 GP",
+   "ustalik": "Sap"
+  },
+  "quarterstaff": {
+   "ne": "Basit sopa: Versatile olduğu için tek elle ya da iki elle daha yüksek hasarla kullanılır.",
+   "nasil": "Hasar: tek elle 1d6 ezici, iki elle yakın dövüşte 1d8. Topple ustalığıyla isabet alan hedef CON kurtarma zarını geçemezse Prone olur. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "kimler": "Herkes kullanabilir; ancak Simple silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "2 SP",
+   "ustalik": "Topple"
+  },
+  "spear": {
+   "ne": "Basit mızrak: Versatile ile iki elde daha çok vurur, Thrown ile fırlatılabilir; hem yakın hem kısa menzil için.",
+   "nasil": "Hasar: tek elle 1d6 delici, iki elle yakın dövüşte 1d8. Fırlatılabilir: normal menzil 20 ft, uzun menzil 60 ft; silahı çekmek saldırının parçasıdır; fırlatırken yakın dövüşteki yetenek değiştiricisi kullanılır. Sap ustalığıyla isabet alan hedefin bir sonraki saldırısı dezavantajlıdır. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "Normal menzilin ötesindeki hedefe saldırı dezavantajlı, uzun menzilin ötesine saldırı yapılamaz.",
+   "kimler": "Herkes kullanabilir; ancak Simple silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "1 GP",
+   "ustalik": "Sap"
+  },
+  "greatclub": {
+   "ne": "İri, iki elle tutulan sopa: basit silahlar arasında ezici hasarı yüksektir.",
+   "nasil": "Hasar: 1d8 ezici. Saldırırken iki el gerekir. Push ustalığıyla isabet alan Large ya da daha küçük hedef geriye itilebilir. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "kimler": "Herkes kullanabilir; ancak Simple silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "2 SP",
+   "ustalik": "Push"
+  },
+  "light-hammer": {
+   "ne": "Küçük çekiç: Light ile ikinci el saldırısına uygundur, fırlatılabilir; ezici hasar verir.",
+   "nasil": "Hasar: 1d4 ezici. Attack eyleminde bununla saldırınca aynı tur bonus eylemle başka bir Light silahla ek saldırı yapılabilir; ek saldırının hasarına yetenek değiştiricisi (negatif değilse) eklenmez. Fırlatılabilir: normal menzil 20 ft, uzun menzil 60 ft; silahı çekmek saldırının parçasıdır; fırlatırken yakın dövüşteki yetenek değiştiricisi kullanılır. Nick ustalığıyla Light ek saldırısı bonus eylem yerine Attack eyleminin içinde yapılır (turda bir kez). Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "Normal menzilin ötesindeki hedefe saldırı dezavantajlı, uzun menzilin ötesine saldırı yapılamaz.",
+   "kimler": "Herkes kullanabilir; ancak Simple silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "2 GP",
+   "ustalik": "Nick"
+  },
+  "sickle": {
+   "ne": "Küçük orak: Light olduğu için ikinci el silahı olarak kullanılan, kesici hasarlı basit silah.",
+   "nasil": "Hasar: 1d4 kesici. Attack eyleminde bununla saldırınca aynı tur bonus eylemle başka bir Light silahla ek saldırı yapılabilir; ek saldırının hasarına yetenek değiştiricisi (negatif değilse) eklenmez. Nick ustalığıyla Light ek saldırısı bonus eylem yerine Attack eyleminin içinde yapılır (turda bir kez). Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "kimler": "Herkes kullanabilir; ancak Simple silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "1 GP",
+   "ustalik": "Nick"
+  },
+  "light-crossbow": {
+   "ne": "Basit menzilli silah: iki elle kullanılır, uzak menzilden cıvatayla delici hasar verir; her atıştan önce doldurulur.",
+   "nasil": "Hasar: 1d8 delici. Saldırırken iki el gerekir. Menzil 80 ft, uzun menzil 320 ft. Her saldırı bir cıvata (Bolt) harcar; çekmek saldırının parçasıdır. Savaştan sonra 1 dakikada harcananın yarısı (aşağı yuvarlanır) geri toplanır. Slow ustalığıyla hasar verilen hedefin hızı senin bir sonraki turunun başına dek düşer. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "Loading: bir eylem, bonus eylem ya da tepkiyle yalnız tek atış yapılır; çoklu saldırı hakkı bu silahla işe yaramaz. Normal menzilin ötesindeki hedefe saldırı dezavantajlı, uzun menzilin ötesine saldırı yapılamaz. Mühimmat bitince menzilli saldırı yapılamaz.",
+   "kimler": "Herkes kullanabilir; ancak Simple silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "25 GP",
+   "ustalik": "Slow"
+  },
+  "shortbow": {
+   "ne": "Hafif yay: iki elle kullanılır, ok atar; Loading olmadığı için çoklu saldırıyla her saldırıda ateş edilebilir.",
+   "nasil": "Hasar: 1d6 delici. Saldırırken iki el gerekir. Menzil 80 ft, uzun menzil 320 ft. Her saldırı bir ok (Arrow) harcar; çekmek saldırının parçasıdır. Savaştan sonra 1 dakikada harcananın yarısı (aşağı yuvarlanır) geri toplanır. Vex ustalığıyla isabet edip hasar verince aynı hedefe bir sonraki saldırı avantajlıdır. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "Normal menzilin ötesindeki hedefe saldırı dezavantajlı, uzun menzilin ötesine saldırı yapılamaz. Mühimmat bitince menzilli saldırı yapılamaz.",
+   "kimler": "Herkes kullanabilir; ancak Simple silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "25 GP",
+   "ustalik": "Vex"
+  },
+  "battleaxe": {
+   "ne": "Savaş baltası: Versatile ile tek elle ya da iki elle daha yüksek kesici hasarla kullanılır.",
+   "nasil": "Hasar: tek elle 1d8 kesici, iki elle yakın dövüşte 1d10. Topple ustalığıyla isabet alan hedef CON kurtarma zarını geçemezse Prone olur. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "10 GP",
+   "ustalik": "Topple"
+  },
+  "flail": {
+   "ne": "Zincirli topuz: ek özelliği olmayan, tek elle kullanılan ezici savaş silahı.",
+   "nasil": "Hasar: 1d8 ezici. Sap ustalığıyla isabet alan hedefin bir sonraki saldırısı dezavantajlıdır. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "10 GP",
+   "ustalik": "Sap"
+  },
+  "glaive": {
+   "ne": "Uzun saplı kesici silah: Reach ile uzaktan vurur, Heavy ve Two-Handed olduğu için güçlü kollar ister.",
+   "nasil": "Hasar: 1d10 kesici. Saldırırken iki el gerekir. Reach erişimi uzatır; fırsat saldırısı erişiminde de geçerlidir. Graze ustalığıyla ıskalanan hedef yine de saldırıdaki yetenek değiştiricisi kadar hasar alır. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "STR değeri en az 13 değilse bu silahla saldırılar dezavantajlıdır.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "20 GP",
+   "ustalik": "Graze"
+  },
+  "greataxe": {
+   "ne": "Büyük balta: tek zarla en yüksek kesici hasar aralığını verir; Heavy ve Two-Handed.",
+   "nasil": "Hasar: 1d12 kesici. Saldırırken iki el gerekir. Cleave ustalığıyla isabetten sonra ilk hedefin yanındaki, erişimdeki ikinci yaratığa turda bir ek saldırı yapılır. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "STR değeri en az 13 değilse bu silahla saldırılar dezavantajlıdır.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "30 GP",
+   "ustalik": "Cleave"
+  },
+  "greatsword": {
+   "ne": "Büyük kılıç: iki zarla istikrarlı yüksek kesici hasar verir; Heavy ve Two-Handed.",
+   "nasil": "Hasar: 2d6 kesici. Saldırırken iki el gerekir. Graze ustalığıyla ıskalanan hedef yine de saldırıdaki yetenek değiştiricisi kadar hasar alır. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "STR değeri en az 13 değilse bu silahla saldırılar dezavantajlıdır.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "50 GP",
+   "ustalik": "Graze"
+  },
+  "halberd": {
+   "ne": "Teber: Reach ile uzaktan kesici darbe indirir; Heavy ve Two-Handed.",
+   "nasil": "Hasar: 1d10 kesici. Saldırırken iki el gerekir. Reach erişimi uzatır; fırsat saldırısı erişiminde de geçerlidir. Cleave ustalığıyla isabetten sonra ilk hedefin yanındaki, erişimdeki ikinci yaratığa turda bir ek saldırı yapılır. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "STR değeri en az 13 değilse bu silahla saldırılar dezavantajlıdır.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "20 GP",
+   "ustalik": "Cleave"
+  },
+  "longsword": {
+   "ne": "Uzun kılıç: Versatile ile tek elde ya da iki elde daha yüksek kesici hasarla kullanılır.",
+   "nasil": "Hasar: tek elle 1d8 kesici, iki elle yakın dövüşte 1d10. Sap ustalığıyla isabet alan hedefin bir sonraki saldırısı dezavantajlıdır. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "15 GP",
+   "ustalik": "Sap"
+  },
+  "maul": {
+   "ne": "Ağır savaş tokmağı: iki zarla yüksek ezici hasar verir; Heavy ve Two-Handed.",
+   "nasil": "Hasar: 2d6 ezici. Saldırırken iki el gerekir. Topple ustalığıyla isabet alan hedef CON kurtarma zarını geçemezse Prone olur. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "STR değeri en az 13 değilse bu silahla saldırılar dezavantajlıdır.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "10 GP",
+   "ustalik": "Topple"
+  },
+  "morningstar": {
+   "ne": "Çivili topuz: ek özelliği olmayan, tek elle kullanılan delici savaş silahı.",
+   "nasil": "Hasar: 1d8 delici. Sap ustalığıyla isabet alan hedefin bir sonraki saldırısı dezavantajlıdır. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "15 GP",
+   "ustalik": "Sap"
+  },
+  "rapier": {
+   "ne": "Meç: Finesse ile STR ya da DEX'le kullanılan, tek elli silahlar arasında yüksek delici hasarlı ince kılıç.",
+   "nasil": "Hasar: 1d8 delici. Saldırı ve hasar için STR ya da DEX değiştiricisinden biri seçilir; ikisinde aynısı kullanılır. Vex ustalığıyla isabet edip hasar verince aynı hedefe bir sonraki saldırı avantajlıdır. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "25 GP",
+   "ustalik": "Vex"
+  },
+  "scimitar": {
+   "ne": "Pala: Finesse ve Light ile çevik dövüşçünün ikinci el silahı; kesici hasar verir.",
+   "nasil": "Hasar: 1d6 kesici. Saldırı ve hasar için STR ya da DEX değiştiricisinden biri seçilir; ikisinde aynısı kullanılır. Attack eyleminde bununla saldırınca aynı tur bonus eylemle başka bir Light silahla ek saldırı yapılabilir; ek saldırının hasarına yetenek değiştiricisi (negatif değilse) eklenmez. Nick ustalığıyla Light ek saldırısı bonus eylem yerine Attack eyleminin içinde yapılır (turda bir kez). Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "25 GP",
+   "ustalik": "Nick"
+  },
+  "shortsword": {
+   "ne": "Kısa kılıç: Finesse ve Light ile çevik dövüşçünün ikinci el silahı; delici hasar verir.",
+   "nasil": "Hasar: 1d6 delici. Saldırı ve hasar için STR ya da DEX değiştiricisinden biri seçilir; ikisinde aynısı kullanılır. Attack eyleminde bununla saldırınca aynı tur bonus eylemle başka bir Light silahla ek saldırı yapılabilir; ek saldırının hasarına yetenek değiştiricisi (negatif değilse) eklenmez. Vex ustalığıyla isabet edip hasar verince aynı hedefe bir sonraki saldırı avantajlıdır. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "10 GP",
+   "ustalik": "Vex"
+  },
+  "trident": {
+   "ne": "Üç dişli mızrak: Versatile ile iki elde daha çok vurur, Thrown ile fırlatılır.",
+   "nasil": "Hasar: tek elle 1d8 delici, iki elle yakın dövüşte 1d10. Fırlatılabilir: normal menzil 20 ft, uzun menzil 60 ft; silahı çekmek saldırının parçasıdır; fırlatırken yakın dövüşteki yetenek değiştiricisi kullanılır. Topple ustalığıyla isabet alan hedef CON kurtarma zarını geçemezse Prone olur. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "Normal menzilin ötesindeki hedefe saldırı dezavantajlı, uzun menzilin ötesine saldırı yapılamaz.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "5 GP",
+   "ustalik": "Topple"
+  },
+  "warhammer": {
+   "ne": "Savaş çekici: Versatile ile tek elle ya da iki elle daha yüksek ezici hasarla kullanılır.",
+   "nasil": "Hasar: tek elle 1d8 ezici, iki elle yakın dövüşte 1d10. Push ustalığıyla isabet alan Large ya da daha küçük hedef geriye itilebilir. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "15 GP",
+   "ustalik": "Push"
+  },
+  "whip": {
+   "ne": "Kırbaç: Finesse ile DEX'le kullanılabilir, Reach ile uzaktan vurur; hasarı düşüktür.",
+   "nasil": "Hasar: 1d4 kesici. Saldırı ve hasar için STR ya da DEX değiştiricisinden biri seçilir; ikisinde aynısı kullanılır. Reach erişimi uzatır; fırsat saldırısı erişiminde de geçerlidir. Slow ustalığıyla hasar verilen hedefin hızı senin bir sonraki turunun başına dek düşer. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "2 GP",
+   "ustalik": "Slow"
+  },
+  "hand-crossbow": {
+   "ne": "El arbaleti: tek elle kullanılan, Light özellikli arbalet; kısa menzilden delici hasar verir, Loading.",
+   "nasil": "Hasar: 1d6 delici. Light olduğu için Attack eyleminde bununla saldırınca aynı tur bonus eylemle başka bir Light silahla ek saldırı yapılabilir. Menzil 30 ft, uzun menzil 120 ft. Her saldırı bir cıvata (Bolt) harcar; çekmek saldırının parçasıdır, doldurmak için boş bir el gerekir. Savaştan sonra 1 dakikada harcananın yarısı (aşağı yuvarlanır) geri toplanır. Vex ustalığıyla isabet edip hasar verince aynı hedefe bir sonraki saldırı avantajlıdır. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "Loading: bir eylem, bonus eylem ya da tepkiyle yalnız tek atış yapılır; çoklu saldırı hakkı bu silahla işe yaramaz. Normal menzilin ötesindeki hedefe saldırı dezavantajlı, uzun menzilin ötesine saldırı yapılamaz. Mühimmat bitince menzilli saldırı yapılamaz.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "75 GP",
+   "ustalik": "Vex"
+  },
+  "heavy-crossbow": {
+   "ne": "Ağır arbalet: çok uzak menzilden yüksek delici hasar verir; Heavy, Loading ve Two-Handed.",
+   "nasil": "Hasar: 1d10 delici. Saldırırken iki el gerekir. Menzil 100 ft, uzun menzil 400 ft. Her saldırı bir cıvata (Bolt) harcar; çekmek saldırının parçasıdır. Savaştan sonra 1 dakikada harcananın yarısı (aşağı yuvarlanır) geri toplanır. Push ustalığıyla isabet alan Large ya da daha küçük hedef geriye itilebilir. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "DEX değeri en az 13 değilse bu silahla saldırılar dezavantajlıdır. Loading: bir eylem, bonus eylem ya da tepkiyle yalnız tek atış yapılır; çoklu saldırı hakkı bu silahla işe yaramaz. Normal menzilin ötesindeki hedefe saldırı dezavantajlı, uzun menzilin ötesine saldırı yapılamaz. Mühimmat bitince menzilli saldırı yapılamaz.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "50 GP",
+   "ustalik": "Push"
+  },
+  "longbow": {
+   "ne": "Uzun yay: tablodaki en uzak menzilli silah; ok atar, Heavy ve Two-Handed; Loading olmadığı için çoklu saldırıya uygundur.",
+   "nasil": "Hasar: 1d8 delici. Saldırırken iki el gerekir. Menzil 150 ft, uzun menzil 600 ft. Her saldırı bir ok (Arrow) harcar; çekmek saldırının parçasıdır. Savaştan sonra 1 dakikada harcananın yarısı (aşağı yuvarlanır) geri toplanır. Slow ustalığıyla hasar verilen hedefin hızı senin bir sonraki turunun başına dek düşer. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "DEX değeri en az 13 değilse bu silahla saldırılar dezavantajlıdır. Normal menzilin ötesindeki hedefe saldırı dezavantajlı, uzun menzilin ötesine saldırı yapılamaz. Mühimmat bitince menzilli saldırı yapılamaz.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "50 GP",
+   "ustalik": "Slow"
+  },
+  "club": {
+   "ne": "Basit sopa: Light olduğu için ikinci el silahı olabilen ucuz ezici silah.",
+   "nasil": "Hasar: 1d4 ezici. Attack eyleminde bununla saldırınca aynı tur bonus eylemle başka bir Light silahla ek saldırı yapılabilir; ek saldırının hasarına yetenek değiştiricisi (negatif değilse) eklenmez. Slow ustalığıyla hasar verilen hedefin hızı senin bir sonraki turunun başına dek düşer. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "kimler": "Herkes kullanabilir; ancak Simple silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "1 SP",
+   "ustalik": "Slow"
+  },
+  "dart": {
+   "ne": "Fırlatmalık ok ucu: Finesse ile DEX'le atılır; hafif ve ucuz bir menzil seçeneği.",
+   "nasil": "Hasar: 1d4 delici. Saldırı ve hasar için STR ya da DEX değiştiricisinden biri seçilir; ikisinde aynısı kullanılır. Fırlatılabilir: normal menzil 20 ft, uzun menzil 60 ft; silahı çekmek saldırının parçasıdır. Vex ustalığıyla isabet edip hasar verince aynı hedefe bir sonraki saldırı avantajlıdır. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "Normal menzilin ötesindeki hedefe saldırı dezavantajlı, uzun menzilin ötesine saldırı yapılamaz.",
+   "kimler": "Herkes kullanabilir; ancak Simple silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "5 CP",
+   "ustalik": "Vex"
+  },
+  "sling": {
+   "ne": "Sapan: mermi atan, ağırlığı olmayan ucuz basit menzilli silah; tek elle kullanılır.",
+   "nasil": "Hasar: 1d4 ezici. Menzil 30 ft, uzun menzil 120 ft. Her saldırı bir mermi (Bullet) harcar; çekmek saldırının parçasıdır, doldurmak için boş bir el gerekir. Savaştan sonra 1 dakikada harcananın yarısı (aşağı yuvarlanır) geri toplanır. Slow ustalığıyla hasar verilen hedefin hızı senin bir sonraki turunun başına dek düşer. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "Normal menzilin ötesindeki hedefe saldırı dezavantajlı, uzun menzilin ötesine saldırı yapılamaz. Mühimmat bitince menzilli saldırı yapılamaz.",
+   "kimler": "Herkes kullanabilir; ancak Simple silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "1 SP",
+   "ustalik": "Slow"
+  },
+  "lance": {
+   "ne": "Mızrak (kargı): Reach ile uzaktan delici hasar verir; binekteyken tek elle kullanılabilir.",
+   "nasil": "Hasar: 1d10 delici. Binekte değilken iki el gerekir; binekteyken tek elle kullanılabilir. Reach erişimi uzatır; fırsat saldırısı erişiminde de geçerlidir. Topple ustalığıyla isabet alan hedef CON kurtarma zarını geçemezse Prone olur. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "STR değeri en az 13 değilse bu silahla saldırılar dezavantajlıdır.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "10 GP",
+   "ustalik": "Topple"
+  },
+  "pike": {
+   "ne": "Uzun mızrak: Reach ile uzaktan delici hasar verir; Heavy ve Two-Handed.",
+   "nasil": "Hasar: 1d10 delici. Saldırırken iki el gerekir. Reach erişimi uzatır; fırsat saldırısı erişiminde de geçerlidir. Push ustalığıyla isabet alan Large ya da daha küçük hedef geriye itilebilir. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "STR değeri en az 13 değilse bu silahla saldırılar dezavantajlıdır.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "5 GP",
+   "ustalik": "Push"
+  },
+  "war-pick": {
+   "ne": "Savaş kazması: Versatile ile tek elle ya da iki elle daha yüksek delici hasarla kullanılır.",
+   "nasil": "Hasar: tek elle 1d8 delici, iki elle yakın dövüşte 1d10. Sap ustalığıyla isabet alan hedefin bir sonraki saldırısı dezavantajlıdır. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "5 GP",
+   "ustalik": "Sap"
+  },
+  "blowgun": {
+   "ne": "Üfleme borusu: iğne atar ve zarsız sabit 1 delici hasar verir; Loading.",
+   "nasil": "Hasar: 1 delici. Menzil 25 ft, uzun menzil 100 ft. Her saldırı bir iğne (Needle) harcar; çekmek saldırının parçasıdır, doldurmak için boş bir el gerekir. Savaştan sonra 1 dakikada harcananın yarısı (aşağı yuvarlanır) geri toplanır. Vex ustalığıyla isabet edip hasar verince aynı hedefe bir sonraki saldırı avantajlıdır. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "Loading: bir eylem, bonus eylem ya da tepkiyle yalnız tek atış yapılır; çoklu saldırı hakkı bu silahla işe yaramaz. Normal menzilin ötesindeki hedefe saldırı dezavantajlı, uzun menzilin ötesine saldırı yapılamaz. Mühimmat bitince menzilli saldırı yapılamaz.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "10 GP",
+   "ustalik": "Vex"
+  },
+  "musket": {
+   "ne": "Tüfek: yüksek delici hasarlı ateşli silah; Loading ve Two-Handed, menzili yaylardan kısa.",
+   "nasil": "Hasar: 1d12 delici. Saldırırken iki el gerekir. Menzil 40 ft, uzun menzil 120 ft. Her saldırı bir mermi (Bullet) harcar; çekmek saldırının parçasıdır. Savaştan sonra 1 dakikada harcananın yarısı (aşağı yuvarlanır) geri toplanır. Slow ustalığıyla hasar verilen hedefin hızı senin bir sonraki turunun başına dek düşer. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "Loading: bir eylem, bonus eylem ya da tepkiyle yalnız tek atış yapılır; çoklu saldırı hakkı bu silahla işe yaramaz. Normal menzilin ötesindeki hedefe saldırı dezavantajlı, uzun menzilin ötesine saldırı yapılamaz. Mühimmat bitince menzilli saldırı yapılamaz.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "500 GP",
+   "ustalik": "Slow"
+  },
+  "pistol": {
+   "ne": "Tabanca: tek elle kullanılan, yüksek delici hasarlı ateşli silah; Loading.",
+   "nasil": "Hasar: 1d10 delici. Menzil 30 ft, uzun menzil 90 ft. Her saldırı bir mermi (Bullet) harcar; çekmek saldırının parçasıdır, doldurmak için boş bir el gerekir. Savaştan sonra 1 dakikada harcananın yarısı (aşağı yuvarlanır) geri toplanır. Vex ustalığıyla isabet edip hasar verince aynı hedefe bir sonraki saldırı avantajlıdır. Ustalığı kullanmak için onu açan bir özellik gerekir.",
+   "risk": "Loading: bir eylem, bonus eylem ya da tepkiyle yalnız tek atış yapılır; çoklu saldırı hakkı bu silahla işe yaramaz. Normal menzilin ötesindeki hedefe saldırı dezavantajlı, uzun menzilin ötesine saldırı yapılamaz. Mühimmat bitince menzilli saldırı yapılamaz.",
+   "kimler": "Herkes kullanabilir; ancak Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez.",
+   "maliyet": "250 GP",
+   "ustalik": "Vex"
+  }
+ }
+}

@@ -353,6 +353,31 @@ export interface SpellMechanics {
   k73c?: Partial<SpellMechanics>;
   /** Kuyruk MB7 (kural sürümü 70+): Phantom Steed çağırma (`data/summons.json` `phantom-steed`). */
   mb7?: Partial<SpellMechanics>;
+  /** Mekanik matris düzeltmeleri (kural sürümü 83+; harita/belgeler/MEKANIK-MATRIS.md): bloktaki alanlar üstüne yazılır. */
+  m83?: Partial<SpellMechanics>;
+  /**
+   * Control Water girdabı (kural sürümü 84, Game Master anahtarı `controlWaterWhirlpool`; `src/battle/girdap.ts`): anahtar açıkken
+   * yapım bu bloğun girdabıyla (`whirlpool`); kapalıyken ve 83 ve altında eski mekanik (`upgrade`, `spellsK19`).
+   */
+  k84?: Partial<SpellMechanics>;
+  whirlpool?: boolean;
+  /**
+   * Mekanik matris B14 (yalnız `m83` bloğunda; Weird): alan yalnız düşmanları etkiler ("Each creature of your choice in a
+   * 30-foot-radius Sphere"); büyünün `area.targets` alanını ezer.
+   */
+  areaTargets?: 'enemies';
+  /**
+   * Mekanik matris B15 (yalnız `m83` bloğunda; Compulsion): büyünün alan tanımını ezer (SRD "Range: 30 feet … Each
+   * creature of your choice that you can see within range": büyücü merkezli 30 ft yayılım). Okuma `spellAreaAt`.
+   */
+  area83?: NonNullable<Spell['area']>;
+  /**
+   * Mekanik matris B18 (yalnız `m83` bloğunda; Shining Smite): isabet alan hedef büyü sürdükçe Invisible'dan yararlanamaz
+   * ("it can't benefit from the Invisible condition"): hedefe konsantrasyona bağlı `revealed` etkisi.
+   */
+  smiteReveal?: boolean;
+  /** Mekanik matris B08 (yalnız `m83` bloğunda; Sacred Flame): hedefin DEX save'ine siper bonusu eklenmez. */
+  ignoresCover?: boolean;
   /**
    * Kuyruk K73c (sürüm 64+, Görev 3): anlık silindir büyüsünün yüksekliği (ft; veride biçim küre). Havada merkezlenince
    * dairesi merkezde, silindir aşağı uzanır (`src/battle/airArea.ts`). Yerde merkezliyken kullanılmaz.
@@ -538,6 +563,13 @@ export interface SpellMechanics {
  * düşmanları). `move`: sonraki turlarda alan taşınır (`spell_followup`; maliyet ve ft).
  */
 export interface ZoneSpec {
+  /**
+   * Mekanik matris B05 (sürüm 83+): yapım anı (`on: 'cast'`) tetiğinin farkları; alan kuralının üstüne yazılır. Wall of Thorns
+   * yapımda Piercing (sonra Slashing), Storm of Vengeance yapımda CON save, 2d6 Thunder ve büyü süresince Deafened.
+   */
+  castTrigger?: Partial<Omit<ZoneSpec, 'castTrigger'>>;
+  /** Mekanik matris B05 (sürüm 83+, Conjure Celestial Healing Light): büyücünün tarafı save yerine bu zar + büyü değiştiricisi kadar iyileşir (yukarı slot zarı dahil). */
+  healAllies?: string;
   /** Kuyruk 19: Wall of Stone: altıgen başına kırılabilir panel (walls.ts); `permanent` konsantrasyon tam sürerse kalıcı. */
   panels?: boolean;
   /** Kuyruk K62 (sürüm 46): panel değerleri (Wall of Ice: AC 12, 30 HP; yoksa Wall of Stone 15/90), bağışık ve zayıf türler (zayıf = hasar iki kat). */
@@ -630,6 +662,11 @@ export interface ZoneSpec {
   resist?: string[];
   /** Kuyruk 19: girdap (Control Water): tur başında alandaki sudakileri merkeze `pull` altıgen çeker; uzaklaşmak için Athletics. */
   vortex?: { pull: number };
+  /**
+   * Control Water girdabı (kural sürümü 84): alanın `band` altıgen ötesine kadar (dışındakiler) tur başında merkeze `pullFt`
+   * çekilir; başarısız save'de yakalanır (hız 0, kurtulma eylemle Athletics `escape`). `src/battle/girdap.ts`.
+   */
+  whirl?: { band: number; pullFt: number };
   /** Kuyruk A6 (Gust of Wind): başarısız save'de büyücüden bu kadar ft itme; büyücüye yaklaşan adım bu kat maliyet. */
   push?: number;
   costToward?: number;
@@ -823,6 +860,11 @@ export interface EffectSpec {
   dashOnCast?: boolean;
   /** Kuyruk A4 (Holy Aura): yakın dövüşle isabet ettiren bu türler CON save ya da Blinded. */
   blindRetort?: string[];
+  /**
+   * Mekanik matris B13 (yalnız `m83` bloğunda; Holy Aura): büyücüden yayılım. Etki büyücüde; yarıçap içindeki dostlar
+   * (kendisi dahil) yayılımda kaldıkça save avantajı, onlara saldırı dezavantajı ve yakın dövüş yansıması alır (`syncAuras`).
+   */
+  allyAura?: { radiusFt: number; saveAdvAll?: boolean; attackedDis?: boolean; blindRetort?: string[] };
   /** CILA: sözlü buyruk: hedef Deafened ise işlemez (Command, Suggestion). */
   needsHearing?: boolean;
   /** CILA: save'e sabit eklenti (yetenek → değer; Slow DEX −2). */

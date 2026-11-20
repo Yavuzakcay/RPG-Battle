@@ -1,119 +1,111 @@
 // Zar görselleri: assets-ham/zarlar/zar-<tema>.jpg (macenta zeminde yan yana boş yüzlü zarlar, soldan sağa
 // d4, d6, d8, d10, d12, d20, d100) → public/zarlar/<tema>/d4.webp … d100.webp (128×128, saydam).
-// Çalıştırma: npm run zarlar
+// Çalıştırma: npm run zarlar [-- --kuru | --incele] [-- --yalniz tema1,tema2] [-- --sure 60] [-- --is 2] [-- --girdi klasör] [-- --cikti klasör]
+// Her dosya ayrı işçide (scripts/lib/zar-isci.mjs) ve zaman aşımıyla (--sure sn, varsayılan 60) işlenir; ilerleme "[i/N] dosya başladı/bitti (ms)", takılan dosya ve adım raporlanır.
 //
-// Masum ve efekt betikleriyle aynı yöntem:
-// 1. Arka plan: görüntü kenarından flood-fill (sıkı macenta eşiği); kapalı boşluklar yalnızca saf arka plan
-//    renginden tohumlanır. 2. Despill: arka plana değen macentaya kaymış kenar pikselleri silinir (iki tur).
-// 3. Bağlı bileşenler: en büyüğün %5'inden küçük lekeler atılır; kalanlar zar sayılır (sayı koddan bulunur,
-//    beklenen 7 değilse betik nedenini yazar ve durur). Soldan sağa sıralanıp d4..d100 adını alır.
-// 4. Hepsine aynı ölçek (en büyük kenar 116 px), nearest-neighbor; alt kenar (ayak) 122 px, yatayda ortalı.
+// SD9: 63 ham kimlik (data/zar-gorselleri.json; ham dosya zar-<kimlik>.jpg). `--kuru`: görsel yazmaz; ham dosyaları ve veriyi
+// karşılaştırır (veride olmayan ham, ham'ı olmayan tema, bölütleme sonucu), boyut raporu verir. `--incele` (SD9b): görsel/veri
+// yazmaz; sorunlu sayfalar (data/zar-kesim.json `incele` + yedi zar ayrışmayanlar) için bileşenleri renkli çizen inceleme görseli
+// docs/zar-kesim/<tema>.png ve docs/zar-kesim/RAPOR.md (kurtarıldı / yeniden üretilmeli) yazar. İş bitince data/zar-mevcut.json
+// (görseli üretilmiş temalar) güncellenir; kuru ve inceleme kipinde yazılmaz.
+//
+// Bölütleme (scripts/lib/zar-kesim.mjs, testli): zeminden flood-fill + despill + bağlı bileşenler (sıkı eşik); yedi bileşen
+// çıkmazsa sırayla gevşek zemin eşiği, aşındırma (zarlar birbirine değiyorsa), data/zar-kesim.json `kutular` (elle 7 dikdörtgen,
+// varsa önce o) ve başarılı sayfalardan oransal şablon; hiçbiri tutmazsa "yeniden üretilmeli". Hepsine aynı ölçek (en büyük kenar
+// 116 px), nearest-neighbor; alt kenar (ayak) 122 px, yatayda ortalı.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import sharp from 'sharp';
+import { NAMES, templateFrom } from './lib/zar-kesim.mjs';
+import { runJob, pool } from './lib/zar-havuz.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const RAW = path.join(root, 'assets-ham/zarlar');
-const OUT = path.join(root, 'public/zarlar');
-const NAMES = ['d4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100'];
-const SIZE = 128;
-const LARGEST = 116;
-const FOOT = 122;
+const argOpt = (n) => (process.argv.includes(n) ? process.argv[process.argv.indexOf(n) + 1] : null);
+const RAW = argOpt('--girdi') ? path.resolve(argOpt('--girdi')) : path.join(root, 'assets-ham/zarlar');
+const OUT = argOpt('--cikti') ? path.resolve(argOpt('--cikti')) : path.join(root, 'public/zarlar');
+const DEFAULT_OUT = !argOpt('--cikti');
+const DOCS = path.join(root, 'docs/zar-kesim');
 
-const isMagenta = (r, g, b) => g <= 70 && r >= 150 && b >= 150 && Math.abs(r - b) <= 60;
-const isPureBg = (r, g, b) => g <= 25 && r >= 230 && b >= 220;
-const isSpill = (r, g, b) => Math.min(r, b) - g >= 60 && Math.abs(r - b) <= 90;
+const argv = process.argv.slice(2);
+const DRY = argv.includes('--kuru');
+const INSPECT = argv.includes('--incele');
+const only = argv.includes('--yalniz') ? (argv[argv.indexOf('--yalniz') + 1] ?? '').split(',').filter(Boolean) : null;
+const themeIds = JSON.parse(fs.readFileSync(path.join(root, 'data/zar-gorselleri.json'), 'utf8')).themes.map((x) => x.id);
+const kesim = JSON.parse(fs.readFileSync(path.join(root, 'data/zar-kesim.json'), 'utf8'));
+const rawFiles = fs.existsSync(RAW) ? fs.readdirSync(RAW).filter((f) => /^zar-[a-z0-9-]+\.(jpg|png)$/.test(f)).sort() : [];
+const rawTheme = (f) => f.replace(/^zar-/, '').replace(/\.(jpg|png)$/, '');
+const rawIds = rawFiles.map(rawTheme);
+const unknown = rawIds.filter((id) => !themeIds.includes(id));
+const noRaw = themeIds.filter((id) => !rawIds.includes(id));
+console.log(`Veride ${themeIds.length} tema; ham dosya ${rawFiles.length}.`);
+if (unknown.length) console.log(`Veride OLMAYAN ham dosya (kimlik data/zar-gorselleri.json'a eklenmeli ya da ad düzeltilmeli): ${unknown.join(', ')}`);
+if (noRaw.length) console.log(`Ham dosyası OLMAYAN tema (klasik yedekle çizilir): ${noRaw.join(', ')}`);
+if (rawFiles.length === 0 && !DRY && !INSPECT) throw new Error(`${RAW} altında zar-<tema>.jpg yok (yalnız kurulum yerelde; bulutta --kuru ya da --incele kullanma, ham dosya gerekir)`);
 
-async function dice(file) {
-  const { data, info } = await sharp(file).removeAlpha().raw().toBuffer({ resolveWithObject: true });
-  const { width: w, height: h } = info;
-  const n = w * h;
-  const bg = new Uint8Array(n);
-  const px = (i) => [data[i * 3], data[i * 3 + 1], data[i * 3 + 2]];
-  const stack = [];
-  const seed = (i) => { if (!bg[i] && isMagenta(...px(i))) { bg[i] = 1; stack.push(i); } };
-  for (let x = 0; x < w; x++) { seed(x); seed((h - 1) * w + x); }
-  for (let y = 0; y < h; y++) { seed(y * w); seed(y * w + w - 1); }
-  for (let i = 0; i < n; i++) if (isPureBg(...px(i))) seed(i);
-  while (stack.length) {
-    const i = stack.pop();
-    const x = i % w, y = (i / w) | 0;
-    if (x > 0) seed(i - 1);
-    if (x < w - 1) seed(i + 1);
-    if (y > 0) seed(i - w);
-    if (y < h - 1) seed(i + w);
-  }
-  for (let pass = 0; pass < 2; pass++) {
-    const add = [];
-    for (let i = 0; i < n; i++) {
-      if (bg[i]) continue;
-      const x = i % w, y = (i / w) | 0;
-      const near = (x > 0 && bg[i - 1]) || (x < w - 1 && bg[i + 1]) || (y > 0 && bg[i - w]) || (y < h - 1 && bg[i + w]);
-      if (near && isSpill(...px(i))) add.push(i);
+const wanted = rawFiles.filter((f) => themeIds.includes(rawTheme(f)) && (!only || only.includes(rawTheme(f))));
+const WORKER = path.join(root, 'scripts/lib/zar-isci.mjs');
+const TIMEOUT = Number(argv.includes('--sure') ? argv[argv.indexOf('--sure') + 1] : 60) * 1000;
+const JOBS = Number(argv.includes('--is') ? argv[argv.indexOf('--is') + 1] : 2);
+const WRITE = !DRY && !INSPECT; // --kuru ve --incele görsel/veri yazmaz (--incele yalnız docs/zar-kesim yazar)
+const WRITE_INSPECT = INSPECT && !DRY;
+
+// Her dosya ayrı işçide, zaman aşımıyla; ilerleme "[i/N] dosya başladı/bitti (ms)", takılırsa son adım raporlanır.
+// 1. geçiş: şablonsuz bölütleme (başarılılar hemen yazılır); başarılılardan oransal şablon; 2. geçiş: yalnız başarısızlar şablonla.
+const results = new Map();
+const N = wanted.length;
+const stepText = (r) => r.steps.filter((x) => x.ms >= 50).map((x) => `${x.name} ${x.ms}`).join(', ');
+async function runPass(files, extra, label) {
+  await pool(files, JOBS, async (f) => {
+    const theme = rawTheme(f); const i = wanted.indexOf(f) + 1;
+    console.log(`[${i}/${N}] ${f} başladı${label}`);
+    const job = { file: path.join(RAW, f), theme, kutu: kesim.kutular?.[theme], erodeMax: kesim.erozyonMax, write: WRITE, outDir: OUT, inspect: WRITE_INSPECT && (extra.inspectAll || (kesim.incele ?? []).includes(theme)), inspectDir: DOCS, ...extra.job };
+    const r = await runJob(WORKER, job, { timeoutMs: TIMEOUT });
+    if (r.ok) {
+      results.set(theme, r.result);
+      console.log(`[${i}/${N}] ${f} bitti (${r.ms} ms): ${r.result.ok ? `${r.result.count} zar [${r.result.method}]` : `AYRIŞMADI (${r.result.note})`}  {${stepText(r)}}`);
+    } else {
+      results.set(theme, { theme, ok: false, method: 'hata', count: 0, kept: [], note: `${r.error}; son adım: ${r.lastStep}`, timedOut: !!r.timedOut });
+      console.error(`[${i}/${N}] ${f} ${r.timedOut ? 'ZAMAN AŞIMI' : 'HATA'} (${r.ms} ms): ${r.error}; takılan adım: ${r.lastStep} {${stepText(r)}}`);
     }
-    for (const i of add) bg[i] = 1;
-  }
-  // Bağlı bileşenler (4-komşu).
-  const comp = new Int32Array(n).fill(-1);
-  const parts = [];
-  for (let s = 0; s < n; s++) {
-    if (bg[s] || comp[s] >= 0) continue;
-    const id = parts.length;
-    const p = { id, count: 0, minX: w, minY: h, maxX: -1, maxY: -1 };
-    const q = [s];
-    comp[s] = id;
-    while (q.length) {
-      const i = q.pop();
-      const x = i % w, y = (i / w) | 0;
-      p.count++;
-      if (x < p.minX) p.minX = x; if (x > p.maxX) p.maxX = x; if (y < p.minY) p.minY = y; if (y > p.maxY) p.maxY = y;
-      for (const j of [x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1, y > 0 ? i - w : -1, y < h - 1 ? i + w : -1]) {
-        if (j >= 0 && !bg[j] && comp[j] < 0) { comp[j] = id; q.push(j); }
-      }
-    }
-    parts.push(p);
-  }
-  const biggest = Math.max(...parts.map((p) => p.count));
-  const kept = parts.filter((p) => p.count >= biggest * 0.05).sort((a, b) => a.minX - b.minX);
-  return { data, w, h, bg, comp, kept, spots: parts.length - kept.length };
+  });
 }
+await runPass(wanted, { job: { sablonYok: true } }, '');
+const goods = [...results.values()].filter((r) => r.ok && (r.method === 'temel' || r.method === 'gevsek'));
+const sablon = kesim.sablon ?? (goods.length >= 3 ? templateFrom(goods) : null);
+const retry = wanted.filter((f) => { const r = results.get(rawTheme(f)); return r && !r.ok && !r.timedOut && r.method !== 'hata'; });
+if (retry.length) { console.log(`\nŞablonlu ikinci geçiş: ${retry.length} dosya`); await runPass(retry, { job: { sablon: sablon ?? undefined, sablonYok: false }, inspectAll: true }, ' (şablon)'); }
+const bad = [...results].filter(([, r]) => !r.ok).map(([t]) => t);
 
-const files = fs.readdirSync(RAW).filter((f) => /^zar-[a-z0-9-]+\.(jpg|png)$/.test(f)).sort();
-if (files.length === 0) throw new Error(`${RAW} altında zar-<tema>.jpg yok`);
-for (const f of files) {
-  const theme = f.replace(/^zar-/, '').replace(/\.(jpg|png)$/, '');
-  const d = await dice(path.join(RAW, f));
-  if (d.kept.length !== NAMES.length) {
-    console.error(`${f}: ${d.kept.length} zar bulundu, ${NAMES.length} bekleniyordu. Bileşen boyları: ${d.kept.map((p) => p.count).join(', ')}`
-      + ' (zarlar birbirine değiyorsa birleşir; zeminde kopuk parça varsa fazla çıkar). Görsel düzeltilmeli.');
-    process.exit(1);
+// Tablo: tema, durum, kaç zar üretildi
+console.log('\n| tema | durum | yöntem | zar | yazılan | not |\n|---|---|---|---|---|---|');
+for (const f of wanted) { const t = rawTheme(f); const r = results.get(t); console.log(`| ${t} | ${r.ok ? 'tamam' : (r.timedOut ? 'ZAMAN AŞIMI' : 'HATALI')} | ${r.method} | ${r.count}/7 | ${r.wrote ?? 0} | ${r.ok ? '' : r.note} |`); }
+
+if (WRITE_INSPECT) {
+  const list = [...new Set([...(kesim.incele ?? []), ...bad])].filter((t) => results.has(t));
+  const lines = ['# Zar sayfası kesim incelemesi (`npm run zarlar -- --incele`)', '', '| tema | yöntem | zar | durum |', '|---|---|---|---|'];
+  for (const t of list) {
+    const r = results.get(t);
+    const st = !r.ok ? 'yeniden üretilmeli' : r.method === 'sablon' ? 'kurtarıldı (oransal şablon: gözle doğrula)' : r.method === 'kutu' ? 'kurtarıldı (elle kutu)' : 'kurtarıldı';
+    lines.push(`| ${t} | ${r.method} | ${r.count} | ${st} |`);
   }
-  const largest = Math.max(...d.kept.map((p) => Math.max(p.maxX - p.minX + 1, p.maxY - p.minY + 1)));
-  const scale = LARGEST / largest;
-  const out = path.join(OUT, theme);
-  fs.mkdirSync(out, { recursive: true });
-  for (const [k, p] of d.kept.entries()) {
-    const bw = p.maxX - p.minX + 1, bh = p.maxY - p.minY + 1;
-    const rgba = Buffer.alloc(bw * bh * 4);
-    for (let y = 0; y < bh; y++) for (let x = 0; x < bw; x++) {
-      const i = (p.minY + y) * d.w + p.minX + x;
-      if (d.bg[i] || d.comp[i] !== p.id) continue;
-      const o = (y * bw + x) * 4;
-      rgba[o] = d.data[i * 3]; rgba[o + 1] = d.data[i * 3 + 1]; rgba[o + 2] = d.data[i * 3 + 2]; rgba[o + 3] = 255;
-    }
-    const tw = Math.max(1, Math.round(bw * scale)), th = Math.max(1, Math.round(bh * scale));
-    const fig = await sharp(rgba, { raw: { width: bw, height: bh, channels: 4 } }).resize(tw, th, { kernel: 'nearest' }).raw().toBuffer();
-    const left = Math.round((SIZE - tw) / 2);
-    const top = FOOT - th;
-    const canvas = Buffer.alloc(SIZE * SIZE * 4);
-    for (let y = 0; y < th; y++) for (let x = 0; x < tw; x++) {
-      const X = left + x, Y = top + y;
-      if (X < 0 || Y < 0 || X >= SIZE || Y >= SIZE) continue;
-      fig.copy(canvas, (Y * SIZE + X) * 4, (y * tw + x) * 4, (y * tw + x) * 4 + 4);
-    }
-    await sharp(canvas, { raw: { width: SIZE, height: SIZE, channels: 4 } }).webp({ lossless: true }).toFile(path.join(out, `${NAMES[k]}.webp`));
-    console.log(`${theme}/${NAMES[k]}: ${bw}×${bh} → ${tw}×${th}, sol ${left}, üst ${top}`);
-  }
-  console.log(`${theme}: ${d.kept.length} zar, ölçek ${scale.toFixed(4)}, atılan leke ${d.spots}`);
+  for (const t of (kesim.incele ?? []).filter((x) => !results.has(x))) lines.push(`| ${t} | – | – | ham dosya yok |`);
+  lines.push('', `Yeniden üretilmeli: ${bad.length ? bad.join(', ') : 'yok'}`);
+  fs.mkdirSync(DOCS, { recursive: true });
+  fs.writeFileSync(path.join(DOCS, 'RAPOR.md'), lines.join('\n') + '\n');
+  console.log(`İnceleme: docs/zar-kesim/ (${list.length} sayfa); yeniden üretilmeli: ${bad.length ? bad.join(', ') : 'yok'}`);
 }
+const failed = bad.length > 0;
+
+// Boyut raporu ve hazır tema listesi (public/zarlar/<tema>/ içinde yedi görsel olanlar).
+const sizeOf = (id) => NAMES.reduce((n, k) => { const f = path.join(OUT, id, `${k}.webp`); return n + (fs.existsSync(f) ? fs.statSync(f).size : 0); }, 0);
+const ready = themeIds.filter((id) => NAMES.every((k) => fs.existsSync(path.join(OUT, id, `${k}.webp`))));
+let total = 0;
+for (const id of ready) { const b = sizeOf(id); total += b; console.log(`  ${id}: ${(b / 1024).toFixed(0)} KB`); }
+const perTheme = ready.length ? total / ready.length : 0;
+console.log(`Hazır tema ${ready.length}/${themeIds.length}; toplam ${(total / 1048576).toFixed(2)} MB; tema başına ort. ${(perTheme / 1024).toFixed(0)} KB; ${themeIds.length} tema tahmini ${(perTheme * themeIds.length / 1048576).toFixed(1)} MB.`);
+if (perTheme * themeIds.length > 25 * 1048576) console.log('UYARI: > 25 MB: tembel indirme önerilir (tema görselleri ilk seçimde indirilsin, ön yükleme yalnız seçili tema).');
+if (!DRY && !INSPECT && DEFAULT_OUT) {
+  fs.writeFileSync(path.join(root, 'data/zar-mevcut.json'), JSON.stringify({ _aciklama: 'npm run zarlar yazar: public/zarlar/<tema>/ altında görseli üretilmiş temalar. Listede olmayan tema klasik görsellerle (ve kendi 3D renkleriyle) çizilir.', mevcut: ready }, null, 2) + '\n');
+  console.log(`data/zar-mevcut.json güncellendi (${ready.length} tema).`);
+}
+if (failed) { console.error(`Ayrışmayan sayfa: ${bad.join(', ')}`); process.exit(DRY || INSPECT ? 0 : 1); }

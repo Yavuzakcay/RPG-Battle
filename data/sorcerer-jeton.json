@@ -1,0 +1,66 @@
+{
+ "note": "Görev WZ-BAGLA/BAGLA-3/TOPLU-KESIM (jetonlar kesildi): sorcerer alt sınıfı → SC jetonu (public/characters/<irk>-<erkek|kadin>-sorcerer-<SC-id>.webp). altSiniflar: alt sınıf kimliği → hücre; kimlikler Türkçe adla doğrulandı (draconic-sorcery fikstür, imza_dunganga data/imza.json, kalanı icerik-liste.txt). Yeni kimlik/hücre yalnız burada değişir (kodda sabit yok). irklar: jetonu üretilmiş ırk×cinsiyet (yoksa alt sınıf jetonu atanmaz, geliştirici günlüğünde \"eksik\" yazılır). maskeHazir: jetonların ten/soy maskesi üretildi mi; false iken soy/ten boyası gereken karakter sınıf-genel jetonu kullanır. cozulemeyen: kimliği çözülemeyen hücre → kullanıcı yerelde altSiniflar'a ekler.",
+ "sinif": "sorcerer",
+ "irklar": {
+    "dragonborn": ["erkek", "kadin"],
+  "human": [
+   "erkek",
+   "kadin"
+  ],
+  "elf": [
+   "erkek",
+   "kadin"
+  ],
+  "dwarf": [
+   "erkek",
+   "kadin"
+  ],
+  "halfling": [
+   "erkek",
+   "kadin"
+  ],
+  "gnome": [
+   "erkek",
+   "kadin"
+  ],
+  "orc": [
+   "erkek",
+   "kadin"
+  ],
+  "tiefling": [
+   "erkek",
+   "kadin"
+  ],
+  "goliath": [
+   "erkek",
+   "kadin"
+  ],
+  "celestial": [
+   "erkek",
+   "kadin"
+  ]
+ },
+ "altSiniflar": {
+  "draconic-sorcery": "SC-1",
+  "alevbaz": "SC-2",
+  "ceren-urperten": "SC-3",
+  "ilahi-kan": "SC-4",
+  "lanetli": "SC-5",
+  "otonom-evren": "SC-6",
+  "paratoner": "SC-7",
+  "titan-kani": "SC-8",
+  "imza_dunganga": "SC-9"
+ },
+ "hucreAdi": {
+  "SC-1": "Ejderha Büyücülüğü",
+  "SC-2": "Alevbaz",
+  "SC-3": "Ceren Ürperten",
+  "SC-4": "İlahi Kan",
+  "SC-5": "Lanetli",
+  "SC-6": "Otonom Evren",
+  "SC-7": "Paratoner",
+  "SC-8": "Titan Kanı",
+  "SC-9": "Dunganga (imza)"
+ },
+ "cozulemeyen": []
+}

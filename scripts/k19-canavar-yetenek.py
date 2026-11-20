@@ -33,7 +33,8 @@ add('sahuagin-warrior', [ab('aquatic-charge', 'Aquatic Charge', 'Suda Hücum', '
 add('seahorse', [ab('bubble-dash', 'Bubble Dash', 'Kabarcık Atılışı', 'action', 'grant', grant=['dash', 'disengage'], waterOnly=True)])
 add('giant-seahorse', [ab('bubble-dash', 'Bubble Dash', 'Kabarcık Atılışı', 'bonus', 'grant', grant=['dash', 'disengage'], waterOnly=True)])
 add('centaur-trooper', [ab('trampling-charge', 'Trampling Charge', 'Çiğneyen Hücum', 'bonus', 'save', recharge=5, trample=True, save='str', dc=14, damage='1d6+4', damageType='bludgeoning', conditions=['Prone'], noHalf=True)])
-for m, dc, dmg in (('gorgon', 16, '2d10+5'), ('elephant', 12, '2d10+4'), ('mammoth', 18, '4d10+7')):
+# Görev D1 (kural sürümü 86): Elephant SRD s. 348 "DC 16 … 17 (2d10 + 6)" (eskiden DC 12, 2d10+4; eski değer data/srd-duzeltme.json).
+for m, dc, dmg in (('gorgon', 16, '2d10+5'), ('elephant', 16, '2d10+6'), ('mammoth', 18, '4d10+7')):
     add(m, [ab('trample', 'Trample', 'Çiğneme', 'bonus', 'save', save='dex', dc=dc, rangeFt=5, damage=dmg, damageType='bludgeoning', half=True, needsCondition='Prone')])
 for m, dmg, dc, rng in (('gnoll-warrior', None, None, None), ('giant-hyena', None, None, None)):
     pass
@@ -45,7 +46,8 @@ add('giant-ape', [ab('leap', 'Leap', 'Sıçrama', 'bonus', 'grant', jumpFt=30)])
 add('giant-frog', [ab('leap', 'Leap', 'Sıçrama', 'bonus', 'grant', jumpFt=20)], jump={'long': 20})
 add('giant-toad', [ab('leap', 'Leap', 'Sıçrama', 'bonus', 'grant', jumpFt=20)], jump={'long': 20})
 add('frog', jump={'long': 10})
-add('cat', jump={'long': 10})
+# Görev D1: SRD s. 346 Jumper "jump distance is determined using its Dexterity" → DEX 15 (eskiden 10).
+add('cat', jump={'long': 15})
 add('lion', jump={'long': 25})
 add('saber-toothed-tiger', jump={'long': 25})
 add('deer', traits=['agile'])
@@ -80,11 +82,16 @@ add('wraith', [ab('create-specter', 'Create Specter', 'Hortlak Yarat', 'action',
 add('tarrasque', [ab('swallow', 'Swallow', 'Yutma', 'bonus', 'swallow', save='str', dc=27, dice='16d6', type='acid', escapeDamage=60, escapeDc=20)],
     siegeMonster=True, reflectiveCarapace=True)
 add('behir', [ab('swallow', 'Swallow', 'Yutma', 'bonus', 'swallow', save='dex', dc=18, dice='6d6', type='acid', escapeDamage=30, escapeDc=14)])
-add('remorhaz', [ab('swallow', 'Swallow', 'Yutma', 'bonus', 'swallow', save='str', dc=17, dice='3d6', type='acid', dice2='5d6', type2='fire', escapeDamage=30, escapeDc=15)],
+# Görev D1: SRD s. 319 "Strength Saving Throw: DC 19 … 10 (3d6) Acid damage plus 10 (3d6) Fire damage" (eskiden DC 17, ateş 5d6).
+add('remorhaz', [ab('swallow', 'Swallow', 'Yutma', 'bonus', 'swallow', save='str', dc=19, dice='3d6', type='acid', dice2='3d6', type2='fire', escapeDamage=30, escapeDc=15)],
     ownerTurn=[{'when': 'end', 'radiusFt': 5, 'dice': '3d10', 'type': 'fire'}])
-add('purple-worm', [ab('swallow', 'Swallow', 'Yutma', 'bonus', 'swallow', save='dex', dc=19, dice='5d6', type='acid', escapeDamage=30, escapeDc=21)])
-add('giant-frog', [ab('leap', 'Leap', 'Sıçrama', 'bonus', 'grant', jumpFt=20), ab('swallow', 'Swallow', 'Yutma', 'action', 'swallow', save='str', dc=11, dice='2d4', type='acid', escapeDamage=0, escapeDc=11, small=True)], jump={'long': 20})
-add('giant-toad', [ab('leap', 'Leap', 'Sıçrama', 'bonus', 'grant', jumpFt=20), ab('swallow', 'Swallow', 'Yutma', 'action', 'swallow', save='str', dc=13, dice='3d6', type='acid', escapeDamage=0, escapeDc=13, small=True)], jump={'long': 20})
+# Görev D1: SRD s. 316 "Swallow. Strength Saving Throw: DC 19" (eskiden DEX).
+add('purple-worm', [ab('swallow', 'Swallow', 'Yutma', 'bonus', 'swallow', save='str', dc=19, dice='5d6', type='acid', escapeDamage=30, escapeDc=21)])
+# Görev D1: SRD s. 351/354 Swallow: kurtarma yok ("swallows a … target it is grappling"); kurbağa Small ya da küçük, 2d4 Acid
+# sonraki turunun sonunda, ölmezse kusar (disgorge); kara kurbağa Medium ya da küçük, her tur sonunda 3d6 (at='end'). Eskiden
+# STR DC 11/13 kurtarması ve tur başı hasar; eski değer data/srd-duzeltme.json. escapeDc (kusma DC'si) SRD dışı, escapeDamage 0 iken etkisiz.
+add('giant-frog', [ab('leap', 'Leap', 'Sıçrama', 'bonus', 'grant', jumpFt=20), ab('swallow', 'Swallow', 'Yutma', 'action', 'swallow', dice='2d4', type='acid', escapeDamage=0, escapeDc=11, maxSize='S', at='end', disgorge=True)], jump={'long': 20})
+add('giant-toad', [ab('leap', 'Leap', 'Sıçrama', 'bonus', 'grant', jumpFt=20), ab('swallow', 'Swallow', 'Yutma', 'action', 'swallow', dice='3d6', type='acid', escapeDamage=0, escapeDc=13, small=True, at='end')], jump={'long': 20})
 add('drider', [ab('spider-queen', 'Magic of the Spider Queen', 'Örümcek Kraliçe Büyüsü', 'bonus', 'spell', recharge=5, spells=['Web', 'Faerie Fire', 'Darkness'], dc=14)])
 add('stone-golem', [ab('slow', 'Slow', 'Yavaşlat', 'bonus', 'spell', recharge=5, spell='Slow', dc=17)], traits=['immutable-form'])
 add('cultist-fanatic', [ab('spiritual-weapon', 'Spiritual Weapon', 'Ruhani Silah', 'bonus', 'spell', uses=2, spell='Spiritual Weapon')])
@@ -98,7 +105,8 @@ add('djinni', [ab('storm-bolt', 'Storm Bolt', 'Fırtına Şimşeği', 'action', 
 # --- pasifler
 add('steam-mephit', blurred=True, deathBurst={'radiusFt': 5, 'save': 'dex', 'dc': 10, 'dice': '2d4', 'type': 'fire', 'half': True})
 add('dust-mephit', deathBurst={'radiusFt': 5, 'save': 'con', 'dc': 10, 'conditions': ['Blinded']})
-add('ice-mephit', deathBurst={'radiusFt': 5, 'save': 'con', 'dc': 10, 'dice': '2d6', 'type': 'cold', 'half': True})
+# Görev D1: SRD s. 307 Death Burst "5 (2d4) Cold damage" (eskiden 2d6).
+add('ice-mephit', deathBurst={'radiusFt': 5, 'save': 'con', 'dc': 10, 'dice': '2d4', 'type': 'cold', 'half': True})
 add('magma-mephit', deathBurst={'radiusFt': 5, 'save': 'dex', 'dc': 11, 'dice': '2d6', 'type': 'fire', 'half': True})
 for m in ('swarm-of-bats', 'swarm-of-ravens', 'swarm-of-insects', 'swarm-of-piranhas', 'swarm-of-rats', 'swarm-of-venomous-snakes', 'swarm-of-crawling-claws'):
     add(m, swarm=True)

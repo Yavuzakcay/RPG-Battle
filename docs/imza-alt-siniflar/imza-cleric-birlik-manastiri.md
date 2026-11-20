@@ -4,7 +4,7 @@
 - Ev kuralı DEĞİL: kullanıcı kararıyla Cleric'in imza alt sınıfı; eski "Barış Alanı" (dış paket) kaydının yerine geçer. K49 adı "Birlik Manastırı" yapar; özellikleri bu belgeye göre yeniden yazar. Kimlikler/kayıtlı karakterler bozulmasın (eski özellik metinleri yeni sürümle değişir, kural sürümü gerekirse CC seçer).
 - Seviyeler Cleric düzeninde 1/2/6/8/17; alt sınıf 3. seviyede seçilir, 1–2 birlikte açılır (etkin seviye = max(seviye,3)).
 - DC (gerekirse) = 8 + yeterlilik + WIS.
-- **Özgünlük taraması:** eski sürümdeki Cesaret Bağı (+1d4 bağ), Huzur Yürüyüşü (2d6+Wis şifa, fırsat saldırısı yok), Güçlü Tılsım (cantrip'e Wis hasarı) ve Barış Azizi (%50 direnç) yayınlanmış bir alt sınıfın özelliklerine çok benziyordu: dördü de atıldı. Yalnız "Ortak Can Havuzu" fikri (kullanıcının kendi tasarımı) kaldı. Özellik adları ve etkiler aşağıda yeni.
+- **Özgünlük taraması:** eski sürümdeki Cesaret Bağı (+1d4 bağ), Huzur Yürüyüşü (2d6+Wis şifa, fırsat saldırısı yok), Güçlü Tılsım (cantrip'e Wis hasarı) ve eski Barış Azizi (%50 direnç) yayınlanmış bir alt sınıfın özelliklerine çok benziyordu: dördü de atıldı. (2026-11-19, kullanıcı kararı: "Barış Azizi" adı 17. seviye özelliğe — eski "Yıkılmaz Birlik" — verildi; %50 direnç etkisi geri gelmedi, etki aşağıdaki gibi.) Yalnız "Ortak Can Havuzu" fikri (kullanıcının kendi tasarımı) kaldı. Özellik adları ve etkiler aşağıda yeni.
 
 ## Kimlik
 Yükü paylaşan bir manastır: dostlarını birbirine bağlar, acıyı da cesareti de ortak taşır. Güç tek kişiden değil, kalabalığın dayanıklılığından gelir.
@@ -15,7 +15,7 @@ Yükü paylaşan bir manastır: dostlarını birbirine bağlar, acıyı da cesar
 - **S2 · Kanal Gücü: Teselli Nöbeti / Vigil of Solace:** Bağlı dostların her biri Cleric seviyesi kadar geçici can kazanır ve 1 Motivasyon kazanır (Motivasyon sistemi açıksa).
 - **S6 · Birlik Can Havuzu / Shared Vitality** (eylem; uzun dinlenmede 1; 10 tur): Bağlı dostların canı tek bir Ortak Can Havuzunda toplanır; hasar bu havuzdan düşer. Mevcut Ortak Can altyapısı kullanılır. **Bilinçli risk (kullanıcı kararı): havuz sıfırlanırsa havuza bağlı herkes anında ölür** (ölüm kurtulma zarı yok; diriltme büyüleri ya da hizmeti gerekir). Havuz açılırken oyuncuya uyarı gösterilir. Havuzun gücü bu riskin karşılığıdır; ayar için parametre `havuzSonuOlum` (varsayılan açık).
 - **S8 · Ortak Şifa / Common Cure:** Bir Bağlı dosta şifa büyüsü yaptığında, diğer Bağlı dostlar WIS modifiyesi kadar can kazanır (havuz açıksa havuza eklenir). Tur başına bir kez.
-- **S17 · Yıkılmaz Birlik / Unbroken Union** (tepki; uzun dinlenmede 1): Ortak Can Havuzu sıfıra düşecekken (yani herkesi öldürecek hasar gelirken) havuz Cleric seviyesinin iki katı canla ayakta kalır ve tüm Bağlı dostların Motivasyonu tam dolar. Bu sürede bağ sende toplanır: bağ sayısı 6'ya çıkar (parametre).
+- **S17 · Barış Azizi / Saint of Peace** (tepki; uzun dinlenmede 1): Ortak Can Havuzu sıfıra düşecekken (yani herkesi öldürecek hasar gelirken) havuz Cleric seviyesinin iki katı canla ayakta kalır ve tüm Bağlı dostların Motivasyonu tam dolar. Bu sürede bağ sende toplanır: bağ sayısı 6'ya çıkar (parametre).
 
 ## Havuz kuralı (KESİN, kullanıcı kararı 2026-11-05)
 - Havuz boyutu = bağlı dostların toplam canı. Kim hasar alırsa hasar havuzdan düşer; şifa ve geçici can da havuza eklenir (havuz en çok toplam azami canı geçemez).
@@ -24,16 +24,16 @@ Yükü paylaşan bir manastır: dostlarını birbirine bağlar, acıyı da cesar
 
 ## Motivasyon ve Ortak Can Havuzu (karar)
 - **Motivasyon kişisel kalır** (K48 kararı: karakter başına havuz). Ortak Can Havuzu yalnız HP'dir; Motivasyonu ne doldurur ne boşaltır. HP havuzu ile Motivasyon birbirine karışmaz.
-- **Tek bağ:** Havuz açıkken Bağlı dostlar bir **Motivasyon kaybı** yaşarsa kayıp bağlı dostlar arasında eşit bölünür (aşağı yuvarlanır, kalan kaybı yaşayana yazılır). Kazançlar paylaşılmaz (yalnız Teselli Nöbeti ve Yıkılmaz Birlik herkese verir). Böylece birlik, acıyı hafifletir ama zinciri artırmaz.
+- **Tek bağ:** Havuz açıkken Bağlı dostlar bir **Motivasyon kaybı** yaşarsa kayıp bağlı dostlar arasında eşit bölünür (aşağı yuvarlanır, kalan kaybı yaşayana yazılır). Kazançlar paylaşılmaz (yalnız Teselli Nöbeti ve Barış Azizi herkese verir). Böylece birlik, acıyı hafifletir ama zinciri artırmaz.
 - Biri Çökmüş (Motivasyon 0, savaşta) olursa havuzdan hasar almaya devam eder (canı havuzda); Çökmüş dost havuz bağından ÇIKARILMAZ. Savaş dışı Moral ölümü bağı keser, havuzdaki payı diğerlerine kalır.
-- Sistem kapalıyken (Motivasyon yok): Teselli Nöbeti yalnız geçici can verir, Yıkılmaz Birlik'in Motivasyon kısmı yok sayılır.
+- Sistem kapalıyken (Motivasyon yok): Teselli Nöbeti yalnız geçici can verir, Barış Azizi'nin Motivasyon kısmı yok sayılır.
 
 ## Oyuncuya görünen metin (sade)
 - **Bağ Kurma (1):** Yakındaki üç dostunu birbirine bağlarsın, 10 tur sürer. **Omuz Ver:** Bağlı bir dost zar tutturamazsa yanındaki bir dost ona destek olur.
 - **Teselli Nöbeti (2):** Bağlı dostların geçici can ve biraz cesaret kazanır.
 - **Birlik Can Havuzu (6):** Bağlı dostların canı tek bir havuzda toplanır, hasar havuzdan düşer. Dikkat: havuz biterse bağlı herkes ölür.
 - **Ortak Şifa (8):** Birini iyileştirince diğer bağlı dostlar da biraz iyileşir.
-- **Yıkılmaz Birlik (17):** Havuz bitecekken ayakta kalır ve herkesin cesareti tazelenir.
+- **Barış Azizi (17):** Havuz bitecekken ayakta kalır ve herkesin cesareti tazelenir.
 
 ## Motor ihtiyaçları
 - Bağlı durumu (süreli, 10 tur), Omuz Ver tepki kancası (başarısız save sonrası bonus), geçici can toplu verme, Ortak Can altyapısı (A1, mevcut) + havuz bitince çıkış kuralı ve 1 HP tabanı, havuz sıfırlanınca toplu ölüm kuralı (uyarı ekranıyla) ve sıfır-önleme tepkisi, Motivasyon kaybı bölüştürme kancası (K48 Moral sistemine bağlı; K48'den sonra).

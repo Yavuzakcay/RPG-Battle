@@ -1,0 +1,94 @@
+{
+ "_aciklama": "Kuyruk KQ6-9: ortam GENİŞLETME (daraltma yok). Her harita için en çok 4 'donör' harita; donör ortamındaki her canavar hedef haritanın ortam listesine de eklenir. `npx vite-node scripts/ortam-genislet.ts` data/monster-ortamlari.json'a uygular (idempotent; data/monsters.json'a dokunmaz). Tablo harita/belgeler/ortam-genisletme.md.",
+ "hedefEnAz": 25,
+ "crTavan": {
+  "_aciklama": "Hedef haritaya donörden en çok bu CR'deki canavarlar eklenir. Taverna düşük seviye karşılaşma haritası (Giriş/Orta/Güçlü; GM kurulum testi `src/screens/setup-ui.test.tsx`): ilk uygulamada kasaba-han donöründen gelen CR 9+ yedi canavar (Clay Golem, Deva, Archmage, Rakshasa, Vampire, Planetar, Solar) çıkarıldı.",
+  "taverna": 8
+ },
+ "istisna": [],
+ "donorler": {
+  "hapishane-dis-halka": [
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "kale-onu"
+  ],
+  "hapishane-hucre-platformu": [
+   "hapishane-dis-halka",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "kale-onu"
+  ],
+  "hapishane-mudur-kulesi": [
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-iskele",
+   "kale-onu"
+  ],
+  "hapishane-iskele": [
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "kale-onu"
+  ],
+  "derinlikler-lav-salonu": [
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "magara"
+  ],
+  "derinlikler-magara-karakol": [
+   "derinlikler-lav-salonu",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "magara"
+  ],
+  "derinlikler-mezar-labirenti": [
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mantar-magarasi",
+   "magara"
+  ],
+  "derinlikler-mantar-magarasi": [
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "magara"
+  ],
+  "orman-heykel-golu": [
+   "orman-oduncu-kampi",
+   "orman-ork-kampi",
+   "orman-kemik-acikligi",
+   "ada"
+  ],
+  "orman-oduncu-kampi": [
+   "orman-heykel-golu",
+   "orman-ork-kampi",
+   "orman-kemik-acikligi"
+  ],
+  "orman-ork-kampi": [
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-kemik-acikligi"
+  ],
+  "orman-kemik-acikligi": [
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi"
+  ],
+  "orman-heykel-magarasi": [
+   "orman-heykel-golu",
+   "derinlikler-mantar-magarasi",
+   "magara"
+  ],
+  "yeralti-nehri": [
+   "magara",
+   "orman-heykel-golu",
+   "derinlikler-mantar-magarasi"
+  ],
+  "taverna": [
+   "kasaba-han"
+  ]
+ },
+ "uygulandi": true
+}

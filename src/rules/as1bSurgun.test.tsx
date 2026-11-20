@@ -60,8 +60,8 @@ describe('AS1b düzeltmesi: Human kültürleri ve Sur Dışı sürgünü', () =>
     expect(pickCulture({ lineageId: 'outwall', exileCulture: 'pure-city', skinTone: 'siyahi' }, 'outwall').skinTone).toBe('dogu-asyali');
     expect(pickCulture({ lineageId: 'outwall', exileCulture: 'khadyrga', skinTone: 'siyahi' }, 'tenhausser')).toEqual({ lineageId: 'tenhausser', exileCulture: undefined, skinTone: 'siyahi' });
     const h = html(char({ raceId: 'human', lineageId: 'outwall', exileCulture: 'tenhausser', skinTone: 'orijinal' }));
-    expect((h.match(/class="skin-tone( on)?"/g) ?? []).length).toBe(1);
-    expect(h).toContain('class="skin-tone on" data-tone="siyahi"');
+    // SD5: ten seçici yok; ton jeton boyasından doğrulanır (aşağıda).
+    expect(h).not.toContain('skin-tone');
     const sheet = (exileCulture?: string, skinTone?: string) => ({ ...char({ raceId: 'human', lineageId: 'outwall', exileCulture, skinTone }).sheet });
     expect(sheetAvatar(sheet('tenhausser', 'orijinal')).tint).toEqual(skinTint('human', 'siyahi'));
     expect(sheetAvatar(sheet('khadyrga', 'siyahi')).tint).toBeUndefined();

@@ -46,10 +46,10 @@ describe('eşleme verisi (data/ses.json)', () => {
   });
   it('varsayılan müzik: gündüz ve gece parçaları görevdeki listeye göre', () => {
     const music = (m: string, v: string) => mapSound(m, v).music;
-    const day = [['col', 'gunduz'], ['volkan', 'normal'], ['ada', 'gunes'], ['dag', 'yaz'], ['gemi', 'gunes'], ['kale', 'gunduz'],
+    const day = [['col', 'gunduz'], ['volkan', 'normal'], ['ada', 'gunes'], ['dag', 'yaz'], ['gemi', 'gunes'], ['kale-avlu', 'gunduz'],
       ['orman', 'orman'], ['sehir-meydani', 'gun'], ['taverna', 'ic-mekan']];
-    const night = [['col', 'aksam'], ['ada', 'firtina'], ['bataklik', 'bataklik'], ['dag', 'kis'], ['dungeon', 'mesale'], ['dungeon', 'merdiven'],
-      ['dungeon', 'hazine'], ['gemi', 'firtina'], ['kale', 'gece'], ['magara', 'magara'], ['orman', 'gece'], ['sehir-meydani', 'gece']];
+    const night = [['col', 'aksam'], ['ada', 'firtina'], ['bataklik', 'bataklik'], ['dag', 'kis'], ['dungeon', 'mesale'], ['dungeon', 'merdiven-yuruyen'],
+      ['dungeon', 'hazine'], ['gemi', 'firtina'], ['magara', 'magara'], ['orman', 'gece'], ['sehir-meydani', 'gece']];
     for (const [m, v] of day) expect(music(m as string, v as string), `${m}/${v}`).toBe('gunduz');
     for (const [m, v] of night) expect(music(m as string, v as string), `${m}/${v}`).toBe('gece');
     expect(menuTrack('light')).toBe('menu-light');

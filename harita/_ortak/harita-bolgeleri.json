@@ -58,11 +58,6 @@
       "aciklama": "Klasik Volkan (boss: uyuyan ejderha) ve Volkan Seferi haritaları; ödül sahnesi volkan-hazine."
     },
     {
-      "id": "vitrin",
-      "ad": "Vitrin",
-      "aciklama": "Test/vitrin haritası Ortamlar Diyarı (denge dışı)."
-    },
-    {
       "id": "derinlikler",
       "ad": "Derinlikler",
       "aciklama": "Kuyruk 21: Derinlikler yeraltı seferi (dallanan): Mağara Karakolu, Mezar Labirenti, Mantar Mağarası, Lav Salonu; zemin `npm run harita-zemin` + duzeltme/. Planlananlar henüz kaydı olmayan adlar.",

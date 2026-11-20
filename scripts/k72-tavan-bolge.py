@@ -29,7 +29,7 @@ import sys
 # K71a/K71b öneri tablosunun iç tavan değerleri (kullanıcı kararı K72: kale grubu 15, saray odaları 20, hapishane/kasaba
 # odaları 12, şehir meydanı 15, buzul tapınağı 20).
 TAVAN_DEGER = {
-    'kale': 15, 'kale-baskini': 15, 'kale-avlu': 15, 'kale-ic-avlu': 15, 'kale-onu': 15, 'batak-kale': 15,
+    'kale-baskini': 15, 'kale-avlu': 15, 'kale-ic-avlu': 15, 'kale-onu': 15, 'batak-kale': 15,
     'beyaz-sehir-dis-kapi': 15,
     'beyaz-sehir-saray-avlusu': 20,
     'hapishane-dis-halka': 12, 'hapishane-iskele': 12, 'kasaba-han': 12, 'kasaba-demirci-tapinak': 12,
@@ -44,7 +44,7 @@ ONAYLI_BOLGE: dict = {}
 
 # K5: tepesinde durulan duvar haritaları (K71b ONAYLI duvar boyu 10, 15, 25, 30 ft).
 SUR_USTU = {
-    'kale', 'kale-baskini', 'kale-avlu', 'kale-ic-avlu', 'kale-onu', 'beyaz-sehir-dis-kapi', 'beyaz-sehir-saray-avlusu',
+    'kale-baskini', 'kale-avlu', 'kale-ic-avlu', 'kale-onu', 'beyaz-sehir-dis-kapi', 'beyaz-sehir-saray-avlusu',
     'batak-kale', 'kasaba-han', 'kasaba-demirci-tapinak', 'orman-heykel-golu', 'orman-ork-kampi', 'orman-oduncu-kampi',
     'orman-kemik-acikligi',
 }

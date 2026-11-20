@@ -21,6 +21,7 @@
  * fırsat saldırısı yiyecek yürüyüşten önce bonus eylemle ayrılır (Cunning Action). Konsantre
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
+import { limitsOn, liftPlan } from './nesneAgirlik';
 import { canAirMove } from './airMove';
 import { bandGap, bandOf, cellsOn, heightLevels, levelOf, levelToFt } from './cells';
 import { foeField, wallClimbCommand } from './ai/climbAi';
@@ -50,7 +51,7 @@ import { isIncapacitated } from '../rules/conditions';
 import { adjustDamage } from '../rules/damage';
 import { monsters, spells } from '../data';
 import { availableForms } from './druid';
-import { costsFrom, distance, hexKey, neighbors, offsetToAxial, sameHex, type Offset } from '../rules/hex';
+import { costsFrom, distance, hexKey, neighbors, offsetToAxial, sameHex, withinRange, type Offset } from '../rules/hex';
 import { execute } from './commands';
 import { canSneak, meleeOf, spellOf } from './features';
 import { standUpProblem } from './grapple';
@@ -107,6 +108,7 @@ import { climbs, fliesOrHovers, flySpeed, groundBound, isAirborne } from './flig
 import { altitudeCapFt, altitudeOf, climbCapFt, climbingAloft, wallHex } from './altitude';
 import { legendaryOf } from './boss';
 import { bodyAt, bodyOf, gap, touchesHexes } from './body';
+import { whirlpoolCast, whirlpoolSize } from './girdap';
 import { footprintDistance } from '../rules/footprint';
 import { globalRule } from './ruleControl';
 import { teleportHexes } from './teleport';
@@ -535,6 +537,32 @@ function zoneSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
       const loose = !!state.yz?.deprem && s.id === 'earthquake' && enemies >= 2;
       if (worth && (friends === 0 || loose) && (!best || enemies > best.foes)) best = { cmd, foes: enemies };
     }
+  }
+  return best?.cmd ?? null;
+}
+
+/**
+ * Control Water girdabı (kural sürümü 84, anahtar açıkken; `k84:girdap`): en çok düşmanı kapsayan, alanda dost (kendisi dahil,
+ * masumlar) olmayan düşmanın altıgeni; motorun seçeceği en düşük slotun yarıçapıyla. En az iki düşman ya da 20+ HP'li tek düşman.
+ * Değer önceliği `kuralOnceligi['k84:girdap']`.
+ */
+function whirlpoolCommand(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
+  if (!state.map || !actor.pos) return null;
+  const sp = castable(actor).find((x) => whirlpoolCast(state, x));
+  if (!sp) return null;
+  const level = actor.spellSlots.findIndex((n, i) => n > 0 && i + 1 >= sp.level) + 1;
+  if (level <= 0) return null;
+  const { radius } = whirlpoolSize(sp, level);
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  let best: { cmd: Command; n: number } | null = null;
+  for (const f of foes) {
+    if (!f.pos) continue;
+    const hexes = withinRange(f.pos, radius, size);
+    const inside = Object.values(state.combatants).filter((c) => c.hp > 0 && c.pos && !c.summon?.intangible && !c.offFloor && touchesHexes(state, c, hexes));
+    const enemies = inside.filter((c) => c.side !== actor.side && !c.civilian).length;
+    if (inside.some((c) => c.side === actor.side || c.civilian) || !(enemies >= 2 || f.hp >= 20)) continue;
+    const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: sp.name, targetId: f.id };
+    if ((!best || enemies > best.n) && tryCmd(state, actor, cmd).ok) best = { cmd, n: enemies };
   }
   return best?.cmd ?? null;
 }
@@ -1033,7 +1061,7 @@ function multiPlanCommand(state: BattleState, actor: Combatant, foes: Combatant[
   const inReach = (n: string, f: Combatant) => { const a = ready(n); return !!a && !a.area && reachOk(state, actor, f, atkReach(a)).ok; };
   const visible = new Set(foes.map((f) => f.id));
   const steps: MultiStep[] = [];
-  let left = multiTotal(spec, actor);
+  let left = multiTotal(spec, actor, state);
   for (const r of spec.replace ?? []) {
     if (r.cost > left) continue;
     const a = r.name ? ready(r.name) : undefined;
@@ -2012,7 +2040,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   }
   // Görev DRUID (basit kural): slotu kalmamış ve konsantre olmayan Druid bonus eylemle en güçlü bilinen biçime girer.
   if (!actor.economy.bonus && !actor.shape && !actor.concentration && foesOf(state, actor).length > 0 && actor.spellSlots.every((n) => n <= 0)) {
-    const form = availableForms(monsters, actor)[0];
+    const form = availableForms(monsters, actor, state.kuralSurumu ?? 1)[0];
     const cmd: Command | null = form ? { type: 'wild_shape', actorId, form: form.id } : null;
     if (cmd && tryCmd(state, actor, cmd).ok) return cmd;
   }
@@ -2531,6 +2559,8 @@ function goalCommand(state: BattleState, actor: Combatant, canAct: boolean): Com
     if (g.kind === 'retrieve' && ob && g.hexes?.length) {
       if (ob.carriedBy === actor.id) { const go = moveToward(state, actor, g.hexes, sneak); if (go) return go; continue; }
       if (ob.carriedBy) continue;
+      // Kuyruk KQ3 NA1 (sürüm 80): yapay zekâ taşıyamayacağı nesneyi seçmez; ortak taşıma koordinasyonu yok (yardımcı gerekiyorsa vazgeçer).
+      if (limitsOn(state)) { const plan = liftPlan(state, actor, ob); if ('problem' in plan || plan.helpers.length) continue; }
       const closest = [...party].sort((a, b) => distance(a.pos as Offset, ob.at) - distance(b.pos as Offset, ob.at))[0];
       if (closest?.id !== actor.id) continue;
       if (distance(pos, ob.at) <= 1) return { type: 'object_use', actorId: actor.id, objectId: ob.id, action: 'take' };
@@ -3374,6 +3404,7 @@ registerAction({ id: 'k65:firtina', rule: true, kind: 'damage', note: 'Fire Stor
 registerAction({ id: 'k64:ele-gecir', rule: true, kind: 'control', note: 'Ghost Possession: 5 ft içindeki geçerli Humanoid hedefi ele geçir', gen: (s, a, h) => (a.monsterId && !a.summon ? [possessCommand(s, a, h.foes)] : []) });
 registerAction({ id: 'k62:boncuk', rule: true, kind: 'control', note: 'Delayed Blast Fireball: boncuğu düşmanların üstüne koy', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [beadSpell(s, a, h.foes)] : []) });
 registerAction({ id: 'k62:kafes', rule: true, kind: 'control', note: 'Forcecage: güçlü düşmanı kutuya kapat', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [cageSpell(s, a, h.foes)] : []) });
+registerAction({ id: 'k84:girdap', rule: true, kind: 'control', note: 'Control Water girdabı: en çok düşmanı kapsayan, dostsuz düşman altıgeni', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [whirlpoolCommand(s, a, h.foes)] : []) });
 registerAction({ id: 'eski:zemin', rule: true, kind: 'control', note: 'kalıcı zemin büyüsü (Entangle, Web, Spike Growth…)', gen: (s, a, h) => (partyBranch(a) || (a.spellNames.length && !a.summon) ? [zoneSpell(s, a, h.foes)] : []) });
 registerAction({ id: 'eski:nefes', rule: true, kind: 'damage', note: 'Dragonborn nefesi', gen: (s, a, h) => (partyBranch(a) ? [breathWeapon(s, a, h.foes)] : []) });
 registerAction({

@@ -38,6 +38,7 @@ import { damagedReactions, hunterDefenseEvents } from './reactions';
 import { applyEvents } from './reduce';
 import { riderOf } from './riders';
 import type { BattleEvent, BattleState, Combatant } from './types';
+import { formMonsterId } from './shapeMonsterCore';
 
 export type AreaTargetSpec = AreaSpec & { targets: 'all' | 'enemies' };
 
@@ -147,9 +148,9 @@ export function areaSaveEvents(state: BattleState, actor: Combatant, pick0: Area
     const local: BattleEvent[] = [...shd, ev];
     if (save.monster && !r.success) {
       // Canavar saldırısının süreli etkisi ve rider durumları (save başarısızsa; tek hedefli yolla aynı).
-      const effect = attackEffect(actor.monsterId, save.monster.attackName);
+      const effect = attackEffect(formMonsterId(actor), save.monster.attackName);
       if (effect && fx.hpAfter > 0) local.push(timedCondition(current, t.id, effect, actor.id, `${actor.name}: ${save.label}`));
-      local.push(...riderConditionEvents(current, actor, { ...t, hp: fx.hpAfter }, riderOf(actor.monsterId, save.monster.attackName), save.monster.attackName, rng));
+      local.push(...riderConditionEvents(current, actor, { ...t, hp: fx.hpAfter }, riderOf(formMonsterId(actor), save.monster.attackName), save.monster.attackName, rng));
     }
     events.push(...local);
     current = applyEvents(current, local);
@@ -168,7 +169,7 @@ export function monsterAreaOf(actor: Combatant, index: number, state?: Pick<Batt
   const atk = actor.attacks[index];
   if (!atk?.area || !atk.save) return null;
   // Kuyruk A2 (sürüm 30+): hasarsız alan saldırısına veriden hasar (Yarı-Ejderha nefesi).
-  const a2d = !atk.damageDice && state ? a2AreaDamage(state, actor.monsterId, atk.name) : undefined;
+  const a2d = !atk.damageDice && state ? a2AreaDamage(state, formMonsterId(actor), atk.name) : undefined;
   return {
     spec: atk.area,
     save: { label: atk.name, ability: atk.save.ability, dc: atk.save.dc, halfOnSave: atk.save.halfOnSave,

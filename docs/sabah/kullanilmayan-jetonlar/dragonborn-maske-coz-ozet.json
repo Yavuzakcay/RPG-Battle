@@ -1,0 +1,62 @@
+{
+ "not": "Dragonborn için sheetAvatar + maskUrlFor çalıştırıldı; çalışma anında istenen ten maskesi URL kümesi. ESKİ hücreli (maske/dragonborn-erkek|kadin-*) istek sayısı 0 olmalı.",
+ "sheetAvatarCagri": 649440,
+ "altSinifKimligi": 121,
+ "soySayisi": 10,
+ "zincirHalkasiMaskeIcin": 1180800,
+ "avatarTintTuru": {
+  "tint yok": 59040,
+  "pul": 590400
+ },
+ "birincilJeton": {
+  "hücreli": 649440
+ },
+ "istenenMaskeDosyasi": 290,
+ "tureGore": {
+  "maske-pul (hücreli)": {
+   "dosya": 266,
+   "istek": 590400,
+   "diskteVar": 266,
+   "diskteYok": 0
+  },
+  "diğer": {
+   "dosya": 24,
+   "istek": 590400,
+   "diskteVar": 0,
+   "diskteYok": 24
+  }
+ },
+ "eskiHucreliIstenen": 0,
+ "eskiHucreliIstenenOrnek": [],
+ "siniFGenelMaskeIstenen": 0,
+ "siniFGenelMaskeBeklenen24Dosyada": 24,
+ "eskiYedekYol_lineageTint_maske": {
+  "maske/ ESKİ hücreli": 240
+ },
+ "istenenAmaDiskteOlmayan": [
+  "characters/maske-pul/dragonborn-male-barbarian.png",
+  "characters/maske-pul/dragonborn-male-bard.png",
+  "characters/maske-pul/dragonborn-male-cleric.png",
+  "characters/maske-pul/dragonborn-male-druid.png",
+  "characters/maske-pul/dragonborn-male-fighter.png",
+  "characters/maske-pul/dragonborn-male-monk.png",
+  "characters/maske-pul/dragonborn-male-paladin.png",
+  "characters/maske-pul/dragonborn-male-ranger.png",
+  "characters/maske-pul/dragonborn-male-rogue.png",
+  "characters/maske-pul/dragonborn-male-sorcerer.png",
+  "characters/maske-pul/dragonborn-male-warlock.png",
+  "characters/maske-pul/dragonborn-male-wizard.png",
+  "characters/maske-pul/dragonborn-female-barbarian.png",
+  "characters/maske-pul/dragonborn-female-bard.png",
+  "characters/maske-pul/dragonborn-female-cleric.png",
+  "characters/maske-pul/dragonborn-female-druid.png",
+  "characters/maske-pul/dragonborn-female-fighter.png",
+  "characters/maske-pul/dragonborn-female-monk.png",
+  "characters/maske-pul/dragonborn-female-paladin.png",
+  "characters/maske-pul/dragonborn-female-ranger.png",
+  "characters/maske-pul/dragonborn-female-rogue.png",
+  "characters/maske-pul/dragonborn-female-sorcerer.png",
+  "characters/maske-pul/dragonborn-female-warlock.png",
+  "characters/maske-pul/dragonborn-female-wizard.png"
+ ]
+}

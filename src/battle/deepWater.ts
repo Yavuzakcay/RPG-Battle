@@ -13,6 +13,7 @@ import { terrainOf } from '../map/terrain';
 import { globalRule } from './ruleControl';
 import { groundBound } from './flight';
 import { k73fOn } from './k73fSurum';
+import { yuzmeOn } from './yuzmeSurum';
 import type { BattleState, Combatant } from './types';
 
 const SWIMMERS = new Set<string>(data.swimmers);
@@ -76,7 +77,7 @@ export const isLiquidTile = (t: { char: string; rule?: string }): boolean => t.r
 export function canEnterVeryDeep(c: Combatant, state?: BattleState): boolean {
   // Kuyruk 19: Gift of the Depths (Warlock) yüzme hızı verir.
   // Kuyruk U1a: süzülen derin suya yürüyen gibi (yalnız uçan, yüzen, suda yürüyen).
-  return !groundBound(c) || listedSwimmer(c, state) || !!c.effects?.some((e) => WATER_WALK.has(e.id)) || !!c.traits?.includes('gift-of-the-depths') || !!c.effects?.some((e) => e.freeMove) || swimsByTrait(c, state);
+  return !groundBound(c) || listedSwimmer(c, state) || !!c.effects?.some((e) => WATER_WALK.has(e.id)) || !!c.traits?.includes('gift-of-the-depths') || !!c.effects?.some((e) => e.freeMove) || swimsByTrait(c, state) || (!!c.swimFt && yuzmeOn(state));
 }
 
 /** Yol bulma: bu yaratık için çok derin su altıgeni geçilmez mi (mekanik kapalıysa hep false). */
@@ -89,5 +90,5 @@ export function deepWaterBlocks(state: BattleState, actor: Combatant): (h: Offse
 
 /** Kuyruk K73c (sürüm 64+): yüzme hızı var mı (SRD listesi, Alter Self/Roving/Gift of the Depths). Uçuş sayılmaz. */
 export function hasSwimSpeed(c: Combatant, state?: Pick<BattleState, 'map' | 'kuralSurumu'>): boolean {
-  return listedSwimmer(c, state) || !!c.traits?.includes('gift-of-the-depths') || swimsByTrait(c, state);
+  return listedSwimmer(c, state) || !!c.traits?.includes('gift-of-the-depths') || swimsByTrait(c, state) || (!!c.swimFt && yuzmeOn(state));
 }

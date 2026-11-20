@@ -1,0 +1,166 @@
+{
+  "jeton": 285,
+  "golge_toplam": 165918,
+  "golge_jeton_basina": {
+    "medyan": 572,
+    "p90": 1022,
+    "en_cok": 2040,
+    "sifir_jeton": 11
+  },
+  "maske_orani_medyan": 0.206,
+  "ince_yapi_toplam": 122722,
+  "ince_yapi_bant_px": {
+    "ust_boynuz": 53113,
+    "orta_el_parmak": 36322,
+    "alt_kuyruk": 33287
+  },
+  "ince_yapi_jeton_basina": {
+    "medyan": 423,
+    "p90": 768,
+    "en_cok": 1232
+  },
+  "bant_yuzde": {
+    "ust": 47.2,
+    "orta": 33.5,
+    "alt": 19.3
+  },
+  "palete_uzaklik_dE_p10_p50_p90": [
+    7.5,
+    10.6,
+    16.9
+  ],
+  "paletin_en_koyu_kumesi_L_medyan": 26.5,
+  "neden_px": {
+    "kutu_disi": 64,
+    "palet_disi_toplam": 160269,
+    "palet_disi_koyu_kume_var": 65393,
+    "palet_disi_kume_yok": 94876,
+    "palet_ici_elenmis": 5585
+  },
+  "boyanan_dagilim": {
+    "ton_sapma_derece_p50_p90_p99_max": [
+      11.8,
+      20.9,
+      25.1,
+      26.0
+    ],
+    "kroma_p5_p50_p95": [
+      24.8,
+      35.5,
+      46.6
+    ],
+    "L_p5_p50_p95": [
+      18.5,
+      23.4,
+      38.8
+    ]
+  },
+  "kroma_kapisi": {
+    "esik_komsu_maske_kroma": 32,
+    "engellenen_px": 7290,
+    "etkilenen_jeton": 41,
+    "en_cok_engellenen": [
+      [
+        "tiefling-erkek-fighter-ID2",
+        1298
+      ],
+      [
+        "tiefling-erkek-wizard-GR",
+        949
+      ],
+      [
+        "tiefling-kadin-warlock-WL-11",
+        683
+      ],
+      [
+        "tiefling-erkek-rogue-ID3",
+        609
+      ],
+      [
+        "tiefling-kadin-warlock-WL-9",
+        488
+      ],
+      [
+        "tiefling-erkek-warlock-WL-7",
+        367
+      ],
+      [
+        "tiefling-erkek-warlock-WL-9",
+        322
+      ],
+      [
+        "tiefling-kadin-bard-ID7",
+        292
+      ]
+    ]
+  },
+  "yasak": {
+    "sari_ton_55_120_px": 1,
+    "ton_sapma_40_ustu_px": 0,
+    "L70_ustu_px": 0,
+    "sari_goz_adayi_eklenen_px": 0,
+    "sari_goz_adayi_son_maskede_px": 0
+  },
+  "en_cok_degisen_10_boynuz_kuyruk": [
+    [
+      "tiefling-kadin-barbarian-ID8",
+      572,
+      324,
+      1829
+    ],
+    [
+      "tiefling-kadin-monk-ID4",
+      177,
+      598,
+      1319
+    ],
+    [
+      "tiefling-erkek-cleric-ID8",
+      463,
+      261,
+      1158
+    ],
+    [
+      "tiefling-erkek-barbarian-ID5",
+      441,
+      261,
+      2040
+    ],
+    [
+      "tiefling-female-monk",
+      373,
+      329,
+      1415
+    ],
+    [
+      "tiefling-erkek-bard-ID7",
+      365,
+      336,
+      1401
+    ],
+    [
+      "tiefling-kadin-bard-ID4",
+      500,
+      195,
+      1134
+    ],
+    [
+      "tiefling-erkek-warlock-WL-4",
+      345,
+      333,
+      1069
+    ],
+    [
+      "tiefling-kadin-barbarian-ID5",
+      410,
+      243,
+      1191
+    ],
+    [
+      "tiefling-erkek-cleric-ID6",
+      273,
+      371,
+      1040
+    ]
+  ]
+}

@@ -1,0 +1,73 @@
+{
+ "not": "scripts/dragonborn-desen-v2.py: maske ölçümü (ten tonu, boyanan piksel, atılan bileşen).",
+ "parametre": {
+  "konturL": 42,
+  "tonFark": 16,
+  "cAlt": 0.3,
+  "cUst": 2.4,
+  "beyazL": 88,
+  "beyazC": 8,
+  "minBilesen": 40,
+  "bilesenL": 62,
+  "delik": 160,
+  "sicakC": 14,
+  "sicakL": 88,
+  "mod": 5.0,
+  "modKoyu": {
+   "gumus": [
+    0.0,
+    -3.0,
+    -6.0
+   ],
+   "beyaz": [
+    0.0,
+    -3.0,
+    -6.0
+   ]
+  }
+ },
+ "jetonlar": {
+  "kadin-wizard-WZ-B1": {
+   "tonH": 290.7,
+   "tonC": 9.4,
+   "tenL": 87.2,
+   "boya": 5670,
+   "atilan": 203
+  },
+  "erkek-fighter-ID4": {
+   "tonH": 289.0,
+   "tonC": 9.1,
+   "tenL": 85.2,
+   "boya": 13631,
+   "atilan": 31
+  },
+  "erkek-barbarian-ID2": {
+   "tonH": 296.0,
+   "tonC": 7.4,
+   "tenL": 83.4,
+   "boya": 11188,
+   "atilan": 222
+  },
+  "kadin-monk-ID1": {
+   "tonH": 307.6,
+   "tonC": 17.2,
+   "tenL": 90.3,
+   "boya": 6077,
+   "atilan": 213
+  },
+  "erkek-ranger-ID4": {
+   "tonH": 291.4,
+   "tonC": 10.7,
+   "tenL": 80.0,
+   "boya": 12215,
+   "atilan": 347
+  },
+  "kadin-fighter-ID4": {
+   "tonH": 290.8,
+   "tonC": 11.9,
+   "tenL": 90.7,
+   "boya": 9187,
+   "atilan": 203
+  }
+ }
+}

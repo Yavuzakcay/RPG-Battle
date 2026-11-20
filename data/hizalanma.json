@@ -1,9 +1,10 @@
 {
  "not": "K51: hizalanma parametreleri (eksen aralığı, başlangıç kırpması, etiket eşiği, histerezis, serbest giriş sınırı) ve 9 etiket.",
  "eksen": 50,
- "baslangicKirp": 50,
+ "baslangicKirp": 50, "katkiCarpani": 1.8, "kareMerkezi": 33,
  "esik": 17,
  "histerezis": 2,
+ "tekrar": { "not": "AL2: aynı hazır olay türü pencere içinde tekrar ederse etki çarpanı (1., 2., 3., 4+. kez). Pencere son uzun dinlenmeye kadar (alignmentLongRest sıfırlar); serbest giriş azalmaz.", "pencere": "uzunDinlenme", "carpanlar": [1, 0.5, 0.25, 0] },
  "serbestEnCok": 10,
  "duzen": {
   "pos": {

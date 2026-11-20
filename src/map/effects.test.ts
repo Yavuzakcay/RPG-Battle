@@ -22,7 +22,6 @@ describe('harita efektleri verisi', () => {
     expect(types('bataklik', 'bataklik')).toEqual(['fog', 'bubbles', 'fireflies']);
     expect(types('magara', 'magara')).toEqual(['crystalFlicker', 'drip']);
     expect(types('dungeon', 'mesale')).toEqual(['flicker', 'dust']);
-    expect(types('kale', 'gece')).toEqual(['flicker']);
     expect(types('sehir-meydani', 'gece')).toEqual(['flicker']);
     expect(types('dag', 'kis')).toEqual(['snow', 'iceGlint']);
     expect(types('dag', 'yaz')).toEqual(['fog']);

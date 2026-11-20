@@ -54,6 +54,7 @@ import { isP12Feature, p12Execute, p12Problem } from './p12';
 import { binekMb7On } from '../binekSurum';
 import { binekMb2On } from '../binekMb2Surum';
 import { mountRuleOf } from '../riderCore';
+import { lateSummonEvents } from '../monsterSetup';
 
 export { paketHex, paketTargeted, withPaket } from './core';
 
@@ -509,7 +510,7 @@ function summonEvents(state: BattleState, c: Ctx): BattleEvent[] | string {
     let n = 1;
     while (cur.combatants[`${a.id}-cagri${n}`]) n++;
     const id = `${a.id}-cagri${n}`;
-    const { reactions: _r, reactionUses: _u, ...base } = combatantFromMonster(monster, { id, name: `${monster.name} (${a.name})`, height: a.height });
+    const { reactions: _r, reactionUses: _u, ...base } = combatantFromMonster(monster, { id, name: `${monster.name} (${a.name})`, height: a.height, kuralSurumu: state.kuralSurumu ?? 1 });
     const initiative = own ? rollDie(20, rollTag(c.rng, { kind: 'initiative', by: id, bonus: abilityModifier(monster.abilities.dex) })) + abilityModifier(monster.abilities.dex) : a.initiative;
     const summon: SummonInfo = {
       by: a.id, spellId, spell: nameOf(c), turn: own ? 'own' : 'after-owner', level: a.level, ...(conc ? { concentration: true } : {}),
@@ -540,9 +541,10 @@ function summonEvents(state: BattleState, c: Ctx): BattleEvent[] | string {
       const j = cur.order.findIndex((oid) => (cur.combatants[oid]?.initiative ?? 0) < initiative);
       index = j < 0 ? cur.order.length : j;
     }
-    const ev: BattleEvent = { type: 'summoned', ownerId: a.id, spell: nameOf(c), combatant, index };
-    out.push(ev);
-    cur = applyEvents(cur, [ev]);
+    // Görev D2 (88+): ödünç canavar ya da arketip savaş başındaki gibi canavar özellikleri ve yetenekleriyle.
+    const evs = lateSummonEvents(cur, { type: 'summoned', ownerId: a.id, spell: nameOf(c), combatant, index }, monster);
+    out.push(...evs);
+    cur = applyEvents(cur, evs);
   }
   return out.some((e) => e.type === 'summoned') ? out : 'Çağırma için boş yer yok.';
 }

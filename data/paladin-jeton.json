@@ -1,0 +1,56 @@
+{
+ "note": "TOPLU-KESIM bağlaması: alt sınıf kimliği → hücre (jeton <irk>-<cinsiyet>-paladin-<hücre>.webp). Hücre adları data/jeton-hucre-sirasi.json. maskeHazir false iken boyası gereken karakter sınıf-genel jetonda kalır.",
+ "sinif": "paladin",
+ "irklar": {
+    "dragonborn": ["erkek", "kadin"],
+  "human": [
+   "erkek",
+   "kadin"
+  ],
+  "elf": [
+   "erkek",
+   "kadin"
+  ],
+  "dwarf": [
+   "erkek",
+   "kadin"
+  ],
+  "halfling": [
+   "erkek",
+   "kadin"
+  ],
+  "gnome": [
+   "erkek",
+   "kadin"
+  ],
+  "orc": [
+   "erkek",
+   "kadin"
+  ],
+  "tiefling": [
+   "erkek",
+   "kadin"
+  ],
+  "goliath": [
+   "erkek",
+   "kadin"
+  ],
+  "celestial": [
+   "erkek",
+   "kadin"
+  ]
+ },
+ "altSiniflar": {
+  "oath-of-devotion": "ID1",
+  "antik-yemin": "ID2",
+  "asi-yemin-bozan": "ID3",
+  "biat-yemini": "ID4",
+  "fetih-yemini": "ID5",
+  "intikam-yemini": "ID6",
+  "kefaret-yemini": "ID7",
+  "muhafiz-yemini": "ID8",
+  "zafer-yemini": "ID9",
+  "imza_hizir": "ID10"
+ },
+ "cozulemeyen": []
+}

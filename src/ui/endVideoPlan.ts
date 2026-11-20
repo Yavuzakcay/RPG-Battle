@@ -21,6 +21,9 @@ export interface EndVideoPlan {
   /** Savaş bitişinden videonun başlamasına (müziğin sönmesi) ve ezgiye kadar geçen süre. */
   startMs: number;
   jingleMs: number;
+  /** SV1: arkadaki karartma (0–1) ve yumuşak giriş/çıkış süresi (ms). */
+  dim: number;
+  fadeMs: number;
 }
 
 const FILES = cfg.files as Record<Lang, Record<EndOutcome, string>>;
@@ -34,8 +37,16 @@ export function endVideoPlan(outcome: EndOutcome | null, lang: Lang, opts: { ena
     kind: opts.reducedMotion ? 'poster' : 'video',
     src: `${cfg.dir}${name}.mp4`, webm: `${cfg.dir}${name}.webm`, poster: `${cfg.dir}${name}-poster.jpg`,
     holdMs: cfg.posterHoldMs, startMs, jingleMs: startMs + cfg.jingleAfterStartMs,
+    dim: cfg.karartma, fadeMs: cfg.gecisMs,
   };
 }
+
+/**
+ * SV1: görünüm kipi. `blend`: video savaş ekranının üstünde şeffaf (`mix-blend-mode: screen` + karartma); `solid`: eski tam ekran
+ * siyah zemin (mix-blend-mode desteklenmiyor ya da Efekt animasyonu kapalı).
+ */
+export type EndVideoMode = 'blend' | 'solid';
+export const endVideoMode = (o: { effects: boolean; supported: boolean }): EndVideoMode => (o.effects && o.supported ? 'blend' : 'solid');
 
 /** Oynamaya başlamazsa (otomatik oynatma kısıtı, yükleme) bu süre sonunda sonuç ekranına geçilir. */
 export const START_TIMEOUT_MS = cfg.startTimeoutMs;

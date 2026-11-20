@@ -6,6 +6,7 @@
  */
 import { useEffect, useState } from 'react';
 import { eligibleForms, shapeLimits } from '../../battle/druid';
+import { creatureTypeAt, swimSpeedAt } from '../../battle/srdD1';
 import { eligibleCantrips, invocationKit, invocationSlots, LESSON_FEATS, parseInvocation } from '../../rules/invocations';
 import { loadMonsters, monsters, monstersLoaded, spells, weapons } from '../../data';
 import { featureSummary } from '../../ui/descriptions';
@@ -17,6 +18,8 @@ import { findSubclass } from '../../rules/subclasses';
 import { wishPickKey } from '../../battle/paket/bag';
 import { getLang, t } from '../../i18n';
 import { Fold, InfoPop, InfoTip } from './shared';
+import { GlyphBadges, GlyphText } from '../../ui/glyph/Glyph';
+import { actionGlyph } from '../../ui/glyph/glyphs';
 
 export function InvocationPicker(props: { classId: string; level: number; invocations: string[]; onInvocations: (ids: string[]) => void; known: string[];
   weapons: string[]; pactWeapon?: string; onPact: (w: string) => void }) {
@@ -104,13 +107,26 @@ export function FormPicker(props: { classId: string; level: number; subclassId?:
   }, [!!f, ready]);
   if (!f || !lim) return null;
   const list = ready ? eligibleForms(monsters, f, props.level).sort((a, b) => a.name.localeCompare(b.name)) : [];
-  const full = props.forms.length >= lim.known;
-  const speed = (m: (typeof list)[number]) => [`${m.speed} ft`, m.fly ? `${T.formFly} ${m.fly} ft` : ''].filter(Boolean).join(' · ');
+  // Görev WS87 (kural sürümü 87): seviye düşünce ya da tür düzeltmesiyle (D1: Giant Eagle/Owl/Elk Celestial, Death Dog
+  // Monstrosity) artık alınamayan seçili biçimler sayılmaz, savaşta kullanılmaz; kayıtta kalır (seviye geri gelince geçerli).
+  const valid = ready ? props.forms.filter((id) => list.some((m) => m.id === id)) : props.forms;
+  const stale = ready ? props.forms.filter((id) => !valid.includes(id)).map((id) => monsters.find((m) => m.id === id)).filter((m): m is (typeof list)[number] => !!m) : [];
+  const full = valid.length >= lim.known;
+  // Yüzme hızı da (SRD 5.2.1; data/yuzme-hizi.json, Görev D1).
+  const speed = (m: (typeof list)[number]) => [`${m.speed} ft`, m.fly ? `${T.formFly} ${m.fly} ft` : '',
+    swimSpeedAt(m.id) ? `${T.formSwim} ${swimSpeedAt(m.id)} ft` : ''].filter(Boolean).join(' · ');
   return (
-    <Fold title={t().builder.wiz.formFold(lim.known, props.forms.length)} className="form-fold">
+    <Fold title={t().builder.wiz.formFold(lim.known, valid.length)} className="form-fold">
     <div className="metamagic-pick form-pick">
       <p className="mute">{T.formAuto}</p>
       {!ready && <p className="mute">{T.formLoading}</p>}
+      {stale.map((m) => (
+        <button key={m.id} type="button" className="form-card on stale" aria-pressed={true} title={T.formStaleTip}
+          onClick={() => props.onForms(props.forms.filter((x) => x !== m.id))}>
+          <AvatarBadge avatar={monsterAvatar(m)} size={32} />
+          <span><b>{m.name}</b><small>CR {m.cr} · {T.formStale(creatureTypeAt(m.id) !== 'beast')}</small></span>
+        </button>
+      ))}
       {list.map((m) => {
         const on = props.forms.includes(m.id);
         return (
@@ -181,11 +197,11 @@ export function FeaturesPanel(props: {
     return (
       <li key={f.key} className={`feature${f.mechanic?.story ? ' story' : ''}${soon ? ' soon' : ''}`}>
         <span className="feature-head">
-          <b>{f.name}</b> <small className="feature-lv">{W.featureLevel(f.level)}</small>
+          <b>{f.name}<GlyphBadges list={[actionGlyph(f.mechanic?.type)]} /></b> <small className="feature-lv">{W.featureLevel(f.level)}</small>
           {f.mechanic?.story && <span className="feature-tag">{T.storyTag}</span>}
           {soon && <span className="feature-tag soon">{W.soonTag}</span>}
         </span>
-        {sum && <small className="feature-sum">{sum}</small>}
+        {sum && <small className="feature-sum"><GlyphText text={sum} /></small>}
         {f.mechanic?.options && (
           <select aria-label={f.name} value={props.choices[f.key] ?? f.mechanic.default ?? f.mechanic.options[0]?.id}
             onChange={(e: { target: { value: string } }) => props.onChoose(f.key, e.target.value)}>

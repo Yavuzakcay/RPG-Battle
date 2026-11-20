@@ -1,0 +1,716 @@
+kategori,kimlik,tür,ne eksik,önerilen dosya adı
+buyu,acid-splash,savaş büyüsü,büyüye özel efekt yok (genel: alan-asit),public/efekt/efekt-acid-splash.webp
+buyu,alarm,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/alarm.webp
+buyu,animal-friendship,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: charmed),public/efekt/efekt-animal-friendship.webp
+buyu,animal-messenger,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/animal-messenger.webp
+buyu,animate-dead,savaş büyüsü,büyüye özel efekt yok (genel: cagir-ruh),public/efekt/efekt-animate-dead.webp
+buyu,antipathy-sympathy,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/antipathy-sympathy.webp
+buyu,arcane-eye,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/arcane-eye.webp
+buyu,arcane-lock,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/arcane-lock.webp
+buyu,arcanists-magic-aura,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/arcanists-magic-aura.webp
+buyu,astral-projection,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/astral-projection.webp
+buyu,augury,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/augury.webp
+buyu,awaken,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/awaken.webp
+buyu,barkskin,savaş büyüsü,büyüye özel efekt yok (genel: koruma-kalkan),public/efekt/efekt-barkskin.webp
+buyu,beacon-of-hope,savaş büyüsü,büyüye özel efekt yok (genel: koruma-kutsama),public/efekt/efekt-beacon-of-hope.webp
+buyu,bless,savaş büyüsü,büyüye özel efekt yok (genel: koruma-kutsama),public/efekt/efekt-bless.webp
+buyu,blindness-deafness,savaş büyüsü,yalnız durum ikonu/jeton filtresi (Blinded),public/efekt/efekt-blindness-deafness.webp
+buyu,burning-hands,savaş büyüsü,büyüye özel efekt yok (genel: koni-ates),public/efekt/efekt-burning-hands.webp
+buyu,charm-monster,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: charmed),public/efekt/efekt-charm-monster.webp
+buyu,charm-person,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: charmed),public/efekt/efekt-charm-person.webp
+buyu,chill-touch,savaş büyüsü,büyüye özel efekt yok (genel: darbe-buyu),public/efekt/efekt-chill-touch.webp
+buyu,circle-of-death,savaş büyüsü,büyüye özel efekt yok (genel: alan-nekrotik),public/efekt/efekt-circle-of-death.webp
+buyu,clairvoyance,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/clairvoyance.webp
+buyu,clone,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/clone.webp
+buyu,commune,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/commune.webp
+buyu,commune-with-nature,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/commune-with-nature.webp
+buyu,comprehend-languages,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/comprehend-languages.webp
+buyu,compulsion,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: charmed),public/efekt/efekt-compulsion.webp
+buyu,cone-of-cold,savaş büyüsü,büyüye özel efekt yok (genel: koni-buz),public/efekt/efekt-cone-of-cold.webp
+buyu,conjure-animals,savaş büyüsü,büyüye özel efekt yok (genel: cagir-ruh),public/efekt/efekt-conjure-animals.webp
+buyu,contact-other-plane,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/contact-other-plane.webp
+buyu,contingency,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/contingency.webp
+buyu,continual-flame,savaş büyüsü,savaşta görsel yok (döküm görsel üretmiyor),public/efekt/efekt-continual-flame.webp
+buyu,control-weather,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/control-weather.webp
+buyu,create-food-and-water,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/create-food-and-water.webp
+buyu,create-or-destroy-water,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/create-or-destroy-water.webp
+buyu,create-undead,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/create-undead.webp
+buyu,creation,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/creation.webp
+buyu,cure-wounds,savaş büyüsü,büyüye özel efekt yok (genel: iyilestir-buyuk),public/efekt/efekt-cure-wounds.webp
+buyu,dancing-lights,savaş büyüsü,savaşta görsel yok (yalnız renkli altıgen yer tutucusu),public/efekt/efekt-dancing-lights.webp
+buyu,demiplane,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/demiplane.webp
+buyu,detect-evil-and-good,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/detect-evil-and-good.webp
+buyu,detect-magic,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/detect-magic.webp
+buyu,detect-poison-and-disease,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/detect-poison-and-disease.webp
+buyu,detect-thoughts,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/detect-thoughts.webp
+buyu,dimension-door,savaş büyüsü,büyüye özel efekt yok (genel: isinlan-cikis),public/efekt/efekt-dimension-door.webp
+buyu,disguise-self,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/disguise-self.webp
+buyu,divination,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/divination.webp
+buyu,dragons-breath,savaş büyüsü,büyüye özel efekt yok (genel: koni-ates),public/efekt/efekt-dragons-breath.webp
+buyu,dream,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/dream.webp
+buyu,druidcraft,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/druidcraft.webp
+buyu,elementalism,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/elementalism.webp
+buyu,enhance-ability,savaş dışı büyü,yalnız rozet (sayı oku),public/buyu/enhance-ability.webp
+buyu,enthrall,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/enthrall.webp
+buyu,eyebite,savaş büyüsü,yalnız durum ikonu/jeton filtresi (Unconscious),public/efekt/efekt-eyebite.webp
+buyu,fabricate,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/fabricate.webp
+buyu,find-familiar,savaş büyüsü,büyüye özel efekt yok (genel: cagir-dogal),public/efekt/efekt-find-familiar.webp
+buyu,find-steed,savaş büyüsü,büyüye özel efekt yok (genel: cagir-dogal),public/efekt/efekt-find-steed.webp
+buyu,find-the-path,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/find-the-path.webp
+buyu,find-traps,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/find-traps.webp
+buyu,fire-storm,savaş büyüsü,büyüye özel efekt yok (genel: alan-ates),public/efekt/efekt-fire-storm.webp
+buyu,fireball,savaş büyüsü,büyüye özel efekt yok (genel: alan-ates),public/efekt/efekt-fireball.webp
+buyu,flesh-to-stone,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: restrained),public/efekt/efekt-flesh-to-stone.webp
+buyu,floating-disk,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/floating-disk.webp
+buyu,forbiddance,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/forbiddance.webp
+buyu,foresight,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/foresight.webp
+buyu,freedom-of-movement,savaş büyüsü,büyüye özel efekt yok (genel: koruma-ruh),public/efekt/efekt-freedom-of-movement.webp
+buyu,freezing-sphere,savaş büyüsü,büyüye özel efekt yok (genel: alan-buz),public/efekt/efekt-freezing-sphere.webp
+buyu,gaseous-form,savaş büyüsü,büyüye özel efekt yok (genel: koruma-ruh),public/efekt/efekt-gaseous-form.webp
+buyu,gate,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/gate.webp
+buyu,geas,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/geas.webp
+buyu,gentle-repose,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/gentle-repose.webp
+buyu,giant-insect,savaş büyüsü,büyüye özel efekt yok (genel: cagir-dogal),public/efekt/efekt-giant-insect.webp
+buyu,glyph-of-warding,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/glyph-of-warding.webp
+buyu,goodberry,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/goodberry.webp
+buyu,greater-invisibility,savaş büyüsü,yalnız durum ikonu/jeton filtresi (Invisible),public/efekt/efekt-greater-invisibility.webp
+buyu,guards-and-wards,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/guards-and-wards.webp
+buyu,guidance,savaş büyüsü,büyüye özel efekt yok (genel: koruma-kutsama),public/efekt/efekt-guidance.webp
+buyu,hallow,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/hallow.webp
+buyu,hallucinatory-terrain,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/hallucinatory-terrain.webp
+buyu,heal,savaş büyüsü,büyüye özel efekt yok (genel: iyilestir-buyuk),public/efekt/efekt-heal.webp
+buyu,healing-word,savaş büyüsü,büyüye özel efekt yok (genel: iyilestir-buyuk),public/efekt/efekt-healing-word.webp
+buyu,heroes-feast,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/heroes-feast.webp
+buyu,heroism,savaş büyüsü,büyüye özel efekt yok (genel: koruma-ruh),public/efekt/efekt-heroism.webp
+buyu,hideous-laughter,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: incapacitated),public/efekt/efekt-hideous-laughter.webp
+buyu,hold-monster,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: paralyzed),public/efekt/efekt-hold-monster.webp
+buyu,hold-person,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: paralyzed),public/efekt/efekt-hold-person.webp
+buyu,hypnotic-pattern,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: incapacitated),public/efekt/efekt-hypnotic-pattern.webp
+buyu,identify,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/identify.webp
+buyu,illusory-script,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/illusory-script.webp
+buyu,imprisonment,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/imprisonment.webp
+buyu,instant-summons,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/instant-summons.webp
+buyu,invisibility,savaş büyüsü,yalnız durum ikonu/jeton filtresi (Invisible),public/efekt/efekt-invisibility.webp
+buyu,knock,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/knock.webp
+buyu,legend-lore,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/legend-lore.webp
+buyu,light,savaş büyüsü,savaşta görsel yok (döküm görsel üretmiyor),public/efekt/efekt-light.webp
+buyu,locate-animals-or-plants,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/locate-animals-or-plants.webp
+buyu,locate-creature,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/locate-creature.webp
+buyu,locate-object,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/locate-object.webp
+buyu,mage-armor,savaş büyüsü,büyüye özel efekt yok (genel: koruma-kalkan),public/efekt/efekt-mage-armor.webp
+buyu,mage-hand,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/mage-hand.webp
+buyu,magic-circle,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/magic-circle.webp
+buyu,magic-jar,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/magic-jar.webp
+buyu,magic-mouth,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/magic-mouth.webp
+buyu,magnificent-mansion,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/magnificent-mansion.webp
+buyu,major-image,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/major-image.webp
+buyu,mass-cure-wounds,savaş büyüsü,büyüye özel efekt yok (genel: iyilestir-buyuk),public/efekt/efekt-mass-cure-wounds.webp
+buyu,mass-heal,savaş büyüsü,büyüye özel efekt yok (genel: iyilestir-buyuk),public/efekt/efekt-mass-heal.webp
+buyu,mass-healing-word,savaş büyüsü,büyüye özel efekt yok (genel: iyilestir-buyuk),public/efekt/efekt-mass-healing-word.webp
+buyu,mass-suggestion,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: charmed),public/efekt/efekt-mass-suggestion.webp
+buyu,meld-into-stone,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/meld-into-stone.webp
+buyu,mending,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/mending.webp
+buyu,message,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/message.webp
+buyu,mind-blank,savaş büyüsü,büyüye özel efekt yok (genel: koruma-ruh),public/efekt/efekt-mind-blank.webp
+buyu,minor-illusion,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/minor-illusion.webp
+buyu,mirage-arcane,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/mirage-arcane.webp
+buyu,mislead,savaş büyüsü,yalnız durum ikonu/jeton filtresi (Invisible),public/efekt/efekt-mislead.webp
+buyu,misty-step,savaş büyüsü,büyüye özel efekt yok (genel: isinlan-cikis),public/efekt/efekt-misty-step.webp
+buyu,modify-memory,savaş dışı büyü,büyüye özel efekt yok (durum döngüsü: incapacitated),public/buyu/modify-memory.webp
+buyu,move-earth,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/move-earth.webp
+buyu,nondetection,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/nondetection.webp
+buyu,passwall,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/passwall.webp
+buyu,phantom-steed,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/phantom-steed.webp
+buyu,planar-ally,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/planar-ally.webp
+buyu,planar-binding,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/planar-binding.webp
+buyu,power-word-heal,savaş büyüsü,büyüye özel efekt yok (genel: iyilestir-buyuk),public/efekt/efekt-power-word-heal.webp
+buyu,power-word-stun,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: stunned),public/efekt/efekt-power-word-stun.webp
+buyu,prayer-of-healing,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/prayer-of-healing.webp
+buyu,prestidigitation,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/prestidigitation.webp
+buyu,private-sanctum,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/private-sanctum.webp
+buyu,programmed-illusion,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/programmed-illusion.webp
+buyu,project-image,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/project-image.webp
+buyu,protection-from-energy,savaş büyüsü,büyüye özel efekt yok (genel: koruma-ruh),public/efekt/efekt-protection-from-energy.webp
+buyu,protection-from-poison,savaş büyüsü,büyüye özel efekt yok (genel: koruma-ruh),public/efekt/efekt-protection-from-poison.webp
+buyu,purify-food-and-drink,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/purify-food-and-drink.webp
+buyu,raise-dead,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/raise-dead.webp
+buyu,regenerate,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/regenerate.webp
+buyu,reincarnate,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/reincarnate.webp
+buyu,resurrection,savaş dışı büyü,büyüye özel efekt yok (genel: iyilestir-buyuk),public/buyu/resurrection.webp
+buyu,rope-trick,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/rope-trick.webp
+buyu,scrying,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/scrying.webp
+buyu,secret-chest,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/secret-chest.webp
+buyu,seeming,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/seeming.webp
+buyu,sending,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/sending.webp
+buyu,sequester,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/sequester.webp
+buyu,shatter,savaş büyüsü,büyüye özel efekt yok (genel: alan-ses),public/efekt/efekt-shatter.webp
+buyu,shocking-grasp,savaş büyüsü,büyüye özel efekt yok (genel: darbe-buyu),public/efekt/efekt-shocking-grasp.webp
+buyu,silent-image,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/silent-image.webp
+buyu,simulacrum,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/simulacrum.webp
+buyu,sleep,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: incapacitated),public/efekt/efekt-sleep.webp
+buyu,speak-with-animals,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/speak-with-animals.webp
+buyu,speak-with-dead,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/speak-with-dead.webp
+buyu,speak-with-plants,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/speak-with-plants.webp
+buyu,stinking-cloud,savaş büyüsü,büyüye özel alan dokusu yok,public/efekt/efekt-stinking-cloud.webp
+buyu,stone-shape,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/stone-shape.webp
+buyu,stoneskin,savaş büyüsü,büyüye özel efekt yok (genel: koruma-ruh),public/efekt/efekt-stoneskin.webp
+buyu,suggestion,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: charmed),public/efekt/efekt-suggestion.webp
+buyu,sunburst,savaş büyüsü,büyüye özel efekt yok (genel: alan-isik),public/efekt/efekt-sunburst.webp
+buyu,symbol,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/symbol.webp
+buyu,telepathic-bond,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/telepathic-bond.webp
+buyu,teleport,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/teleport.webp
+buyu,teleportation-circle,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/teleportation-circle.webp
+buyu,thaumaturgy,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/thaumaturgy.webp
+buyu,thunderwave,savaş büyüsü,büyüye özel efekt yok (genel: alan-ses),public/efekt/efekt-thunderwave.webp
+buyu,tiny-hut,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/tiny-hut.webp
+buyu,tongues,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/tongues.webp
+buyu,transport-via-plants,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/transport-via-plants.webp
+buyu,tree-stride,savaş büyüsü,büyüye özel efekt yok (genel: isinlan-giris),public/efekt/efekt-tree-stride.webp
+buyu,true-resurrection,savaş dışı büyü,büyüye özel efekt yok (genel: iyilestir-buyuk),public/buyu/true-resurrection.webp
+buyu,tsunami,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/tsunami.webp
+buyu,unseen-servant,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/unseen-servant.webp
+buyu,vampiric-touch,savaş büyüsü,büyüye özel efekt yok (genel: darbe-buyu),public/efekt/efekt-vampiric-touch.webp
+buyu,vitriolic-sphere,savaş büyüsü,büyüye özel efekt yok (genel: alan-asit),public/efekt/efekt-vitriolic-sphere.webp
+buyu,water-breathing,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/water-breathing.webp
+buyu,weird,savaş büyüsü,büyüye özel efekt yok (genel: alan-psisik),public/efekt/efekt-weird.webp
+buyu,wind-walk,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/wind-walk.webp
+buyu,wish,savaş büyüsü,savaşta görsel yok (döküm gözlenemedi),public/efekt/efekt-wish.webp
+buyu,word-of-recall,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/word-of-recall.webp
+buyu,zone-of-truth,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/zone-of-truth.webp
+esya,potion-of-greater-healing,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-greater-healing.webp
+esya,potion-of-healing,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-healing.webp
+esya,potion-of-superior-healing,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-superior-healing.webp
+esya,potion-of-supreme-healing,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-supreme-healing.webp
+esya,acid,donanım,ikon yok (tür yedeği: tuketilebilir),public/esya/acid.webp
+esya,alchemists-fire,donanım,ikon yok (tür yedeği: tuketilebilir),public/esya/alchemists-fire.webp
+esya,antitoxin,donanım,ikon yok (tür yedeği: tuketilebilir),public/esya/antitoxin.webp
+esya,healers-kit,donanım,ikon yok (tür yedeği: tuketilebilir),public/esya/healers-kit.webp
+esya,holy-water,donanım,ikon yok (tür yedeği: tuketilebilir),public/esya/holy-water.webp
+esya,amulet-of-health,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/amulet-of-health.webp
+esya,bag-of-holding,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/bag-of-holding.webp
+esya,belt-of-hill-giant-strength,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/belt-of-hill-giant-strength.webp
+esya,boots-of-speed,sihirli eşya (nadir),ikon yok (tür yedeği: tuketilebilir),public/esya/boots-of-speed.webp
+esya,bracers-of-defense,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/bracers-of-defense.webp
+esya,cloak-of-displacement,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/cloak-of-displacement.webp
+esya,cloak-of-protection,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/cloak-of-protection.webp
+esya,gauntlets-of-ogre-power,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/gauntlets-of-ogre-power.webp
+esya,headband-of-intellect,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/headband-of-intellect.webp
+esya,poisoners-kit,alet,ikon yok (tür yedeği: tuketilebilir),public/esya/poisoners-kit.webp
+esya,ring-of-protection,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-protection.webp
+esya,staff-of-healing,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/staff-of-healing.webp
+esya,wand-of-fireballs,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/wand-of-fireballs.webp
+esya,wand-of-magic-missiles,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/wand-of-magic-missiles.webp
+esya,ammunition,donanım,ikon yok (tür yedeği: tuketilebilir),public/esya/ammunition.webp
+esya,arcane-focus,donanım,ikon yok (tür yedeği: arac),public/esya/arcane-focus.webp
+esya,backpack,donanım,ikon yok (tür yedeği: arac),public/esya/backpack.webp
+esya,ball-bearings,donanım,ikon yok (tür yedeği: tuketilebilir),public/esya/ball-bearings.webp
+esya,barrel,donanım,ikon yok (tür yedeği: arac),public/esya/barrel.webp
+esya,poison-basic,donanım,ikon yok (tür yedeği: tuketilebilir),public/esya/poison-basic.webp
+esya,basket,donanım,ikon yok (tür yedeği: arac),public/esya/basket.webp
+esya,bedroll,donanım,ikon yok (tür yedeği: arac),public/esya/bedroll.webp
+esya,bell,donanım,ikon yok (tür yedeği: arac),public/esya/bell.webp
+esya,blanket,donanım,ikon yok (tür yedeği: arac),public/esya/blanket.webp
+esya,block-and-tackle,donanım,ikon yok (tür yedeği: arac),public/esya/block-and-tackle.webp
+esya,book,donanım,ikon yok (tür yedeği: arac),public/esya/book.webp
+esya,bottle-glass,donanım,ikon yok (tür yedeği: arac),public/esya/bottle-glass.webp
+esya,bucket,donanım,ikon yok (tür yedeği: arac),public/esya/bucket.webp
+esya,lantern-bullseye,donanım,ikon yok (tür yedeği: arac),public/esya/lantern-bullseye.webp
+esya,burglars-pack,donanım,ikon yok (tür yedeği: arac),public/esya/burglars-pack.webp
+esya,caltrops,donanım,ikon yok (tür yedeği: tuketilebilir),public/esya/caltrops.webp
+esya,candle,donanım,ikon yok (tür yedeği: arac),public/esya/candle.webp
+esya,case-crossbow-bolt,donanım,ikon yok (tür yedeği: arac),public/esya/case-crossbow-bolt.webp
+esya,case-map-or-scroll,donanım,ikon yok (tür yedeği: arac),public/esya/case-map-or-scroll.webp
+esya,chain,donanım,ikon yok (tür yedeği: arac),public/esya/chain.webp
+esya,chest,donanım,ikon yok (tür yedeği: arac),public/esya/chest.webp
+esya,climbers-kit,donanım,ikon yok (tür yedeği: arac),public/esya/climbers-kit.webp
+esya,clothes-fine,donanım,ikon yok (tür yedeği: arac),public/esya/clothes-fine.webp
+esya,clothes-travelers,donanım,ikon yok (tür yedeği: arac),public/esya/clothes-travelers.webp
+esya,component-pouch,donanım,ikon yok (tür yedeği: arac),public/esya/component-pouch.webp
+esya,costume,donanım,ikon yok (tür yedeği: arac),public/esya/costume.webp
+esya,crowbar,donanım,ikon yok (tür yedeği: arac),public/esya/crowbar.webp
+esya,diplomats-pack,donanım,ikon yok (tür yedeği: arac),public/esya/diplomats-pack.webp
+esya,druidic-focus,donanım,ikon yok (tür yedeği: arac),public/esya/druidic-focus.webp
+esya,dungeoneers-pack,donanım,ikon yok (tür yedeği: arac),public/esya/dungeoneers-pack.webp
+esya,entertainers-pack,donanım,ikon yok (tür yedeği: arac),public/esya/entertainers-pack.webp
+esya,explorers-pack,donanım,ikon yok (tür yedeği: arac),public/esya/explorers-pack.webp
+esya,flask,donanım,ikon yok (tür yedeği: arac),public/esya/flask.webp
+esya,grappling-hook,donanım,ikon yok (tür yedeği: arac),public/esya/grappling-hook.webp
+esya,holy-symbol,donanım,ikon yok (tür yedeği: arac),public/esya/holy-symbol.webp
+esya,lantern-hooded,donanım,ikon yok (tür yedeği: arac),public/esya/lantern-hooded.webp
+esya,hunting-trap,donanım,ikon yok (tür yedeği: arac),public/esya/hunting-trap.webp
+esya,ink,donanım,ikon yok (tür yedeği: arac),public/esya/ink.webp
+esya,ink-pen,donanım,ikon yok (tür yedeği: arac),public/esya/ink-pen.webp
+esya,jug,donanım,ikon yok (tür yedeği: arac),public/esya/jug.webp
+esya,ladder,donanım,ikon yok (tür yedeği: arac),public/esya/ladder.webp
+esya,lamp,donanım,ikon yok (tür yedeği: arac),public/esya/lamp.webp
+esya,lock,donanım,ikon yok (tür yedeği: arac),public/esya/lock.webp
+esya,magnifying-glass,donanım,ikon yok (tür yedeği: arac),public/esya/magnifying-glass.webp
+esya,manacles,donanım,ikon yok (tür yedeği: arac),public/esya/manacles.webp
+esya,map,donanım,ikon yok (tür yedeği: arac),public/esya/map.webp
+esya,mirror,donanım,ikon yok (tür yedeği: arac),public/esya/mirror.webp
+esya,net,donanım,ikon yok (tür yedeği: tuketilebilir),public/esya/net.webp
+esya,oil,donanım,ikon yok (tür yedeği: tuketilebilir),public/esya/oil.webp
+esya,paper,donanım,ikon yok (tür yedeği: arac),public/esya/paper.webp
+esya,parchment,donanım,ikon yok (tür yedeği: arac),public/esya/parchment.webp
+esya,perfume,donanım,ikon yok (tür yedeği: arac),public/esya/perfume.webp
+esya,pole,donanım,ikon yok (tür yedeği: arac),public/esya/pole.webp
+esya,pot-iron,donanım,ikon yok (tür yedeği: arac),public/esya/pot-iron.webp
+esya,pouch,donanım,ikon yok (tür yedeği: arac),public/esya/pouch.webp
+esya,priests-pack,donanım,ikon yok (tür yedeği: arac),public/esya/priests-pack.webp
+esya,quiver,donanım,ikon yok (tür yedeği: arac),public/esya/quiver.webp
+esya,ram-portable,donanım,ikon yok (tür yedeği: arac),public/esya/ram-portable.webp
+esya,rations,donanım,ikon yok (tür yedeği: tuketilebilir),public/esya/rations.webp
+esya,robe,donanım,ikon yok (tür yedeği: arac),public/esya/robe.webp
+esya,rope,donanım,ikon yok (tür yedeği: arac),public/esya/rope.webp
+esya,sack,donanım,ikon yok (tür yedeği: arac),public/esya/sack.webp
+esya,scholars-pack,donanım,ikon yok (tür yedeği: arac),public/esya/scholars-pack.webp
+esya,shovel,donanım,ikon yok (tür yedeği: arac),public/esya/shovel.webp
+esya,signal-whistle,donanım,ikon yok (tür yedeği: arac),public/esya/signal-whistle.webp
+esya,spikes-iron,donanım,ikon yok (tür yedeği: arac),public/esya/spikes-iron.webp
+esya,spyglass,donanım,ikon yok (tür yedeği: arac),public/esya/spyglass.webp
+esya,string,donanım,ikon yok (tür yedeği: arac),public/esya/string.webp
+esya,tent,donanım,ikon yok (tür yedeği: arac),public/esya/tent.webp
+esya,tinderbox,donanım,ikon yok (tür yedeği: arac),public/esya/tinderbox.webp
+esya,torch,donanım,ikon yok (tür yedeği: tuketilebilir),public/esya/torch.webp
+esya,vial,donanım,ikon yok (tür yedeği: arac),public/esya/vial.webp
+esya,waterskin,donanım,ikon yok (tür yedeği: arac),public/esya/waterskin.webp
+esya,adamantine-armor,sihirli eşya (olagandisi),ikon yok (tür yedeği: zirh),public/esya/adamantine-armor.webp
+esya,ammunition-of-slaying,sihirli eşya (cokNadir),ikon yok (tür yedeği: silah),public/esya/ammunition-of-slaying.webp
+esya,ammunition-1,sihirli eşya (olagandisi),ikon yok (tür yedeği: silah),public/esya/ammunition-1.webp
+esya,ammunition-2,sihirli eşya (olagandisi),ikon yok (tür yedeği: silah),public/esya/ammunition-2.webp
+esya,ammunition-3,sihirli eşya (olagandisi),ikon yok (tür yedeği: silah),public/esya/ammunition-3.webp
+esya,amulet-of-proof-against-detection-and-location,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/amulet-of-proof-against-detection-and-location.webp
+esya,amulet-of-the-planes,sihirli eşya (cokNadir),ikon yok (tür yedeği: aksesuar),public/esya/amulet-of-the-planes.webp
+esya,animated-shield,sihirli eşya (cokNadir),ikon yok (tür yedeği: kalkan),public/esya/animated-shield.webp
+esya,apparatus-of-the-crab,sihirli eşya (efsanevi),ikon yok (tür yedeği: sihirli),public/esya/apparatus-of-the-crab.webp
+esya,armor-of-invulnerability,sihirli eşya (efsanevi),ikon yok (tür yedeği: zirh),public/esya/armor-of-invulnerability.webp
+esya,armor-of-resistance-acid,sihirli eşya (nadir),ikon yok (tür yedeği: zirh),public/esya/armor-of-resistance-acid.webp
+esya,armor-of-resistance-bludgeoning,sihirli eşya (nadir),ikon yok (tür yedeği: zirh),public/esya/armor-of-resistance-bludgeoning.webp
+esya,armor-of-resistance-cold,sihirli eşya (nadir),ikon yok (tür yedeği: zirh),public/esya/armor-of-resistance-cold.webp
+esya,armor-of-resistance-fire,sihirli eşya (nadir),ikon yok (tür yedeği: zirh),public/esya/armor-of-resistance-fire.webp
+esya,armor-of-resistance-force,sihirli eşya (nadir),ikon yok (tür yedeği: zirh),public/esya/armor-of-resistance-force.webp
+esya,armor-of-resistance-lightning,sihirli eşya (nadir),ikon yok (tür yedeği: zirh),public/esya/armor-of-resistance-lightning.webp
+esya,armor-of-resistance-necrotic,sihirli eşya (nadir),ikon yok (tür yedeği: zirh),public/esya/armor-of-resistance-necrotic.webp
+esya,armor-of-resistance-piercing,sihirli eşya (nadir),ikon yok (tür yedeği: zirh),public/esya/armor-of-resistance-piercing.webp
+esya,armor-of-resistance-poison,sihirli eşya (nadir),ikon yok (tür yedeği: zirh),public/esya/armor-of-resistance-poison.webp
+esya,armor-of-resistance-psychic,sihirli eşya (nadir),ikon yok (tür yedeği: zirh),public/esya/armor-of-resistance-psychic.webp
+esya,armor-of-resistance-radiant,sihirli eşya (nadir),ikon yok (tür yedeği: zirh),public/esya/armor-of-resistance-radiant.webp
+esya,armor-of-resistance-slashing,sihirli eşya (nadir),ikon yok (tür yedeği: zirh),public/esya/armor-of-resistance-slashing.webp
+esya,armor-of-resistance-thunder,sihirli eşya (nadir),ikon yok (tür yedeği: zirh),public/esya/armor-of-resistance-thunder.webp
+esya,armor-of-vulnerability-bludgeoning,sihirli eşya (nadir),ikon yok (tür yedeği: zirh),public/esya/armor-of-vulnerability-bludgeoning.webp
+esya,armor-of-vulnerability-piercing,sihirli eşya (nadir),ikon yok (tür yedeği: zirh),public/esya/armor-of-vulnerability-piercing.webp
+esya,armor-of-vulnerability-slashing,sihirli eşya (nadir),ikon yok (tür yedeği: zirh),public/esya/armor-of-vulnerability-slashing.webp
+esya,armor-1,sihirli eşya (olagandisi),ikon yok (tür yedeği: zirh),public/esya/armor-1.webp
+esya,armor-2,sihirli eşya (olagandisi),ikon yok (tür yedeği: zirh),public/esya/armor-2.webp
+esya,armor-3,sihirli eşya (olagandisi),ikon yok (tür yedeği: zirh),public/esya/armor-3.webp
+esya,arrow-catching-shield,sihirli eşya (nadir),ikon yok (tür yedeği: kalkan),public/esya/arrow-catching-shield.webp
+esya,bag-of-beans,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/bag-of-beans.webp
+esya,bag-of-devouring,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/bag-of-devouring.webp
+esya,bag-of-tricks,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/bag-of-tricks.webp
+esya,bead-of-force,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/bead-of-force.webp
+esya,bead-of-nourishment,sihirli eşya (siradan),ikon yok (tür yedeği: sihirli),public/esya/bead-of-nourishment.webp
+esya,belt-of-cloud-giant-strength,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/belt-of-cloud-giant-strength.webp
+esya,belt-of-dwarvenkind,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/belt-of-dwarvenkind.webp
+esya,belt-of-fire-giant-strength,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/belt-of-fire-giant-strength.webp
+esya,belt-of-frost-giant-strength,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/belt-of-frost-giant-strength.webp
+esya,belt-of-stone-giant-strength,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/belt-of-stone-giant-strength.webp
+esya,belt-of-storm-giant-strength,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/belt-of-storm-giant-strength.webp
+esya,berserker-axe,sihirli eşya (nadir),ikon yok (tür yedeği: silah),public/esya/berserker-axe.webp
+esya,boots-of-elvenkind,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/boots-of-elvenkind.webp
+esya,boots-of-levitation,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/boots-of-levitation.webp
+esya,boots-of-striding-and-springing,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/boots-of-striding-and-springing.webp
+esya,boots-of-the-winterlands,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/boots-of-the-winterlands.webp
+esya,bowl-of-commanding-water-elementals,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/bowl-of-commanding-water-elementals.webp
+esya,bracers-of-archery,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/bracers-of-archery.webp
+esya,brazier-of-commanding-fire-elementals,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/brazier-of-commanding-fire-elementals.webp
+esya,brooch-of-shielding,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/brooch-of-shielding.webp
+esya,broom-of-flying,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/broom-of-flying.webp
+esya,candle-of-invocation,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/candle-of-invocation.webp
+esya,cape-of-the-mountebank,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/cape-of-the-mountebank.webp
+esya,carpet-of-flying,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/carpet-of-flying.webp
+esya,censer-of-controlling-air-elementals,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/censer-of-controlling-air-elementals.webp
+esya,chime-of-opening,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/chime-of-opening.webp
+esya,circlet-of-blasting,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/circlet-of-blasting.webp
+esya,cloak-of-arachnida,sihirli eşya (cokNadir),ikon yok (tür yedeği: aksesuar),public/esya/cloak-of-arachnida.webp
+esya,cloak-of-elvenkind,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/cloak-of-elvenkind.webp
+esya,cloak-of-invisibility,sihirli eşya (efsanevi),ikon yok (tür yedeği: tuketilebilir),public/esya/cloak-of-invisibility.webp
+esya,cloak-of-the-bat,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/cloak-of-the-bat.webp
+esya,cloak-of-the-manta-ray,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/cloak-of-the-manta-ray.webp
+esya,crystal-ball,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/crystal-ball.webp
+esya,crystal-ball-of-mind-reading,sihirli eşya (efsanevi),ikon yok (tür yedeği: sihirli),public/esya/crystal-ball-of-mind-reading.webp
+esya,crystal-ball-of-telepathy,sihirli eşya (efsanevi),ikon yok (tür yedeği: sihirli),public/esya/crystal-ball-of-telepathy.webp
+esya,crystal-ball-of-true-seeing,sihirli eşya (efsanevi),ikon yok (tür yedeği: sihirli),public/esya/crystal-ball-of-true-seeing.webp
+esya,cube-of-force,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/cube-of-force.webp
+esya,cubic-gate,sihirli eşya (efsanevi),ikon yok (tür yedeği: sihirli),public/esya/cubic-gate.webp
+esya,dagger-of-venom,sihirli eşya (nadir),ikon yok (tür yedeği: silah),public/esya/dagger-of-venom.webp
+esya,dancing-sword,sihirli eşya (cokNadir),ikon yok (tür yedeği: silah),public/esya/dancing-sword.webp
+esya,decanter-of-endless-water,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/decanter-of-endless-water.webp
+esya,deck-of-illusions,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/deck-of-illusions.webp
+esya,defender,sihirli eşya (efsanevi),ikon yok (tür yedeği: silah),public/esya/defender.webp
+esya,demon-armor,sihirli eşya (cokNadir),ikon yok (tür yedeği: zirh),public/esya/demon-armor.webp
+esya,dimensional-shackles,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/dimensional-shackles.webp
+esya,dragon-orb,sihirli eşya (efsanevi),ikon yok (tür yedeği: sihirli),public/esya/dragon-orb.webp
+esya,dragon-scale-mail,sihirli eşya (cokNadir),ikon yok (tür yedeği: zirh),public/esya/dragon-scale-mail.webp
+esya,dragon-slayer,sihirli eşya (nadir),ikon yok (tür yedeği: silah),public/esya/dragon-slayer.webp
+esya,dust-of-disappearance,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/dust-of-disappearance.webp
+esya,dust-of-dryness,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/dust-of-dryness.webp
+esya,dust-of-sneezing-and-choking,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/dust-of-sneezing-and-choking.webp
+esya,dwarven-plate,sihirli eşya (cokNadir),ikon yok (tür yedeği: zirh),public/esya/dwarven-plate.webp
+esya,dwarven-thrower,sihirli eşya (cokNadir),ikon yok (tür yedeği: silah),public/esya/dwarven-thrower.webp
+esya,efficient-quiver,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/efficient-quiver.webp
+esya,efreeti-bottle,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/efreeti-bottle.webp
+esya,elemental-gem,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/elemental-gem.webp
+esya,elixir-of-health,sihirli eşya (nadir),ikon yok (tür yedeği: tuketilebilir),public/esya/elixir-of-health.webp
+esya,elven-chain,sihirli eşya (nadir),ikon yok (tür yedeği: zirh),public/esya/elven-chain.webp
+esya,energy-bow,sihirli eşya (cokNadir),ikon yok (tür yedeği: silah),public/esya/energy-bow.webp
+esya,eversmoking-bottle,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/eversmoking-bottle.webp
+esya,eyes-of-charming,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/eyes-of-charming.webp
+esya,eyes-of-minute-seeing,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/eyes-of-minute-seeing.webp
+esya,eyes-of-the-eagle,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/eyes-of-the-eagle.webp
+esya,feather-token,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/feather-token.webp
+esya,figurine-of-wondrous-power,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/figurine-of-wondrous-power.webp
+esya,flame-tongue,sihirli eşya (nadir),ikon yok (tür yedeği: silah),public/esya/flame-tongue.webp
+esya,folding-boat,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/folding-boat.webp
+esya,frost-brand,sihirli eşya (cokNadir),ikon yok (tür yedeği: silah),public/esya/frost-brand.webp
+esya,gem-of-brightness,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/gem-of-brightness.webp
+esya,gem-of-seeing,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/gem-of-seeing.webp
+esya,giant-slayer,sihirli eşya (nadir),ikon yok (tür yedeği: silah),public/esya/giant-slayer.webp
+esya,glamoured-studded-leather,sihirli eşya (nadir),ikon yok (tür yedeği: zirh),public/esya/glamoured-studded-leather.webp
+esya,gloves-of-missile-snaring,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/gloves-of-missile-snaring.webp
+esya,gloves-of-swimming-and-climbing,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/gloves-of-swimming-and-climbing.webp
+esya,gloves-of-thievery,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/gloves-of-thievery.webp
+esya,goggles-of-night,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/goggles-of-night.webp
+esya,hammer-of-thunderbolts,sihirli eşya (efsanevi),ikon yok (tür yedeği: silah),public/esya/hammer-of-thunderbolts.webp
+esya,handy-haversack,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/handy-haversack.webp
+esya,hat-of-disguise,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/hat-of-disguise.webp
+esya,hat-of-many-spells,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/hat-of-many-spells.webp
+esya,helm-of-brilliance,sihirli eşya (cokNadir),ikon yok (tür yedeği: aksesuar),public/esya/helm-of-brilliance.webp
+esya,helm-of-comprehending-languages,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/helm-of-comprehending-languages.webp
+esya,helm-of-telepathy,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/helm-of-telepathy.webp
+esya,helm-of-teleportation,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/helm-of-teleportation.webp
+esya,holy-avenger,sihirli eşya (efsanevi),ikon yok (tür yedeği: silah),public/esya/holy-avenger.webp
+esya,horn-of-blasting,sihirli eşya (nadir),ikon yok (tür yedeği: tuketilebilir),public/esya/horn-of-blasting.webp
+esya,horn-of-valhalla,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/horn-of-valhalla.webp
+esya,horseshoes-of-speed,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/horseshoes-of-speed.webp
+esya,horseshoes-of-a-zephyr,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/horseshoes-of-a-zephyr.webp
+esya,immovable-rod,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/immovable-rod.webp
+esya,instant-fortress,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/instant-fortress.webp
+esya,ioun-stone,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/ioun-stone.webp
+esya,iron-bands,sihirli eşya (nadir),ikon yok (tür yedeği: tuketilebilir),public/esya/iron-bands.webp
+esya,iron-flask,sihirli eşya (efsanevi),ikon yok (tür yedeği: sihirli),public/esya/iron-flask.webp
+esya,javelin-of-lightning,sihirli eşya (olagandisi),ikon yok (tür yedeği: silah),public/esya/javelin-of-lightning.webp
+esya,lantern-of-revealing,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/lantern-of-revealing.webp
+esya,luck-blade,sihirli eşya (efsanevi),ikon yok (tür yedeği: silah),public/esya/luck-blade.webp
+esya,mace-of-disruption,sihirli eşya (nadir),ikon yok (tür yedeği: silah),public/esya/mace-of-disruption.webp
+esya,mace-of-smiting,sihirli eşya (nadir),ikon yok (tür yedeği: silah),public/esya/mace-of-smiting.webp
+esya,mace-of-terror,sihirli eşya (nadir),ikon yok (tür yedeği: silah),public/esya/mace-of-terror.webp
+esya,mantle-of-spell-resistance,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/mantle-of-spell-resistance.webp
+esya,manual-of-bodily-health,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/manual-of-bodily-health.webp
+esya,manual-of-gainful-exercise,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/manual-of-gainful-exercise.webp
+esya,manual-of-golems,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/manual-of-golems.webp
+esya,manual-of-quickness-of-action,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/manual-of-quickness-of-action.webp
+esya,marvelous-pigments,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/marvelous-pigments.webp
+esya,medallion-of-thoughts,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/medallion-of-thoughts.webp
+esya,mirror-of-life-trapping,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/mirror-of-life-trapping.webp
+esya,mithral-armor,sihirli eşya (olagandisi),ikon yok (tür yedeği: zirh),public/esya/mithral-armor.webp
+esya,mysterious-deck,sihirli eşya (efsanevi),ikon yok (tür yedeği: sihirli),public/esya/mysterious-deck.webp
+esya,necklace-of-adaptation,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/necklace-of-adaptation.webp
+esya,necklace-of-fireballs,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/necklace-of-fireballs.webp
+esya,necklace-of-prayer-beads,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/necklace-of-prayer-beads.webp
+esya,nine-lives-stealer,sihirli eşya (cokNadir),ikon yok (tür yedeği: silah),public/esya/nine-lives-stealer.webp
+esya,oathbow,sihirli eşya (cokNadir),ikon yok (tür yedeği: silah),public/esya/oathbow.webp
+esya,oil-of-etherealness,sihirli eşya (nadir),ikon yok (tür yedeği: tuketilebilir),public/esya/oil-of-etherealness.webp
+esya,oil-of-sharpness,sihirli eşya (cokNadir),ikon yok (tür yedeği: tuketilebilir),public/esya/oil-of-sharpness.webp
+esya,oil-of-slipperiness,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/oil-of-slipperiness.webp
+esya,pearl-of-power,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/pearl-of-power.webp
+esya,periapt-of-health,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/periapt-of-health.webp
+esya,periapt-of-proof-against-poison,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/periapt-of-proof-against-poison.webp
+esya,periapt-of-wound-closure,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/periapt-of-wound-closure.webp
+esya,philter-of-love,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/philter-of-love.webp
+esya,pipes-of-haunting,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/pipes-of-haunting.webp
+esya,pipes-of-the-sewers,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/pipes-of-the-sewers.webp
+esya,plate-armor-of-etherealness,sihirli eşya (efsanevi),ikon yok (tür yedeği: zirh),public/esya/plate-armor-of-etherealness.webp
+esya,portable-hole,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/portable-hole.webp
+esya,potion-of-animal-friendship,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-animal-friendship.webp
+esya,potion-of-clairvoyance,sihirli eşya (nadir),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-clairvoyance.webp
+esya,potion-of-climbing,sihirli eşya (siradan),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-climbing.webp
+esya,potion-of-cloud-giant-strength,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-cloud-giant-strength.webp
+esya,potion-of-diminution,sihirli eşya (nadir),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-diminution.webp
+esya,potion-of-fire-giant-strength,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-fire-giant-strength.webp
+esya,potion-of-flying,sihirli eşya (cokNadir),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-flying.webp
+esya,potion-of-frost-giant-strength,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-frost-giant-strength.webp
+esya,potion-of-gaseous-form,sihirli eşya (nadir),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-gaseous-form.webp
+esya,potion-of-growth,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-growth.webp
+esya,potion-of-heroism,sihirli eşya (nadir),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-heroism.webp
+esya,potion-of-hill-giant-strength,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-hill-giant-strength.webp
+esya,potion-of-invisibility,sihirli eşya (nadir),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-invisibility.webp
+esya,potion-of-invulnerability,sihirli eşya (nadir),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-invulnerability.webp
+esya,potion-of-longevity,sihirli eşya (cokNadir),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-longevity.webp
+esya,potion-of-mind-reading,sihirli eşya (nadir),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-mind-reading.webp
+esya,potion-of-poison,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-poison.webp
+esya,potion-of-resistance-acid,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-resistance-acid.webp
+esya,potion-of-resistance-bludgeoning,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-resistance-bludgeoning.webp
+esya,potion-of-resistance-cold,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-resistance-cold.webp
+esya,potion-of-resistance-fire,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-resistance-fire.webp
+esya,potion-of-resistance-force,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-resistance-force.webp
+esya,potion-of-resistance-lightning,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-resistance-lightning.webp
+esya,potion-of-resistance-necrotic,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-resistance-necrotic.webp
+esya,potion-of-resistance-piercing,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-resistance-piercing.webp
+esya,potion-of-resistance-poison,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-resistance-poison.webp
+esya,potion-of-resistance-psychic,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-resistance-psychic.webp
+esya,potion-of-resistance-radiant,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-resistance-radiant.webp
+esya,potion-of-resistance-slashing,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-resistance-slashing.webp
+esya,potion-of-resistance-thunder,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-resistance-thunder.webp
+esya,potion-of-speed,sihirli eşya (cokNadir),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-speed.webp
+esya,potion-of-stone-giant-strength,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-stone-giant-strength.webp
+esya,potion-of-storm-giant-strength,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-storm-giant-strength.webp
+esya,potion-of-vitality,sihirli eşya (cokNadir),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-vitality.webp
+esya,potion-of-water-breathing,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/potion-of-water-breathing.webp
+esya,quarterstaff-of-the-acrobat,sihirli eşya (cokNadir),ikon yok (tür yedeği: silah),public/esya/quarterstaff-of-the-acrobat.webp
+esya,ring-of-animal-influence,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-animal-influence.webp
+esya,ring-of-djinni-summoning,sihirli eşya (efsanevi),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-djinni-summoning.webp
+esya,ring-of-elemental-command,sihirli eşya (efsanevi),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-elemental-command.webp
+esya,ring-of-evasion,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-evasion.webp
+esya,ring-of-feather-falling,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-feather-falling.webp
+esya,ring-of-free-action,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-free-action.webp
+esya,ring-of-invisibility,sihirli eşya (efsanevi),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-invisibility.webp
+esya,ring-of-jumping,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-jumping.webp
+esya,ring-of-mind-shielding,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-mind-shielding.webp
+esya,ring-of-regeneration,sihirli eşya (cokNadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-regeneration.webp
+esya,ring-of-resistance-acid,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-resistance-acid.webp
+esya,ring-of-resistance-bludgeoning,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-resistance-bludgeoning.webp
+esya,ring-of-resistance-cold,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-resistance-cold.webp
+esya,ring-of-resistance-fire,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-resistance-fire.webp
+esya,ring-of-resistance-force,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-resistance-force.webp
+esya,ring-of-resistance-lightning,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-resistance-lightning.webp
+esya,ring-of-resistance-necrotic,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-resistance-necrotic.webp
+esya,ring-of-resistance-piercing,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-resistance-piercing.webp
+esya,ring-of-resistance-poison,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-resistance-poison.webp
+esya,ring-of-resistance-psychic,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-resistance-psychic.webp
+esya,ring-of-resistance-radiant,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-resistance-radiant.webp
+esya,ring-of-resistance-slashing,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-resistance-slashing.webp
+esya,ring-of-resistance-thunder,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-resistance-thunder.webp
+esya,ring-of-shooting-stars,sihirli eşya (cokNadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-shooting-stars.webp
+esya,ring-of-spell-storing,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-spell-storing.webp
+esya,ring-of-spell-turning,sihirli eşya (efsanevi),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-spell-turning.webp
+esya,ring-of-swimming,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-swimming.webp
+esya,ring-of-telekinesis,sihirli eşya (cokNadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-telekinesis.webp
+esya,ring-of-three-wishes,sihirli eşya (efsanevi),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-three-wishes.webp
+esya,ring-of-warmth,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-warmth.webp
+esya,ring-of-water-walking,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-water-walking.webp
+esya,ring-of-x-ray-vision,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-x-ray-vision.webp
+esya,ring-of-the-ram,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/ring-of-the-ram.webp
+esya,robe-of-eyes,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/robe-of-eyes.webp
+esya,robe-of-scintillating-colors,sihirli eşya (cokNadir),ikon yok (tür yedeği: tuketilebilir),public/esya/robe-of-scintillating-colors.webp
+esya,robe-of-stars,sihirli eşya (cokNadir),ikon yok (tür yedeği: aksesuar),public/esya/robe-of-stars.webp
+esya,robe-of-useful-items,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/robe-of-useful-items.webp
+esya,robe-of-the-archmagi,sihirli eşya (efsanevi),ikon yok (tür yedeği: aksesuar),public/esya/robe-of-the-archmagi.webp
+esya,rod-of-absorption,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/rod-of-absorption.webp
+esya,rod-of-alertness,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/rod-of-alertness.webp
+esya,rod-of-lordly-might,sihirli eşya (efsanevi),ikon yok (tür yedeği: sihirli),public/esya/rod-of-lordly-might.webp
+esya,rod-of-resurrection,sihirli eşya (efsanevi),ikon yok (tür yedeği: sihirli),public/esya/rod-of-resurrection.webp
+esya,rod-of-rulership,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/rod-of-rulership.webp
+esya,rod-of-security,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/rod-of-security.webp
+esya,rope-of-climbing,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/rope-of-climbing.webp
+esya,rope-of-entanglement,sihirli eşya (nadir),ikon yok (tür yedeği: tuketilebilir),public/esya/rope-of-entanglement.webp
+esya,scarab-of-protection,sihirli eşya (efsanevi),ikon yok (tür yedeği: aksesuar),public/esya/scarab-of-protection.webp
+esya,scimitar-of-speed,sihirli eşya (cokNadir),ikon yok (tür yedeği: silah),public/esya/scimitar-of-speed.webp
+esya,sending-stones,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/sending-stones.webp
+esya,sentinel-shield,sihirli eşya (olagandisi),ikon yok (tür yedeği: kalkan),public/esya/sentinel-shield.webp
+esya,shield-of-missile-attraction,sihirli eşya (nadir),ikon yok (tür yedeği: kalkan),public/esya/shield-of-missile-attraction.webp
+esya,shield-of-the-cavalier,sihirli eşya (cokNadir),ikon yok (tür yedeği: kalkan),public/esya/shield-of-the-cavalier.webp
+esya,shield-1,sihirli eşya (olagandisi),ikon yok (tür yedeği: kalkan),public/esya/shield-1.webp
+esya,shield-2,sihirli eşya (olagandisi),ikon yok (tür yedeği: kalkan),public/esya/shield-2.webp
+esya,shield-3,sihirli eşya (olagandisi),ikon yok (tür yedeği: kalkan),public/esya/shield-3.webp
+esya,slippers-of-spider-climbing,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/slippers-of-spider-climbing.webp
+esya,sovereign-glue,sihirli eşya (efsanevi),ikon yok (tür yedeği: sihirli),public/esya/sovereign-glue.webp
+esya,spell-scroll,sihirli eşya (olagandisi),ikon yok (tür yedeği: tuketilebilir),public/esya/spell-scroll.webp
+esya,spellguard-shield,sihirli eşya (cokNadir),ikon yok (tür yedeği: kalkan),public/esya/spellguard-shield.webp
+esya,sphere-of-annihilation,sihirli eşya (efsanevi),ikon yok (tür yedeği: sihirli),public/esya/sphere-of-annihilation.webp
+esya,staff-of-charming,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/staff-of-charming.webp
+esya,staff-of-fire,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/staff-of-fire.webp
+esya,staff-of-frost,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/staff-of-frost.webp
+esya,staff-of-power,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/staff-of-power.webp
+esya,staff-of-striking,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/staff-of-striking.webp
+esya,staff-of-swarming-insects,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/staff-of-swarming-insects.webp
+esya,staff-of-thunder-and-lightning,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/staff-of-thunder-and-lightning.webp
+esya,staff-of-withering,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/staff-of-withering.webp
+esya,staff-of-the-magi,sihirli eşya (efsanevi),ikon yok (tür yedeği: sihirli),public/esya/staff-of-the-magi.webp
+esya,staff-of-the-python,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/staff-of-the-python.webp
+esya,staff-of-the-woodlands,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/staff-of-the-woodlands.webp
+esya,stone-of-controlling-earth-elementals,sihirli eşya (nadir),ikon yok (tür yedeği: aksesuar),public/esya/stone-of-controlling-earth-elementals.webp
+esya,stone-of-good-luck,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/stone-of-good-luck.webp
+esya,sun-blade,sihirli eşya (nadir),ikon yok (tür yedeği: silah),public/esya/sun-blade.webp
+esya,sword-of-life-stealing,sihirli eşya (nadir),ikon yok (tür yedeği: silah),public/esya/sword-of-life-stealing.webp
+esya,sword-of-sharpness,sihirli eşya (cokNadir),ikon yok (tür yedeği: silah),public/esya/sword-of-sharpness.webp
+esya,sword-of-wounding,sihirli eşya (nadir),ikon yok (tür yedeği: silah),public/esya/sword-of-wounding.webp
+esya,talisman-of-pure-good,sihirli eşya (efsanevi),ikon yok (tür yedeği: aksesuar),public/esya/talisman-of-pure-good.webp
+esya,talisman-of-ultimate-evil,sihirli eşya (efsanevi),ikon yok (tür yedeği: aksesuar),public/esya/talisman-of-ultimate-evil.webp
+esya,talisman-of-the-sphere,sihirli eşya (efsanevi),ikon yok (tür yedeği: aksesuar),public/esya/talisman-of-the-sphere.webp
+esya,thunderous-greatclub,sihirli eşya (cokNadir),ikon yok (tür yedeği: silah),public/esya/thunderous-greatclub.webp
+esya,tome-of-clear-thought,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/tome-of-clear-thought.webp
+esya,tome-of-leadership-and-influence,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/tome-of-leadership-and-influence.webp
+esya,tome-of-understanding,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/tome-of-understanding.webp
+esya,trident-of-fish-command,sihirli eşya (olagandisi),ikon yok (tür yedeği: silah),public/esya/trident-of-fish-command.webp
+esya,universal-solvent,sihirli eşya (efsanevi),ikon yok (tür yedeği: sihirli),public/esya/universal-solvent.webp
+esya,vicious-weapon,sihirli eşya (nadir),ikon yok (tür yedeği: silah),public/esya/vicious-weapon.webp
+esya,vorpal-sword,sihirli eşya (efsanevi),ikon yok (tür yedeği: silah),public/esya/vorpal-sword.webp
+esya,wand-of-binding,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/wand-of-binding.webp
+esya,wand-of-enemy-detection,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/wand-of-enemy-detection.webp
+esya,wand-of-fear,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/wand-of-fear.webp
+esya,wand-of-lightning-bolts,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/wand-of-lightning-bolts.webp
+esya,wand-of-magic-detection,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/wand-of-magic-detection.webp
+esya,wand-of-paralysis,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/wand-of-paralysis.webp
+esya,wand-of-polymorph,sihirli eşya (cokNadir),ikon yok (tür yedeği: sihirli),public/esya/wand-of-polymorph.webp
+esya,wand-of-secrets,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/wand-of-secrets.webp
+esya,wand-of-web,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/wand-of-web.webp
+esya,wand-of-wonder,sihirli eşya (nadir),ikon yok (tür yedeği: sihirli),public/esya/wand-of-wonder.webp
+esya,wand-of-the-war-mage-1,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/wand-of-the-war-mage-1.webp
+esya,wand-of-the-war-mage-2,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/wand-of-the-war-mage-2.webp
+esya,wand-of-the-war-mage-3,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/wand-of-the-war-mage-3.webp
+esya,weapon-of-warning,sihirli eşya (olagandisi),ikon yok (tür yedeği: silah),public/esya/weapon-of-warning.webp
+esya,weapon-1,sihirli eşya (olagandisi),ikon yok (tür yedeği: silah),public/esya/weapon-1.webp
+esya,weapon-2,sihirli eşya (olagandisi),ikon yok (tür yedeği: silah),public/esya/weapon-2.webp
+esya,weapon-3,sihirli eşya (olagandisi),ikon yok (tür yedeği: silah),public/esya/weapon-3.webp
+esya,well-of-many-worlds,sihirli eşya (efsanevi),ikon yok (tür yedeği: sihirli),public/esya/well-of-many-worlds.webp
+esya,wind-fan,sihirli eşya (olagandisi),ikon yok (tür yedeği: sihirli),public/esya/wind-fan.webp
+esya,winged-boots,sihirli eşya (olagandisi),ikon yok (tür yedeği: aksesuar),public/esya/winged-boots.webp
+esya,wings-of-flying,sihirli eşya (nadir),ikon yok (tür yedeği: tuketilebilir),public/esya/wings-of-flying.webp
+esya,dagger,silah,ikon yok (tür yedeği: silah),public/esya/dagger.webp
+esya,handaxe,silah,ikon yok (tür yedeği: silah),public/esya/handaxe.webp
+esya,javelin,silah,ikon yok (tür yedeği: silah),public/esya/javelin.webp
+esya,mace,silah,ikon yok (tür yedeği: silah),public/esya/mace.webp
+esya,quarterstaff,silah,ikon yok (tür yedeği: silah),public/esya/quarterstaff.webp
+esya,spear,silah,ikon yok (tür yedeği: silah),public/esya/spear.webp
+esya,greatclub,silah,ikon yok (tür yedeği: silah),public/esya/greatclub.webp
+esya,light-hammer,silah,ikon yok (tür yedeği: silah),public/esya/light-hammer.webp
+esya,sickle,silah,ikon yok (tür yedeği: silah),public/esya/sickle.webp
+esya,light-crossbow,silah,ikon yok (tür yedeği: silah),public/esya/light-crossbow.webp
+esya,shortbow,silah,ikon yok (tür yedeği: silah),public/esya/shortbow.webp
+esya,battleaxe,silah,ikon yok (tür yedeği: silah),public/esya/battleaxe.webp
+esya,flail,silah,ikon yok (tür yedeği: silah),public/esya/flail.webp
+esya,glaive,silah,ikon yok (tür yedeği: silah),public/esya/glaive.webp
+esya,greataxe,silah,ikon yok (tür yedeği: silah),public/esya/greataxe.webp
+esya,greatsword,silah,ikon yok (tür yedeği: silah),public/esya/greatsword.webp
+esya,halberd,silah,ikon yok (tür yedeği: silah),public/esya/halberd.webp
+esya,longsword,silah,ikon yok (tür yedeği: silah),public/esya/longsword.webp
+esya,maul,silah,ikon yok (tür yedeği: silah),public/esya/maul.webp
+esya,morningstar,silah,ikon yok (tür yedeği: silah),public/esya/morningstar.webp
+esya,rapier,silah,ikon yok (tür yedeği: silah),public/esya/rapier.webp
+esya,scimitar,silah,ikon yok (tür yedeği: silah),public/esya/scimitar.webp
+esya,shortsword,silah,ikon yok (tür yedeği: silah),public/esya/shortsword.webp
+esya,trident,silah,ikon yok (tür yedeği: silah),public/esya/trident.webp
+esya,warhammer,silah,ikon yok (tür yedeği: silah),public/esya/warhammer.webp
+esya,whip,silah,ikon yok (tür yedeği: silah),public/esya/whip.webp
+esya,hand-crossbow,silah,ikon yok (tür yedeği: silah),public/esya/hand-crossbow.webp
+esya,heavy-crossbow,silah,ikon yok (tür yedeği: silah),public/esya/heavy-crossbow.webp
+esya,longbow,silah,ikon yok (tür yedeği: silah),public/esya/longbow.webp
+esya,club,silah,ikon yok (tür yedeği: silah),public/esya/club.webp
+esya,dart,silah,ikon yok (tür yedeği: silah),public/esya/dart.webp
+esya,sling,silah,ikon yok (tür yedeği: silah),public/esya/sling.webp
+esya,lance,silah,ikon yok (tür yedeği: silah),public/esya/lance.webp
+esya,pike,silah,ikon yok (tür yedeği: silah),public/esya/pike.webp
+esya,war-pick,silah,ikon yok (tür yedeği: silah),public/esya/war-pick.webp
+esya,blowgun,silah,ikon yok (tür yedeği: silah),public/esya/blowgun.webp
+esya,musket,silah,ikon yok (tür yedeği: silah),public/esya/musket.webp
+esya,pistol,silah,ikon yok (tür yedeği: silah),public/esya/pistol.webp
+esya,padded-armor,zırh,ikon yok (tür yedeği: zirh),public/esya/padded-armor.webp
+esya,leather-armor,zırh,ikon yok (tür yedeği: zirh),public/esya/leather-armor.webp
+esya,studded-leather-armor,zırh,ikon yok (tür yedeği: zirh),public/esya/studded-leather-armor.webp
+esya,hide-armor,zırh,ikon yok (tür yedeği: zirh),public/esya/hide-armor.webp
+esya,chain-shirt,zırh,ikon yok (tür yedeği: zirh),public/esya/chain-shirt.webp
+esya,scale-mail,zırh,ikon yok (tür yedeği: zirh),public/esya/scale-mail.webp
+esya,breastplate,zırh,ikon yok (tür yedeği: zirh),public/esya/breastplate.webp
+esya,half-plate-armor,zırh,ikon yok (tür yedeği: zirh),public/esya/half-plate-armor.webp
+esya,ring-mail,zırh,ikon yok (tür yedeği: zirh),public/esya/ring-mail.webp
+esya,chain-mail,zırh,ikon yok (tür yedeği: zirh),public/esya/chain-mail.webp
+esya,splint-armor,zırh,ikon yok (tür yedeği: zirh),public/esya/splint-armor.webp
+esya,plate-armor,zırh,ikon yok (tür yedeği: zirh),public/esya/plate-armor.webp
+canavar,young-red-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-red-dragon, ancient-red-dragon, red-dragon-wyrmling)",public/monsters/young-red-dragon.webp
+canavar,black-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-black-dragon, ancient-black-dragon, young-black-dragon)",public/monsters/black-dragon-wyrmling.webp
+canavar,blue-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-blue-dragon, ancient-blue-dragon, young-blue-dragon)",public/monsters/blue-dragon-wyrmling.webp
+canavar,brass-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-brass-dragon, ancient-brass-dragon, young-brass-dragon)",public/monsters/brass-dragon-wyrmling.webp
+canavar,bronze-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-bronze-dragon, ancient-bronze-dragon, young-bronze-dragon)",public/monsters/bronze-dragon-wyrmling.webp
+canavar,copper-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-copper-dragon, ancient-copper-dragon, young-copper-dragon)",public/monsters/copper-dragon-wyrmling.webp
+canavar,gold-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-gold-dragon, ancient-gold-dragon, young-gold-dragon)",public/monsters/gold-dragon-wyrmling.webp
+canavar,green-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-green-dragon, ancient-green-dragon, young-green-dragon)",public/monsters/green-dragon-wyrmling.webp
+canavar,red-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-red-dragon, ancient-red-dragon, young-red-dragon)",public/monsters/red-dragon-wyrmling.webp
+canavar,silver-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-silver-dragon, ancient-silver-dragon, young-silver-dragon)",public/monsters/silver-dragon-wyrmling.webp
+canavar,white-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-white-dragon, ancient-white-dragon, young-white-dragon)",public/monsters/white-dragon-wyrmling.webp
+canavar,young-black-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-black-dragon, ancient-black-dragon, black-dragon-wyrmling)",public/monsters/young-black-dragon.webp
+canavar,young-blue-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-blue-dragon, ancient-blue-dragon, blue-dragon-wyrmling)",public/monsters/young-blue-dragon.webp
+canavar,young-brass-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-brass-dragon, ancient-brass-dragon, brass-dragon-wyrmling)",public/monsters/young-brass-dragon.webp
+canavar,young-bronze-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-bronze-dragon, ancient-bronze-dragon, bronze-dragon-wyrmling)",public/monsters/young-bronze-dragon.webp
+canavar,young-copper-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-copper-dragon, ancient-copper-dragon, copper-dragon-wyrmling)",public/monsters/young-copper-dragon.webp
+canavar,young-gold-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-gold-dragon, ancient-gold-dragon, gold-dragon-wyrmling)",public/monsters/young-gold-dragon.webp
+canavar,young-green-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-green-dragon, ancient-green-dragon, green-dragon-wyrmling)",public/monsters/young-green-dragon.webp
+canavar,young-silver-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-silver-dragon, ancient-silver-dragon, silver-dragon-wyrmling)",public/monsters/young-silver-dragon.webp
+canavar,young-white-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-white-dragon, ancient-white-dragon, white-dragon-wyrmling)",public/monsters/young-white-dragon.webp
+canavar,adult-black-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-black-dragon, black-dragon-wyrmling, young-black-dragon)",public/monsters/adult-black-dragon.webp
+canavar,adult-blue-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-blue-dragon, blue-dragon-wyrmling, young-blue-dragon)",public/monsters/adult-blue-dragon.webp
+canavar,adult-brass-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-brass-dragon, brass-dragon-wyrmling, young-brass-dragon)",public/monsters/adult-brass-dragon.webp
+canavar,adult-bronze-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-bronze-dragon, bronze-dragon-wyrmling, young-bronze-dragon)",public/monsters/adult-bronze-dragon.webp
+canavar,adult-copper-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-copper-dragon, copper-dragon-wyrmling, young-copper-dragon)",public/monsters/adult-copper-dragon.webp
+canavar,adult-gold-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-gold-dragon, gold-dragon-wyrmling, young-gold-dragon)",public/monsters/adult-gold-dragon.webp
+canavar,adult-green-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-green-dragon, green-dragon-wyrmling, young-green-dragon)",public/monsters/adult-green-dragon.webp
+canavar,adult-red-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-red-dragon, red-dragon-wyrmling, young-red-dragon)",public/monsters/adult-red-dragon.webp
+canavar,adult-silver-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-silver-dragon, silver-dragon-wyrmling, young-silver-dragon)",public/monsters/adult-silver-dragon.webp
+canavar,adult-white-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-white-dragon, white-dragon-wyrmling, young-white-dragon)",public/monsters/adult-white-dragon.webp
+canavar,ancient-black-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-black-dragon, black-dragon-wyrmling, young-black-dragon)",public/monsters/ancient-black-dragon.webp
+canavar,ancient-blue-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-blue-dragon, blue-dragon-wyrmling, young-blue-dragon)",public/monsters/ancient-blue-dragon.webp
+canavar,ancient-brass-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-brass-dragon, brass-dragon-wyrmling, young-brass-dragon)",public/monsters/ancient-brass-dragon.webp
+canavar,ancient-bronze-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-bronze-dragon, bronze-dragon-wyrmling, young-bronze-dragon)",public/monsters/ancient-bronze-dragon.webp
+canavar,ancient-copper-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-copper-dragon, copper-dragon-wyrmling, young-copper-dragon)",public/monsters/ancient-copper-dragon.webp
+canavar,ancient-gold-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-gold-dragon, gold-dragon-wyrmling, young-gold-dragon)",public/monsters/ancient-gold-dragon.webp
+canavar,ancient-green-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-green-dragon, green-dragon-wyrmling, young-green-dragon)",public/monsters/ancient-green-dragon.webp
+canavar,ancient-red-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-red-dragon, red-dragon-wyrmling, young-red-dragon)",public/monsters/ancient-red-dragon.webp
+canavar,ancient-silver-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-silver-dragon, silver-dragon-wyrmling, young-silver-dragon)",public/monsters/ancient-silver-dragon.webp
+canavar,ancient-white-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-white-dragon, white-dragon-wyrmling, young-white-dragon)",public/monsters/ancient-white-dragon.webp
+yuzey,warning,yüzey,sprite yok (renkli altıgen),assets-ham/sprite/yuzey-warning-1.png → public/sprites/yuzey-warning-1.webp
+nesne,chest,harita nesnesi,sprite yok (emoji 🧰),assets-ham/sprite/nesne-chest.png → public/sprites/nesne-chest.webp
+nesne,table,harita nesnesi,sprite yok (emoji 🪑),assets-ham/sprite/nesne-table.png → public/sprites/nesne-table.webp
+nesne,door,harita nesnesi,sprite yok (emoji 🚪),assets-ham/sprite/nesne-door.png → public/sprites/nesne-door.webp
+nesne,gate,harita nesnesi,sprite yok (emoji ⛩),assets-ham/sprite/nesne-gate.png → public/sprites/nesne-gate.webp
+nesne,brazier,harita nesnesi,sprite yok (emoji 🔥),assets-ham/sprite/nesne-brazier.png → public/sprites/nesne-brazier.webp
+nesne,lever,harita nesnesi,sprite yok (emoji 🕹),assets-ham/sprite/nesne-lever.png → public/sprites/nesne-lever.webp
+nesne,statueEye,harita nesnesi,sprite yok (emoji 👁),assets-ham/sprite/nesne-statue-eye.png → public/sprites/nesne-statue-eye.webp
+nesne,tent,harita nesnesi,sprite yok (emoji ⛺),assets-ham/sprite/nesne-tent.png → public/sprites/nesne-tent.webp
+nesne,tree,harita nesnesi,sprite yok (emoji 🌲),assets-ham/sprite/nesne-tree.png → public/sprites/nesne-tree.webp
+nesne,bridge,harita nesnesi,sprite yok (emoji 🌉),assets-ham/sprite/nesne-bridge.png → public/sprites/nesne-bridge.webp
+nesne,bonePile,harita nesnesi,sprite yok (emoji 💀),assets-ham/sprite/nesne-bone-pile.png → public/sprites/nesne-bone-pile.webp
+nesne,plaque,harita nesnesi,sprite yok (emoji 📜),assets-ham/sprite/nesne-plaque.png → public/sprites/nesne-plaque.webp
+nesne,boulderPile,harita nesnesi,sprite yok (emoji 🪨),assets-ham/sprite/nesne-boulder-pile.png → public/sprites/nesne-boulder-pile.webp
+nesne,cauldron,harita nesnesi,sprite yok (emoji 🫕),assets-ham/sprite/nesne-cauldron.png → public/sprites/nesne-cauldron.webp
+nesne,iceSeal,harita nesnesi,sprite yok (emoji ❄),assets-ham/sprite/nesne-ice-seal.png → public/sprites/nesne-ice-seal.webp
+nesne,crackedWall,harita nesnesi,sprite yok (emoji 🧱),assets-ham/sprite/nesne-cracked-wall.png → public/sprites/nesne-cracked-wall.webp
+nesne,key,harita nesnesi,sprite yok (emoji 🗝),assets-ham/sprite/nesne-key.png → public/sprites/nesne-key.webp
+nesne,benchLeg,harita nesnesi,sprite yok (emoji 🪵),assets-ham/sprite/nesne-bench-leg.png → public/sprites/nesne-bench-leg.webp
+nesne,chain,harita nesnesi,sprite yok (emoji ⛓),assets-ham/sprite/nesne-chain.png → public/sprites/nesne-chain.webp
+nesne,bucket,harita nesnesi,sprite yok (emoji 🪣),assets-ham/sprite/nesne-bucket.png → public/sprites/nesne-bucket.webp
+nesne,cudgel,harita nesnesi,sprite yok (emoji 🏏),assets-ham/sprite/nesne-cudgel.png → public/sprites/nesne-cudgel.webp
+nesne,ballista,harita nesnesi,sprite yok (emoji 🏹),assets-ham/sprite/nesne-ballista.png → public/sprites/nesne-ballista.webp
+nesne,frozenFall,harita nesnesi,sprite yok (emoji 🧊),assets-ham/sprite/nesne-frozen-fall.png → public/sprites/nesne-frozen-fall.webp
+nesne,rock,harita nesnesi,sprite yok (emoji 🪨),assets-ham/sprite/nesne-rock.png → public/sprites/nesne-rock.webp
+nesne,droppedItem,harita nesnesi,sprite yok (emoji 🗡),assets-ham/sprite/nesne-dropped-item.png → public/sprites/nesne-dropped-item.webp
+nesne,spellbook,harita nesnesi,sprite yok (emoji 📖),assets-ham/sprite/nesne-spellbook.png → public/sprites/nesne-spellbook.webp
+nesne,sword,harita nesnesi,sprite yok (emoji 🗡),assets-ham/sprite/nesne-sword.png → public/sprites/nesne-sword.webp
+nesne,statue,harita nesnesi,sprite yok (emoji 🗿),assets-ham/sprite/nesne-statue.png → public/sprites/nesne-statue.webp
+nesne,potion,harita nesnesi,sprite yok (emoji 🧪),assets-ham/sprite/nesne-potion.png → public/sprites/nesne-potion.webp
+nesne,wand,harita nesnesi,sprite yok (emoji 🪄),assets-ham/sprite/nesne-wand.png → public/sprites/nesne-wand.webp
+nesne,amulet,harita nesnesi,sprite yok (emoji 📿),assets-ham/sprite/nesne-amulet.png → public/sprites/nesne-amulet.webp
+nesne,ring,harita nesnesi,sprite yok (emoji 💍),assets-ham/sprite/nesne-ring.png → public/sprites/nesne-ring.webp
+alan,antilife-shell,büyü alanı (aura),aura varsayılan rengi (aura-altin),public/efekt/efekt-zemin-antilife-shell.webp
+alan,conjure-animals,büyü alanı,alan dokusu yok (renkli altıgen yer tutucusu),public/efekt/efekt-zemin-conjure-animals.webp
+alan,conjure-elemental,büyü alanı,alan dokusu yok (renkli altıgen yer tutucusu),public/efekt/efekt-zemin-conjure-elemental.webp
+alan,dancing-lights,büyü alanı,alan dokusu yok (renkli altıgen yer tutucusu),public/efekt/efekt-zemin-dancing-lights.webp
+alan,flaming-sphere,büyü alanı,alan dokusu yok (renkli altıgen yer tutucusu),public/efekt/efekt-zemin-flaming-sphere.webp
+alan,forcecage,büyü alanı,alan dokusu yok (renkli altıgen yer tutucusu),public/efekt/efekt-zemin-forcecage.webp
+zar,hizalanma-lawful-good,zar teması (hizalanma),zar seti yok (0/7; klasik görsel + 3D renkleri),assets-ham/zarlar/zar-hizalanma-lawful-good.jpg → public/zarlar/hizalanma-lawful-good/d4..d100.webp
+zar,hizalanma-neutral-good,zar teması (hizalanma),zar seti yok (0/7; klasik görsel + 3D renkleri),assets-ham/zarlar/zar-hizalanma-neutral-good.jpg → public/zarlar/hizalanma-neutral-good/d4..d100.webp
+zar,hizalanma-chaotic-good,zar teması (hizalanma),zar seti yok (0/7; klasik görsel + 3D renkleri),assets-ham/zarlar/zar-hizalanma-chaotic-good.jpg → public/zarlar/hizalanma-chaotic-good/d4..d100.webp
+zar,hizalanma-lawful-neutral,zar teması (hizalanma),zar seti yok (0/7; klasik görsel + 3D renkleri),assets-ham/zarlar/zar-hizalanma-lawful-neutral.jpg → public/zarlar/hizalanma-lawful-neutral/d4..d100.webp
+zar,hizalanma-true-neutral,zar teması (hizalanma),zar seti yok (0/7; klasik görsel + 3D renkleri),assets-ham/zarlar/zar-hizalanma-true-neutral.jpg → public/zarlar/hizalanma-true-neutral/d4..d100.webp
+zar,hizalanma-chaotic-neutral,zar teması (hizalanma),zar seti yok (0/7; klasik görsel + 3D renkleri),assets-ham/zarlar/zar-hizalanma-chaotic-neutral.jpg → public/zarlar/hizalanma-chaotic-neutral/d4..d100.webp
+zar,hizalanma-lawful-evil,zar teması (hizalanma),zar seti yok (0/7; klasik görsel + 3D renkleri),assets-ham/zarlar/zar-hizalanma-lawful-evil.jpg → public/zarlar/hizalanma-lawful-evil/d4..d100.webp
+zar,hizalanma-neutral-evil,zar teması (hizalanma),zar seti yok (0/7; klasik görsel + 3D renkleri),assets-ham/zarlar/zar-hizalanma-neutral-evil.jpg → public/zarlar/hizalanma-neutral-evil/d4..d100.webp
+zar,hizalanma-chaotic-evil,zar teması (hizalanma),zar seti yok (0/7; klasik görsel + 3D renkleri),assets-ham/zarlar/zar-hizalanma-chaotic-evil.jpg → public/zarlar/hizalanma-chaotic-evil/d4..d100.webp

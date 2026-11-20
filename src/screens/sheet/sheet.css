@@ -1,0 +1,43 @@
+/* Kuyruk KQ4 CK1: karakter kâğıdı. Özgün düzen, açık zemin (koyu temada da); A4 dikey, yazdırmaya uygun. */
+.sheet-overlay { position: fixed; inset: 0; z-index: 90; background: rgba(20, 24, 28, 0.7); overflow: auto; padding: 12px 8px 40px; }
+.sheet-toolbar { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 0 auto 12px; max-width: 794px; }
+.sheet-toolbar button { min-height: 40px; }
+.sheet-paper { --ink: #1c2329; --mute: #56636d; --line: #b9c3ca; --accent: #b4640f; margin: 0 auto; max-width: 794px; color: var(--ink); font: 13px/1.4 system-ui, sans-serif; }
+.sheet-page { background: #fff; color: var(--ink); padding: 18px 20px; margin-bottom: 14px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); box-sizing: border-box; width: 100%; aspect-ratio: 210 / 297; overflow: hidden; }
+.sheet-page h1 { font-size: 24px; margin: 0; }
+.sheet-page h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); border-bottom: 1px solid var(--line); margin: 12px 0 6px; padding-bottom: 2px; }
+.sheet-page h3 { font-size: 12px; margin: 6px 0 2px; }
+.sheet-page p { margin: 2px 0; }
+.sheet-head { display: flex; gap: 14px; align-items: center; border-bottom: 2px solid var(--ink); padding-bottom: 10px; }
+.sheet-title p { margin: 2px 0; }
+.sheet-sub { color: var(--mute); font-size: 12px; }
+.sheet-warn { color: #a12; font-weight: 600; }
+.sheet-grid { display: grid; grid-template-columns: 1fr 1.3fr 1fr; gap: 14px; margin-top: 8px; }
+.sheet-scores { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.sheet-scores li { display: grid; grid-template-columns: 38px 1fr 30px; align-items: center; border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px; }
+.sheet-scores .mod { font-size: 18px; font-weight: 700; text-align: center; }
+.sheet-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.sheet-list li { display: flex; gap: 4px; align-items: baseline; }
+.sheet-list li b { margin-left: auto; }
+.sheet-list .dot { color: var(--accent); width: 1em; }
+.sheet-list.skills { font-size: 12px; }
+.sheet-vitals { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.sheet-vitals li { border: 1px solid var(--line); border-radius: 8px; padding: 4px 6px; text-align: center; }
+.sheet-vitals small { display: block; color: var(--mute); font-size: 10px; text-transform: uppercase; }
+.sheet-vitals b { font-size: 16px; }
+.sheet-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.sheet-table th, .sheet-table td { text-align: left; padding: 3px 4px; border-bottom: 1px solid var(--line); }
+.sheet-features { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; font-size: 12px; }
+.sheet-features small { color: var(--mute); }
+.sheet-story p { white-space: pre-wrap; }
+@media (max-width: 640px) { .sheet-grid { grid-template-columns: 1fr; } .sheet-page { aspect-ratio: auto; } }
+@page { size: A4 portrait; margin: 10mm; }
+@media print {
+  body > *:not(.sheet-overlay) { display: none !important; }
+  .sheet-overlay { position: static; background: #fff; padding: 0; overflow: visible; }
+  .sheet-toolbar { display: none !important; }
+  .sheet-paper { max-width: none; }
+  .sheet-page { box-shadow: none; margin: 0; padding: 0; width: 100%; aspect-ratio: auto; overflow: visible; break-inside: avoid; }
+  .sheet-page[data-page="1"] { break-after: page; }
+  .sheet-grid { grid-template-columns: 1fr 1.3fr 1fr; }
+}

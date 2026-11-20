@@ -94,10 +94,18 @@ describe('büyücüden çıkan alanlar', () => {
     const r = ok(cast(s, 'Lightning Bolt', { targetHex: o(7, 1) }, scripted(...dice(6, 3, 3, 3, 3, 3, 3, 3, 3), [20, 5], [20, 5])));
     expect(saves(r.events).map((e) => e.targetId).sort()).toEqual(['A1', 'A2']);
   });
-  it('Spirit Guardians (15 ft yayılım, yalnızca düşmanlar): müttefik ve uzaktaki etkilenmez', () => {
-    const s = field([wizard(), foe('Near'), ally('Friend'), foe('Far')], { W: o(7, 3), Near: o(9, 3), Friend: o(8, 3), Far: o(12, 3) });
+  it('Spirit Guardians (15 ft yayılım, yalnızca düşmanlar): müttefik ve uzaktaki etkilenmez (kural sürümü 82: yapımda save)', () => {
+    // Mekanik matris K02 (sürüm 83): yapımda save yok (SRD "whenever the Emanation enters a creature's space and whenever a
+    // creature enters the Emanation or ends its turn there"); yapım anı alan üyeliği eski kuralla sınanır.
+    const s = { ...field([wizard(), foe('Near'), ally('Friend'), foe('Far')], { W: o(7, 3), Near: o(9, 3), Friend: o(8, 3), Far: o(12, 3) }), kuralSurumu: 82 };
     const r = ok(cast(s, 'Spirit Guardians', {}, scripted(...dice(8, 4, 4, 4), [20, 5])));
     expect(saves(r.events).map((e) => e.targetId)).toEqual(['Near']);
+  });
+  it('Spirit Guardians kural sürümü 83: yapımda kimse save atmaz (K02)', () => {
+    const s = field([wizard(), foe('Near'), ally('Friend'), foe('Far')], { W: o(7, 3), Near: o(9, 3), Friend: o(8, 3), Far: o(12, 3) });
+    const r = ok(cast(s, 'Spirit Guardians', {}, scripted([20, 5])));
+    expect(saves(r.events)).toEqual([]);
+    expect(r.state.combatants.W?.concentration?.spell).toBe('Spirit Guardians');
   });
 });
 

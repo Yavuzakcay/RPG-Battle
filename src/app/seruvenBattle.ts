@@ -14,12 +14,40 @@ import { HAPIS, confiscated, sucById } from '../journey/hapishane';
 import { combatantFromMonster, type Combatant } from '../battle';
 import { getMonster } from '../data';
 import { characterTokenFile } from '../battle/avatar';
-import { SCENARIOS, enemiesAt } from '../sim/balance';
+import { DEFAULT_LEVEL, SCENARIOS, enemiesAt } from '../sim/balance';
+import { seruvenEnemyPlan } from '../journey/seruvenEnemies';
+import { crXp } from '../journey/encounter';
+import bossData from '../../data/sim-boss.json';
 import { GM_CONTEXT, dispatch } from '../ui/session';
 import { battleResultCommand, stopParticipants } from './journeyBattle';
 import { kapiAt, varis, yerlesimById, yerlesimHarita } from '../yerlesim/yerlesim';
 import { createMapBattle } from './setup';
 import type { Session } from '../ui/session';
+
+/** Boss savaşlarının senaryoları (`data/sim-boss.json`): üreteç almaz. */
+const BOSS_SCENARIOS = new Set((bossData as { bosslar: Array<{ senaryo: string }> }).bosslar.map((b) => b.senaryo));
+
+/**
+ * 2026-11-19: 6+ seviyede düğümün düşmanları (`journey/seruvenEnemies`): tam liste → en yakın alt 6+ liste → (yalnız sıradan
+ * düğümde) bölge üreteci → 5. seviye. 1–5. seviyede `undefined` (eski yol `enemiesAt`). Tohum Serüven kimliği + anahtar +
+ * seviye: kurulum ve sonuç XP'si aynı listeyi görür.
+ */
+export function seruvenEnemies(s: SeruvenState, scenarioId: string, ozel: boolean, key: string): Record<string, number> | undefined {
+  if (s.level <= DEFAULT_LEVEL) return undefined;
+  const sc = SCENARIOS.find((x) => x.id === scenarioId);
+  if (!sc) return undefined;
+  const partySize = s.party.filter((m) => !m.status.dead && m.status.hp > 0).length;
+  return seruvenEnemyPlan(sc, s.level, { ozel: ozel || BOSS_SCENARIOS.has(scenarioId), partySize, seed: `${s.id}:${s.seed}:${key}:${s.level}` }).enemies;
+}
+
+/**
+ * 6+ seviyede kazanılan savaşın XP'si savaştaki düşmanlardan (canavar kimliği olan, çağrılmamış düşmanlar; SRD XP): kayıtlı
+ * eski bir savaş eski listesiyle sürer, XP de o listeden gelir (düğümün yeni planından değil).
+ */
+export function battleEnemyXp(final: BattleState): number {
+  return Object.values(final.combatants).filter((c) => c.side === 'enemies' && c.monsterId && !c.summon && !c.civilian)
+    .reduce((n, c) => { try { return n + crXp(getMonster(c.monsterId as string).cr); } catch { return n; } }, 0);
+}
 
 /** Kuyruk K48: Moral tam modu (Serüven anahtarları `moralSistemi` + `moralTam`) savaşta ev kuralı `moralSistemi`. */
 export const moralHouse = (s: SeruvenState): { houseRules?: Record<string, boolean> } =>
@@ -33,8 +61,12 @@ export const isNight = (s: SeruvenState, nodeId: string) => s.night.includes(nod
 /** Düğümün tek duraklı yolculuk durumu (yolculuk savaş parçalarına verilir). */
 export function nodeJourney(s: SeruvenState, nodeId: string): JourneyState | null {
   const node = seruvenNode(s, nodeId);
-  const stop = node ? nodeStop(node, s.level, isNight(s, nodeId)) : null;
-  if (!stop) return null;
+  const stop0 = node ? nodeStop(node, s.level, isNight(s, nodeId)) : null;
+  if (!stop0 || !node) return null;
+  // 2026-11-19: 6+ seviyede listesi verilmemiş savaş durağına düşman planı (sefer ve boss düğümü özel: üreteç yok).
+  const planned = stop0.kind === 'battle' && !stop0.enemies && stop0.scenario
+    ? seruvenEnemies(s, stop0.scenario, !!node.sefer || !!node.boss, nodeKey(s.page, nodeId)) : undefined;
+  const stop = planned ? { ...stop0, enemies: planned } : stop0;
   return {
     id: `seruven:${s.id}`, route: { id: 'seruven', name: { tr: 'Serüven', en: 'Adventure' }, level: s.level, stops: [stop] },
     seed: s.seed, difficulty: 'normal', progression: 'milestone', stop: 0, stopDone: false, hour: 0, lastLongRest: 0, shortRests: 0,
@@ -93,7 +125,8 @@ export function seruvenResultCommand(s: SeruvenState, nodeId: string, final: Bat
   if (!j) return null;
   const r = battleResultCommand(j, final);
   if (r.type !== 'battle_result') return null;
-  return { type: 'battle_result' as const, node: nodeId, outcome: r.outcome, statuses: r.statuses, xp: r.xp, ...(r.flags ? { flags: r.flags } : {}) };
+  const xp = s.level > DEFAULT_LEVEL && r.outcome === 'won' ? battleEnemyXp(final) : r.xp;
+  return { type: 'battle_result' as const, node: nodeId, outcome: r.outcome, statuses: r.statuses, xp, ...(r.flags ? { flags: r.flags } : {}) };
 }
 
 /**
@@ -108,7 +141,8 @@ export function linkSession(s: SeruvenState, linkId: string, rng: Rng): Session 
   const start = (fromA ? link.uclar.a : link.uclar.b).map(([c, r]) => ({ col: c - 1, row: r - 1 }));
   const exits = (fromA ? link.uclar.b : link.uclar.a).map(([c, r]) => ({ col: c - 1, row: r - 1 }));
   const j = nodeJourney({ ...s, night: [] }, s.at);
-  const shim = j ? { ...j, route: { ...j.route, stops: [{ id: link.id, kind: 'battle' as const, name: { tr: link.id, en: link.id }, travelHours: 0, scenario: link.scenario }] } } : null;
+  const linkEnemies = seruvenEnemies(s, link.scenario, true, `link:${link.id}`);
+  const shim = j ? { ...j, route: { ...j.route, stops: [{ id: link.id, kind: 'battle' as const, name: { tr: link.id, en: link.id }, travelHours: 0, scenario: link.scenario, ...(linkEnemies ? { enemies: linkEnemies } : {}) }] } } : null;
   const p = shim ? stopParticipants(shim) : null;
   if (!p?.scenario.map) return null;
   const party = p.participants.filter((c) => c.side === 'party');
@@ -193,7 +227,8 @@ function scenarioJourney(s: SeruvenState, scenario: string, enemies?: Record<str
 export function sucSession(s: SeruvenState, rng: Rng): Session | null {
   const suc = s.suc ? sucById(s.suc.id) : undefined;
   if (!s.suc || !suc) return null;
-  const j = scenarioJourney(s, s.suc.asama === 'on' ? suc.scenario : HAPIS.baskin);
+  const sid = s.suc.asama === 'on' ? suc.scenario : HAPIS.baskin;
+  const j = scenarioJourney(s, sid, seruvenEnemies(s, sid, true, `suc:${s.suc.id}:${s.suc.asama}`));
   const p = stopParticipants(j);
   return p?.scenario.map ? createMapBattle(p.participants, { ...p.scenario.map, mirrored: false, ...moralHouse(s) }, rng) : null;
 }
@@ -201,7 +236,8 @@ export function sucSession(s: SeruvenState, rng: Rng): Session | null {
 export function sucResultCommand(s: SeruvenState, final: BattleState): SeruvenCommand | null {
   const suc = s.suc ? sucById(s.suc.id) : undefined;
   if (!s.suc || !suc) return null;
-  const j = scenarioJourney(s, s.suc.asama === 'on' ? suc.scenario : HAPIS.baskin);
+  const sid = s.suc.asama === 'on' ? suc.scenario : HAPIS.baskin;
+  const j = scenarioJourney(s, sid, seruvenEnemies(s, sid, true, `suc:${s.suc.id}:${s.suc.asama}`));
   const r = battleResultCommand(j, final);
   return r.type === 'battle_result' ? { type: 'suc_sonuc', outcome: r.outcome, statuses: r.statuses, xp: r.xp } : null;
 }
@@ -211,7 +247,7 @@ export function hapisEnemies(s: SeruvenState, node: SeruvenNode): Record<string,
   if (s.done.includes(nodeKey(HAPIS.sayfa, node.id))) return {};
   const sc = SCENARIOS.find((x) => x.id === node.scenario);
   if (!sc) return {};
-  const list = { ...enemiesAt(sc, s.level) };
+  const list = { ...(seruvenEnemies(s, sc.id, true, nodeKey(HAPIS.sayfa, node.id)) ?? enemiesAt(sc, s.level)) };
   if (toggleOn(s, 'hapishaneKolay')) {
     let left = HAPIS.kolay.eksik;
     for (const id of Object.keys(list).sort((a, b) => (a === 'guard' ? -1 : b === 'guard' ? 1 : 0))) {

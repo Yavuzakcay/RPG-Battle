@@ -1,168 +1,193 @@
 {
-  "not": "Kuyruk AS1a: alt soy görünümü (yalnızca görsel; kural sürümüne girmez, savaş koduna dokunmaz). Alt soylara ayrı çizim yok: renk filtresi (CSS `filter`; tint/maske tablosunda yeri olmayan ırklar için), en-boy/ölçek, kanat katmanı ve Celestial hale kuralı burada. Maskeli (soy-renkleri.json) ırklarda renk oradadır: Tiefling Kanatlı, Gnome Yeraltı. Kuyruk AS1a-2 (İş 3): `orijinal` listesindeki alt soylar boyasız ORİJİNAL jetonla gelir (filtre/tint/maske yok; yalnız oran değişebilir); Dragonborn hariç her ırkta en az bir tane. Savaş jetonuna bağlama (Avatar tipi src/battle/types.ts'te) AS1b/MB3 sonrası. AS1c: kanat slotları `data/kanat-esleme.json`'a taşındı; savaş jetonuna `Avatar.look` ile uygulanır.",
-  "maskesizIrklar": [
-    "dwarf",
-    "halfling",
-    "orc",
-    "human"
+ "not": "Kuyruk AS1a: alt soy görünümü (yalnızca görsel; kural sürümüne girmez, savaş koduna dokunmaz). Alt soylara ayrı çizim yok: renk filtresi (CSS `filter`; tint/maske tablosunda yeri olmayan ırklar için), en-boy/ölçek, kanat katmanı ve Celestial hale kuralı burada. Maskeli (soy-renkleri.json) ırklarda renk oradadır: Tiefling Kanatlı, Gnome Yeraltı. Kuyruk AS1a-2 (İş 3): `orijinal` listesindeki alt soylar boyasız ORİJİNAL jetonla gelir (filtre/tint/maske yok; yalnız oran değişebilir); Dragonborn hariç her ırkta en az bir tane. Savaş jetonuna bağlama (Avatar tipi src/battle/types.ts'te) AS1b/MB3 sonrası. AS1c: kanat slotları `data/kanat-esleme.json`'a taşındı; savaş jetonuna `Avatar.look` ile uygulanır. KQ6-6: Halfling İnce soyu yüklenen jetonun kendisi (oran 1×1); Kalın soyu aynı jetondan boy ×0,90, en ×1,10 (ayak çizgisinden, `ayak.yuzde`).",
+ "maskesizIrklar": [
+  "dwarf",
+  "halfling",
+  "orc",
+  "human"
+ ],
+ "altSoylar": {
+  "dwarf/crag": {
+   "filtre": "saturate(0.6) brightness(0.94) hue-rotate(14deg)"
+  },
+  "dwarf/knoll": {
+   "orijinal": true,
+   "oran": {
+    "en": 1.04,
+    "boy": 1
+   }
+  },
+  "dwarf/undervault": {
+   "filtre": "brightness(0.78) saturate(0.75) hue-rotate(-12deg)"
+  },
+  "halfling/slender": {
+   "orijinal": true,
+   "oran": {
+    "en": 1,
+    "boy": 1
+   }
+  },
+  "halfling/sturdy": {
+   "orijinal": true,
+   "oran": {
+    "en": 1.07,
+    "boy": 0.93
+   }
+  },
+  "orc/glacier": {
+   "filtre": "hue-rotate(75deg) saturate(0.65) brightness(1.06)"
+  },
+  "orc/wildwood": {
+   "orijinal": true
+  },
+  "orc/fen": {
+   "filtre": "hue-rotate(-28deg) saturate(0.9) brightness(0.88)"
+  },
+  "human/tenhausser": {
+   "orijinal": true
+  },
+  "human/khadyrga": {
+   "orijinal": true
+  },
+  "human/pure-city": {
+   "orijinal": true
+  },
+  "human/outwall": {
+   "orijinal": true
+  },
+  "tiefling/winged": {
+   "kanat": "tiefling-kanatli"
+  },
+  "elf/wood-elf": {
+   "orijinal": true
+  },
+  "tiefling/infernal": {
+   "orijinal": true
+  },
+  "gnome/rock-gnome": {
+   "orijinal": true
+  },
+  "goliath/hill": {
+   "orijinal": true
+  },
+  "goliath/stone": {
+   "orijinal": true
+  },
+  "gnome/forest-gnome": {
+   "orijinal": true
+  }
+ },
+ "celestialUyanis": {
+  "parlayan-ruh": {
+   "hale": true,
+   "orijinal": true
+  },
+  "gece-gozyasi": {
+   "hale": false,
+   "filtre": "grayscale(1) contrast(1.12)"
+  },
+  "kirik-kanat": {
+   "hale": false,
+   "kanat": "celestial-kirik-kanat"
+  }
+ },
+ "hale": {
+  "not": "Celestial jetonlarında hale çizimin içinde (256 px yükseklikte satır 8–23, baş ≈24'ten başlar). Gizlenince üstteki bu yüzde kırpılır.",
+  "gizleUstYuzde": 9.5
+ },
+ "ten": {
+  "not": "Kuyruk AS1c: Human ten tonu karakterde `skinTone`; `kulturTen` her kültürün seçebileceği tonlar (Tenhausser Koyu, Khadyrga Orijinal, Saf Kent Altın, Sur Dışı üçü). Sur Dışı'nda Sürgün seçiliyse (`surgun`) tonlar sürgün kültürünün satırından, seçili değilse Sur Dışı'nın üç tonu. Kayıtlı ton listede yoksa listedeki ilk ton geçerlidir (tek çözücü `cultureSkinTone`): tek tonlu kültür ya da sürgün seçilince ton kendiliğinden gelir, jeton boyası da buna uyar. Ton jetonun yalnız TEN pikselini boyar (ten maskesi `public/characters/maske/human-*.png`, `src/ui/tint.ts` lch yolu: `renk` hedef ten rengi, ortalama açıklık hedefe taşınır, gölge/ışık orantısı korunur); saç, giysi, silah renkleri değişmez. `renk` null: boyasız (Orijinal). `rozetRenk` yalnız seçici rozeti. Gerçek renkleri bu alanda düzenle; kod ve test değişmez.",
+  "yerTutucu": false,
+  "filtreUygula": true,
+  "varsayilan": "orijinal",
+  "tonlar": [
+   {
+    "id": "orijinal",
+    "ad": {
+     "tr": "Orijinal",
+     "en": "Original"
+    },
+    "renk": null,
+    "rozetRenk": "#c18d62"
+   },
+   {
+    "id": "siyahi",
+    "ad": {
+     "tr": "Koyu",
+     "en": "Dark"
+    },
+    "renk": "#96623E",
+    "rozetRenk": "#96623E"
+   },
+   {
+    "id": "dogu-asyali",
+    "ad": {
+     "tr": "Altın",
+     "en": "Golden"
+    },
+    "renk": "#E2B880",
+    "rozetRenk": "#E2B880"
+   }
   ],
-  "altSoylar": {
-    "dwarf/crag": {
-      "filtre": "saturate(0.6) brightness(0.94) hue-rotate(14deg)"
+  "kulturTen": {
+   "tenhausser": [
+    "siyahi"
+   ],
+   "khadyrga": [
+    "orijinal"
+   ],
+   "pure-city": [
+    "dogu-asyali"
+   ],
+   "outwall": [
+    "orijinal",
+    "siyahi",
+    "dogu-asyali"
+   ]
+  },
+  "surgun": {
+   "not": "Görev AS1b düzeltmesi: Sur Dışı (`kultur`) seçilince ek \"Sürgün\" seçimi (karakterde `exileCulture`). Seçenekler yalnız bu üç kültür; buff/debuff her zaman Sur Dışı'nınki. Görünüm (ten tonu) sürgün kültürünün `kulturTen` satırından: tek ton varsa (Tenhausser Koyu, Khadyrga Orijinal, Saf Kent Altın) o ton kendiliğinden seçilir; Sürgün seçili değilse Sur Dışı'nın üç tonu (yalnız veri).",
+   "kultur": "outwall",
+   "secenekler": [
+    "tenhausser",
+    "khadyrga",
+    "pure-city"
+   ],
+   "ad": {
+    "tenhausser": {
+     "tr": "Tenhausser Sürgünü",
+     "en": "Tenhausser Exile"
     },
-    "dwarf/knoll": {
-      "orijinal": true,
-      "oran": {
-        "en": 1.04,
-        "boy": 1
-      }
+    "khadyrga": {
+     "tr": "Khadyrga Sürgünü",
+     "en": "Khadyrga Exile"
     },
-    "dwarf/undervault": {
-      "filtre": "brightness(0.78) saturate(0.75) hue-rotate(-12deg)"
-    },
-    "halfling/slender": {
-      "orijinal": true,
-      "oran": {
-        "en": 0.94,
-        "boy": 1.05
-      }
-    },
-    "halfling/sturdy": {
-      "orijinal": true,
-      "oran": {
-        "en": 1.1,
-        "boy": 0.97
-      }
-    },
-    "orc/glacier": {
-      "filtre": "hue-rotate(75deg) saturate(0.65) brightness(1.06)"
-    },
-    "orc/wildwood": {
-      "orijinal": true
-    },
-    "orc/fen": {
-      "filtre": "hue-rotate(-28deg) saturate(0.9) brightness(0.88)"
-    },
-    "human/tenhausser": {
-      "orijinal": true
-    },
-    "human/khadyrga": {
-      "orijinal": true
-    },
-    "human/pure-city": {
-      "orijinal": true
-    },
-    "human/outwall": {
-      "orijinal": true
-    },
-    "tiefling/winged": {
-      "kanat": "tiefling-kanatli"
-    },
-    "elf/wood-elf": {
-      "orijinal": true
-    },
-    "tiefling/infernal": {
-      "orijinal": true
-    },
-    "gnome/rock-gnome": {
-      "orijinal": true
-    },
-    "goliath/hill": {
-      "orijinal": true
+    "pure-city": {
+     "tr": "Saf Kent Sürgünü",
+     "en": "Pure City Exile"
     }
-  },
-  "celestialUyanis": {
-    "parlayan-ruh": {
-      "hale": true,
-      "orijinal": true
-    },
-    "gece-gozyasi": {
-      "hale": false,
-      "filtre": "brightness(0.74) saturate(0.85) hue-rotate(12deg)"
-    },
-    "kirik-kanat": {
-      "hale": false,
-      "kanat": "celestial-kirik-kanat"
-    }
-  },
-  "hale": {
-    "not": "Celestial jetonlarında hale çizimin içinde (256 px yükseklikte satır 8–23, baş ≈24'ten başlar). Gizlenince üstteki bu yüzde kırpılır.",
-    "gizleUstYuzde": 9.5
-  },
-  "ten": {
-    "not": "Kuyruk AS1c: Human ten tonu karakterde `skinTone`; `kulturTen` her kültürün seçebileceği tonlar (Tenhausser Koyu, Khadyrga Orijinal, Saf Kent Altın, Sur Dışı üçü). Sur Dışı'nda Sürgün seçiliyse (`surgun`) tonlar sürgün kültürünün satırından, seçili değilse Sur Dışı'nın üç tonu. Kayıtlı ton listede yoksa listedeki ilk ton geçerlidir (tek çözücü `cultureSkinTone`): tek tonlu kültür ya da sürgün seçilince ton kendiliğinden gelir, jeton boyası da buna uyar. Ton jetonun yalnız TEN pikselini boyar (ten maskesi `public/characters/maske/human-*.png`, `src/ui/tint.ts` lch yolu: `renk` hedef ten rengi, ortalama açıklık hedefe taşınır, gölge/ışık orantısı korunur); saç, giysi, silah renkleri değişmez. `renk` null: boyasız (Orijinal). `rozetRenk` yalnız seçici rozeti. Gerçek renkleri bu alanda düzenle; kod ve test değişmez.",
-    "yerTutucu": false,
-    "filtreUygula": true,
-    "varsayilan": "orijinal",
-    "tonlar": [
-      {
-        "id": "orijinal",
-        "ad": {
-          "tr": "Orijinal",
-          "en": "Original"
-        },
-        "renk": null,
-        "rozetRenk": "#c18d62"
-      },
-      {
-        "id": "siyahi",
-        "ad": {
-          "tr": "Koyu",
-          "en": "Dark"
-        },
-        "renk": "#96623E",
-        "rozetRenk": "#96623E"
-      },
-      {
-        "id": "dogu-asyali",
-        "ad": {
-          "tr": "Altın",
-          "en": "Golden"
-        },
-        "renk": "#E2B880",
-        "rozetRenk": "#E2B880"
-      }
-    ],
-    "kulturTen": {
-      "tenhausser": [
-        "siyahi"
-      ],
-      "khadyrga": [
-        "orijinal"
-      ],
-      "pure-city": [
-        "dogu-asyali"
-      ],
-      "outwall": [
-        "orijinal",
-        "siyahi",
-        "dogu-asyali"
-      ]
-    },
-    "surgun": {
-      "not": "Görev AS1b düzeltmesi: Sur Dışı (`kultur`) seçilince ek \"Sürgün\" seçimi (karakterde `exileCulture`). Seçenekler yalnız bu üç kültür; buff/debuff her zaman Sur Dışı'nınki. Görünüm (ten tonu) sürgün kültürünün `kulturTen` satırından: tek ton varsa (Tenhausser Koyu, Khadyrga Orijinal, Saf Kent Altın) o ton kendiliğinden seçilir; Sürgün seçili değilse Sur Dışı'nın üç tonu (yalnız veri).",
-      "kultur": "outwall",
-      "secenekler": ["tenhausser", "khadyrga", "pure-city"],
-      "ad": {
-        "tenhausser": { "tr": "Tenhausser Sürgünü", "en": "Tenhausser Exile" },
-        "khadyrga": { "tr": "Khadyrga Sürgünü", "en": "Khadyrga Exile" },
-        "pure-city": { "tr": "Saf Kent Sürgünü", "en": "Pure City Exile" }
-      }
-    }
-  },
-  "orijinal": [
-    "elf/wood-elf",
-    "dwarf/knoll",
-    "halfling/slender",
-    "halfling/sturdy",
-    "orc/wildwood",
-    "celestial/parlayan-ruh",
-    "human/tenhausser",
-    "human/khadyrga",
-    "human/pure-city",
-    "human/outwall",
-    "tiefling/infernal",
-    "gnome/rock-gnome",
-    "goliath/hill"
-  ]
+   }
+  }
+ },
+ "orijinal": [
+  "elf/wood-elf",
+  "dwarf/knoll",
+  "halfling/slender",
+  "halfling/sturdy",
+  "orc/wildwood",
+  "celestial/parlayan-ruh",
+  "human/tenhausser",
+  "human/khadyrga",
+  "human/pure-city",
+  "human/outwall",
+  "tiefling/infernal",
+  "gnome/rock-gnome",
+  "goliath/hill",
+  "goliath/stone",
+  "gnome/forest-gnome"
+ ],
+ "ayak": {
+  "not": "Oran ölçeklemesinin demir noktası: jeton görselinde ayak çizgisinin yüksekliği (256 px jetonda y≈247). Ayaklar sabit kalır, yatayda ortadan.",
+  "yuzde": 0.965
+ }
 }

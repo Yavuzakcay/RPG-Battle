@@ -237,9 +237,9 @@
     "cost": "bonus",
     "kind": "save",
     "save": "dex",
-    "dc": 12,
+    "dc": 16,
     "rangeFt": 5,
-    "damage": "2d10+4",
+    "damage": "2d10+6",
     "damageType": "bludgeoning",
     "half": true,
     "needsCondition": "Prone"
@@ -355,13 +355,13 @@
     "tr": "Yutma",
     "cost": "action",
     "kind": "swallow",
-    "save": "str",
-    "dc": 11,
     "dice": "2d4",
     "type": "acid",
     "escapeDamage": 0,
     "escapeDc": 11,
-    "small": true
+    "maxSize": "S",
+    "at": "end",
+    "disgorge": true
    }
   ],
   "passive": {
@@ -386,13 +386,12 @@
     "tr": "Yutma",
     "cost": "action",
     "kind": "swallow",
-    "save": "str",
-    "dc": 13,
     "dice": "3d6",
     "type": "acid",
     "escapeDamage": 0,
     "escapeDc": 13,
-    "small": true
+    "small": true,
+    "at": "end"
    }
   ],
   "passive": {
@@ -411,7 +410,7 @@
  "cat": {
   "passive": {
    "jump": {
-    "long": 10
+    "long": 15
    }
   }
  },
@@ -929,10 +928,10 @@
     "cost": "bonus",
     "kind": "swallow",
     "save": "str",
-    "dc": 17,
+    "dc": 19,
     "dice": "3d6",
     "type": "acid",
-    "dice2": "5d6",
+    "dice2": "3d6",
     "type2": "fire",
     "escapeDamage": 30,
     "escapeDc": 15
@@ -957,7 +956,7 @@
     "tr": "Yutma",
     "cost": "bonus",
     "kind": "swallow",
-    "save": "dex",
+    "save": "str",
     "dc": 19,
     "dice": "5d6",
     "type": "acid",
@@ -1168,7 +1167,7 @@
     "radiusFt": 5,
     "save": "con",
     "dc": 10,
-    "dice": "2d6",
+    "dice": "2d4",
     "type": "cold",
     "half": true
    }

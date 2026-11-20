@@ -5,5 +5,3 @@
 
 - `kale-avlu`
 - `kale-baskini`
-- `kale-klasik`
-- `kale-klasik-gece`
