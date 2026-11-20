@@ -92,4 +92,19 @@ describe('Dungeondex prospektüsü: büyüler', () => {
     expect(fb.map((x) => x.key)).toEqual(expect.arrayContaining(['ne', 'nasil', 'etken', 'kimler', 'maliyet', 'durum']));
     expect(fb.find((x) => x.key === 'nasil')!.rows.map((r) => r.text)).toContain('Anında');
   });
+  it('Serüven öncesi: "Etken içerik" motorun bugünkü mekaniğinden; "Oyunda farklı" notu iki dilde ve yalnız gerçek farkta', async () => {
+    const T = t().dex.pro;
+    const etken = (id: string) => buyuProspektus(id, T, 'tr')!.find((x) => x.key === 'etken')!.rows.map((r) => `${r.label}: ${r.text}`);
+    const durum = (id: string, L = T, lang: 'tr' | 'en' = 'tr') => buyuProspektus(id, L, lang)!.find((x) => x.key === 'durum')!.rows;
+    expect(etken('ice-storm')).toContain(`${T.l.damage}: 2d10 ezici + 4d6 soğuk`);
+    expect(etken('flame-strike')).toContain(`${T.l.damage}: 5d6 ateş + 5d6 ışıl`);
+    expect(etken('meteor-swarm')).toContain(`${T.l.damage}: 20d6 ateş + 20d6 ezici`);
+    expect(etken('dragons-breath')).toContain(`${T.l.damage}: 3d6 asit ya da soğuk ya da ateş ya da yıldırım ya da zehir`);
+    expect(etken('blindness-deafness')).toContain(`${T.l.conditions}: Blinded ya da Deafened`);
+    for (const id of ['ice-storm', 'flame-strike', 'meteor-swarm', 'bestow-curse']) expect(durum(id).some((r) => r.label === T.l.diff), id).toBe(true);
+    for (const id of ['conjure-fey', 'divine-word', 'prayer-of-healing', 'blindness-deafness', 'dragons-breath', 'fireball']) expect(durum(id).some((r) => r.label === T.l.diff), id).toBe(false);
+    const en = (await import('../../i18n/strings.en')).en.dex.pro;
+    expect(Object.keys(en.spell.gameDiff).sort()).toEqual(Object.keys(T.spell.gameDiff).sort());
+    expect(durum('ice-storm', en, 'en').find((r) => r.label === en.l.diff)!.text).toMatch(/7d6 Cold/);
+  });
 });

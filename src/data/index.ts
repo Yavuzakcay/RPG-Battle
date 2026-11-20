@@ -75,6 +75,17 @@ export const spellDescriptionShown = (id: string, lang: Lang): string | undefine
 export type AciklamaTuru = 'buyu' | 'esya' | 'tur' | 'yetenek' | 'altsinif' | 'invocation' | 'buyuSecenek' | 'durum' | 'canavar';
 export const trDescriptions: Record<AciklamaTuru, Record<string, string>> = { buyu: {}, esya: {}, tur: {}, yetenek: {}, altsinif: {}, invocation: {}, buyuSecenek: {}, durum: {}, canavar: {} };
 export const trAciklama = (tur: AciklamaTuru, id: string): string | undefined => trDescriptions[tur][id];
+/**
+ * Paket (Serüven öncesi): canavar açıklamaları (≈215 kB) `data/aciklamalar-tr-canavar.json` ayrı tembel parçada; yalnız Dungeondex
+ * yükler (`loadDexExtras`). Erişim aynı (`trAciklama('canavar', …)`); yüklenene dek boş.
+ */
+let monsterDescLoading: Promise<void> | null = null;
+export function loadMonsterDescriptions(): Promise<void> {
+  monsterDescLoading ??= import('../../data/aciklamalar-tr-canavar.json').then((m) => {
+    Object.assign(trDescriptions.canavar, (m.default as unknown as { canavar: Record<string, string> }).canavar);
+  });
+  return monsterDescLoading;
+}
 let classLoading: Promise<void> | null = null;
 export const classDataLoaded = () => classData.progression.length > 0;
 export function loadClassData(): Promise<void> {

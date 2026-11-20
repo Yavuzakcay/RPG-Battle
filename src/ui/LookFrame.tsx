@@ -8,6 +8,7 @@ import { useState, type CSSProperties, type ReactNode } from 'react';
 import { WingFilterDefs } from './WingFilter';
 import { LookContext } from './lookContext';
 import { FOOT_FRAC, lineageLook, wingBox, wingFilterId, type LookSheet, type WingLayerSpec } from './lineageLook';
+import { useWingData } from './wingData';
 
 const BASE = import.meta.env.BASE_URL;
 
@@ -29,6 +30,7 @@ export function WingLayer(props: { wing: WingLayerSpec; size: number }) {
 
 /** `ability`: karakter ekranı (liste, oluşturucu önizlemesi): uçma yeteneği olan karakter havada olmasa da kanatlı görünür. */
 export function LookFrame(props: { sheet: LookSheet; size: number; flying?: boolean; ability?: boolean; children: ReactNode }) {
+  useWingData(); // Paket: kanat verisi tembel.
   const look = lineageLook(props.sheet, { ...(props.flying ? { flying: true } : {}), ...(props.ability ? { ability: true } : {}) });
   const style = {
     width: props.size, height: props.size,

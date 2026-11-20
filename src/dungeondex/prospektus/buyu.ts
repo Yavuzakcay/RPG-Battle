@@ -29,6 +29,17 @@ export function spellStatus(s: Spell): { tone: ProTone; note?: string } {
   return { tone: 'ok', note: m.gmNoted ? str(m.gmNote) : undefined };
 }
 
+/**
+ * Serüven öncesi: kartın "Etken içerik" satırları motorun bugünkü mekaniğinden (taban + bütün tamamlama blokları, `mechanicsAt`
+ * güncel sürümle aynı sıra; haritaya bağlı `k84` hariç). Eskiden taban `mechanics` okunuyordu (Ice Storm'da 7d6 soğuk gibi).
+ * Savaş motoru içe aktarılmaz (Dungeondex parçası hafif kalır).
+ */
+const EFFECTIVE_BLOCKS = [...SPELL_BLOCKS, 'mb7', 'm83'];
+export function effectiveMechanics(s: Spell): Record<string, unknown> {
+  const raw = s.mechanics as unknown as Record<string, unknown>;
+  return Object.assign({}, raw, ...EFFECTIVE_BLOCKS.map((k) => (raw[k] as object | undefined) ?? {})) as Record<string, unknown>;
+}
+
 /** Büyü prospektüsü; bilinmeyen kimlikte null. */
 export function buyuProspektus(id: string, L: ProStrings, lang: Lang): ProSection[] | null {
   const s = spells.find((x) => x.id === id);
@@ -40,7 +51,7 @@ export function buyuProspektus(id: string, L: ProStrings, lang: Lang): ProSectio
   const row = (label: string, text: string | undefined | false, trOnly = false): ProRow[] => (text ? [{ label, text, trOnly: (tr && trOnly) || undefined }] : []);
   const unit = (n: number, u: string) => { const w = P.unit[u] ?? u; return lang === 'en' && n === 1 ? w.replace(/s$/, '') : w; };
   const S: Record<ProKey, ProRow[]> = { ne: [], nasil: [], etken: [], risk: [], kimler: [], maliyet: [], durum: [] };
-  const m = s.mechanics as unknown as Record<string, unknown>;
+  const m = effectiveMechanics(s);
 
   S.ne.push(...par(k.ne));
   S.nasil.push(...par(k.nasil));
@@ -56,9 +67,15 @@ export function buyuProspektus(id: string, L: ProStrings, lang: Lang): ProSectio
   }
   if (k.bilesen) S.nasil.push(...row(P.comps, k.bilesen));
 
-  if (typeof m.damage === 'string') S.etken.push(...row(L.l.damage, `${m.damage}${typeof m.damageType === 'string' ? ` ${L.dmg[m.damageType] ?? m.damageType}` : ''}`));
+  const dmgName = (t: unknown) => (typeof t === 'string' ? L.dmg[t] ?? t : '');
+  const split = Array.isArray(m.split) && m.split.length === 2 ? (m.split as Array<{ dice: string; type: string }>) : null;
+  const dmgChoices = Array.isArray(m.damageChoices) && m.damageChoices.length ? (m.damageChoices as string[]) : null;
+  if (split) S.etken.push(...row(L.l.damage, split.map((p) => `${p.dice} ${dmgName(p.type)}`).join(' + ')));
+  else if (typeof m.damage === 'string') S.etken.push(...row(L.l.damage, `${m.damage}${dmgChoices ? ` ${dmgChoices.map(dmgName).join(P.or)}` : typeof m.damageType === 'string' ? ` ${dmgName(m.damageType)}` : ''}`));
   if (typeof m.save === 'string') S.etken.push(...row(L.l.save, `${L.ab[m.save] ?? m.save}${m.halfOnSave ? ` (${P.halfOnSave})` : ''}`));
-  if (Array.isArray(m.conditions) && m.conditions.length) S.etken.push(...row(L.l.conditions, (m.conditions as string[]).join(', ')));
+  const condChoices = Array.isArray(m.conditionChoices) && m.conditionChoices.length ? (m.conditionChoices as string[]) : null;
+  if (condChoices) S.etken.push(...row(L.l.conditions, condChoices.join(P.or)));
+  else if (Array.isArray(m.conditions) && m.conditions.length) S.etken.push(...row(L.l.conditions, (m.conditions as string[]).join(', ')));
   S.etken.push(...row(P.upcast, k.yukari, true));
 
   S.risk.push(...par(k.risk));
@@ -72,6 +89,9 @@ export function buyuProspektus(id: string, L: ProStrings, lang: Lang): ProSectio
 
   const st = spellStatus(s);
   if (st.note) S.durum.push({ label: L.l.reason, text: st.note, trOnly: tr || undefined });
+  // Serüven öncesi: motorda SRD'den gerçekten farklı kalan parça (iki dilde; `dex.pro.spell.gameDiff`).
+  const diff = P.gameDiff[id];
+  if (diff) S.durum.push({ label: L.l.diff, text: diff });
 
   return PRO_ORDER.flatMap((key): ProSection[] => {
     if (key === 'durum') return [{ key, title: L.sec[key] ?? key, rows: S.durum, badge: { tone: st.tone, text: L.badge[st.tone] ?? st.tone } }];

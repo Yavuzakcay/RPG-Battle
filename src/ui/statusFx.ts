@@ -20,8 +20,9 @@ interface Entry {
 }
 const DATA = spriteData as { frameMs: number; effects: Record<string, Entry> };
 
-/** Ekranda aynı anda çalışan animasyonlu döngü efekti üst sınırı (telefon performansı). */
-export const MAX_ANIMATED = 8;
+import { MAX_ANIMATED } from './effectsSetting';
+/** Ekranda aynı anda çalışan animasyonlu döngü efekti üst sınırı (tek kaynak `effectsSetting.ts`). */
+export { MAX_ANIMATED };
 /** Efekt halkasının jeton çapına oranı (halkalar jetonun çevresinde). */
 export const LOOP_SCALE = 1.15;
 /** Birden çok durum varken sıradaki efekte geçiş aralığı (ms; Görev V2). */

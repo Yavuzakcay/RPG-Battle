@@ -4,11 +4,11 @@
  * Celestial hale kuralı. Human ten tonu ayrı seçimdir (`skinTone`), kültürün izin verdiği tonlardan (`cultureSkinTone`). Saf: DOM bilmez.
  */
 import data from '../../data/alt-soy-gorunum.json';
-import wings from '../../data/kanat-esleme.json';
 import soyRenkleri from '../../data/soy-renkleri.json';
 import type { TintSpec } from '../battle/types';
 import { rgbToLab } from './color';
 import { findSubclass } from '../rules/subclasses';
+import { WING_SLOTS, wingTable as W } from './wingData';
 
 /** Çözülmüş kanat katmanı (jetonun arkası): `src` o anki durumun görseli (`public/` altı yol), filtre renk için. */
 /** `capa`: kanat kökü görsel oranı; `omuz`: kökün jeton yüksekliğinde tepeden oranı; `enBoy`: görsel yüksekliği/genişliği. */
@@ -92,8 +92,8 @@ export function pickCulture(sheet: { lineageId?: string; exileCulture?: string; 
 export const ORIGINAL_LINEAGES: string[] = D.orijinal;
 export const isOriginalLineage = (key: string): boolean => D.orijinal.includes(key);
 export type WingSlotData = { altSinif?: string; /** Kuyruk A İş 2: kendi çiziminde kanadı olan jetonlar (dosya adı, uzantısız); bu slotun kanadı çizilmez. */ kanatsiz?: string[]; ayna?: WingMirror; /** KW2: tek kanat görselinin üstüne çizilen katmanlar (dosya aynı klasörde, aynı boyutta). `zar.etkin: false` pembe karışımlı zar katmanını kapatır (karşılaştırma); pençe her zaman. */ katmanlar?: { zar?: { dosya: string; etkin?: boolean }; pence?: { dosya: string; palet: WingPalet } }; palet?: WingPalet; renkPaletleri?: Record<string, WingPalet & { zar?: WingPalet }>; esnet?: boolean; sprite?: WingSprite & { klasor?: string }; dosya: string | null; dosyaKapali: string | null; minSeviye?: number; herZaman?: boolean; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre?: string; renkFiltreleri?: Record<string, string> };
-const W = wings as unknown as { klasor: string; slotlar: Record<string, WingSlotData> };
-export const WING_SLOTS = Object.keys(W.slotlar);
+/** Paket: kanat verisi tembel (`wingData.ts` `loadWingData`); yüklenene dek boş (kanat yok). */
+export { WING_SLOTS };
 /** Jeton yolundan dosya adı (klasör ve uzantı olmadan; `characters/kucuk/x.webp` → `x`). */
 const tokenBase = (src: string): string => src.replace(/[?#].*$/, '').replace(/^.*\//, '').replace(/\.[a-z0-9]+$/i, '');
 /**

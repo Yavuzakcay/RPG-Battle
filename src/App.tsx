@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { classDataLoaded, loadClassData, loadMonsters, monstersLoaded } from './data';
+import { loadWingData } from './ui/wingData';
 import { Home, PlayerScreen } from './screens/Screens';
 import { loadCharacters, newId, saveCharacters } from './app/storage';
 import { hasSavedBattle } from './app/saveKey';
@@ -142,7 +143,8 @@ function useClassData(): { ready: boolean; error: string | null } {
     if (ready) return;
     // Dış içerik (Görev E1): kayıtlı paketler sınıf verisinden sonra doğrulanıp uygulanır; hata olursa içeriksiz devam.
     // Görev AS2: yerel icerik/ klasörü kalıcı ana kaynak; karakter ekranları (eski kayıt alt sınıf ataması dahil) onu bekler.
-    loadClassData()
+    // Paket: kanat verisi (tembel parça) sınıf verisiyle birlikte; yüklenemezse kanatsız devam.
+    Promise.all([loadClassData(), loadWingData().catch(() => undefined)])
       .then(() => import('./content/store').then((m) => { m.applyStoredContent(); return m.loadLocalFolder().then(() => undefined, () => undefined); }, () => undefined))
       .then(() => setReady(true), () => setError(t().common.classLoadError));
   }, [ready]);

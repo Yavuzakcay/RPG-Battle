@@ -4,7 +4,7 @@
  * adlar İngilizce (alt sınıf ve Geçmiş adı Türkçe), açıklamalar Türkçe; SRD'nin İngilizce ham metni (`text`, `raw`)
  * hiçbir kartta kullanılmaz. Tembel parça: yalnız `src/screens/Dungeondex.tsx` içe aktarır.
  */
-import { armor, classes, items, monsters, races, spells, spellDescriptions, trAciklama, weapons, classData } from '../data';
+import { armor, classes, items, monsters, races, spells, spellDescriptions, trAciklama, weapons, classData, loadMonsterDescriptions } from '../data';
 import type { Item, Monster, Spell, SubclassDef, Weapon } from '../data';
 import { allFeats } from '../rules/advancement';
 import { backgrounds } from '../rules/backgrounds';
@@ -71,7 +71,7 @@ export async function loadDexExtras(): Promise<Omit<DexExtras, 'mapNames'>> {
     Promise.all(Object.values(EN_FILE).map((l) => l())).then((x) => x[0] ?? {}),
     import('../../data/srd/classes.json'),
   ]);
-  const feats = await import('../../data/canavar-ozellik.json');
+  const [feats] = await Promise.all([import('../../data/canavar-ozellik.json'), loadMonsterDescriptions()]);
   const placeList = places.default as unknown as Array<{ id: string; tema?: string; ortam?: string[] }>;
   return {
     srdMonsters: (srd.default as unknown as { monsters: DexExtras['srdMonsters'] }).monsters,
@@ -210,7 +210,7 @@ export function buildDex(x: DexExtras): Record<DexCat, DexEntry[]> {
         ...(m.darkvision ? [[L.fact.darkvision, L.ft(m.darkvision)] as [string, string]] : []),
         ...(m.attacks?.length ? [[L.fact.attacks, m.attacks.map((a) => a.name).join(', ')] as [string, string]] : []),
       ],
-      // Kuyruk A İş 4: özellik ve eylemler (ad İngilizce, açıklama Türkçe `aciklamalar-tr.json` `canavar`); eksikte "henüz yok".
+      // Kuyruk A İş 4: özellik ve eylemler (ad İngilizce, açıklama Türkçe `aciklamalar-tr-canavar.json`, `loadMonsterDescriptions`); eksikte "henüz yok".
       sections: (x.monsterFeatures[m.id] ?? []).length ? [{ title: L.sec.monsterFeatures, rows: (x.monsterFeatures[m.id] ?? []).map((ft): DexRow => {
         const tr = trAciklama('canavar', ft.anahtar);
         return { name: ft.ad, tag: L.monsterKind[ft.tur] ?? ft.tur, text: tr ? { tr, en: en('canavar', ft.anahtar) } : { ui: L.noDesc } };

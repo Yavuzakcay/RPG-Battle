@@ -5,6 +5,8 @@
  * - Dokunmatik: jeton dışından sürükleme (8 px eşiği; altı dokunma), iki parmakla yakınlaştırma.
  * - Takip: sıra yeni yaratığa geçince kamera ona kayar (ayar; elle kaydırınca o tur durur).
  * - Mini harita (dokununca oraya gider; pencere dikdörtgeni sürüklenir, Görev M2), "Tümünü göster" (salt görüntüleme), ekran dışı olay okları.
+ * - Serüven öncesi (dar ekran): 1 yakınlaştırmada altıgen 44 px'ten darsa (telefon dikey) küçük haritada da kamera açılır ve ilk
+ *   açılışta altıgen ≈56 px olacak kadar yakınlaşır (`narrowZoom`; aktif yaratık ortada). "Tümünü göster" ve － eski görünüme döner.
  */
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import type { BattleState } from '../battle';
@@ -12,10 +14,11 @@ import { TERRAIN_COLOR } from '../map/terrain';
 import type { Offset } from '../rules/hex';
 import { HEX_W, VIEW, gridOf, hexCenter, hexPoints, hexesIn, worldOf } from './mapView';
 import {
-  DRAG_PX, centerOn, clampCamera, dragViewTo, ensureVisible, fitZoom, inView, offscreenDir, panBy, scaleOf, viewSize, zoomAt, zoomLimits,
+  DRAG_PX, centerOn, clampCamera, dragViewTo, ensureVisible, fitZoom, inView, narrowZoom, offscreenDir, panBy, scaleOf, viewSize, zoomAt, zoomLimits,
   type Camera, type Point, type Size,
 } from './camera';
 import { t } from '../i18n';
+import { NARROW_HEX_PX } from './tokenReadability';
 
 const FOLLOW_KEY = 'rpg-battle-kamera-takip';
 const readFollow = (): boolean => { try { return localStorage.getItem(FOLLOW_KEY) !== 'off'; } catch { return true; } };
@@ -47,9 +50,13 @@ const turnKey = (s: BattleState) => `${s.round}:${s.turnIndex}`;
 
 export function useMapCamera(state: BattleState, screen: Size): MapCam {
   const world = worldOf(gridOf(state));
-  const big = world.w > VIEW.w + 0.5 || world.h > VIEW.h + 0.5;
+  // Dar ekranda (telefon dikey) küçük haritada da kamera (yalnız görünüm; `narrowZoom`).
+  const narrow = narrowZoom(screen, HEX_W, NARROW_HEX_PX);
+  const big = world.w > VIEW.w + 0.5 || world.h > VIEW.h + 0.5 || narrow !== null;
   const limits = zoomLimits(screen, HEX_W);
   const [cam0, setCam] = useState<Camera>({ x: 0, y: 0, zoom: 1 });
+  // İlk kez dar bulununca bir kez varsayılan yakınlaştırma (aktif yaratık ortada); sonra kullanıcının seçimi korunur.
+  const narrowDone = useRef(false);
   const [overview, setOverviewState] = useState(false);
   const [follow, setFollowState] = useState(readFollow);
   const manualTurn = useRef<string | null>(null);
@@ -67,6 +74,13 @@ export function useMapCamera(state: BattleState, screen: Size): MapCam {
 
   // Takip: sıra değişince aktif yaratığa kay (elle kaydırılan turda değil).
   const actorPos = state.combatants[state.order[state.turnIndex] ?? '']?.pos;
+  useEffect(() => {
+    if (narrow === null || narrowDone.current) return;
+    narrowDone.current = true;
+    const at = actorPos ? hexCenter(actorPos) : { x: world.w / 2, y: world.h / 2 };
+    setCam((c) => centerOn({ ...c, zoom: Math.max(c.zoom, narrow) }, at, world));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [narrow]);
   useEffect(() => {
     if (!big || !follow || !actorPos || manualTurn.current === turnKey(state)) return;
     setCam((c) => ensureVisible(clampCamera(c, world), [hexCenter(actorPos)], world, 160));
