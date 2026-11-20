@@ -81,5 +81,38 @@
       { "glif": "healing", "tr": ["iyileş"], "en": ["heal"], "onek": true }
     ]
   },
-  "kesim": {}
+  "kesim": {
+    "abjuration": {"sayfa": 1, "hucre": 1, "kutu": [46,46,469,467]},
+    "conjuration": {"sayfa": 1, "hucre": 2, "kutu": [557,46,979,467]},
+    "divination": {"sayfa": 1, "hucre": 3, "kutu": [1068,46,1490,467]},
+    "enchantment": {"sayfa": 1, "hucre": 4, "kutu": [1579,46,2001,467]},
+    "evocation": {"sayfa": 1, "hucre": 5, "kutu": [47,557,467,977]},
+    "illusion": {"sayfa": 1, "hucre": 6, "kutu": [558,557,978,977]},
+    "necromancy": {"sayfa": 1, "hucre": 7, "kutu": [1069,557,1489,977]},
+    "transmutation": {"sayfa": 1, "hucre": 8, "kutu": [1580,557,2000,977]},
+    "action": {"sayfa": 1, "hucre": 9, "kutu": [47,1070,467,1489]},
+    "bonus-action": {"sayfa": 1, "hucre": 10, "kutu": [558,1070,978,1489]},
+    "reaction": {"sayfa": 1, "hucre": 11, "kutu": [1070,1070,1489,1489]},
+    "passive": {"sayfa": 1, "hucre": 12, "kutu": [1580,1070,1999,1489]},
+    "concentration": {"sayfa": 1, "hucre": 13, "kutu": [47,1582,466,2001]},
+    "ritual": {"sayfa": 1, "hucre": 14, "kutu": [558,1582,977,2001]},
+    "attunement": {"sayfa": 1, "hucre": 15, "kutu": [1070,1582,1489,2001]},
+    "cursed": {"sayfa": 1, "hucre": 16, "kutu": [1580,1582,2000,2001]},
+    "acid": {"sayfa": 2, "hucre": 1, "kutu": [46,46,468,467]},
+    "bludgeoning": {"sayfa": 2, "hucre": 2, "kutu": [557,46,979,467]},
+    "cold": {"sayfa": 2, "hucre": 3, "kutu": [1068,46,1490,467]},
+    "fire": {"sayfa": 2, "hucre": 4, "kutu": [1579,46,2000,467]},
+    "force": {"sayfa": 2, "hucre": 5, "kutu": [47,557,467,977]},
+    "lightning": {"sayfa": 2, "hucre": 6, "kutu": [558,557,978,977]},
+    "necrotic": {"sayfa": 2, "hucre": 7, "kutu": [1069,557,1489,977]},
+    "piercing": {"sayfa": 2, "hucre": 8, "kutu": [1580,557,2000,977]},
+    "poison": {"sayfa": 2, "hucre": 9, "kutu": [47,1070,467,1489]},
+    "psychic": {"sayfa": 2, "hucre": 10, "kutu": [558,1070,977,1489]},
+    "radiant": {"sayfa": 2, "hucre": 11, "kutu": [1070,1070,1489,1489]},
+    "slashing": {"sayfa": 2, "hucre": 12, "kutu": [1580,1070,1999,1489]},
+    "thunder": {"sayfa": 2, "hucre": 13, "kutu": [47,1582,466,2001]},
+    "healing": {"sayfa": 2, "hucre": 14, "kutu": [558,1582,977,2001]},
+    "temporary-hp": {"sayfa": 2, "hucre": 15, "kutu": [1070,1582,1489,2001]},
+    "saving-throw": {"sayfa": 2, "hucre": 16, "kutu": [1581,1582,2000,2001]}
+  }
 }
