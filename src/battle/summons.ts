@@ -7,6 +7,7 @@
  * oyuncusu yönetir (düşman tarafında Game Master). Kaybolma `summonCleanup` ile her komuttan sonra olay olarak yazılır:
  * 0 HP, konsantrasyonun bitmesi, sahibin ölümü (at), süre; aynı büyü yeniden yapılınca önceki yaratık gider.
  */
+import { b94On } from './b94Surum';
 import { ws92On } from './ws92Surum';
 import { charmedAgainst } from './range';
 import { matrisOn } from './matrisSurum';
@@ -289,7 +290,9 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
   if (def.setup && state.status !== 'setup' && !companion) return fail(`${spell.name} savaştan önce (kurulumda) yapılır.`);
   if (!def.setup && state.status !== 'active') return fail('Savaş henüz başlamadı.');
   if (state.map && !actor.pos) return fail('Önce çağıranı yerleştir.');
-  const choice = cmd.choice ?? def.choice?.options[0];
+  // Görev B94 (sürüm 94+, SRD 5.2.1 s. 43 Wild Companion "the familiar is Fey"): Wild Companion yolunda tür Fey.
+  const wildFey = companion && b94On(state) && (state.status === 'active' || !!actor.traits?.includes('wild-companion-only')) && !!def.choice?.options.includes('fey');
+  const choice = wildFey ? 'fey' : cmd.choice ?? def.choice?.options[0];
   if (def.choice && choice && !def.choice.options.includes(choice)) return fail(`Geçersiz seçim: ${choice}.`);
   // Mekanik matris B22 (sürüm 83): yapımda Clenched Fist büyüleyene yöneltilemez (SRD Charmed "You can't attack the charmer").
   const fistAt = def.handK19 && cmd.choice === 'fist' && cmd.targetId ? state.combatants[cmd.targetId] : undefined;

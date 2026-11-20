@@ -10,6 +10,7 @@
  * - Hücum ("20+ ft düz koşup vurursa"): turdaki son düz koşu (`run`) en az o kadar ve hedef koşu
  *   yönünde bitişikse tutar.
  */
+import { cuttingWordsCheck } from './reactions';
 import { formMonsterId } from './shapeMonsterCore';
 import { ws92On } from './ws92Surum';
 import { adjacent3D, k73bOn } from './adjacency';
@@ -76,9 +77,12 @@ export function executeEscapeGrapple(state: BattleState, actor: Combatant, rng: 
   // Avantaj ile dezavantaj birbirini götürür (SRD).
   const mode: RollMode = !pb ? mode0 : mode0 === 'disadvantage' ? 'normal' : 'advantage';
   const d = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus: Math.max(ath, acr) }));
-  const { total, extra } = finishCheck(actor, skill, d.kept, Math.max(ath, acr), g.escapeDc, mode, rng);
+  const { total: total0, extra } = finishCheck(actor, skill, d.kept, Math.max(ath, acr), g.escapeDc, mode, rng);
+  // Görev B94 (sürüm 94+): Cutting Words başarılı kontrolü çevirebilir.
+  const cw = cuttingWordsCheck(state, actor, total0, g.escapeDc, 'Grapple', rng);
+  const total = cw.total;
   const success = total >= g.escapeDc;
-  const events: BattleEvent[] = [{ type: 'grapple_escape', actorId: actor.id, skill, d20: d.rolls, total, dc: g.escapeDc, success, ...(extra.length ? { bonusDice: extra } : {}) }];
+  const events: BattleEvent[] = [...cw.events, { type: 'grapple_escape', actorId: actor.id, skill, d20: d.rolls, total, dc: g.escapeDc, success, ...(extra.length ? { bonusDice: extra } : {}) }];
   if (success) events.push({ type: 'grapple_ended', targetId: actor.id, reason: 'kaçtı' });
   return finish(state, events);
 }

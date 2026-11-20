@@ -2,7 +2,7 @@
  * Karakterin savaşlar arası durumu ve dinlenme (Görev N): kalan HP, harcanan HP zarı (Hit Point Dice), sınıf
  * kaynakları ve büyü slotları. Savaş bitince kaydedilir; bir sonraki savaş bu durumla başlar. Kısa dinlenme HP zarı
  * harcatır ve kısa dinlenmede yenilenen kaynakları (Second Wind'den biri, Action Surge, Warlock slotları…) doldurur;
- * uzun dinlenme her şeyi doldurur, harcanan HP zarlarının yarısını geri verir (SRD 5.2.1 "Resting").
+ * uzun dinlenme her şeyi doldurur, harcanan HP zarlarının tamamını geri verir (SRD 5.2.1 s. 185 Long Rest; GENEL-SAVAS-DENETIM G5).
  * Saf fonksiyonlar; zar `rng` ile.
  */
 import { gainedFeatures } from './classFeatures';
@@ -10,7 +10,7 @@ import { lineageOf } from './lineage';
 import { featResources } from './backgrounds';
 import { getClass } from '../data';
 import type { Rng } from './dice';
-import { classResources, depotStart, rechargeResources } from './classFeatures';
+import { classResources, depotStart, rechargeResources, resourceDef } from './classFeatures';
 import { longRest, shortRest, type RestState } from './rest';
 import { MAX_EXHAUSTION, exhaustionAfterLongRest } from './exhaustion';
 import { deriveStats, type CharacterSheet } from './stats';
@@ -83,8 +83,9 @@ export function currentStatus(sheet: CharacterSheet, status?: CharacterStatus): 
     hp,
     hitDiceSpent: Math.min(sheet.level, Math.max(0, status.hitDiceSpent)),
     resources,
-    slots: full.slots.map((n, i) => (status.slotMax
-      ? Math.max(0, n - Math.max(0, (status.slotMax[i] ?? 0) - (status.slots[i] ?? 0)))
+    slots: pactShift(full.slots, status) ?? full.slots.map((n, i) => (status.slotMax
+      // Görev B93: tablonun üstündeki yaratılmış slot (Font of Magic) uzun dinlenmeye dek kalır.
+      ? Math.max(0, n - Math.max(0, (status.slotMax[i] ?? 0) - (status.slots[i] ?? 0))) + Math.max(0, (status.slots[i] ?? 0) - (status.slotMax[i] ?? 0))
       : Math.min(n, Math.max(0, status.slots[i] ?? n)))),
     slotMax: full.slots,
     resourceMax: { ...(full.resourceMax ?? full.resources) },
@@ -116,7 +117,8 @@ export interface RestResult { status: CharacterStatus; rolls: number[]; healed: 
 export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus | undefined, dice: number, rng: Rng,
   /** Görev B93: slot kurtarma seçimi (kaynak → slot seviyeleri; null: kullanma; yoksa otomatik, en yüksekten). */ recover?: Record<string, number[] | null>): RestResult {
   const s = currentStatus(sheet, status);
-  if (s.dead) return { status: s, rolls: [], healed: 0 };
+  // GENEL-SAVAS-DENETIM G1 (SRD 5.2.1 s. 187): kısa dinlenmeye başlamak için en az 1 HP; 0 HP'de hiçbir kazanç yok.
+  if (s.dead || s.hp < 1) return { status: s, rolls: [], healed: 0 };
   const r0 = shortRest(restState(sheet, s), dice, rng);
   // Görev WIZARD: Arcane Recovery (kaynak `arcaneRecovery`, uzun dinlenmede bir kez): toplamı seviyenin yarısını (yukarı)
   // aşmayan, 6. seviyenin altındaki slotlar en yüksekten başlayarak. Görev B93: oyuncu seçer ya da ertelerse kullanılmaz.
@@ -147,7 +149,7 @@ function tirelessAfter(sheet: CharacterSheet, exhaustion: number | undefined): n
 
 /**
  * Görev WARLOCK: Magical Cunning (kaynak `magicalCunning`, uzun dinlenmede bir kez; savaş dışı 1 dakikalık ayin):
- * harcanmış Pact slotlarının yarısı (yukarı) geri gelir. Kullanılamıyorsa null.
+ * harcanmış Pact slotlarından en çok azami slot sayısının yarısı (yukarı) kadarı geri gelir. Kullanılamıyorsa null.
  */
 export function magicalCunningStatus(sheet: CharacterSheet, status: CharacterStatus | undefined): CharacterStatus | null {
   const s = currentStatus(sheet, status);
@@ -159,7 +161,9 @@ export function magicalCunningStatus(sheet: CharacterSheet, status: CharacterSta
   const slots = [...s.slots];
   // Kuyruk 19 (11–20): Eldritch Master (Warlock 20): Magical Cunning bütün harcanmış Pact slotlarını geri verir.
   const master = gainedFeatures(sheet.classId, sheet.level, sheet.subclassId).some((f) => f.key === 'warlock:eldritch-master');
-  slots[i] = (slots[i] ?? 0) + (master ? spent : Math.ceil(spent / 2));
+  // Görev B93 (SRD 5.2.1 s. 72): "expended Pact Magic spell slots … equal to no more than half your maximum (round up)":
+  // harcananların en çok azami slotun yarısı (yukarı) kadarı (eskiden harcananın yarısı).
+  slots[i] = (slots[i] ?? 0) + (master ? spent : Math.min(spent, Math.ceil((max[i] ?? 0) / 2)));
   return { ...s, slots, resources: { ...s.resources, magicalCunning: 0 } };
 }
 
@@ -196,7 +200,7 @@ export function arcaneRecovery(sheet: CharacterSheet, resources: Record<string, 
   return { slots: used ? out : slots, used };
 }
 
-/** Uzun dinlenme: HP, slotlar ve bütün kaynaklar dolar; harcanan HP zarlarının yarısı (en az 1) geri gelir. */
+/** Uzun dinlenme: HP, slotlar ve bütün kaynaklar dolar; harcanan HP zarlarının tamamı geri gelir (SRD 5.2.1 s. 185). */
 export function longRestStatus(sheet: CharacterSheet, status: CharacterStatus | undefined): CharacterStatus {
   const s = currentStatus(sheet, status);
   if (s.dead) return s;
@@ -281,4 +285,38 @@ export function recoveryOptions(sheet: CharacterSheet, status: CharacterStatus |
   };
   walk(5, Math.ceil(sheet.level / 2), [], missing);
   return out;
+}
+
+/**
+ * Görev B93 (Warlock C9): tek seviyeli slot düzeninde (Pact Magic) seviye atlayınca slot seviyesi değişirse harcanan sayısı
+ * yeni seviyeye taşınır (eskiden eski indekste harcanan, yeni indekste dolu sayılıyordu). Durum bu düzende değilse null.
+ */
+function pactShift(full: number[], status: CharacterStatus): number[] | null {
+  if (!status.slotMax) return null;
+  const nz = (a: number[]) => a.map((n, i) => (n > 0 ? i : -1)).filter((i) => i >= 0);
+  const now = nz(full);
+  const before = nz(status.slotMax);
+  if (now.length !== 1 || before.length !== 1 || now[0] === before[0]) return null;
+  const spent = Math.max(0, (status.slotMax[before[0]!] ?? 0) - (status.slots[before[0]!] ?? 0));
+  return full.map((n, i) => (i === now[0] ? Math.max(0, n - spent) : n));
+}
+
+/**
+ * Görev B93 (SRD 5.2.1 s. 66 Font of Magic, savaş dışı): slot → Sorcery Point (slot seviyesi kadar, tavanı aşmaz) ya da
+ * Sorcery Point → slot (bedel ve en düşük seviye veriden; yaratılan slot uzun dinlenmede kaybolur). Kullanılamıyorsa null.
+ */
+export function fontOfMagicStatus(sheet: CharacterSheet, status: CharacterStatus | undefined, mode: 'toPoints' | 'toSlot', level: number): CharacterStatus | null {
+  const s = currentStatus(sheet, status);
+  const points = s.resources.sorceryPoints;
+  if (s.dead || points === undefined) return null;
+  const max = (fullStatus(sheet).resourceMax ?? fullStatus(sheet).resources).sorceryPoints ?? 0;
+  if (mode === 'toPoints') {
+    if ((s.slots[level - 1] ?? 0) <= 0 || points >= max) return null;
+    const slots = [...s.slots]; slots[level - 1] = (slots[level - 1] ?? 0) - 1;
+    return { ...s, slots, resources: { ...s.resources, sorceryPoints: Math.min(max, points + level) } };
+  }
+  const row = resourceDef('sorceryPoints')?.slotCost?.[String(level)];
+  if (!row || sheet.level < row[1] || points < row[0]) return null;
+  const slots = [...s.slots]; slots[level - 1] = (slots[level - 1] ?? 0) + 1;
+  return { ...s, slots, resources: { ...s.resources, sorceryPoints: points - row[0] } };
 }

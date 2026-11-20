@@ -39,10 +39,12 @@ export function InvocationPicker(props: { classId: string; level: number; invoca
         const on = mine.length > 0;
         const blocked = !!v.requires && !ids.includes(v.requires);
         const cantrips = v.repeatable && v.repeatable !== 'feat' ? eligibleCantrips(v, props.known) : [];
-        const info = `${describeTr('invocation', v.id) ?? v.note ?? ''}${v.gmNote ? ` — ${T.invocationOffCombat}: ${v.gmNote}` : ''}${v.status === 'none' ? ` (${T.invocationNone})` : ''}`;
+        // Görev B93: ⓘ yalnız Türkçe açıklama (EN arayüzde SD4 notu); geliştirici notu (`note`) gösterilmez.
+        const info = `${describeTr('invocation', v.id) ?? ''}${v.gmNote ? ` — ${T.invocationOffCombat}: ${v.gmNote}` : ''}${v.status === 'none' ? ` (${T.invocationNone})` : ''}`;
         return (
           <span key={v.id} className="invocation">
             <button type="button" className={on ? 'on' : ''} aria-pressed={on} disabled={!on && (full || blocked || (!!v.repeatable && v.repeatable !== 'feat' && cantrips.length === 0))}
+              title={!on && blocked ? T.invocationNeeds(slots.list.find((x) => x.id === v.requires)?.name ?? v.requires ?? '') : undefined}
               onClick={() => props.onInvocations(on ? chosen.filter((x) => parseInvocation(x)[0] !== v.id) : [...chosen, cantrips[0] ? `${v.id}:${cantrips[0]}` : v.repeatable === 'feat' ? `${v.id}:alert` : v.id])}>
               {v.name} <small>{v.minLevel}+</small> <InfoTip text={info} /></button>
             {on && v.repeatable === 'feat' && mine.map((m, k) => (
@@ -67,11 +69,16 @@ export function InvocationPicker(props: { classId: string; level: number; invoca
             {on && v.repeatable === 'feat' && !full && (
               <button type="button" onClick={() => props.onInvocations([...chosen, `${v.id}:skilled`])}>+</button>
             )}
-            {on && cantrips.length > 1 && (
-              <select aria-label={v.name} value={parseInvocation(mine[0] as string)[1] ?? ''}
-                onChange={(e: { target: { value: string } }) => props.onInvocations(chosen.map((x) => (x === mine[0] ? `${v.id}:${e.target.value}` : x)))}>
+            {on && cantrips.length > 1 && mine.map((m, k) => (
+              // Görev B93: tekrarlanabilen Invocation'ın her alımı ayrı cantrip'e.
+              <select key={`c${k}`} aria-label={v.name} value={parseInvocation(m)[1] ?? ''}
+                onChange={(e: { target: { value: string } }) => props.onInvocations(chosen.map((x, i) => (x === m && chosen.indexOf(m) === i ? `${v.id}:${e.target.value}` : x)))}>
                 {cantrips.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
+            ))}
+            {on && !!v.repeatable && v.repeatable !== 'feat' && !full && cantrips.some((c) => !mine.some((m) => parseInvocation(m)[1] === c)) && (
+              <button type="button" aria-label={`${v.name} +`}
+                onClick={() => props.onInvocations([...chosen, `${v.id}:${cantrips.find((c) => !mine.some((m) => parseInvocation(m)[1] === c))}`])}>+</button>
             )}
           </span>
         );
