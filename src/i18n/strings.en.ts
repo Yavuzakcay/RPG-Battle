@@ -1044,6 +1044,8 @@ export const en: Strings = {
     grappleEscape: (a: string, skill: string, d20: string, total: number, dc: number, ok: boolean) => `${a} tried to escape: ${skill} roll ${d20}, total ${total} / DC ${dc}: ${ok ? 'escaped' : 'failed'}.`,
   },
   alarm: {
+    groupNames: { devriye: 'Patrol', iskeleNobeti: 'Pier watch', kogus: 'Cell block', kule: 'Tower', mudur: 'Warden', nobet: 'Watch' } as Record<string, string>,
+    groupFallback: 'group',
     state: { asleep: 'asleep', calm: 'unaware', alarmed: 'alarmed' },
     formed: (parts: string) => `Groups: ${parts}.`,
     alarmed: (group: string, reason: string) => `Alarm! Group ${group} wakes up (${reason}); initiative at disadvantage.`,
@@ -1313,6 +1315,8 @@ export const en: Strings = {
       climb: (ft: number): string => `Climb (${ft} ft down a fissure)`, climbHint: 'Tap the adjacent hex to climb out to', inFissure: (ft: number): string => `In a fissure (${ft} ft)`,
       structures: (n: number, names: string): string => `Structures: ${n} will collapse (${names})`, structuresSafe: (n: number): string => `Structures: ${n} take damage, none collapse`,
       collapseHits: (foes: number, friends: number): string => `Collapse: ${foes} foes · ${friends} allies`, buried: 'Buried in rubble (Escape: DC 20 Athletics)', escapeRubble: 'Dig out of rubble' },
+    held: { spider: 'Spider Form', unknown: 'item', feature: 'feature' },
+    sheet: { actions: 'Actions', open: 'Open the action sheet', close: 'Close the action sheet', label: 'Action sheet' },
     s2: { altitude: (ft: number): string => `Altitude ${ft} ft`, up: '▲ 5 ft', down: '▼ 5 ft', drop: (item: string): string => `Drop ${item}`, pick: (item: string): string => `Pick up ${item}` },
     k68: { ceiling: (ft: number): string => `ceiling ${ft} ft`, cap: (ft: number): string => `max ${ft} ft`, climbUp: '▲ Climb 5 ft', climbDown: '▼ Climb down 5 ft',
       climbing: (ft: number, ceiling: boolean): string => (ceiling ? `On the ceiling (${ft} ft)` : `On the wall (${ft} ft)`),

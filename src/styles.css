@@ -1625,3 +1625,75 @@ input[type="range"]:disabled { accent-color: var(--off); }
 
 /* Kuyruk KQ6-4: zemin efekt katmanı (su deseni, yüzey yamaları) altıgen tıklamasını yutmaz; Mielikki Gölü gibi su altıgenlerine dokunma çalışsın. */
 .fx-ground, .fx-ground * { pointer-events: none; }
+
+/* Görev D: telefon dikey savaş yerleşimi (yalnız `.mb-screen.portrait`; yatay ve masaüstü değişmez). Üstte ince sıra
+   şeridi (+ seçenekler), ortada harita (kamera kaydırır), altta iki konumlu çekmece: kapalıyken yalnız çubuk (≥ 44 px),
+   açıkken eylemler, balonlar, ipucu, tepki ve zar sorusu. HUD parçaları portal ile taşınır; satır içi konumları geçersiz. */
+.mb-screen.portrait { flex-direction: column; align-items: stretch; justify-content: flex-start;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) 0 env(safe-area-inset-left, 0px); box-sizing: border-box; }
+.mb-screen.portrait .portrait-hint { display: none; }
+.pt-top { flex: none; height: 48px; display: flex; align-items: center; gap: 4px; padding: 0 6px; position: relative; z-index: 12; color: #fff;
+  background: rgba(15, 20, 26, 0.92); border-bottom: 1px solid rgba(255, 255, 255, 0.12); box-sizing: border-box; }
+.pt-top .turn-strip { position: static; transform: none; flex: 1 1 auto; min-width: 0; max-width: none; background: transparent; padding: 0; order: 1; }
+.pt-top .strip-item, .pt-top .strip-more { min-width: 40px; min-height: 44px; }
+.pt-top .strip-more { background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 22px; }
+.pt-top .hud-corner.tl { position: static; order: 2; flex: none; }
+.pt-top .hud-corner.tl > .hud-btn { min-width: 44px; min-height: 44px; }
+.pt-top .hud-corner.tl .hud-pop { position: absolute; top: 100%; right: 4px; left: auto; max-height: min(70vh, 560px); max-width: calc(100vw - 16px);
+  overflow-y: auto; overscroll-behavior: contain; z-index: 20; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6); }
+.pt-top .hud-pop button { min-height: 44px; }
+.pt-map { flex: 1 1 auto; min-height: 0; position: relative; overflow: hidden; }
+.pt-map > .mb-stage { position: absolute; left: 0; top: 0; }
+.mb-screen.portrait .hud-corner.tr { top: 6px; right: 6px; max-width: calc(100% - 64px); }
+.mb-screen.portrait .cam-controls { top: 8px; transform: none; }
+.mb-screen.portrait .minimap { right: 6px; bottom: 6px; }
+.mb-screen.portrait .objective { top: 56px; }
+.pt-sheet { flex: none; position: relative; z-index: 11; display: flex; flex-direction: column; color: #fff; box-sizing: border-box;
+  padding-bottom: env(safe-area-inset-bottom, 0px); background: rgba(15, 20, 26, 0.97); border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px 14px 0 0; box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.5); font-size: 14px; }
+.pt-bar { flex: none; height: 52px; display: flex; align-items: center; gap: 6px; padding: 0 8px; box-sizing: border-box; touch-action: none; }
+.pt-handle { flex: 1 1 auto; min-width: 0; min-height: 44px; display: flex; align-items: center; gap: 8px; padding: 0 6px; background: transparent;
+  color: #fff; border: none; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; }
+.pt-grip { flex: none; width: 28px; height: 5px; border-radius: 3px; background: rgba(255, 255, 255, 0.45); }
+.pt-label { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pt-sheet:not(.open) .pt-bar .pt-label { font-weight: 500; }
+.pt-caret { flex: none; color: #ffd400; }
+.pt-bar .pt-go { flex: none; min-height: 44px; min-width: 64px; padding: 0 16px; border-radius: 22px; background: #c0392b; color: #fff; border: none; font-weight: 700; }
+.pt-bar .pt-go:disabled { background: #555; color: rgba(255, 255, 255, 0.6); }
+.pt-bar .pt-cancel { flex: none; min-width: 44px; min-height: 44px; border-radius: 22px; background: rgba(255, 255, 255, 0.08); color: #fff; border: 1px solid rgba(255, 255, 255, 0.35); }
+.pt-bar-slot { display: flex; gap: 6px; flex: none; }
+.pt-bar-slot:empty { display: none; }
+.pt-bar-slot .hud-btn, .pt-bar-slot .hud-cta { position: static; transform: none; min-height: 44px; white-space: nowrap; }
+.pt-peek { position: absolute; left: 0; right: 0; bottom: calc(100% + 6px); display: flex; justify-content: center; pointer-events: none; }
+.pt-peek .dice-tray { position: static; transform: none; }
+.pt-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+  display: flex; flex-direction: column; gap: 8px; padding: 2px 10px 10px; box-sizing: border-box; }
+.pt-sheet:not(.open) .pt-body { visibility: hidden; }
+.pt-body button { min-height: 44px; }
+.pt-body > .dice-prompt-backdrop { order: 0; }
+.pt-body > .hud-hint { order: 1; }
+.pt-body > .bubble { order: 2; }
+.pt-body > .pt-actions { order: 3; }
+.pt-body > .radial-tip { order: 4; }
+.pt-body > .economy { order: 5; }
+.pt-body > .air-panel { order: 6; }
+.pt-body .hud-hint { position: static; transform: none; white-space: normal; flex-wrap: wrap; border-radius: 12px; padding: 6px 10px; gap: 6px;
+  background: rgba(255, 255, 255, 0.06); }
+.pt-body .bubble { position: static !important; left: auto !important; top: auto !important; width: auto !important; max-height: none !important;
+  z-index: auto; flex: none; box-shadow: none; overflow: visible; }
+.pt-body .bubble .slot-picker button { min-height: 44px; }
+.pt-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.pt-actions:empty { display: none; }
+.pt-actions .radial-btn { position: static !important; width: auto !important; height: auto !important; min-height: 52px; border-radius: 14px;
+  font-size: 14px; padding: 4px 6px; box-shadow: none; }
+.pt-body .radial-tip { position: static !important; transform: none; max-width: none; left: auto !important; top: auto !important; }
+.pt-body .economy { position: static; transform: none; align-self: flex-start; flex-wrap: wrap; white-space: normal; pointer-events: auto; font-size: 12px; max-width: 100%; }
+.pt-body .economy-extra:empty { display: none; }
+.pt-body .economy-extra .hud-btn.small { min-height: 44px; margin-left: 0; padding: 0 10px; }
+.pt-body .economy span.climb-note, .pt-body .economy-extra span.climb-note { position: static; transform: none; width: auto; }
+.pt-body .air-panel { position: static; transform: none; max-width: none; flex-direction: row; flex-wrap: wrap; align-items: center; }
+.pt-body .air-panel .air-levels { max-height: 132px; }
+.pt-body .dice-prompt-backdrop { position: static; inset: auto; display: block; background: none; padding: 0; z-index: auto; }
+.pt-body .dice-prompt { max-width: none; box-shadow: none; }
+.mb-screen.portrait .hud-corner.tr.info-box { left: 6px; right: 56px; max-width: none; }
+.pt-body .economy-extra { justify-content: flex-start; }

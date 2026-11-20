@@ -2,6 +2,7 @@
  * Görev S4: Game Master grup paneli (kurulum): haritanın uyuyan/habersiz grup alanları, her grubun durumu ve haber
  * gidecek komşuları. Ayrı bileşen: GM Atölyesi aynı paneli kullanacak.
  */
+import { groupName } from '../heldItemName';
 import type { GroupState } from '../../battle/types';
 import { t } from '../../i18n';
 
@@ -23,15 +24,15 @@ export function GroupsPanel(props: {
       <p className="mute">{A.gm.note}</p>
       {props.groups.map((g) => (
         <div key={g.id} className="row wrap group-row">
-          <strong>{g.id}</strong> <span className="mute">({g.hexes.length})</span>
-          <select value={stateOf(g)} onChange={(e) => set(g.id, { state: e.target.value as GroupState })} aria-label={g.id}>
+          <strong>{groupName(g.id)}</strong> <span className="mute">({g.hexes.length})</span>
+          <select value={stateOf(g)} onChange={(e) => set(g.id, { state: e.target.value as GroupState })} aria-label={groupName(g.id)}>
             {STATES.map((s) => <option key={s} value={s}>{A.state[s]}</option>)}
           </select>
           <span className="mute">{A.gm.links}:</span>
           {props.groups.filter((o) => o.id !== g.id).map((o) => (
             <label key={o.id}>
               <input type="checkbox" checked={linksOf(g).includes(o.id)}
-                onChange={(e) => set(g.id, { links: e.target.checked ? [...linksOf(g), o.id] : linksOf(g).filter((x) => x !== o.id) })} /> {o.id}
+                onChange={(e) => set(g.id, { links: e.target.checked ? [...linksOf(g), o.id] : linksOf(g).filter((x) => x !== o.id) })} /> {groupName(o.id)}
             </label>
           ))}
         </div>

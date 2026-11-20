@@ -587,6 +587,10 @@ export const TR_EXTRA = {
       // Kuyruk K66b: yapı hasarı ve çöküş.
       structures: (n: number, names: string): string => `Yapılar: ${n} çökecek (${names})`, structuresSafe: (n: number): string => `Yapılar: ${n} hasar alır, çökmez`,
       collapseHits: (foes: number, friends: number): string => `Çöküş: ${foes} düşman · ${friends} dost`, buried: 'Enkaz altında (Kurtul: DC 20 Athletics)', escapeRubble: 'Enkazdan kurtul' },
+    /** Görev D: elde/yerdeki eşyanın okunur adı yoksa (ham kimlik gösterilmez). */
+    held: { spider: 'Örümcek Biçimi', unknown: 'eşya', feature: 'özellik' },
+    /** Görev D: telefon dikey yerleşimi, alt çekmece. */
+    sheet: { actions: 'Eylemler', open: 'Eylem çekmecesini aç', close: 'Eylem çekmecesini kapat', label: 'Eylem çekmecesi' },
     s2: { altitude: (ft: number): string => `İrtifa ${ft} ft`, up: '▲ 5 ft', down: '▼ 5 ft', drop: (item: string): string => `${item} bırak`, pick: (item: string): string => `${item} al` },
     // Kuyruk K68b: tavan, tırmanma (Spider Climb), yerinde yüksek zıplama (Jump), Call Lightning bulutu.
     k68: { ceiling: (ft: number): string => `tavan ${ft} ft`, cap: (ft: number): string => `en çok ${ft} ft`, climbUp: '▲ Tırman 5 ft', climbDown: '▼ İn 5 ft',
