@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Efekt kaydı gidiş-dönüşü: deprem yarığının `alfa`/`ton` alanları kesim tablosuna (2026-11-20; yalnız veri/betik, görsel ve kural sürümü değişmedi)
+
+- **Sorun:** `data/efekt-e2.json` `efekt-zemin-deprem-yarigi` kaydındaki `alfa: 0.64` ve `ton: ["#28120e", "#802c16"]` elle eklenmişti. `npm run sprite-ice -- --efekt` dosyayı kesim tablosundan baştan yazdığı için bu alanlar tam kesimde kayboluyordu. Uygulama bu iki alanı okumuyor; çatlak dokusunun tepe alfası ve koyu/parlak tonu, `catlak` ile aynı değerler.
+- **Yapılan:** iki alan `data/efekt-kesim.json` `efekt-eksik` sayfasına ad → değer alanı olarak eklendi (`alfa`, `ton`). Betik bunları kayda yazıyor: `scripts/efekt-sayfa.mjs` `effectRecord` (kayıt üretimi), `e2Text` (dosya metni). Saf işlevler; `importEffects` ve test aynısını kullanır. Alan sırası dosyadakiyle aynı (`sabit` → `alfa` → `ton` → `yol`).
+- **Karşılaştırma:** `efekt-e2.json`'ın 94 kaydı ve `sprite-esleme.json` `efektler` kayıtları kesim tablosundan yeniden üretildi; görselden gelen değerler (kare, en, boy) kaydın kendisinden alındı. Başka elle eklenmiş alan ya da tabloyla çelişen değer yok; tek fark `alfa`/`ton` idi. Kesim tablosundan bu iki alan çıkarılınca test farkı yakalıyor.
+- **Test:** `scripts/efekt-sayfa.test.mjs` "kesim → kayıt gidiş-dönüşü". Her kayıt alan ve sırayla eşit, `e2Text` çıktısı `efekt-e2.json` metniyle bayt bayt aynı (tam kesimden sonra `git diff` boş beklenir).
+- **Çalıştırılmadı:** `npm run sprite-ice -- --efekt`. Bulut oturumunda `assets-ham/efekt/` yok (depo dışı); yerelde çalıştırılacak. Eşdeğeri bayt bayt metin testiyle sınandı.
+
 ## Control Water girdap efekt sayfası (2026-11-20; yalnız görsel, kural sürümü 91 ve kayıt sürümü değişmedi)
 
 - **Ön durum:** SU2 (Earthquake şeffaf çatlak, `46423da2`/`b659f685`) ve SU3 (`su` `haric`/`ekle`, `b9e79022`/`b3cd2894`) birleşmiş, bu dalda.
