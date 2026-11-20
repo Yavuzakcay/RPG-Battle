@@ -4,7 +4,7 @@
  * İngilizce SRD ham metni kalmaz; İngilizce arayüzde Türkçe metin yerine "yalnız Türkçe" notu çıkar.
  */
 import { describe, expect, it } from 'vitest';
-import { items, spells, classData, trAciklama } from './index';
+import { items, spells, classData, trAciklama, enDescriptions } from './index';
 import { looksEnglish } from './aciklamaDil';
 import { itemSummary } from '../ui/equipmentText';
 import { describeTr } from '../ui/trDesc';
@@ -47,15 +47,19 @@ describe('SD4 Türkçe açıklamalar', () => {
     const bad = items.filter((i) => looksEnglish(itemSummary(i))).map((i) => i.id);
     expect(bad).toEqual([]);
   });
-  it('İngilizce arayüzde Türkçe açıklama yerine kısa "yalnız Türkçe" notu; Türkçede açıklama', () => {
+  // Görev EN-ACIKLAMA: İngilizce arayüz artık data/aciklamalar-en.json'daki İngilizce açıklamayı gösterir; "yalnız Türkçe"
+  // notu yalnız EN karşılığı olmayan kayıtta (geriye uyum) kalır.
+  it('İngilizce arayüzde İngilizce açıklama, EN karşılığı yoksa "yalnız Türkçe" notu; Türkçede açıklama', () => {
     expect(trAciklama('buyu', 'fireball')).toMatch(/8d6/);
     setLang('tr');
     expect(describeTr('buyu', 'fireball')).toMatch(/8d6/);
     setLang('en');
+    const saved = enDescriptions.buyu.fireball;
     try {
+      expect(describeTr('buyu', 'fireball')).toMatch(/8d6 Fire damage/);
+      delete enDescriptions.buyu.fireball;
       expect(describeTr('buyu', 'fireball')).toBe(t().common.descTrOnly);
-      expect(describeTr('buyu', 'fireball')).not.toMatch(/8d6/);
       expect(describeTr('buyu', 'yok-boyle-buyu')).toBeUndefined();
-    } finally { setLang('tr'); }
+    } finally { enDescriptions.buyu.fireball = saved!; setLang('tr'); }
   });
 });

@@ -13,12 +13,13 @@ vi.mock('../../../data/glif-esleme.json', async (orig) => {
 
 const { DamageChip, GlyphBadges, GlyphText } = await import('./Glyph');
 const { saveGlyphs } = await import('../glyphSetting');
+const { setLang } = await import('../../i18n');
 
 const imgs = (html: string) => [...html.matchAll(/<img [^>]*>/g)].map((m) => m[0]);
 const attr = (tag: string, a: string) => new RegExp(`${a}="([^"]*)"`).exec(tag)?.[1];
 const textOf = (html: string) => html.replace(/<[^>]+>/g, '').replace(/&#x27;/g, "'").replace(/&amp;/g, '&');
 
-afterEach(() => saveGlyphs(true));
+afterEach(async () => { saveGlyphs(true); await setLang('tr'); });
 
 describe('GlyphText', () => {
   it('hasar türünün ve kurtarma zarının önüne 16 px simge; aria-hidden, alt boş; metin aynen', () => {
@@ -42,6 +43,14 @@ describe('GlyphText', () => {
     const html = renderToStaticMarkup(<div><GlyphBadges list={['evocation']} /><GlyphText text="ateş hasarı" /><DamageChip type="fire" label="ateş" /></div>);
     expect(imgs(html)).toHaveLength(0);
     expect(textOf(html)).toBe('ateş hasarı');
+  });
+
+  it('İngilizce arayüzde metin içi simge yok (açıklama SRD ham metni); başlık rozeti ve çip var', async () => {
+    await setLang('en');
+    const text = 'Each creature must succeed on a Dexterity saving throw or take 8d6 Fire damage.';
+    const html = renderToStaticMarkup(<div><GlyphBadges list={['evocation']} /><GlyphText text={text} /><DamageChip type="fire" label="fire" /></div>);
+    expect(imgs(html).map((i) => attr(i, 'data-glif'))).toEqual(['evocation', 'fire']);
+    expect(textOf(html)).toBe(`${text}fire`);
   });
 
   it('başlık rozetleri 20 px ve ipucu adlı; çip simge + ad', () => {

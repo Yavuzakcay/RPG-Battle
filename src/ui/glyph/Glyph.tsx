@@ -31,10 +31,13 @@ export function GlyphBadges(props: { list: Array<string | undefined> | undefined
   return <span className="glyph-badges">{list.map((ad) => <Glyph key={ad} ad={ad} kind="head" />)}</span>;
 }
 
-/** Açıklama metni: hasar türü, geçici can, kurtarma zarı ve iyileştirme geçen yerin önüne 16 px simge (veriden kalıplar). */
+/**
+ * Açıklama metni: hasar türü, geçici can, kurtarma zarı ve iyileştirme geçen yerin önüne 16 px simge (veriden kalıplar).
+ * Yalnız Türkçe arayüzde: İngilizce arayüzde açıklamalar SRD 5.2.1 ham metni ("Differs in game" notlu; EN-ACIKLAMA), dokunulmaz.
+ */
 export function GlyphText(props: { text: string | undefined }) {
   const text = props.text ?? '';
-  if (!text || !storedGlyphs()) return <>{text}</>;
+  if (!text || !storedGlyphs() || getLang() !== 'tr') return <>{text}</>;
   const parts = glyphSegments(text);
   if (parts.length === 1 && 'text' in parts[0]!) return <>{text}</>;
   return <>{parts.map((p, i) => ('glif' in p ? <Glyph key={i} ad={p.glif} /> : <Fragment key={i}>{p.text}</Fragment>))}</>;

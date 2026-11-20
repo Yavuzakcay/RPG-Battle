@@ -4,7 +4,7 @@
  * adlar İngilizce (alt sınıf ve Geçmiş adı Türkçe), açıklamalar Türkçe; SRD'nin İngilizce ham metni (`text`, `raw`)
  * hiçbir kartta kullanılmaz. Tembel parça: yalnız `src/screens/Dungeondex.tsx` içe aktarır.
  */
-import { armor, classes, items, monsters, races, spells, spellDescriptions, trAciklama, weapons, classData } from '../data';
+import { armor, classes, items, monsters, races, spells, spellDescriptions, trAciklama, weapons, classData, enDescriptions, loadEnMonsterDescriptions } from '../data';
 import type { Item, Monster, Spell, SubclassDef, Weapon } from '../data';
 import { allFeats } from '../rules/advancement';
 import { backgrounds } from '../rules/backgrounds';
@@ -57,7 +57,7 @@ export interface DexExtras {
   monsterPlaces: Record<string, { tema?: string; ortam?: string[] }>;
   /** Harita kimliği → görünen ad (gizli haritalar yok). */
   mapNames: Record<string, string>;
-  /** İsteğe bağlı İngilizce açıklamalar (`data/aciklamalar-en.json`; aynı tür → kimlik yapısı). */
+  /** İngilizce açıklamalar (`data/aciklamalar-en.json` + `aciklamalar-en-canavar.json`; aynı tür → kimlik yapısı). */
   en: Record<string, Record<string, string>>;
   /** Kuyruk A İş 4: canavar → özellik/eylem listesi (`data/canavar-ozellik.json`; ad İngilizce, tür, sıra). */
   monsterFeatures: Record<string, Array<{ anahtar: string; ad: string; tur: string }>>;
@@ -65,14 +65,14 @@ export interface DexExtras {
   classPrimary: Record<string, string>;
 }
 
-const EN_FILE = import.meta.glob<Record<string, Record<string, string>>>('../../data/aciklamalar-en.json', { import: 'default' });
 
 /** Canavar verisini ve ek tabloları yükler (hepsi uygulamaya gömülü; ağ yok). */
 export async function loadDexExtras(): Promise<Omit<DexExtras, 'mapNames'>> {
   const [srd, types, sp, places, en, srdClasses] = await Promise.all([
     import('../../data/srd/monsters.json'), import('../../data/canavar-turleri.json'), import('../../data/canavar-buyuleri.json'),
     import('../../data/monster-ortamlari.json'),
-    Promise.all(Object.values(EN_FILE).map((l) => l())).then((x) => x[0] ?? {}),
+    // Görev EN-ACIKLAMA: İngilizce açıklamalar (`loadClassData` yükler) + canavar özellikleri (yalnız burada).
+    loadEnMonsterDescriptions().then(() => enDescriptions as unknown as Record<string, Record<string, string>>),
     import('../../data/srd/classes.json'),
   ]);
   const feats = await import('../../data/canavar-ozellik.json');
@@ -236,7 +236,7 @@ export function buildDex(x: DexExtras): Record<DexCat, DexEntry[]> {
     const sp = srdSpecies.species.find((s) => s.id === r.id);
     const isCel = r.id === 'celestial';
     const rows: DexRow[] = isCel
-      ? cel.ozellikler.map((o) => ({ name: o.en, text: { tr: o.metin.tr, en: en('tur', `celestial/${o.id}`) } }))
+      ? cel.ozellikler.map((o) => ({ name: o.en, text: { tr: o.metin.tr, en: en('tur', `celestial/${o.id}`) ?? o.metin.en } }))
       : (sp?.traits ?? []).map((tr) => ({ name: tr.name, text: { tr: trAciklama('tur', `${r.id}/${tr.id}`), en: en('tur', `${r.id}/${tr.id}`) } }));
     const lineages = isCel ? Object.entries(cel.awakening.secenekler).map(([id, o]) => ({ id: `celestial/${id}`, name: o.en }))
       : (r.lineages ?? []).map((l) => ({ id: `${r.id}/${l.id}`, name: l.name }));
@@ -291,7 +291,7 @@ export function buildDex(x: DexExtras): Record<DexCat, DexEntry[]> {
       facts: [],
       sections: [{ title: L.sec.features, rows: s.features.map((f) => ({
         name: f.name.en || f.name.tr, level: f.level, tag: L.status[f.status] ?? f.status, glif: actionGlyph(f.effect?.type),
-        text: { tr: trAciklama('altsinif', `${c.id}/${s.id}:${f.id}`) ?? f.description?.tr, en: en('altsinif', `${c.id}/${s.id}:${f.id}`) },
+        text: { tr: trAciklama('altsinif', `${c.id}/${s.id}:${f.id}`) ?? f.description?.tr, en: en('altsinif', `${c.id}/${s.id}:${f.id}`) ?? f.description?.en },
       })) }],
       links: [{ cat: 'altsinif', filter: ['cls', c.id], label: L.subclassesOf(c.name) }, { cat: 'buyu', filter: ['cls', c.id], label: L.spellsOf(c.name) }]
         .filter((l) => l.cat !== 'buyu' || spells.some((sp) => spellClassIds(sp).includes(c.id))) as DexLink[],
@@ -401,7 +401,7 @@ function buildClasses(x: DexExtras, en: (kind: string, id: string) => string | u
     const rows: DexRow[] = (prog?.rows ?? []).flatMap((r) => r.features.map((f): DexRow => {
       const key = `${c.id}:${f.id}`;
       const tr = featureSummary({ key, id: f.id, from: 'class' }, c.id, undefined, 'tr') || undefined;
-      return { name: f.name, level: r.level, glif: actionGlyph(classData.mechanics.features[key]?.type), text: tr ? { tr, en: en('yetenek', key) } : { ui: L.noFeatureDesc } };
+      return { name: f.name, level: r.level, glif: actionGlyph(classData.mechanics.features[key]?.type), text: tr ? { tr, en: en('yetenek', key) ?? (featureSummary({ key, id: f.id, from: 'class' }, c.id, undefined, 'en') || undefined) } : { ui: L.noFeatureDesc } };
     }));
     const options: DexRow[] = Object.entries(classData.mechanics.features).filter(([k, m]) => k.startsWith(`${c.id}:`) && m.options?.length)
       .flatMap(([k, m]) => (m.options ?? []).map((o): DexRow => ({

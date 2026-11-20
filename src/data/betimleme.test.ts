@@ -47,6 +47,8 @@ describe('büyü betimlemeleri (veri)', () => {
     expect(Object.keys(spellDescriptions)).toHaveLength(339);
     expect(spellDescriptions._aciklama).toBeUndefined();
     expect(spellDescriptionOf('fireball', 'tr')).toContain('alev');
-    expect(spellDescriptionShown('fireball', 'en')).toBeUndefined();
+    // Görev EN-ACIKLAMA: 339 betimlemenin `en` alanı var; EN modunda o gösterilir (gizli değil).
+    expect(spellDescriptionShown('fireball', 'en')).toBeTruthy();
+    expect(spellDescriptionOf('fireball', 'en')).toBe(spellDescriptionShown('fireball', 'en'));
   });
 });

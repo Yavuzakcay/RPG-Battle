@@ -10,10 +10,48 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Bağlama mevcut açıklama çizimine eklenti:** `src/ui/glyph/Glyph.tsx` (`GlyphText`, `GlyphBadges`, `DamageChip`), saf eşleme `src/ui/glyph/glyphs.ts`; yeni ayrı çizim yolu yok, var olan metin düğümleri `GlyphText`'e sarıldı. Simge `aria-hidden`, alt metin boş, metin aynen (testte `textContent` girdiyle aynı). Ayar "Açıklama simgeleri" (Ayarlar, varsayılan açık, `rpg-battle-glif`; `src/ui/glyphSetting.ts`) kapalıysa hiçbir şey çizilmez, çipler dahil. Tembel parça (`Glyph-*.js/css`); ana parça 464,12 kB.
 - **Başlık (a):** büyüde okul + Concentration + Ritual (Ritual oyun büyü verisinde yok, SRD kaydından `rules/spellComponents.ts` `spellRitual`; bu modül SRD büyü tablosunu zaten okuyordu, ek yük yok); sınıf özelliğinde `class-features.json` `type` (action, bonus, reaction, passive; free ve resource için simge yok); canavar özellik/eyleminde `canavar-ozellik.json` `tur` (trait → passive; legendary için simge yok); paket alt sınıf özelliğinde `effect.type`; eşyada Attunement. **Cursed bağlanmadı:** oyun eşya verisinde lanet alanı yok (yalnız 5 SRD eşyasının ham metninde "curse" geçiyor).
 - **Metin içi (b):** kalıplar veride (`metin.kaliplar`), Türkçe I/İ dahil harf duyarsız. Hasar türü yalnız ardından "hasar"/"damage" gelirken (ör. "Ateş veya soğuk hasarı"nda yalnız "soğuk"). Türkçe metinde Radiant "ışıltı" geçiyor, görevdeki "ışıldayan" ile birlikte ikisi de kalıpta. Geçici can: "geçici can/canı/HP/Hit Point(s)", "Temporary Hit Points/HP"; kurtarma zarı: "kurtarma zar…", "saving throw"; iyileştirme: "iyileş…", "heal…". Paragraf (satır sonu) başına aynı simge en çok 2. "… can (HP) kazanır" gibi iyileştirme anlatımları kalıpta değil (görevdeki iki kalıp); veriye eklenebilir.
-- **Ham SRD metnine dokunulmaz (c):** Dungeondex kartında yalnız açıklama metni (`tr`/`en`) simgeli, arayüz özeti (`ui`: eşya etki özeti ham SRD metnine düşebilir) aynen; oluşturucuda eşya özeti ham `it.text`'i içeriyorsa aynen; prospektüs "Oyundaki durum" bölümü ("Oyunda farklı" notu) aynen; büyü ⓘ penceresinde yalnız açıklama kısmı (bileşen/malzeme SRD metni aynen); savaş çekmecesinde canavar saldırı metni aynen.
+- **Ham SRD metnine dokunulmaz (c):** satır içi simge yalnız Türkçe arayüzde. Bu görevle aynı anda gelen EN-ACIKLAMA'dan beri İngilizce arayüzdeki açıklamalar SRD 5.2.1 ham metni ("Differs in game" notlu; `_kaynak`: büyü 339/339, eşya 197/211 SRD), kayıt başına kaynak işareti yok; bu yüzden EN'de metin aynen, başlık rozetleri ve çipler iki dilde. EN kalıpları Türkçe metindeki İngilizce terimler için ("geçici Hit Point", "Healing Word"). Ayrıca Dungeondex kartında yalnız açıklama metni (`tr`/`en`) simgeli, arayüz özeti (`ui`: eşya etki özeti ham SRD metnine düşebilir) aynen; oluşturucuda eşya özeti ham `it.text`'i içeriyorsa aynen; prospektüs "Oyundaki durum" bölümü ("Oyunda farklı" notu) aynen; büyü ⓘ penceresinde yalnız açıklama kısmı (bileşen/malzeme SRD metni aynen); savaş çekmecesinde canavar saldırı metni aynen.
 - **Çipler (d):** hamle önizleme kartında hasar satırının yanında, günlükte satır başlığının yanında hasar türü çipi (simge + ad; `movePreview` `dtypes`, `logEntries` `eventDamageTypes`). Hasarsız olayda çip yok. Günlükte HP görünürlüğü (OD1B) gizli/etiket/yüzde olan hedefte tür de gizli kalır (mevcut testin yakaladığı sızıntı düzeltildi).
 - **Kontrol sayfası:** `onizleme-glif.html` (yalnız geliştirme): `?v=dex&id=fireball` gerçek Dungeondex kartı, `?v=onizleme` gerçek önizleme kartı (savaştaki balon kabında). 390×844 ekran görüntüleri görseller kesilince çekilecek.
 
+## İngilizce açıklamalar (Görev EN-ACIKLAMA, 2026-11-20; yalnız veri ve gösterim, kural ve kayıt sürümü aynı)
+
+Soru sorulmadı. EN arayüzde "Description available in Turkish only" notu yerine gerçek İngilizce açıklama.
+
+- **Dosyalar:**
+  - `data/aciklamalar-en.json`: `aciklamalar-tr.json` ile aynı tür ve kimlikler.
+  - `data/aciklamalar-en-canavar.json`: canavar özellik ve eylemleri. Yalnız Dungeondex `loadDexExtras` → `loadEnMonsterDescriptions` yükler.
+  - Büyü betimlemesinin `en` alanı: `data/buyu-betimleme.json`, 339 kayıt, en çok 135 karakter.
+- **Üretici:** `node scripts/en-aciklama-uret.mjs` (deterministik). Elle çeviri ve "Differs in game" notları `scripts/en-aciklama/ceviri.json`'da; betik bu dosyayı ve betimleme `en`'lerini hiç yazmaz.
+- **Kaynak önceliği:**
+  1. SRD 5.2.1 İngilizce metni, oyun mekaniği aynıysa:
+     - Büyü ve Invocation: PDF'ten (`scripts/srd/pdf.mjs`; büyüde yapım satırlarından sonrası, "Using a Higher-Level Spell Slot" / "Cantrip Upgrade" dahil).
+     - Durum: SRD sözlüğündeki "[Condition]" maddesi.
+     - Tür özelliği, sınıf özelliği, eşya: `data/srd/*.json`. İki seviyeli özellik (Improved Brutal Strike) "Level 13: … / Level 17: …" olarak birleşti.
+     - Canavar: `scripts/srd-canavar-ozellik.mjs --metin` ayrıştırıcısı; `canavar-ozellik.json` aynen yeniden yazılır, değişmez.
+  2. SRD'de tek karşılığı olmayan kayıtlar elle çevrildi; sayı, zar, DC ve süreler TR ile birebir. Bunlar: birden çok oyun eşyasının paylaştığı SRD kaydı (Armor/Shield +1–3, altı Belt of Giant Strength, Potion of Healing), Poisoner's Kit (SRD metni boş), bizim 2 alt sınıf özelliği, 4 Control Water seçeneği.
+- **"Differs in game" notu: 9 kayıt.**
+  - Kullanıcının saydığı dört büyü (Ice Storm, Flame Strike, Meteor Swarm, Bestow Curse). Etkin mekanik kodda yeniden denetlendi:
+    - Ice Storm ve Flame Strike yeni savaşta SRD'yle aynı (`split`). Not, `spellsK19` kapalıyken ya da 16'dan eski kayıtta tek zarı söyler.
+    - Meteor Swarm'da 37'den eski kayıtta tek küre.
+    - Bestow Curse'te gerçek fark var: tur seçeneğinde Dodge yerine eylem kaybı; 7+ yuva 8 saat, 9. yuva kalıcı değil.
+  - Eşyalarda Dungeondex prospektüsünün `oyunFarki` kayıtlarından TR dosyasında olanlar: Ammunition of Slaying, Sword of Sharpness, Sword of Wounding, Vicious Weapon. Ayrıca Alchemist's Fire (oyunda DC 10 DEX ile söndürme).
+  - Prospektüs Aşama 2'de "farklı" sanılan Conjure Fey, Divine Word, Prayer of Healing, Blindness/Deafness ve Dragon's Breath etkin mekanikte SRD ile uyumlu (sonraki sürüm blokları), not eklenmedi.
+- **Kimlik genişletmesi** (TR dosyasında olmayan, EN'de var):
+  - Invocation: oyunun bütün 28 Invocation'ı. Dungeondex'te TR açıklama oyun notundan geliyordu; EN'de SRD maddesi.
+  - Eşya: TR dosyasında olmayıp verideki kısa notu Türkçe olan 37 eşya (Bag of Holding gibi). EN arayüzde etki özeti yoksa SRD metni.
+  - Test bu iki genişletmeye izin verir.
+- **SD4 "SRD ham metni gösterilmez" kuralı EN arayüz için kalktı** (kullanıcı kararı). TR arayüz aynı: Türkçe özet. EN metinler SRD'nin tam metni olduğu için uzun olabilir (en uzun eşya ≈ 3,9 bin, büyü ≈ 3,5 bin karakter). Dungeondex kartında paragraflar korunur (`.dex-card p { white-space: pre-line }`).
+- **Erişim:**
+  - `enAciklama` ve dile göre `aciklamaOf` (`src/data/index.ts`). `describeTr` EN'de EN metni, yoksa eski not (geriye uyum).
+  - EN'e geçen yerler: oluşturucu özellik özeti ve tür satırları (`descriptions.ts`), karakter sayfası tür özellikleri (`sheetModel.ts`), Game Master nesne kartı (`ObjectCard.tsx`), Dungeondex (`catalog.ts`; Celestial ve alt sınıf özelliğinde verinin kendi `en` alanı, sınıf özelliğinde `aciklamalar.json` `features.en`).
+  - Savaş modülündeki `girdap.ts` notu (olaya yazılan metin) değişmedi: replay ve olay içeriği aynı kalsın.
+  - Dış içerik paketleri (`icerik/`) değişmedi: `description.en` varsa zaten kullanılıyor.
+  - Dungeondex prospektüs paragrafları (`data/prospektus/*`) bu görevin kapsamı dışında, EN'de "yalnız Türkçe" notuyla.
+- **Paket boyutu:** EN verisi tembel parçalarda: `aciklamalar-en` 364 kB, `aciklamalar-en-canavar` 248 kB. Ana parça 464,45 kB (`paket-siniri` ölçümü; öncesi aynı ölçümle ≈ 463,9 kB). Artış `data/index.ts`'teki erişim kodu.
+- **Tarama:** `scripts/sd4-aciklama-tara.ts`'e EN sütunu ve yeni satırlar eklendi: silah, zırh, durum, büyü seçeneği, canavar, geçmiş. Bütün kategorilerde EN yok = 0.
+- **Test:** `src/data/aciklamalarEn.test.ts`. Sayı/zar eşleşmesi uyarı düzeyinde: 183 kayıtta TR özetteki ifade SRD metninde birebir yok (ör. "60 ft" ↔ "60 feet" dışı ifadeler, TR özette hesaplanmış değer).
+- **Değişen eski testler** (davranış değişti, gerekçe bu karar): `aciklamalarTr.test.ts` ve `dungeondex.test.tsx` artık EN metni bekliyor, not yalnız EN karşılığı silinince çıkıyor. `betimleme.test.ts` ve `spellDescription.test.ts` EN betimlemenin görünmesini bekliyor. `dungeondex.test.tsx`'teki SRD ham metni denetimi `en` alanını dışarıda bırakıyor.
 ## Ranger ID4 Dragonborn: ham jetondaki macenta artığı dolduruldu (2026-11-20; yalnız görünüm, mekanik/kural/kayıt sürümü yok)
 
 - **Ne değişti:** `public/characters/dragonborn-erkek-ranger-ID4.webp` baş ile kanat kökü arasındaki macenta anahtar renk artığının 17 pikseli (x 105–110, y 89–94; ölçüt: opak, L* > 42, kroma > 35, macenta ton 290–350°) tek renkle, komşu ten/pul piksellerinin ortalamasıyla (#8c8ca4, L* 59) dolduruldu. Komşu = pul maskesindeki (yoldaş kanadı hariç) pikseller, artığa en çok 4 px uzaklıkta (Chebyshev; buradaki kontur bandı 2–3 px kalın, 4 px karşı taraftaki ilk pullara uzanır): 40 piksel, başın alt kenarı ve boyun (L* 58,9 ± 10,2). Kontur ve koyu mor geçiş pikselleri (L* ≤ 42) dokunulmadı.

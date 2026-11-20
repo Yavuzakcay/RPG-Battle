@@ -3,7 +3,7 @@
  * (`deriveStats`, `combatantFromSheet`, `carryLoad`) gelir; yeni kural yok. Adlar İngilizce, açıklamalar Türkçe (SD4;
  * `featureSummary` EN arayüzde mevcut davranışı verir). Boş hikâye alanı modelde yoktur.
  */
-import { classes, getRace, spells as allSpells, trAciklama } from '../../data';
+import { classes, getRace, spells as allSpells, aciklamaOf } from '../../data';
 import srdSpecies from '../../../data/srd/species.json';
 import { ABILITIES, type Ability } from '../../rules/abilities';
 import { deriveStats, finalScores, type CharacterSheet } from '../../rules/stats';
@@ -73,10 +73,10 @@ export function sheetModel(c: SavedCharacter, lang: Lang, opts: { carryRule?: Ca
       features.push({ name: f.name, level: f.level, from: f.from, text: featureSummary(f, sheet.classId, sheet.subclassId, lang) });
     }
   } catch { /* ilerleme verisi yok */ }
-  // Tür özellikleri (SRD tür kaydı; açıklama Türkçe `aciklamalar-tr.json` `tur`, EN arayüzde yalnız ad).
+  // Tür özellikleri (SRD tür kaydı; açıklama dile göre `aciklamalar-tr.json` / `aciklamalar-en.json` `tur`).
   try {
     const sp = srdSpecies.species.find((x) => x.id === sheet.raceId);
-    for (const tr of sp?.traits ?? []) features.push({ name: tr.name, level: 1, from: 'species', text: lang === 'tr' ? trAciklama('tur', `${sheet.raceId}/${tr.id}`) ?? '' : '' });
+    for (const tr of sp?.traits ?? []) features.push({ name: tr.name, level: 1, from: 'species', text: aciklamaOf('tur', `${sheet.raceId}/${tr.id}`, lang) ?? '' });
   } catch { /* tür verisi yok */ }
   // Büyüler: seviye gruplarına.
   const known = [...new Set([...(sheet.spellNames ?? [])])];
