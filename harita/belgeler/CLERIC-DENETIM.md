@@ -158,3 +158,15 @@ Probe'larla denenip doğrulanan **doğru** davranışlar (regresyon için not): 
 
 - A17 Divine Strike yalnız kendi turunda: **düzeldi** (sürümlü 93; `cleric.ts` `divineStrikeHit`, Druid Primal Strike aynı kod; test `b93.test.ts` A3).
 - B7 / C5 seviye atlama ve dinlenmede seçim değişimi (Serüven): **düzeldi** (sürümsüz; `levelChoices.ts`, `data/secim-degisim.json`: cantrip seviye atlamada 1, hazır liste uzun dinlenmede hepsi; test `levelChoices.test.ts`).
+
+### B. Cleric
+
+- A7 / E1 Divine Spark kip ve hasar türü seçimi: **düzeldi** (sürümsüz arayüz; menüde "Divine Spark: iyileştir / Necrotic hasar / Radiant hasar", TR+EN).
+- A8 Divine Spark kendine ve görülmeyene hedeflenmez: **düzeldi** (sürümlü 93; `clericFeatureProblem`).
+- A13 / D6 Turned Undead olabildiğince uzaklaşır: **düzeldi** (sürümlü 93; etkide `command: 'flee'` kalıcı, Dash'siz, tur başında `compelEvents`; Incapacitated eylem yapamaz).
+- A14 Cleric Incapacitated olunca / düşünce / ölünce Turn Undead biter: **düzeldi** (sürümlü 93; `ActiveEffect.endsIfSourceDown`, `pruneEffects`). Sear Undead hasarı aynen; Frightened bağışıklığı ve tür (A12, A15) daha önce kapanmıştı, Sear Undead aynı hedef listesini (`undeadInRange`) kullanıyor (test: 5. seviye Sear hasarı).
+- A20 Improved Potent Spellcasting yalnız hasar verince: **düzeldi** (sürümlü 93).
+- A21 Divine Intervention herhangi bir Cleric büyüsü (≤ 5, tepki değil), hazırlanmamış da: **düzeldi** (sürümlü 93; veri `freeSpellList.anyFromList`, `src/battle/anyList.ts`; arayüzde ana menü "Divine Intervention (hazırlanmamış büyü)"; yalnız oyuncu isteğiyle slotsuz; yapay zekâ değişmedi: son çare, hazırlananla).
+- A23 / C3 Greater Divine Intervention: Wish'ten sonra 2d4 uzun dinlenme: **düzeldi** (savaşta sürümlü 93: `<kaynak>:bekle` kaydı; dinlenme sürümsüz: `CharacterStatus.waits`, `longRestStatus`; veri `ResourceDef.wait`).
+- A24 / A25 Disciple of Life Mass Heal yolunda (iyileşen her yaratığa 2 + slot, havuz dışı, tam canı aşmaz), Blessed Healer Mass Heal ve Power Word Heal'de, yalnız gerçekten iyileşen (canı eksik) başka hedefte: **düzeldi** (sürümlü 93; alt sınıf: bizim sürüm metniyle motor uyumu). Power Word Heal "bütün HP" verdiği için Disciple of Life'ın ek HP'si orada etkisiz (tam can).
+- Dokunulmayanlar (bilinçli sapma, kullanıcı kararı): A3, A11, A18, A26, E5; E2 (TR kısa menü adları ↔ SD4) karar bekliyor.

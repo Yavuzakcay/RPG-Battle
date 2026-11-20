@@ -79,6 +79,8 @@ import { oneDieBonus, SKIP_ALL, usedOnce, type OnceSkip } from './oneDieBonus';
 import { buyucu93On } from './buyucu93Surum';
 import { counterspellCheck, damagedReactions, hitReactions, targetedReactions } from './reactions';
 import { resourceLeft } from './types';
+import { resourceDef } from '../rules/classFeatures';
+import { anyListResource } from './anyList';
 import type { ActiveEffect, AttackOption, CommandWord, BattleEvent, BattleState, Combatant, Command, ExtraDamage, MapObject, SpellZone } from './types';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
@@ -452,7 +454,15 @@ export function executeCast(state: BattleState, actor0: Combatant, cmd0: CastCom
     : r1;
   if (!r.ok) return r;
   // Kuyruk 19 (Spell Recall): Free Casting: 1–4. seviye slot 1d4 tutarsa geri gelir.
-  const extra = [...potentTempHpEvents(r.state, actor00.id, cmd.spellName),
+  // Görev B93 (sürüm 93+): Improved Potent Spellcasting yalnız cantrip gerçekten hasar verdiyse (SRD "deal damage").
+  const dealt = !buyucu93On(state) || r.events.some((e) => (e.type === 'attack_resolved' || e.type === 'save_resolved') && e.actorId === actor00.id && e.appliedDamage > 0);
+  // Görev B93 (sürüm 93+): Greater Divine Intervention: Wish bu kaynakla yapıldıysa 2d4 uzun dinlenme bekleme (`<kaynak>:bekle`).
+  const waitEv: BattleEvent[] = buyucu93On(state) ? r.events.flatMap((e) => {
+    const w = e.type === 'feature_used' && e.actorId === actor00.id ? resourceDef(e.feature)?.wait : undefined;
+    return w && w.spells.includes(cmd.spellName) && e.type === 'feature_used'
+      ? [{ type: 'feature_used' as const, actorId: actor00.id, feature: `${e.feature}:bekle`, remaining: rollDice(w.dice, rollTag(rng, { by: actor00.id })).total }] : [];
+  }) : [];
+  const extra = [...waitEv, ...(dealt ? potentTempHpEvents(r.state, actor00.id, cmd.spellName) : []),
     ...freeCastingEvents(r.state, actor00.id, r.events, () => rollDice('1d4', rollTag(rng, { by: actor00.id })).total)];
   return extra.length ? finish(state, [...r.events, ...extra]) : r;
 }
@@ -532,12 +542,27 @@ function withLifeBond(state: BattleState, cmd: CastCommand, r: CommandResult): C
   return extra.length ? finish(state, [...r.events, ...extra]) : r;
 }
 
+/**
+ * Görev B93 (arayüz): Divine Intervention kipinde büyü menüsü için sanal büyücü: yalnız listeli kaynağın verdiği hazırlanmamış
+ * büyüler (slotsuz). Kaynak yoksa ya da sürüm < 93 ise null.
+ */
+export function anyListActor(state: BattleState, actor: Combatant): Combatant | null {
+  if (!buyucu93On(state)) return null;
+  const extra = spells.filter((sp) => sp.level > 0 && !actor.spellNames.includes(sp.name) && anyListResource(actor, sp));
+  if (!extra.length) return null;
+  return { ...actor, spellNames: extra.map((x) => x.name), freeSpells: { ...(actor.freeSpells ?? {}), ...Object.fromEntries(extra.map((x) => [x.name, anyListResource(actor, x) as string])) } };
+}
+
 function executeCastAt(state: BattleState, actor00: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
   let spell0 = spells.find((s) => s.name === cmd.spellName);
   if (!spell0) return fail(`Büyü bulunamadı: ${cmd.spellName}`);
   // F1: büyüye özgü zorluk sınıfı/saldırı (Magic Initiate'in seçilen yeteneği) bu yapım için.
   const own = actor00.spellStats?.[spell0.name];
-  const actor0 = own ? { ...actor00, spellSaveDc: own.dc, spellAttack: own.attack } : actor00;
+  const actor0a = own ? { ...actor00, spellSaveDc: own.dc, spellAttack: own.attack } : actor00;
+  // Görev B93 (sürüm 93+): Divine Intervention herhangi bir Cleric büyüsü (≤ 5, tepki değil), hazırlanmamış olsa da
+  // (SRD 5.2.1 s. 38 "choose any Cleric spell of level 5 or lower"); yalnız oyuncu isteğiyle slotsuz yapımda.
+  const anyRes = cmd.free && buyucu93On(state) && !actor0a.spellNames.includes(spell0.name) ? anyListResource(actor0a, spell0) : null;
+  const actor0 = anyRes ? { ...actor0a, spellNames: [...actor0a.spellNames, spell0.name], freeSpells: { ...(actor0a.freeSpells ?? {}), [spell0.name]: anyRes } } : actor0a;
   if (!actor0.spellNames.includes(spell0.name)) return fail('Bu büyüyü bilmiyor.');
   // Mekanik matris B04 (sürüm 83): tepki büyüsü (Shield, Counterspell, Feather Fall, Hellish Rebuke) yalnız tetiğiyle,
   // tepki sisteminden yapılır (SRD 5.2.1 "Casting Time: Reaction, which you take when …"); komutla yapılınca eskiden
@@ -847,7 +872,8 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       type: 'healed', actorId: actor.id, targetId: target.id, label: spell.name,
       amount: hpAfter - target.hp, targetHpAfter: hpAfter, ...(hi.rolls ? { rolls: hi.rolls } : {}), ...(hi.changed ? { changed: hi.changed } : {}),
     });
-    events.push(...healSelfAfter(actor, slotLevel, target.id !== actor.id, spell.name));
+    // Görev B93 (sürüm 93+): Blessed Healer yalnız gerçekten iyileşen (canı eksik) başka hedefte.
+    events.push(...healSelfAfter(actor, slotLevel, target.id !== actor.id && (!buyucu93On(state) || hpAfter > target.hp), spell.name));
     return finish(state, events);
   }
 
@@ -1296,7 +1322,8 @@ function executeHealMany(state: BattleState, actor: Combatant, cmd: CastCommand,
   }
   // Blessed Healer: başkası iyileştiyse büyücü (kendisi hedefse onun iyileşmesinden sonra).
   const self = applyEvents(state, events).combatants[actor.id] as Combatant;
-  events.push(...healSelfAfter(self, slot.slotLevel, targets.some((t) => t.id !== actor.id), spell.name));
+  events.push(...healSelfAfter(self, slot.slotLevel, buyucu93On(state)
+    ? events.some((e) => e.type === 'healed' && e.targetId !== actor.id && e.amount > 0) : targets.some((t) => t.id !== actor.id), spell.name));
   return finish(state, events);
 }
 

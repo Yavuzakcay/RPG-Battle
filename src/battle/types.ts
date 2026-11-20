@@ -139,6 +139,8 @@ export interface ActiveEffect {
   consumeOnAttacked?: boolean;
   /** Kuyruk 19: Incapacitated olunca biter (Superior Defense). */
   breakOnIncapacitated?: boolean;
+  /** Görev B93 (sürüm 93+, Turn Undead): kaynak Incapacitated olunca ya da ölünce (0 HP dahil) biter. */
+  endsIfSourceDown?: boolean;
   /** Kuyruk 19 (11–20): bu yaratık türlerinin etkilerine save'ler avantajlı (Holy Nimbus: fiend, undead). */
   saveAdvVs?: string[];
   /** Kuyruk 19 (sihirli eşyalar): bu durumlara/kaynaklara karşı save'ler avantajlı (`spell`: büyüler), hasar kırılganlığı, kritik vuruş normal sayılır, menzilli saldırıya AC, tur başı yenilenme, silah bonusu, STR skoru tabanı. */

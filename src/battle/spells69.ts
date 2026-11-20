@@ -11,6 +11,8 @@
  * - `spellGlobe` / `antimagic` (Globe of Invulnerability, Antimagic Field: içerideki yaratıklar dışarıdan gelen büyüden
  *   etkilenmez; Antimagic içinde büyü yapılamaz).
  */
+import { buyucu93On } from './buyucu93Surum';
+import { healBonus, healSelfAfter } from './cleric';
 import { ruleVersion } from './ruleVersion';
 import { distance, type Offset } from '../rules/hex';
 import { rollDice, rollDie, rollTag, type Rng } from '../rules/dice';
@@ -116,7 +118,15 @@ export function after69(before: BattleState, state: BattleState, actor: Combatan
       if (second) add(powerWordEvents(cur, actor, second, m.powerWord, spell, rng));
     }
   }
-  if (m.massHeal) add(massHealEvents(cur, actor, m.massHeal, m.cures ?? [], spell));
+  // Görev B93 (sürüm 93+): Disciple of Life (slotla yapılan iyileştirmede iyileşen her yaratığa 2 + slot seviyesi) ve
+  // Blessed Healer (başkası gerçekten iyileştiyse büyücüye) Mass Heal ve Power Word Heal yolunda da.
+  const slotLv = buyucu93On(before) ? events.find((e): e is Extract<BattleEvent, { type: 'slot_spent' }> => e.type === 'slot_spent' && e.actorId === actor.id)?.level ?? null : null;
+  if (m.massHeal) add(massHealEvents(cur, actor, m.massHeal, m.cures ?? [], spell, healBonus(actor, slotLv)));
+  if (slotLv && (m.massHeal || m.powerWord === 'heal')) {
+    const others = out.some((e) => e.type === 'healed' && e.targetId !== actor.id && e.amount > 0 && e.label === spell.name);
+    const self = cur.combatants[actor.id];
+    if (self) add(healSelfAfter(self, slotLv, others, spell.name));
+  }
   if (m.hpTiers) add(divineWordEvents(cur, actor, spell, rng));
   if (m.prismatic) add(prismaticEvents(cur, actor, spell, target.hex ?? (t ? hexOf(t) : null), rng));
   if (m.reverseGravity) add(reverseGravityEvents(cur, actor, spell, target.hex ?? (t ? hexOf(t) : null), rng));
@@ -144,14 +154,16 @@ function powerWordEvents(state: BattleState, actor: Combatant, t: Combatant, kin
   return [{ type: 'effect_added', targetId: t.id, effect: { id: `pws:${actor.id}:${t.id}`, name: spell.name, sourceId: actor.id, speedZero: true, until: state.round + 1 } as ActiveEffect }];
 }
 
-function massHealEvents(state: BattleState, actor: Combatant, pool: number, cures: string[], spell: Spell): BattleEvent[] {
+function massHealEvents(state: BattleState, actor: Combatant, pool: number, cures: string[], spell: Spell, bonus = 0): BattleEvent[] {
   let left = pool;
   const out: BattleEvent[] = [];
   const allies = Object.values(state.combatants).filter((c) => c.side === actor.side && !c.civilian && c.life !== 'dead' && c.pos && ft(actor, c) <= 60
     && !['undead', 'construct'].includes(c.creatureType ?? '')).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
   for (const c of allies) {
     const amount = Math.min(left, c.maxHp - c.hp);
-    if (amount > 0) { out.push({ type: 'healed', actorId: actor.id, targetId: c.id, label: spell.name, amount, targetHpAfter: c.hp + amount }); left -= amount; }
+    // Görev B93: Disciple of Life havuzun dışında, iyileşen yaratığa (en çok tam cana).
+    const extra = amount > 0 ? Math.min(bonus, c.maxHp - c.hp - amount) : 0;
+    if (amount > 0) { out.push({ type: 'healed', actorId: actor.id, targetId: c.id, label: spell.name, amount: amount + extra, targetHpAfter: c.hp + amount + extra }); left -= amount; }
     for (const k of cures) if (c.conditions.includes(k)) out.push({ type: 'map_effect', rule: 'spells69', targetId: c.id, text: `${spell.name}: ${k} bitti`, removeCondition: k });
     if (left <= 0) break;
   }
