@@ -74,7 +74,7 @@ export const NADIRLIK_RENKLERI: Record<string, string> = { siradan: '#9aa0a6', o
 
 // ───────────────────────── Büyüler ─────────────────────────
 const BX = B as unknown as {
-  zemin?: Record<string, string>; duvar: Record<string, string>; auraBuyu?: Record<string, { sprite: string }>;
+  zemin?: Record<string, string>; zeminKucuk?: Record<string, { efekt: string } | string>; duvar: Record<string, string>; auraBuyu?: Record<string, { sprite: string }>;
   etkiHalka?: Record<string, { sprite: string }>; cagirRenk?: Record<string, { sprite: string; ton?: string }>; rozetBuyu?: Record<string, string>;
 };
 const ZONES = read<{ zones: Record<string, { sprites: string[] }> }>('data/sprite-esleme.json').zones;
@@ -84,6 +84,9 @@ function specificKeys(id: string): Set<string> {
   const f = SPELL_FX[id];
   if (f) { if (f.yol === 'isaret' && f.simge) k.add(`isaret-${f.simge}`); if (f.sprite) k.add(f.sprite); if (f.ek) k.add(f.ek); }
   if (BX.zemin?.[id]) k.add(`zemin:${BX.zemin[id]}`);
+  // Control Water: küçük alanın ikinci varyantı (`zeminKucuk`) da büyüye özel.
+  const zk = BX.zeminKucuk?.[id];
+  if (zk && typeof zk === 'object') k.add(`zemin:${zk.efekt}`);
   if (BX.duvar[id]) k.add(`duvar:${BX.duvar[id]}`);
   if (BX.auraBuyu?.[id]) k.add(`aura:${BX.auraBuyu[id]!.sprite}`);
   if (BX.etkiHalka?.[id]) k.add(`aura:${BX.etkiHalka[id]!.sprite}`);

@@ -1,7 +1,8 @@
 // Kuyruk E5: tek kareli efekt hücresinden prosedürel kısa canlandırma (4–6 kare). Saf, deterministik; kural/motor yok.
 // Girdi: kırpılmış RGBA hücre (alfa = parlaklık alfası, renk alfaya bölünmüş). Çıktı: S×S kareler (RGBA, ham).
 // Türler (spec `canlandirma[ad]`): nabiz (ölçek-nabız + solma), kayma (yönlü ilerleme/yükselme), halka (genişleyip solar),
-// donme (döngü: satır kayması dalgası + hafif salınım; kare 0 = kare N), yayil (çapa noktasından büyüyüp solar).
+// `kenar` (dış bantta koyu şerit temizliği, `rimClean`). donme (döngü: satır kayması dalgası + hafif salınım; kare 0 = kare N; `aci` verilirse döngü boyunca o kadar derece gerçek dönüş,
+// girdap gibi yakın dönel simetrili içerikte yavaş sürekli dönüş: N kare × aci/N), yayil (çapa noktasından büyüyüp solar).
 
 /** Hücre içerik sınır kutusu (alfa > eşik). */
 export function bboxOf(buf, w, h, thr = 24) {
@@ -87,10 +88,31 @@ export function frameParams(spec, i) {
     case 'donme': {
       // Döngü: i/n (son kare ilk kareye bağlanır).
       const ph = (i / n) * Math.PI * 2;
-      return { sc: s0 + (s1 - s0) * (0.5 + 0.5 * Math.sin(ph)), dx: 0, dy: 0, k: 1, ph };
+      // `aci` (derece, isteğe bağlı): kare i'de i/n × aci dönüş (son kare ilk kareye aci/n adımıyla bağlanır).
+      const rot = spec.aci ? ((spec.aci * Math.PI) / 180) * (i / n) : 0;
+      return { sc: s0 + (s1 - s0) * (0.5 + 0.5 * Math.sin(ph)), dx: 0, dy: 0, k: 1, ph, rot };
     }
     default: return { sc: 1, dx: 0, dy: 0, k: 1 };
   }
+}
+
+/**
+ * `kenar` { r: [r0, r1], alfa: [lo, hi] } (Control Water girdabı): dış kenardaki koyu bulanık şeritleri temizler. Merkezden uzaklık
+ * yarı-genişliğe oranla r0'dan r1'e (smoothstep) artan bantta, alfası lo'nun altındaki (koyu) pikseller söner, hi'nin üstündekiler (gövde,
+ * köpük) kalır; r0'ın içi değişmez. Renk değişmez, yalnız alfa.
+ */
+export function rimClean(buf, w, h, cx, cy, half, { r: [r0, r1], alfa: [lo, hi] }) {
+  const out = Buffer.from(buf);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const d = (y * w + x) * 4; const a = buf[d + 3] / 255;
+    if (a <= 0) continue;
+    const rr = Math.hypot(x + 0.5 - cx, y + 0.5 - cy) / half;
+    if (rr <= r0) continue;
+    const wr = smooth(Math.min(1, (rr - r0) / (r1 - r0)));
+    const wa = smooth(Math.min(1, Math.max(0, (a - lo) / (hi - lo))));
+    out[d + 3] = Math.round(255 * a * (1 - wr * (1 - wa)));
+  }
+  return out;
 }
 
 /** Bir hücreden `spec.kare` karelik şerit üretir (S×S ham RGBA kareler). */
@@ -104,7 +126,8 @@ export async function animate(cell, spec, S, margin = 1.45) {
   const cxs = m ? box.x0 + m[0] * bw : (box.x0 + box.x1) / 2; const cys = m ? box.y0 + m[1] * bh : (box.y0 + box.y1) / 2;
   const ext = m ? 2 * Math.max(cxs - box.x0, box.x1 - cxs, cys - box.y0, box.y1 - cys) : Math.max(bw, bh);
   const scale = S / (ext * margin);
-  const src = toCanvas(cell.buf, cell.w, cell.h, { x0: cxs, x1: cxs, y0: cys, y1: cys }, S, scale);
+  const buf = spec.kenar ? rimClean(cell.buf, cell.w, cell.h, cxs, cys, ext / 2, spec.kenar) : cell.buf;
+  const src = toCanvas(buf, cell.w, cell.h, { x0: cxs, x1: cxs, y0: cys, y1: cys }, S, scale);
   const n = spec.kare ?? 5;
   // Ölçek/kayma çapası: `merkez` varsa tuval merkezi; yoksa içerik kutusunun oranı (varsayılan merkez).
   const [px, py] = spec.pivot ?? [0.5, 0.5];
@@ -118,7 +141,7 @@ export async function animate(cell, spec, S, margin = 1.45) {
       const amp = (spec.genlik ?? 0.07) * S; const kf = (spec.dalga ?? 2.6) * Math.PI * 2 / S;
       warp = (x, y) => {
         const z = (y - S / 2) / f.sc; const w0 = (x - S / 2) / f.sc;
-        const rot = Math.sin(f.ph) * (spec.salinim ?? 0.05); const c = Math.cos(rot); const s = Math.sin(rot);
+        const rot = (f.rot ?? 0) + Math.sin(f.ph) * (spec.salinim ?? 0.05); const c = Math.cos(rot); const s = Math.sin(rot);
         return [S / 2 + w0 * c - z * s - amp * Math.sin(y * kf + f.ph), S / 2 + w0 * s + z * c];
       };
     } else {

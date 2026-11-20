@@ -399,11 +399,25 @@ export interface GroundPatch {
   /** Kuyruk E4c: dokuyu altıgen başına (koordinattan türetilmiş döndürme/aynalama) döşe; opaklık. Tek seferlik (loop=false) doku son karede kalır. */
   karo?: { opaklik: number; tekKaro?: number };
   loop: boolean;
+  /** Control Water: dokunun üstüne alanın altıgen çizgileri (`zeminIzgara`). */
+  grid?: boolean;
 }
 export interface GroundWall {
   key: string; hexes: Array<{ at: Offset; rotate: number }>; sprite: FxSprite; tint?: string; outline?: string;
   /** Kuyruk E4b: dikişsiz olmayan duvar (rüzgâr): parça uçlarının yumuşama oranı (parça enine); yoksa dikişsiz. */
   soft?: number;
+}
+
+/**
+ * Control Water efekt sayfası (yalnız görünüm): küçük alanın ikinci varyantı (`efekt-baglama.json` `zeminKucuk`: alan yarıçapı
+ * `enCokYaricap` altıgen ya da küçükse) ve üstüne ızgara çizilen dokular (`zeminIzgara`).
+ */
+const SMALL = ((B as unknown as { zeminKucuk?: Record<string, { efekt: string; enCokYaricap: number } | string> }).zeminKucuk ?? {});
+const GRID = new Set((B as unknown as { zeminIzgara?: { liste: string[] } }).zeminIzgara?.liste ?? []);
+export function zoneSprite(spellId: string, hexCount: number, Z: Record<string, string>): string | undefined {
+  const k = SMALL[spellId];
+  if (k && typeof k === 'object' && radiusOf(hexCount) <= k.enCokYaricap + 1e-6) return k.efekt;
+  return Z[spellId];
 }
 
 /** Kalıcı efektler: auralar (yaratığa bağlı) ve duvarlar (engel alanları). */
@@ -445,8 +459,8 @@ export function groundFx(state: BattleState): { auras: GroundAura[]; walls: Grou
   const zones: SpellZone[] = state.map?.zones ?? [];
   const Z = (B as unknown as { zemin?: Record<string, string> }).zemin ?? {};
   for (const z of zones) {
-    const zs = !z.surface && z.hexes.length ? sp(Z[z.spellId]) : null;
-    if (zs) patches.push({ key: `zp:${z.id}`, at: centroid(z.hexes), radius: radiusOf(z.hexes.length), sprite: zs, hexes: z.hexes, loop: zs.loop, ...(KARO[zs.id] ? { karo: KARO[zs.id]! } : {}) });
+    const zs = !z.surface && z.hexes.length ? sp(zoneSprite(z.spellId, z.hexes.length, Z)) : null;
+    if (zs) patches.push({ key: `zp:${z.id}`, at: centroid(z.hexes), radius: radiusOf(z.hexes.length), sprite: zs, hexes: z.hexes, loop: zs.loop, ...(KARO[zs.id] ? { karo: KARO[zs.id]! } : {}), ...(GRID.has(zs.id) ? { grid: true } : {}) });
     if (z.anchorId && z.radius !== undefined && state.combatants[z.anchorId]?.pos && !z.surface) {
       const s = auraSprite(z.spec?.damageType, undefined);
       if (s) auras.push({ key: `z:${z.id}`, ownerId: z.anchorId, radius: z.radius, sprite: s });

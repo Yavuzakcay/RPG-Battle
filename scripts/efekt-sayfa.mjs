@@ -122,7 +122,11 @@ export function crackPixel(r, g, b, p) {
   return { a, c: [0, 1, 2].map((i) => Math.round(p.darkC[i] * (1 - w) + p.glowC[i] * w)) };
 }
 
-function cellRgba(img, x0, y0, x1, y1, black = BLACK, opaque = false, gain = 1, edge = 0, crack = null) {
+/**
+ * `keep` (Control Water girdabı, `renkKoru` listesi): renk ham kalır (alfaya bölünmez), alfa parlaklıktan × kazanç. Normal karışımlı
+ * zemin dokusunda koyu gölgeler açık zeminde de okunur (alfaya bölünen renk yalnız siyah üstündeki `screen` görünümünü korur).
+ */
+function cellRgba(img, x0, y0, x1, y1, black = BLACK, opaque = false, gain = 1, edge = 0, crack = null, keep = false) {
   const cw = x1 - x0; const ch = y1 - y0;
   const out = Buffer.alloc(cw * ch * 4);
   let peak = 0;
@@ -141,9 +145,9 @@ function cellRgba(img, x0, y0, x1, y1, black = BLACK, opaque = false, gain = 1, 
       if (dEdge < edge) { const u = dEdge / edge; a *= u * u * (3 - 2 * u); }
     }
     if (a > peak) peak = a;
-    out[d] = a0 > 0 ? Math.min(255, Math.round(r / a0)) : 0;
-    out[d + 1] = a0 > 0 ? Math.min(255, Math.round(g / a0)) : 0;
-    out[d + 2] = a0 > 0 ? Math.min(255, Math.round(b / a0)) : 0;
+    out[d] = keep ? r : a0 > 0 ? Math.min(255, Math.round(r / a0)) : 0;
+    out[d + 1] = keep ? g : a0 > 0 ? Math.min(255, Math.round(g / a0)) : 0;
+    out[d + 2] = keep ? b : a0 > 0 ? Math.min(255, Math.round(b / a0)) : 0;
     out[d + 3] = Math.round(a * 255);
   }
   return { buf: out, w: cw, h: ch, peak };
@@ -165,7 +169,7 @@ export async function sliceSheet(file, spec, emptyThr = 0.04) {
     const result = {};
     for (let n = 0; n < spec.adlar.length; n++) {
       const ad = spec.adlar[n]; const f = flat[n];
-      const c = cellRgba(img, f.x[0], f.y[0], f.x[1], f.y[1], spec.siyah ?? BLACK, false, spec.kazanc?.[ad]?.['1'] ?? 1, spec.yumusat?.[ad] ?? spec.yumusat?.['*'] ?? 0);
+      const c = cellRgba(img, f.x[0], f.y[0], f.x[1], f.y[1], spec.siyah ?? BLACK, false, spec.kazanc?.[ad]?.['1'] ?? 1, spec.yumusat?.[ad] ?? spec.yumusat?.['*'] ?? 0, null, !!spec.renkKoru?.includes(ad));
       if (c.peak < emptyThr) throw new Error(`${report.file}: ${n + 1}. hücre (${ad}) boş`);
       const S = spec.boyutlar?.[ad] ?? spec.boyut;
       const frames = await animate(c, spec.canlandirma[ad], S, spec.kenarPayi ?? 1.45);
@@ -277,6 +281,38 @@ export async function contactSheet(file, strips, { bg = { r: 40, g: 40, b: 46 },
   await sharp({ create: { width: W, height: H, channels: 4, background: { ...bg, alpha: 1 } } }).composite(comp).png().toFile(file);
 }
 
+/**
+ * Kesim sonucundan efekt kaydı (saf; `importEffects` ve gidiş-dönüş testi aynı işlevi kullanır). `r`: { frames (uzunluğu), fw, fh }.
+ * Alan sırası dosyadaki sıradır (tek satır kayıt; fark çıkmasın). Kesim tablosundan gelen ad → değer alanları: kullanilmiyor, sabit,
+ * alfa ve ton (deprem yarığı: bilgi alanları, uygulama okumaz). `klasor` alanlı sayfada sonda `yol`.
+ */
+export function effectRecord(sheet, spec, ad, r) {
+  const name = `efekt-${ad}`;
+  return {
+    kare: r.frames.length, sure: r.frames.length * (spec.kareMsler?.[ad] ?? spec.kareMs), tur: spec.turler?.[ad] ?? spec.tur, karisim: spec.opak?.includes(ad) || spec.normal?.includes(ad) ? 'normal' : 'screen', yon: spec.yonler?.[ad] ?? null,
+    en: r.fw, boy: r.fh, dongu: spec.donguler?.[ad] ?? !!spec.dongu, kaynak: `${sheet}`, ...(spec.ortusme ? { ortusme: spec.ortusme } : {}),
+    // Kuyruk E4: içe aktarılan ama hiçbir büyüye bağlanmayan şerit (kullanıcı kararı; kayıtta işaretli).
+    ...(spec.kullanilmiyor?.includes(ad) ? { kullanilmiyor: true } : {}),
+    // Kuyruk E4c: hareket azaltmada gösterilecek kare (0 tabanlı; yoksa ortadaki).
+    ...(spec.sabit?.[ad] !== undefined ? { sabit: spec.sabit[ad] } : {}),
+    // Kesim tablosundaki bilgi alanları (eskiden kayda elle eklenmişti; tam kesimde kayboluyordu).
+    ...(spec.alfa?.[ad] !== undefined ? { alfa: spec.alfa[ad] } : {}),
+    ...(spec.ton?.[ad] !== undefined ? { ton: spec.ton[ad] } : {}),
+    ...(spec.klasor ? { yol: `${spec.klasor}/${name}` } : {}),
+  };
+}
+
+/** Tek satır kayıt biçimi (`{ "a": 1, "b": 2 }`). */
+const oneLine = (v) => JSON.stringify(v).replace(/^\{/, '{ ').replace(/\}$/, ' }').replace(/":/g, '": ').replace(/,"/g, ', "');
+
+/** `data/efekt-e2.json` metni (saf): kayıtlar ada göre sıralı, tek satır. */
+export function e2Text(efektler, simgeler) {
+  const sorted = Object.entries(efektler).sort(([a], [b]) => a.localeCompare(b));
+  const block = `{\n${sorted.map(([k, v]) => `    ${JSON.stringify(k)}: ${oneLine(v)}`).join(',\n')}\n  }`;
+  const simg = Object.entries(simgeler).map(([k, v]) => `    ${JSON.stringify(k)}: ${oneLine(v)}`).join(',\n');
+  return `{\n  "not": "Kuyruk E2 (npm run sprite-ice -- --efekt üretir; elle düzenlenmez): data/efekt-kesim.json'da klasor alanlı sayfaların kayıtları. efektler: sprite-esleme efektler ile aynı biçim + yol (public/ altındaki yol, uzantısız). simgeler: ikon sayfası öneki → ad → yol (128 px, macenta anahtarla). Yalnızca tembel efekt parçası (src/ui/fx/) okur.",\n  "efektler": ${block},\n  "simgeler": {\n${simg}\n  }\n}\n`;
+}
+
 /** `--efekt` kipi: kesim tablosundaki her sayfa (ad eşleşmesi uzantıdan bağımsız). */
 /** `processSprite`: sprite-ice'ın macenta anahtarlı temizleyicisi (döngüsel içe aktarma olmasın diye parametre). */
 /**
@@ -322,15 +358,8 @@ export async function importEffects({ src = 'assets-ham/efekt', out = 'public/sp
       const name = `efekt-${ad}`;
       await writeStrip(path.join(dir, `${name}.webp`), r);
       if (r.dropped) notes.push(`${name}: ızgarada ${r.grid} kare, sondaki ${r.dropped} kare atıldı (boş ya da kare sınırı) → ${r.frames.length}`);
-      const rec = {
-        kare: r.frames.length, sure: r.frames.length * (spec.kareMsler?.[ad] ?? spec.kareMs), tur: spec.turler?.[ad] ?? spec.tur, karisim: spec.opak?.includes(ad) || spec.normal?.includes(ad) ? 'normal' : 'screen', yon: spec.yonler?.[ad] ?? null,
-        en: r.fw, boy: r.fh, dongu: spec.donguler?.[ad] ?? !!spec.dongu, kaynak: `${sheet}`, ...(spec.ortusme ? { ortusme: spec.ortusme } : {}),
-        // Kuyruk E4: içe aktarılan ama hiçbir büyüye bağlanmayan şerit (kullanıcı kararı; kayıtta işaretli).
-        ...(spec.kullanilmiyor?.includes(ad) ? { kullanilmiyor: true } : {}),
-        // Kuyruk E4c: hareket azaltmada gösterilecek kare (0 tabanlı; yoksa ortadaki).
-        ...(spec.sabit?.[ad] !== undefined ? { sabit: spec.sabit[ad] } : {}),
-      };
-      if (spec.klasor) e2.efektler[name] = { ...rec, yol: `${spec.klasor}/${name}` };
+      const rec = effectRecord(sheet, spec, ad, r);
+      if (spec.klasor) e2.efektler[name] = rec;
       else records[name] = rec;
       console.log(`  ${name}.webp ${r.frames.length} kare ${r.fw}×${r.fh}${r.dropped ? ` (sondaki ${r.dropped} kare atıldı: boş ya da kare sınırı)` : ''}`);
     }
@@ -348,9 +377,7 @@ export async function importEffects({ src = 'assets-ham/efekt', out = 'public/sp
   fs.writeFileSync(esleme, `${head},\n  "efektNotu": ${JSON.stringify(E.efektNotu)},\n  "efektler": ${block(E.efektler)},\n  "efektIkonlari": ${block(E.efektIkonlari)}\n}\n`);
   JSON.parse(fs.readFileSync(esleme, 'utf8'));
   // Kuyruk E2 kayıtları: ayrı dosya (tembel efekt parçası).
-  const e2Sorted = Object.fromEntries(Object.entries(e2.efektler).sort(([a], [b]) => a.localeCompare(b)));
-  const simg = Object.entries(e2.simgeler).map(([k, v]) => `    ${JSON.stringify(k)}: ${one(v)}`).join(',\n');
-  fs.writeFileSync(e2File, `{\n  "not": "Kuyruk E2 (npm run sprite-ice -- --efekt üretir; elle düzenlenmez): data/efekt-kesim.json'da klasor alanlı sayfaların kayıtları. efektler: sprite-esleme efektler ile aynı biçim + yol (public/ altındaki yol, uzantısız). simgeler: ikon sayfası öneki → ad → yol (128 px, macenta anahtarla). Yalnızca tembel efekt parçası (src/ui/fx/) okur.",\n  "efektler": ${block(e2Sorted)},\n  "simgeler": {\n${simg}\n  }\n}\n`);
+  fs.writeFileSync(e2File, e2Text(e2.efektler, e2.simgeler));
   JSON.parse(fs.readFileSync(e2File, 'utf8'));
   for (const m of T.mevcut ?? []) byName.delete(m);
   const unmatched = [...byName.values()];

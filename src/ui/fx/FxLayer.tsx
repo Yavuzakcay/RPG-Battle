@@ -302,6 +302,8 @@ export function FxGround({ state, enabled, reduceMotion, geo, used, tokenUsed }:
             <g clipPath={`url(#${clip})`}>
               <Strip s={z.sprite} x={p.x - d / 2} y={p.y - d / 2} w={d} h={d} animated={anim.has(z.key)} loop={z.loop} tint={z.ton} className="fx-patch" />
             </g>
+            {/* Control Water girdabı: altıgen çizgileri dokunun üstünde (ızgara FxGround'dan önce çizilir; `.hx` ile aynı çizgi). */}
+            {z.grid && <path d={hexPath(z.hexes, geo, 1)} className="fx-patch-grid" />}
           </g>
         );
       })}
