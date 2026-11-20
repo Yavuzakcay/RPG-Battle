@@ -31,6 +31,17 @@ export function zoomLimits(screen: Size, hexWorldW: number): { min: number; max:
   return { min: Math.min(1, MIN_HEX_PX / hexAt1), max: MAX_ZOOM };
 }
 
+/**
+ * Serüven öncesi (yalnız arayüz): dar ekran (telefon dikey) — 1 yakınlaştırmada altıgen `MIN_HEX_PX`'ten darsa küçük haritada da
+ * kamera açılır; varsayılan yakınlaştırma altıgeni `targetPx` genişliğine getirir (en çok `MAX_ZOOM`). Dar değilse null.
+ */
+export function narrowZoom(screen: Size, hexWorldW: number, targetPx: number): number | null {
+  if (!(screen.w > 0)) return null;
+  const hexAt1 = hexWorldW * scaleOf(screen, 1);
+  if (hexAt1 >= MIN_HEX_PX) return null;
+  return Math.min(MAX_ZOOM, Math.max(1, targetPx / hexAt1));
+}
+
 /** Dünyanın tamamını gösteren yakınlaştırma (Tümünü göster). */
 export const fitZoom = (world: Size): number => Math.min(VIEW.w / world.w, VIEW.h / world.h, 1);
 

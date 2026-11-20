@@ -3,8 +3,7 @@
  * kapalıysa ve ekranda en çok `MAX_ANIMATED` animasyon varsa oynar; aksi halde ilk kare sabit.
  */
 import { useEffect, useState } from 'react';
-import { reducedMotion } from './effectsSetting';
-import { MAX_ANIMATED } from './statusFx';
+import { MAX_ANIMATED, reducedMotion } from './effectsSetting';
 
 const SPRITE_ANIM_KEY = 'rpg-battle-sprite-anim';
 let live = 0;

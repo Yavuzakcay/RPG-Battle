@@ -470,6 +470,9 @@ export const TR_EXTRA = {
       special: 'Özel', items: 'Eşya', other: 'Diğer', more: 'Daha fazla ›', fast: 'Hızlı eylem', fastMark: 'hızlı', cantrip: 'Cantrip', spellLevel: (n: number) => `${n}. seviye`,
       groups: { combat: 'Dövüş', heal: 'Şifa ve koruma', shape: 'Hayvan formu', slots: 'Slot yenile', summon: 'Büyü ve çağrılar', other: 'Diğer' } as Record<string, string>,
       noSpellsHere: 'Şu an yapabileceğin büyü yok.', noSpecialHere: 'Şu an yapabileceğin özel bir şey yok.',
+      // Serüven öncesi: canavar yetenekleri (`monster_ability`; biçim, çağrı ve Game Master canavarı) Özel ▸ Dövüş'te.
+      mab: (name: string, opt?: string) => (opt ? `${name}: ${opt}` : name), mabOpt: { dash: 'Koş', disengage: 'Geri Çekil', hide: 'Gizlen' } as Record<string, string>,
+      mabNotReady: 'Kullanım hakkı yok ya da şarj olmadı.',
       floor: 'Merdivenden geç', steady: 'Nişan Al', horde: 'Sürü Kırıcı', cunning: 'Kurnaz Vuruş',
       cunningName: { trip: 'Çelme (Trip)', withdraw: 'Sıyrıl (Withdraw)', poison: 'Zehirle (Poison)', daze: 'Sersemlet (Daze)', 'knock-out': 'Bayılt (Knock Out)', obscure: 'Kör Et (Obscure)' } as Record<string, string>,
       cunningHint: (max: number) => `Sneak Attack tutarsa zarından düşülür; en çok ${max} seçenek.`,
@@ -880,6 +883,17 @@ export const TR_EXTRA = {
         unit: { round: 'tur', minute: 'dakika', hour: 'saat', day: 'gün' } as Record<string, string>,
         dur: { aninda: 'Anında', kaldirilana: 'Kaldırılana dek', kaldirilanaTetik: 'Kaldırılana ya da tetiklenene dek', ozel: 'Özel' } as Record<string, string>,
         upTo: (n: number, u: string) => `en çok ${n} ${u}`, span: (n: number, u: string) => `${n} ${u}`, concPrefix: (s: string) => `Konsantrasyon, ${s}`,
+        or: ' ya da ',
+        /**
+         * Serüven öncesi: "Oyunda farklı" notu (yalnız arayüz). Prospektüs görevinin SRD'den ayrışan 9 büyüsünden motorun bugünkü
+         * hâlinde (kural sürümü 91) gerçekten farklı kalanlar; diğerleri SRD'ye uyuyor (DECISIONS.md).
+         */
+        gameDiff: {
+          'ice-storm': 'İki hasar türü (2d10 ezici + 4d6 soğuk) Game Master kurulumundaki "4–5. seviye büyülerin tam SRD yan etkileri" anahtarına bağlı (varsayılan açık); anahtar kapalıyken tek tür: 7d6 soğuk.',
+          'flame-strike': 'İki hasar türü (5d6 ateş + 5d6 ışıl) Game Master kurulumundaki "4–5. seviye büyülerin tam SRD yan etkileri" anahtarına bağlı (varsayılan açık); anahtar kapalıyken tek tür: 10d6 ışıl.',
+          'meteor-swarm': 'İki hasar türü (20d6 ateş + 20d6 ezici) Game Master kurulumundaki "4–5. seviye büyülerin tam SRD yan etkileri" anahtarına bağlı (varsayılan açık); anahtar kapalıyken tek tür: 40d6 ateş.',
+          'bestow-curse': 'Yüksek yuvada süre: 4. seviye 10 dakika, 5. seviye ve üstü 8 saat ve konsantrasyonsuz. SRD\'nin 7–8. seviye 24 saat ve 9. seviye kaldırılana dek süresi oyunda 8 saat sayılır (savaştan uzun; savaşta fark yok).',
+        } as Record<string, string>,
       },
     },
     contentMissing: (n: number, all: number) => `İçerik eksik: ${n}/${all} alt sınıf yüklü. Dış içerik paketi Ayarlar → Gelişmiş → Dış içerik'ten içe aktarılabilir.`,

@@ -76,6 +76,17 @@ export type AciklamaTuru = 'buyu' | 'esya' | 'tur' | 'yetenek' | 'altsinif' | 'i
 export const trDescriptions: Record<AciklamaTuru, Record<string, string>> = { buyu: {}, esya: {}, tur: {}, yetenek: {}, altsinif: {}, invocation: {}, buyuSecenek: {}, durum: {}, canavar: {} };
 export const trAciklama = (tur: AciklamaTuru, id: string): string | undefined => trDescriptions[tur][id];
 /**
+ * Paket (Serüven öncesi): canavar açıklamaları (≈215 kB) `data/aciklamalar-tr-canavar.json` ayrı tembel parçada; yalnız Dungeondex
+ * yükler (`loadDexExtras`). Erişim aynı (`trAciklama('canavar', …)`); yüklenene dek boş.
+ */
+let monsterDescLoading: Promise<void> | null = null;
+export function loadMonsterDescriptions(): Promise<void> {
+  monsterDescLoading ??= import('../../data/aciklamalar-tr-canavar.json').then((m) => {
+    Object.assign(trDescriptions.canavar, (m.default as unknown as { canavar: Record<string, string> }).canavar);
+  });
+  return monsterDescLoading;
+}
+/**
  * Görev EN-ACIKLAMA: İngilizce açıklamalar (`data/aciklamalar-en.json`, aynı tür ve kimlikler; SRD 5.2.1 metni ya da çeviri,
  * `node scripts/en-aciklama-uret.mjs`). `loadClassData` tembel parçayla doldurur; canavar özellikleri ayrı dosyada
  * (`data/aciklamalar-en-canavar.json`), yalnız Dungeondex `loadEnMonsterDescriptions` ile yükler. Kayıt yoksa undefined.

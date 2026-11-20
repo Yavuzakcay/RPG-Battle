@@ -1,6 +1,6 @@
 /**
  * Kuyruk A İş 4: SRD 5.2.1 canavar stat bloklarından özellik ve eylem listesi (ad İngilizce, tür, sıra) →
- * data/canavar-ozellik.json (elle düzenlenmez). Türkçe açıklamalar `data/aciklamalar-tr.json` `canavar` bölümünde, anahtar
+ * data/canavar-ozellik.json (elle düzenlenmez). Türkçe açıklamalar `data/aciklamalar-tr-canavar.json` `canavar` bölümünde, anahtar
  * `<canavar>/<tür>:<ad-slug>` (tür: trait | action | bonus | reaction | legendary). `--metin <yol>`: İngilizce SRD metinleriyle
  * birlikte ayrı bir dosyaya yazar (yalnız çeviri/denetim için; depoya girmez). Çalıştırma: node scripts/srd-canavar-ozellik.mjs
  */
@@ -54,6 +54,6 @@ const metinYolu = process.argv.includes('--metin') ? process.argv[process.argv.i
 if (metinYolu) fs.writeFileSync(metinYolu, JSON.stringify(out, null, 1));
 const liste = Object.fromEntries(Object.entries(out).map(([id, m]) => [id, m.entries.map((e) => ({ anahtar: `${id}/${e.key}`, ad: e.name, tur: e.kind }))]));
 const govde = Object.entries(liste).map(([id, l]) => `  ${JSON.stringify(id)}: ${JSON.stringify(l)}`).join(',\n');
-const not = 'SRD 5.2.1 canavar özellik ve eylemleri (ad İngilizce, tür, stat bloğundaki sıra); scripts/srd-canavar-ozellik.mjs docs/SRD_CC_v5.2.1.pdf s. 254–364\'ten üretir, elle düzenlenmez. Türkçe açıklama data/aciklamalar-tr.json canavar[anahtar].';
+const not = 'SRD 5.2.1 canavar özellik ve eylemleri (ad İngilizce, tür, stat bloğundaki sıra); scripts/srd-canavar-ozellik.mjs docs/SRD_CC_v5.2.1.pdf s. 254–364\'ten üretir, elle düzenlenmez. Türkçe açıklama data/aciklamalar-tr-canavar.json canavar[anahtar].';
 fs.writeFileSync(new URL('../data/canavar-ozellik.json', import.meta.url), `{\n "_not": ${JSON.stringify(not)},\n "canavarlar": {\n${govde}\n }\n}\n`);
 console.log(Object.keys(out).length, 'blok,', Object.values(out).reduce((n, m) => n + m.entries.length, 0), 'kayıt');
