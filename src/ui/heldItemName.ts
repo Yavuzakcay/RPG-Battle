@@ -9,12 +9,13 @@ import { getMonster } from '../data';
 import { getLang, t } from '../i18n';
 import { resourceDef } from '../rules/classFeatures';
 import { entryOf } from '../battle/monsterAbilities';
-import type { BattleState } from '../battle/types';
+import { heldWeapons } from '../battle/heldItems';
+import type { BattleState, Combatant } from '../battle/types';
 
 const WEAPON_NAME = new Map((weaponData as Array<{ id: string; name: string }>).map((w) => [w.id, w.name]));
 
 /** Saldırı seçeneğinin (AttackOption) okunurluğa yetecek kısmı. */
-export interface NamedOption { weaponId?: string; label: string }
+export interface NamedOption { weaponId?: string; label: string; /** Wild Shape/Polymorph biçiminin doğal saldırısı. */ beast?: unknown }
 
 export function heldItemName(id: string, options: ReadonlyArray<NamedOption> = []): string {
   const N = t().battle.held;
@@ -29,6 +30,17 @@ export function heldItemName(id: string, options: ReadonlyArray<NamedOption> = [
   if (opt) return opt;
   return N.unknown;
 }
+
+/**
+ * Doğal silah ya da biçim silahı (Wild Shape/Polymorph biçiminin saldırısı `beast:<canavar>`, Karadul Örümcek Biçimi `karadul:spider`):
+ * elde tutulan bir eşya değil; arayüz bırak/al düğmesi göstermez (yalnız arayüz; motor kuralı değişmedi).
+ */
+export const NATURAL_WEAPON_PREFIXES = ['beast:', 'karadul:'] as const;
+export function isNaturalWeapon(id: string, options: ReadonlyArray<NamedOption> = []): boolean {
+  return NATURAL_WEAPON_PREFIXES.some((p) => id.startsWith(p)) || options.some((o) => o.weaponId === id && !!o.beast);
+}
+/** Bırak düğmesine çıkan eşyalar: elde tutulan silahlardan doğal/biçim silahları çıkmış hâli. */
+export const droppableWeapons = (c: Combatant): string[] => heldWeapons(c).filter((id) => !isNaturalWeapon(id, c.weaponOptions));
 
 /** Harita grubunun okunur adı: çeviri tablosu, yoksa kimlik sözcüklere ayrılır. */
 export function groupName(id: string): string {

@@ -7,6 +7,8 @@
  * Komut başarılı olursa `action_used` olayı komutun olaylarının ardına eklenir; başarısız
  * komut hiçbir şey harcamaz.
  */
+import { buyucu93On } from './buyucu93Surum';
+import { anyListResource } from './anyList';
 import { ws92On } from './ws92Surum';
 import ws92Data from '../../data/ws92.json';
 import { heldFollow, mechanicsAt } from './spellVersion';
@@ -406,7 +408,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       // Action Surge'ün verdiği eylem Magic eylemi olamaz (SRD 5.2.1).
       if (e.surged && spell.castingTime === 'action') return fail('Action Surge\'ün ek eylemiyle büyü yapılamaz.');
       // Kuyruk 43b: Divine Intervention ile slotsuz yapım (oyuncu isteği): Magic eylemi, slot yok.
-      if (cmd.free && (spell.level === 0 || !freeCastResource(actor, spell.name, cmd.slotLevel, true))) return fail('Bu büyü slotsuz yapılamaz (kullanım hakkı yok ya da büyü listede değil).');
+      // Görev B93 (93+): hazırlanmamış listeli büyü (Divine Intervention `anyFromList`).
+      if (cmd.free && (spell.level === 0 || (!freeCastResource(actor, spell.name, cmd.slotLevel, true) && !(buyucu93On(state) && !actor.spellNames.includes(spell.name) && anyListResource(actor, spell))))) return fail('Bu büyü slotsuz yapılamaz (kullanım hakkı yok ya da büyü listede değil).');
       // Kuyruk P11: bilinmeyen büyü (paket çalınan/kopya) slotsuz yapılır.
       const usesSlot = spell.level > 0 && !cmd.free && !freeCast(actor, spell.name, cmd.slotLevel) && actor.spellNames.includes(spell.name);
       const key = turnKey(state);

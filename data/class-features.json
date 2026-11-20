@@ -29,6 +29,12 @@
     "divineIntervention": {
       "name": "Divine Intervention",
       "feature": "cleric:divine-intervention",
+      "wait": {
+        "spells": [
+          "Wish"
+        ],
+        "dice": "2d4"
+      },
       "uses": {
         "fixed": 1
       },
@@ -42,6 +48,7 @@
         "minLevel": 1,
         "maxLevel": 5,
         "lastResort": true,
+        "anyFromList": true,
         "extraNames": [
           "Wish"
         ]

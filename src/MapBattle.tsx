@@ -33,7 +33,7 @@ import { whirlpoolCast } from './battle/girdap';
 import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { SHEET_BAR_H, TOP_STRIP_H, isPortraitPhone, portraitScaleScreen, sheetOpenFor, sheetOpenHeight, stageBox } from './ui/battleLayout';
-import { groupName, heldItemName } from './ui/heldItemName';
+import { droppableWeapons, groupName, heldItemName, isNaturalWeapon } from './ui/heldItemName';
 import type { Spell } from './data';
 import { resourceLeft, type AttackOption, type BattleState, type Combatant, type Command, type CunningOption } from './battle';
 import { resourceDef, resourceUsable } from './rules/classFeatures';
@@ -96,7 +96,7 @@ import {
 } from './ui/hud';
 import { SECENEK_ADI } from './battle/girdapSurum';
 import { effectIcons, effectRows } from './ui/effectsView';
-import { destroyForceProblem, effectTargetCount, strideSpellOf } from './battle/spells';
+import { anyListActor, destroyForceProblem, effectTargetCount, strideSpellOf } from './battle/spells';
 import { wishCandidates } from './battle/spells69';
 import { movableZoneOf } from './battle/zones';
 import { DANCE_COMBINED, danceAddProblem, danceMax } from './battle/danceLights';
@@ -189,7 +189,7 @@ import { castBarrierKind } from './battle/castBarrier';
 import { burstSprite, objectSprite, zoneLook } from './ui/sprites';
 import { zoneShownTo } from './battle/hiddenZones';
 import { ruleVersion } from './battle/ruleVersion';
-import { heldWeapons, groundItemsNear } from './battle/heldItems';
+import { groundItemsNear } from './battle/heldItems';
 import { climbs, fliesOrHovers, flySpeed, hovers, ownFlyCapFt, spellJumpFt } from './battle/flight';
 import { SpriteBurst, SurfaceLayer, type SurfaceItem } from './ui/SpriteZone';
 import { failHit, goalHexes, goalStatus } from './battle/goals';
@@ -560,6 +560,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   const [spell, setSpell] = useState<Spell | null>(null);
   // Yukarı slot seçimi (Görev N): null en düşük uygun slot (ve Favored Enemy'nin slotsuz büyüsü).
   const [slotPick, setSlotPick] = useState<number | null>(null);
+  // Görev B93: Divine Intervention kipi (hazırlanmamış Cleric büyüleri, slotsuz).
+  const [diMode, setDiMode] = useState(false);
   // Görev SORCERER: bu yapımda seçilen Metamagic seçenekleri.
   const [mmPick, setMmPick] = useState<string[]>([]);
   // Kuyruk K58: önizleme ayarları ve keşif defteri (yalnız arayüz durumu; kayıt/replay dışı).
@@ -592,9 +594,12 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   // İyileştirme havuzu (Lay On Hands) kipinde seçili özellik; komut eksik HP kadar (havuz yettiğince), tam sağlıklıysa
   // ve kaldırılabilir durum varsa yalnızca durum kaldırma.
   const [featureKey, setFeatureKey] = useState<string | null>(null);
+  // Görev B93: Divine Spark kipi (iyileştir / hasar türü; menüden seçilir).
+  const [featureChoice, setFeatureChoice] = useState<string | null>(null);
   const featureCommand = (me: Combatant, c: Combatant): Command => {
     const f = (me.features ?? []).find((x) => x.key === featureKey);
-    // Görev CLERIC: Divine Spark hedef seçer (dosta iyileştirme, düşmana hasar; tür motorda hedefe göre).
+    // Görev CLERIC: Divine Spark hedef seçer; Görev B93: kip ve hasar türü menüde seçilir (yoksa dosta iyileştirme, düşmana hasar).
+    if (f?.effect.kind === 'divineSpark' && featureChoice) return { type: 'use_feature', actorId: me.id, feature: f.key, targetId: c.id, choice: featureChoice };
     if (f?.effect.kind === 'divineSpark' || f?.effect.kind === 'inspire' || f?.effect.kind === 'leash' || f?.effect.kind === 'celestialHeal' || f?.effect.kind === 'karadulGaze' || (f && featTargeted(f))) return { type: 'use_feature', actorId: me.id, feature: f.key, targetId: c.id };
     const pool = f?.resource ? resourceLeft(me, f.resource) : 0;
     const missing = Math.max(0, c.maxHp - c.hp);
@@ -794,7 +799,9 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     return () => window.clearInterval(timer);
   }, [rotating]);
   const actorId = state.order[state.turnIndex] ?? '';
-  const actor = state.combatants[actorId];
+  const actorReal = state.combatants[actorId];
+  // Görev B93: Divine Intervention kipinde büyü menüsü yalnız hazırlanmamış listeli büyüler (sanal büyücü; komutlar slotsuz).
+  const actor = diMode && actorReal ? anyListActor(state, actorReal) ?? actorReal : actorReal;
   // Görev F: saldırı balonunda seçilen Cunning Strike seçenekleri (tur değişince sıfırlanır) ve Horde Breaker silahı.
   const [cunningPicks, setCunningPicks] = useState<CunningOption[]>([]);
   useEffect(() => { setCunningPicks([]); setBrutalPicks([]); }, [actorId, state.round]);
@@ -1237,7 +1244,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     if (!mounts.length || mounts.some((m) => !mountProblem(state, actor, m.id))) return null;
     return loc(mountProblem(state, actor, mounts[0]?.id ?? ''));
   }, [state, actor, mode]);
-  const reset = () => { setDismountFt(null); setJumpAim(null); setMoveAim(null); setOriginId(null); setMode('idle'); setSpell(null); setAreaAct(null); setSlotPick(null); setMmPick([]); setTargetId(null); setAimHex(null); setAimPts([]); setGateAim(false); setMenuOpen(true); setMoveMenu(false); setSpellTab(null); setSpecialTab(null); };
+  const reset = () => { setDiMode(false); setDismountFt(null); setJumpAim(null); setMoveAim(null); setOriginId(null); setMode('idle'); setSpell(null); setAreaAct(null); setSlotPick(null); setMmPick([]); setTargetId(null); setAimHex(null); setAimPts([]); setGateAim(false); setMenuOpen(true); setMoveMenu(false); setSpellTab(null); setSpecialTab(null); };
   const run = (cmd0: Command) => {
     const mm = mmPick.filter((x) => x !== 'overchannel' && x !== 'store');
     const cmd: Command = cmd0.type === 'cast_spell' && mmPick.length > 0
@@ -1554,6 +1561,10 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   const B = t().battle;
   const Y = B.why;
   const N = B.label;
+  // Görev B93: Divine Spark menüde üç seçenek (iyileştir, Necrotic, Radiant); SRD 5.2.1 s. 37 seçim oyuncunun.
+  const sparkItems = <T extends { key: string; label: string; act: () => void }>(f: UsableFeature, item: T): T[] => (f.effect.kind !== 'divineSpark' ? [item]
+    : ['heal', ...f.effect.types].map((ch) => ({ ...item, key: `${f.key}:${ch}`, label: `${item.label}: ${N.sparkChoice(ch)}`,
+      act: () => { reset(); setFeatureKey(f.key); setFeatureChoice(ch); setMode('feature'); setMenuOpen(false); } })));
   // Kuyruk K58 G2: motorun gerekçesi seçili dile (data/neden-metinleri.json).
   const why = (cmd: Command) => (actor ? loc(economyBlock(state, actor, cmd)) : Y.notYourTurn);
   /** Kuyruk K68b: motorun reddi (zar atmadan deneme; düğmeyi kapatmak ve nedenini ipucunda göstermek için). */
@@ -1618,6 +1629,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       reason: offhandProblem(actor) ?? why({ type: 'offhand_attack', actorId, targetId: '' }) ?? undefined,
       act: () => { reset(); setMode('offhand'); setMenuOpen(false); } }] : []),
     ...(actor.spellNames.length > 0 ? [{ key: 'spell', label: N.spell, reason: spellReason, act: () => { reset(); setMode('spells'); setMenuOpen(false); } }] : []),
+    // Görev B93: Divine Intervention: herhangi bir Cleric büyüsü (≤ 5), hazırlanmamış olsa da, slotsuz.
+    ...(anyListActor(state, actor) ? [{ key: 'divine-intervention', label: N.anyListSpell, act: () => { reset(); setDiMode(true); setSlotPick(FREE_SLOT); setMode('spells'); setMenuOpen(false); } }] : []),
     // Alan eylemleri (Görev R4): nefes, koni/çizgi saldırıları, Dragonborn Breath Weapon.
     ...(state.map && (areaAttacksOf(actor).length > 0 || breathOf(actor)) ? [{ key: 'area', label: t().area.menu,
       act: () => { reset(); setMode('areas'); setMenuOpen(false); } }] : []),
@@ -1728,7 +1741,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     // Kuyruk 19 (11–20): Nature Magician: Wild Shape kullanımları → tek slot (kullanım başına 2 seviye).
     ...(actor.traits?.includes('nature-magician') && globalRule(state, 'featuresK19') ? [1, 2, 3, 4].map((n) => ({ key: `magician-${n}`, label: N.natureMagician(n, Math.min(9, 2 * n)),
       reason: why({ type: 'wild_resurgence', actorId, mode: 'magician', uses: n }) ?? undefined, act: () => run({ type: 'wild_resurgence', actorId, mode: 'magician', uses: n }) })) : []),
-    ...(actor.features ?? []).filter((f) => f.effect.kind !== 'wildShape').map((f) => (f.effect.kind === 'healPool' || f.effect.kind === 'divineSpark' || f.effect.kind === 'inspire' || f.effect.kind === 'leash' || f.effect.kind === 'celestialHeal' || f.effect.kind === 'karadulGaze' || featTargeted(f)
+    ...(actor.features ?? []).filter((f) => f.effect.kind !== 'wildShape').flatMap((f) => sparkItems(f, (f.effect.kind === 'healPool' || f.effect.kind === 'divineSpark' || f.effect.kind === 'inspire' || f.effect.kind === 'leash' || f.effect.kind === 'celestialHeal' || f.effect.kind === 'karadulGaze' || featTargeted(f)
       ? { key: f.key, label: N.featureName[f.key] ?? f.name,
         // Kuyruk K50: hedefli imza eylemi hedef seçilene dek yalnız kaynak denetlenir.
         // Kuyruk P11: paket `ilham.kaynaksiz` kaynak bitince de ilham verir.
@@ -1742,7 +1755,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
           ? (reset(), setPickHexCmd({ make: (h) => ({ type: 'use_feature', actorId, feature: f.key, to: h }) }), setMode('pickHex'), setMenuOpen(false))
           : f.effect.kind === 'teleport' || f.effect.kind === 'landsAid' || f.effect.kind === 'blinkStep'
           ? (reset(), setFeatureKey(f.key), setMode('teleport'), setMenuOpen(false))
-          : run({ type: 'use_feature', actorId, feature: f.key })) })),
+          : run({ type: 'use_feature', actorId, feature: f.key })) }))),
     // Kuyruk 19: Find Steed atının bonus eylemleri.
     ...steedActions(state, actor).map((k) => ({ key: `steed-${k}`, label: N.steed[k] ?? k, reason: actor.economy.bonus ? Y.steerBonus : undefined,
       act: () => { reset(); if (k === 'fey-step') { setPickHexCmd({ make: (h) => ({ type: 'steed_action', actorId, kind: k, to: h }) }); setMode('pickHex'); }
@@ -3349,7 +3362,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                   {(c.altitudeFt ?? 0) > 0 && <button className="hud-btn small" onClick={() => run({ type: 'vertical_move', actorId, targetId: c.id, toFt: (c.altitudeFt ?? 0) - 5 })}>{`${c.name} ${B.s2.down}`}</button>}
                 </span>
               ))}
-              {ruleVersion(state) >= 41 && !actor.shape?.possession && heldWeapons(actor)[0] && <button className="hud-btn small" onClick={() => run({ type: 'drop_item', actorId, item: heldWeapons(actor)[0] as string })}>{B.s2.drop(heldItemName(heldWeapons(actor)[0] as string, actor.weaponOptions))}</button>}
+              {/* Doğal/biçim silahı (Wild Shape `beast:`, Karadul) bırakılmaz: düğme gizli (`droppableWeapons`). */}
+              {ruleVersion(state) >= 41 && !actor.shape?.possession && droppableWeapons(actor)[0] && <button className="hud-btn small" onClick={() => run({ type: 'drop_item', actorId, item: droppableWeapons(actor)[0] as string })}>{B.s2.drop(heldItemName(droppableWeapons(actor)[0] as string, actor.weaponOptions))}</button>}
               {/* Kuyruk P11: saklı büyüyü ateşle (hedef: seçili hedef ya da kendisi). */}
               {actor.effects?.find((e) => e.storedSpell) && <button className="hud-btn small" onClick={() => run({ type: 'spell_followup', actorId, targetId: targetId ?? actorId, choice: 'sakli', ...(aimHex ? { targetHex: aimHex } : {}) })}>{B.p11.fire(actor.effects.find((e) => e.storedSpell)?.storedSpell?.spellName ?? '')}</button>}
               {/* Kuyruk P12: büyü kitabını bırak / al; dostun mühürlü büyüsünü tetikle (dostun ekonomisi harcanmaz). */}
@@ -3360,7 +3374,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                 <button key={`seal${c.id}`} className="hud-btn small" onClick={() => run({ type: 'spell_followup', actorId, sourceId: c.id, targetId: targetId ?? actorId, choice: 'sakli', ...(aimHex ? { targetHex: aimHex } : {}) })}>
                   {B.p12.allyFire(c.name, c.effects?.find((e) => e.storedSpell)?.storedSpell?.spellName ?? '')}</button>
               ))}
-              {ruleVersion(state) >= 41 && groundItemsNear(state, actor).map((o) => <button key={o.id} className="hud-btn small" onClick={() => run({ type: 'pick_up', actorId, objectId: o.id })}>{B.s2.pick(heldItemName(o.item ?? ''))}</button>)}
+              {ruleVersion(state) >= 41 && groundItemsNear(state, actor).filter((o) => !isNaturalWeapon(o.item ?? '')).map((o) => <button key={o.id} className="hud-btn small" onClick={() => run({ type: 'pick_up', actorId, objectId: o.id })}>{B.s2.pick(heldItemName(o.item ?? ''))}</button>)}
             </div>
           )}
           </>, ptBody)}

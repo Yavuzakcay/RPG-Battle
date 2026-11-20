@@ -1380,6 +1380,8 @@ export type FeatureEffect =
   | { kind: 'paket'; target?: 'ally' | 'enemy' | 'any'; hex?: 'hex' | 'after' };
 
 export interface ResourceDef {
+  /** Görev B93: bu büyüler bu kaynakla yapılınca kaynak zar kadar uzun dinlenme kullanılamaz (Greater Divine Intervention: Wish, 2d4). */
+  wait?: { spells: string[]; dice: string };
   name: string;
   /** Kaynağı veren özellik(ler): `sınıf:özellik`. */
   feature: string | string[];
@@ -1402,6 +1404,7 @@ export interface ResourceDef {
    * 5. seviyeye dek, tepki değil). `lastResort`: yalnızca büyünün seviyesinde ya da üstünde slot kalmadıysa harcanır.
    */
   freeSpellList?: { classes: string[]; /** Kuyruk 19: yalnızca bu adlar (Natural Recovery: daire büyüleri). */ names?: string[]; minLevel?: number; maxLevel: number; lastResort?: boolean;
+    /** Görev B93 (sürüm 93+, Divine Intervention): listedeki herhangi bir büyü, hazırlanmamış olsa da (oyuncu isteğiyle `cast_spell.free`). */ anyFromList?: boolean;
     /** Kuyruk 18 H3: seviye başına yalnızca bilinen ilk büyü (Spell Mastery, Signature Spells: seçim arayüzü yerine). */ perLevel?: number;
     /** Kuyruk 19: sınıf ve seviye sınırı dışında bu adlar da (Greater Divine Intervention: Wish). */ extraNames?: string[] };
   /** Görev SORCERER: savaşta dönüştürmeyle bu kaynağın tavanı aşılmaz (Font of Magic: Sorcery Points). */

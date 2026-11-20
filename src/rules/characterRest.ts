@@ -35,6 +35,11 @@ export interface CharacterStatus {
    */
   resourceMax?: Record<string, number>;
   hpMax?: number;
+  /**
+   * Görev B93: kaynak başına kalan uzun dinlenme bekleme sayısı (Greater Divine Intervention: Wish'ten sonra 2d4 Long Rest).
+   * Sayaç sürdükçe uzun dinlenme o kaynağı doldurmaz.
+   */
+  waits?: Record<string, number>;
   /** Savaşta öldü: dinlenme diriltmez. */
   dead?: boolean;
   /** Görev S1: bitkinlik seviyesi (yoksa 0); uzun dinlenme 1 azaltır. */
@@ -86,6 +91,7 @@ export function currentStatus(sheet: CharacterSheet, status?: CharacterStatus): 
     hpMax: full.hp,
     ...(status.dead ? { dead: true } : {}),
     ...((status.exhaustion ?? 0) > 0 ? { exhaustion: Math.min(MAX_EXHAUSTION, status.exhaustion ?? 0) } : {}),
+    ...(status.waits && Object.keys(status.waits).length ? { waits: { ...status.waits } } : {}),
     ...moralPart(status),
   };
 }
@@ -186,7 +192,7 @@ export function longRestStatus(sheet: CharacterSheet, status: CharacterStatus | 
   const r = longRest(restState(sheet, s));
   return {
     hp: r.hp, hitDiceSpent: sheet.level - r.hitDiceLeft, slots: r.spellSlots, slotMax: s.slotMax ?? [], resourceMax: s.resourceMax ?? {}, hpMax: s.hpMax ?? r.hp,
-    resources: rechargeResources(s.resources, fullStatus(sheet).resourceMax ?? fullStatus(sheet).resources, 'long', sheet.level),
+    ...waitedLongRest(rechargeResources(s.resources, fullStatus(sheet).resourceMax ?? fullStatus(sheet).resources, 'long', sheet.level), s.waits),
     // Bitkinlik (SRD 5.2.1): uzun dinlenme 1 seviye azaltır.
     ...(exhaustionAfterLongRest(s.exhaustion) > 0 ? { exhaustion: exhaustionAfterLongRest(s.exhaustion) } : {}),
     ...moralPart(s),
@@ -225,3 +231,17 @@ export function repairSlots<T extends { sheet: CharacterSheet; status?: Characte
   return { list: list.some((c) => needs(c.status)) ? out : list, repaired };
 }
 
+
+/**
+ * Görev B93: bekleme sayacı olan kaynak uzun dinlenmede dolmaz; sayaç bir azalır (sıfıra inince bu dinlenmede dolar).
+ * SRD 5.2.1 s. 38 Greater Divine Intervention: "can't use this feature again until you finish 2d4 Long Rests".
+ */
+function waitedLongRest(resources: Record<string, number>, waits: Record<string, number> | undefined): { resources: Record<string, number>; waits?: Record<string, number> } {
+  if (!waits) return { resources };
+  const out = { ...resources };
+  const left: Record<string, number> = {};
+  for (const [id, n] of Object.entries(waits)) {
+    if (n - 1 > 0) { left[id] = n - 1; out[id] = 0; }
+  }
+  return { resources: out, ...(Object.keys(left).length ? { waits: left } : {}) };
+}

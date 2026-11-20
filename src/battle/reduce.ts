@@ -229,6 +229,11 @@ function pruneEffects(state: BattleState): BattleState {
       if (e.whileGrappledBy && c.grapple?.by !== e.whileGrappledBy) return false;
       // Kuyruk 19: Incapacitated olunca biten etki (Superior Defense).
       if (e.breakOnIncapacitated && c.conditions.some((x) => ['Incapacitated', 'Stunned', 'Paralyzed', 'Unconscious', 'Petrified'].includes(x))) return false;
+      // Görev B93 (Turn Undead): kaynak Incapacitated, 0 HP ya da ölü.
+      if (e.endsIfSourceDown) {
+        const src = state.combatants[e.sourceId];
+        if (!src || src.life === 'dead' || src.hp <= 0 || src.conditions.some((x) => ['Incapacitated', 'Stunned', 'Paralyzed', 'Unconscious', 'Petrified'].includes(x))) return false;
+      }
       if (e.concentration && state.combatants[e.sourceId]?.concentration?.spell !== e.concentration) return false;
       return true;
     });

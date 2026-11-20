@@ -55,6 +55,12 @@ export function applyBattleResult(characters: SavedCharacter[], state: BattleSta
       ...(prev.hpMax !== undefined ? { hpMax: prev.hpMax } : {}),
       ...(c.life === 'dead' ? { dead: true } : {}),
       ...((c.exhaustion ?? 0) > 0 && c.life !== 'dead' ? { exhaustion: c.exhaustion } : {}),
+      // Görev B93: savaşta başlayan bekleme sayacı (`<kaynak>:bekle`; Greater Divine Intervention).
+      ...((): Partial<CharacterStatus> => {
+        const w = { ...(prev.waits ?? {}) };
+        for (const [k, n] of Object.entries(c.resources)) if (k.endsWith(':bekle') && n > 0) w[k.slice(0, -':bekle'.length)] = n;
+        return Object.keys(w).length ? { waits: w } : {};
+      })(),
       ...moralResult(c, prev),
     };
     return { ...ch, status: next };
