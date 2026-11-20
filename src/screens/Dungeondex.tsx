@@ -4,7 +4,7 @@
  * sütun (liste ya da kart), geniş ekranda iki sütun (liste + kart).
  */
 import { useEffect, useMemo, useState } from 'react';
-import { loadMonsters } from '../data';
+import { loadMonsters, monsters } from '../data';
 import { t, useLang } from '../i18n';
 import { APP_NAME } from '../app/appName';
 import notice from '../../NOTICE?raw';
@@ -12,15 +12,28 @@ import {
   buildDex, dexFilters, dexSearch, loadDexExtras, shownText, DEX_CATS, DEX_PAGE, DEX_SUBCLASS_EXPECTED, DEX_VISIBLE_FILTERS,
   type DexCat, type DexEntry, type DexExtras, type DexLink, type DexText,
 } from '../dungeondex/catalog';
+import { BookFrame, DexCover, useCover } from '../dungeondex/book/Book';
+import { bookData } from '../dungeondex/book/kitapData';
+import { storedDexCover } from '../ui/dexCoverSetting';
+import { IconBook } from '../ui/icons';
 import './dungeondex.css';
+
+const BASE = import.meta.env.BASE_URL;
 
 const MAP_FILES = import.meta.glob<{ id: string; name: string; gizli?: boolean }>(['../../harita/*/*.json', '!../../harita/_ortak/*.json', '!../../harita/belgeler/*.json'], { import: 'default' });
 
 export type DexView = { cat: DexCat | 'lisans' | null; id: string | null };
 type View = DexView;
 
-export function Dungeondex(props: { onBack: () => void; /** Testler: hazır ek veri (yükleme atlanır). */ extras?: Omit<DexExtras, 'mapNames'>; /** Testler: başlangıç görünümü. */ initial?: DexView }) {
+export function Dungeondex(props: { onBack: () => void; /** Testler: hazır ek veri (yükleme atlanır). */ extras?: Omit<DexExtras, 'mapNames'>; /** Testler: başlangıç görünümü. */ initial?: DexView;
+  /** Kapak (Görev DD-Kitap): verilmezse Ayarlar "Kapak animasyonu"; başlangıç görünümü verilince (testler) kapak yok. */ cover?: boolean }) {
   const lang = useLang();
+  const [phase, openCover] = useCover(props.cover ?? (props.initial ? false : storedDexCover()));
+  // Kitap görselleri kapak kapalıyken önyüklenir (açılınca boş çerçeve görünmesin).
+  useEffect(() => {
+    const d = bookData();
+    for (const f of [d.genis?.file, d.mobil?.file]) if (f) { const img = new Image(); img.src = `${BASE}${f}`; }
+  }, []);
   const L = t().dex;
   const [extras, setExtras] = useState<Omit<DexExtras, 'mapNames'> | null>(props.extras ?? null);
   const [mapNames, setMapNames] = useState<Record<string, string>>({});
@@ -70,55 +83,95 @@ export function Dungeondex(props: { onBack: () => void; /** Testler: hazır ek v
     props.onBack();
   };
 
+  // Kitapta kayıt ya da kategori değişince sayfa başa döner (sayfa kendi içinde kayar).
+  useEffect(() => { document.querySelector('.ddk-page')?.scrollTo?.(0, 0); }, [view.cat, view.id]);
   const title = view.cat === 'lisans' ? L.license : view.cat ? L.cat[view.cat] : L.title;
+  const counts = dex ? L.cover.counts(dex.buyu.length, dex.esya.length, dex.canavar.length) : null;
+  const idx = entry ? found.findIndex((e) => e.id === entry.id) : -1;
+  const step = (d: number) => { const e = found[idx + d]; if (e) { setTrail([]); setView({ cat: view.cat, id: e.id }); } };
+  const page = (
+    <main className={`app dex${view.cat && view.cat !== 'lisans' ? ' dex-split' : ''}${entry ? ' dex-has-card' : ''}`}>
+      {error && <p className="error">{L.error}</p>}
+      {!dex && !error && <p className="mute">{L.loading}</p>}
+      {dex && view.cat === null && (
+        <nav className="dex-cats" aria-label={L.categories}>
+          {DEX_CATS.map((c) => (
+            <button key={c} type="button" className="dex-cat" data-testid={`dex-cat-${c}`} onClick={() => openCat(c)}>
+              <strong>{L.cat[c]}</strong><span>{L.count(dex[c].length)}</span>
+            </button>
+          ))}
+          <button type="button" className="dex-cat dex-license-btn" data-testid="dex-cat-lisans" onClick={() => openCat('lisans')}><strong>{L.license}</strong><span>SRD 5.2.1 · CC-BY-4.0</span></button>
+        </nav>
+      )}
+      {view.cat === 'lisans' && <License />}
+      {dex && view.cat && view.cat !== 'lisans' && (
+        <div className="dex-body">
+          <section className="dex-list" aria-label={title}>
+            <input className="dex-search" type="search" value={query} placeholder={L.search} aria-label={L.search}
+              onChange={(e) => { setQuery(e.target.value); setShown(DEX_PAGE); }} />
+            {filters.length > 0 && <Filters filters={filters} sel={sel} onChange={(s) => { setSel(s); setShown(DEX_PAGE); }} />}
+            {view.cat === 'altsinif' && list.length < DEX_SUBCLASS_EXPECTED && <p className="dex-note" role="status">{L.contentMissing(list.length, DEX_SUBCLASS_EXPECTED)}</p>}
+            <p className="mute dex-count">{L.count(found.length)}</p>
+            {found.length === 0 && <p className="mute">{L.empty}</p>}
+            <ul className="dex-rows">
+              {found.slice(0, shown).map((e) => (
+                <li key={e.id}>
+                  <button type="button" className={`dex-row${e.id === view.id ? ' on' : ''}`} onClick={() => { setTrail([]); setView({ cat: view.cat, id: e.id }); }}>
+                    <strong>{e.name}</strong>{e.alt && <em>{e.alt}</em>}<span>{e.header}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+            {found.length > shown && <button type="button" className="dex-more" onClick={() => setShown(shown + DEX_PAGE)}>{L.more(found.length - shown)}</button>}
+          </section>
+          <section className="dex-card-pane">
+            {entry ? <Card entry={entry} onLink={follow} /> : <p className="mute dex-pick">{L.pick}</p>}
+          </section>
+        </div>
+      )}
+    </main>
+  );
   return (
-    <div className="menu-screen dex-screen">
-      <main className={`app dex${view.cat && view.cat !== 'lisans' ? ' dex-split' : ''}${entry ? ' dex-has-card' : ''}`}>
-        <header className="dex-top">
-          <button type="button" className="dex-back" onClick={back} aria-label={L.back}>← {L.back}</button>
-          <h1>{title}</h1>
-        </header>
-        {error && <p className="error">{L.error}</p>}
-        {!dex && !error && <p className="mute">{L.loading}</p>}
-        {dex && view.cat === null && (
-          <nav className="dex-cats" aria-label={L.categories}>
-            {DEX_CATS.map((c) => (
-              <button key={c} type="button" className="dex-cat" data-testid={`dex-cat-${c}`} onClick={() => openCat(c)}>
-                <strong>{L.cat[c]}</strong><span>{L.count(dex[c].length)}</span>
-              </button>
-            ))}
-            <button type="button" className="dex-cat dex-license-btn" data-testid="dex-cat-lisans" onClick={() => openCat('lisans')}><strong>{L.license}</strong><span>SRD 5.2.1 · CC-BY-4.0</span></button>
-          </nav>
-        )}
-        {view.cat === 'lisans' && <License />}
-        {dex && view.cat && view.cat !== 'lisans' && (
-          <div className="dex-body">
-            <section className="dex-list" aria-label={title}>
-              <input className="dex-search" type="search" value={query} placeholder={L.search} aria-label={L.search}
-                onChange={(e) => { setQuery(e.target.value); setShown(DEX_PAGE); }} />
-              {filters.length > 0 && <Filters filters={filters} sel={sel} onChange={(s) => { setSel(s); setShown(DEX_PAGE); }} />}
-              {view.cat === 'altsinif' && list.length < DEX_SUBCLASS_EXPECTED && <p className="dex-note" role="status">{L.contentMissing(list.length, DEX_SUBCLASS_EXPECTED)}</p>}
-              <p className="mute dex-count">{L.count(found.length)}</p>
-              {found.length === 0 && <p className="mute">{L.empty}</p>}
-              <ul className="dex-rows">
-                {found.slice(0, shown).map((e) => (
-                  <li key={e.id}>
-                    <button type="button" className={`dex-row${e.id === view.id ? ' on' : ''}`} onClick={() => { setTrail([]); setView({ cat: view.cat, id: e.id }); }}>
-                      <strong>{e.name}</strong>{e.alt && <em>{e.alt}</em>}<span>{e.header}</span>
-                    </button>
-                  </li>
+    <div className="menu-screen dex-screen ddk-screen">
+      {phase !== 'closed' && (
+        <>
+          <header className="ddk-bar">
+            <button type="button" className="dex-back" onClick={back} aria-label={L.back}>← {L.back}</button>
+            <h1>{title}</h1>
+            <div className="ddk-nav">
+              <button type="button" data-testid="dex-prev" onClick={() => step(-1)} disabled={idx <= 0} aria-label={L.prev} title={L.prev}>‹</button>
+              <button type="button" data-testid="dex-next" onClick={() => step(1)} disabled={idx < 0 || idx >= found.length - 1} aria-label={L.next} title={L.next}>›</button>
+            </div>
+            {dex && (
+              <nav className="ddk-tabs" aria-label={L.categories}>
+                {[...DEX_CATS, 'lisans' as const].map((c) => (
+                  <button key={c} type="button" data-testid={`dex-tab-${c}`} className={view.cat === c ? 'on' : ''} aria-pressed={view.cat === c}
+                    onClick={() => openCat(c)}>{c === 'lisans' ? L.license : L.cat[c]}</button>
                 ))}
-              </ul>
-              {found.length > shown && <button type="button" className="dex-more" onClick={() => setShown(shown + DEX_PAGE)}>{L.more(found.length - shown)}</button>}
-            </section>
-            <section className="dex-card-pane">
-              {entry ? <Card entry={entry} onLink={follow} /> : <p className="mute dex-pick">{L.pick}</p>}
-            </section>
+              </nav>
+            )}
+          </header>
+          <div className={`ddk-book${phase !== 'open' ? ' ddk-entering' : ''}`}>
+            <BookFrame
+              vitrine={<Vitrine entry={entry} />}
+              strip={entry ? <><strong>{entry.name}</strong><em>{L.cat[entry.cat]}</em></> : <strong>{title}</strong>}
+              page={page} />
           </div>
-        )}
-      </main>
+        </>
+      )}
+      {phase !== 'open' && <DexCover phase={phase} onOpen={openCover} counts={counts} />}
     </div>
   );
+}
+
+/** Vitrin (Görev DD-Kitap; içerik sonraki görevde): canavarda jeton, diğerlerinde yer tutucu ikon. */
+function Vitrine(props: { entry: DexEntry | null }) {
+  const L = t().dex;
+  const e = props.entry;
+  const [broken, setBroken] = useState<string | null>(null);
+  const src = e?.cat === 'canavar' ? (monsters.find((m) => m.id === e.id)?.avatar ?? `monsters/${e.id}.webp`) : null;
+  if (src && broken !== src) return <img src={`${BASE}${src}`} alt={e!.name} onError={() => setBroken(src)} />;
+  return <div className="ddk-vitrin-ph" aria-label={L.vitrine}><IconBook size={48} /><span>{e ? L.cat[e.cat] : L.title}</span></div>;
 }
 
 function Filters(props: { filters: ReturnType<typeof dexFilters>; sel: Record<string, string>; onChange: (s: Record<string, string>) => void }) {

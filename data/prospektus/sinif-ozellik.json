@@ -1,0 +1,1100 @@
+{
+ "_aciklama": "Dungeondex prospektüsü, sınıf özellikleri (kimlik `<sınıf>:<özellik>`; aynı özellik ikinci kez `@<seviye>`). ne/nasil/risk/kimler SRD 5.2.1'den Türkçe özet; sinif ve seviye data/srd/classes.json'dan (test denetler).",
+ "kayitlar": {
+  "barbarian:rage": {
+   "ne": "İlkel bir güce bürünürsün: ezici, delici ve kesici hasara Resistance, STR ile yaptığın saldırılarda ek Rage hasarı, STR kontrolleri ve STR kurtarma zarlarında Advantage kazanırsın.",
+   "nasil": "Bonus eylemle girilir. Kullanım sayısı sınıf tablosundaki kadardır; Short Rest bir kullanımı, Long Rest hepsini geri verir. Rage sonraki turunun sonuna dek sürer; düşmana saldırı zarı atarak, düşmana kurtarma zarı attırarak ya da bonus eylem harcayarak her tur uzatılır, en çok 10 dakika.",
+   "risk": "Rage sürerken büyü yapamaz ve Concentration sürdüremezsin. Heavy zırh giyersen ya da Incapacitated olursan erken biter.",
+   "kimler": "Heavy zırh giyerken Rage'e girilemez.",
+   "sinif": "barbarian",
+   "seviye": 1
+  },
+  "barbarian:unarmored-defense": {
+   "ne": "Zırh giymiyorken temel Armor Class'ın 10 + DEX değiştiricisi + CON değiştiricisi olur.",
+   "nasil": "Pasiftir; Shield taşırken de geçerlidir.",
+   "kimler": "Herhangi bir zırh giyiyorsan işlemez.",
+   "sinif": "barbarian",
+   "seviye": 1
+  },
+  "barbarian:weapon-mastery": {
+   "ne": "Seçtiğin iki tür Simple ya da Martial yakın dövüş silahının ustalık (mastery) özelliklerini kullanabilirsin.",
+   "nasil": "Her Long Rest sonunda seçimlerinden birini değiştirebilirsin. Seçebileceğin silah türü sayısı sınıf tablosundaki kadar artar.",
+   "kimler": "Yalnız yakın dövüş silahları seçilebilir.",
+   "sinif": "barbarian",
+   "seviye": 1
+  },
+  "barbarian:danger-sense": {
+   "ne": "Tehlikeyi sezersin: DEX kurtarma zarlarında Advantage kazanırsın.",
+   "risk": "Incapacitated iken işlemez.",
+   "sinif": "barbarian",
+   "seviye": 2
+  },
+  "barbarian:reckless-attack": {
+   "ne": "Savunmayı bir kenara bırakıp öfkeyle saldırırsın: STR kullanan saldırı zarların Advantage kazanır.",
+   "nasil": "Turundaki ilk saldırı zarını atarken seçilir; etki sonraki turunun başına dek sürer.",
+   "risk": "Aynı süre boyunca sana yapılan saldırı zarları da Advantage kazanır.",
+   "sinif": "barbarian",
+   "seviye": 2
+  },
+  "barbarian:barbarian-subclass": {
+   "ne": "Bir Barbarian alt sınıfı seçersin; alt sınıf belirli Barbarian seviyelerinde ek özellikler verir. SRD'de örnek alt sınıf Path of the Berserker.",
+   "nasil": "Seçimden sonra kariyerin boyunca Barbarian seviyene eşit ya da altındaki bütün alt sınıf özelliklerini kazanırsın.",
+   "sinif": "barbarian",
+   "seviye": 3
+  },
+  "barbarian:primal-knowledge": {
+   "ne": "Barbarian beceri listesinden bir beceride daha yetkinlik kazanırsın. Rage sürerken bazı beceri kontrollerini STR kontrolü olarak yapabilirsin.",
+   "nasil": "Rage etkinken Acrobatics, Intimidation, Perception, Stealth ya da Survival kontrolünü STR ile yapmayı seçebilirsin.",
+   "risk": "Beceri kontrollerini STR'ye çevirme yalnız Rage sürerken geçerlidir.",
+   "sinif": "barbarian",
+   "seviye": 3
+  },
+  "barbarian:ability-score-improvement": {
+   "ne": "Ability Score Improvement feat'ini ya da koşullarını karşıladığın başka bir feat'i alırsın.",
+   "nasil": "Bu özellik Barbarian sınıfının 8, 12 ve 16. seviyelerinde yeniden gelir; her seferinde yeni bir feat seçilir.",
+   "sinif": "barbarian",
+   "seviye": 4
+  },
+  "barbarian:extra-attack": {
+   "ne": "Turunda Attack eylemini yaptığında bir yerine iki kez saldırırsın.",
+   "sinif": "barbarian",
+   "seviye": 5
+  },
+  "barbarian:fast-movement": {
+   "ne": "Hızın 10 ft artar.",
+   "kimler": "Heavy zırh giyerken artış işlemez.",
+   "sinif": "barbarian",
+   "seviye": 5
+  },
+  "barbarian:feral-instinct": {
+   "ne": "İçgüdülerin keskinleşir: inisiyatif zarlarında Advantage kazanırsın.",
+   "sinif": "barbarian",
+   "seviye": 7
+  },
+  "barbarian:instinctive-pounce": {
+   "ne": "Rage'e girerken hızının yarısı kadar hareket edebilirsin.",
+   "nasil": "Rage'e girmek için kullandığın bonus eylemin parçasıdır; ayrı eylem gerekmez.",
+   "sinif": "barbarian",
+   "seviye": 7
+  },
+  "barbarian:brutal-strike": {
+   "ne": "Reckless Attack kullandığın turda bir STR saldırısında Advantage'dan vazgeçersin; isabet ederse hedef silahın ya da Unarmed Strike'ın türünde ek 1d10 hasar alır ve bir Brutal Strike etkisi uygularsın.",
+   "nasil": "Etkiler: Forceful Blow (hedef senden düz 15 ft itilir, sonra hızının yarısı kadar fırsat saldırısı almadan ona doğru ilerleyebilirsin) ya da Hamstring Blow (hedefin hızı sonraki turunun başına dek 15 ft azalır).",
+   "risk": "Seçilen saldırı zarında Disadvantage olmamalıdır. Bir hedef aynı anda yalnız bir Hamstring Blow etkisinde kalır, en sonuncusu geçerlidir.",
+   "sinif": "barbarian",
+   "seviye": 9
+  },
+  "barbarian:relentless-rage": {
+   "ne": "Rage sürerken 0 HP'ye düşer ama doğrudan ölmezsen bir CON kurtarma zarı atarsın; başarıda HP'n Barbarian seviyenin iki katına çıkar.",
+   "nasil": "İlk kullanımda DC 10'dur; sonraki her kullanımda DC'ye 5 eklenir. Short Rest ya da Long Rest DC'yi yeniden 10'a indirir.",
+   "risk": "Yalnız Rage etkinken çalışır; doğrudan ölümü engellemez.",
+   "sinif": "barbarian",
+   "seviye": 11
+  },
+  "barbarian:improved-brutal-strike": {
+   "ne": "Brutal Strike seçeneklerine iki yeni etki eklenir.",
+   "nasil": "Staggering Blow: hedef bir sonraki kurtarma zarında Disadvantage alır ve sonraki turunun başına dek fırsat saldırısı yapamaz. Sundering Blow: sonraki turunun başından önce başka bir yaratığın hedefe yaptığı ilk saldırı zarı +5 alır.",
+   "risk": "Bir saldırı zarı yalnız bir Sundering Blow bonusu alabilir.",
+   "sinif": "barbarian",
+   "seviye": 13
+  },
+  "barbarian:persistent-rage": {
+   "ne": "İnisiyatif atarken harcanmış bütün Rage kullanımlarını geri alabilirsin. Rage'in her tur uzatmaya gerek kalmadan 10 dakika sürer.",
+   "nasil": "Kullanımları bu yolla geri aldıktan sonra Long Rest bitirene dek yeniden yapamazsın.",
+   "risk": "Rage yine de Unconscious olursan ya da Heavy zırh giyersen erken biter.",
+   "sinif": "barbarian",
+   "seviye": 15
+  },
+  "barbarian:improved-brutal-strike@17": {
+   "ne": "Brutal Strike'ın ek hasarı 2d10'a çıkar ve her kullanımda iki farklı Brutal Strike etkisi uygulayabilirsin.",
+   "sinif": "barbarian",
+   "seviye": 17
+  },
+  "barbarian:indomitable-might": {
+   "ne": "Bir STR kontrolünün ya da STR kurtarma zarının toplamı STR skorundan düşükse, toplam yerine skorunu kullanabilirsin.",
+   "sinif": "barbarian",
+   "seviye": 18
+  },
+  "barbarian:epic-boon": {
+   "ne": "Bir Epic Boon feat'i ya da koşullarını karşıladığın başka bir feat'i alırsın. Önerilen: Boon of Irresistible Offense.",
+   "sinif": "barbarian",
+   "seviye": 19
+  },
+  "barbarian:primal-champion": {
+   "ne": "İlkel gücün vücut bulmuş hâli olursun: STR ve CON skorların 4 artar.",
+   "risk": "Bu artışla skorlar en çok 25'e çıkabilir.",
+   "sinif": "barbarian",
+   "seviye": 20
+  },
+  "bard:bardic-inspiration": {
+   "ne": "Sözle, müzikle ya da dansla başkasına ilham verirsin: yaratık bir Bardic Inspiration zarı kazanır ve başarısız bir D20 Testine ekleyebilir.",
+   "nasil": "Bonus eylemle seni görebilen ya da duyabilen, 60 ft içindeki başka bir yaratığa verilir. Zar 1 saat içinde başarısız D20 Testinden sonra atılıp eklenir. Kullanım sayısı CHA değiştiricin kadardır (en az 1); Long Rest hepsini geri verir. Zar d6'dır; 5. seviyede d8, 10. seviyede d10, 15. seviyede d12 olur.",
+   "risk": "Bir yaratık aynı anda yalnız bir Bardic Inspiration zarı taşıyabilir; zar atılınca harcanır.",
+   "kimler": "Kendine veremezsin; hedef seni görmeli ya da duymalıdır.",
+   "sinif": "bard",
+   "seviye": 1
+  },
+  "bard:spellcasting": {
+   "ne": "Bard büyü listesinden büyü yaparsın. Büyü yeteneğin CHA'dır; bir Musical Instrument büyü odağı olarak kullanılabilir.",
+   "nasil": "İki cantrip ile başlarsın, 4. ve 10. seviyede birer cantrip daha öğrenirsin. Slotlar ve hazırlanan büyü sayısı sınıf tablosundaki kadardır; Long Rest bütün slotları geri verir. Her Bard seviyesi kazandığında bir cantrip'i ve hazırlanan bir büyüyü değiştirebilirsin.",
+   "risk": "Hazırladığın büyüler slotun olan seviyelerden olmalıdır.",
+   "sinif": "bard",
+   "seviye": 1
+  },
+  "bard:expertise": {
+   "ne": "Yetkin olduğun iki beceride Expertise kazanırsın; 9. seviyede iki beceride daha.",
+   "nasil": "Yetkinsen Performance ve Persuasion önerilir.",
+   "sinif": "bard",
+   "seviye": 2
+  },
+  "bard:jack-of-all-trades": {
+   "ne": "Yetkin olmadığın bir beceriyi kullanan ve başka yoldan yetkinlik bonusu almayan yetenek kontrollerine yetkinlik bonusunun yarısını (aşağı yuvarlanır) eklersin.",
+   "sinif": "bard",
+   "seviye": 2
+  },
+  "bard:bard-subclass": {
+   "ne": "Bir Bard alt sınıfı seçersin; alt sınıf belirli Bard seviyelerinde ek özellikler verir. SRD'de örnek alt sınıf College of Lore.",
+   "nasil": "Seçimden sonra kariyerin boyunca Bard seviyene eşit ya da altındaki bütün alt sınıf özelliklerini kazanırsın.",
+   "sinif": "bard",
+   "seviye": 3
+  },
+  "bard:ability-score-improvement": {
+   "ne": "Ability Score Improvement feat'ini ya da koşullarını karşıladığın başka bir feat'i alırsın.",
+   "nasil": "Bu özellik Bard sınıfının 8, 12 ve 16. seviyelerinde yeniden gelir; her seferinde yeni bir feat seçilir.",
+   "sinif": "bard",
+   "seviye": 4
+  },
+  "bard:font-of-inspiration": {
+   "ne": "Bardic Inspiration kullanımların artık Short Rest ya da Long Rest sonunda tamamen dolar.",
+   "nasil": "Ayrıca eylem harcamadan bir büyü slotu harcayarak bir Bardic Inspiration kullanımını geri alabilirsin.",
+   "sinif": "bard",
+   "seviye": 5
+  },
+  "bard:countercharm": {
+   "ne": "Sen ya da 30 ft içindeki bir yaratık Charmed ya da Frightened durumu veren bir etkiye karşı kurtarma zarında başarısız olursa, zarı Advantage ile yeniden attırırsın.",
+   "nasil": "Tepki harcar.",
+   "sinif": "bard",
+   "seviye": 7
+  },
+  "bard:magical-secrets": {
+   "ne": "Hazırlanan büyü sayın arttığında yeni büyüleri Bard, Cleric, Druid ve Wizard listelerinden seçebilirsin; seçilenler senin için Bard büyüsü sayılır.",
+   "nasil": "Bu sınıf için hazırlanan bir büyüyü değiştirirken de bu listelerden seçebilirsin.",
+   "sinif": "bard",
+   "seviye": 10
+  },
+  "bard:superior-inspiration": {
+   "ne": "İnisiyatif attığında Bardic Inspiration kullanımın ikiden azsa ikiye tamamlanır.",
+   "sinif": "bard",
+   "seviye": 18
+  },
+  "bard:epic-boon": {
+   "ne": "Bir Epic Boon feat'i ya da koşullarını karşıladığın başka bir feat'i alırsın. Önerilen: Boon of Spell Recall.",
+   "sinif": "bard",
+   "seviye": 19
+  },
+  "bard:words-of-creation": {
+   "ne": "Power Word Heal ve Power Word Kill büyüleri her zaman hazırdır.",
+   "nasil": "İkisinden birini yaptığında, ilk hedefin 10 ft içindeki ikinci bir yaratığı da hedefleyebilirsin.",
+   "sinif": "bard",
+   "seviye": 20
+  },
+  "cleric:spellcasting": {
+   "ne": "Cleric büyü listesinden büyü yaparsın. Büyü yeteneğin WIS'tir; bir Holy Symbol büyü odağı olarak kullanılabilir.",
+   "nasil": "Üç cantrip ile başlarsın, 4. ve 10. seviyede birer cantrip daha öğrenirsin. Slotlar ve hazırlanan büyü sayısı sınıf tablosundaki kadardır; Long Rest bütün slotları geri verir. Her Long Rest sonunda hazırlanan büyü listeni değiştirebilirsin.",
+   "risk": "Hazırladığın büyüler slotun olan seviyelerden olmalıdır.",
+   "sinif": "cleric",
+   "seviye": 1
+  },
+  "cleric:divine-order": {
+   "ne": "Kutsal bir rol seçersin: Protector ya da Thaumaturge.",
+   "nasil": "Protector: Martial silah yetkinliği ve Heavy zırh eğitimi. Thaumaturge: bir ek Cleric cantrip'i ve INT (Arcana ya da Religion) kontrollerine WIS değiştiricin kadar bonus (en az +1).",
+   "sinif": "cleric",
+   "seviye": 1
+  },
+  "cleric:channel-divinity": {
+   "ne": "İlahi enerjiyi doğrudan büyülü etkilere dönüştürürsün. İki etkiyle başlarsın: Divine Spark ve Turn Undead.",
+   "nasil": "Divine Spark: Magic eylemi, 30 ft içinde görebildiğin başka bir yaratık; 1d8 + WIS değiştiricisi kadar HP yenilersin ya da CON kurtarma zarı attırırsın (başarısızlıkta seçtiğin nekrotik ya da ışıyan hasar, başarıda yarısı); zar 7., 13. ve 18. seviyede 2d8, 3d8, 4d8 olur. Turn Undead: Magic eylemi, 30 ft içindeki seçtiğin Undead'ler WIS kurtarma zarı atar, başarısız olan 1 dakika Frightened ve Incapacitated olur ve senden uzaklaşmaya çalışır. İki kullanımla başlarsın, sınıf tablosuna göre artar; Short Rest bir, Long Rest bütün kullanımları geri verir. DC, büyü kurtarma DC'ndir.",
+   "risk": "Turn Undead etkisi yaratık hasar alırsa, sen Incapacitated olursan ya da ölürsen erken biter.",
+   "sinif": "cleric",
+   "seviye": 2
+  },
+  "cleric:cleric-subclass": {
+   "ne": "Bir Cleric alt sınıfı seçersin; alt sınıf belirli Cleric seviyelerinde ek özellikler verir. SRD'de örnek alt sınıf Life Domain.",
+   "nasil": "Seçimden sonra kariyerin boyunca Cleric seviyene eşit ya da altındaki bütün alt sınıf özelliklerini kazanırsın.",
+   "sinif": "cleric",
+   "seviye": 3
+  },
+  "cleric:ability-score-improvement": {
+   "ne": "Ability Score Improvement feat'ini ya da koşullarını karşıladığın başka bir feat'i alırsın.",
+   "nasil": "Bu özellik Cleric sınıfının 8, 12 ve 16. seviyelerinde yeniden gelir; her seferinde yeni bir feat seçilir.",
+   "sinif": "cleric",
+   "seviye": 4
+  },
+  "cleric:sear-undead": {
+   "ne": "Turn Undead kullandığında, kurtarma zarında başarısız olan her Undead ışıyan hasar alır.",
+   "nasil": "WIS değiştiricin kadar d8 atılır (en az 1d8) ve toplam hasar olarak uygulanır.",
+   "risk": "Bu hasar Turn Undead etkisini sona erdirmez.",
+   "sinif": "cleric",
+   "seviye": 5
+  },
+  "cleric:blessed-strikes": {
+   "ne": "Savaşta ilahi güçle dolarsın; iki seçenekten birini alırsın.",
+   "nasil": "Divine Strike: her turunda bir kez, silahla yaptığın saldırı zarı isabet edince hedefe seçtiğin türde ek 1d8 nekrotik ya da ışıyan hasar. Potent Spellcasting: Cleric cantrip'lerinin hasarına WIS değiştiricini eklersin.",
+   "sinif": "cleric",
+   "seviye": 7
+  },
+  "cleric:divine-intervention": {
+   "ne": "Tanrından yardım istersin: 5. seviye ya da daha düşük bir Cleric büyüsünü slot harcamadan ve Material bileşeni gerekmeden yaparsın.",
+   "nasil": "Magic eylemi; büyü aynı eylemin parçası olarak yapılır. Long Rest bitirene dek yeniden kullanılamaz.",
+   "kimler": "Yapımı Reaction gerektiren büyüler seçilemez.",
+   "sinif": "cleric",
+   "seviye": 10
+  },
+  "cleric:improved-blessed-strikes": {
+   "ne": "Blessed Strikes için seçtiğin seçenek güçlenir.",
+   "nasil": "Divine Strike: ek hasar 2d8 olur. Potent Spellcasting: Cleric cantrip'iyle bir yaratığa hasar verdiğinde kendine ya da 60 ft içindeki başka bir yaratığa WIS değiştiricinin iki katı kadar geçici HP verirsin.",
+   "sinif": "cleric",
+   "seviye": 14
+  },
+  "cleric:epic-boon": {
+   "ne": "Bir Epic Boon feat'i ya da koşullarını karşıladığın başka bir feat'i alırsın. Önerilen: Boon of Fate.",
+   "sinif": "cleric",
+   "seviye": 19
+  },
+  "cleric:greater-divine-intervention": {
+   "ne": "Divine Intervention ile büyü seçerken Wish'i de seçebilirsin.",
+   "risk": "Wish'i seçersen Divine Intervention'ı 2d4 Long Rest bitirene dek yeniden kullanamazsın.",
+   "sinif": "cleric",
+   "seviye": 20
+  },
+  "druid:spellcasting": {
+   "ne": "Druid büyü listesinden büyü yaparsın. Büyü yeteneğin WIS'tir; bir Druidic Focus büyü odağı olarak kullanılabilir.",
+   "nasil": "İki cantrip ile başlarsın, 4. ve 10. seviyede birer cantrip daha öğrenirsin. Slotlar ve hazırlanan büyü sayısı sınıf tablosundaki kadardır; Long Rest bütün slotları geri verir. Her Long Rest sonunda hazırlanan büyü listeni değiştirebilirsin.",
+   "risk": "Hazırladığın büyüler slotun olan seviyelerden olmalıdır.",
+   "sinif": "druid",
+   "seviye": 1
+  },
+  "druid:druidic": {
+   "ne": "Druid'lerin gizli dili Druidic'i bilirsin ve Speak with Animals büyüsü her zaman hazırdır.",
+   "nasil": "Druidic ile gizli mesaj bırakabilirsin; dili bilenler mesajı kendiliğinden fark eder. Diğerleri varlığını DC 15 INT (Investigation) kontrolüyle fark eder ama büyü olmadan çözemez.",
+   "sinif": "druid",
+   "seviye": 1
+  },
+  "druid:primal-order": {
+   "ne": "Kutsal bir rol seçersin: Magician ya da Warden.",
+   "nasil": "Magician: bir ek Druid cantrip'i ve INT (Arcana ya da Nature) kontrollerine WIS değiştiricin kadar bonus (en az +1). Warden: Martial silah yetkinliği ve Medium zırh eğitimi.",
+   "sinif": "druid",
+   "seviye": 1
+  },
+  "druid:wild-shape": {
+   "ne": "Öğrendiğin bir Beast biçimine bürünürsün; oyun değerlerin büyük ölçüde biçimin stat bloğuyla değişir, Druid seviyen kadar geçici HP kazanırsın.",
+   "nasil": "Bonus eylemle girilir ve bırakılır; biçimde Druid seviyenin yarısı kadar saat kalırsın. İki kullanımla başlarsın, sınıf tablosuna göre artar; Short Rest bir, Long Rest bütün kullanımları geri verir. Dört bilinen biçimle başlarsın (en yüksek Challenge Rating 1/4, uçuş hızı yok); sayı ve sınır Beast Shapes tablosuyla artar, 8. seviyeden uçan biçim seçilebilir. Her Long Rest sonunda bir biçimi değiştirebilirsin.",
+   "risk": "Biçimdeyken büyü yapamazsın (yaptığın büyülerin Concentration'ı bozulmaz). Incapacitated olursan, ölürsen ya da yeniden Wild Shape kullanırsan biçim biter. Eşyaların biçime uymayabilir; biçimle birleşen eşya etkisizdir.",
+   "sinif": "druid",
+   "seviye": 2
+  },
+  "druid:wild-companion": {
+   "ne": "Hayvan biçimli bir doğa ruhu çağırırsın: Find Familiar büyüsünü Material bileşeni olmadan yaparsın.",
+   "nasil": "Magic eylemi; bir büyü slotu ya da bir Wild Shape kullanımı harcanır.",
+   "risk": "Bu yolla çağrılan familiar Fey'dir ve Long Rest bitirdiğinde kaybolur.",
+   "sinif": "druid",
+   "seviye": 2
+  },
+  "druid:druid-subclass": {
+   "ne": "Bir Druid alt sınıfı seçersin; alt sınıf belirli Druid seviyelerinde ek özellikler verir. SRD'de örnek alt sınıf Circle of the Land.",
+   "nasil": "Seçimden sonra kariyerin boyunca Druid seviyene eşit ya da altındaki bütün alt sınıf özelliklerini kazanırsın.",
+   "sinif": "druid",
+   "seviye": 3
+  },
+  "druid:ability-score-improvement": {
+   "ne": "Ability Score Improvement feat'ini ya da koşullarını karşıladığın başka bir feat'i alırsın.",
+   "nasil": "Bu özellik Druid sınıfının 8, 12 ve 16. seviyelerinde yeniden gelir; her seferinde yeni bir feat seçilir.",
+   "sinif": "druid",
+   "seviye": 4
+  },
+  "druid:wild-resurgence": {
+   "ne": "Büyü slotları ile Wild Shape kullanımları arasında dönüşüm yaparsın.",
+   "nasil": "Wild Shape kullanımın kalmadıysa her turunda bir kez, eylem harcamadan bir büyü slotu harcayıp bir kullanım kazanırsın. Ayrıca eylem harcamadan bir Wild Shape kullanımını harcayarak 1. seviye bir büyü slotu kazanabilirsin.",
+   "risk": "Kullanımdan slot kazanma Long Rest bitirene dek yeniden yapılamaz.",
+   "sinif": "druid",
+   "seviye": 5
+  },
+  "druid:elemental-fury": {
+   "ne": "Elementlerin gücü sende akar; iki seçenekten birini alırsın.",
+   "nasil": "Potent Spellcasting: Druid cantrip'lerinin hasarına WIS değiştiricini eklersin. Primal Strike: her turunda bir kez silahla ya da Wild Shape'teki Beast biçiminin saldırısıyla isabet edince hedefe ek 1d8 soğuk, ateş, yıldırım ya da gök gürültüsü hasarı (isabette seçilir).",
+   "sinif": "druid",
+   "seviye": 7
+  },
+  "druid:improved-elemental-fury": {
+   "ne": "Elemental Fury için seçtiğin seçenek güçlenir.",
+   "nasil": "Potent Spellcasting: menzili 10 ft ya da daha uzun Druid cantrip'lerinin menzili 300 ft artar. Primal Strike: ek hasar 2d8 olur.",
+   "sinif": "druid",
+   "seviye": 15
+  },
+  "druid:beast-spells": {
+   "ne": "Wild Shape kullanırken Beast biçimindeyken büyü yapabilirsin.",
+   "risk": "Bedeli belirtilmiş Material bileşeni olan ya da Material bileşenini tüketen büyüler biçimdeyken yapılamaz.",
+   "sinif": "druid",
+   "seviye": 18
+  },
+  "druid:epic-boon": {
+   "ne": "Bir Epic Boon feat'i ya da koşullarını karşıladığın başka bir feat'i alırsın. Önerilen: Boon of Dimensional Travel.",
+   "sinif": "druid",
+   "seviye": 19
+  },
+  "druid:archdruid": {
+   "ne": "Doğanın canlılığı sende sürekli filizlenir: Evergreen Wild Shape, Nature Magician ve Longevity.",
+   "nasil": "Evergreen Wild Shape: inisiyatif attığında Wild Shape kullanımın kalmadıysa bir kullanım geri alırsın. Nature Magician: eylem harcamadan harcanmamış Wild Shape kullanımlarını tek bir büyü slotuna çevirirsin, her kullanım 2 slot seviyesi verir. Longevity: her on yılda bedenin yalnız bir yıl yaşlanır.",
+   "risk": "Nature Magician Long Rest bitirene dek yeniden kullanılamaz.",
+   "sinif": "druid",
+   "seviye": 20
+  },
+  "fighter:fighting-style": {
+   "ne": "Seçtiğin bir Fighting Style feat'ini kazanırsın. Defense önerilir.",
+   "nasil": "Her Fighter seviyesi kazandığında seçtiğin feat'i başka bir Fighting Style feat'iyle değiştirebilirsin.",
+   "sinif": "fighter",
+   "seviye": 1
+  },
+  "fighter:second-wind": {
+   "ne": "Fiziksel ve zihinsel dayanıklılığından yararlanıp 1d10 + Fighter seviyen kadar HP yenilersin.",
+   "nasil": "Bonus eylem. İki kullanımla başlarsın, sınıf tablosuna göre artar; Short Rest bir, Long Rest bütün kullanımları geri verir.",
+   "sinif": "fighter",
+   "seviye": 1
+  },
+  "fighter:weapon-mastery": {
+   "ne": "Seçtiğin üç tür Simple ya da Martial silahın ustalık (mastery) özelliklerini kullanabilirsin.",
+   "nasil": "Her Long Rest sonunda seçimlerinden birini değiştirebilirsin. Seçebileceğin silah türü sayısı sınıf tablosundaki kadar artar.",
+   "sinif": "fighter",
+   "seviye": 1
+  },
+  "fighter:action-surge": {
+   "ne": "Turunda bir ek eylem yaparsın.",
+   "nasil": "Short Rest ya da Long Rest bitirene dek yeniden kullanılamaz. 17. seviyeden dinlenmeden önce iki kez kullanılabilir, ama bir turda yalnız bir kez.",
+   "kimler": "Ek eylem Magic eylemi olamaz.",
+   "sinif": "fighter",
+   "seviye": 2
+  },
+  "fighter:tactical-mind": {
+   "ne": "Başarısız bir yetenek kontrolünde Second Wind kullanımı harcayıp HP yenilemek yerine 1d10 atar ve kontrole eklersin.",
+   "nasil": "Kontrol başarısız olduktan sonra kullanılır; eklemeye rağmen kontrol yine başarısızsa Second Wind kullanımı harcanmaz.",
+   "risk": "Yalnız yetenek kontrollerinde geçerlidir; kurtarma zarı ya da saldırı zarına uygulanmaz.",
+   "sinif": "fighter",
+   "seviye": 2
+  },
+  "fighter:fighter-subclass": {
+   "ne": "Bir Fighter alt sınıfı seçersin; alt sınıf belirli Fighter seviyelerinde ek özellikler verir. SRD'de örnek alt sınıf Champion.",
+   "nasil": "Seçimden sonra kariyerin boyunca Fighter seviyene eşit ya da altındaki bütün alt sınıf özelliklerini kazanırsın.",
+   "sinif": "fighter",
+   "seviye": 3
+  },
+  "fighter:ability-score-improvement": {
+   "ne": "Ability Score Improvement feat'ini ya da koşullarını karşıladığın başka bir feat'i alırsın.",
+   "nasil": "Bu özellik Fighter sınıfının 6, 8, 12, 14 ve 16. seviyelerinde yeniden gelir; her seferinde yeni bir feat seçilir.",
+   "sinif": "fighter",
+   "seviye": 4
+  },
+  "fighter:extra-attack": {
+   "ne": "Turunda Attack eylemini yaptığında bir yerine iki kez saldırırsın.",
+   "sinif": "fighter",
+   "seviye": 5
+  },
+  "fighter:tactical-shift": {
+   "ne": "Second Wind'i bonus eylemle kullandığında hızının yarısı kadar fırsat saldırısı almadan hareket edebilirsin.",
+   "sinif": "fighter",
+   "seviye": 5
+  },
+  "fighter:indomitable": {
+   "ne": "Başarısız bir kurtarma zarını Fighter seviyen kadar bonusla yeniden atarsın.",
+   "nasil": "Long Rest bitirene dek bir kez; 13. seviyeden iki, 17. seviyeden üç kez.",
+   "risk": "Yeni zarı kullanmak zorundasın.",
+   "sinif": "fighter",
+   "seviye": 9
+  },
+  "fighter:tactical-master": {
+   "ne": "Ustalık özelliğini kullanabildiğin bir silahla saldırırken o saldırı için ustalığı Push, Sap ya da Slow ile değiştirebilirsin.",
+   "sinif": "fighter",
+   "seviye": 9
+  },
+  "fighter:two-extra-attacks": {
+   "ne": "Turunda Attack eylemini yaptığında bir yerine üç kez saldırırsın.",
+   "sinif": "fighter",
+   "seviye": 11
+  },
+  "fighter:studied-attacks": {
+   "ne": "Bir yaratığa saldırı zarı atıp ıskalarsan, sonraki turunun sonundan önce o yaratığa yapacağın bir sonraki saldırı zarı Advantage kazanır.",
+   "sinif": "fighter",
+   "seviye": 13
+  },
+  "fighter:epic-boon": {
+   "ne": "Bir Epic Boon feat'i ya da koşullarını karşıladığın başka bir feat'i alırsın. Önerilen: Boon of Combat Prowess.",
+   "sinif": "fighter",
+   "seviye": 19
+  },
+  "fighter:three-extra-attacks": {
+   "ne": "Turunda Attack eylemini yaptığında bir yerine dört kez saldırırsın.",
+   "sinif": "fighter",
+   "seviye": 20
+  },
+  "monk:martial-arts": {
+   "ne": "Unarmed Strike ve Monk silahlarıyla (Simple yakın dövüş silahları ve Light özellikli Martial yakın dövüş silahları) dövüş ustalığı kazanırsın.",
+   "nasil": "Bonus eylemle bir Unarmed Strike yapabilirsin. Unarmed Strike ve Monk silahlarında normal hasar yerine Martial Arts zarını (1d6; sınıf tablosuna göre büyür) atabilirsin. Saldırı ve hasarda STR yerine DEX kullanabilirsin; Unarmed Strike'ın Grapple ve Shove seçeneklerinin DC'sinde de DEX kullanılabilir.",
+   "kimler": "Zırh giyerken, Shield taşırken ya da Monk silahı olmayan bir silah tutarken bu faydalar işlemez.",
+   "sinif": "monk",
+   "seviye": 1
+  },
+  "monk:unarmored-defense": {
+   "ne": "Temel Armor Class'ın 10 + DEX değiştiricisi + WIS değiştiricisi olur.",
+   "kimler": "Zırh giyiyorsan ya da Shield taşıyorsan işlemez.",
+   "sinif": "monk",
+   "seviye": 1
+  },
+  "monk:monks-focus": {
+   "ne": "İçindeki olağanüstü enerjiyi Focus Points olarak kullanırsın. Flurry of Blows, Patient Defense ve Step of the Wind ile başlarsın.",
+   "nasil": "Focus Points sayısı sınıf tablosundaki kadardır; Short Rest ya da Long Rest hepsini geri verir. Flurry of Blows: 1 Focus Point ile bonus eylemle iki Unarmed Strike. Patient Defense: bonus eylemle Disengage, ya da 1 Focus Point ile Disengage ve Dodge birlikte. Step of the Wind: bonus eylemle Dash, ya da 1 Focus Point ile Disengage ve Dash birlikte, o tur atlama mesafen iki katına çıkar. Kurtarma zarı isteyen Focus özelliklerinde DC'si 8 + WIS değiştiricisi + yetkinlik bonusudur.",
+   "sinif": "monk",
+   "seviye": 2
+  },
+  "monk:unarmored-movement": {
+   "ne": "Hızın 10 ft artar; artış sınıf tablosundaki seviyelerde büyür.",
+   "kimler": "Zırh giyiyorsan ya da Shield taşıyorsan işlemez.",
+   "sinif": "monk",
+   "seviye": 2
+  },
+  "monk:uncanny-metabolism": {
+   "ne": "İnisiyatif attığında harcanmış bütün Focus Points'i geri alır, Martial Arts zarını atıp Monk seviyen + atılan sayı kadar HP yenilersin.",
+   "nasil": "Long Rest bitirene dek yeniden kullanılamaz.",
+   "sinif": "monk",
+   "seviye": 2
+  },
+  "monk:deflect-attacks": {
+   "ne": "Ezici, delici ya da kesici hasar içeren bir saldırı sana isabet edince aldığın toplam hasarı 1d10 + DEX değiştiricisi + Monk seviyen kadar azaltırsın.",
+   "nasil": "Tepki harcar. Hasarı 0'a indirirsen 1 Focus Point harcayıp saldırının gücünü yönlendirebilirsin: yakın dövüş saldırısıysa 5 ft, menzilli saldırıysa 60 ft içinde görebildiğin (Total Cover arkasında olmayan) bir yaratık DEX kurtarma zarı atar; başarısızsa iki Martial Arts zarı + DEX değiştiricisi kadar, saldırının türünde hasar alır.",
+   "risk": "Yalnız ezici, delici ya da kesici hasar içeren isabetlerde kullanılabilir; yönlendirme ancak hasar 0'a inerse yapılır.",
+   "sinif": "monk",
+   "seviye": 3
+  },
+  "monk:monk-subclass": {
+   "ne": "Bir Monk alt sınıfı seçersin; alt sınıf belirli Monk seviyelerinde ek özellikler verir. SRD'de örnek alt sınıf Warrior of the Open Hand.",
+   "nasil": "Seçimden sonra kariyerin boyunca Monk seviyene eşit ya da altındaki bütün alt sınıf özelliklerini kazanırsın.",
+   "sinif": "monk",
+   "seviye": 3
+  },
+  "monk:ability-score-improvement": {
+   "ne": "Ability Score Improvement feat'ini ya da koşullarını karşıladığın başka bir feat'i alırsın.",
+   "nasil": "Bu özellik Monk sınıfının 8, 12 ve 16. seviyelerinde yeniden gelir; her seferinde yeni bir feat seçilir.",
+   "sinif": "monk",
+   "seviye": 4
+  },
+  "monk:slow-fall": {
+   "ne": "Düşerken aldığın hasarı Monk seviyenin beş katı kadar azaltırsın.",
+   "nasil": "Düştüğünde tepki harcanarak kullanılır.",
+   "sinif": "monk",
+   "seviye": 4
+  },
+  "monk:extra-attack": {
+   "ne": "Turunda Attack eylemini yaptığında bir yerine iki kez saldırırsın.",
+   "sinif": "monk",
+   "seviye": 5
+  },
+  "monk:stunning-strike": {
+   "ne": "Monk silahı ya da Unarmed Strike ile isabet edince hedefi sersemletmeye çalışırsın: hedef CON kurtarma zarı atar, başarısızsa sonraki turunun başına dek Stunned olur.",
+   "nasil": "Turda bir kez, isabetten sonra 1 Focus Point harcanır.",
+   "risk": "Hedef kurtarma zarında başarılı olursa Stunned olmaz; yalnız hızı sonraki turunun başına dek yarıya iner ve o zamana dek ona yapılan ilk saldırı zarı Advantage kazanır.",
+   "sinif": "monk",
+   "seviye": 5
+  },
+  "monk:empowered-strikes": {
+   "ne": "Unarmed Strike ile hasar verdiğinde hasarın türünü normal türü ya da kuvvet hasarı olarak seçebilirsin.",
+   "sinif": "monk",
+   "seviye": 6
+  },
+  "monk:evasion": {
+   "ne": "Yarı hasar için DEX kurtarma zarı attıran bir etkide başarılıysan hiç hasar almazsın, başarısızsan yalnız yarı hasar alırsın.",
+   "risk": "Incapacitated iken işlemez.",
+   "sinif": "monk",
+   "seviye": 7
+  },
+  "monk:acrobatic-movement": {
+   "ne": "Kendi turunda dikey yüzeylerde ve sıvıların üstünde, hareket sırasında düşmeden ilerleyebilirsin.",
+   "kimler": "Zırh giyiyorsan ya da Shield taşıyorsan işlemez.",
+   "sinif": "monk",
+   "seviye": 9
+  },
+  "monk:heightened-focus": {
+   "ne": "Monk'un üç Focus seçeneği güçlenir: Flurry of Blows, Patient Defense ve Step of the Wind daha fazla fayda sağlar.",
+   "nasil": "Flurry of Blows: 1 Focus Point ile iki yerine üç Unarmed Strike. Patient Defense: Focus Point harcadığında iki Martial Arts zarı kadar geçici HP. Step of the Wind: Focus Point harcadığında 5 ft içindeki Large ya da daha küçük, istekli bir yaratığı turunun sonuna dek seninle birlikte taşırsın; onun hareketi fırsat saldırısına yol açmaz.",
+   "sinif": "monk",
+   "seviye": 10
+  },
+  "monk:self-restoration": {
+   "ne": "Her turunun sonunda kendindeki Charmed, Frightened ya da Poisoned durumlarından birini kaldırabilirsin. Ayrıca yemeksiz ve içeceksiz kalmak sana Exhaustion seviyesi vermez.",
+   "sinif": "monk",
+   "seviye": 10
+  },
+  "monk:deflect-energy": {
+   "ne": "Deflect Attacks özelliğini yalnız ezici, delici ve kesici değil, her hasar türünden saldırıya karşı kullanabilirsin.",
+   "nasil": "Deflect Attacks'ın kullanım koşulları aynen geçerlidir; yalnız kapsadığı hasar türleri genişler.",
+   "sinif": "monk",
+   "seviye": 13
+  },
+  "monk:disciplined-survivor": {
+   "ne": "Bütün kurtarma zarlarında yetkinlik kazanırsın; başarısız bir kurtarma zarını Focus harcayarak yeniden atabilirsin.",
+   "nasil": "Kurtarma zarı başarısız olunca 1 Focus Point harcayıp yeniden atarsın.",
+   "risk": "Yeniden atılan sonucu kullanmak zorundasın.",
+   "sinif": "monk",
+   "seviye": 14
+  },
+  "monk:perfect-focus": {
+   "ne": "Savaş başında Focus Point'lerin azsa bir kısmını kendiliğinden geri kazanırsın.",
+   "nasil": "Inisiyatif attığında Uncanny Metabolism kullanmadıysan ve 3 ya da daha az Focus Point'in varsa 4'e tamamlanır.",
+   "kimler": "Aynı inisiyatifte Uncanny Metabolism kullandıysan işlemez.",
+   "sinif": "monk",
+   "seviye": 15
+  },
+  "monk:superior-defense": {
+   "ne": "Focus harcayarak bir süre Force dışındaki bütün hasarlara direnç kazanırsın.",
+   "nasil": "Turunun başında 3 Focus Point harcarsın; etki 1 dakika sürer.",
+   "risk": "Incapacitated olursan etki erken biter; Force hasarına karşı korumaz.",
+   "sinif": "monk",
+   "seviye": 18
+  },
+  "monk:epic-boon": {
+   "ne": "Bir Epic Boon feat'i ya da koşullarını karşıladığın başka bir feat kazanırsın.",
+   "nasil": "Seçim seviye atlarken yapılır; SRD önerisi Boon of Irresistible Offense.",
+   "sinif": "monk",
+   "seviye": 19
+  },
+  "monk:body-and-mind": {
+   "ne": "DEX ve WIS değerlerin 4 artar; bu özellikle üst sınır 25 olur.",
+   "nasil": "Kalıcı ve pasif; ek eylem gerekmez.",
+   "risk": "Değerler 25'i aşamaz.",
+   "sinif": "monk",
+   "seviye": 20
+  },
+  "paladin:lay-on-hands": {
+   "ne": "Dokunuşla iyileştiren bir şifa havuzun olur; havuzun toplamı Paladin seviyenin beş katıdır. Havuzdan Poisoned durumunu da kaldırabilirsin.",
+   "nasil": "Bonus eylemle bir yaratığa (kendin dahil) dokunur, havuzdan istediğin kadar HP verirsin. Poisoned'ı kaldırmak havuzdan 5 puan harcar. Havuz Long Rest ile dolar.",
+   "risk": "Poisoned'ı kaldırmak için harcanan puanlar ayrıca HP iyileştirmez; havuzda kalandan fazlası verilemez.",
+   "sinif": "paladin",
+   "seviye": 1
+  },
+  "paladin:spellcasting": {
+   "ne": "Dua ve meditasyonla Paladin büyüleri yaparsın; büyü yeteneğin CHA'dır.",
+   "nasil": "Slotlar ve hazır büyü sayısı sınıf tablosundaki kadardır; başta iki 1. seviye büyü hazırlarsın. Slotlar Long Rest ile dolar; her Long Rest sonunda hazır listeden bir büyüyü değiştirebilirsin. Holy Symbol büyü odağı olabilir.",
+   "risk": "Hazırlanan büyüler slotu olan seviyelerden olmalıdır.",
+   "sinif": "paladin",
+   "seviye": 1
+  },
+  "paladin:weapon-mastery": {
+   "ne": "Yetkin olduğun iki silah türünün ustalık (mastery) özelliklerini kullanırsın; örneğin Longsword ve Javelin.",
+   "nasil": "Her Long Rest sonunda seçtiğin silah türlerini değiştirebilirsin (örneğin Halberd ve Flail).",
+   "kimler": "Yalnız yetkin olduğun silah türleri seçilebilir.",
+   "sinif": "paladin",
+   "seviye": 1
+  },
+  "paladin:fighting-style": {
+   "ne": "Bir Fighting Style feat'i alırsın ya da yerine Blessed Warrior seçeneğini seçersin.",
+   "nasil": "Blessed Warrior: iki Cleric cantrip'i öğrenirsin (öneri Guidance ve Sacred Flame); Paladin büyüsü sayılır, yetenek CHA'dır. Her Paladin seviyesinde birini başka Cleric cantrip'iyle değiştirebilirsin.",
+   "sinif": "paladin",
+   "seviye": 2
+  },
+  "paladin:paladins-smite": {
+   "ne": "Divine Smite büyüsü her zaman hazırdır ve bir kez slot harcamadan yapılabilir.",
+   "nasil": "Slotsuz yapım Long Rest ile yenilenir; sonrasında Divine Smite normal slotla yapılır.",
+   "sinif": "paladin",
+   "seviye": 2
+  },
+  "paladin:channel-divinity": {
+   "ne": "İlahi gücü büyülü etkilere dönüştürürsün; ilk etkin Divine Sense'tir, diğer Paladin özellikleri yeni seçenekler ekler.",
+   "nasil": "Her kullanımda bu sınıfın etkilerinden birini seçersin. İki kullanım hakkın vardır, 11. seviyede bir tane daha eklenir. Short Rest bir hakkı, Long Rest hepsini geri verir.",
+   "sinif": "paladin",
+   "seviye": 3
+  },
+  "paladin:paladin-subclass": {
+   "ne": "Bir Paladin alt sınıfı seçersin; alt sınıf belirli seviyelerde ek özellikler verir ve seviyen yettikçe hepsini kazanırsın.",
+   "nasil": "Seçim bu seviyede bir kez yapılır; SRD'de örnek alt sınıf Oath of Devotion.",
+   "sinif": "paladin",
+   "seviye": 3
+  },
+  "paladin:ability-score-improvement": {
+   "ne": "Ability Score Improvement feat'ini ya da koşullarını karşıladığın başka bir feat'i alırsın.",
+   "nasil": "Bu hak 4, 8, 12 ve 16. seviyelerde yeniden gelir.",
+   "sinif": "paladin",
+   "seviye": 4
+  },
+  "paladin:extra-attack": {
+   "ne": "Kendi turunda Attack eylemini aldığında bir yerine iki saldırı yaparsın.",
+   "nasil": "Attack eylemiyle otomatik; ek bir kaynak harcamaz.",
+   "sinif": "paladin",
+   "seviye": 5
+  },
+  "paladin:faithful-steed": {
+   "ne": "Find Steed büyüsü her zaman hazırdır ve bir kez slot harcamadan yapılabilir.",
+   "nasil": "Slotsuz yapım Long Rest ile yenilenir.",
+   "sinif": "paladin",
+   "seviye": 5
+  },
+  "paladin:aura-of-protection": {
+   "ne": "Çevrende 10 ft'lik görünmez bir aura yayarsın; sen ve auradaki dostların kurtarma zarlarına CHA değiştiricin kadar bonus alır (en az +1).",
+   "nasil": "Pasif; aura seninle birlikte hareket eder.",
+   "risk": "Incapacitated iken aura çalışmaz. Birden çok Paladin varsa bir yaratık aynı anda yalnız bir Aura of Protection'dan yararlanır ve hangisi olacağını kendisi seçer.",
+   "sinif": "paladin",
+   "seviye": 6
+  },
+  "paladin:abjure-foes": {
+   "ne": "Channel Divinity kullanarak düşmanları dehşete düşürürsün; başarısız olanlar Frightened olur.",
+   "nasil": "Magic eylemiyle bir Channel Divinity kullanımı harcarsın. 60 ft içinde gördüğün, CHA değiştiricin kadar (en az bir) yaratık WIS kurtarma zarı atar; başarısız olan 1 dakika Frightened olur.",
+   "risk": "Etki, hedef herhangi bir hasar alınca biter. Bu şekilde Frightened olan hedef turunda yalnız birini yapabilir: hareket, eylem ya da bonus eylem.",
+   "sinif": "paladin",
+   "seviye": 9
+  },
+  "paladin:aura-of-courage": {
+   "ne": "Aura of Protection içindeyken sen ve dostların Frightened durumuna bağışık olursunuz.",
+   "nasil": "Pasif; auraya giren Frightened bir dostun bu durumu aurada kaldığı sürece etkisizdir.",
+   "risk": "Aura of Protection'a bağlıdır; aura çalışmadığında bu koruma da yoktur.",
+   "sinif": "paladin",
+   "seviye": 10
+  },
+  "paladin:radiant-strikes": {
+   "ne": "Yakın dövüş silahı ya da Unarmed Strike ile isabet ettiğin hedef ek 1d8 ışıltı hasarı alır.",
+   "nasil": "Pasif; her uygun isabette kendiliğinden eklenir.",
+   "kimler": "Menzilli saldırılarda işlemez.",
+   "sinif": "paladin",
+   "seviye": 11
+  },
+  "paladin:restoring-touch": {
+   "ne": "Lay On Hands kullanırken hedeften Blinded, Charmed, Deafened, Frightened, Paralyzed ya da Stunned durumlarını da kaldırabilirsin.",
+   "nasil": "Kaldırdığın her durum için Lay On Hands havuzundan 5 puan harcarsın.",
+   "risk": "Bu puanlar ayrıca HP iyileştirmez; havuz yetmezse durum kaldırılamaz.",
+   "sinif": "paladin",
+   "seviye": 14
+  },
+  "paladin:aura-expansion": {
+   "ne": "Aura of Protection'ın 30 ft'lik bir yayılıma genişler.",
+   "nasil": "Pasif; auraya bağlı diğer etkiler de bu alanda geçerli olur.",
+   "sinif": "paladin",
+   "seviye": 18
+  },
+  "paladin:epic-boon": {
+   "ne": "Bir Epic Boon feat'i ya da koşullarını karşıladığın başka bir feat kazanırsın.",
+   "nasil": "Seçim seviye atlarken yapılır; SRD önerisi Boon of Truesight.",
+   "sinif": "paladin",
+   "seviye": 19
+  },
+  "ranger:spellcasting": {
+   "ne": "Doğanın büyüsüyle Ranger büyüleri yaparsın; büyü yeteneğin WIS'tir.",
+   "nasil": "Slotlar ve hazır büyü sayısı sınıf tablosundaki kadardır; başta iki 1. seviye büyü hazırlarsın. Slotlar Long Rest ile dolar; her Long Rest sonunda hazır listeden bir büyüyü değiştirebilirsin. Druidic Focus büyü odağı olabilir.",
+   "risk": "Hazırlanan büyüler slotu olan seviyelerden olmalıdır.",
+   "sinif": "ranger",
+   "seviye": 1
+  },
+  "ranger:favored-enemy": {
+   "ne": "Hunter's Mark büyüsü her zaman hazırdır ve belli sayıda slot harcamadan yapılabilir.",
+   "nasil": "Başta iki slotsuz yapım hakkın vardır; sayı sınıf tablosundaki kadar artar. Bütün haklar Long Rest ile dolar.",
+   "sinif": "ranger",
+   "seviye": 1
+  },
+  "ranger:weapon-mastery": {
+   "ne": "Yetkin olduğun iki silah türünün ustalık (mastery) özelliklerini kullanırsın; örneğin Longbow ve Shortsword.",
+   "nasil": "Her Long Rest sonunda seçtiğin silah türlerini değiştirebilirsin (örneğin Scimitar ve Longsword).",
+   "kimler": "Yalnız yetkin olduğun silah türleri seçilebilir.",
+   "sinif": "ranger",
+   "seviye": 1
+  },
+  "ranger:deft-explorer": {
+   "ne": "Uzmanlığın olmayan yetkin bir becerinde Expertise kazanır, ayrıca iki dil öğrenirsin.",
+   "nasil": "Beceri ve diller karakter oluştururken seçilir.",
+   "sinif": "ranger",
+   "seviye": 2
+  },
+  "ranger:fighting-style": {
+   "ne": "Bir Fighting Style feat'i alırsın ya da yerine Druidic Warrior seçeneğini seçersin.",
+   "nasil": "Druidic Warrior: iki Druid cantrip'i öğrenirsin (öneri Guidance ve Starry Wisp); Ranger büyüsü sayılır, yetenek WIS'tir. Her Ranger seviyesinde birini başka Druid cantrip'iyle değiştirebilirsin.",
+   "sinif": "ranger",
+   "seviye": 2
+  },
+  "ranger:ranger-subclass": {
+   "ne": "Bir Ranger alt sınıfı seçersin; alt sınıf belirli seviyelerde ek özellikler verir ve seviyen yettikçe hepsini kazanırsın.",
+   "nasil": "Seçim bu seviyede bir kez yapılır; SRD'de örnek alt sınıf Hunter.",
+   "sinif": "ranger",
+   "seviye": 3
+  },
+  "ranger:ability-score-improvement": {
+   "ne": "Ability Score Improvement feat'ini ya da koşullarını karşıladığın başka bir feat'i alırsın.",
+   "nasil": "Bu hak 4, 8, 12 ve 16. seviyelerde yeniden gelir.",
+   "sinif": "ranger",
+   "seviye": 4
+  },
+  "ranger:extra-attack": {
+   "ne": "Kendi turunda Attack eylemini aldığında bir yerine iki saldırı yaparsın.",
+   "nasil": "Attack eylemiyle otomatik; ek bir kaynak harcamaz.",
+   "sinif": "ranger",
+   "seviye": 5
+  },
+  "ranger:roving": {
+   "ne": "Hızın 10 ft artar; ayrıca hızına eşit tırmanma ve yüzme hızı kazanırsın.",
+   "nasil": "Pasif.",
+   "kimler": "Hız artışı ağır (Heavy) zırh giyerken işlemez.",
+   "sinif": "ranger",
+   "seviye": 6
+  },
+  "ranger:expertise": {
+   "ne": "Uzmanlığın olmayan iki yetkin becerinde Expertise kazanırsın.",
+   "nasil": "Beceriler seviye atlarken seçilir.",
+   "sinif": "ranger",
+   "seviye": 9
+  },
+  "ranger:tireless": {
+   "ne": "Kendine geçici HP verebilir, Short Rest ile Exhaustion düzeyini azaltırsın.",
+   "nasil": "Magic eylemiyle kendine 1d8 + WIS değiştiricisi (en az 1) geçici HP verirsin; WIS değiştiricin kadar (en az bir kez) kullanılır ve Long Rest ile dolar. Her Short Rest sonunda Exhaustion düzeyin varsa 1 azalır.",
+   "sinif": "ranger",
+   "seviye": 10
+  },
+  "ranger:relentless-hunter": {
+   "ne": "Hasar almak Hunter's Mark üzerindeki konsantrasyonunu bozamaz.",
+   "nasil": "Pasif.",
+   "risk": "Yalnız hasardan kaynaklanan bozulmayı önler; Hunter's Mark dışındaki büyülerde işlemez.",
+   "sinif": "ranger",
+   "seviye": 13
+  },
+  "ranger:natures-veil": {
+   "ne": "Doğa ruhlarını çağırarak kendini kısa süre görünmez yaparsın.",
+   "nasil": "Bonus eylemle sonraki turunun sonuna dek Invisible olursun. WIS değiştiricin kadar (en az bir kez) kullanılır; Long Rest ile dolar.",
+   "sinif": "ranger",
+   "seviye": 14
+  },
+  "ranger:precise-hunter": {
+   "ne": "Hunter's Mark ile işaretlediğin yaratığa karşı saldırı zarların avantajlıdır.",
+   "nasil": "Pasif; işaret o anda hangi yaratıktaysa ona uygulanır.",
+   "sinif": "ranger",
+   "seviye": 17
+  },
+  "ranger:feral-senses": {
+   "ne": "30 ft menzilli Blindsight kazanırsın.",
+   "nasil": "Pasif.",
+   "sinif": "ranger",
+   "seviye": 18
+  },
+  "ranger:epic-boon": {
+   "ne": "Bir Epic Boon feat'i ya da koşullarını karşıladığın başka bir feat kazanırsın.",
+   "nasil": "Seçim seviye atlarken yapılır; SRD önerisi Boon of Dimensional Travel.",
+   "sinif": "ranger",
+   "seviye": 19
+  },
+  "ranger:foe-slayer": {
+   "ne": "Hunter's Mark'ın hasar zarı d6 yerine d10 olur.",
+   "nasil": "Pasif; Hunter's Mark her uygulandığında geçerlidir.",
+   "sinif": "ranger",
+   "seviye": 20
+  },
+  "rogue:expertise": {
+   "ne": "Seçtiğin iki yetkin becerinde Expertise kazanırsın; 6. seviyede iki beceri daha eklenir.",
+   "nasil": "Seçim seviye atlarken yapılır; SRD önerisi Sleight of Hand ve Stealth.",
+   "sinif": "rogue",
+   "seviye": 1
+  },
+  "rogue:sneak-attack": {
+   "ne": "Turda bir kez, saldırı zarıyla isabet ettiğin bir yaratığa ek hasar verirsin; ek zar sınıf tablosundaki kadar artar (başta 1d6).",
+   "nasil": "Saldırı zarın avantajlı olmalı ve Finesse ya da menzilli silah kullanmalısın. Avantaj yerine hedefin 5 ft içinde Incapacitated olmayan bir dostun yeterlidir. Ek hasar silahın hasar türündedir.",
+   "risk": "Saldırı zarın dezavantajlıysa dost yakınlığı yetmez.",
+   "kimler": "Finesse olmayan yakın dövüş silahlarıyla kullanılamaz.",
+   "sinif": "rogue",
+   "seviye": 1
+  },
+  "rogue:thieves-cant": {
+   "ne": "Thieves' Cant gizli dilini ve seçtiğin bir dili daha bilirsin.",
+   "nasil": "Diller karakter oluştururken seçilir.",
+   "sinif": "rogue",
+   "seviye": 1
+  },
+  "rogue:weapon-mastery": {
+   "ne": "Yetkin olduğun iki silah türünün ustalık (mastery) özelliklerini kullanırsın; örneğin Dagger ve Shortbow.",
+   "nasil": "Her Long Rest sonunda seçtiğin silah türlerini değiştirebilirsin (örneğin Scimitar ve Shortsword).",
+   "kimler": "Yalnız yetkin olduğun silah türleri seçilebilir.",
+   "sinif": "rogue",
+   "seviye": 1
+  },
+  "rogue:cunning-action": {
+   "ne": "Dash, Disengage ya da Hide eylemlerinden birini bonus eylem olarak yapabilirsin.",
+   "nasil": "Kendi turunda, bonus eylem olarak; turda bir kez.",
+   "sinif": "rogue",
+   "seviye": 2
+  },
+  "rogue:rogue-subclass": {
+   "ne": "Bir Rogue alt sınıfı seçersin; alt sınıf belirli seviyelerde ek özellikler verir ve seviyen yettikçe hepsini kazanırsın.",
+   "nasil": "Seçim bu seviyede bir kez yapılır; SRD'de örnek alt sınıf Thief.",
+   "sinif": "rogue",
+   "seviye": 3
+  },
+  "rogue:steady-aim": {
+   "ne": "Bu turdaki bir sonraki saldırı zarına avantaj verirsin.",
+   "nasil": "Bonus eylemle kullanılır.",
+   "risk": "Kullandıktan sonra hızın tur sonuna dek 0 olur.",
+   "kimler": "Bu tur hareket ettiysen kullanılamaz.",
+   "sinif": "rogue",
+   "seviye": 3
+  },
+  "rogue:ability-score-improvement": {
+   "ne": "Ability Score Improvement feat'ini ya da koşullarını karşıladığın başka bir feat'i alırsın.",
+   "nasil": "Bu hak 4, 8, 10, 12 ve 16. seviyelerde yeniden gelir.",
+   "sinif": "rogue",
+   "seviye": 4
+  },
+  "rogue:cunning-strike": {
+   "ne": "Sneak Attack hasarından zar vazgeçerek saldırına Poison, Trip ya da Withdraw etkilerinden birini eklersin.",
+   "nasil": "Her etkinin bedeli 1d6'dır; zar hasar atılmadan çıkarılır, etki hasardan hemen sonra olur. Kurtarma zarı DC'si 8 + DEX değiştiricisi + yetkinlik bonusudur. Poison: CON kurtarma zarı ya da 1 dakika Poisoned (her tur sonunda yeniden atılır). Trip: DEX kurtarma zarı ya da Prone. Withdraw: saldırıdan hemen sonra fırsat saldırısına yol açmadan hızının yarısı kadar hareket.",
+   "risk": "Harcanan zarlar Sneak Attack hasarından düşer.",
+   "kimler": "Poison için üzerinde Poisoner's Kit olmalı; Trip yalnız Large ya da daha küçük hedeflere işler.",
+   "sinif": "rogue",
+   "seviye": 5
+  },
+  "rogue:uncanny-dodge": {
+   "ne": "Gördüğün bir saldırgan seni saldırı zarıyla vurduğunda hasarı yarıya indirirsin.",
+   "nasil": "Tepki harcarsın; hasar aşağı yuvarlanarak yarılanır.",
+   "kimler": "Göremediğin saldırgana karşı kullanılamaz.",
+   "sinif": "rogue",
+   "seviye": 5
+  },
+  "rogue:evasion": {
+   "ne": "Yarım hasar için DEX kurtarma zarı atılan etkilerde başarıda hiç hasar almaz, başarısızlıkta yalnız yarısını alırsın.",
+   "nasil": "Pasif.",
+   "risk": "Incapacitated iken çalışmaz.",
+   "sinif": "rogue",
+   "seviye": 7
+  },
+  "rogue:reliable-talent": {
+   "ne": "Yetkin olduğun beceri ya da aletle yaptığın yetenek kontrollerinde d20'de 9 ve altı 10 sayılır.",
+   "nasil": "Pasif.",
+   "kimler": "Yetkinliğin olmayan kontrollerde ve saldırı ya da kurtarma zarlarında işlemez.",
+   "sinif": "rogue",
+   "seviye": 7
+  },
+  "rogue:improved-cunning-strike": {
+   "ne": "Sneak Attack hasarı verdiğinde iki Cunning Strike etkisini birlikte kullanabilirsin.",
+   "nasil": "Her etkinin zar bedelini ayrı ayrı ödersin.",
+   "sinif": "rogue",
+   "seviye": 11
+  },
+  "rogue:devious-strikes": {
+   "ne": "Cunning Strike seçeneklerine Daze, Knock Out ve Obscure eklenir.",
+   "nasil": "Daze (2d6): CON kurtarma zarı ya da sonraki turunda yalnız hareket, eylem ya da bonus eylemden biri. Knock Out (6d6): CON kurtarma zarı ya da 1 dakika Unconscious; her tur sonunda yeniden atılır. Obscure (3d6): DEX kurtarma zarı ya da sonraki turunun sonuna dek Blinded.",
+   "risk": "Knock Out'un Unconscious etkisi hedef herhangi bir hasar alınca biter. Bedeller Sneak Attack hasarından düşer.",
+   "sinif": "rogue",
+   "seviye": 14
+  },
+  "rogue:slippery-mind": {
+   "ne": "WIS ve CHA kurtarma zarlarında yetkinlik kazanırsın.",
+   "nasil": "Pasif.",
+   "sinif": "rogue",
+   "seviye": 15
+  },
+  "rogue:elusive": {
+   "ne": "Sana yapılan hiçbir saldırı zarı avantajlı olamaz.",
+   "nasil": "Pasif.",
+   "risk": "Incapacitated iken bu koruma işlemez.",
+   "sinif": "rogue",
+   "seviye": 18
+  },
+  "rogue:epic-boon": {
+   "ne": "Bir Epic Boon feat'i ya da koşullarını karşıladığın başka bir feat kazanırsın.",
+   "nasil": "Seçim seviye atlarken yapılır; SRD önerisi Boon of the Night Spirit.",
+   "sinif": "rogue",
+   "seviye": 19
+  },
+  "rogue:stroke-of-luck": {
+   "ne": "Başarısız bir D20 Testini 20'ye çevirirsin.",
+   "nasil": "Bir kez kullanılır; Short Rest ya da Long Rest ile yenilenir.",
+   "sinif": "rogue",
+   "seviye": 20
+  },
+  "sorcerer:spellcasting": {
+   "ne": "Doğuştan gelen büyüyle Sorcerer büyüleri yaparsın; büyü yeteneğin CHA'dır.",
+   "nasil": "Başta dört cantrip bilirsin, 4. ve 10. seviyede birer tane eklenir. Slotlar ve hazır büyü sayısı sınıf tablosundaki kadardır; başta iki 1. seviye büyü hazırlarsın. Slotlar Long Rest ile dolar; her Sorcerer seviyesinde bir hazır büyüyü ve bir cantrip'i değiştirebilirsin. Arcane Focus büyü odağı olabilir.",
+   "risk": "Hazırlanan büyüler slotu olan seviyelerden olmalıdır.",
+   "sinif": "sorcerer",
+   "seviye": 1
+  },
+  "sorcerer:innate-sorcery": {
+   "ne": "İçindeki büyüyü 1 dakikalığına serbest bırakırsın: Sorcerer büyülerinin kurtarma DC'si 1 artar ve bu büyülerin saldırı zarları avantajlı olur.",
+   "nasil": "Bonus eylemle başlatılır; iki kullanım hakkın vardır ve Long Rest ile dolar.",
+   "kimler": "Yalnız Sorcerer büyülerini etkiler.",
+   "sinif": "sorcerer",
+   "seviye": 1
+  },
+  "sorcerer:font-of-magic": {
+   "ne": "Sorcery Point havuzu kazanırsın; puanları slota, slotları puana çevirebilir ve Metamagic gibi özelliklerde harcarsın.",
+   "nasil": "Başta 2 puan; sayı sınıf tablosundaki kadar artar ve Long Rest ile dolar. Bir slotu harcayıp seviyesi kadar puan alırsın (eylem gerekmez). Bonus eylemle puanları bir slota çevirirsin; bedel ve gereken seviye Creating Spell Slots tablosundadır.",
+   "risk": "Puanlar tablodaki üst sınırı aşamaz; en çok 5. seviye slot yaratılır ve yaratılan slotlar Long Rest sonunda kaybolur.",
+   "sinif": "sorcerer",
+   "seviye": 2
+  },
+  "sorcerer:metamagic": {
+   "ne": "Yaptığın büyüleri geçici olarak değiştiren iki Metamagic seçeneği öğrenirsin.",
+   "nasil": "Her seçenek kendi bedeli kadar Sorcery Point harcar. 10. ve 17. seviyede ikişer seçenek daha eklenir; her Sorcerer seviyesinde bir seçeneği değiştirebilirsin.",
+   "risk": "Aksi yazmıyorsa bir büyüye yalnız bir Metamagic seçeneği uygulanır.",
+   "sinif": "sorcerer",
+   "seviye": 2
+  },
+  "sorcerer:sorcerer-subclass": {
+   "ne": "Bir Sorcerer alt sınıfı seçersin; alt sınıf belirli seviyelerde ek özellikler verir ve seviyen yettikçe hepsini kazanırsın.",
+   "nasil": "Seçim bu seviyede bir kez yapılır; SRD'de örnek alt sınıf Draconic Sorcery.",
+   "sinif": "sorcerer",
+   "seviye": 3
+  },
+  "sorcerer:ability-score-improvement": {
+   "ne": "Ability Score Improvement feat'ini ya da koşullarını karşıladığın başka bir feat'i alırsın.",
+   "nasil": "Bu hak 4, 8, 12 ve 16. seviyelerde yeniden gelir.",
+   "sinif": "sorcerer",
+   "seviye": 4
+  },
+  "sorcerer:sorcerous-restoration": {
+   "ne": "Short Rest sonunda harcanmış Sorcery Point'lerin bir kısmını geri kazanırsın.",
+   "nasil": "Geri gelen puan Sorcerer seviyenin yarısını (aşağı yuvarlanır) aşamaz. Bir kez kullanılır; Long Rest ile yenilenir.",
+   "sinif": "sorcerer",
+   "seviye": 5
+  },
+  "sorcerer:sorcery-incarnate": {
+   "ne": "Innate Sorcery hakların bitse de Sorcery Point ile onu başlatabilir; etkinken bir büyüye iki Metamagic uygulayabilirsin.",
+   "nasil": "Hakkın kalmadığında Innate Sorcery'yi başlatan bonus eylemde 2 Sorcery Point harcarsın.",
+   "risk": "İki Metamagic yalnız Innate Sorcery etkinken mümkündür.",
+   "sinif": "sorcerer",
+   "seviye": 7
+  },
+  "sorcerer:epic-boon": {
+   "ne": "Bir Epic Boon feat'i ya da koşullarını karşıladığın başka bir feat kazanırsın.",
+   "nasil": "Seçim seviye atlarken yapılır; SRD önerisi Boon of Dimensional Travel.",
+   "sinif": "sorcerer",
+   "seviye": 19
+  },
+  "sorcerer:arcane-apotheosis": {
+   "ne": "Innate Sorcery etkinken her turunda bir Metamagic seçeneğini Sorcery Point harcamadan kullanırsın.",
+   "nasil": "Kendi turunda, turda bir seçenek için geçerlidir.",
+   "risk": "Innate Sorcery etkin değilse işlemez.",
+   "sinif": "sorcerer",
+   "seviye": 20
+  },
+  "warlock:eldritch-invocations": {
+   "ne": "Kalıcı büyülü yetenekler ya da başka dersler veren Eldritch Invocation'lar öğrenirsin; başta bir tane seçersin (örneğin Pact of the Tome).",
+   "nasil": "Invocation sayısı sınıf tablosundaki kadar artar. Her Warlock seviyesinde birini koşullarını karşıladığın başka biriyle değiştirebilirsin.",
+   "risk": "Başka bir invocation'ın ön koşulu olanı değiştiremezsin; açıklaması izin vermedikçe aynı invocation iki kez seçilmez.",
+   "kimler": "Ön koşulu (örneğin Warlock seviyesi) karşılanmayan invocation seçilemez.",
+   "sinif": "warlock",
+   "seviye": 1
+  },
+  "warlock:pact-magic": {
+   "ne": "Bir varlıkla yaptığın anlaşmayla Warlock büyüleri yaparsın; büyü yeteneğin CHA'dır ve bütün slotların aynı seviyededir.",
+   "nasil": "Başta iki cantrip bilirsin, 4. ve 10. seviyede birer tane eklenir. Slot sayısı, slot seviyesi ve hazır büyü sayısı sınıf tablosundaki kadardır; her büyü bu slot seviyesinde yapılır. Pact Magic slotları Short Rest ya da Long Rest ile dolar. Her Warlock seviyesinde bir hazır büyüyü ve bir cantrip'i değiştirebilirsin. Arcane Focus büyü odağı olabilir.",
+   "risk": "Hazırlanan büyünün seviyesi tablodaki slot seviyesini aşamaz.",
+   "sinif": "warlock",
+   "seviye": 1
+  },
+  "warlock:magical-cunning": {
+   "ne": "1 dakikalık bir ayinle harcanmış Pact Magic slotlarının bir kısmını geri kazanırsın.",
+   "nasil": "Ayin sonunda en çok azami slot sayının yarısı (yukarı yuvarlanır) kadar slot geri gelir. Bir kez kullanılır; Long Rest ile yenilenir.",
+   "sinif": "warlock",
+   "seviye": 2
+  },
+  "warlock:warlock-subclass": {
+   "ne": "Bir Warlock alt sınıfı seçersin; alt sınıf belirli seviyelerde ek özellikler verir ve seviyen yettikçe hepsini kazanırsın.",
+   "nasil": "Seçim bu seviyede bir kez yapılır; SRD'de örnek alt sınıf Fiend Patron.",
+   "sinif": "warlock",
+   "seviye": 3
+  },
+  "warlock:ability-score-improvement": {
+   "ne": "Ability Score Improvement feat'ini ya da koşullarını karşıladığın başka bir feat'i alırsın.",
+   "nasil": "Bu hak 4, 8, 12 ve 16. seviyelerde yeniden gelir.",
+   "sinif": "warlock",
+   "seviye": 4
+  },
+  "warlock:contact-patron": {
+   "ne": "Contact Other Plane büyüsü her zaman hazırdır; onunla hamine slot harcamadan doğrudan ulaşabilirsin.",
+   "nasil": "Bu özellikle yaptığında büyünün kurtarma zarında otomatik başarılı olursun. Bir kez kullanılır; Long Rest ile yenilenir.",
+   "sinif": "warlock",
+   "seviye": 9
+  },
+  "warlock:mystic-arcanum": {
+   "ne": "Hamin sana bir arcanum verir: bir 6. seviye Warlock büyüsünü slot harcamadan yapabilirsin.",
+   "nasil": "Her arcanum Long Rest başına bir kez slotsuz yapılır. 13., 15. ve 17. seviyede sırasıyla 7., 8. ve 9. seviye birer büyü eklenir. Her Warlock seviyesinde bir arcanum büyüsünü aynı seviyeden başka bir Warlock büyüsüyle değiştirebilirsin.",
+   "sinif": "warlock",
+   "seviye": 11
+  },
+  "warlock:epic-boon": {
+   "ne": "Bir Epic Boon feat'i ya da koşullarını karşıladığın başka bir feat kazanırsın.",
+   "nasil": "Seçim seviye atlarken yapılır; SRD önerisi Boon of Fate.",
+   "sinif": "warlock",
+   "seviye": 19
+  },
+  "warlock:eldritch-master": {
+   "ne": "Magical Cunning kullandığında harcanmış bütün Pact Magic slotlarını geri kazanırsın.",
+   "nasil": "Magical Cunning'in kullanım koşulları aynen geçerlidir.",
+   "sinif": "warlock",
+   "seviye": 20
+  },
+  "wizard:spellcasting": {
+   "ne": "Arkana çalışmasıyla Wizard büyüleri yaparsın; büyü yeteneğin INT'tir ve 1+ seviye büyülerin büyü kitabında durur.",
+   "nasil": "Başta üç cantrip bilirsin, 4. ve 10. seviyede birer tane eklenir. Kitap altı 1. seviye büyüyle başlar; 1'den sonraki her seviyede iki büyü eklersin. Hazır büyü sayısı ve slotlar sınıf tablosundaki kadardır; slotlar Long Rest ile dolar. Her Long Rest sonunda hazır listeyi kitaptan yeniden kurabilir, bir cantrip'i değiştirebilirsin. Arcane Focus ya da kitabın büyü odağı olur.",
+   "risk": "Hazırlanan ve kitaba eklenen büyüler slotu olan seviyelerden olmalıdır.",
+   "sinif": "wizard",
+   "seviye": 1
+  },
+  "wizard:ritual-adept": {
+   "ne": "Ritual etiketli ve büyü kitabında bulunan her büyüyü, hazır olmasa da ritüel olarak yapabilirsin.",
+   "nasil": "Ritüel yaparken kitaptan okuman gerekir.",
+   "kimler": "Kitabında olmayan ya da Ritual etiketi taşımayan büyülerde işlemez.",
+   "sinif": "wizard",
+   "seviye": 1
+  },
+  "wizard:arcane-recovery": {
+   "ne": "Short Rest sonunda büyü kitabını çalışarak harcanmış bazı slotları geri kazanırsın.",
+   "nasil": "Geri alınan slotların toplam seviyesi Wizard seviyenin yarısını (yukarı yuvarlanır) aşamaz. Bir kez kullanılır; Long Rest ile yenilenir.",
+   "risk": "6. seviye ve üstü slotlar geri alınamaz.",
+   "sinif": "wizard",
+   "seviye": 1
+  },
+  "wizard:scholar": {
+   "ne": "Arcana, History, Investigation, Medicine, Nature ya da Religion'dan yetkin olduğun birinde Expertise kazanırsın.",
+   "nasil": "Beceri seviye atlarken seçilir.",
+   "kimler": "Yetkin olmadığın beceri seçilemez.",
+   "sinif": "wizard",
+   "seviye": 2
+  },
+  "wizard:wizard-subclass": {
+   "ne": "Bir Wizard alt sınıfı seçersin; alt sınıf belirli seviyelerde ek özellikler verir ve seviyen yettikçe hepsini kazanırsın.",
+   "nasil": "Seçim bu seviyede bir kez yapılır; SRD'de örnek alt sınıf Evoker.",
+   "sinif": "wizard",
+   "seviye": 3
+  },
+  "wizard:ability-score-improvement": {
+   "ne": "Ability Score Improvement feat'ini ya da koşullarını karşıladığın başka bir feat'i alırsın.",
+   "nasil": "Bu hak 4, 8, 12 ve 16. seviyelerde yeniden gelir.",
+   "sinif": "wizard",
+   "seviye": 4
+  },
+  "wizard:memorize-spell": {
+   "ne": "Short Rest sonunda hazır 1+ seviye büyülerinden birini kitabındaki başka bir 1+ seviye büyüyle değiştirebilirsin.",
+   "nasil": "Değişim için büyü kitabını çalışman gerekir.",
+   "sinif": "wizard",
+   "seviye": 5
+  },
+  "wizard:spell-mastery": {
+   "ne": "Kitabındaki, döküm süresi bir eylem olan bir 1. ve bir 2. seviye büyüyü her zaman hazır tutar, en düşük seviyede slot harcamadan istediğin kadar yaparsın.",
+   "nasil": "Her Long Rest sonunda kitabı çalışarak bu büyülerden birini aynı seviyeden uygun başka bir büyüyle değiştirebilirsin.",
+   "risk": "Daha yüksek seviyede yapmak için slot harcaman gerekir.",
+   "sinif": "wizard",
+   "seviye": 18
+  },
+  "wizard:epic-boon": {
+   "ne": "Bir Epic Boon feat'i ya da koşullarını karşıladığın başka bir feat kazanırsın.",
+   "nasil": "Seçim seviye atlarken yapılır; SRD önerisi Boon of Spell Recall.",
+   "sinif": "wizard",
+   "seviye": 19
+  },
+  "wizard:signature-spells": {
+   "ne": "Kitabındaki iki 3. seviye büyüyü imza büyüsü seçersin; her zaman hazırdır ve her biri bir kez slotsuz 3. seviyede yapılır.",
+   "nasil": "Slotsuz yapım her büyü için ayrıdır ve Short Rest ya da Long Rest ile yenilenir.",
+   "risk": "Daha yüksek seviyede yapmak için slot harcaman gerekir.",
+   "sinif": "wizard",
+   "seviye": 20
+  }
+ }
+}

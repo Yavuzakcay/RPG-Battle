@@ -21,6 +21,7 @@ if (ver) setDefaultRuleVersion(Number(ver));
 
 const { tumBuyuSatirlari } = await import('./matris/tum');
 const { saldiriSatirlari } = await import('./matris/saldiri');
+const { hazirlaSatirlari } = await import('./matris/hazirla');
 const { yazRapor, siniflandir, ozetOf } = await import('./matris/rapor');
 const { YONTEM } = await import('./matris/yontem');
 type Ozet = ReturnType<typeof ozetOf>;
@@ -31,6 +32,8 @@ const t0 = Date.now();
 const rows = [
   ...(onlyAtk && !only ? [] : tumBuyuSatirlari(only)),
   ...(only && !onlyAtk ? [] : saldiriSatirlari(onlyAtk)),
+  // Hazırla (Ready, sürüm 90): eylem satırları (SRD 5.2.1 s.186–187).
+  ...(only || onlyAtk ? [] : hazirlaSatirlari()),
 ];
 const ms = Date.now() - t0;
 const sinifli = siniflandir(rows);

@@ -5,9 +5,9 @@ Satır satır sonuçlar: [`mekanik-matris.csv`](mekanik-matris.csv) (UTF-8, virg
 
 ## Özet
 
-- Toplam satır: **6606** (büyü 1851 satır / 339 büyü; silah 670 satır / 46 seçenek; canavar 4085 satır / 579 saldırı).
-- Doğru oranı: **100.0%** (6606/6606); karar bekleyenler hariç 100.0%.
-- Sonuçlar: doğru 6606 · yanlış 0 · çökme 0 · uygulanmıyor 0 · karar bekliyor 0.
+- Toplam satır: **6615** (büyü 1851 satır / 339 büyü; silah 670 satır / 46 seçenek; canavar 4085 satır / 579 saldırı).
+- Doğru oranı: **100.0%** (6615/6615); karar bekleyenler hariç 100.0%.
+- Sonuçlar: doğru 6615 · yanlış 0 · çökme 0 · uygulanmıyor 0 · karar bekliyor 0.
 - Kök nedene göre: 0 yanlış, 0 çökme, 0 uygulanmıyor, 0 karar bekleyen bulgu.
 
 | Tür | Satır | Doğru | Yanlış | Çökme | Uygulanmıyor | Karar bekliyor | Doğru oranı |
@@ -15,6 +15,7 @@ Satır satır sonuçlar: [`mekanik-matris.csv`](mekanik-matris.csv) (UTF-8, virg
 | Büyü | 1851 | 1851 | 0 | 0 | 0 | 0 | 100.0% |
 | Silah | 670 | 670 | 0 | 0 | 0 | 0 | 100.0% |
 | Canavar | 4085 | 4085 | 0 | 0 | 0 | 0 | 100.0% |
+| Eylem (Ready) | 9 | 9 | 0 | 0 | 0 | 0 | 100.0% |
 
 ## Önce / sonra (düzeltme turları)
 
@@ -90,13 +91,13 @@ Bulgu başına doğru olmayan satır (aşama sırasıyla):
 | alan | 99 | 99 | 0 | 0 | 0 | 0 |
 | durum | 1978 | 1978 | 0 | 0 | 0 | 0 |
 | hasar türü | 1384 | 1384 | 0 | 0 | 0 | 0 |
-| konsantrasyon | 157 | 157 | 0 | 0 | 0 | 0 |
-| saldırı zarı | 634 | 634 | 0 | 0 | 0 | 0 |
+| konsantrasyon | 159 | 159 | 0 | 0 | 0 | 0 |
+| saldırı zarı | 635 | 635 | 0 | 0 | 0 | 0 |
 | save | 239 | 239 | 0 | 0 | 0 | 0 |
 | siper | 216 | 216 | 0 | 0 | 0 | 0 |
-| tepki | 731 | 731 | 0 | 0 | 0 | 0 |
-| yapım | 1027 | 1027 | 0 | 0 | 0 | 0 |
-| yukarı slot | 113 | 113 | 0 | 0 | 0 | 0 |
+| tepki | 734 | 734 | 0 | 0 | 0 | 0 |
+| yapım | 1029 | 1029 | 0 | 0 | 0 | 0 |
+| yukarı slot | 114 | 114 | 0 | 0 | 0 | 0 |
 | yüzey | 28 | 28 | 0 | 0 | 0 | 0 |
 
 ## Bulgular (kök nedene göre; öncelik sırası: yanlış → çökme → uygulanmıyor → karar bekliyor)
@@ -106,6 +107,22 @@ Düzeltilen bulgular (B01, B02, Ç01, B03, B04, B21, B05, B06, B07, B08, B09, B1
 ### Yeni bulgular (düzeltme turlarında bulundu; matris satırı yok; onay bekliyor)
 
 - **G01 — Save günlüğü durumdan gelen avantaj/dezavantajı göstermiyordu (görünüm; sonucu etkilemez) — düzeltildi.** `save_resolved.mode` motorun 41 save yolunun 27'sinde sabit 'normal'; Restrained, Dodge, Haste gibi kaynaklardan gelen kip yalnız atılan iki zarda görünüyordu. Öneri: Düzeltildi (2026-11-19, sürümsüz, yalnız görünüm): `saveMode` koşulları `saveModeWhy`'a taşındı; komut sonunda save olaylarına `modeWhy` (`src/battle/saveWhy.ts`), günlükte açılır ayrıntıda tek satır ("Dezavantaj: Restrained (DEX save)") ve kip rozeti aynı kaynaktan. 64 kurulum değişmedi.
+
+## Eylemler: Hazırla (Ready)
+
+SRD 5.2.1 s.186–187; kural sürümü 90 (`src/sim/matris/hazirla.ts`).
+
+| Bağlam | Beklenen | Gerçek | Sonuç |
+|---|---|---|---|
+| düşman erişime girer → saldırı | tek saldırı, tepki ready | tek saldırı, tepki ready | doğru |
+| Extra Attack (2 saldırı) varken | 1 | 1 | doğru |
+| hareket yanıtı | hareket tepkiyle, turun hareketi değişmedi | hareket tepkiyle, turun hareketi değişmedi | doğru |
+| büyü hazırlanınca slot | 1. seviye slot 4 → 3, konsantrasyon ready:Guiding Bolt | 1. seviye slot 4 → 3, konsantrasyon ready:Guiding Bolt | doğru |
+| tetik gelmezse (sonraki tur başı) | slot 3 (geri gelmedi), konsantrasyon yok, hazırlık bitti | slot 3 (geri gelmedi), konsantrasyon yok, hazırlık bitti | doğru |
+| tutma konsantrasyonu bozulur | tetiklenmez | tetiklenmez | doğru |
+| döküm süresi tepki olan büyü (Shield) | red | red | doğru |
+| fırsat saldırısı ile aynı tepki | leave | leave | doğru |
+| kural sürümü 89 | red | red | doğru |
 
 ## Büyü matrisi (büyü başına)
 

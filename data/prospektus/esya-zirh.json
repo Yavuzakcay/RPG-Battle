@@ -1,0 +1,130 @@
+{
+ "_aciklama": "Dungeondex prospektüsü, zırhlar. kayitlar: ne/nasil/risk/kimler SRD 5.2.1'den Türkçe özet; maliyet, giyDk/cikarDk (giyme/çıkarma dakikası), dex/dexMax (AC'ye DEX eklenir, üst sınır) data/srd/armor.json'dan (test denetler). ozellik: zırh kurallarının Türkçe açıklaması (SRD Equipment > Armor).",
+ "ozellik": {
+  "zirhsiz-giyme": "Zırhı herkes giyebilir; ama o zırh türünün eğitimi olmayan STR ya da DEX içeren her D20 Testinde dezavantajlıdır ve büyü yapamaz. Kalkanın AC katkısı da yalnız eğitimle gelir.",
+  "guc-sarti": "Zırh tablosunda STR değeri yazılıysa, giyenin STR değeri o değerin altındaysa hızı 10 ft azalır.",
+  "gizlilik": "Zırh tablosunda Stealth sütununda dezavantaj yazılıysa giyen DEX (Stealth) kontrollerinde dezavantajlıdır."
+ },
+ "kayitlar": {
+  "padded-armor": {
+   "ne": "Hafif zırh: AC 11 + DEX değiştiricisi; en ucuz koruma; DEX'i yüksek karaktere AC sağlar ama sessiz değildir.",
+   "nasil": "Giymek ve çıkarmak 1 dakika sürer. Aynı anda yalnız bir zırh giyilebilir.",
+   "risk": "Giyen DEX (Stealth) kontrollerinde dezavantajlıdır.",
+   "kimler": "Herkes giyebilir; hafif zırh eğitimi olmayan STR ya da DEX içeren her D20 Testinde dezavantajlıdır ve büyü yapamaz.",
+   "maliyet": "5 GP",
+   "giyDk": 1,
+   "cikarDk": 1,
+   "dex": true
+  },
+  "leather-armor": {
+   "ne": "Hafif zırh: AC 11 + DEX değiştiricisi; DEX'e dayanan karakter için sessiz, ucuz temel koruma.",
+   "nasil": "Giymek ve çıkarmak 1 dakika sürer. Aynı anda yalnız bir zırh giyilebilir.",
+   "kimler": "Herkes giyebilir; hafif zırh eğitimi olmayan STR ya da DEX içeren her D20 Testinde dezavantajlıdır ve büyü yapamaz.",
+   "maliyet": "10 GP",
+   "giyDk": 1,
+   "cikarDk": 1,
+   "dex": true
+  },
+  "studded-leather-armor": {
+   "ne": "Hafif zırh: AC 12 + DEX değiştiricisi; hafif zırhların en iyisi; DEX'in tamamını AC'ye ekler ve gizliliği bozmaz.",
+   "nasil": "Giymek ve çıkarmak 1 dakika sürer. Aynı anda yalnız bir zırh giyilebilir.",
+   "kimler": "Herkes giyebilir; hafif zırh eğitimi olmayan STR ya da DEX içeren her D20 Testinde dezavantajlıdır ve büyü yapamaz.",
+   "maliyet": "45 GP",
+   "giyDk": 1,
+   "cikarDk": 1,
+   "dex": true
+  },
+  "hide-armor": {
+   "ne": "Orta zırh: AC 12 + DEX değiştiricisi (en çok +2); orta zırhların en ucuzu; gizliliği bozmaz.",
+   "nasil": "Giymek 5 dakika, çıkarmak 1 dakika sürer. Aynı anda yalnız bir zırh giyilebilir.",
+   "kimler": "Herkes giyebilir; orta zırh eğitimi olmayan STR ya da DEX içeren her D20 Testinde dezavantajlıdır ve büyü yapamaz.",
+   "maliyet": "10 GP",
+   "giyDk": 5,
+   "cikarDk": 1,
+   "dex": true,
+   "dexMax": 2
+  },
+  "chain-shirt": {
+   "ne": "Orta zırh: AC 13 + DEX değiştiricisi (en çok +2); gizliliği bozmayan, görece hafif orta zırh.",
+   "nasil": "Giymek 5 dakika, çıkarmak 1 dakika sürer. Aynı anda yalnız bir zırh giyilebilir.",
+   "kimler": "Herkes giyebilir; orta zırh eğitimi olmayan STR ya da DEX içeren her D20 Testinde dezavantajlıdır ve büyü yapamaz.",
+   "maliyet": "50 GP",
+   "giyDk": 5,
+   "cikarDk": 1,
+   "dex": true,
+   "dexMax": 2
+  },
+  "scale-mail": {
+   "ne": "Orta zırh: AC 14 + DEX değiştiricisi (en çok +2); yüksek AC veren ama gizliliği bozan orta zırh.",
+   "nasil": "Giymek 5 dakika, çıkarmak 1 dakika sürer. Aynı anda yalnız bir zırh giyilebilir.",
+   "risk": "Giyen DEX (Stealth) kontrollerinde dezavantajlıdır.",
+   "kimler": "Herkes giyebilir; orta zırh eğitimi olmayan STR ya da DEX içeren her D20 Testinde dezavantajlıdır ve büyü yapamaz.",
+   "maliyet": "50 GP",
+   "giyDk": 5,
+   "cikarDk": 1,
+   "dex": true,
+   "dexMax": 2
+  },
+  "breastplate": {
+   "ne": "Orta zırh: AC 14 + DEX değiştiricisi (en çok +2); pahalı ama gizliliği bozmayan, yüksek AC'li orta zırh.",
+   "nasil": "Giymek 5 dakika, çıkarmak 1 dakika sürer. Aynı anda yalnız bir zırh giyilebilir.",
+   "kimler": "Herkes giyebilir; orta zırh eğitimi olmayan STR ya da DEX içeren her D20 Testinde dezavantajlıdır ve büyü yapamaz.",
+   "maliyet": "400 GP",
+   "giyDk": 5,
+   "cikarDk": 1,
+   "dex": true,
+   "dexMax": 2
+  },
+  "half-plate-armor": {
+   "ne": "Orta zırh: AC 15 + DEX değiştiricisi (en çok +2); orta zırhlar arasında en yüksek AC'yi verir, gizliliği bozar.",
+   "nasil": "Giymek 5 dakika, çıkarmak 1 dakika sürer. Aynı anda yalnız bir zırh giyilebilir.",
+   "risk": "Giyen DEX (Stealth) kontrollerinde dezavantajlıdır.",
+   "kimler": "Herkes giyebilir; orta zırh eğitimi olmayan STR ya da DEX içeren her D20 Testinde dezavantajlıdır ve büyü yapamaz.",
+   "maliyet": "750 GP",
+   "giyDk": 5,
+   "cikarDk": 1,
+   "dex": true,
+   "dexMax": 2
+  },
+  "ring-mail": {
+   "ne": "Ağır zırh: sabit AC 14 (DEX eklenmez); STR şartı olmayan en ucuz ağır zırh.",
+   "nasil": "Giymek 10 dakika, çıkarmak 5 dakika sürer. Aynı anda yalnız bir zırh giyilebilir.",
+   "risk": "Giyen DEX (Stealth) kontrollerinde dezavantajlıdır.",
+   "kimler": "Herkes giyebilir; ağır zırh eğitimi olmayan STR ya da DEX içeren her D20 Testinde dezavantajlıdır ve büyü yapamaz.",
+   "maliyet": "30 GP",
+   "giyDk": 10,
+   "cikarDk": 5,
+   "dex": false
+  },
+  "chain-mail": {
+   "ne": "Ağır zırh: sabit AC 16 (DEX eklenmez); STR şartı olan ağır zırhların en ucuzu, DEX'i düşük savaşçı için.",
+   "nasil": "Giymek 10 dakika, çıkarmak 5 dakika sürer. Aynı anda yalnız bir zırh giyilebilir.",
+   "risk": "STR değeri 13 altındaysa giyenin hızı 10 ft azalır. Giyen DEX (Stealth) kontrollerinde dezavantajlıdır.",
+   "kimler": "Herkes giyebilir; ağır zırh eğitimi olmayan STR ya da DEX içeren her D20 Testinde dezavantajlıdır ve büyü yapamaz.",
+   "maliyet": "75 GP",
+   "giyDk": 10,
+   "cikarDk": 5,
+   "dex": false
+  },
+  "splint-armor": {
+   "ne": "Ağır zırh: sabit AC 17 (DEX eklenmez); yüksek sabit AC veren ağır zırh; güçlü kollar ister.",
+   "nasil": "Giymek 10 dakika, çıkarmak 5 dakika sürer. Aynı anda yalnız bir zırh giyilebilir.",
+   "risk": "STR değeri 15 altındaysa giyenin hızı 10 ft azalır. Giyen DEX (Stealth) kontrollerinde dezavantajlıdır.",
+   "kimler": "Herkes giyebilir; ağır zırh eğitimi olmayan STR ya da DEX içeren her D20 Testinde dezavantajlıdır ve büyü yapamaz.",
+   "maliyet": "200 GP",
+   "giyDk": 10,
+   "cikarDk": 5,
+   "dex": false
+  },
+  "plate-armor": {
+   "ne": "Ağır zırh: sabit AC 18 (DEX eklenmez); oyundaki en yüksek AC'yi veren ağır zırh; pahalı ve ağır.",
+   "nasil": "Giymek 10 dakika, çıkarmak 5 dakika sürer. Aynı anda yalnız bir zırh giyilebilir.",
+   "risk": "STR değeri 15 altındaysa giyenin hızı 10 ft azalır. Giyen DEX (Stealth) kontrollerinde dezavantajlıdır.",
+   "kimler": "Herkes giyebilir; ağır zırh eğitimi olmayan STR ya da DEX içeren her D20 Testinde dezavantajlıdır ve büyü yapamaz.",
+   "maliyet": "1,500 GP",
+   "giyDk": 10,
+   "cikarDk": 5,
+   "dex": false
+  }
+ }
+}

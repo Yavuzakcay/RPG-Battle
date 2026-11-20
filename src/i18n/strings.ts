@@ -743,6 +743,9 @@ const tr = {
     choiceTitle: (who: string): string => `Seçim: ${who}`,
     choiceLine: (label: string): string => `${label}: birini seç.`,
     noChoice: 'Seçme',
+    /** Hazırla (Ready): tetik gelince. */
+    readyTitle: (who: string): string => `Hazırlanan eylemi uygula? (${who})`,
+    readyLine: (src: string, trig: string): string => `${src}: ${trig}.`,
     suggested: 'önerilen',
     no: 'Kullanma',
     policy: {

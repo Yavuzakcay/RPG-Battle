@@ -113,6 +113,7 @@ import { goalEvents } from './goals';
 import { executeRally, moraleAfterEvents, moraleStartEvents } from './morale';
 import { alarmEvents, executeAlarmGroup, formGroupsEvent, patrolEvents, patrolOf } from './alarm';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
+import { executeReady, registerReadyCast } from './ready';
 
 export type { CommandResult } from './common';
 export { canControl, currentActorId } from './common';
@@ -180,6 +181,8 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
 /** Komutu çözer; komutu veren gizlenmişse ve komut onu ortaya çıkarıyorsa bunu da ekler. */
 export function execute(state: BattleState, cmd: Command, ctx: CommandContext, rng: Rng): CommandResult {
   // Kuyruk S1: haritadan ayrılma, büyünün yapımıyla aynı yol (eylem, slot, hedef denetimi).
+  // Hazırla (Ready): tutulan büyünün salınması yalnız motorun iç komutu (tepkiyle; `ready.ts`).
+  if (cmd.type === 'cast_spell' && cmd.fromReady) return fail('Hazırlanan büyü yalnız tetikle salınır.');
   if (cmd.type === 'retreat') return execute(state, { type: 'cast_spell', actorId: cmd.actorId, spellName: cmd.spellName, targetIds: cmd.targetIds, ...(cmd.slotLevel ? { slotLevel: cmd.slotLevel } : {}) }, ctx, rng);
   // Eylem ekonomisi: komut çalışmadan önce harcanabilir mi bakılır, başarılıysa harcanır
   // (olay, komutun olaylarının ardına eklenir; ikisi farklı alanları değiştirir).
@@ -524,7 +527,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const steed = controlledMountOf(state, state.combatants[cmd.actorId]);
     if (steed && state.order[state.turnIndex] === cmd.actorId) return executeCommand(state, { ...cmd, actorId: steed.id }, ctx, rng);
   }
-  const outOfTurn0 = (cmd.type === 'cast_spell' && isReactionSpell(cmd.spellName)) || cmd.type === 'initiative_swap';
+  const outOfTurn0 = (cmd.type === 'cast_spell' && (isReactionSpell(cmd.spellName) || !!cmd.fromReady)) || cmd.type === 'initiative_swap';
   // Kuyruk MB2 (74+): kontrollü binek binicisinin turunda, binicinin kararıyla oynar (yalnız hareket, Dash, Disengage, Dodge).
   const ctrl = controlledGate(state, cmd, ctx, outOfTurn0);
   if (ctrl && 'error' in ctrl) return fail(ctrl.error);
@@ -779,6 +782,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
   if (cmd.type === 'attack_gate') return executeAttackGate(state, actor, cmd.at, cmd.option, rng);
   if (cmd.type === 'dodge') return executeDodge(state, actor);
+  // Hazırla (Ready, sürüm 90; SRD 5.2.1 s.186–187).
+  if (cmd.type === 'ready') return executeReady(state, actor, cmd);
   if (cmd.type === 'help') return executeHelp(state, actor, cmd.targetId, rng);
   if (cmd.type === 'distract') return executeDistract(state, actor, cmd.at);
   if (cmd.type === 'use_item') return executeUseItem(state, actor, cmd.itemId, cmd.targetId, rng);
@@ -1069,3 +1074,5 @@ function controlledGate(state: BattleState, cmd: Command, ctx: CommandContext, o
   return { ctx: m.side === 'enemies' || m.civilian ? { ...ctx, isGm: true } : { ...ctx, playerId: m.ownerId ?? ctx.playerId } };
 }
 
+// Hazırla (Ready, sürüm 90): tutulan büyü salınırken iç komut (sıra ve eylem ekonomisi dışında; slot hazırlarken harcandı).
+registerReadyCast((s, cmd, rng) => executeCommand(s, cmd, { isGm: true, playerId: s.combatants[cmd.actorId]?.ownerId ?? null }, rng));
