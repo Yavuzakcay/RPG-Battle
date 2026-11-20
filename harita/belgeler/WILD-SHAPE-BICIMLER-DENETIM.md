@@ -16,7 +16,7 @@ Yalnız denetim: kod, veri, test ve DECISIONS.md değişmedi. Tarih 2026-11-20, 
   - **Yeni fark 1: Rampage** (Giant Hyena) düşmanda çalışıyor, biçimde hiç çalışmıyor (Y11).
   - **Yeni fark 2: Swarm** biçimi Wild Shape'in geçici HP'sini alıyor; SRD sürüye geçici HP vermez (⚠ yorum, Y6).
   - **Yeni fark 3 (genel, bütün biçimler): STR skoru biçimden alınmıyor** (G1, Y13): atlama mesafesi ve taşıma/sürükleme druidin kendi STR'siyle.
-- Önceki denetimde bulunanlar (Swallow, Multiattack bileşimi, arayüzde yetenek düğmesi, `multiHex` sığma, süre) yeniden açılmadı; tablolarda "bilinen".
+- Önceki denetimde bulunanlar (Swallow, Multiattack bileşimi, `multiHex` sığma, süre) yeniden açılmadı; tablolarda "bilinen". Arayüzde yetenek düğmesi eksiği (önceki A38) bu arada `birlesik`'e gelen 51f0b8cb ile kapandı (G4); motor değişmedi, yoklamalar geçerli.
 
 ## Yöntem
 
@@ -37,7 +37,7 @@ Yalnız denetim: kod, veri, test ve DECISIONS.md değişmedi. Tarih 2026-11-20, 
 | G1 | **STR (ve DEX) skoru** | `strScore`/`dexScore` biçime geçmiyor; değiştirici (`modifiers`) geçiyor. Uzun atlama mesafesi (`jumpRangeFeet`), taşıma ve sürükleme sınırı (`capacityOf`, `dragLimitOf`) druidin kendi skoruyla. Örnek: Lion biçiminde STR 8 (druid), düşman Lion 17 | yok (yeni) | var: düşman canavar kendi STR'siyle | `reduce.ts:944` (`shape_changed` `strScore` yazmıyor), `movement.ts:664–667`, `nesneAgirlik.ts:36,38`; Y13, Y18 |
 | G2 | Saldırılar | saldırı zarlı olanlar silah seçeneği (biçimin to-hit ve hasarı), save'li/şarjlı olanlar canavar saldırısı; ikisi de arayüzde seçilebiliyor | tam | yok (Y16) | `druid.ts:76–81`, `shapeMonster.ts:81`, `mapView.ts:181–186` |
 | G3 | Multiattack | yalnız saldırı sayısı | bilinen | düşman planla (`data/multiattack.json`) | önceki denetim A35 |
-| G4 | Canavar yetenekleri (Bubble Dash, Rampage, Swallow; SRD dışı Leap) | motor ve YZ; arayüz düğmesi yok | bilinen | yok | önceki denetim A38 |
+| G4 | Canavar yetenekleri (Bubble Dash, Rampage, Swallow; SRD dışı Leap) | motor ve YZ; arayüzde Yetenek düğmesi `birlesik`'e 51f0b8cb ile geldi (önceki denetimdeki A38 kapandı; `grant` seçenekleri ayrı düğme) | tam (arayüz) | yok | `MapBattle.tsx:1764–1776`, `monsterAbilities.ts:82–86` |
 | G5 | Biçimi olmayan saldırı (Seahorse: yalnız Bubble Dash) | genel "Vuruş" (Unarmed Strike) seçeneği | tam | — | Y0 (`weapons: ["Vuruş"]`) |
 
 ## Biçimler
@@ -157,7 +157,7 @@ Saldırısı yok; biçimde genel Vuruş (G5).
 | Girdi | Tür | Biçimde | Durum | Fark (düşman/biçim) | Kanıt |
 |---|---|---|---|---|---|
 | Water Breathing | özellik | su altında soluma ✓; "yalnız su altında" kısmı yok: karada boğulma işlemez (iki yolda da) | kısmi | — | `underwaterCore.ts:51–65` |
-| Bubble Dash | eylem | Dash + Disengage (eylem): yüzme hızı kadar ek hareket ✓; fırsat saldırısı muafiyeti tur boyu (SRD yalnız bu hareket); arayüz düğmesi yok (bilinen) | kısmi | — | `canavar-yetenekleri.json` `seahorse`; `monsterAbilities.ts:281`; Y15 |
+| Bubble Dash | eylem | motor (YZ, seçeneksiz komut): Dash + Disengage birlikte, fırsat saldırısı muafiyeti tur boyu (SRD yalnız bu hareket); arayüzde Dash ve Disengage ayrı düğme, ikisi birden alınamaz (G4); SRD: yüzme hızı kadar fırsat saldırısız hareket | kısmi | — | `canavar-yetenekleri.json` `seahorse`; `monsterAbilities.ts:281`; Y15 |
 
 #### Spider (`spider`): CR 0, Tiny, 20 ft, tırmanma, AC 12
 
@@ -271,7 +271,7 @@ Ayrıca SRD dışı bonus yetenek Leap (20 ft sıçrama; kullanıcı kararı, DE
 | Amphibious | özellik | su altında soluma | tam | — | `underwaterCore.ts:51–65` |
 | Standing Leap | özellik | uzun atlama mesafesi ✓ (Jump büyüsü modeliyle: turda bir, 10 ft harcar); yüksek atlama yok ✗ | kısmi | — | `monsterAbilities.ts:117`, `movement.ts:703`; Y13 |
 | Bite | eylem | Grappled (kaçış DC 11) | tam | — | `druid.ts:76–81`, `features.ts:268–269,306,400`; Y17, Y16 |
-| Swallow | eylem | bilinen (önceki denetim: Total Cover, yutarken Bite, YZ, yutan ölünce Prone, `grapple` alanı); arayüz düğmesi yok | kısmi | — | `monsterAbilities.ts:82–86`; önceki denetim |
+| Swallow | eylem | bilinen (önceki denetim: Total Cover, yutarken Bite, YZ, yutan ölünce Prone, `grapple` alanı); arayüzde Yetenek düğmesi var (G4) | kısmi | — | `monsterAbilities.ts:82–86`; önceki denetim |
 
 #### Giant Lizard (`giant-lizard`): CR 1/4, Large, 40 ft, tırmanma, AC 12
 
@@ -356,7 +356,7 @@ Ayrıca SRD dışı bonus yetenek Leap (20 ft sıçrama; kullanıcı kararı, DE
 |---|---|---|---|---|---|
 | Water Breathing | özellik | su altında soluma ✓; "yalnız su altında" kısmı yok: karada boğulma işlemez (iki yolda da) | kısmi | — | `underwaterCore.ts:51–65` |
 | Ram | eylem | hücumda 2d8+2 | tam | — | `druid.ts:76–81`, `features.ts:268–269,306,400`; Y16 |
-| Bubble Dash | bonus eylem | bonus Dash + Disengage: tam yüzme hızı verir (SRD yarısı); fırsat saldırısı muafiyeti tur boyu; arayüz düğmesi yok (bilinen) | kısmi | — | `canavar-yetenekleri.json` `giant-seahorse`; `monsterAbilities.ts:281`; Y15 |
+| Bubble Dash | bonus eylem | motor (YZ, seçeneksiz komut): bonus Dash + Disengage, tam yüzme hızı (SRD yarısı), muafiyet tur boyu; arayüzde Dash ya da Disengage ayrı düğme (G4) | kısmi | — | `canavar-yetenekleri.json` `giant-seahorse`; `monsterAbilities.ts:281`; Y15 |
 
 #### Reef Shark (`reef-shark`): CR 1/2, Medium, 5 ft, yüzme 30, AC 12
 
@@ -483,7 +483,7 @@ Ayrıca SRD dışı bonus yetenek Leap (20 ft sıçrama; kullanıcı kararı, DE
 | Girdi | Tür | Biçimde | Durum | Fark (düşman/biçim) | Kanıt |
 |---|---|---|---|---|---|
 | Bite | eylem | saldırı ve hasar stat bloğundan | tam | — | `druid.ts:76–81`, `features.ts:268–269,306,400`; Y16 |
-| Rampage (1/Day) | bonus eylem | Bite biçimde silah seçeneği; yetenek saldırıyı canavar saldırıları içinde arıyor, bulamıyor; arayüz düğmesi de yok (bilinen) | yok | var: düşman hyena'da çalışır, biçimde "kullanılamaz" | `boss.ts:286` (`mover.attacks`), `monsterAbilities.ts:212–213`; Y11 |
+| Rampage (1/Day) | bonus eylem | Bite biçimde silah seçeneği; yetenek saldırıyı canavar saldırıları içinde arıyor, bulamıyor; arayüzdeki Yetenek düğmesi (G4) motorun gerekçesiyle kapalı kalır | yok | var: düşman hyena'da çalışır, biçimde "kullanılamaz" | `boss.ts:286` (`mover.attacks`), `monsterAbilities.ts:212–213`; Y11 |
 
 #### Giant Octopus (`giant-octopus`): CR 1, Large, 10 ft, yüzme 60, AC 11
 
@@ -511,7 +511,7 @@ Ayrıca SRD dışı bonus yetenek Leap (20 ft sıçrama; kullanıcı kararı, DE
 | Amphibious | özellik | su altında soluma | tam | — | `underwaterCore.ts:51–65` |
 | Standing Leap | özellik | uzun atlama mesafesi ✓ (Jump büyüsü modeliyle: turda bir, 10 ft harcar); yüksek atlama yok ✗ | kısmi | — | `monsterAbilities.ts:117`, `movement.ts:703`; Y13 |
 | Bite | eylem | ek 2d4 poison; Grappled (kaçış DC 12) | tam | — | `druid.ts:76–81`, `features.ts:268–269,306,400`; Y17, Y16 |
-| Swallow | eylem | bilinen (önceki denetim: Total Cover, yutarken Bite, YZ, yutan ölünce Prone, `grapple` alanı); arayüz düğmesi yok | kısmi | — | `monsterAbilities.ts:82–86`; önceki denetim |
+| Swallow | eylem | bilinen (önceki denetim: Total Cover, yutarken Bite, YZ, yutan ölünce Prone, `grapple` alanı); arayüzde Yetenek düğmesi var (G4) | kısmi | — | `monsterAbilities.ts:82–86`; önceki denetim |
 
 #### Lion (`lion`): CR 1, Large, 50 ft, AC 12
 
@@ -597,13 +597,12 @@ Bir kök nedeni düzeltmek kaç biçimi kapatır (savaşta etkili, tam olmayan; 
 | 3 | Water Breathing: karada boğulma yok | 7 | giant-octopus, giant-seahorse, octopus, piranha, reef-shark, seahorse, swarm-of-piranhas | yeni |
 | 4 | Swarm: altıgen paylaşımı ve geçici HP | 5 | swarm-of-bats, swarm-of-insects, swarm-of-piranhas, swarm-of-rats, swarm-of-ravens | yeni |
 | 5 | Atlama özellikleri Jump büyüsü modeliyle (koşu şartı, yüksek atlama, DEX) | 5 | cat, frog, giant-frog, giant-toad, lion | yeni |
-| 6 | Arayüzde canavar yeteneği düğmesi yok (Bubble Dash, Rampage, Swallow) | 5 | seahorse, giant-seahorse, giant-hyena, giant-frog, giant-toad | bilinen |
-| 7 | Multiattack bileşimi | 2 | lion, brown-bear | bilinen |
-| 8 | Swallow | 2 | giant-frog, giant-toad | bilinen |
-| 9 | Bubble Dash: tur boyu Disengage, Giant Seahorse'ta tam hız | 2 | seahorse, giant-seahorse | yeni |
-| 10 | Rampage biçimde çalışmıyor | 1 | giant-hyena | yeni (iki yol farkı) |
-| 11 | Illumination: loş ışık yok, parlak 30 ft | 1 | giant-fire-beetle | yeni |
-| 12 | Cacophony: Deafened'ın ek dezavantajları | 1 | swarm-of-ravens | yeni |
+| 6 | Multiattack bileşimi | 2 | lion, brown-bear | bilinen |
+| 7 | Swallow | 2 | giant-frog, giant-toad | bilinen |
+| 8 | Bubble Dash: tur boyu Disengage, Giant Seahorse'ta tam hız | 2 | seahorse, giant-seahorse | yeni |
+| 9 | Rampage biçimde çalışmıyor | 1 | giant-hyena | yeni (iki yol farkı) |
+| 10 | Illumination: loş ışık yok, parlak 30 ft | 1 | giant-fire-beetle | yeni |
+| 11 | Cacophony: Deafened'ın ek dezavantajları | 1 | swarm-of-ravens | yeni |
 
 ## Düzeltme önerileri
 
@@ -621,7 +620,7 @@ Karar kullanıcıda; bu belge hiçbirini uygulamadı.
 | 8 | Bubble Dash: Disengage yerine yalnız bu hareket fırsat saldırısız (`fullMoveNoOA`/`halfMove` gibi), Giant Seahorse yarım yüzme hızı | çok düşük: 2 biçim | gerekir | küçük: `data/canavar-yetenekleri.json` iki kayıt |
 | 9 | Illumination: 10 ft parlak + 10 ft loş (`light` 2, `lightDim` 2) | çok düşük: 1 biçim + düşman Giant Fire Beetle | gerekir (ışık seviyesi; gece haritası) | küçük: `monsterTraits.ts:46` |
 | 10 | Cacophony: Deafened sürerken yetenek kontrolü ve saldırı dezavantajı (ek etki) | çok düşük: 1 biçim + düşman | gerekir | küçük: `attack-riders.json` ya da A2 eki |
-| — | Bilinenler (Multiattack bileşimi, Swallow, arayüz yetenek düğmesi, `multiHex` sığma) | — | — | önceki belgedeki öneriler |
+| — | Bilinenler (Multiattack bileşimi, Swallow, `multiHex` sığma) | — | — | önceki belgedeki öneriler; arayüz yetenek düğmesi 51f0b8cb ile kapandı |
 
 ## Yoklama kayıtları
 
