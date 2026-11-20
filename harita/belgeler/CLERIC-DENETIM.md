@@ -29,19 +29,21 @@ Durum sözlüğü: **tam** · **kısmi** · **yok** · **bilinçli sapma** (DECI
 
 | Alan | Satır | tam | kısmi | yok | bilinçli sapma |
 |---|---|---|---|---|---|
-| A) Savaş içi | 30 | 14 | 11 | 2 | 3 |
+| A) Savaş içi | 30 | 16 | 9 | 2 | 3 |
 | B) Oluşturucu / seviye atlama | 8 | 7 | 1 | 0 | 0 |
 | C) Dinlenme ve Serüven | 5 | 3 | 2 | 0 | 0 |
-| D) Yapay zekâ | 6 | 3 | 2 | 0 | 1 |
+| D) Yapay zekâ | 6 | 4 | 1 | 0 | 1 |
 | E) Arayüz ve TR/EN | 6 | 2 | 3 | 0 | 1 |
-| **Toplam** | **55** | **29** | **19** | **2** | **5** |
+| **Toplam** | **55** | **32** | **16** | **2** | **5** |
+
+**Güncelleme (aynı gün, sonradan):** A12 ve A15, denetimden sonra `birlesik`'e birleşen D1 (veri düzeltmeleri, kural sürümü 86) ve D3 (süren etkinin verdiği durumlar bağışıklığa takılır, sürüm 89) ile kapandı; probe'lar bu iki işten önceki ağaçta çalıştırılmıştı. Aşağıdaki A12/A15 satırları ve bulgu 1 bu yüzden "kapandı" olarak işaretli. Kapanışı Paladin denetimi sırasında bir probe ile (Abjure Foes bağışıklığı) ve veri dosyası okumasıyla doğruladım; Turn Undead için probe tekrarlanmadı.
 
 (Sayım tablo satırlarının durum sütunundan; "tam (dolaylı/etkisiz)" tam, "kısmi (hata/bilinçli/doğrulanmadı)" kısmi sayıldı.)
 
 Öne çıkan bulgular (ayrıntı tabloda):
 
-1. **Veri hatası (yüksek etki):** `data/canavar-turleri.json` Wight'ı `dragon`, Wraith'i `monstrosity`, Specter'ı `celestial` yazıyor; SRD'de üçü de Undead (PDF iki sütunlu: tür satırı komşu sütundan okunmuş; üçü `temadan` listesinde değil, PDF okumasından yanlış). Turn Undead, Sear Undead, Divine Smite'ın Undead zarı, Protection from Evil and Good, Mass Heal'in Undead dışlaması bu üçünü Undead saymıyor. Wight `data/sim-senaryolar.json`'da geçiyor (satır 402, 408, 440).
-2. Turn Undead'in üç yan kuralı eksik: Frightened bağışıklığı yok sayılıyor (Ghost, Mummy…), "olabildiğince uzaklaşır" yok, Cleric Incapacitated/ölünce efekt bitmiyor.
+1. **Kapandı (denetimden sonra):** `data/canavar-turleri.json` Wight, Wraith ve Specter'ı yanlış türde yazıyordu (`dragon`, `monstrosity`, `celestial`; PDF iki sütunlu okuma hatası). D1 ile üçü `undead` oldu (şimdi veride doğrulandı). Turn Undead, Sear Undead, Divine Smite ve Protection from Evil and Good bu üçünü artık Undead sayıyor.
+2. Turn Undead'in iki yan kuralı eksik (Frightened bağışıklığı D3 ile kapandı): "olabildiğince uzaklaşır" yok, Cleric Incapacitated/ölünce efekt bitmiyor.
 3. Divine Strike, düşmanın turunda yapılan fırsat saldırısında da ek zar veriyor (SRD: "kendi turlarında").
 4. Disciple of Life/Blessed Healer çoğu büyüde tam; Mass Heal ve Power Word Heal yolunda (`spells69.ts`) yok.
 5. Bilinen: Divine Intervention yalnız hazırlanmış büyüyle; Greater DI 2d4 sayacı yok; Potent Spellcasting Cleric listesi ayrımı yapmıyor.
@@ -62,10 +64,10 @@ Durum sözlüğü: **tam** · **kısmi** · **yok** · **bilinçli sapma** (DECI
 | A9 | Turn Undead: Magic action, 30 ft, WIS save, DC = büyü DC'si | Eylem harcanır, `undeadInRange` 30 ft, DC `spellSaveDc` (probe: economy.action true, 30 ft dışı "Undead yok") | tam | probe; `cleric.test.ts` | 4612 |
 | A10 | Başarısız: Frightened + Incapacitated 1 dk; hasar alınca biter | `effect_added` `grants` + `breakOnDamage`, `until` round+9 (probe: until 10) | tam | probe | 4612 |
 | A11 | Seçilen Undead'ler ("of your choice") | Menzildeki **bütün** düşman Undead; dost Undead hariç (probe), alt küme seçimi yok | bilinçli sapma | `cleric.ts` 56–66 | yok (düşük etki) |
-| A12 | Undead'in durum bağışıklığı geçerli (Ghost: Frightened bağışık → yalnız Incapacitated) | `effect_added.grants` bağışıklığa bakmıyor: Frightened bağışık Ghost'ta (`immune` içinde Frightened) probe'da ikisi birden uygulandı | kısmi (hata) | probe: Ghost conds ["Frightened","Incapacitated"]; `reduce.ts` 146 `immuneTo` yalnız `condition_changed`/save yolunda (893, 984), 701 `effect_added` yok | yok |
+| A12 | Undead'in durum bağışıklığı geçerli (Ghost: Frightened bağışık → yalnız Incapacitated) | `effect_added.grants` bağışıklığa bakmıyor: Frightened bağışık Ghost'ta (`immune` içinde Frightened) probe'da ikisi birden uygulandı | tam (D3 ile kapandı; denetim anında kısmi/hata) | probe: Ghost conds ["Frightened","Incapacitated"]; `reduce.ts` 146 `immuneTo` yalnız `condition_changed`/save yolunda (893, 984), 701 `effect_added` yok | yok |
 | A13 | "olabildiğince uzaklaşmaya çalışır" | Yok. Probe'da turnlu Undead'in YZ komutu `end_turn`; DECISIONS "Frightened davranışına bırakıldı" ama Incapacitated olduğu için YZ hiç hareket etmiyor | yok | probe: `chooseCommand` → `end_turn` | 4612 |
 | A14 | Cleric Incapacitated olursa ya da ölürse efekt biter | Yok: efekt yalnız süre ve hasarla biter (probe: Cleric Incapacitated ve ölü iken Undead hâlâ Frightened+Incapacitated). `pruneEffects` (`reduce.ts` 201–216) kaynak durumuna bakmıyor | yok | probe | yok |
-| A15 | Undead = SRD yaratık türü Undead | Tür `data/canavar-turleri.json`'dan; **Wight=dragon, Wraith=monstrosity, Specter=celestial** (SRD: üçü Undead; PDF iki sütunlu okuma hatası). Diğer 16 Undead doğru; SRD'deki 19 Undead'den 16'sı | kısmi (veri hatası) | probe: Wight'a Turn Undead "30 ft içinde Undead yok"; `monsters.json` kimlikleri `wight`/`wraith`/`specter` mevcut; SRD s. 340–342 | 4609 (tür verisi P-Paladin kaydı) |
+| A15 | Undead = SRD yaratık türü Undead | Tür `data/canavar-turleri.json`'dan; **Wight=dragon, Wraith=monstrosity, Specter=celestial** (SRD: üçü Undead; PDF iki sütunlu okuma hatası). Diğer 16 Undead doğru; SRD'deki 19 Undead'den 16'sı | tam (D1 ile kapandı; denetim anında kısmi/veri hatası) | probe: Wight'a Turn Undead "30 ft içinde Undead yok"; `monsters.json` kimlikleri `wight`/`wraith`/`specter` mevcut; SRD s. 340–342 | 4609 (tür verisi P-Paladin kaydı) |
 | A16 | Sear Undead: WIS d8 (min 1), tek zar, başarısızlara Radiant, efekti bitirmez | Tek `rollDice`, direnç uygulanır (probe: resistant → yarı), efekt hasardan sonra eklenir | tam | `cleric.test.ts`; probe (resistant) | 4612 |
 | A17 | Divine Strike: **kendi turunda** bir kez, silah isabeti, +1d8 Necrotic/Radiant | `usedThisTurn` anahtarı = o anki turun anahtarı; düşmanın turunda fırsat saldırısı da +1d8 alır (probe: B'nin turunda A'nın OA'sı `extra: ["Divine Strike"]`). Kritikte zar ikiye katlanır; tür otomatik (hedefe iyi işleyen) | kısmi (hata) | probe; `cleric.ts` 234–246, `classTraits.ts` 24 | 4613 |
 | A18 | Potent Spellcasting: **Cleric** cantrip hasarına WIS | Cantrip ölçekli bütün hasar cantrip'lerine (Magic Initiate vb. dahil) | bilinçli sapma (bilinen) | `spells.ts` 113, `cleric.ts` 231 | 4613 |
@@ -110,7 +112,7 @@ Durum sözlüğü: **tam** · **kısmi** · **yok** · **bilinçli sapma** (DECI
 | # | Konu | Oyunda ne oluyor | Durum | Kanıt | DECISIONS |
 |---|---|---|---|---|---|
 | D1 | Preserve Life | `clericChoice` (`ai.ts` 3097): ≥2 Bloodied dost ya da biri ¼ altında; 30 ft | tam | `cleric.test.ts` "yapay zekâ" | 4595, 4558 |
-| D2 | Turn Undead | Undead toplam HP ≥ 15, Incapacitated olanlar sayılmaz; **A15 yüzünden Wight/Wraith/Specter'a hiç kullanılmaz** | kısmi | `ai.ts` 3113 | 4595 |
+| D2 | Turn Undead | Undead toplam HP ≥ 15, Incapacitated olanlar sayılmaz; Wight/Wraith/Specter artık sayılıyor (A15 kapandı) | tam | `ai.ts` 3113 | 4595 |
 | D3 | Divine Spark | Yalnız düşmüş (0 HP) dostu kaldırmak için; düşmana hasar modu yok | bilinçli sapma | `ai.ts` 3117–3121 | 4595, 4562 |
 | D4 | İyileştirme önceliği | Düşmüş dosta iyileştirme büyüsü önce (önceki kurallar); bu denetimde bu yol ayrıca ölçülmedi | tam (dolaylı) | DECISIONS kaydı | 4595 |
 | D5 | Divine Intervention | Yalnız slot bitince (son çare) | tam — **bilinen** | `economy.ts` 90–93 | 3496, 3574 |
@@ -133,8 +135,8 @@ Sıra etkiye göre. "Sürüm" sütunu: kural sürümü 79'dan sonra tek toplu s�
 
 | # | Düzeltme | Etki | Sürüm | Tahmini iş |
 |---|---|---|---|---|
-| 1 | `data/canavar-turleri.json`: Wight, Wraith, Specter → `undead`; `temadan` listesinin tamamı iki sütunlu PDF'ten yeniden doğrulanmalı (Divine Smite Fiend/Undead, PEG, Hallow de etkilenir). Wight'lı sim senaryoları (`sim-senaryolar.json` 402, 408, 440) için 3–4 senaryolu hızlı regresyon | Yüksek: Turn Undead, Sear Undead, YZ Turn Undead, Mass Heal dışlaması | Sürümsüz (veri) | 1 saat + regresyon |
-| 2 | Turn Undead: `effect_added.grants`'ı `immuneTo` ile süz (Ghost, Mummy, Lich Frightened bağışık) | Orta | 80 | 1–2 saat |
+| 1 | ~~Wight, Wraith, Specter türü~~ **kapandı (D1)**. Kalan: `temadan` listesindeki diğer türlerin iki sütunlu PDF okumasıyla doğrulanması D1 kapsamında yapıldı mı, bu belgede doğrulanmadı | — | — | — |
+| 2 | ~~Turn Undead Frightened bağışıklığı~~ **kapandı (D3, sürüm 89)** | — | — | — |
 | 3 | Turn Undead: kaynak Cleric Incapacitated ya da ölüyse efekt biter (`ActiveEffect` yeni alan + `pruneEffects`) | Orta | 80 | 2 saat |
 | 4 | Divine Strike yalnız Cleric'in kendi turunda (`turnKey` sahibi = aktör) | Orta (OA başına +4,5 hasar) | 80 | 1 saat |
 | 5 | Turn Undead kaçış hareketi: `compelEvents` flee kalıbı + YZ Incapacitated'da yalnız hareket | Orta-düşük (taktik; denge ölçümü gerekir) | 80 | 3–4 saat |
