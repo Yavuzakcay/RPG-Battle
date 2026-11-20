@@ -24,7 +24,7 @@ Durum: **geçerli** (YZ bugün yapmıyor), **geçersiz** (artık yapıyor ya da 
 | 10 | Magic Circle / Hallow (K64b) | DECISIONS K64b | geçerli ama YZ kapsamı değil: kurulumda (savaş öncesi, Game Master) yapılır | savaş içi döküm süresi uzun | yok | — | kapsam dışı |
 | 11 | Kaçın (Dodge) / Yardım (Help) | DECISIONS (eski) "Yapay zekâ Kaçın ve Yardım'ı kullanmıyor" | geçersiz: `ai.ts` `help`/`dodge` adayları var | — | — | belge eski | — |
 | 12 | Gizlen (Hide) | CLAUDE.md bilinen eksikler | kısmen: `ai.ts` `hide` (bonus eylemle, gizlenme yerinde) var; gece/ışıksız altıgen araması yok | — | gece kuralı simde zayıf | sonraki YZ kuyruğu | orta (yapılmadı: kapsam) |
-| 13 | Ready eylemi | CLAUDE.md | geçerli (mekanik yok) | yeni mekanik | — | — | kapsam dışı |
+| 13 | Ready eylemi | CLAUDE.md | **güncelleme 2026-11-20 (GENEL-SAVAS-DENETIM):** mekanik kural sürümü 90'dan beri var (`src/battle/ready.ts`, DECISIONS "Hazırla (Ready) eylemi: kural sürümü 90"); yapay zekâ kullanmıyor (R3 yapılmadı). Eski kayıt (sürüm 54): "geçerli (mekanik yok)" | YZ adayı yok | Ready'li düşman yalnız Game Master elle | R3: YZ Ready adayı | orta (yapılmadı) |
 | 14 | Patient Defense / Step of the Wind | DECISIONS P-Monk | geçerli (yalnız Flurry) | — | düşük | savunma değerlendirmesi | orta (yapılmadı) |
 | 15 | Divine Favor, Shield of Faith, Magic Weapon (kendine güçlendirme büyüleri) | DECISIONS P-Paladin | geçerli (`buff` yalnız özelliklerde, büyüde yok) | — | düşük | önizlemede etki değeri | orta (yapılmadı) |
 | 16 | Jump, Spider Climb, Longstrider, Fly ile dikey taktik | DECISIONS K68b | geçerli | dikey taktik yasak | — | — | kapsam dışı (K73) |

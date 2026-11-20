@@ -2,7 +2,7 @@
  * Karakterin savaşlar arası durumu ve dinlenme (Görev N): kalan HP, harcanan HP zarı (Hit Point Dice), sınıf
  * kaynakları ve büyü slotları. Savaş bitince kaydedilir; bir sonraki savaş bu durumla başlar. Kısa dinlenme HP zarı
  * harcatır ve kısa dinlenmede yenilenen kaynakları (Second Wind'den biri, Action Surge, Warlock slotları…) doldurur;
- * uzun dinlenme her şeyi doldurur, harcanan HP zarlarının yarısını geri verir (SRD 5.2.1 "Resting").
+ * uzun dinlenme her şeyi doldurur, harcanan HP zarlarının tamamını geri verir (SRD 5.2.1 s. 185 Long Rest; GENEL-SAVAS-DENETIM G5).
  * Saf fonksiyonlar; zar `rng` ile.
  */
 import { gainedFeatures } from './classFeatures';
@@ -116,7 +116,8 @@ export interface RestResult { status: CharacterStatus; rolls: number[]; healed: 
 export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus | undefined, dice: number, rng: Rng,
   /** Görev B93: slot kurtarma seçimi (kaynak → slot seviyeleri; null: kullanma; yoksa otomatik, en yüksekten). */ recover?: Record<string, number[] | null>): RestResult {
   const s = currentStatus(sheet, status);
-  if (s.dead) return { status: s, rolls: [], healed: 0 };
+  // GENEL-SAVAS-DENETIM G1 (SRD 5.2.1 s. 187): kısa dinlenmeye başlamak için en az 1 HP; 0 HP'de hiçbir kazanç yok.
+  if (s.dead || s.hp < 1) return { status: s, rolls: [], healed: 0 };
   const r0 = shortRest(restState(sheet, s), dice, rng);
   // Görev WIZARD: Arcane Recovery (kaynak `arcaneRecovery`, uzun dinlenmede bir kez): toplamı seviyenin yarısını (yukarı)
   // aşmayan, 6. seviyenin altındaki slotlar en yüksekten başlayarak. Görev B93: oyuncu seçer ya da ertelerse kullanılmaz.
@@ -198,7 +199,7 @@ export function arcaneRecovery(sheet: CharacterSheet, resources: Record<string, 
   return { slots: used ? out : slots, used };
 }
 
-/** Uzun dinlenme: HP, slotlar ve bütün kaynaklar dolar; harcanan HP zarlarının yarısı (en az 1) geri gelir. */
+/** Uzun dinlenme: HP, slotlar ve bütün kaynaklar dolar; harcanan HP zarlarının tamamı geri gelir (SRD 5.2.1 s. 185). */
 export function longRestStatus(sheet: CharacterSheet, status: CharacterStatus | undefined): CharacterStatus {
   const s = currentStatus(sheet, status);
   if (s.dead) return s;

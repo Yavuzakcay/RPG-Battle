@@ -1,9 +1,33 @@
 # Genel savaş kuralları denetimi: SRD 5.2.1 ↔ oyun (sınıf dışı kurallar)
 
-> 2026-11-20, kural sürümü 94. **Yalnız denetim:** kod, veri ve test değişmedi. Emin olunmayan satırlar geçici testle
+> 2026-11-20, kural sürümü 94. Düzeltme durumu aşağıda (aynı gün, sürümsüz grup). **İlk denetim yalnız denetimdi:** kod, veri ve test değişmedi. Emin olunmayan satırlar geçici testle
 > gerçekten çalıştırıldı (`src/battle/zzGenel*_*.test.ts`, iş bitince silindi; bu belge dışında depoya dosya girmedi).
 > Kaynak: `docs/SRD_CC_v5.2.1.pdf` "Playing the Game" (s. 5–19) ve "Rules Glossary" (s. 176–191), `pdftotext` ile; gerekirse
 > `data/srd/`. Sayfa numaraları PDF sayfasıdır.
+
+## Düzeltme durumu (2026-11-20, GENEL-SAVAS-DENETIM düzeltmeleri)
+
+Karar kuralı (kullanıcı): SRD 5.2.1 ölçüttür; çelişen madde SRD'ye hizalanır, tek istisna oyun mekaniğini kökten bozan madde
+("ertelendi, karar gerekli"). SRD dışı yeni mekanik eklenmez; SRD'den doğrulanamayan uygulanmaz ("doğrulanmadı"). Karar DECISIONS.md
+"GENEL-SAVAS-DENETIM düzeltmeleri, sürümsüz grup".
+
+- **Yapıldı (sürümsüz, savaş dışı):**
+  - G5 uzun dinlenme bütün HP zarları (SRD s. 185), G2 kısa dinlenmede zar başına en az 1 HP (s. 187), G1 0 HP'de kısa dinlenme yok
+    (s. 187). `src/rules/rest.ts`, `src/rules/characterRest.ts`, karakter listesi düğmesi (`player.rest.shortNeedsHp`).
+  - DECISIONS.md'deki yanlış "SRD 5.2.1" atfı (uzun dinlenmede yarı HP zarı) yeni kararla düzeltildi; eski satıra işaret.
+  - Öneri 17 (belgeler): `READY-DURUM.md`, `Y1-ENVANTER.md` #13, `docs/SRD-DENETIM.md` "Durumlar (15)" kısmi
+    (`scripts/srd-denetim.ts`), `ENVANTER-DIGER.md` durum satırı, DECISIONS Long Jump notu (zorlu araziye iniş zorunlu, s. 185).
+  - Sayfa düzeltmesi: Short Rest girişi PDF s. 187'de (bu belgede önce s. 188 yazıyordu).
+- **Bekliyor (sürümlü grup):** öneri 1–5, 7–12, 15 ve 13'ün Spare the Dying kolu. Kapı: `birlesik`'te kural sürümü 95 (Swarm)
+  olmalı; düzeltme anında 94'tü, bu yüzden uygulanmadı. Sürüm o anki `data/kural-surumu.json` + 1, tek sabit.
+- **Ertelendi, karar gerekli (uygulanmadı):**
+  - G6/D21 0 HP'de uzun dinlenme yasağı (s. 185): doğrudan uygulanınca 0 HP karakter kalıcı kalır, Serüven bozgun tekrarı ve
+    Hapishane `dragBack` kırılır; SRD çıkışı (stabil yaratık 1d4 saatte 1 HP, s. 18) ölmekte/stabil kaydı ve zaman modeli ister.
+  - H3/H4/H12 `nightVision` varsayılanı ve `darkness` haritaları (Karar gerekli 3).
+  - D10 Knocking Out (Karar gerekli 7).
+  - A45 yapay zekânın Dash yapmaması (öneri 14; denge etkisi, `npm run sim` gerektirir).
+  - Oyun mekaniğini kökten değiştirecek diğer maddeler: Karar gerekli listesi.
+- **Doğrulanmadı:** G7 (savaşta azalan HP en çoğunun karaktere yazılması) değişmedi.
 
 ## Kapsam notu ve sınırlar
 
@@ -17,10 +41,11 @@
   "Bilinen" sütunu: daha önce belgelenmişse kaynağı, yoksa "—". "**hata**" = SRD'ye aykırı ve kayıtlı kararı olmayan, probe ile görülmüş davranış.
 - SRD 5.2.1 metin notları (2014'ten farklı olduğu için yanlış beklenebilecekler): dost alanı zorlu arazi **değil** (s. 14); ayrı
   "Squeezing" kuralı yok, yalnız dar açıklık zorlu arazi (s. 181); uzun dinlenme harcanan **bütün** Hit Point Dice'ı verir (s. 185);
-  kısa dinlenmede zar başına **en az 1 HP** (s. 188); su altında yakın dövüş istisnası yalnız Piercing silah, menzilli istisna yok (s. 16);
+  kısa dinlenmede zar başına **en az 1 HP** (s. 187); su altında yakın dövüş istisnası yalnız Piercing silah, menzilli istisna yok (s. 16);
   yetenek kontrolü ve save'de doğal 1/20 otomatik değil (s. 7, yalnız saldırı zarı).
 - **Ready (Hazırla)** kural sürümü 90'dan beri var (`src/battle/ready.ts`). Diskteki `CLAUDE.md` "Bilinen eksikler" satırı "kısmen"
   diyor (doğru); `harita/belgeler/READY-DURUM.md` ve `harita/belgeler/Y1-ENVANTER.md` #13 hâlâ "yok" diyor (eski).
+  **Güncellendi 2026-11-20:** iki belge de düzeltildi (READY-DURUM başına güncelleme notu, Y1-ENVANTER #13).
 
 Sayı özeti, en önemli bulgular, düzeltme önerileri ve "Karar gerekli" tabloların ardında; probe dökümü en sonda.
 
@@ -74,7 +99,7 @@ SRD s. 7, 10, 13–15, 18 (Actions tablosu, Bonus Actions, Reactions, Your Turn,
 | A42 | Turda tek slotlu büyü (Spellcasting; ekonomi) | `slotTurn`; Ready büyüsü de sayılır | tam | savaş içi | `economy.ts:271-276`, `:413-414`; `economy.test.ts` "bonus eylem büyüsü (Healing Word) + eylemle cantrip…" | DECISIONS 309 |
 | A43 | Hiçbir şey yapmama (s.14) | `end_turn` | tam | savaş içi, arayüz | `commands.ts` `end_turn` | — |
 | A44 | Dropping Prone: eylemsiz, hızsız, hız 0'da olmaz (s.14) | Komut yok | yok | savaş içi | grep `drop_prone`/`yere yat`: yok | CLAUDE.md "Yakalama ve yere düşme" satırı |
-| A45 | YZ: Dash | Hiçbir savaşçı Dash eylemi seçmiyor (yalnız canavar yeteneği `grant: dash`, kontrollü binek) | yok | YZ | PA12 (hız 30, hedef 11 altıgen: `move,end_turn`, 5 altıgen kala durdu); grep `type: 'dash'` `ai.ts`: yok | — |
+| A45 | YZ: Dash | **Ertelendi 2026-11-20 (denge etkisi, karar bekliyor).** Hiçbir savaşçı Dash eylemi seçmiyor (yalnız canavar yeteneği `grant: dash`, kontrollü binek) | yok | YZ | PA12 (hız 30, hedef 11 altıgen: `move,end_turn`, 5 altıgen kala durdu); grep `type: 'dash'` `ai.ts`: yok | — |
 | A46 | YZ: Disengage | Yalnız bonus eylemle (Cunning Action), yürüyüş OA yedirecekse | kısmi | YZ | `ai.ts:1710-1719` (`guardMove`) | — |
 | A47 | YZ: Dodge / Help | Familiar (Yardım, yoksa Kaçın), kontrollü binek, dostu sarsma | kısmi | YZ | `ai.ts:3064-3076`, `ai.ts:1921-1929`, `ai.ts:1895` | Y1-ENVANTER #11; DECISIONS 6475 |
 | A48 | YZ: Hide | Yalnız sızma (uyuyan/habersiz grup) haritalarında | kısmi | YZ | `ai.ts:2545-2556` | Y1-ENVANTER #12; DECISIONS 5447 |
@@ -269,22 +294,22 @@ SRD s. 6–8 (D20 Tests, Rolling 20 or 1, Advantage/Disadvantage, Proficiency), 
 
 ## 7. Dinlenme ve iyileşme (G)
 
-SRD Glossary Short Rest (s. 188), Long Rest (s. 185), Hit Point Dice, Exhaustion. Bunlar savaş dışı (`src/rules/rest.ts`, `src/rules/characterRest.ts`, `src/journey/`): düzeltmeleri kural sürümü gerektirmez, ama `sim:zincir` sonuçlarını değiştirir. Çapraz: G1/G6 = D21.
+SRD Glossary Short Rest (s. 187), Long Rest (s. 185), Hit Point Dice, Exhaustion. Bunlar savaş dışı (`src/rules/rest.ts`, `src/rules/characterRest.ts`, `src/journey/`): düzeltmeleri kural sürümü gerektirmez, ama `sim:zincir` sonuçlarını değiştirir. Çapraz: G1/G6 = D21.
 
 | # | SRD kuralı (sayfa) | Oyunda | Durum | Yer | Kanıt | Bilinen |
 |---|---|---|---|---|---|---|
-| G1 | Short Rest 1 saat; başlamak için **en az 1 HP** (s.188) | Süre yolculukta 1 saat. 0 HP denetimi yok: yalnızca `dead` engeller, 0 HP'de HP zarı harcanır | kısmi | dinlenme-Serüven / arayüz | `characterRest.ts:118`, `data/yolculuk/ayarlar.json:4`; PD13 (0 HP → 6) | — |
-| G2 | HP zarı: zar + CON, **en az 1 HP** (s.188) | Zar başına en az 0 | kısmi | dinlenme-Serüven | `src/rules/rest.ts:37`; PD11 (d6 = 1, CON −3 → 0; SRD 2); test `rest.test.ts:32` bunu sabitliyor | — |
-| G3 | Her zardan sonra yenisini harcamaya karar verilir (s.188) | Sayı önceden seçilir (karakter listesinde sayaç, yolculukta otomatik öneri) | kısmi | arayüz TR-EN | `src/screens/Screens.tsx:254-264` | DECISIONS.md:5428 |
+| G1 | Short Rest 1 saat; başlamak için **en az 1 HP** (s.187) | Süre yolculukta 1 saat. **Düzeltildi 2026-11-20 (sürümsüz):** 0 HP'de kısa dinlenme başlamaz (`rest.ts` `shortRest`, `characterRest.ts` `shortRestStatus`; düğme kapalı). Uzun dinlenme yasağı G6'da (ertelendi) | tam | dinlenme-Serüven / arayüz | `characterRest.ts:118`, `data/yolculuk/ayarlar.json:4`; PD13 (0 HP → 6) | — |
+| G2 | HP zarı: zar + CON, **en az 1 HP** (s.187) | **Düzeltildi 2026-11-20 (sürümsüz):** zar başına en az 1 (eskiden 0) | tam | dinlenme-Serüven | `src/rules/rest.ts:37`; PD11 (d6 = 1, CON −3 → 0; SRD 2); test `rest.test.ts:32` bunu sabitliyor | — |
+| G3 | Her zardan sonra yenisini harcamaya karar verilir (s.187) | Sayı önceden seçilir (karakter listesinde sayaç, yolculukta otomatik öneri) | kısmi | arayüz TR-EN | `src/screens/Screens.tsx:254-264` | DECISIONS.md:5428 |
 | G4 | HP zarı sayısı = seviye (s.183, Character Creation) | `hitDiceLeft = level − spent` | tam | dinlenme-Serüven | `characterRest.ts:108` | — |
-| G5 | Long Rest: tüm HP ve **harcanan HP zarlarının tamamı** (s.185) | Harcananların **yarısı** (en az 1) geri gelir (2014 kuralı) | kısmi | dinlenme-Serüven | `rest.ts:53`; PD12 (6. seviye, 6 harcanmış → 3 geri); testler `rest.test.ts:48`, `characterRest.test.ts:28` | DECISIONS.md:7029 (yanlış atıf: "harcanan HP zarlarının yarısı geri gelir (SRD 5.2.1)") |
-| G6 | Long Rest başlamak için **en az 1 HP** (s.185) | 0 HP'deki (ölü olmayan) karakter tam HP'ye döner. Geçerli olduğu yerler: karakter listesi, Game Master "Hepsini dinlendir", yolculuk, Serüven dinlenme düğümü ve han | yok | dinlenme-Serüven | `characterRest.ts:191`; PD13 (0 HP → 40) | — |
+| G5 | Long Rest: tüm HP ve **harcanan HP zarlarının tamamı** (s.185) | **Düzeltildi 2026-11-20 (sürümsüz):** tamamı geri gelir (eskiden yarısı, 2014 kuralı); DECISIONS atfı yeni kararla düzeltildi | tam | dinlenme-Serüven | `rest.ts:53`; PD12 (6. seviye, 6 harcanmış → 3 geri); testler `rest.test.ts:48`, `characterRest.test.ts:28` | DECISIONS.md:7029 (yanlış atıf: "harcanan HP zarlarının yarısı geri gelir (SRD 5.2.1)") |
+| G6 | Long Rest başlamak için **en az 1 HP** (s.185) | 0 HP'deki (ölü olmayan) karakter tam HP'ye döner. Geçerli olduğu yerler: karakter listesi, Game Master "Hepsini dinlendir", yolculuk, Serüven dinlenme düğümü ve han. **Ertelendi, karar gerekli (2026-11-20):** doğrudan yasak 0 HP karakteri kalıcı bırakır, Serüven `bozgundaYenidenDene` ve Hapishane `dragBack`'i kırar; SRD çıkışı (stabil 1d4 saatte 1 HP, s.18) D21 kaydını ve zaman modelini ister | yok | dinlenme-Serüven | `characterRest.ts:191`; PD13 (0 HP → 40) | — |
 | G7 | Long Rest: azalan HP en çoğu ve yetenek skorları normale döner (s.185) | Kalıcı durumda HP en çoğu tablodan (`hpMax`); savaşta azalan en çok değer karaktere yazılıyor mu denenmedi | doğrulanmadı | dinlenme-Serüven | `characterRest.ts:72-80` | — |
 | G8 | Long Rest Exhaustion'ı 1 azaltır (s.182, s.185) | Doğru | tam | dinlenme-Serüven | `characterRest.ts:197`, `rules/exhaustion.ts:14` | — |
-| G9 | Özellikler kısa/uzun dinlenmede açıklamasındaki gibi yenilenir (s.185, s.188) | Veriden `rechargeResources` (`short`/`long`), Arcane/Natural Recovery, Sorcerous Restoration, Magical Cunning, Greater Divine Intervention beklemesi | tam | dinlenme-Serüven | `characterRest.ts:131`, `:195` | sınıf denetimleri (B93/B94) |
+| G9 | Özellikler kısa/uzun dinlenmede açıklamasındaki gibi yenilenir (s.185, s.187) | Veriden `rechargeResources` (`short`/`long`), Arcane/Natural Recovery, Sorcerous Restoration, Magical Cunning, Greater Divine Intervention beklemesi | tam | dinlenme-Serüven | `characterRest.ts:131`, `:195` | sınıf denetimleri (B93/B94) |
 | G10 | Long Rest'ten sonra yenisi için en az 16 saat (s.185) | Yolculukta tam (`longRestGapHours` 16). Karakter listesinde, Game Master kurulumunda ve Serüven düğümünde saat yok, her an yapılabilir | kısmi | dinlenme-Serüven / arayüz | `src/journey/engine.ts:136`, `ayarlar.json:6`, `seruven.ts:298` | — |
-| G11 | Kesintiler (inisiyatif, cantrip dışı büyü, hasar, 1 saat efor); kesilen Short Rest yararsız (s.185, s.188) | Dinlenme anlık; kesinti modeli yok | yok | dinlenme-Serüven | `rest.ts`, `characterRest.ts` (zaman modeli yok) | — |
-| G12 | Short Rest sayısında sınır yok (s.16, s.188) | Ev kuralı: iki uzun dinlenme arası en çok 2 (Normal/Zor), Kolay'da sınırsız; Serüven "Dinlenme" durağında sınıra sayılmayan bir kısa dinlenme | bilinçli sapma | dinlenme-Serüven | `ayarlar.json:7`, `engine.ts:122` | DECISIONS.md:5428, :5293 |
+| G11 | Kesintiler (inisiyatif, cantrip dışı büyü, hasar, 1 saat efor); kesilen Short Rest yararsız (s.185, s.187) | Dinlenme anlık; kesinti modeli yok | yok | dinlenme-Serüven | `rest.ts`, `characterRest.ts` (zaman modeli yok) | — |
+| G12 | Short Rest sayısında sınır yok (s.16, s.187) | Ev kuralı: iki uzun dinlenme arası en çok 2 (Normal/Zor), Kolay'da sınırsız; Serüven "Dinlenme" durağında sınıra sayılmayan bir kısa dinlenme | bilinçli sapma | dinlenme-Serüven | `ayarlar.json:7`, `engine.ts:122` | DECISIONS.md:5428, :5293 |
 | G13 | Dead: dinlenmeyle HP kazanılmaz (s.181) | `dead` durumda dinlenme etkisiz | tam | dinlenme-Serüven | `characterRest.ts:118`, `:191` | — |
 | G14 | (SRD dışı) Serüven bozgununda uzun dinlenip yeniden deneme | Serüven anahtarı `bozgundaYenidenDene` | bilinçli sapma | dinlenme-Serüven | `seruven.ts:343-346` | CLAUDE.md (Serüven anahtarları) |
 
@@ -314,7 +339,7 @@ SRD s. 10 (Vision and Light), Glossary Blindsight, Darkvision, Heavily/Lightly O
 
 ## Sayı özeti ve en önemli bulgular
 
-Toplam **230** satır: **tam 123**, **kısmi 60**, **yok 29**, **bilinçli sapma 16**, **doğrulanmadı 2**.
+Toplam **230** satır: **tam 126**, **kısmi 57**, **yok 29**, **bilinçli sapma 16**, **doğrulanmadı 2** (2026-11-20 sürümsüz düzeltmelerden sonra; ilk denetimde tam 123, kısmi 60).
 Yaklaşık 10 konu iki ya da üç bölümde ayrı satır olarak geçer (çapraz başvuru notlu; ör. baygının Prone'u B39 = D14, stabilize
 A15/A16 = F2/F24 = D18); tekil bulgu sayısı satır sayısından azdır.
 
@@ -326,9 +351,9 @@ A15/A16 = F2/F24 = D18); tekil bulgu sayısı satır sayısından azdır.
 | 4. HP ve ölüm (D) | 17 | 8 | 1 | 0 | 0 | 26 |
 | 5. Hareket (E) | 15 | 5 | 5 | 4 | 0 | 29 |
 | 6. Zar ve kontroller (F) | 12 | 8 | 3 | 0 | 1 | 24 |
-| 7. Dinlenme ve iyileşme (G) | 4 | 5 | 2 | 2 | 1 | 14 |
+| 7. Dinlenme ve iyileşme (G) | 7 | 2 | 2 | 2 | 1 | 14 |
 | 8. Işık ve görüş (H) | 11 | 2 | 0 | 4 | 0 | 17 |
-| **Toplam** | **123** | **60** | **29** | **16** | **2** | **230** |
+| **Toplam** | **126** | **57** | **29** | **16** | **2** | **230** |
 
 **En önemli bulgular** (hepsi probe ile çalıştırıldı ve kodda yeniden okundu; ayrıntı tablolarda ve "Düzeltme önerileri"nde):
 
@@ -376,6 +401,9 @@ Yalnız SRD 5.2.1 maddeleri; yeni mekanik önerilmedi.
 | 16 | Savaş sonu: geçici HP uzun dinlenmeye dek karakterde; ölmekte/stabil ayrımı kayda | D26, D21 | düşük | hayır | 0,5 gün |
 | 17 | Belgeler: `READY-DURUM.md`, `Y1-ENVANTER.md` #13 (Ready var), `docs/SRD-DENETIM.md:493` ve `ENVANTER-DIGER.md:49` (15 durum "tam" değil), DECISIONS.md:3106 (Long Jump inişi SRD'de zorunlu, "GM seçeneği" değil) | — | bilgi | hayır | 0,5 saat |
 
+**Durum (2026-11-20):** 6 yapıldı, yalnız 0 HP uzun dinlenme kolu ertelendi (G6/D21); 17 yapıldı; 13'ün düğme kolu ve 16 sürümsüz ama
+savaş sonu kaydı/arayüz işi, sürümlü grupla birlikte ele alınacak; 1–5, 7–12, 15 sürümlü grubu bekliyor; 14 ertelendi (denge).
+
 Öneri sırası: 1–3 (ölüm ve baygın: en ağır sonuçlar) → 4–5 (durum/kontrol tek yolu) → 6 (sürümsüz, ölçümle) → 7–12 (tek toplu
 sürümde) → 13–14 (arayüz/YZ) → 15–17.
 
@@ -383,10 +411,10 @@ sürümde) → 13–14 (arayüz/YZ) → 15–17.
 
 1. **Baygının Prone'u ve eşya düşürme** (B39–B41, D14): SRD'ye uygun, ama ölmekte olan karaktere uzak saldırıyı zayıflatır ve uyanınca
    kalkma hareketi harcatır; elindekini düşürme S2 el modeline bağlanacak mı?
-2. **Dinlenme SRD 5.2.1'e** (G5, G2, G1, G6): bütün HP zarları geri gelirse kısa dinlenme ev kuralı sınırı (2) ve Serüven dengesi yeniden
+2. **[Kısmen çözüldü 2026-11-20: G5, G2, G1 uygulandı; G6 0 HP uzun dinlenme ertelendi]** **Dinlenme SRD 5.2.1'e** (G5, G2, G1, G6): bütün HP zarları geri gelirse kısa dinlenme ev kuralı sınırı (2) ve Serüven dengesi yeniden
    ölçülmeli; 0 HP dinlenme yasağı Kolay zorluğun "1 HP ile kalk" (`reviveOneHp`) ev kuralıyla birlikte karara bağlanmalı. Ayrıca
    Long Rest'in 16 saat beklemesi ve kesinti modeli (G10, G11) yalnız yolculukta: karakter listesi/GM/Serüven düğümü için kapsam dışı mı?
-3. **`nightVision` ve `darkness` haritaları** (H3, H4, H12): gece haritasında `nightVision` kapalıyken (varsayılan) karanlık saldırıda hiç
+3. **[Ertelendi 2026-11-20, karar bekliyor]** **`nightVision` ve `darkness` haritaları** (H3, H4, H12): gece haritasında `nightVision` kapalıyken (varsayılan) karanlık saldırıda hiç
    etkisiz; `darkness` haritalarında görülmeyen hedef hiç seçilemiyor ve karanlık görüşsüz 3–4 altıgen görüyor (SRD: dezavantajla
    saldırılır, görüş 0). Bilerek mi (DECISIONS.md:4394 yalnız denge gerekçesi), yoksa varsayılan değişsin mi?
 4. **Gizlenmiş hedefe tahminle saldırı** (C10): şimdi hedeflenemiyor; SRD tahmin edilen yere dezavantajlı saldırıya izin verir.
@@ -394,7 +422,7 @@ sürümde) → 13–14 (arayüz/YZ) → 15–17.
 5. **Genişletilmiş kritik aralığı** (C5): Improved/Superior Critical'da doğal 19 (18) AC'ye bakmadan isabet sayılıyor; SRD "hits
    regardless" yalnız doğal 20 için der. Yorum DECISIONS'a yazılmalı.
 6. **Dirençte yuvarlama** (D9): aynı saldırının aynı türden parçaları (silah + Sneak Attack) birlikte mi, ayrı mı yarıya insin?
-7. **Knocking Out** (D10): SRD'de yakın dövüşle 0'a indirirken "bayılt" seçeneği var, oyunda yok (yalnız Cunning Strike). Eklensin mi?
+7. **[Ertelendi 2026-11-20, karar bekliyor]** **Knocking Out** (D10): SRD'de yakın dövüşle 0'a indirirken "bayılt" seçeneği var, oyunda yok (yalnız Cunning Strike). Eklensin mi?
 8. **Stabilize menzili** (D18): SRD menzil yazmıyor (Help eylemi); bitişik (5 ft) koşulu yazılsın mı?
 9. **Heroic Inspiration** (F21): Human'a savaş başına mı (şimdi) uzun dinlenme başına mı (SRD); "herhangi bir zarı yeniden at" yerine
    otomatik başarısız-d20 yaklaşığı bilinçli sapma olarak mı kayda geçsin?
