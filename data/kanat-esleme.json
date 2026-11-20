@@ -48,6 +48,11 @@
    "dosyaKapali": null,
    "kanatsizNot": "Kuyruk A İş 2: kendi çiziminde kanat bulunan jetonlar (dosya adı, uzantısız); bu jetonlarda ejderha kanadı hiç çizilmez (rozet, savaş jetonu, karakter figürü, Draconic Flight uçuşu dahil). Tespit: siluet ölçümü + kontak sayfası (harita/belgeler/DRAGONBORN-KENDI-KANAT.md).",
    "kanatsiz": ["dragonborn-erkek-cleric-ID1", "dragonborn-kadin-cleric-ID1", "dragonborn-erkek-warlock-WL-7", "dragonborn-kadin-warlock-WL-7"],
+   "jetonAyarNot": "Ranger ID4 (Ejder Muhafızı): jeton başına elle kanat ayarı (src/ui/wingRoot.ts; data/dragonborn-kanat-kok.json üretilen kökünün önüne geçer). Anahtar dosya adı (dragonborn- öneksiz); kok: [sol, sağ] kök x'i (jeton uzayı 256 px), olcek: kanat çifti boyunun çarpanı. Bu jetonlarda omzun arkasında yoldaş ejderin büyük kanadı var: üretici sol kenarı yoldaş kanadından ölçüp yedek köke (gövdeden uzak) düşmüştü; kök gövdeye alınır, kanat küçültülür.",
+   "jetonAyar": {
+    "erkek-ranger-ID4": { "kok": [96, 164], "olcek": 0.75 },
+    "kadin-ranger-ID4": { "kok": [96, 164], "olcek": 0.75 }
+   },
    "minSeviye": 5,
    "olcek": 0.6,
    "capa": [

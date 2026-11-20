@@ -1,5 +1,6 @@
 """Dragonborn pul deseni (v2) oyun verisi: 264 beyaz taban jetonun pul maskesi ve desen ayarı.
-`python scripts/dragonborn-pul-maske.py`
+`python scripts/dragonborn-pul-maske.py` (`--jeton erkek-ranger-ID4,kadin-ranger-ID4`: yalnız bu jetonların maskesi yeniden yazılır; veri
+dosyası, rapor ve diğer maskeler değişmez: jeton başına düzeltmeden sonra öbür maskelere dokunmamak için)
 - public/characters/maske-pul/<jeton>.png: ikili maske (255 = boyanır), scripts/dragonborn-desen-v2.py `mask_of` ile aynı yöntem
   (ten tonu jetonun kendi başından, kapama, küçük bileşen atma, kapalı delik doldurma, yoldaş başı çıkarma; boynuz/kontur/göz hariç).
   Maske üretilemeyen ya da boş çıkan jetonun dosyası yazılmaz (o jeton boyanmaz, beyaz kalır).
@@ -80,6 +81,20 @@ if __name__ == '__main__':
     sys.stdout.reconfigure(encoding='utf-8')
     os.makedirs(OUT, exist_ok=True)
     names = v2.all_tokens(); bos = {}; boya = {}
+    tek = sys.argv[sys.argv.index('--jeton') + 1].split(',') if '--jeton' in sys.argv else None
+    if tek:
+        if set(tek) - set(names): raise SystemExit(f'bilinmeyen jeton: {sorted(set(tek) - set(names))}')
+        duz = json.load(open(DUZELTME, encoding='utf-8'))['jetonlar']
+        for n in tek:
+            ayar = duz.get(f'dragonborn-{n}')
+            if not ayar or ayar.get('bos'): raise SystemExit(f'--jeton yalnız elle düzeltmeli (bos olmayan) jetonlar içindir: {n}')
+            rgba = np.array(Image.open(os.path.join(v2.CHAR, f'dragonborn-{n}.webp')).convert('RGBA'))
+            m, info = v2.mask_of(rgba, ayar)
+            if ayar.get('kapi') and m is not None: m = v2.renk_kapisi(rgba, info, m)
+            if m is None or int(m.sum()) < ASGARI_PX: raise SystemExit(f'{n}: maske boş')
+            Image.fromarray((m * 255).astype(np.uint8), 'L').convert('1').save(os.path.join(OUT, f'dragonborn-{n}.png'), optimize=True)
+            print(n, int(m.sum()), 'px')
+        sys.exit(0)
     duz = json.load(open(DUZELTME, encoding='utf-8'))['jetonlar']
     bilinmeyen = set(duz) - {f'dragonborn-{n}' for n in names}
     if bilinmeyen: raise SystemExit(f'düzeltmede bilinmeyen jeton: {sorted(bilinmeyen)}')

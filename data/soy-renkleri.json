@@ -585,6 +585,17 @@
     }
   },
   "maskFix": {
+    "goliath-erkek-ranger-ID4": {
+      "not": "Ranger Ejder Muhafızı: maske yoldaş ejderin kanadına (sol) ve gövdesine (sağ) taşıyordu, yüz baş çizgisinde (opak kutunun üst %30'u) kesiliyordu; kanat ve yoldaş dışlanır, baş kutusu (çene dahil) ten adaylarıyla doldurulur (include, baş çizgisinin altında korunur); erkek jetonun teni nötr gri (kroma < 3): kutuda aday açıklık 35–86, kroma 0–14 (`aday`; göz akı ve kontur dışarıda).",
+      "exclude": [[0, 0, 89, 140], [165, 0, 255, 62], [161, 62, 255, 140]],
+      "include": [[91, 22, 160, 92], [97, 92, 152, 107]],
+      "aday": { "L": [35, 86], "C": [0, 14] }
+    },
+    "goliath-kadin-ranger-ID4": {
+      "not": "Ranger Ejder Muhafızı: erkekteki gibi (kanat ve yoldaş dışlanır, yüz çeneye dek).",
+      "exclude": [[0, 0, 85, 140], [165, 0, 255, 62], [160, 62, 255, 140]],
+      "include": [[86, 22, 158, 92], [95, 92, 150, 106]]
+    },
     "goliath-female-barbarian": {
       "exclude": [
         [

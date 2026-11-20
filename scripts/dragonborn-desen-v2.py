@@ -117,7 +117,9 @@ def _elle_ornek(rgba, ayar):
 
 def mask_of(rgba, ayar=None):
     """`ayar` (jeton başına düzeltme, data/dragonborn-pul-duzeltme.json): `P` eşik ezmesi, `beyazKutu` beyaz vurgu adayı yalnız bu
-    kutularda ([x0, y0, x1, y1], 256 px, uç hariç), `yalniz` sonuç yalnız bu kutularda, `haric` sonuçtan çıkarılan kutular. Yoksa davranış aynen."""
+    kutularda ([x0, y0, x1, y1], 256 px, uç hariç), `yalniz` sonuç yalnız bu kutularda, `haric` sonuçtan çıkarılan kutular, `ekle` (en son)
+    bu alanlardaki opak, kontur olmayan pikseller boyanır (ör. jetonun kendisindeki macenta anahtar renk artığı: boyanınca çevresindeki pul
+    tonuna iner). Yoksa davranış aynen."""
     ayar = ayar or {}; P = {**globals()['P'], **ayar.get('P', {})}
     if 'ornek' in ayar: return _elle_ornek(rgba, ayar)
     L = lab(rgba[..., :3].astype(float)); a, b = L[..., 1], L[..., 2]; C = np.hypot(a, b); h = (np.degrees(np.arctan2(b, a)) + 360) % 360
@@ -146,6 +148,7 @@ def mask_of(rgba, ayar=None):
     paint = keep & op & (L[..., 0] > P['konturL']) & ~warm & (C <= c0 * P['cUst'] + 6)
     if 'yalniz' in ayar: paint &= _kutular(op.shape, ayar['yalniz'])
     if 'haric' in ayar: paint &= ~_kutular(op.shape, ayar['haric'])
+    if 'ekle' in ayar: paint |= _kutular(op.shape, ayar['ekle']) & op & (L[..., 0] > P['konturL'])
     return paint, {'tonH': round(h0, 1), 'tonC': round(c0, 1), 'tenL': round(l0, 1), 'boya': int(paint.sum()), 'atilan': int(dropped), 'yoldas': int(yoldas)}
 
 # ---- renk kapısı (pul v2 kapanışı): maskeyi renk bölgelerine ayırıp yalnız ejderha derisine yakın bölgeleri tutar ----

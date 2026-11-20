@@ -1,5 +1,5 @@
 {
- "not": "Dragonborn pul maskesi jeton başına elle düzeltme (scripts/dragonborn-pul-maske.py okur; scripts/dragonborn-desen-v2.py mask_of `ayar`). Koordinatlar 256 px jeton uzayında. `yalniz`: maske yalnız bu alanlarda; `haric`: bu alanlar çıkarılır; `beyazKutu`: beyaz vurgu adayı yalnız bu alanlarda; alan = kutu [x0, y0, x1, y1] (uç hariç) ya da çokgen [[x, y], ...]. `bos`: maske yazılmaz, jeton boyanmaz (neden maskesiz listesine). `neden`: çıkarılan kıyafet/eşya. `ornek` + `alan`: başta lavanta ten örneği olmayan jetonlarda ten rengi `ornek` alanından, boyama `alan` içinde renge yakın piksellerde (`renkFark` a*b*, `parlakFark` L*). `kapi`: otomatik maske + renk kapısı. `secenek`: kör topal görevindeki a/b/c.",
+ "not": "Dragonborn pul maskesi jeton başına elle düzeltme (scripts/dragonborn-pul-maske.py okur; scripts/dragonborn-desen-v2.py mask_of `ayar`). Koordinatlar 256 px jeton uzayında. `yalniz`: maske yalnız bu alanlarda; `haric`: bu alanlar çıkarılır; `beyazKutu`: beyaz vurgu adayı yalnız bu alanlarda; alan = kutu [x0, y0, x1, y1] (uç hariç) ya da çokgen [[x, y], ...]. `bos`: maske yazılmaz, jeton boyanmaz (neden maskesiz listesine). `ekle`: en son eklenen alanlar (opak, kontur olmayan pikseller; ör. jetondaki anahtar renk artığı pul tonuna iner). `neden`: çıkarılan kıyafet/eşya. `ornek` + `alan`: başta lavanta ten örneği olmayan jetonlarda ten rengi `ornek` alanından, boyama `alan` içinde renge yakın piksellerde (`renkFark` a*b*, `parlakFark` L*). `kapi`: otomatik maske + renk kapısı. `secenek`: kör topal görevindeki a/b/c.",
  "jetonlar": {
   "dragonborn-kadin-paladin-ID10": {
    "yalniz": [
@@ -207,9 +207,11 @@
      [72, 236],
      [60, 230]
     ],
-    [176, 100, 200, 150]
+    [176, 100, 200, 150],
+    [[20, 30], [84, 30], [88, 45], [94, 64], [99, 76], [105, 86], [111, 94], [114, 102], [100, 106], [86, 108], [70, 114], [62, 118], [61, 127], [50, 127], [44, 121], [36, 128], [33, 148], [18, 148]]
    ],
-   "neden": "kılıç ağzı (çokgen) ve yavru ejderha kalıntısı"
+   "ekle": [[105, 89, 111, 95]],
+   "neden": "kılıç ağzı (çokgen), yavru ejderha kalıntısı ve yoldaş ejderin sol kanadı (çokgen; Ranger ID4: kanat yoldaşın, boyanmaz); ekle: baş ile kanat arasındaki macenta anahtar renk artığı (jetonun kendisinde, boyun hizasında mor leke) pul tonuna boyanır"
   },
   "dragonborn-kadin-ranger-ID4": {
    "haric": [
@@ -219,9 +221,10 @@
      [82, 238],
      [70, 232]
     ],
-    [176, 85, 215, 150]
+    [176, 85, 215, 150],
+    [[20, 28], [88, 28], [90, 46], [94, 66], [98, 79], [104, 89], [112, 98], [116, 104], [100, 108], [80, 113], [60, 122], [40, 126], [22, 134]]
    ],
-   "neden": "kılıç ağzı (çokgen) ve yavru ejderha kalıntısı"
+   "neden": "kılıç ağzı (çokgen), yavru ejderha kalıntısı ve yoldaş ejderin sol kanadı (çokgen; Ranger ID4: kanat yoldaşın, boyanmaz)"
   },
   "dragonborn-erkek-paladin-ID10": {
    "yalniz": [

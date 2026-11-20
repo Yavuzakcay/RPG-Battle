@@ -18,7 +18,7 @@ export interface WingPart { ad: 'zar' | 'pence'; src: string; palet: WingPalet }
 /** KW1: tek kanatlı slot. `dx`: kökün gövde merkezinden varsayılan uzaklığı (jeton genişliği oranı; jeton kök verisi yoksa), `aci`: kanadın kök etrafında dışa/yukarı dönüşü (derece). */
 export interface WingMirror { dx: number; aci: number }
 /** KW1: kanat kökü jeton uzayında (256 px): sol/sağ kök x'i; y verilmezse slotun `omuz` yüksekliği (`data/dragonborn-kanat-kok.json`). */
-export interface WingRoot { sol: number; sag: number; y?: number }
+export interface WingRoot { sol: number; sag: number; y?: number; /** Ranger ID4: jeton başına kanat boyu çarpanı (`kanat-esleme.json` `jetonAyar`). */ olcek?: number }
 /** `esik` (0–1, KW1): parlaklık eşiği; bunun altı gölge rengi, üstü eşikten ışık rengine gerilir (kanat görseli çok açık: palet tam aralığı kullansın). */
 export interface WingPalet { golge: string; isik: string; esik?: number }
 export interface WingSprite { sutun: number; satir: number; kareEn: number; kareBoy: number; kareMs: number }
@@ -178,9 +178,10 @@ export function wingPlacements(wing: WingLayerSpec, cx: number, cy: number, w: n
   const m = wing.ayna;
   if (!m) return [];
   const k = w / TOKEN_SPACE, left = cx - w / 2;
+  const wg = root?.olcek ? { ...wing, olcek: wing.olcek * root.olcek } : wing;
   const ry = root?.y !== undefined ? cy - w / 2 + root.y * k : cy - w / 2 + w * wing.omuz;
   const sides: Array<['sag' | 'sol', number, boolean]> = [['sag', root ? left + root.sag * k : cx + m.dx * w, false], ['sol', root ? left + root.sol * k : cx - m.dx * w, true]];
-  return sides.map(([side, rx, mirror]) => ({ side, ...wingBox(wing, cx, cy, w, { x: rx, y: ry }), pivot: { x: rx, y: ry }, angle: m.aci, mirror }));
+  return sides.map(([side, rx, mirror]) => ({ side, ...wingBox(wg, cx, cy, w, { x: rx, y: ry }), pivot: { x: rx, y: ry }, angle: m.aci, mirror }));
 }
 const r2 = (n: number): number => Math.round(n * 100) / 100;
 /** SVG dönüşümü: sağ kanat kökü etrafında saat yönünün tersine (dışa/yukarı) döner; sol kanat aynı dönüşün kök hizasında yatay aynasıdır. */
