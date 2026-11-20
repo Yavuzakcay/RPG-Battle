@@ -102,6 +102,8 @@ export interface ActiveEffect {
   levitate?: boolean;
   shareSpace?: boolean;
   squeeze?: boolean;
+  /** Görev SWARM95 (95+): SRD Swarm: `shareSpace`/`squeeze` karşılıklı (sürünün altıgenine başkası da girip durur; `swarmShare.ts`). */
+  swarm?: boolean;
   bladeGone?: boolean;
   /** Kuyruk P11 (paket `buyuSakla`): bekleyen büyü (yapıldı, ateşlenmedi). */
   /** Kuyruk P11 (paket `koruma.itmeDirenci`): zorla harekete karşı avantajlı STR kurtulması. */

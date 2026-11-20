@@ -6,6 +6,8 @@ Yalnız denetim: kod, veri, test ve DECISIONS.md değişmedi. Tarih 2026-11-20, 
 
 **WS92 güncellemesi (kural sürümü 92, 2026-11-20):** savaşta etkili 134 girdinin **129'u tam, 5'i kısmi** (yalnız Swarm: başka yaratığın altıgeninde durma ertelendi, karar gerekli; geçici HP kullanıcı kararıyla korunur), yok 0. Düzelenler: STR/DEX skoru biçimden (G1, 69 biçim), sabit 1 hasar (17 biçim), Water Breathing karada nefes (7), atlama özellikleri (5), Multiattack bileşimi (Brown Bear, Lion), Swallow (2), Bubble Dash (2), Rampage, Illumination, Cacophony. Ayrıntı DECISIONS WS92; yoklama tablosu belgenin sonunda ("WS92 son yoklama").
 
+**SWARM95 güncellemesi (kural sürümü 95, 2026-11-20):** Swarm (5 biçim) kısmi → tam: başka yaratığın altıgeninde durma ve karşılıklısı, kapı aralığından geçme (SRD Swarm; Gaseous Form altyapısı). Savaşta etkili 134 girdinin **134'ü tam**, kısmi 0. Ayrıntı DECISIONS SWARM95.
+
 Aşağıdaki ilk özet denetim anındaki (kural sürümü 91) durumdur; tablolar WS92'ye göre güncellendi.
 
 - **Biçim sayısı: 69.** SRD 5.2.1'deki CR ≤ 1 Beast'lerin hepsi (`data/canavar-turleri.json` `beast` + `data/monsters.json` CR; liste `druid.ts` `eligibleForms`, eşikler `data/class-features.json` Wild Shape: Beast Shapes tablosu). Eksik ya da fazla biçim yok. Giant Eagle, Giant Owl, Giant Vulture, Flying Snake SRD 5.2.1'de Beast değil, listede yok (doğru).
@@ -314,7 +316,7 @@ Ayrıca SRD dışı bonus yetenek Leap (20 ft sıçrama; kullanıcı kararı, DE
 
 | Girdi | Tür | Biçimde | Durum | Fark (düşman/biçim) | Kanıt |
 |---|---|---|---|---|---|
-| Swarm | özellik | iyileşme engelli ✓, yaratık altıgeninden geçer ✓; başka yaratığın altıgeninde duramaz ✗ (iki yolda da; **ertelendi, karar gerekli**: doluluk modeli); biçime girince geçici HP = druid seviyesi (kullanıcı kararı WS92: korunur); "Tiny açıklıktan geçme" ızgarada karşılıksız | kısmi | biçim Wild Shape geçici HP'si alır (kullanıcı kararı) | `monsterAbilities.ts:121,127`, `movement.ts:459`, `reduce.ts:1030`; Y6, Y7 |
+| Swarm | özellik | iyileşme engelli ✓, yaratık altıgeninden geçer ✓; **SWARM95 (sürüm 95): başka yaratığın altıgeninde durur ve başkası sürünün altıgeninde durur ✓** (yürüme, uçuş, atlama inişi; iki yolda da: düşman sürü ve Wild Shape/Polymorph biçimi), kapı aralığından (Tiny açıklık) geçer ✓ (Gaseous Form `shareSpace`/`squeeze`); biçime girince geçici HP = druid seviyesi (kullanıcı kararı WS92: korunur) | tam | biçim Wild Shape geçici HP'si alır (kullanıcı kararı) | `monsterAbilities.ts` (`swarm`), `swarmShare.ts`, `movement.ts` `blockingOccupant`; `swarm95.test.ts`; Y6, Y7 |
 | Bites | eylem | sürü Bloodied iken 1d4 | tam | — | `druid.ts:76–81`, `features.ts:268–269,306,400`; Y8, Y16 |
 
 #### Wolf (`wolf`): CR 1/4, Medium, 40 ft, AC 12
@@ -441,14 +443,14 @@ Ayrıca SRD dışı bonus yetenek Leap (20 ft sıçrama; kullanıcı kararı, DE
 
 | Girdi | Tür | Biçimde | Durum | Fark (düşman/biçim) | Kanıt |
 |---|---|---|---|---|---|
-| Swarm | özellik | iyileşme engelli ✓, yaratık altıgeninden geçer ✓; başka yaratığın altıgeninde duramaz ✗ (iki yolda da; **ertelendi, karar gerekli**: doluluk modeli); biçime girince geçici HP = druid seviyesi (kullanıcı kararı WS92: korunur); "Tiny açıklıktan geçme" ızgarada karşılıksız | kısmi | biçim Wild Shape geçici HP'si alır (kullanıcı kararı) | `monsterAbilities.ts:121,127`, `movement.ts:459`, `reduce.ts:1030`; Y6, Y7 |
+| Swarm | özellik | iyileşme engelli ✓, yaratık altıgeninden geçer ✓; **SWARM95 (sürüm 95): başka yaratığın altıgeninde durur ve başkası sürünün altıgeninde durur ✓** (yürüme, uçuş, atlama inişi; iki yolda da: düşman sürü ve Wild Shape/Polymorph biçimi), kapı aralığından (Tiny açıklık) geçer ✓ (Gaseous Form `shareSpace`/`squeeze`); biçime girince geçici HP = druid seviyesi (kullanıcı kararı WS92: korunur) | tam | biçim Wild Shape geçici HP'si alır (kullanıcı kararı) | `monsterAbilities.ts` (`swarm`), `swarmShare.ts`, `movement.ts` `blockingOccupant`; `swarm95.test.ts`; Y6, Y7 |
 | Bites | eylem | sürü Bloodied iken 1d4 | tam | — | `druid.ts:76–81`, `features.ts:268–269,306,400`; Y8, Y16 |
 
 #### Swarm of Ravens (`swarm-of-ravens`): CR 1/4, Medium, 10 ft, uçma 50, AC 12
 
 | Girdi | Tür | Biçimde | Durum | Fark (düşman/biçim) | Kanıt |
 |---|---|---|---|---|---|
-| Swarm | özellik | iyileşme engelli ✓, yaratık altıgeninden geçer ✓; başka yaratığın altıgeninde duramaz ✗ (iki yolda da; **ertelendi, karar gerekli**: doluluk modeli); biçime girince geçici HP = druid seviyesi (kullanıcı kararı WS92: korunur); "Tiny açıklıktan geçme" ızgarada karşılıksız | kısmi | biçim Wild Shape geçici HP'si alır (kullanıcı kararı) | `monsterAbilities.ts:121,127`, `movement.ts:459`, `reduce.ts:1030`; Y6, Y7 |
+| Swarm | özellik | iyileşme engelli ✓, yaratık altıgeninden geçer ✓; **SWARM95 (sürüm 95): başka yaratığın altıgeninde durur ve başkası sürünün altıgeninde durur ✓** (yürüme, uçuş, atlama inişi; iki yolda da: düşman sürü ve Wild Shape/Polymorph biçimi), kapı aralığından (Tiny açıklık) geçer ✓ (Gaseous Form `shareSpace`/`squeeze`); biçime girince geçici HP = druid seviyesi (kullanıcı kararı WS92: korunur) | tam | biçim Wild Shape geçici HP'si alır (kullanıcı kararı) | `monsterAbilities.ts` (`swarm`), `swarmShare.ts`, `movement.ts` `blockingOccupant`; `swarm95.test.ts`; Y6, Y7 |
 | Beaks | eylem | sürü Bloodied iken 1d4 | tam | — | `druid.ts:76–81`, `features.ts:268–269,306,400`; Y8, Y16 |
 | Cacophony (Recharge 6) | eylem | WIS DC 10, Deafened tur başına dek; WS92: Deafened süresince saldırı ve yetenek kontrolü dezavantajlı (A2 eki, iki yolda da) | tam | — | `attack-riders.json` `swarm-of-ravens:Cacophony`; `shapeMonster.ts:81`; Y10 |
 
@@ -464,7 +466,7 @@ Ayrıca SRD dışı bonus yetenek Leap (20 ft sıçrama; kullanıcı kararı, DE
 | Girdi | Tür | Biçimde | Durum | Fark (düşman/biçim) | Kanıt |
 |---|---|---|---|---|---|
 | Spider Climb | özellik | tırmanma (duvar/tavan) | tam | — | `monsterTraits.ts:37`; `shape91.test.ts` (Giant Spider) |
-| Swarm | özellik | iyileşme engelli ✓, yaratık altıgeninden geçer ✓; başka yaratığın altıgeninde duramaz ✗ (iki yolda da; **ertelendi, karar gerekli**: doluluk modeli); biçime girince geçici HP = druid seviyesi (kullanıcı kararı WS92: korunur); "Tiny açıklıktan geçme" ızgarada karşılıksız | kısmi | biçim Wild Shape geçici HP'si alır (kullanıcı kararı) | `monsterAbilities.ts:121,127`, `movement.ts:459`, `reduce.ts:1030`; Y6, Y7 |
+| Swarm | özellik | iyileşme engelli ✓, yaratık altıgeninden geçer ✓; **SWARM95 (sürüm 95): başka yaratığın altıgeninde durur ve başkası sürünün altıgeninde durur ✓** (yürüme, uçuş, atlama inişi; iki yolda da: düşman sürü ve Wild Shape/Polymorph biçimi), kapı aralığından (Tiny açıklık) geçer ✓ (Gaseous Form `shareSpace`/`squeeze`); biçime girince geçici HP = druid seviyesi (kullanıcı kararı WS92: korunur) | tam | biçim Wild Shape geçici HP'si alır (kullanıcı kararı) | `monsterAbilities.ts` (`swarm`), `swarmShare.ts`, `movement.ts` `blockingOccupant`; `swarm95.test.ts`; Y6, Y7 |
 | Bites | eylem | sürü Bloodied iken 1d4+1 | tam | — | `druid.ts:76–81`, `features.ts:268–269,306,400`; Y8, Y16 |
 
 #### Brown Bear (`brown-bear`): CR 1, Large, 40 ft, tırmanma, AC 11
@@ -531,7 +533,7 @@ Ayrıca SRD dışı bonus yetenek Leap (20 ft sıçrama; kullanıcı kararı, DE
 
 | Girdi | Tür | Biçimde | Durum | Fark (düşman/biçim) | Kanıt |
 |---|---|---|---|---|---|
-| Swarm | özellik | iyileşme engelli ✓, yaratık altıgeninden geçer ✓; başka yaratığın altıgeninde duramaz ✗ (iki yolda da; **ertelendi, karar gerekli**: doluluk modeli); biçime girince geçici HP = druid seviyesi (kullanıcı kararı WS92: korunur); "Tiny açıklıktan geçme" ızgarada karşılıksız | kısmi | biçim Wild Shape geçici HP'si alır (kullanıcı kararı) | `monsterAbilities.ts:121,127`, `movement.ts:459`, `reduce.ts:1030`; Y6, Y7 |
+| Swarm | özellik | iyileşme engelli ✓, yaratık altıgeninden geçer ✓; **SWARM95 (sürüm 95): başka yaratığın altıgeninde durur ve başkası sürünün altıgeninde durur ✓** (yürüme, uçuş, atlama inişi; iki yolda da: düşman sürü ve Wild Shape/Polymorph biçimi), kapı aralığından (Tiny açıklık) geçer ✓ (Gaseous Form `shareSpace`/`squeeze`); biçime girince geçici HP = druid seviyesi (kullanıcı kararı WS92: korunur) | tam | biçim Wild Shape geçici HP'si alır (kullanıcı kararı) | `monsterAbilities.ts` (`swarm`), `swarmShare.ts`, `movement.ts` `blockingOccupant`; `swarm95.test.ts`; Y6, Y7 |
 | Water Breathing | özellik | su altında soluma; WS92: sudan dışarıda nefes tutar (1 + CON dakika, sonra tur başına Exhaustion; iki yolda da) | tam | — | `underwaterCore.ts:51–65` |
 | Bites | eylem | sürü Bloodied iken 1d4+3 | tam | — | `druid.ts:76–81`, `features.ts:268–269,306,400`; Y8, Y16 |
 
@@ -555,7 +557,7 @@ WS92 (kural sürümü 92) sonrası yeniden sayıldı.
 | Amphibious | özellik | 5 | 5 |  |  |  |
 | Hooves | eylem | 5 | 5 |  |  |  |
 | Ram | eylem | 5 | 5 |  |  |  |
-| Swarm | özellik | 5 |  | 5 |  |  |
+| Swarm | özellik | 5 | 5 |  |  |  |
 | Bites | eylem | 4 | 4 |  |  |  |
 | Multiattack | eylem | 4 | 4 |  |  |  |
 | Rend | eylem | 4 | 4 |  |  |  |
@@ -601,7 +603,7 @@ Bir kök nedeni düzeltmek kaç biçimi kapatır (savaşta etkili, tam olmayan; 
 | 1 | G1 STR skoru biçimden alınmıyor (atlama, taşıma/sürükleme) | 69 | bütün biçimler | **düzeldi (WS92)** |
 | 2 | Sabit hasar ("1" → 1d2): **düzeldi (WS92)** | 17 | badger, bat, cat, crab, frog, giant-fire-beetle, goat, hawk, lizard, octopus, owl, piranha, rat, raven, scorpion, spider, weasel | bilinen (CLAUDE.md) |
 | 3 | Water Breathing: karada boğulma yok: **düzeldi (WS92)** | 7 | giant-octopus, giant-seahorse, octopus, piranha, reef-shark, seahorse, swarm-of-piranhas | yeni |
-| 4 | Swarm: altıgen paylaşımı (ertelendi, karar gerekli) ve geçici HP (kullanıcı kararı: korunur) | 5 | swarm-of-bats, swarm-of-insects, swarm-of-piranhas, swarm-of-rats, swarm-of-ravens | yeni |
+| 4 | Swarm: altıgen paylaşımı: **düzeldi (SWARM95, sürüm 95)**; geçici HP (kullanıcı kararı: korunur) | 5 | swarm-of-bats, swarm-of-insects, swarm-of-piranhas, swarm-of-rats, swarm-of-ravens | yeni |
 | 5 | Atlama özellikleri Jump büyüsü modeliyle (koşu şartı, yüksek atlama, DEX): **düzeldi (WS92)** | 5 | cat, frog, giant-frog, giant-toad, lion | yeni |
 | 6 | Multiattack bileşimi | 2 | lion, brown-bear | **düzeldi (WS92)** |
 | 7 | Swallow | 2 | giant-frog, giant-toad | **düzeldi (WS92)** |

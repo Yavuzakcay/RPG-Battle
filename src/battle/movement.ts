@@ -54,6 +54,8 @@ import { usedThisTurn } from './classTraits';
 import { turnKey } from './economy';
 import { conveyorBlocks, conveyorFlow, conveyorSlideEvents, isUphillStep } from './conveyor';
 import { diggable } from './burrow';
+import { swarm95On } from './swarm95Surum';
+import { isSwarm, swarmShareOk } from './swarmShare';
 
 /** Kullanıcıya gösterilen 1 tabanlı konum metni. */
 export const hexLabel = (o: Offset): string => `sütun ${o.col + 1}, satır ${o.row + 1}`;
@@ -94,12 +96,30 @@ export { speedHexes };
 
 /** Altıgende duran başka bir savaşçı (ölüler yer kaplamaz). */
 export function occupantAt(state: BattleState, at: Offset, exceptId?: string, band?: Band): Combatant | undefined {
+  return Object.values(state.combatants).find(occupies(state, at, exceptId, band));
+}
+
+/** Altıgeni (hücre bandında) kaplayan savaşçı yüklemi (`occupantAt`, `occupantsAt`). */
+function occupies(state: BattleState, at: Offset, exceptId?: string, band?: Band): (c: Combatant) => boolean {
   // Kuyruk K71c (sürüm 58+): hücre doluluğu: yalnız `band` düzeylerini (verilmezse yer, düzey 0) kaplayan yaratık.
   const probe = band ?? (cellsOn(state) ? GROUND_BAND : undefined);
-  return Object.values(state.combatants).find(
-    // Kuyruk MB1 (68+): bineğinin üstündeki binici hücre kaplamaz (bineğin hücreleri yığının hücreleri).
-    (c) => c.id !== exceptId && c.pos !== null && !c.summon?.noSpace && !(c.riding && seatedRider(state, c)) && covers(state, c, at) && isTargetable(c) && fillsBand(state, c, probe),
-  );
+  // Kuyruk MB1 (68+): bineğinin üstündeki binici hücre kaplamaz (bineğin hücreleri yığının hücreleri).
+  return (c) => c.id !== exceptId && c.pos !== null && !c.summon?.noSpace && !(c.riding && seatedRider(state, c)) && covers(state, c, at) && isTargetable(c) && fillsBand(state, c, probe);
+}
+
+/** Görev SWARM95: altıgendeki bütün savaşçılar (sürü paylaşımında birden çok olabilir). */
+export function occupantsAt(state: BattleState, at: Offset, exceptId?: string, band?: Band): Combatant[] {
+  return Object.values(state.combatants).filter(occupies(state, at, exceptId, band));
+}
+
+/**
+ * Görev SWARM95 (95+, SRD Swarm): `actor`ın `at` altıgeninde durmasını engelleyen savaşçı (yoksa undefined). Sürü herkesin
+ * altıgeninde durur; sürü olmayan yalnız altıgendeki herkes sürüyse (`swarmShareOk`). 94 ve altı: `occupantAt` aynen.
+ */
+export function blockingOccupant(state: BattleState, actor: Combatant, at: Offset, band?: Band): Combatant | undefined {
+  const first = occupantAt(state, at, actor.id, band);
+  if (!first || !swarm95On(state)) return first;
+  return swarmShareOk(state, actor, occupantsAt(state, at, actor.id, band)) ? undefined : first;
 }
 
 /**
@@ -318,16 +338,20 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
   // (`dyn`) altıgendeki bütün düşmanlar tutulur, bant her çağrıda süzülür.
   const moverBand = cellsOn(state) ? bandOf(actor) : undefined;
   const enemiesAt = dyn ? new Map<string, Combatant[]>() : null;
+  const swarm95 = swarm95On(state);
   for (const c of Object.values(state.combatants)) {
     // Dokunulamaz çağrının (ruh sürüsü, Flaming Sphere) içinden geçilir (Görev B2).
     if (c.pos === null || c.side === actor.side || !isTargetable(c) || isIntangible(c)) continue;
-    if (enemiesAt) { const k = hexKey(c.pos); enemiesAt.set(k, [...(enemiesAt.get(k) ?? []), c]); } else if (fillsBand(state, c, moverBand)) enemyAt.set(hexKey(c.pos), c);
+    // Görev SWARM95 (95+): sürüyle aynı altıgendeki sürü olmayan düşman yolu keser (sürünün içinden geçilir, onun değil).
+    if (enemiesAt) { const k = hexKey(c.pos); enemiesAt.set(k, [...(enemiesAt.get(k) ?? []), c]); }
+    else if (fillsBand(state, c, moverBand)) { const k = hexKey(c.pos); const was = enemyAt.get(k); if (!(swarm95 && was && !isSwarm(was))) enemyAt.set(k, c); }
   }
   const enemyFor = (k: string): Combatant | undefined => {
     if (!enemiesAt || !dyn) return enemyAt.get(k);
     const list = enemiesAt.get(k);
     if (!list) return undefined;
     const band = bandOf(actor, dyn.ft);
+    if (swarm95) { const m = list.filter((c) => fillsBand(state, c, band)); return m.find((c) => !isSwarm(c)) ?? m[0]; }
     return list.find((c) => fillsBand(state, c, band));
   };
   // Görev B2: büyü alanları (zorlu arazi, Plant Growth, rüzgâr duvarı); zemin maliyetiyle birikmez, büyüğü geçer.
@@ -508,7 +532,8 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
     const s2gas = ruleVersion(state) >= 41 && actor.effects?.some((e) => e.shareSpace);
     const doorGap = ruleVersion(state) >= 41 && actor.effects?.some((e) => e.squeeze) && (state.map?.objects ?? []).some((o) => (o.kind === 'door' || o.kind === 'gate') && o.state !== 'open' && sameHex(o.at, h));
     if (target.movement === 'blocked' && !doorGap && !onTop) return fail(`${hexLabel(h)} geçilmez (${target.name}).`);
-    const other = occupantAt(state, h, actor.id, cellsOn(state) ? bandOf(actor) : undefined);
+    // Görev SWARM95 (95+): SRD Swarm altıgen paylaşımı (sürü herkesin altıgeninde, herkes sürünün altıgeninde durur).
+    const other = blockingOccupant(state, actor, h, cellsOn(state) ? bandOf(actor) : undefined);
     if (other && !s2gas) return fail(`${hexLabel(h)} dolu (${other.name}).`);
   }
 
@@ -727,7 +752,7 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   if (up > 0 && up <= spellFt && !isAirborne(actor)) {
     const landing0 = terrainAt(state, to);
     if (landing0.movement === 'blocked' || landing0.movement === 'deadly') return fail(`${hexLabel(to)} üzerine inilemez (${landing0.name}).`);
-    const other0 = occupantAt(state, to, actor.id);
+    const other0 = blockingOccupant(state, actor, to);
     if (other0) return fail(`${hexLabel(to)} dolu (${other0.name}).`);
     if (SPELL_JUMP_COST > speedHexes(actor) - actor.movementUsed) return fail('Hareket yetmiyor.');
     const jumped: BattleEvent = { type: 'jumped', actorId: actor.id, from, to, gap, cost: SPELL_JUMP_COST, running: false, traitTurns: { [SPELL_JUMP]: turnKey(state) } };
@@ -759,7 +784,7 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   if (landing.movement === 'deadly') return fail(`İniş altıgeni ${hexLabel(to)} lav: atlama reddedildi.`);
   if (landing.movement === 'blocked') return fail(`${hexLabel(to)} üzerine inilemez (${landing.name}).`);
   // Kuyruk K73f (66+): batık/yer altındaki atlayanın varışı yalnız kendi katmanında (yukarıda); yüzeydeki yaratık engel değil.
-  const other = layered ? undefined : occupantAt(state, to, actor.id);
+  const other = layered ? undefined : blockingOccupant(state, actor, to);
   if (other) return fail(`${hexLabel(to)} dolu (${other.name}).`);
   // Kuyruk K69 (sürüm 53, çok altıgen): inişte gövde sığmalı.
   const fit = bodyFitProblem(state, actor, to);

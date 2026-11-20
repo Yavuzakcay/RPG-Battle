@@ -35,6 +35,7 @@ import { timedCondition } from './durations';
 import { combatantFromMonster } from './create';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, SpellZone } from './types';
 import { formMonsterId } from './shapeMonsterCore';
+import { swarm95On } from './swarm95Surum';
 import { ws92On } from './ws92Surum';
 import ws92Data from '../../data/ws92.json';
 import { insideEffect } from './swallow92';
@@ -135,6 +136,8 @@ export function monsterAbilitySetup(state: BattleState, c0: Combatant, m0?: Mons
   if (burrow) { fx.passCreatures = true; fx.burrow = true; }
   if (p.earthGlide || p.tunneler) fx.phase = { difficult: false } as ActiveEffect['phase'];
   if (p.swarm) fx.noHeal = true;
+  // Görev SWARM95 (95+): SRD Swarm altıgen paylaşımı Gaseous Form altyapısıyla (`shareSpace`, `squeeze`) + karşılıklılık (`swarm`).
+  if (p.swarm && swarm95On(state)) { fx.swarm = true; fx.shareSpace = true; fx.squeeze = true; }
   if (Object.keys(fx).length) c.effects = [...(c.effects ?? []), { ...fx, id: `srd19:${id}:passive`, name: c.name, sourceId: id } as ActiveEffect];
   const traits = [...(p.traits ?? []), ...(p.siegeMonster ? ['siege-monster'] : []), ...(p.greaterMagicResistance ? ['greater-magic-resistance'] : []),
     ...(p.reflectiveCarapace ? ['reflective-carapace'] : []), ...(p.corrosive ? ['corrosive-form'] : []), ...(p.mistyEscape ? ['misty-escape'] : []),
