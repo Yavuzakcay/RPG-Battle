@@ -80,4 +80,15 @@ describe('Ranger ID4: maske düzeltmeleri veride', () => {
       expect(PUL.has(n), n).toBe(true);
     }
   });
+
+  it('Dragonborn erkek: ekle yalnız doldurulan macenta artığının 17 pikseli (yoldaş kanadının pikselleri değil); kadında ekle yok', () => {
+    const J = (pulDuz as unknown as { jetonlar: Record<string, { ekle?: number[][] }> }).jetonlar;
+    const px = new Set<string>();
+    for (const [x0, y0, x1, y1] of J['dragonborn-erkek-ranger-ID4']!.ekle! as [number, number, number, number][]) {
+      for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) px.add(`${x},${y}`);
+    }
+    expect(px.size).toBe(17);
+    for (const k of ['105,93', '105,94', '106,94']) expect(px.has(k), k).toBe(false);
+    expect(J['dragonborn-kadin-ranger-ID4']!.ekle).toBeUndefined();
+  });
 });
