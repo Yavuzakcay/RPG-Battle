@@ -9,6 +9,39 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Dungeondex prospektüsü, Aşama 2: büyü, sınıf özelliği, feat, tür özelliği, alt sınıf (2026-11-20; yalnız arayüz)
+
+Soru sorulmadı. Aşama 1'in kurallarıyla (SRD'den Türkçe özet, sayı testi, ham metin yok). Belge `harita/belgeler/DUNGEONDEX-PROSPEKTUS.md`.
+
+- **Büyüler (339).** Dosya: `data/prospektus/buyu.json`, modül `buyu.ts`.
+  - Süre SRD süresinden yapılandırılmış (`sure`: tip, n, birim, enCok, kons) ve iki dilde dil tablosundan çizilir. SRD'nin İngilizce süre metni gösterilmez.
+  - Bileşen harfleri, malzeme bedeli (GP), malzemenin tüketilmesi ve ritüel SRD'den alınır; test karşılaştırır.
+  - Oyundaki durum `scripts/lib/buyu-durum.mjs` ölçütüyle aynı (test eşitliği denetler). Bu ölçüte yeni bir "Kısmen çalışır" rozeti eklendi.
+- **Sınıf özellikleri (174)** `sinif-ozellik.json`'da. Kimlik `<sınıf>:<özellik>`. Improved Brutal Strike SRD'de iki kez geçer; 17. seviyedeki kayıt `barbarian:improved-brutal-strike@17`.
+  - Kullanım türü, kaynak ve yenilenme `class-features.json`'dan.
+  - Mekanik kaydı olmayan özellikte (Spellcasting gibi) "Oyundaki durum" bölümü yok: rozet uydurulmaz.
+- **Feat'ler (17)** `feat.json`'da. Kategori ve tekrar alınabilirlik SRD'den, durum `class-features.json` `feats`'ten.
+- **Tür özellikleri (41)** `tur-ozellik.json`'da. Durum veride değil, bu yüzden bölüm yok.
+- **Alt sınıflar için dosya yok.** Prospektüs yüklü `SubclassDef`'ten çizilir: rol, seviyeli özellik açıklamaları (veride TR/EN) ve durum etiketleri.
+  - 108 paket alt sınıfının metni depoya girmez; yüklüyse kendi paket metniyle görünür.
+  - Yeni metin yazılmadı.
+- **Oyun verisinin SRD'den ayrıştığı büyüler.** Paragraf SRD'yi yazar, "Etken içerik" oyun verisini gösterir. Not alanı eklenmedi (büyü durum notları zaten `gmNote`/`approx`). Liste ayrı görev için:
+  - Ice Storm: oyunda 7d6 soğuk; SRD'de 2d10 ezici + 4d6 soğuk.
+  - Flame Strike: oyunda 10d6 ışıl; SRD'de 5d6 ateş + 5d6 ışıl.
+  - Meteor Swarm: oyunda 40d6 ateş; SRD'de 20d6 ateş + 20d6 ezici.
+  - Conjure Fey: oyunda WIS kurtarma zarı; SRD'de yakın dövüş büyü saldırısı.
+  - Divine Word: oyunda eylem; SRD'de bonus eylem.
+  - Prayer of Healing: oyunda `utility`.
+  - Blindness/Deafness: oyunda yalnız Blinded.
+  - Dragon's Breath: oyunda yalnız ateş.
+  - Bestow Curse: yüksek yuva süreleri oyunda yok.
+- **Sayı testi yalnız kaydın kendi SRD alanına bakar.** Bazı değerler SRD'de yalnız tabloda geçer: Prismatic Spray/Wall hasar zarı, Divine Word HP aralıkları, Goliath soy zarları gibi. Bu değerler ya sözle yazıldı ("on iki altı yüzlü zar") ya da yazılmadı.
+  - Test kaynağı tabloları kapsayacak biçimde genişletilirse sayıyla yazılabilir. Öneri: `npm run srd` tablo satırlarını kayda eklesin.
+- **Doğrulama:**
+  - Typecheck, `src/dungeondex` testleri (44) ve `srdIds` testi yeşil.
+  - Build yeşil, ana parça 461,63 kB.
+  - `check:harita` ve `check:ses` çalıştırılmadı: harita ve ses değişmedi; `check:ses` bulutta çalışmaz.
+
 ## Dungeondex prospektüsü, Aşama 1: eşyalar (2026-11-20; yalnız arayüz, kural ve kayıt sürümü aynı)
 
 Soru sorulmadı. Şablon ve kategori eşlemesi `harita/belgeler/DUNGEONDEX-PROSPEKTUS.md`'de.
