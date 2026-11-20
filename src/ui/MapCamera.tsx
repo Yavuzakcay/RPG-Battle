@@ -45,16 +45,27 @@ export interface MapCam {
 
 const turnKey = (s: BattleState) => `${s.round}:${s.turnIndex}`;
 
-export function useMapCamera(state: BattleState, screen: Size): MapCam {
+/**
+ * `scaleScreen` (Görev D, telefon dikey): ölçeği veren standart oranlı sanal ekran. Verilirse pencere `screen`'in kendi
+ * oranında (`Camera.v1`) ve 15×7 harita da kaydırılır; çekmece açılıp sahne kısalınca ölçek değişmez, pencere kısalır.
+ * Verilmezse (masaüstü, yatay) eski davranış aynen.
+ */
+export function useMapCamera(state: BattleState, screen: Size, scaleScreen?: Size): MapCam {
   const world = worldOf(gridOf(state));
-  const big = world.w > VIEW.w + 0.5 || world.h > VIEW.h + 0.5;
-  const limits = zoomLimits(screen, HEX_W);
+  const sk = scaleScreen ?? screen;
+  const k1 = scaleOf(sk, 1);
+  const v1: Size | undefined = scaleScreen ? { w: screen.w / k1, h: screen.h / k1 } : undefined;
+  const vw = v1 ?? VIEW;
+  const big = world.w > vw.w + 0.5 || world.h > vw.h + 0.5;
+  const limits = zoomLimits(sk, HEX_W);
   const [cam0, setCam] = useState<Camera>({ x: 0, y: 0, zoom: 1 });
   const [overview, setOverviewState] = useState(false);
   const [follow, setFollowState] = useState(readFollow);
   const manualTurn = useRef<string | null>(null);
-  const cam = !big ? { x: 0, y: 0, zoom: 1 } : overview ? clampCamera({ x: 0, y: 0, zoom: fitZoom(world) }, world) : clampCamera(cam0, world);
-  const k = scaleOf(screen, cam.zoom);
+  /** Saklı kameraya güncel pencere boyutu (dikeyde; yatayda `v1` yok). */
+  const withV = (c: Camera): Camera => ({ x: c.x, y: c.y, zoom: c.zoom, ...(v1 ? { v1 } : {}) });
+  const cam = !big ? { x: 0, y: 0, zoom: 1 } : overview ? clampCamera(withV({ x: 0, y: 0, zoom: fitZoom(world, vw) }), world) : clampCamera(withV(cam0), world);
+  const k = scaleOf(sk, cam.zoom);
   const pointers = useRef(new Map<number, Point>());
   const drag = useRef<{ start: Point; last: Point; active: boolean; pinch?: { dist: number; zoom: number } } | null>(null);
   const draggedFlag = useRef(false);
@@ -63,15 +74,15 @@ export function useMapCamera(state: BattleState, screen: Size): MapCam {
   camRef.current = cam;
 
   const manual = () => { manualTurn.current = turnKey(state); };
-  const update = (f: (c: Camera) => Camera) => { if (overview) setOverviewState(false); setCam((c) => f(clampCamera(overview ? camRef.current : c, world))); };
+  const update = (f: (c: Camera) => Camera) => { if (overview) setOverviewState(false); setCam((c) => f(clampCamera(withV(overview ? camRef.current : c), world))); };
 
   // Takip: sıra değişince aktif yaratığa kay (elle kaydırılan turda değil).
   const actorPos = state.combatants[state.order[state.turnIndex] ?? '']?.pos;
   useEffect(() => {
     if (!big || !follow || !actorPos || manualTurn.current === turnKey(state)) return;
-    setCam((c) => ensureVisible(clampCamera(c, world), [hexCenter(actorPos)], world, 160));
+    setCam((c) => ensureVisible(clampCamera(withV(c), world), [hexCenter(actorPos)], world, 160));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [big, follow, state.round, state.turnIndex, actorPos?.col, actorPos?.row]);
+  }, [big, follow, state.round, state.turnIndex, actorPos?.col, actorPos?.row, Math.round(vw.h)]);
 
   // Klavye: ok tuşları / WASD kaydırır; Space basılıyken sol tuş sürükler.
   useEffect(() => {
@@ -85,7 +96,7 @@ export function useMapCamera(state: BattleState, screen: Size): MapCam {
       const m = d[e.code];
       if (!m) return;
       e.preventDefault(); manual();
-      update((c) => panBy(c, m[0], m[1], screen, world));
+      update((c) => panBy(c, m[0], m[1], sk, world));
     };
     const up = (e: KeyboardEvent) => { if (e.code === 'Space') space.current = false; };
     window.addEventListener('keydown', down); window.addEventListener('keyup', up);
@@ -104,7 +115,7 @@ export function useMapCamera(state: BattleState, screen: Size): MapCam {
       if (skip(e.target)) return;
       const p = local(e);
       manual();
-      update((c) => zoomAt(c, c.zoom * Math.pow(1.0015, -e.deltaY), p, screen, world, limits));
+      update((c) => zoomAt(c, c.zoom * Math.pow(1.0015, -e.deltaY), p, sk, world, limits));
     },
     onContextMenu: (e: Event) => e.preventDefault(),
     onPointerDown: (e: PointerEvent & { currentTarget: EventTarget }) => {
@@ -130,7 +141,7 @@ export function useMapCamera(state: BattleState, screen: Size): MapCam {
         const [a, b] = [...pointers.current.values()] as [Point, Point];
         const dist = Math.hypot(a.x - b.x, a.y - b.y);
         draggedFlag.current = true; manual();
-        update((c) => zoomAt(c, d.pinch!.zoom * (dist / Math.max(1, d.pinch!.dist)), { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }, screen, world, limits));
+        update((c) => zoomAt(c, d.pinch!.zoom * (dist / Math.max(1, d.pinch!.dist)), { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }, sk, world, limits));
         return;
       }
       if (!d.active && Math.hypot(p.x - d.start.x, p.y - d.start.y) < DRAG_PX) return;
@@ -138,7 +149,7 @@ export function useMapCamera(state: BattleState, screen: Size): MapCam {
       draggedFlag.current = true; manual();
       const dx = p.x - d.last.x, dy = p.y - d.last.y;
       d.last = p;
-      update((c) => panBy(c, dx, dy, screen, world));
+      update((c) => panBy(c, dx, dy, sk, world));
     },
     onPointerUp: (e: PointerEvent) => { pointers.current.delete(e.pointerId); if (pointers.current.size === 0) drag.current = null; },
     onPointerCancel: (e: PointerEvent) => { pointers.current.delete(e.pointerId); if (pointers.current.size === 0) drag.current = null; },
@@ -148,10 +159,10 @@ export function useMapCamera(state: BattleState, screen: Size): MapCam {
 
   const visibleHexes = useMemo(() => {
     if (!big) return [];
-    const v = viewSize(cam.zoom);
+    const v = viewSize(cam.zoom, cam.v1);
     return hexesIn(gridOf(state), { x: cam.x, y: cam.y, w: v.w, h: v.h });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [big, Math.round(cam.x / 20), Math.round(cam.y / 20), cam.zoom, gridOf(state)?.cols, gridOf(state)?.rows]);
+  }, [big, Math.round(cam.x / 20), Math.round(cam.y / 20), cam.zoom, Math.round(cam.v1?.w ?? 0), Math.round(cam.v1?.h ?? 0), gridOf(state)?.cols, gridOf(state)?.rows]);
 
   return {
     big, world, cam, k, screen, visibleHexes, handlers,
@@ -160,10 +171,10 @@ export function useMapCamera(state: BattleState, screen: Size): MapCam {
     setFollow: (on) => { setFollowState(on); try { localStorage.setItem(FOLLOW_KEY, on ? 'on' : 'off'); } catch { /* yerel */ } },
     overview,
     setOverview: (on) => setOverviewState(on),
-    zoomBy: (f) => { manual(); update((c) => zoomAt(c, c.zoom * f, { x: screen.w / 2, y: screen.h / 2 }, screen, world, limits)); },
-    goTo: (p) => { manual(); setOverviewState(false); setCam((c) => centerOn(clampCamera(c, world), p, world)); },
-    dragView: (grab, p) => { manual(); setOverviewState(false); setCam((c) => dragViewTo(clampCamera(c, world), grab, p, world)); },
-    keepVisible: (hexes) => { if (big && !overview && hexes.length) setCam((c) => ensureVisible(clampCamera(c, world), hexes.map(hexCenter), world)); },
+    zoomBy: (f) => { manual(); update((c) => zoomAt(c, c.zoom * f, { x: screen.w / 2, y: screen.h / 2 }, sk, world, limits)); },
+    goTo: (p) => { manual(); setOverviewState(false); setCam((c) => centerOn(clampCamera(withV(c), world), p, world)); },
+    dragView: (grab, p) => { manual(); setOverviewState(false); setCam((c) => dragViewTo(clampCamera(withV(c), world), grab, p, world)); },
+    keepVisible: (hexes) => { if (big && !overview && hexes.length) setCam((c) => ensureVisible(clampCamera(withV(c), world), hexes.map(hexCenter), world)); },
   };
 }
 
@@ -188,7 +199,7 @@ export function CameraHud(props: { cam: MapCam; state: BattleState; alerts?: Off
   const C = t().camera;
   const W = Math.round(Math.min(180, cam.screen.w * 0.24)), H = (W * cam.world.h) / cam.world.w;
   const s = W / cam.world.w;
-  const v = viewSize(cam.cam.zoom);
+  const v = viewSize(cam.cam.zoom, cam.cam.v1);
   const hexes = useMemo(() => hexesIn(gridOf(state), { x: 0, y: 0, w: cam.world.w, h: cam.world.h }, 0),
   // eslint-disable-next-line react-hooks/exhaustive-deps
   [state.map?.id, gridOf(state)?.cols]);

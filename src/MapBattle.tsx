@@ -28,7 +28,10 @@ import { sizeRank } from './battle/forced';
 import { eldritchSmiteProblem } from './battle/warlock';
 import { availableForms, wildShapeFeature } from './battle/druid';
 import { whirlpoolCast } from './battle/girdap';
-import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+import { SHEET_BAR_H, TOP_STRIP_H, isPortraitPhone, portraitScaleScreen, sheetOpenFor, sheetOpenHeight, stageBox } from './ui/battleLayout';
+import { groupName, heldItemName } from './ui/heldItemName';
 import type { Spell } from './data';
 import { resourceLeft, type AttackOption, type BattleState, type Combatant, type Command, type CunningOption } from './battle';
 import { resourceDef, resourceUsable } from './rules/classFeatures';
@@ -208,22 +211,39 @@ const BUTTON = 56;
 
 type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere' | 'pick' | 'shift' | 'pickHex' | 'throwObj' | 'special' | 'ready' | 'readyHex';
 
-/** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
-function useStage(): Box {
+/**
+ * Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). Görev D: telefon dikeyde (`portrait`) sahne harita
+ * alanının ölçülen boyutu (`useElementSize`), harita kamerayla kaydırılır; `vh` açık çekmecenin yüksekliği için.
+ */
+function useStage(): { box: Box; portrait: boolean; vw: number; vh: number } {
   const measure = () => {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-    const w = Math.min(vw, vh * RATIO);
-    return { w, h: w / RATIO };
+    return { box: stageBox(vw, vh, RATIO), portrait: isPortraitPhone(vw, vh), vw, vh };
   };
-  const [box, setBox] = useState<Box>(measure);
+  const [st, setSt] = useState(measure);
   useEffect(() => {
-    const on = () => setBox(measure());
+    const on = () => setSt(measure());
     window.addEventListener('resize', on);
     window.addEventListener('orientationchange', on);
     return () => { window.removeEventListener('resize', on); window.removeEventListener('orientationchange', on); };
   }, []);
-  return box;
+  return st;
+}
+
+/** Görev D: öğenin ölçülen boyutu (ResizeObserver; yoksa ya da ölçülmeden null). */
+function useElementSize(el: HTMLElement | null): Box | null {
+  const [size, setSize] = useState<Box | null>(null);
+  useLayoutEffect(() => {
+    if (!el) { setSize(null); return; }
+    const read = () => { const r = el.getBoundingClientRect(); setSize((o) => (o && Math.abs(o.w - r.width) < 0.5 && Math.abs(o.h - r.height) < 0.5 ? o : { w: r.width, h: r.height })); };
+    read();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(read);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [el]);
+  return size;
 }
 
 /** Karakter çekmecesi: yetenek, zar ve ayrıntılar. */
@@ -487,7 +507,14 @@ const usableResources = (c: Combatant): Array<[string, number]> =>
 
 /** Haritalı savaş ekranı. `exitLabel` çıkış düğmesinin adı (kurulum ekranına dönüş). */
 export function Battle(props: { initial: Session; /** Görev OD1C: haritada tamamlanacak bekleyen hedefler içeren taslak. */ goalDraft?: GoalsDraft; mapFilter?: string; onExit: (final?: BattleState) => void; exitLabel?: string; restored?: boolean }) {
-  const box = useStage();
+  const stage = useStage();
+  // Görev D: telefon dikey yerleşimi (üstte sıra şeridi, ortada harita, altta çekmece); yatay ve masaüstü aynı.
+  const portrait = stage.portrait;
+  const portraitRef = useRef(portrait);
+  portraitRef.current = portrait;
+  const [ptMap, setPtMap] = useState<HTMLDivElement | null>(null);
+  const ptSize = useElementSize(portrait ? ptMap : null);
+  const box: Box = portrait ? ptSize ?? { w: stage.vw, h: Math.max(1, stage.vh - TOP_STRIP_H - SHEET_BAR_H) } : stage.box;
   const [session, setSession] = useState<Session>(props.initial);
   // Görev OD1C: bekleyen hedefler (altıgen/nesne haritada seçilir). `goalPick`: şu an hangi hedef için hangi seçim açık.
   const [gd, setGd] = useState<GoalsDraft | null>(props.goalDraft ?? null);
@@ -624,7 +651,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   // Kuyruk MB6: havada inme irtifası (ft; uçabilen binici seçer, uçamayan için seçici yok).
   const [dismountFt, setDismountFt] = useState<number | null>(null);
   useEffect(() => { setAirFt(0); }, [areaAct]);
-  const [menuOpen, setMenuOpen] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(() => !portrait);
   // SD2: halka menü sayfası ('top' = 6 büyük düğme; 'move' ve 'items' alt menü), "Daha fazla" sayfa no, Büyü/Özel sekmeleri.
   const [menuPage, setMenuPage] = useState<'top' | 'move' | 'items'>('top');
   const [menuMore, setMenuMore] = useState(0);
@@ -685,8 +712,19 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   const seenLines = useRef(session.lines.length);
 
   const state = session.state;
-  // Görev H1: kamera (yalnızca geniş haritada; kayda girmez).
-  const cam = useMapCamera(state, box);
+  // Görev D: dikey çekmece. Karar bekleyen balon/soru (DOM'dan) açar, hedeflemede kapanır; elle seçim aynı bağlamda geçerli.
+  const [ptTop, setPtTop] = useState<HTMLDivElement | null>(null);
+  const [ptBar, setPtBar] = useState<HTMLDivElement | null>(null);
+  const [ptBody, setPtBody] = useState<HTMLDivElement | null>(null);
+  const [ptPeek, setPtPeek] = useState<HTMLDivElement | null>(null);
+  const [sheetDecision, setSheetDecision] = useState(false);
+  const [sheetCta, setSheetCta] = useState<{ label: string; disabled: boolean } | null>(null);
+  const [sheetManual, setSheetManual] = useState<{ key: string; open: boolean } | null>(null);
+  const sheetKey = `${mode}|${targetId ?? ''}|${sheetDecision}|${menuOpen}|${state.order[state.turnIndex] ?? ''}|${state.round}`;
+  const sheetOpen = portrait && sheetOpenFor({ idle: mode === 'idle', menuOpen, decision: sheetDecision, manual: sheetManual?.key === sheetKey ? sheetManual.open : null });
+  const sheetH = sheetOpenHeight(stage.vh);
+  // Görev H1: kamera (yalnızca geniş haritada; kayda girmez). Görev D: dikeyde her haritada, ölçek çekmeceden bağımsız.
+  const cam = useMapCamera(state, box, portrait ? portraitScaleScreen(box.h, sheetOpen, sheetH, RATIO) : undefined);
   const visibleSet = useMemo(() => new Set(cam.visibleHexes.map(hexKey)), [cam.visibleHexes]);
   // Savaş sonu (Görev U): bu ekranda savaş bitince bir kez görsel efekt ve ezgi (kayıttan yüklenen bitmiş savaşta değil).
   const [endFx, setEndFx] = useState<'victory' | 'defeat' | null>(null);
@@ -908,7 +946,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     window.addEventListener('keydown', key);
     return () => window.removeEventListener('keydown', key);
   });
-  useEffect(() => { setMenuOpen(true); setMode('idle'); setSpell(null); setSlotPick(null); setTargetId(null); setAimHex(null); setAimPts([]); setTip(null); }, [actorId, state.round]);
+  useEffect(() => { setMenuOpen(!portraitRef.current); setMode('idle'); setSpell(null); setSlotPick(null); setTargetId(null); setAimHex(null); setAimPts([]); setTip(null); }, [actorId, state.round]);
 
   // Kuyruk 31: Serüven savaşı bittikten sonra keşfe devam (seçili parti üyesi serbest yürür; çıkış altıgenine varınca dönüş).
   const [exploring, setExploring] = useState(false);
@@ -1141,6 +1179,30 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     if (mode !== 'idle') cam.keepVisible(ps);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetId, aimHex?.col, aimHex?.row, mode]);
+  // Görev D: dikeyde çekmece açılıp harita alanı değişince sıradaki yaratık ve hedef görünür kalsın.
+  useEffect(() => {
+    if (!portrait) return;
+    const ps = [actor?.pos, targetId ? state.combatants[targetId]?.pos : null, aimHex].filter((x): x is Offset => !!x);
+    cam.keepVisible(ps);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [portrait, Math.round(box.h)]);
+  // Görev D: çekmecedeki karar balonu/sorusu ve nişan balonunun ana düğmesi (kapalı çubukta yinelenir) her çizimden sonra okunur.
+  useLayoutEffect(() => {
+    const body = portrait ? ptBody : null;
+    const has = !!body?.querySelector('.bubble:not(.area-bubble), .dice-prompt');
+    if (has !== sheetDecision) setSheetDecision(has);
+    const b = body?.querySelector<HTMLButtonElement>('.area-bubble button.cta') ?? null;
+    const next = b ? { label: (b.textContent ?? '').trim(), disabled: b.disabled } : null;
+    if (next?.label !== sheetCta?.label || next?.disabled !== sheetCta?.disabled) setSheetCta(next);
+  });
+  /** Görev D: dikeyde HUD parçası çekmeceye / üst şeride taşınır (portal); yatayda olduğu yerde (DOM aynı). */
+  const inPt = (node: ReactNode, el: HTMLElement | null, cls?: string): ReactNode =>
+    (portrait && el ? createPortal(cls ? <div className={cls}>{node}</div> : node, el) : node);
+  const setSheet = (open: boolean) => {
+    if (mode === 'idle' && !sheetDecision) { setSheetManual(null); setMenuOpen(open); if (!open) setTip(null); }
+    else setSheetManual({ key: sheetKey, open });
+  };
+  const sheetSwipe = useRef<{ y: number; swallow: boolean } | null>(null);
   // Görev H1: son komutun etkilediği yaratıklar ekran dışındaysa kenarda ok.
   const alerts = useMemo(() => {
     if (!cam.big) return [];
@@ -1815,8 +1877,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     special: B.hint.special,
   };
 
-  return (
-    <div className="mb-screen">
+  const stageNode = (
       <div className="mb-stage" data-testid="battle-stage" style={{ width: box.w, height: box.h }} {...cam.handlers}>
         {/* Katmanlar: harita görseli, hareketli efektler (Adım 10c), altıgenler ve jetonlar. Görsel düz
             <img>: yüklenemez ya da çözülemezse ekranda yazar (kara ekran yerine). */}
@@ -2313,6 +2374,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
             );
           })()}
           {toolbarShown({ mode, goalPick }, 'surface') && <SurfaceTool pick={surfacePick} onPick={setSurfacePick} onClose={() => { setMode('idle'); setMenuOpen(true); }} />}
+{inPt(<>
           <div className="turn-strip" role="list" aria-label={B.order}>
             {(() => {
               // Kuyruk K58 G4: sıra şimdiki yaratıktan başlar; şimdiki + sonraki 5 (açılınca hepsi), durum simgeleri, konsantrasyon.
@@ -2346,12 +2408,14 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
             {(() => { const h = state.order.filter((id) => { const c = state.combatants[id]; return !!c && !c.summon?.gone && !stripMountOf(state, id).hide; }).length - 6;
               return h > 0 || stripAll ? <button className="strip-more" onClick={() => setStripAll((v) => !v)}>{stripAll ? '‹' : t().view.more(h)}</button> : null; })()}
           </div>
+          </>, ptTop)}
 
           {hazard && (
             <ul className="hazard-legend" aria-label={t().view.hazard(true)}>
               {HAZARD_KINDS.map((k) => <li key={k} className={`hz-key hz-${k}`}><i />{t().view.hazardKind[k]}</li>)}
             </ul>
           )}
+{inPt(<>
           <div className={`hud-corner tl${optionsOpen ? ' open' : ''}`}>
             <button className="hud-btn" aria-label={B.options} onClick={() => setOptionsOpen((o) => !o)}>≡</button>
             {optionsOpen && (
@@ -2369,7 +2433,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                 )}
                 {active && state.map && <button onClick={() => { reset(); setGoalPick(null); setMode('gmSurface'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.surfaceTool.open}</button>}
                 {active && (state.groups ?? []).filter((g) => g.state !== 'alarmed').map((g) => (
-                  <button key={`al${g.id}`} onClick={() => { dice.play((rng) => dispatch(session, { type: 'alarm_group', groupId: g.id }, rng, GM_CONTEXT)); setMenuOpen(false); }}>{t().alarm.gm.alarm(g.id)}</button>
+                  <button key={`al${g.id}`} onClick={() => { dice.play((rng) => dispatch(session, { type: 'alarm_group', groupId: g.id }, rng, GM_CONTEXT)); setMenuOpen(false); }}>{t().alarm.gm.alarm(groupName(g.id))}</button>
                 ))}
                 {(active || setup) && state.map && <button onClick={() => { reset(); setGoalPick(null); setObjectPick('inspect'); setMode('gmObject'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.objectTool.open}</button>}
                 {active && sleepingDragon(state) && (
@@ -2411,7 +2475,9 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
               </div>
             )}
           </div>
+          </>, ptTop)}
 
+{inPt(<>
           {(modeHint[mode] || setup) && (
             <div className="hud-hint">
               {setup ? B.hint.setup : modeHint[mode]}
@@ -2493,7 +2559,9 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
               {mode !== 'idle' && <button className="hud-btn small" onClick={reset} aria-label={t().common.cancel}>✕</button>}
             </div>
           )}
+          </>, ptBody)}
 
+{inPt(<>
           {active && actor && actorPx && menuOpen && mode === 'idle' && !optionsOpen && items.map((it, i) => (
             // Devre dışı düğme de açıklamasını gösterebilsin diye `disabled` değil `aria-disabled` (Chrome
             // devre dışı düğmede fare/dokunma olaylarını iletmez); tıklama yine işlemez.
@@ -2519,6 +2587,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
               {it.label}
             </button>
           ))}
+          </>, ptBody, 'pt-actions')}
+{inPt(<>
           {active && menuOpen && mode === 'idle' && !optionsOpen && tip && (() => {
             const i = items.findIndex((x) => x.key === tip);
             const it = items[i];
@@ -3057,6 +3127,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
               </div>
             );
           })()}
+          </>, ptBody)}
 
           {/* Kuyruk 33: boss kartı (efsanevi eylemler, in olayı) kısa özet. */}
           {active && bosses(state).filter(({ c }) => c.hp > 0 && !c.asleep).map(({ c, spec }) => (
@@ -3113,6 +3184,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
             <div className="objective">{B.objective(civiliansAlive(state), state.map.objective.total)}
               {state.map.objective.strict ? B.objectiveStrict(state.map.objective.needed) : ''}</div>
           )}
+{inPt(<>
           {active && actor && gateAim && gm.gate && (() => {
             const size = { w: 250, h: Math.min(box.h - 16, 40 + actor.weaponOptions.length * 56) };
             const at = bubbleAt(px(gm.gate.at), size, box, tokenR + 8);
@@ -3129,6 +3201,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
               </div>
             );
           })()}
+          </>, ptBody)}
+{inPt(<>
           {/* Kuyruk K71c (sürüm 58+): Hava görünümü: düğme ve düzey seçici (0'dan üst sınıra; kaydırılır). Seçili düzeyde
               olmayan jetonlar soluk ve dokunulmaz; uçabilen sıradaki yaratık vurgulu altıgene o düzeyde birleşik uçuşla gider. */}
           {cellsOn(state) && state.status === 'active' && (() => {
@@ -3250,7 +3324,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                   {(c.altitudeFt ?? 0) > 0 && <button className="hud-btn small" onClick={() => run({ type: 'vertical_move', actorId, targetId: c.id, toFt: (c.altitudeFt ?? 0) - 5 })}>{`${c.name} ${B.s2.down}`}</button>}
                 </span>
               ))}
-              {ruleVersion(state) >= 41 && !actor.shape?.possession && heldWeapons(actor)[0] && <button className="hud-btn small" onClick={() => run({ type: 'drop_item', actorId, item: heldWeapons(actor)[0] as string })}>{B.s2.drop(heldWeapons(actor)[0] as string)}</button>}
+              {ruleVersion(state) >= 41 && !actor.shape?.possession && heldWeapons(actor)[0] && <button className="hud-btn small" onClick={() => run({ type: 'drop_item', actorId, item: heldWeapons(actor)[0] as string })}>{B.s2.drop(heldItemName(heldWeapons(actor)[0] as string, actor.weaponOptions))}</button>}
               {/* Kuyruk P11: saklı büyüyü ateşle (hedef: seçili hedef ya da kendisi). */}
               {actor.effects?.find((e) => e.storedSpell) && <button className="hud-btn small" onClick={() => run({ type: 'spell_followup', actorId, targetId: targetId ?? actorId, choice: 'sakli', ...(aimHex ? { targetHex: aimHex } : {}) })}>{B.p11.fire(actor.effects.find((e) => e.storedSpell)?.storedSpell?.spellName ?? '')}</button>}
               {/* Kuyruk P12: büyü kitabını bırak / al; dostun mühürlü büyüsünü tetikle (dostun ekonomisi harcanmaz). */}
@@ -3261,11 +3335,14 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                 <button key={`seal${c.id}`} className="hud-btn small" onClick={() => run({ type: 'spell_followup', actorId, sourceId: c.id, targetId: targetId ?? actorId, choice: 'sakli', ...(aimHex ? { targetHex: aimHex } : {}) })}>
                   {B.p12.allyFire(c.name, c.effects?.find((e) => e.storedSpell)?.storedSpell?.spellName ?? '')}</button>
               ))}
-              {ruleVersion(state) >= 41 && groundItemsNear(state, actor).map((o) => <button key={o.id} className="hud-btn small" onClick={() => run({ type: 'pick_up', actorId, objectId: o.id })}>{B.s2.pick(o.item ?? '')}</button>)}
+              {ruleVersion(state) >= 41 && groundItemsNear(state, actor).map((o) => <button key={o.id} className="hud-btn small" onClick={() => run({ type: 'pick_up', actorId, objectId: o.id })}>{B.s2.pick(heldItemName(o.item ?? ''))}</button>)}
             </div>
           )}
+          </>, ptBody)}
           {setup && gd && pendingItems(gd).length > 0 && <span className="goal-warn" role="status">{t().oda.goal.warn(pendingItems(gd).length)}</span>}
+{inPt(<>
           {setup && <button className="hud-cta" data-testid="battle-start" onClick={startBattle}>{B.start}</button>}
+          </>, ptBar)}
           {endVideo?.shown && state.status === 'finished' && (
             <Suspense fallback={null}>
               <EndVideo plan={endVideo.plan} label={B.endVideoSkip} stopJingle={leaveBattleEnd} onDone={() => setEndVideo(null)} />
@@ -3308,12 +3385,14 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
               </div>
             );
           })()}
+{inPt(<>
           {active && actor?.side === 'enemies' && (
             <button className="hud-btn enemy-play" onClick={() => setEnemyRun((n) => n + 1)}>{B.enemyPlay}</button>
           )}
           {active && actor?.side === 'party' && actor.summon && (
             <button className="hud-btn enemy-play" onClick={() => { dice.play((rng) => autoplaySummonTurn(session, rng)); reset(); }}>{t().summons.autoplay}</button>
           )}
+          </>, ptBar)}
 
           <div className={`hud-corner bl${logOpen ? ' open' : ''}`}>
             <div className="toasts" aria-live="polite">
@@ -3470,12 +3549,15 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
             );
           })()}
 
+{inPt(<>
           {timings && diceQueue.length > 0 && (
             <Suspense fallback={null}>
               <DiceTray items={diceQueue} timings={timings} theme={diceTheme} allow3d={dice3dAllowed(diceAnim, reduceMotion)}
                 onDone={(id) => setDiceQueue((q) => q.filter((x) => x.id !== id))} onSkip={() => setDiceQueue([])} />
             </Suspense>
           )}
+          </>, ptPeek)}
+{inPt(<>
           {dice.reaction && (
             <ReactionPrompt key={`${dice.reaction.reactorId}:${dice.reaction.trigger}:${session.events.length}`} request={dice.reaction} state={state} onAnswer={dice.answer} />
           )}
@@ -3484,6 +3566,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
               whoName={dice.pending.request.by ? state.combatants[dice.pending.request.by]?.name ?? null : null}
               onEnter={dice.enter} onAuto={dice.autoRoll} onCancel={() => { setEnemyRun(0); dice.cancel(); }} />
           )}
+          </>, ptBody)}
 
           {drawerId && state.combatants[drawerId] && (
             <Drawer c={state.combatants[drawerId] as Combatant} state={state} onClose={() => setDrawerId(null)}
@@ -3494,7 +3577,49 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
           )}
         </div>
       </div>
-      <p className="portrait-hint">{B.portrait}</p>
+  );
+  if (!portrait) {
+    return (
+      <div className="mb-screen">
+        {stageNode}
+        <p className="portrait-hint">{B.portrait}</p>
+      </div>
+    );
+  }
+  // Görev D: telefon dikey: üstte sıra şeridi (+ seçenekler), ortada harita, altta iki konumlu çekmece.
+  const S = B.sheet;
+  const barLabel = setup ? B.hint.setup : mode === 'idle' && !moveAim && !jumpAim ? S.actions : modeHint[mode] || S.actions;
+  const canCancel = mode !== 'idle' || !!moveAim || !!jumpAim;
+  return (
+    <div className="mb-screen portrait">
+      <div className="pt-top" ref={setPtTop} />
+      <div className="pt-map" ref={setPtMap}>{stageNode}</div>
+      <div className={`pt-sheet${sheetOpen ? ' open' : ''}`} data-testid="sheet" role="region" aria-label={S.label}
+        style={{ height: `calc(${sheetOpen ? sheetH : SHEET_BAR_H}px + env(safe-area-inset-bottom, 0px))` }}>
+        <div className="pt-peek" ref={setPtPeek} />
+        <div className="pt-bar"
+          onPointerDown={(e: { clientY: number }) => { sheetSwipe.current = { y: e.clientY, swallow: false }; }}
+          onPointerUp={(e: { clientY: number }) => {
+            const d = sheetSwipe.current;
+            if (!d) return;
+            const dy = e.clientY - d.y;
+            if (Math.abs(dy) > 24) { d.swallow = true; setSheet(dy < 0); }
+          }}>
+          <button type="button" className="pt-handle" data-testid="sheet-handle" aria-expanded={sheetOpen} aria-label={sheetOpen ? S.close : S.open}
+            onClick={() => { if (sheetSwipe.current?.swallow) { sheetSwipe.current = null; return; } setSheet(!sheetOpen); }}>
+            <span className="pt-grip" aria-hidden="true" />
+            <span className="pt-label">{barLabel}</span>
+            <span className="pt-caret" aria-hidden="true">{sheetOpen ? '▾' : '▴'}</span>
+          </button>
+          {sheetCta && (
+            <button type="button" className="cta pt-go" disabled={sheetCta.disabled}
+              onClick={() => ptBody?.querySelector<HTMLButtonElement>('.area-bubble button.cta')?.click()}>{sheetCta.label}</button>
+          )}
+          {canCancel && <button type="button" className="pt-cancel" aria-label={t().common.cancel} onClick={reset}>✕</button>}
+          <div className="pt-bar-slot" ref={setPtBar} />
+        </div>
+        <div className="pt-body" ref={setPtBody} />
+      </div>
     </div>
   );
 }

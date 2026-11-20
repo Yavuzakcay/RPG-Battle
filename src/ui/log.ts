@@ -1,4 +1,5 @@
 /** Olayları insanın okuyacağı satırlara çevirir (geçerli dilde; metinler src/i18n/strings.ts `log`). */
+import { featureName, groupName, heldItemName } from './heldItemName';
 import { leafGoals } from '../battle/goals';
 import { goalText } from './goalText';
 import { riderOf } from '../battle/riders';
@@ -376,7 +377,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'extra_damage':
       return `${n(event.actorId)} → ${n(event.targetId)}: ${event.label}. ${damagePart(event.rolls, event.raw, event.applied, event.damageType, event.damageNote)}`;
     case 'feature_used':
-      return L.featureUsed(n(event.actorId), L.feature[event.feature] ?? event.feature, event.remaining);
+      return L.featureUsed(n(event.actorId), featureName(event.feature, state, event.actorId), event.remaining);
     case 'buff_added':
       return L.buffAdded(n(event.targetId), event.buff.source, event.buff.until);
     case 'buff_removed':
@@ -413,9 +414,9 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'patrol_moved':
       return '';
     case 'groups_formed':
-      return t().alarm.formed(Object.entries(event.members).map(([g, ids]) => `${g} ${ids.length} (${t().alarm.state[state.groups?.find((x) => x.id === g)?.state ?? 'asleep']})`).join(', '));
+      return t().alarm.formed(Object.entries(event.members).map(([g, ids]) => `${groupName(g)} ${ids.length} (${t().alarm.state[state.groups?.find((x) => x.id === g)?.state ?? 'asleep']})`).join(', '));
     case 'group_alarmed':
-      return t().alarm.alarmed(event.groupId, event.byId && event.byId !== 'gm' ? `${event.reason}: ${n(event.byId)}` : event.reason);
+      return t().alarm.alarmed(groupName(event.groupId), event.byId && event.byId !== 'gm' ? `${event.reason}: ${n(event.byId)}` : event.reason);
     case 'goal_changed': {
       const g = state.goals ? [...state.goals.list, ...leafGoals(state.goals.list)].find((x) => x.id === event.goalId) : undefined;
       return t().goals.log(event.status === 'done' ? '✓' : '✗', g ? goalText(g, state) : event.goalId);
@@ -434,7 +435,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'altitude_changed':
       return event.objectId ? L.altitudeObject(event.label, event.altitudeFt) : L.altitude(n(event.targetId ?? ''), event.altitudeFt, event.label);
     case 'item_dropped':
-      return L.itemDropped(n(event.actorId), event.item, event.label);
+      return L.itemDropped(n(event.actorId), heldItemName(event.item, event.options ?? []), event.label);
     case 'item_picked':
       return L.itemPicked(n(event.actorId));
     case 'zone_spotted':
