@@ -1,0 +1,108 @@
+/* Dungeondex Kitap kabuğu (Görev DD-Kitap; tembel parça). Palet: grafit #2B2B2E–#3A3A3F, bakır #C8651B/#E07A2F,
+   kor #FF5A1F/#B3200F, krem #EBD9C3, vitrin içi #121214. Görseller en-boy oranıyla sığar (container sorgu birimleri:
+   kutu min(100cqw, 100cqh × oran)); kutular yüzde. Ejderha katmanlarının stilleri index.html'deki splash.css'ten. */
+.ddk-screen { --ddk-grafit: #2B2B2E; --ddk-grafit2: #3A3A3F; --ddk-bakir: #C8651B; --ddk-bakir2: #E07A2F; --ddk-kor: #FF5A1F; --ddk-kor2: #B3200F;
+  --ddk-krem: #EBD9C3; --ddk-vitrin: #121214;
+  position: relative; height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; background: #1A1A1C; }
+
+/* Üst şerit: geri, başlık, kategori sekmeleri, önceki/sonraki (kitabın dışında). */
+.menu-screen .ddk-bar { border-radius: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 6px 10px; background: linear-gradient(#3A3A3F, #2B2B2E);
+  border-bottom: 2px solid var(--ddk-bakir); }
+.menu-screen .ddk-bar h1 { margin: 0; font-size: 18px; color: var(--ddk-krem); flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ddk-bar button { min-height: 44px; min-width: 44px; background: #2B2B2E; color: var(--ddk-krem); border: 1px solid var(--ddk-bakir); border-radius: 10px; font-weight: 600; }
+.ddk-bar button:hover:not(:disabled) { border-color: var(--ddk-bakir2); color: #fff; }
+.ddk-bar button:disabled { opacity: 0.4; }
+.ddk-nav { display: flex; gap: 6px; }
+.ddk-tabs { order: 9; flex-basis: 100%; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: thin; padding-bottom: 2px; }
+.ddk-tabs button { flex: 0 0 auto; min-height: 36px; font-size: 14px; padding: 4px 12px; border-radius: 999px; font-weight: 500; }
+.ddk-tabs button.on { background: linear-gradient(#E07A2F, #C8651B); color: #1A1A1C; border-color: #E07A2F; }
+
+/* Kitap alanı: ekranın kalanı; görsel en-boy oranıyla sığar. */
+.ddk-book { position: relative; flex: 1 1 auto; min-height: 0; }
+.ddk-book.ddk-entering { animation: ddk-fade-in var(--in-ms, 400ms) ease-out both; }
+.ddk-fit { position: absolute; inset: 6px; container-type: size; display: grid; place-items: center; }
+.ddk-frame.ddk-img { position: relative; aspect-ratio: var(--ar); width: min(100cqw, calc(100cqh * var(--ar))); }
+.ddk-frame-img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; user-select: none; }
+.ddk-img .ddk-vitrin, .ddk-img .ddk-serit, .ddk-img .ddk-page { position: absolute; }
+.ddk-vitrin { display: grid; place-items: center; overflow: hidden; background: var(--ddk-vitrin); container-type: size; }
+.ddk-img .ddk-vitrin { background: transparent; }
+.ddk-vitrin img { max-width: 86%; max-height: 86%; object-fit: contain; image-rendering: pixelated; filter: drop-shadow(0 0 2cqmin rgba(255, 90, 31, 0.35)); }
+.ddk-vitrin-ph { display: grid; place-items: center; gap: 4px; color: var(--ddk-bakir2); opacity: 0.8; text-align: center; font-size: clamp(11px, 7cqmin, 20px); }
+.ddk-vitrin-ph svg { width: 34cqmin; height: 34cqmin; }
+.ddk-serit { display: flex; align-items: center; justify-content: center; gap: 0.6em; padding: 0 3%; overflow: hidden; container-type: size;
+  color: var(--ddk-krem); font-size: clamp(11px, 42cqh, 22px); white-space: nowrap; }
+.ddk-serit strong { overflow: hidden; text-overflow: ellipsis; }
+.ddk-serit em { font-style: normal; font-size: 0.72em; color: var(--ddk-bakir2); border: 1px solid var(--ddk-bakir); border-radius: 999px; padding: 0 0.5em; flex: 0 0 auto; }
+.ddk-page { overflow-y: auto; overscroll-behavior: contain; min-height: 0; }
+/* Krem sayfa: koyu mürekkep (kart bileşenleri değişmez, yalnız renk değişkenleri). */
+.ddk-img .ddk-page { --ink: #2A1F17; --mute: #6B5A48; --panel: transparent; --card: rgba(255, 250, 240, 0.45); --line: rgba(110, 70, 40, 0.28); --acc: #B3200F;
+  color: var(--ink); scrollbar-color: #C8651B transparent; scrollbar-width: thin; padding: 0 2px; }
+.ddk-img .ddk-page button { color: var(--ink); }
+
+/* Düz düzen (çerçeve görseli yok): dar ekranda alt alta, genişte vitrin solda. */
+.ddk-frame.ddk-duz { position: absolute; inset: 8px; display: grid; gap: 8px; grid-template-rows: minmax(120px, 28%) auto minmax(0, 1fr); }
+.ddk-duz .ddk-vitrin { border-radius: 12px; }
+.ddk-duz .ddk-serit { min-height: 40px; background: linear-gradient(#3A3A3F, #2B2B2E); border: 1px solid var(--ddk-bakir); border-radius: 10px; font-size: 17px; container-type: normal; }
+.ddk-duz .ddk-page { background: var(--panel); color: var(--ink); border-radius: 12px; padding: 4px; }
+@media (min-width: 700px) and (min-aspect-ratio: 1/1) {
+  .ddk-frame.ddk-duz { grid-template-columns: minmax(240px, 38%) 1fr; grid-template-rows: 1fr auto; }
+  .ddk-duz .ddk-vitrin { grid-column: 1; grid-row: 1; }
+  .ddk-duz .ddk-serit { grid-column: 1; grid-row: 2; }
+  .ddk-duz .ddk-page { grid-column: 2; grid-row: 1 / 3; }
+}
+
+/* Sayfa içinde mevcut Dungeondex düzeni tek sütun (liste ya da kart). */
+.ddk-page .app.dex { max-width: none; margin: 0; padding: 4px 6px; min-height: 0; }
+.ddk-page .dex-split .dex-body { grid-template-columns: 1fr; }
+.ddk-page .dex-has-card .dex-list, .ddk-page .dex-split:not(.dex-has-card) .dex-card-pane, .ddk-page .dex-pick { display: none; }
+.ddk-page .dex-card-pane { position: static; max-height: none; overflow: visible; }
+.ddk-page .dex-cats { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+.ddk-page .dex-facts { grid-template-columns: 1fr; }
+
+/* --- Kapak --- */
+.ddk-cover { position: absolute; inset: 0; z-index: 20; background: #1A1A1C; cursor: pointer; -webkit-tap-highlight-color: transparent; outline: none; }
+.ddk-cover:focus-visible .ddk-cover-box { outline: 2px solid var(--ddk-bakir2); outline-offset: 4px; }
+.ddk-cover-fit { position: absolute; inset: 12px; container-type: size; display: grid; place-items: center; perspective: 1800px; }
+.ddk-cover-box { position: relative; aspect-ratio: var(--ar); width: min(100cqw, calc(100cqh * var(--ar))); transform-origin: 0 50%; container-type: size; }
+.ddk-cover-img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; user-select: none; }
+.ddk-cstrip { position: absolute; display: grid; place-items: center; align-content: center; text-align: center; color: var(--ddk-krem); line-height: 1.1; }
+.ddk-cstrip span { font-size: 4.2cqh; font-weight: 700; letter-spacing: 0.06em; text-shadow: 0 0 1.2cqh rgba(255, 90, 31, 0.45); }
+.ddk-cstrip-top span { font-size: 5cqh; font-variant: small-caps; }
+.ddk-cstrip small { font-size: 2cqh; white-space: nowrap; color: var(--ddk-bakir2); margin-top: 0.4cqh; }
+.ddk-no-img .ddk-cstrip { border-top: 1px solid var(--ddk-bakir); border-bottom: 1px solid var(--ddk-bakir); }
+.ddk-toka { position: absolute; width: 7%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; mix-blend-mode: screen;
+  background: radial-gradient(circle, rgba(255, 140, 60, 0.75) 0%, rgba(255, 90, 31, 0.35) 40%, rgba(179, 32, 15, 0) 70%); opacity: 0.6; }
+
+/* Ejderha sahnesi (açılış ekranının geniş logo tuvali). --stage-w: zarın em ölçüsü (splashLogic dieHtml). */
+.ddk-logo { position: absolute; pointer-events: none; }
+.ddk-logo-in { position: absolute; inset: 0; container-type: inline-size; --stage-w: 100cqw; }
+.ddk-logo .splash-govde, .ddk-logo .splash-wing { opacity: 0; }
+.ddk-logo .splash-die-body { animation: splash-die-spin 1ms linear both; }
+.ddk-eye { position: absolute; width: 4.5%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; z-index: 7; mix-blend-mode: screen; opacity: 0;
+  background: radial-gradient(circle, #fff 0%, rgba(255, 200, 120, 0.95) 18%, rgba(255, 90, 31, 0.65) 42%, rgba(179, 32, 15, 0) 72%); }
+.ddk-closed .ddk-eye { animation: ddk-pulse var(--pulse-ms) ease-in-out infinite alternate; }
+.ddk-static .ddk-eye { animation: none !important; opacity: 0.8; }
+.ddk-paused .ddk-eye, .ddk-paused * { animation-play-state: paused !important; }
+@keyframes ddk-pulse { from { opacity: 0.25; transform: translate(-50%, -50%) scale(0.7); } to { opacity: 1; transform: translate(-50%, -50%) scale(1.15); } }
+
+/* Kanatlar açılır: kapalı kanatlar söner, açık kanatlar katlı pozdan (--fold) açılır, kapalı gövde geniş gövdeye geçer. */
+.ddk-wings .splash-kapali-kanat { animation: splash-fade-out var(--cwing-out) linear calc(var(--wing-at) - var(--cwing-out)) both; }
+.ddk-wings .splash-wing, .ddk-turn .splash-wing { animation: splash-wing-open var(--wing-ms) cubic-bezier(0.3, 0.05, 0.25, 1) var(--wing-at) both; }
+.ddk-wings .splash-kapali, .ddk-turn .splash-kapali { animation: splash-fade-out var(--swap-ms) ease-in-out var(--swap-at) both; }
+.ddk-wings .splash-govde, .ddk-turn .splash-govde { animation: splash-fade-in var(--swap-ms) ease-in-out var(--swap-at) both; }
+.ddk-wings .splash-die-wrap, .ddk-turn .splash-die-wrap { animation: splash-fade-out var(--swap-ms) ease-in-out var(--swap-at) both; }
+.ddk-turn .splash-kapali-kanat { opacity: 0; }
+/* Dönüşte kanat/gövde son hâlinde kalsın (animasyon yeniden başlamasın): gecikme sıfır, süre 1 ms. */
+.ddk-turn { --wing-at: 0ms; --wing-ms: 1ms; --swap-at: 0ms; --swap-ms: 1ms; }
+
+/* Kapak sol menteşe etrafında döner ve solar; zemin solarak altta açık kitap görünür (çapraz solma). */
+.ddk-turn { animation: ddk-bg-out var(--turn-ms) ease-in both; pointer-events: none; }
+.ddk-turn .ddk-cover-box { animation: ddk-cover-turn var(--turn-ms) cubic-bezier(0.45, 0, 0.7, 1) both; }
+.ddk-fade { animation: ddk-fade-out var(--fade-ms) ease-out both; pointer-events: none; }
+@keyframes ddk-cover-turn { 0% { transform: rotateY(0deg); opacity: 1; } 55% { opacity: 1; } 100% { transform: rotateY(var(--turn-deg)); opacity: 0; } }
+@keyframes ddk-bg-out { 0%, 30% { background-color: #1A1A1C; } 100% { background-color: rgba(26, 26, 28, 0); } }
+@keyframes ddk-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes ddk-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .ddk-closed .ddk-eye { animation: none; opacity: 0.8; }
+}

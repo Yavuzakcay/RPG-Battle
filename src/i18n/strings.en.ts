@@ -23,6 +23,7 @@ export const en: Strings = {
     on: 'On', off: 'Off',
     video: 'End-of-battle video', videoHelp: 'A short video plays when a battle ends.',
     preview: 'Move preview', previewHelp: 'Shows the result before you confirm.', detail: 'Detail', short: 'Short', full: 'Full',
+    dexCover: 'Cover animation', dexCoverHelp: 'The Dungeondex cover animates as it opens.',
     city: 'City view', cityHelp: 'Towns show a top-down map.', tint: 'Map color', tintHelp: 'The battle map takes the settlement color.',
     book: 'Discovery Book', bookCount: (a: number, b: number) => `${a}/${b}`, bookOpen: 'Open', bookBack: 'Settings', bookEmpty: 'Nothing discovered yet.',
     advanced: 'Advanced', advancedHelp: 'Most players never need these.', packs: (n: number) => `Packs loaded: ${n}`,
@@ -153,6 +154,8 @@ export const en: Strings = {
     theme: { auto: 'Theme: auto', light: 'Theme: light', dark: 'Theme: dark' },
   },
   dex: {
+    cover: { top: 'Dungeondex', tap: 'Tap to open', open: 'Dungeondex cover: tap to open', counts: (s: number, e: number, c: number) => `${s} spells · ${e} items · ${c} monsters` },
+    prev: 'Previous entry', next: 'Next entry', vitrine: 'Showcase',
     title: 'Dungeondex', back: 'Back', search: 'Search (English or Turkish name)', categories: 'Categories', loading: 'Loading…',
     error: 'Could not load the Dungeondex data.',
     cat: { buyu: 'Spells', esya: 'Items', canavar: 'Monsters', tur: 'Species', altsoy: 'Lineages', sinif: 'Classes', altsinif: 'Subclasses', feat: 'Feats', gecmis: 'Backgrounds', durum: 'Conditions' } as Record<string, string>,

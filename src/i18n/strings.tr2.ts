@@ -14,6 +14,7 @@ export const TR_EXTRA = {
     on: 'Açık', off: 'Kapalı',
     video: 'Savaş sonu videosu', videoHelp: 'Savaş bitince kısa bir video oynar.',
     preview: 'Hamle önizlemesi', previewHelp: 'Hedef seçince sonucu önceden gösterir.', detail: 'Ayrıntı', short: 'Kısa', full: 'Tam',
+    dexCover: 'Kapak animasyonu', dexCoverHelp: 'Dungeondex açılırken kapak canlanır.',
     city: 'Şehir görünümü', cityHelp: 'Şehirde üstten harita görünür.', tint: 'Harita rengi', tintHelp: 'Savaş haritası yerleşimin rengini alır.',
     book: 'Keşif Defteri', bookCount: (a: number, b: number) => `${a}/${b}`, bookOpen: 'Aç', bookBack: 'Ayarlar', bookEmpty: 'Henüz keşfedilen yok.',
     advanced: 'Gelişmiş', advancedHelp: 'Çoğu oyuncunun buna dokunması gerekmez.', packs: (n: number) => `Yüklü paket: ${n}`,
@@ -768,6 +769,8 @@ export const TR_EXTRA = {
   /** Zar animasyonu ve elle zar girişi (Görev J). */
   /** Dungeondex (harita/belgeler/DUNGEONDEX-TASARIM.md; yalnız arayüz). */
   dex: {
+    cover: { top: 'Dungeondex', tap: 'Dokun, aç', open: 'Dungeondex kapağı: dokun, aç', counts: (s: number, e: number, c: number) => `${s} büyü · ${e} eşya · ${c} canavar` },
+    prev: 'Önceki kayıt', next: 'Sonraki kayıt', vitrine: 'Vitrin',
     title: 'Dungeondex', back: 'Geri', search: 'Ara (Türkçe ya da İngilizce ad)', categories: 'Kategoriler', loading: 'Yükleniyor…',
     error: 'Dungeondex verisi yüklenemedi.',
     cat: { buyu: 'Büyüler', esya: 'Eşyalar', canavar: 'Canavarlar', tur: 'Türler', altsoy: 'Alt soylar', sinif: 'Sınıflar', altsinif: 'Alt sınıflar', feat: "Feat'ler", gecmis: 'Geçmişler', durum: 'Durumlar' } as Record<string, string>,

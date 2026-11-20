@@ -1,0 +1,36 @@
+{
+ "note": "Dungeondex Kitap kabuğu (Görev DD-Kitap; src/dungeondex/book/). kapak/genis/mobil: npm run dd-kitap (scripts/dungeondex-kitap.ts) assets-ham/dungeondex/ (macenta zemin) görsellerinden üretir; kutular görselin 0–1 oranı (x, y, w, h). null: görsel henüz üretilmedi (kitap çerçevesiz düz düzenle açılır). logoAltigen: kapalı kanatlı logonun altıgeninin kendi görselindeki kutusu (public/logo/acilis-kapali-govde.webp alfa sınırı; dd-kitap ölçer). animasyon ve yontem elle; elle: ölçümün üstüne yazılan kutular (örn. {\"mobil\": {\"serit\": {...}}}).",
+ "animasyon": {
+  "kanatMs": 900,
+  "kanatGecikmeMs": 120,
+  "kapaliKanatSonMs": 140,
+  "govdeGecisMs": 300,
+  "kapakMs": 850,
+  "kapakAci": -105,
+  "solmaMs": 260,
+  "nabizMs": 1700,
+  "logoOlcek": 0.9
+ },
+ "yontem": {
+  "koyuMax": 40,
+  "koyuFark": 16,
+  "kremLum": 150,
+  "kremRB": [
+   10,
+   100
+  ],
+  "seritOran": 2.5,
+  "enAz": 0.002,
+  "guvenliPay": 0.02
+ },
+ "elle": {},
+ "logoAltigen": {
+  "x": 0.1308,
+  "y": 0.06,
+  "w": 0.7392,
+  "h": 0.8717
+ },
+ "kapak": null,
+ "genis": null,
+ "mobil": null
+}
