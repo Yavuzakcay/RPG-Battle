@@ -40,7 +40,7 @@ const MOVE_KEYS = new Set(['walk', 'dash', 'disengage', 'jump', 'stand', 'escape
 /** Eşya alt menüsü: iksirler (`item-<kimlik>`), nesne ve fırlatma. */
 const ITEM_KEYS = new Set(['object', 'throwObject']);
 /** "Diğer" grubu: her zaman yapılabilen temel eylemler. */
-const OTHER_KEYS = new Set(['dodge', 'help', 'hide', 'shove', 'search', 'distract', 'pull', 'srd19:stonecunning']);
+const OTHER_KEYS = new Set(['ready', 'dodge', 'help', 'hide', 'shove', 'search', 'distract', 'pull', 'srd19:stonecunning']);
 /** Şifa ve koruma özellikleri (anahtar parçası). */
 const HEAL_RE = /(lay-on-hands|divine-spark|preserve-life|healing-touch|wholeness|tireless|inspiration|natures-veil|lands-aid|sanctuary|vigil|vitality|sacred-weapon|nimbus|awakening|forge-bond)/;
 const HEAL_KEYS = new Set(['wind']);

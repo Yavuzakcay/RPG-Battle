@@ -35,6 +35,8 @@ import { resourceDef, resourceUsable } from './rules/classFeatures';
 import { pickerLevels, usesShown } from './ui/slotInfo';
 import { getMap, maps } from './map/maps';
 import { economyBlock, freeCastResource, preferBonus } from './battle/economy';
+import { readyOn } from './battle/readySurum';
+import { READY_DRAFT, ReadyPanel, type ReadyDraft } from './ui/ReadyPanel';
 import { bodyAt, bodyOf, isMultiHex } from './battle/body';
 import { dimLightOn, optionalRules, ruleOf, stuckInBog } from './battle/maprules';
 import { standUpProblem } from './battle/grapple';
@@ -204,7 +206,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere' | 'pick' | 'shift' | 'pickHex' | 'throwObj' | 'special';
+type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere' | 'pick' | 'shift' | 'pickHex' | 'throwObj' | 'special' | 'ready' | 'readyHex';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -515,6 +517,9 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     if (session.state.status !== 'setup') saveBattle(session);
   }, [session.state.round, session.state.status]);
   const [mode, setMode] = useState<Mode>('idle');
+  // Hazırla (Ready, sürüm 90): panel taslağı ve haritadan seçilen alan.
+  const [readyDraft, setReadyDraft] = useState<ReadyDraft>(READY_DRAFT);
+  const [readyPick, setReadyPick] = useState<'hex' | 'to'>('hex');
   // Kuyruk 43: seçilen sarf eşyası (iksir).
   const [itemPick, setItemPick] = useState<string | null>(null);
   const [spell, setSpell] = useState<Spell | null>(null);
@@ -1339,6 +1344,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     if (mode === 'erupt') { run({ type: 'map_trigger', rule: 'eruption', at: h }); return; }
     // Kuyruk 41b: Dikkat dağıt: menzildeki altıgene ses.
     if (mode === 'distract') { run({ type: 'distract', actorId, at: h }); return; }
+    // Hazırla (Ready): tetik altıgeni ya da hareket varışı.
+    if (mode === 'readyHex') { setReadyDraft((d) => ({ ...d, [readyPick]: h })); setMode('ready'); return; }
     if (mode === 'attack' && gm.gate && gm.gate.state === 'closed' && sameHex(gm.gate.at, h)) { setGateAim(true); return; }
     if (mode !== 'idle' && mode !== 'jump') return;
     const key = hexKey(h);
@@ -1546,6 +1553,10 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
         ?? (reach.shove === 0 ? Y.noShoveTarget : undefined),
       act: () => { reset(); setMode('shove'); setMenuOpen(false); } },
     { key: 'dodge', label: N.dodge, reason: why({ type: 'dodge', actorId }) ?? undefined, act: () => run({ type: 'dodge', actorId }) },
+    // Hazırla (Ready, sürüm 90; SRD 5.2.1 s.186–187): tetik + yanıt paneli.
+    ...(state.map && readyOn(state) ? [{ key: 'ready', label: t().readyUi.menu,
+      reason: why({ type: 'ready', actorId, trigger: READY_DRAFT.trigger, response: { kind: 'move', to: actor.pos ?? { col: 0, row: 0 } } }) ?? undefined,
+      act: () => { reset(); setReadyDraft({ ...READY_DRAFT, ...(actor.weaponOptions[0] ? { weapon: actor.weaponOptions[0].label } : actor.attacks.length ? { attackIndex: 0 } : {}) }); setMode('ready'); setMenuOpen(false); } }] : []),
     { key: 'help', label: N.help, reason: why({ type: 'help', actorId, targetId: '' }) ?? (reach.help === 0 ? Y.noAdjEnemy : undefined),
       act: () => { reset(); setMode('help'); setMenuOpen(false); } },
     // Kuyruk 43: sarf eşyaları (iksir; bonus eylem, kendine ya da 5 ft içindeki dosta).
@@ -1784,6 +1795,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     idle: '', gmSurface: B.gm.surfaceTool.hint, gmObject: B.gm.surfaceTool.hint, object: B.hint.object, attack: B.hint.attack, spells: B.hint.spells,
     spell: spell && (spell.area || spell.mechanics.zone) ? B.hint.spellArea(spell.name) : spell && freeHexAnyOn(state) && hexCastable(state, spell) ? B.hint.spellHex(spell.name) : B.hint.spell(spell?.name ?? ''), aim: areaFreeShape(state, areaAct, choicePick) ? B.k65.hint : B.hint.aim(actor && areaAct ? areaActSpec(actor, areaAct)?.label ?? '' : ''),
     areas: t().area.pickHint,
+    ready: t().readyUi.title, readyHex: t().readyUi.pickHint,
     pull: B.hint.pull, help: B.hint.help, distract: B.hint.distract, item: B.hint.item, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
     effect: spell ? t().effects.hint(spell.name, effectTargetCount(spell, slotPick ?? spell.level)) : '',
     summon: spell ? t().summons.hint(spell.name) : '',
@@ -2518,6 +2530,20 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
               <div className={`radial-tip${below ? ' below' : ''}`} role="tooltip"
                 style={{ left: Math.min(box.w - 120, Math.max(120, at.x)), top: below ? at.y + BUTTON / 2 + 6 : at.y - BUTTON / 2 - 6 }}>
                 <b>{it.label}</b> {it.reason ?? actionTip(it.key, it)}
+              </div>
+            );
+          })()}
+
+          {active && actor && actorPx && (mode === 'ready' || mode === 'readyHex') && (() => {
+            const size = { w: 280, h: Math.min(box.h - 16, mode === 'readyHex' ? 90 : 460) };
+            const at = bubbleAt(actorPx, size, box, tokenR + 8);
+            return (
+              <div className="bubble ready-bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h, overflowY: 'auto' }}>
+                {mode === 'readyHex'
+                  ? <><p>{t().readyUi.pickHint}</p><button type="button" className="ghost" onClick={() => setMode('ready')}>{t().readyUi.cancel}</button></>
+                  : <ReadyPanel state={state} actor={actor} draft={readyDraft} onDraft={setReadyDraft} hexLabel={hexLabel}
+                    blocked={economyBlock(state, actor, { type: 'ready', actorId, trigger: readyDraft.trigger, response: { kind: 'move', to: actor.pos ?? { col: 0, row: 0 } } })}
+                    onPickHex={(f) => { setReadyPick(f); setMode('readyHex'); }} onConfirm={(c) => { run(c); reset(); }} onCancel={reset} />}
               </div>
             );
           })()}

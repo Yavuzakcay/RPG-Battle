@@ -25,6 +25,61 @@ Soru sorulmadı. DUNGEONDEX-PROSPEKTUS görevinin kart düzeni maddesinin yerine
 - **Metinler**: Dungeondex ve Ayarlar metinleri depoda `strings.tr2.ts` (TR, tembel) ve `strings.en.ts`'te durduğu için ekler oraya yazıldı (`strings.ts`'te dex anahtarı yok).
 - **Ana parça**: 456,55 → 456,75 kB (+0,2; Ayarlar satırı ve paylaşılan küçük modüller); kitap kodu, CSS ve ejderha zarı Dungeondex tembel parçasında, `splashLogic` ortak tembel parçada.
 
+## Dungeondex prospektüsü, Aşama 1: eşyalar (2026-11-20; yalnız arayüz, kural ve kayıt sürümü aynı)
+
+Soru sorulmadı. Şablon ve kategori eşlemesi `harita/belgeler/DUNGEONDEX-PROSPEKTUS.md`'de.
+
+- **Bölümler sabit sırada:** Ne işe yarar, Nasıl kullanılır, Etken içerik, Riskler, Kimler kullanamaz, Maliyet ve ağırlık, Oyundaki durum.
+  - Satırsız bölüm üretilmez.
+  - "Oyundaki durum" her zaman rozetle görünür: savaşta çalışır / Game Master işler / savaş dışı / yalnız açıklama.
+- **Saf modül:** `src/dungeondex/prospektus/` (`esya.ts`, `types.ts`). Dil tablosu parametreyle gelir; React yok.
+- **Bileşen:** `ProspektusSections.tsx`, kabuğa bağlanmadı; kabuk görevi sağ sayfaya bağlayacak. Kabuk dosyalarına ve `data/aciklamalar-tr.json`'a dokunulmadı.
+- **Metinler** `dex.pro` altında, `strings.tr2.ts` (tembel TR parçası) + `strings.en.ts`. Dungeondex'in bütün TR metinleri zaten orada; ana parçaya girmez. Ana parça 461,55 kB.
+- **Veri** `data/prospektus/esya-{silah,zirh,donanim,sihirli}.json`, kategori başına ayrı dosya:
+  - Türkçe paragraflar `ne`/`nasil`/`risk`/`kimler`.
+  - SRD'den alınanlar: maliyet, ustalık, nadirlik, zırh giyme/çıkarma dakikası, AC'ye DEX ve üst sınırı. Bu alanları test `data/srd` ile karşılaştırır.
+  - Oyun verisinde maliyet ve nadirlik alanı yoktu.
+- **Kaynak:** `data/srd/*.json` (PDF'ten `npm run srd`). Kesik ya da tablolu metinler için `pdftotext` ile PDF okundu. Bellekten değer yok.
+  - Kaydın kendi alanında olmayan tablo sayıları (asa yük bedelleri, rastgele tablolar) yazılmadı; tablo özetlendi.
+- **Alchemist's fire:** oyun verisinin notu "yanma 1d4/tur, DC 10 DEX ile söndür". SRD Burning ise: tur başında 1d4 ateş; eylemle Prone olup yuvarlanınca, ıslanınca, batınca ya da havasız kalınca söner. Prospektüs SRD'yi yazar. Oyundaki söndürme kuralı değiştirilmedi (yeni mekanik yok).
+- **Oyun verisi ile SRD'nin ayrıştığı 23 kayıt:** paragraf SRD'yi yazar, "Etken içerik" oyun verisini gösterir. "Oyundaki durum" bölümüne `oyunFarki` notu ("Oyunda farklı") eklendi:
+  - Horn of Blasting: 5d6 / 5d8.
+  - Helm of Teleportation: Misty Step / Teleport.
+  - Wand of Web: DC 15 / 13.
+  - Staff of the Woodlands: 10 / 6 yük.
+  - Vicious Weapon: yalnız kritikte 7 / her isabette 2d6.
+  - Sword of Sharpness: 4d6 / 14 + Exhaustion.
+  - Sword of Wounding: 2d4 / 2d6.
+  - Ammunition of Slaying ve Dwarven Thrower: hasar türü / kuvvet.
+  - Eyes of the Eagle ve 13 Ring of Resistance: oyunda uyum var, SRD'de yok.
+  - Oyun verisi bu görevde düzeltilmedi (mekanik değişikliği, kural sürümü gerektirir); ayrı görev önerildi.
+- **Holy water:** oyun verisi `text` 2d6 diyor, `use` ve SRD 2d8. Kart `use`'u ve SRD'yi gösterir; `text` gösterilmez.
+- **Sayısal tutarlılık testi:** paragraftaki zar, `DC N`, `N ft`, `N GP/SP/CP` ve `±N` kaydın SRD ya da oyun alanlarında birebir olmalı. Paragraf İngilizce görünmemeli (`looksEnglish`). SRD ham cümlesi hiçbir satırda geçmemeli.
+- **Silah özellik açıklamaları** (`ozellik`: Heavy'de 13, Reach'te 5 ft) SRD Equipment > Weapons > Properties'ten. Kayıt alanında olmadıkları için sayı testi bunlara bakmaz; elle denetlendi.
+- **Ustalık sayıları** (Push 10 ft…) silah paragraflarına yazılmadı; ustalık kartı ayrı.
+- **Commit ayrımı:** paragraflar türe göre paralel yazıldı. Commit'ler silah+zırh, donanım ve sihirli eşya olarak ayrıldı. Test dosyası son commit'te: kapsam testi bütün türleri ister.
+- **Ekran görüntüsü:** `docs/sabah/dungeondex/prospektus-alchemists-fire.png`.
+- **Doğrulama:** typecheck, `src/dungeondex` testleri ve build yeşil. `check:harita` ve `check:ses` çalıştırılmadı: harita çizimi ve ses değişmedi (hafif doğrulama kuralı); `check:ses` bulutta çalışmaz.
+
+## Hazırla (Ready) eylemi: kural sürümü 90, kayıt sürümü 24 (2026-11-20; kullanıcı kararı: SRD'de olup eksik olan eklenir, uydurma yok)
+
+Sürüm notu: Ready ilk olarak 89 olarak yazıldı; birleştirmede paralel Görev D3 89'u almıştı, Ready 90'a taşındı (WS91 90'ı Ready'ye ayırıp 91'i aldı; güncel sürüm 91) (kod, veri, testler ve regresyon altını D3 dahil ağaçta 61610a31: 89 = altın, 90 = 89).
+
+Kaynak SRD 5.2.1 s.186–187 "Ready [Action]"; Extra Attack s.48 ("Attack eylemini **kendi turunda** aldığında"). Durum denetimi `harita/belgeler/READY-DURUM.md`. R1 (saldırı/hareket) ve R2 (büyü) birlikte; R3 (yapay zekânın kullanması) yok.
+
+- **Komut ve olaylar:** `ready { trigger, sourceId?, hex?, response }` kendi turunda eylem (`economy.ts`). Olaylar `readied`, `ready_released`, `ready_lapsed` (kayıt sürümü 23 → 24; 3–23 yüklenmeye devam). Savaşçıda `readied` (bir anda bir tane). Sürüm < 90'da komut reddedilir, kancalar hiçbir şey yapmaz (`readySurum.ts` `readyOn`).
+- **Tetikler veride** (`data/hazirla.json`; kodda yalnız olay türleri ve koşullar): düşman erişimime / seçtiğim altıgene / 30 ft içime girerse (yürürken her adımdan sonra, `registerAfterStep`), düşman saldırırsa / dostuma / bana saldırırsa (saldırı çözüldükten sonra, `registerAfterAttack`), düşman büyü yaparsa ve hareketini bitirirse (komut sonu, `registerCommandEnd`). Hepsinde "algılanabilir" (s.186): tetikleyeni görmek (`hiddenTo`/`canSee`). Tetikleyen karşı taraftan; `sourceId` verilirse yalnız o yaratık. SRD örnekleri ("If the goblin steps next to me…") erişim ve altıgen tetikleri.
+- **Tetik bittikten hemen sonra** (s.186): erişime girme adımdan sonra (fırsat saldırısı adımdan önce), saldırı çözüldükten sonra, büyü ve hareket komut sonunda.
+- **Tepki:** fırsat saldırısıyla aynı hak (`canReact`/`reactionUsed`, `reaction_used.trigger = 'ready'`); sıralama: önce tetiklenen harcar (aynı adımda fırsat saldırısı önce gelir). Karar `askReaction` (oyuncu Sor/Her zaman/Asla; kancasız Rng önerisi "kullan"). Reddedilirse tetik yok sayılır, hazırlık sürer (s.186 "or ignore the trigger"); tepki harcanmaz.
+- **Yanıtlar:** tek saldırı (`attack_resolved.ready`; Extra Attack ve Multiattack yok: s.48); hızın kadar hareket (`moved.reaction`: turun hareketinden düşmez; fırsat saldırısı ve zemin kuralları normal yürüyüş gibi). ⚠ Yürüyüş ortasında hazırlanan hareketle yola bir yaratık girerse yürüyen o altıgenden geçmez (düşman) ya da orada bitmez (dost): yürüyüş bir önceki altıgende durur (motorun önceden bulduğu yol yeniden hesaplanmıyor; yalnız Ready hareketi olunca etkin, eski imzalar aynı).
+- **Büyü (R2):** döküm süresi eylem olmalı (Shield, bonus eylem büyüleri reddedilir). Slot hazırlarken harcanır ve tetik gelmezse geri gelmez (arayüz yazar); hazırlama turda bir slotlu büyü kuralına sayılır (`slotTurn`). Tutmak konsantrasyon ister: konsantrasyon adı `ready:<büyü>` (var olan konsantrasyon biter, arayüz uyarır); bozulursa (CON save, Incapacitated) büyü etkisiz dağılır (`ready_lapsed concentration`). Hedef salınırken seçilir (kullanıcı kararı; tepki sorusunun seçimleri: geçerli yaratıklar, alanlı büyüde merkez/yön o yaratığın altıgeni; hedefsiz yapılabilen büyüde seçim yok). Salma iç komut `cast_spell.fromReady` (sıra/eylem dışı, slot yeniden düşmez); dışarıdan gönderilirse reddedilir. Konsantrasyonlu büyü salınınca kendi konsantrasyonu tutmanın yerini alır (tek konsantrasyon). ⚠ Counterspell ve büyü kancaları salma anında değerlendirilir (büyünün etkisi o an doğar; SRD büyünün hazırlarken "normal yapıldığını" söylüyor; hazırlarken hedef bilinmediği için).
+- **Bitiş:** sonraki turunun başında (`ready_lapsed turnStart`), düşünce, haritadan ayrılınca, Incapacitated olunca (tepki yapamaz).
+- **Kapılar:** Incapacitated hazırlayamaz (`checkActor`); Time Stop sürerken başkasının hazırlığı tetiklenmez ("no time passes for other creatures"); ele geçirilmiş beden ve bedendeki ele geçiren hazırlayamaz (beden Incapacitated: tepki yok; `possessionCommandProblem`); kontrollü binek hazırlayamaz (yalnız Dash/Disengage/Dodge, `controlledCommandProblem`); Wild Shape biçiminde büyü hazırlanamaz (Beast Spells hariç), saldırı ve hareket hazırlanır; Rage'de büyü hazırlanamaz; haritasız savaşta yok.
+- **Yapay zekâ Ready kullanmaz** (R3 ayrı görev); düşman tarafında Game Master elle kullanır. Hızlı regresyon (`src/sim/readyRegresyon.test.ts`, 4 senaryo × 3 tohum): 89 imzası Ready öncesi ağaçla (61610a31) aynı, 90 = 89.
+- **Arayüz:** Özel ▸ Diğer ▸ "Hazırla" paneli (`src/ui/ReadyPanel.tsx`: tetik, kim tetikler, yanıt, haritadan altıgen seçimi, büyüde slot/konsantrasyon uyarısı), jeton rozeti ⏳, günlük satırları, tepki sorusu "Hazırlanan eylemi uygula?". Motor hata metinleri yalnız Türkçe (bilinen eksik). Görüntü `docs/sabah/ready/hazirla.png`.
+- **Kapsam dışı (SRD'de var, bu turda yok):** Dash/Disengage/Dodge/Help/Hide/eşya kullanımı gibi diğer eylemlerin hazırlanması; hazırlanan yanıtın serbest metinli tetiği (yalnız veri listesindeki tetikler).
+
+## Dungeondex, Türkçe sürüm (2026-11-20; yalnız arayüz, kural ve kayıt sürümü değişmedi)
 ## Wild Shape / Polymorph biçim aktarımı WS91: kural sürümü 91 (2026-11-19, kullanıcı kararı 2026-11-20: SRD'de olup eksik olan tamamlanır, uydurma yok)
 
 Soru sorulmadı. Her kural PDF'ten okundu (`docs/SRD_CC_v5.2.1.pdf`, `pdftotext -layout`): Wild Shape s. 42–43, Polymorph s. 153, "Flying"/"Hover" s. 183, Archmage s. 305, Mind Blank s. 149. Önce motorda karşılık arandı: canavar kurulumu için D2'nin tek girişi (`monsterSetup.ts` `setupMonster` = `monsterTraitSetup` + `monsterAbilitySetup`) yeniden kullanıldı, ikinci kopya yazılmadı.
@@ -62,6 +117,7 @@ Soru sorulmadı. Her kural PDF'ten okundu (`docs/SRD_CC_v5.2.1.pdf`, `pdftotext 
   - **Archmage "Charmed (with Mind Blank)" (s. 305):** stat bloğunda Mind Blank "(cast before combat)"; Mind Blank (s. 149) Charmed ve Psychic bağışıklığı verir. Veri notu "Charmed (with Mind Blank)" bağışıklık listesine hiç girmiyordu. 91+: koşullu bağışıklık, koşulun büyüsü canavarın büyü kaydında "cast before combat" ise sayılır (`withSpell`; yalnız Archmage'de var). Psychic zaten bağışıktı.
 - **Kalanlar (yapılmadı, ileride):** biçimin aurası (`setupMonster` alanları; uygun Beast'lerde aura yok, alanlar biçime aktarılmaz); arayüz canavar yeteneği düğmesi göstermiyor (canavarlarda da yok; motor ve yapay zekâ kullanır); Druid yapay zekâsı biçime yalnız slotu bitince girer (simülasyonda kısa savaşlarda hiç girmiyor); biçimdeki eşya (s. 43 "Objects") yok; yüzücü listesi (`derin-su.json` `swimmers66`) canavarın kendi kimliğiyle kalır.
 - **Doğrulama.** Testler `src/battle/shape91.test.ts` (Wolf, Giant Spider, Brown Bear, Crocodile, Swarm of Rats aktarımı; Giant Eagle artık uygun değil (SRD 5.2.1: Celestial); biçimden biçime ve geri yükleme; Polymorph canavar hedef, Multiattack planı ve yetenekler biçimin kimliğiyle; geçici HP; Hover; Mind Blank; replay), Karadul 86–91 karşılaştırması `karadul.test.ts`. Mekanik matris 91'de 6606/6606 doğru (Polymorph ve True Polymorph satırları dahil; Wild Shape büyü/saldırı satırı değil). Hızlı regresyon `src/sim/shape91Regresyon.test.ts` (4 senaryo × 1 ve 3 tohum): 89 imzaları altınla aynı; 91'de Orman (Druid), Mağara (Hover'lı Specter), Kale 89'la aynı, Çöl (slotsuz başlayan Druid, biçime giriyor) değişti (1 tohum `ec9b82fb4cb3`, 3 tohum `2e1cd5e14ca6`; zafer 1/1 ve 3/3 aynı). Denge ölçümü yapılmadı.
+- **Doğrulama sonuçları.** typecheck yeşil; tam `npm test` 469/471 dosya geçti, düşen ikisi güncel sürüm değerini sınayan `g6.test.ts` ve `ruleVersion.test.ts` (89 → 91 güncellendi, yeniden yeşil; birleşmeyle gelen test dosyalarıyla birlikte 7 dosya 90 test geçti); build ana parça 461,55 kB / 500; `check:harita` 92/92; `check:ses` 15 kontrol 0 hata (bulutta, `PW_CHROMIUM=/opt/pw-browsers/chromium`).
 
 ## Kuyruk A İş 4: canavar özellik ve eylemlerinin Türkçe açıklamaları (2026-11-20; yalnız içerik verisi)
 

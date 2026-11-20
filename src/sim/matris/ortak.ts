@@ -10,7 +10,8 @@ export type Sonuc = 'doğru' | 'yanlış' | 'çökme' | 'uygulanmıyor' | 'karar
 export type Mode = 'normal' | 'advantage' | 'disadvantage';
 
 export interface Satir {
-  tur: 'büyü' | 'silah' | 'canavar';
+  /** `eylem`: Hazırla (Ready) gibi eylem kuralları (sürüm 89). */
+  tur: 'büyü' | 'silah' | 'canavar' | 'eylem';
   ad: string;
   seviye: string;
   siniflar: string;

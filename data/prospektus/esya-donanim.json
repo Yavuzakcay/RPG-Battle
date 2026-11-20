@@ -1,0 +1,383 @@
+{
+ "_aciklama": "Dungeondex prospektüsü, donanım (Adventuring Gear + Poisoner's Kit). kayitlar: ne/nasil/risk/kimler SRD 5.2.1'den Türkçe özet; maliyet data/srd/gear.json / tools.json'dan (test denetler).",
+ "kayitlar": {
+  "acid": {
+   "ne": "Fırlatılan asit şişesi. Hedef DEX kurtarma zarını (DC 8 + DEX değiştiricin + yeterlilik bonusun) geçemezse 2d6 asit hasarı alır.",
+   "nasil": "Attack eylemindeki saldırılarından birinin yerine fırlatılır; 20 ft içinde görebildiğin bir yaratık ya da nesne hedeflenir.",
+   "risk": "Tek kullanımlıktır; şişe atılınca biter. Kurtarma zarını geçen hedef hiç hasar almaz.",
+   "maliyet": "25 GP"
+  },
+  "alchemists-fire": {
+   "ne": "Yapışkan, havayla tutuşan sıvı. Hedef DEX kurtarma zarını (DC 8 + DEX değiştiricin + yeterlilik bonusun) geçemezse 1d4 ateş hasarı alır ve yanmaya başlar.",
+   "nasil": "Attack eylemindeki saldırılarından birinin yerine fırlatılır; 20 ft içinde görebildiğin bir yaratık ya da nesne hedeflenir.",
+   "risk": "Yanan yaratık ya da nesne her turunun başında 1d4 ateş hasarı alır. Yanan, eylemini harcayıp Prone olarak yerde yuvarlanırsa ateş söner; ıslatılınca, suya batırılınca ya da havasız bırakılınca da söner. Şişe atılınca biter.",
+   "maliyet": "50 GP"
+  },
+  "antitoxin": {
+   "ne": "1 saat boyunca Poisoned durumundan kaçınmak ya da onu sona erdirmek için yapılan kurtarma zarlarında avantaj verir.",
+   "nasil": "Bonus eylemle içilir; yalnız içen kişiyi etkiler.",
+   "risk": "İçilince biter.",
+   "maliyet": "50 GP"
+  },
+  "healers-kit": {
+   "ne": "0 HP'deki Unconscious bir yaratığı WIS (Medicine) kontrolü gerektirmeden stabilize eder. On kullanımı vardır.",
+   "nasil": "Utilize eylemiyle bir kullanım harcanır; 0 HP'deki Unconscious yaratığa uygulanır.",
+   "risk": "HP geri kazandırmaz; yalnız ölüm kurtarma zarlarını durdurur. On kullanım bitince takım işe yaramaz.",
+   "maliyet": "5 GP"
+  },
+  "holy-water": {
+   "ne": "Kutsanmış su şişesi. Hedef Fiend ya da Undead ise ve DEX kurtarma zarını (DC 8 + DEX değiştiricin + yeterlilik bonusun) geçemezse 2d8 ışıltı hasarı alır.",
+   "nasil": "Attack eylemindeki saldırılarından birinin yerine fırlatılır; 20 ft içinde görebildiğin bir yaratık hedeflenir.",
+   "risk": "Tek kullanımlıktır; şişe atılınca biter.",
+   "kimler": "Yalnız Fiend ve Undead yaratıklara hasar verir; diğer yaratıklar etkilenmez.",
+   "maliyet": "25 GP"
+  },
+  "poisoners-kit": {
+   "ne": "Zehir hazırlamak ve zehirli maddeleri tanımak için alet takımı. Zehirlenmiş bir nesneyi fark etmeye ve Basic Poison üretmeye yarar; Rogue'un Cunning Strike: Poison seçeneği için de gerekir.",
+   "nasil": "Kontrollerde INT kullanılır. Cunning Strike: Poison etkisi ancak takım üzerindeyken kullanılabilir.",
+   "maliyet": "50 GP"
+  },
+  "ammunition": {
+   "ne": "Ammunition özelliği olan silahların harcadığı mühimmat. Hangi türün gerektiği silahın açıklamasında yazar; satın alınan miktar türe göre değişir.",
+   "kimler": "Saklama kabı (sadak, kutu, kese) ayrıca satın alınır.",
+   "maliyet": "Varies"
+  },
+  "arcane-focus": {
+   "ne": "Arkan büyüyü yönlendirmek için mücevherle süslenmiş ya da oyulmuş nesne. Büyülerin bedava malzeme bileşenlerinin yerine geçen bir Spellcasting Focus'tur.",
+   "kimler": "Yalnız Sorcerer, Warlock ve Wizard büyü odağı olarak kullanabilir.",
+   "maliyet": "Varies"
+  },
+  "backpack": {
+   "ne": "1 fit küpte 30 pound'a kadar eşya taşır; eyer heybesi olarak da kullanılabilir.",
+   "maliyet": "2 GP"
+  },
+  "ball-bearings": {
+   "ne": "Kesesinden dökülen bilyeler 10 ft içinde, düz zeminde 10 ft'lik kare bir alanı kaplar. Alana bir turda ilk kez giren yaratık DC 10 DEX kurtarma zarını geçemezse Prone olur.",
+   "nasil": "Utilize eylemiyle dökülür.",
+   "risk": "Alana giren dostlar da kurtarma zarı atar. Bilyeleri toplamak 10 dakika sürer.",
+   "maliyet": "1 GP"
+  },
+  "barrel": {
+   "ne": "40 galon sıvı ya da 4 fit küp kuru yük alan büyük fıçı.",
+   "maliyet": "2 GP"
+  },
+  "poison-basic": {
+   "ne": "Zehirli silah ya da mühimmattan delici veya kesici hasar alan yaratık fazladan 1d4 zehir hasarı alır.",
+   "nasil": "Bonus eylemle bir silaha ya da en çok üç parça mühimmata sürülür.",
+   "risk": "Zehir 1 dakika ya da hasarı verilene dek etkili kalır, hangisi önce olursa; şişe sürülünce biter.",
+   "kimler": "Ezici hasar veren silahlarda işe yaramaz; yalnız delici ve kesici hasarla tetiklenir.",
+   "maliyet": "100 GP"
+  },
+  "basket": {
+   "ne": "2 fit küpte 40 pound'a kadar eşya alan sepet.",
+   "maliyet": "4 SP"
+  },
+  "bedroll": {
+   "ne": "Small ya da Medium bir yaratığın uyuduğu döşek. İçindeyken aşırı soğuğa karşı kurtarma zarlarını kendiliğinden geçersin.",
+   "kimler": "Yalnız bir Small ya da Medium yaratık içinde uyuyabilir.",
+   "maliyet": "1 GP"
+  },
+  "bell": {
+   "ne": "Çalındığında 60 ft öteden duyulan bir ses çıkarır; uyarı ya da işaret için kullanılır.",
+   "nasil": "Utilize eylemiyle çalınır.",
+   "maliyet": "1 GP"
+  },
+  "blanket": {
+   "ne": "Battaniyeye sarılıyken aşırı soğuğa karşı kurtarma zarlarında avantajın olur.",
+   "maliyet": "5 SP"
+  },
+  "block-and-tackle": {
+   "ne": "Makara düzeneği: normalde kaldırabildiğin ağırlığın dört katına kadarını kaldırmanı sağlar.",
+   "maliyet": "1 GP"
+  },
+  "book": {
+   "ne": "Kurgu ya da bilgi kitabı. Konusuyla ilgili doğru bir bilgi kitabına danışırsan o konudaki INT (Arcana, History, Nature ya da Religion) kontrollerine +5 bonus alırsın.",
+   "kimler": "Bonus yalnız kitap doğru bilgi içeriyorsa ve kontrol kitabın konusuyla ilgiliyse geçerlidir.",
+   "maliyet": "25 GP"
+  },
+  "bottle-glass": {
+   "ne": "Bir buçuk pint sıvı alan cam şişe.",
+   "maliyet": "2 GP"
+  },
+  "bucket": {
+   "ne": "Yarım fit küp alan kova.",
+   "maliyet": "5 CP"
+  },
+  "lantern-bullseye": {
+   "ne": "Yağ yakarak 60 ft'lik bir konide parlak ışık, ardından 60 ft daha loş ışık verir.",
+   "risk": "Yakıt olarak Oil gerekir; yağ bitince söner.",
+   "maliyet": "10 GP"
+  },
+  "burglars-pack": {
+   "ne": "Hırsız paketi: Backpack, Ball Bearings, Bell, 10 Candle, Crowbar, Hooded Lantern, 7 şişe Oil, 5 günlük Rations, Rope, Tinderbox ve Waterskin içerir.",
+   "maliyet": "16 GP"
+  },
+  "caltrops": {
+   "ne": "Dökülen dikenler 5 ft içinde 5 ft'lik kare bir alanı kaplar. Alana bir turda ilk kez giren yaratık DC 15 DEX kurtarma zarını geçemezse 1 delici hasar alır ve hızı bir sonraki turunun başına dek 0 olur.",
+   "nasil": "Utilize eylemiyle torbasından dökülür.",
+   "risk": "Alana giren dostlar da kurtarma zarı atar. Dikenleri toplamak 10 dakika sürer.",
+   "maliyet": "1 GP"
+  },
+  "candle": {
+   "ne": "Yakıldığında 1 saat boyunca 5 ft yarıçapta parlak ışık, ardından 5 ft daha loş ışık verir.",
+   "risk": "1 saat sonra tükenir.",
+   "maliyet": "1 CP"
+  },
+  "case-crossbow-bolt": {
+   "ne": "En çok 20 tatar yayı oku (Bolt) taşıyan kutu.",
+   "maliyet": "1 GP"
+  },
+  "case-map-or-scroll": {
+   "ne": "En çok 10 yaprak kâğıt ya da 5 yaprak parşömen alan harita/parşömen kabı.",
+   "maliyet": "1 GP"
+  },
+  "chain": {
+   "ne": "5 ft içindeki Grappled, Incapacitated ya da Restrained, direnen bir yaratığı bağlar; bacakları bağlanan yaratık kurtulana dek Restrained olur.",
+   "nasil": "Utilize eylemiyle, DC 13 STR (Athletics) kontrolü başarılıysa sarılır. Yaratık eylemiyle DC 18 DEX (Acrobatics) kontrolüyle kurtulur ya da DC 20 STR (Athletics) kontrolüyle zinciri koparır.",
+   "kimler": "Yalnız Grappled, Incapacitated ya da Restrained durumdaki yaratığa uygulanabilir.",
+   "maliyet": "5 GP"
+  },
+  "chest": {
+   "ne": "12 fit küp eşya alan sandık.",
+   "maliyet": "5 GP"
+  },
+  "climbers-kit": {
+   "ne": "Ayakkabı uçları, eldiven, kazık ve emniyet kemeri. Kendini bağladığında bağlantı noktasından 25 ft'ten fazla düşemezsin.",
+   "nasil": "Utilize eylemiyle kendini sabitlersin; bağı bonus eylemle çözersin.",
+   "risk": "Bağlıyken bağlantı noktasından 25 ft'ten fazla uzaklaşamazsın; önce bağı çözmen gerekir.",
+   "maliyet": "25 GP"
+  },
+  "clothes-fine": {
+   "ne": "Pahalı kumaştan, ustaca işlenmiş giysiler. Bazı etkinliklere ve yerlere yalnız bu kıyafetle girilebilir.",
+   "maliyet": "15 GP"
+  },
+  "clothes-travelers": {
+   "ne": "Farklı ortamlarda yolculuk için yapılmış dayanıklı giysiler.",
+   "maliyet": "2 GP"
+  },
+  "component-pouch": {
+   "ne": "Büyülerin bedava malzeme bileşenlerini bölmelerinde taşıyan su geçirmez kese; bu bileşenlerin yerine kullanılır.",
+   "kimler": "Bedeli yazılı ya da harcanan malzeme bileşenlerinin yerini tutmaz; yalnız bedava bileşenleri kapsar.",
+   "maliyet": "25 GP"
+  },
+  "costume": {
+   "ne": "Kostüm giyiliyken temsil ettiği kişiyi ya da kişi türünü taklit etmek için yapılan yetenek kontrollerinde avantajın olur.",
+   "maliyet": "5 GP"
+  },
+  "crowbar": {
+   "ne": "Kaldıraç gücünün işe yaradığı STR kontrollerinde avantaj verir.",
+   "maliyet": "2 GP"
+  },
+  "diplomats-pack": {
+   "ne": "Diplomat paketi: Chest, Fine Clothes, Ink, 5 Ink Pen, Lamp, 2 Map or Scroll Case, 4 şişe Oil, 5 yaprak Paper, 5 yaprak Parchment, Perfume ve Tinderbox içerir.",
+   "maliyet": "39 GP"
+  },
+  "druidic-focus": {
+   "ne": "İlkel büyüyü yönlendirmek için oyulmuş, kurdeleyle bağlanmış ya da boyanmış nesne. Spellcasting Focus olarak kullanılır.",
+   "kimler": "Yalnız Druid ve Ranger büyü odağı olarak kullanabilir.",
+   "maliyet": "Varies"
+  },
+  "dungeoneers-pack": {
+   "ne": "Zindan paketi: Backpack, Caltrops, Crowbar, 2 şişe Oil, 10 günlük Rations, Rope, Tinderbox, 10 Torch ve Waterskin içerir.",
+   "maliyet": "12 GP"
+  },
+  "entertainers-pack": {
+   "ne": "Sanatçı paketi: Backpack, Bedroll, Bell, Bullseye Lantern, 3 Costume, Mirror, 8 şişe Oil, 9 günlük Rations, Tinderbox ve Waterskin içerir.",
+   "maliyet": "40 GP"
+  },
+  "explorers-pack": {
+   "ne": "Kâşif paketi: Backpack, Bedroll, 2 şişe Oil, 10 günlük Rations, Rope, Tinderbox, 10 Torch ve Waterskin içerir.",
+   "maliyet": "10 GP"
+  },
+  "flask": {
+   "ne": "1 pint sıvı alan matara.",
+   "maliyet": "2 CP"
+  },
+  "grappling-hook": {
+   "ne": "50 ft içindeki bir korkuluğa, çıkıntıya ya da tutunacak yere fırlatılan kanca. Kancaya Rope bağlıysa ip tırmanılabilir.",
+   "nasil": "Utilize eylemiyle fırlatılır; DC 13 DEX (Acrobatics) kontrolü başarılıysa takılır.",
+   "maliyet": "2 GP"
+  },
+  "holy-symbol": {
+   "ne": "İlahi büyüyü yönlendirmek için süslenmiş ya da boyanmış simge. Spellcasting Focus olarak kullanılır; türüne göre elde tutulur, takılır ya da kalkana veya sancak, tabar gibi kumaşa işlenir.",
+   "kimler": "Yalnız Cleric ve Paladin büyü odağı olarak kullanabilir.",
+   "maliyet": "Varies"
+  },
+  "lantern-hooded": {
+   "ne": "Yağ yakarak 30 ft yarıçapta parlak ışık, ardından 30 ft daha loş ışık verir. Kapağı indirilince ışık 5 ft yarıçapta loş ışığa düşer.",
+   "nasil": "Kapak bonus eylemle indirilir ya da kaldırılır.",
+   "risk": "Yakıt olarak Oil gerekir; yağ bitince söner.",
+   "maliyet": "5 GP"
+  },
+  "hunting-trap": {
+   "ne": "Basınç plakasına basan yaratık DC 13 DEX kurtarma zarını geçemezse 1d4 delici hasar alır ve hızı bir sonraki turunun başına dek 0 olur; kurtulana dek hareketi zincirin uzunluğuyla sınırlıdır.",
+   "nasil": "Utilize eylemiyle kurulur ve zincirle ağaç ya da kazık gibi sabit bir nesneye bağlanır. Kapana kısılan ya da erişimindeki biri eylemiyle DC 13 STR (Athletics) kontrolüyle kurtarır.",
+   "risk": "Plakaya basan dost da yakalanır. Her başarısız kurtulma denemesi kapandakine 1 delici hasar verir.",
+   "maliyet": "5 GP"
+  },
+  "ink": {
+   "ne": "1 onsluk şişe; yaklaşık 500 sayfa yazmaya yeter.",
+   "maliyet": "10 GP"
+  },
+  "ink-pen": {
+   "ne": "Ink ile yazı yazmaya ya da çizim yapmaya yarayan kalem.",
+   "kimler": "Mürekkep ayrıca gerekir.",
+   "maliyet": "2 CP"
+  },
+  "jug": {
+   "ne": "1 galon sıvı alan testi.",
+   "maliyet": "2 CP"
+  },
+  "ladder": {
+   "ne": "10 ft boyunda merdiven; inip çıkmak için tırmanmak gerekir.",
+   "maliyet": "1 SP"
+  },
+  "lamp": {
+   "ne": "Yağ yakarak 15 ft yarıçapta parlak ışık, ardından 30 ft daha loş ışık verir.",
+   "risk": "Yakıt olarak Oil gerekir; yağ bitince söner.",
+   "maliyet": "5 SP"
+  },
+  "lock": {
+   "ne": "Anahtarıyla gelen kilit. Anahtarsız açmak için Thieves' Tools ve başarılı bir DC 15 DEX (Sleight of Hand) kontrolü gerekir.",
+   "maliyet": "10 GP"
+  },
+  "magnifying-glass": {
+   "ne": "Ayrıntılı bir eşyayı değerlendirmek ya da incelemek için yapılan yetenek kontrollerinde avantaj verir. Güneş ışığı kadar parlak ışık ve çıra varsa yaklaşık 5 dakikada ateş yakar.",
+   "kimler": "Ateş yakmak için güneş ışığı kadar parlak ışık gerekir.",
+   "maliyet": "100 GP"
+  },
+  "manacles": {
+   "ne": "5 ft içindeki Grappled, Incapacitated ya da Restrained, direnen Small veya Medium bir yaratığı kelepçeler. Kelepçeli yaratığın saldırı zarlarında dezavantajı olur; kelepçe sabit bir zincire ya da kancaya bağlıysa Restrained olur.",
+   "nasil": "Utilize eylemiyle, DC 13 DEX (Sleight of Hand) kontrolü başarılıysa takılır. Yaratık eylemiyle DC 20 DEX (Sleight of Hand) kontrolüyle sıyrılır ya da DC 25 STR (Athletics) kontrolüyle kırar. Anahtarsız kilit Thieves' Tools ile DC 15 DEX (Sleight of Hand) kontrolüyle açılır.",
+   "kimler": "Yalnız Small ya da Medium, Grappled, Incapacitated veya Restrained durumdaki yaratığa takılabilir.",
+   "maliyet": "2 GP"
+  },
+  "map": {
+   "ne": "Doğru bir haritaya danışırsan haritadaki yerde yolunu bulmak için yaptığın WIS (Survival) kontrollerine +5 bonus alırsın.",
+   "kimler": "Bonus yalnız harita doğruysa ve gösterdiği yerdeyken geçerlidir.",
+   "maliyet": "1 GP"
+  },
+  "mirror": {
+   "ne": "Elde taşınan çelik ayna; köşelerin ardına bakmaya ve ışığı yansıtarak işaret vermeye yarar.",
+   "maliyet": "5 GP"
+  },
+  "net": {
+   "ne": "15 ft içindeki bir yaratık DEX kurtarma zarını (DC 8 + DEX değiştiricin + yeterlilik bonusun) geçemezse kurtulana dek Restrained olur.",
+   "nasil": "Attack eylemindeki saldırılarından birinin yerine fırlatılır; görebildiğin bir yaratık hedeflenir. Hedef ya da 5 ft içindeki bir yaratık eylemiyle DC 10 STR (Athletics) kontrolü yaparak kurtarır; ağı yok etmek de (AC 10, 5 HP) hedefi serbest bırakır.",
+   "risk": "Ağ ezici, zehir ve psişik hasara bağışıktır.",
+   "kimler": "Huge ve daha büyük yaratıklar kurtarma zarını kendiliğinden geçer.",
+   "maliyet": "1 GP"
+  },
+  "oil": {
+   "ne": "Fırlatılırsa hedef DEX kurtarma zarını (DC 8 + DEX değiştiricin + yeterlilik bonusun) geçemezse yağa bulanır; yağ kurumadan (1 dakika) ateş hasarı alırsa fazladan 5 ateş hasarı alır. Lamba ve fenerlerde 6 saat yanan yakıttır.",
+   "nasil": "Attack eylemindeki bir saldırının yerine 20 ft içine fırlatılır ya da Utilize eylemiyle 5 ft içinde 5 ft'lik kare zemine dökülür. Tutuşan döküntü 2 tur yanar; giren ya da turunu orada bitiren yaratığa turda bir kez 5 ateş hasarı verir.",
+   "risk": "Yanan yağ alanına giren dost da hasar alır. Fırlatılan şişe tek kullanımlıktır.",
+   "maliyet": "1 SP"
+  },
+  "paper": {
+   "ne": "Bir yaprak yaklaşık 250 el yazısı sözcük alır.",
+   "maliyet": "2 SP"
+  },
+  "parchment": {
+   "ne": "Bir yaprak parşömen yaklaşık 250 el yazısı sözcük alır.",
+   "maliyet": "1 SP"
+  },
+  "perfume": {
+   "ne": "Sürdükten sonra 1 saat boyunca 5 ft içindeki Indifferent bir Humanoid'i etkilemek için yaptığın CHA (Persuasion) kontrollerinde avantajın olur.",
+   "kimler": "Yalnız Indifferent tutumdaki Humanoid'lere karşı işe yarar.",
+   "maliyet": "5 GP"
+  },
+  "pole": {
+   "ne": "10 ft uzunluğunda sırık; 10 ft öteye dokunmaya yarar. High Jump ya da Long Jump için STR (Athletics) kontrolü gerekirse sırıkla atlayıp avantaj alırsın.",
+   "maliyet": "5 CP"
+  },
+  "pot-iron": {
+   "ne": "1 galon alan demir kazan.",
+   "maliyet": "2 GP"
+  },
+  "pouch": {
+   "ne": "Beşte bir fit küpte 6 pound'a kadar eşya alan kese.",
+   "maliyet": "5 SP"
+  },
+  "priests-pack": {
+   "ne": "Rahip paketi: Backpack, Blanket, Holy Water, Lamp, 7 günlük Rations, Robe ve Tinderbox içerir.",
+   "maliyet": "33 GP"
+  },
+  "quiver": {
+   "ne": "En çok 20 ok (Arrow) taşıyan sadak.",
+   "maliyet": "1 GP"
+  },
+  "ram-portable": {
+   "ne": "Kapı kırmak için yapılan STR kontrolüne +4 bonus verir. Bir karakter daha yardım ederse kontrolde avantajın olur.",
+   "maliyet": "4 GP"
+  },
+  "rations": {
+   "ne": "Kurutulmuş et, kuru meyve, peksimet ve kuruyemişten oluşan yolculuk erzakı.",
+   "risk": "Yemek yemeyen karakter yetersiz beslenme (Malnutrition) tehlikesiyle karşılaşır.",
+   "maliyet": "5 SP"
+  },
+  "robe": {
+   "ne": "Mesleki ya da törensel anlamı olan cüppe. Bazı etkinliklere ve yerlere yalnız belirli renk ya da simgeli cüppeyle girilebilir.",
+   "maliyet": "1 GP"
+  },
+  "rope": {
+   "ne": "Düğüm atmaya ve tutsak bağlamaya yarar. Bacakları bağlanan yaratık kurtulana dek Restrained olur. İp DC 20 STR (Athletics) kontrolüyle koparılabilir.",
+   "nasil": "Utilize eylemiyle, DC 10 DEX (Sleight of Hand) kontrolü başarılıysa düğüm atılır. Bağlanan yaratık eylemiyle DC 15 DEX (Acrobatics) kontrolüyle kurtulur.",
+   "kimler": "Direnen bir yaratık ancak Grappled, Incapacitated ya da Restrained durumdaysa bağlanabilir.",
+   "maliyet": "1 GP"
+  },
+  "sack": {
+   "ne": "1 fit küpte 30 pound'a kadar eşya alan çuval.",
+   "maliyet": "1 CP"
+  },
+  "scholars-pack": {
+   "ne": "Bilgin paketi: Backpack, Book, Ink, Ink Pen, Lamp, 10 şişe Oil, 10 yaprak Parchment ve Tinderbox içerir.",
+   "maliyet": "40 GP"
+  },
+  "shovel": {
+   "ne": "1 saat çalışarak toprak ya da benzeri zeminde her kenarı 5 ft olan bir çukur kazmanı sağlar.",
+   "maliyet": "2 GP"
+  },
+  "signal-whistle": {
+   "ne": "Öttürüldüğünde 600 ft öteden duyulan bir ses çıkarır.",
+   "nasil": "Utilize eylemiyle öttürülür.",
+   "maliyet": "5 CP"
+  },
+  "spikes-iron": {
+   "ne": "Onlu demet hâlinde demir kazıklar. Tahta, toprak ya da benzeri malzemeye çakılarak kapı sıkıştırılır ya da kazığa Rope veya Chain bağlanır.",
+   "nasil": "Utilize eylemiyle, Light Hammer gibi küt bir nesneyle çakılır.",
+   "maliyet": "1 GP"
+  },
+  "spyglass": {
+   "ne": "Bakılan nesneleri iki kat büyük gösteren dürbün.",
+   "maliyet": "1,000 GP"
+  },
+  "string": {
+   "ne": "10 ft uzunluğunda sicim; Utilize eylemiyle düğüm atılabilir.",
+   "maliyet": "1 SP"
+  },
+  "tent": {
+   "ne": "En çok iki Small ya da Medium yaratığın uyuyabildiği çadır.",
+   "maliyet": "2 GP"
+  },
+  "tinderbox": {
+   "ne": "Çakmaktaşı, çelik ve çıra içeren ateş kutusu. Mum, lamba, fener, meşale ya da açıkta yakıtı olan bir şeyi tutuşturmak bonus eylem; başka bir ateşi yakmak 1 dakika sürer.",
+   "maliyet": "5 SP"
+  },
+  "torch": {
+   "ne": "1 saat yanar; 20 ft yarıçapta parlak ışık, ardından 20 ft daha loş ışık verir. Basit yakın dövüş silahı olarak da kullanılabilir; isabette 1 ateş hasarı verir.",
+   "nasil": "Attack eyleminde meşaleyle saldırabilirsin.",
+   "risk": "1 saat sonra söner.",
+   "maliyet": "1 CP"
+  },
+  "vial": {
+   "ne": "4 ons alan küçük şişe.",
+   "maliyet": "1 GP"
+  },
+  "waterskin": {
+   "ne": "4 pint su alan su tulumu.",
+   "risk": "Yeterince su içmeyen karakter susuzluk (dehydration) tehlikesiyle karşılaşır.",
+   "maliyet": "2 SP"
+  }
+ }
+}

@@ -1,0 +1,1756 @@
+{
+ "_aciklama": "Dungeondex prospektüsü, sihirli eşyalar. kayitlar: ne/nasil/risk/kimler SRD 5.2.1'den Türkçe özet; nadirlik data/srd/magic-items.json'dan (test denetler). oyunFarki: oyun verisinin SRD'den ayrıştığı yer (yalnız not; oyun verisi bu görevde değişmedi, DECISIONS.md).",
+ "kayitlar": {
+  "potion-of-greater-healing": {
+   "ne": "İçince 4d4+4 HP geri kazanırsın. Kırmızı sıvısı çalkalanınca parıldar.",
+   "nasil": "Oyunda bonus eylemle içilir; 5 ft içindeki bir dosta da içirebilirsin.",
+   "nadirlik": "Varies"
+  },
+  "potion-of-healing": {
+   "ne": "İçince 2d4+2 HP geri kazanırsın. Kırmızı sıvısı çalkalanınca parıldar.",
+   "nasil": "Oyunda bonus eylemle içilir; 5 ft içindeki bir dosta da içirebilirsin.",
+   "nadirlik": "Varies"
+  },
+  "potion-of-superior-healing": {
+   "ne": "İçince 8d4+8 HP geri kazanırsın. Kırmızı sıvısı çalkalanınca parıldar.",
+   "nasil": "Oyunda bonus eylemle içilir; 5 ft içindeki bir dosta da içirebilirsin.",
+   "nadirlik": "Varies"
+  },
+  "potion-of-supreme-healing": {
+   "ne": "İçince 10d4+20 HP geri kazanırsın. Kırmızı sıvısı çalkalanınca parıldar.",
+   "nasil": "Oyunda bonus eylemle içilir; 5 ft içindeki bir dosta da içirebilirsin.",
+   "nadirlik": "Varies"
+  },
+  "amulet-of-health": {
+   "ne": "Takılıyken CON değerin 19 olur. CON değerin muska olmadan zaten 19 ya da daha yüksekse etkisi yoktur.",
+   "nadirlik": "Rare"
+  },
+  "bag-of-holding": {
+   "ne": "İçi dışından çok daha büyük bir torba: 500 lb'ye kadar eşya alır (en çok 64 fit küp hacim); içindekilerden bağımsız olarak 5 lb ağırlığındadır.",
+   "nasil": "İçinden bir eşya çıkarmak Utilize eylemi ister. Ters çevrilirse içindekiler zarar görmeden dökülür; düzeltilmeden yeniden kullanılamaz.",
+   "risk": "Aşırı yüklenir, delinir ya da yırtılırsa yok olur ve içindekiler Astral Plane'e saçılır. İçindeki hava 10 dakikalık nefese yeter (içerideki nefes alanlar arasında bölünür). Handy Haversack, Portable Hole gibi bir boyut ötesi alana konursa ikisi de yok olur; açılan geçidin 10 ft yarıçaplı küresindeki herkes Astral Plane'de rastgele bir yere çekilir.",
+   "nadirlik": "Uncommon"
+  },
+  "belt-of-hill-giant-strength": {
+   "ne": "Takılıyken STR değerin 21 olur (Hill Giant). Kemer olmadan STR değerin bu değere eşit ya da daha yüksekse etkisi yoktur.",
+   "nadirlik": "Varies"
+  },
+  "boots-of-speed": {
+   "ne": "Topuklarını birbirine vurunca hızın iki katına çıkar ve sana fırsat saldırısı yapan her yaratık saldırı zarında dezavantajlı olur.",
+   "nasil": "Bonus eylemle topukları vurarak açılır; yeniden vurunca kapanır.",
+   "risk": "Toplam 10 dakika kullanıldıktan sonra uzun dinlenmeyi bitirene dek senin için çalışmaz.",
+   "nadirlik": "Rare"
+  },
+  "bracers-of-defense": {
+   "ne": "Takılıyken AC'ne +2 bonus verir.",
+   "kimler": "Bonus yalnız zırh giymiyor ve kalkan kullanmıyorsan geçerlidir.",
+   "nadirlik": "Rare"
+  },
+  "cloak-of-displacement": {
+   "ne": "Pelerin seni gerçek yerinin biraz yanında duruyormuş gibi gösteren bir yanılsama yansıtır; sana yapılan saldırı zarları dezavantajlı olur.",
+   "risk": "Hasar alınca bu özellik bir sonraki turunun başına dek çalışmaz; hızın 0 iken de bastırılır.",
+   "nadirlik": "Rare"
+  },
+  "cloak-of-protection": {
+   "ne": "Giyerken AC'ne ve bütün kurtarma zarlarına +1 bonus verir.",
+   "nadirlik": "Uncommon"
+  },
+  "gauntlets-of-ogre-power": {
+   "ne": "Takılıyken STR değerin 19 olur. STR değerin eldivenler olmadan zaten 19 ya da daha yüksekse etkisi yoktur.",
+   "nadirlik": "Uncommon"
+  },
+  "headband-of-intellect": {
+   "ne": "Takılıyken INT değerin 19 olur. INT değerin bant olmadan zaten 19 ya da daha yüksekse etkisi yoktur.",
+   "nadirlik": "Uncommon"
+  },
+  "ring-of-protection": {
+   "ne": "Takılıyken AC'ne ve bütün kurtarma zarlarına +1 bonus verir.",
+   "nadirlik": "Rare"
+  },
+  "staff-of-healing": {
+   "ne": "10 yüklü asa. Yük harcayarak Cure Wounds, Lesser Restoration ya da Mass Cure Wounds büyüsünü kendi büyü yeteneği değiştiricinle yaparsın; harcanan yük büyüye göre değişir.",
+   "nasil": "Asayı tutarken kullanılır. Her şafakta 1d6 + 4 harcanmış yükü yenilenir.",
+   "risk": "Son yükü harcayınca 1d20 atılır; 1 gelirse asa bir ışık çakmasıyla sonsuza dek yok olur.",
+   "kimler": "Uyum yalnız Bard, Cleric ya da Druid içindir.",
+   "nadirlik": "Rare"
+  },
+  "wand-of-fireballs": {
+   "ne": "7 yüklü değnek. En çok 3 yük harcayarak Fireball (kurtarma DC 15) yaparsın: 1 yükle 3. seviye büyü, her ek yük büyünün seviyesini 1 artırır.",
+   "nasil": "Değneği tutarken kullanılır. Her şafakta 1d6 + 1 harcanmış yükü yenilenir.",
+   "risk": "Son yükü harcayınca 1d20 atılır; 1 gelirse değnek ufalanıp küle döner ve yok olur.",
+   "kimler": "Uyum yalnız büyü yapabilen (spellcaster) yaratıklar içindir.",
+   "nadirlik": "Rare"
+  },
+  "wand-of-magic-missiles": {
+   "ne": "7 yüklü değnek. En çok 3 yük harcayarak Magic Missile yaparsın: 1 yükle 1. seviye büyü, her ek yük büyünün seviyesini 1 artırır.",
+   "nasil": "Değneği tutarken kullanılır. Her şafakta 1d6 + 1 harcanmış yükü yenilenir.",
+   "risk": "Son yükü harcayınca 1d20 atılır; 1 gelirse değnek ufalanıp küle döner ve yok olur.",
+   "nadirlik": "Uncommon"
+  },
+  "adamantine-armor": {
+   "ne": "Dünyanın en sert maddelerinden adamantine ile güçlendirilmiş zırh. Giyerken sana gelen her kritik vuruş normal vuruşa döner.",
+   "kimler": "Orta ya da ağır zırh olarak bulunur (Hide Armor hariç).",
+   "nadirlik": "Uncommon"
+  },
+  "ammunition-of-slaying": {
+   "ne": "Belli bir yaratık türünü öldürmek için yapılmış cephane; tür GM'ce seçilir ya da zarla belirlenir. O türden bir yaratık bu cephaneden hasar alırsa DC 17 CON kurtarma zarı atar: başarısızsa ek 6d10 kuvvet hasarı, başarılıysa bunun yarısı.",
+   "risk": "Ek hasarını bir yaratığa verdikten sonra cephane sıradan hâle gelir.",
+   "nadirlik": "Very Rare",
+   "oyunFarki": "Oyun verisinde ek hasar delici (SRD kuvvet)."
+  },
+  "ammunition-1": {
+   "ne": "Bu sihirli cephaneyle yapılan saldırı ve hasar zarlarına +1 bonus verir. Genellikle on ya da yirmilik takımlar hâlinde bulunur.",
+   "risk": "Bir hedefe isabet ettikten sonra cephane sihrini yitirir.",
+   "nadirlik": "Varies"
+  },
+  "ammunition-2": {
+   "ne": "Bu sihirli cephaneyle yapılan saldırı ve hasar zarlarına +2 bonus verir. Genellikle on ya da yirmilik takımlar hâlinde bulunur.",
+   "risk": "Bir hedefe isabet ettikten sonra cephane sihrini yitirir.",
+   "nadirlik": "Varies"
+  },
+  "ammunition-3": {
+   "ne": "Bu sihirli cephaneyle yapılan saldırı ve hasar zarlarına +3 bonus verir. Genellikle on ya da yirmilik takımlar hâlinde bulunur.",
+   "risk": "Bir hedefe isabet ettikten sonra cephane sihrini yitirir.",
+   "nadirlik": "Varies"
+  },
+  "amulet-of-proof-against-detection-and-location": {
+   "ne": "Takılıyken Divination büyüleriyle hedef alınamazsın ve sihirli gözetleme algılayıcılarıyla görülemezsin; izin verirsen bu koruma kalkar.",
+   "nadirlik": "Uncommon"
+  },
+  "amulet-of-the-planes": {
+   "ne": "Başka bir varoluş düzleminde tanıdığın bir yerin adını söyleyip DC 15 Arcana kontrolü yaparsın; başarıda Plane Shift yaparsın.",
+   "nasil": "Muskayı takarken Magic eylemiyle kullanılır.",
+   "risk": "Kontrol başarısızsa sen ve 15 ft içindeki her yaratık ve nesne, 1d100 ile belirlenen rastgele bir yere gidersiniz.",
+   "nadirlik": "Very Rare"
+  },
+  "animated-shield": {
+   "ne": "Kalkan havalanıp senin alanında süzülür ve seni elinde tutuyormuşsun gibi korur; ellerin boş kalır.",
+   "nasil": "Kalkanı tutarken bonus eylemle canlandırırsın. 1 dakika sürer; bonus eylemle bitirebilirsin.",
+   "risk": "Ölürsen ya da Incapacitated olursan kalkan yere, boş elin varsa eline düşer.",
+   "nadirlik": "Very Rare"
+  },
+  "apparatus-of-the-crab": {
+   "ne": "500 lb'lik mühürlü demir fıçı gibi görünen, iki Medium ya da daha küçük yaratığın girebildiği bir araç; on kolla dev bir ıstakoza dönüşür (AC 20, HP 200, hız 30 ft, yüzme 30 ft). Su yüzünde yüzer, suyun altına inebilir.",
+   "nasil": "Gizli mandal DC 20 Investigation kontrolüyle bulunur. Araç bir pilot ister; bölmedeki bir yaratık Utilize eylemiyle en çok iki kolu oynatır, kollar her kullanımdan sonra ortaya döner. Kapak kapalıyken bölme hava ve su geçirmez.",
+   "risk": "900 ft derinliğin altında her dakika basınçtan 2d6 ezici hasar alır. Bölmedeki hava 10 saatlik nefese yeter (nefes alanlar arasında bölünür).",
+   "nadirlik": "Legendary"
+  },
+  "armor-of-invulnerability": {
+   "ne": "Giyerken ezici, delici ve kesici hasara direncin olur.",
+   "nasil": "Metal Shell: Magic eylemiyle 10 dakika boyunca (ya da zırhı çıkarana dek) bu üç hasar türüne bağışıklık kazanırsın; ertesi şafağa dek yeniden kullanılamaz.",
+   "kimler": "Plate Armor'dır.",
+   "nadirlik": "Legendary"
+  },
+  "armor-of-resistance-acid": {
+   "ne": "Giyerken asit hasarına direncin olur. Direnç türünü GM seçer ya da zarla belirler; bu zırhta asit.",
+   "nadirlik": "Rare"
+  },
+  "armor-of-resistance-bludgeoning": {
+   "ne": "Giyerken ezici hasarına direncin olur. Direnç türünü GM seçer ya da zarla belirler; bu zırhta ezici.",
+   "nadirlik": "Rare"
+  },
+  "armor-of-resistance-cold": {
+   "ne": "Giyerken soğuk hasarına direncin olur. Direnç türünü GM seçer ya da zarla belirler; bu zırhta soğuk.",
+   "nadirlik": "Rare"
+  },
+  "armor-of-resistance-fire": {
+   "ne": "Giyerken ateş hasarına direncin olur. Direnç türünü GM seçer ya da zarla belirler; bu zırhta ateş.",
+   "nadirlik": "Rare"
+  },
+  "armor-of-resistance-force": {
+   "ne": "Giyerken kuvvet hasarına direncin olur. Direnç türünü GM seçer ya da zarla belirler; bu zırhta kuvvet.",
+   "nadirlik": "Rare"
+  },
+  "armor-of-resistance-lightning": {
+   "ne": "Giyerken yıldırım hasarına direncin olur. Direnç türünü GM seçer ya da zarla belirler; bu zırhta yıldırım.",
+   "nadirlik": "Rare"
+  },
+  "armor-of-resistance-necrotic": {
+   "ne": "Giyerken nekrotik hasarına direncin olur. Direnç türünü GM seçer ya da zarla belirler; bu zırhta nekrotik.",
+   "nadirlik": "Rare"
+  },
+  "armor-of-resistance-piercing": {
+   "ne": "Giyerken delici hasarına direncin olur. Direnç türünü GM seçer ya da zarla belirler; bu zırhta delici.",
+   "nadirlik": "Rare"
+  },
+  "armor-of-resistance-poison": {
+   "ne": "Giyerken zehir hasarına direncin olur. Direnç türünü GM seçer ya da zarla belirler; bu zırhta zehir.",
+   "nadirlik": "Rare"
+  },
+  "armor-of-resistance-psychic": {
+   "ne": "Giyerken psişik hasarına direncin olur. Direnç türünü GM seçer ya da zarla belirler; bu zırhta psişik.",
+   "nadirlik": "Rare"
+  },
+  "armor-of-resistance-radiant": {
+   "ne": "Giyerken ışıltılı hasarına direncin olur. Direnç türünü GM seçer ya da zarla belirler; bu zırhta ışıltılı.",
+   "nadirlik": "Rare"
+  },
+  "armor-of-resistance-slashing": {
+   "ne": "Giyerken kesici hasarına direncin olur. Direnç türünü GM seçer ya da zarla belirler; bu zırhta kesici.",
+   "nadirlik": "Rare"
+  },
+  "armor-of-resistance-thunder": {
+   "ne": "Giyerken gök gürültüsü hasarına direncin olur. Direnç türünü GM seçer ya da zarla belirler; bu zırhta gök gürültüsü.",
+   "nadirlik": "Rare"
+  },
+  "armor-of-vulnerability-bludgeoning": {
+   "ne": "Giyerken ezici hasarına direncin olur (tür ezici, delici ya da kesiciden biridir; bu zırhta ezici).",
+   "risk": "Lanetli: lanet ancak Identify yapılınca ya da uyum kurunca anlaşılır. Uyum seni lanetler; zırhı çıkarmak laneti bitirmez, ancak Remove Curse ya da benzeri bir büyü bitirir. Lanetliyken delici ve kesici hasara karşı zayıflığın (Vulnerability) olur.",
+   "nadirlik": "Rare"
+  },
+  "armor-of-vulnerability-piercing": {
+   "ne": "Giyerken delici hasarına direncin olur (tür ezici, delici ya da kesiciden biridir; bu zırhta delici).",
+   "risk": "Lanetli: lanet ancak Identify yapılınca ya da uyum kurunca anlaşılır. Uyum seni lanetler; zırhı çıkarmak laneti bitirmez, ancak Remove Curse ya da benzeri bir büyü bitirir. Lanetliyken ezici ve kesici hasara karşı zayıflığın (Vulnerability) olur.",
+   "nadirlik": "Rare"
+  },
+  "armor-of-vulnerability-slashing": {
+   "ne": "Giyerken kesici hasarına direncin olur (tür ezici, delici ya da kesiciden biridir; bu zırhta kesici).",
+   "risk": "Lanetli: lanet ancak Identify yapılınca ya da uyum kurunca anlaşılır. Uyum seni lanetler; zırhı çıkarmak laneti bitirmez, ancak Remove Curse ya da benzeri bir büyü bitirir. Lanetliyken ezici ve delici hasara karşı zayıflığın (Vulnerability) olur.",
+   "nadirlik": "Rare"
+  },
+  "armor-1": {
+   "ne": "Bu sihirli zırhı giyerken AC'ne +1 bonus verir.",
+   "nadirlik": "Varies"
+  },
+  "armor-2": {
+   "ne": "Bu sihirli zırhı giyerken AC'ne +2 bonus verir.",
+   "nadirlik": "Varies"
+  },
+  "armor-3": {
+   "ne": "Bu sihirli zırhı giyerken AC'ne +3 bonus verir.",
+   "nadirlik": "Varies"
+  },
+  "arrow-catching-shield": {
+   "ne": "Bu kalkanı kullanırken menzilli saldırılara karşı AC'ne +2 bonus verir; kalkanın normal AC bonusuna eklenir.",
+   "nasil": "5 ft içindeki bir hedefe menzilli saldırı yapılınca tepkinle saldırının hedefi sen olabilirsin.",
+   "nadirlik": "Rare"
+  },
+  "bag-of-beans": {
+   "ne": "Bulunduğunda içinde 3d4 kuru fasulye olan torba. Dökülen fasulyeler 10 ft yarıçaplı kürede patlar: içindeki herkes (sen dahil) DC 15 DEX kurtarma zarı atar, başarısızsa 5d4 kuvvet hasarı, başarılıysa yarısı.",
+   "nasil": "Torbadan çıkardığın bir fasulyeyi toprağa ya da kuma ekip sularsan fasulye kaybolur ve 1 dakika sonra ekildiği yerde GM'in seçtiği ya da zarla belirlenen bir etki doğar.",
+   "risk": "Dökülen fasulyeler patlamada yok olur ve patlama seni de etkiler. Fasulye kalmayınca torba sıradan hâle gelir.",
+   "nadirlik": "Rare"
+  },
+  "bag-of-devouring": {
+   "ne": "Bag of Holding'e benzer ama aslında dev bir boyut ötesi yaratığın ağzıdır: içine tamamen konan hayvansal ya da bitkisel madde yutulur ve sonsuza dek kaybolur. Cansız nesneler bir fit küpe kadar saklanabilir.",
+   "nasil": "Torbayı ters çevirmek ağzı kapatır.",
+   "risk": "İçine el sokan yaratığın yüzde 50 içeri çekilme şansı vardır. İçerideki eylemle DC 15 Athletics kontrolüyle kaçabilir; dışarıdan biri eylemle DC 20 Athletics kontrolüyle çekip çıkarabilir. Turuna torbanın içinde başlayan yaratık yutulur. Cansız nesneler günde bir kez başka bir düzleme tükürülür. Delinir ya da yırtılırsa yok olur, içindekiler Astral Plane'e gider.",
+   "nadirlik": "Very Rare"
+  },
+  "bag-of-tricks": {
+   "ne": "Tüylü bir nesneyi çıkarıp 20 ft'e kadar atarsın; düştüğü yerde torbanın rengine göre zarla belirlenen bir hayvana dönüşür. Yaratık sana ve dostlarına dosttur, inisiyatifte hemen senden sonra oynar.",
+   "nasil": "Nesneyi çıkarmak Magic eylemidir. Bonus eylemle yaratığın bir sonraki turundaki hareketini ve eylemini buyurursun; buyruk yoksa doğasına uygun davranır. Üç nesne çıkarıldıktan sonra ertesi şafağa dek kullanılamaz.",
+   "risk": "Yaratık bir sonraki şafakta ya da 0 HP'ye düşünce kaybolur.",
+   "nadirlik": "Uncommon"
+  },
+  "bead-of-force": {
+   "ne": "Fırlatılan boncuk çarpınca 10 ft yarıçaplı kürede patlar: içindeki her yaratık DC 15 DEX kurtarma zarında başarısız olursa 5d4 kuvvet hasarı alır. Ardından alanı 1 dakika saydam bir kuvvet küresi kaplar.",
+   "nasil": "Magic eylemiyle 60 ft'e kadar fırlatılır ve patlayınca yok olur. Genellikle 1d4 + 4 boncuk birlikte bulunur. Küre içindeki bir yaratık Utilize eylemiyle küreyi hızının yarısı kadar yuvarlayabilir; küre kaldırılabilir ve içindekilerden bağımsız 1 lb gelir.",
+   "risk": "Kurtarma zarında başarısız olup tamamen alanın içinde kalan küreye hapsolur; başarılı olan ya da kısmen içeride kalan dışarı itilir. Küreden yalnız solunabilir hava geçer, hiçbir saldırı ya da etki geçemez.",
+   "nadirlik": "Rare"
+  },
+  "bead-of-nourishment": {
+   "ne": "Tatsız, jöle kıvamında bir boncuk; dilinde erir ve 1 günlük erzak (Rations) kadar besler.",
+   "nadirlik": "Common"
+  },
+  "belt-of-cloud-giant-strength": {
+   "ne": "Takılıyken STR değerin 27 olur (Cloud Giant). Kemer olmadan STR değerin bu değere eşit ya da daha yüksekse etkisi yoktur.",
+   "nadirlik": "Varies"
+  },
+  "belt-of-dwarvenkind": {
+   "ne": "Takılıyken Dwarvish bilirsin, cüceler ve duergar ile Persuasion kontrollerinde avantajlısın, CON değerin 2 artar (en çok 20). Cüce değilsen ayrıca 60 ft karanlık görüş, zehir hasarına direnç ve Poisoned'a karşı kurtarma zarlarında avantaj kazanırsın.",
+   "risk": "Uyumluyken her şafakta yüzde 50 olasılıkla gür bir sakal çıkar (varsa kalınlaşır).",
+   "kimler": "Karanlık görüş, zehir direnci ve Poisoned avantajı yalnız cüce ya da duergar olmayanlara verilir.",
+   "nadirlik": "Rare"
+  },
+  "belt-of-fire-giant-strength": {
+   "ne": "Takılıyken STR değerin 25 olur (Fire Giant). Kemer olmadan STR değerin bu değere eşit ya da daha yüksekse etkisi yoktur.",
+   "nadirlik": "Varies"
+  },
+  "belt-of-frost-giant-strength": {
+   "ne": "Takılıyken STR değerin 23 olur (Frost Giant). Kemer olmadan STR değerin bu değere eşit ya da daha yüksekse etkisi yoktur.",
+   "nadirlik": "Varies"
+  },
+  "belt-of-stone-giant-strength": {
+   "ne": "Takılıyken STR değerin 23 olur (Stone Giant). Kemer olmadan STR değerin bu değere eşit ya da daha yüksekse etkisi yoktur.",
+   "nadirlik": "Varies"
+  },
+  "belt-of-storm-giant-strength": {
+   "ne": "Takılıyken STR değerin 29 olur (Storm Giant). Kemer olmadan STR değerin bu değere eşit ya da daha yüksekse etkisi yoktur.",
+   "nadirlik": "Varies"
+  },
+  "berserker-axe": {
+   "ne": "Bu silahla saldırı ve hasar zarlarına +1 bonus verir. Uyumluyken HP maksimumun kazandığın her seviye için 1 artar.",
+   "risk": "Lanetli: uyum laneti sana geçirir. Silahtan ayrılmak istemezsin, başka silahlarla saldırı zarlarında dezavantajlısın. Silah yanındayken başka bir yaratık sana hasar verirse DC 15 WIS kurtarma zarı atarsın; başarısızsan çılgına dönersin: en yakın yaratığı düşman sayar, her turunda ona yaklaşıp Attack eylemiyle saldırırsın. Turuna 60 ft içinde görebildiğin ya da duyabildiğin yaratık yokken başlayınca biter.",
+   "kimler": "Battleaxe'tir.",
+   "nadirlik": "Rare"
+  },
+  "boots-of-elvenkind": {
+   "ne": "Giyerken hangi yüzeyde yürürsen yürü adımların ses çıkarmaz ve Stealth kontrollerinde avantajlısın.",
+   "nadirlik": "Uncommon"
+  },
+  "boots-of-levitation": {
+   "ne": "Giyerken kendine Levitate büyüsünü yapabilirsin.",
+   "nadirlik": "Rare"
+  },
+  "boots-of-striding-and-springing": {
+   "ne": "Giyerken hızın 30 ft olur (zaten daha yüksekse değişmez); taşıma kapasitesini aşan yük ya da ağır zırh hızını düşürmez. Her turunda bir kez yalnız 10 ft hareket harcayarak 30 ft'e kadar zıplayabilirsin.",
+   "nadirlik": "Uncommon"
+  },
+  "boots-of-the-winterlands": {
+   "ne": "Giyerken soğuk hasarına direncin olur ve 0 °F ya da daha soğuk havaya ek koruma olmadan dayanırsın. Buz ya da karın oluşturduğu zorlu araziyi yok sayarsın.",
+   "nadirlik": "Uncommon"
+  },
+  "bowl-of-commanding-water-elementals": {
+   "ne": "Kase suyla doluyken ve ona 5 ft içindeyken Magic eylemiyle bir Water Elemental çağırırsın. Elemental kaseye olabildiğince yakın boş bir alanda belirir, dillerini anlar, buyruklarına uyar ve inisiyatifte hemen senden sonra oynar.",
+   "nasil": "Elemental 1 saat sonra, ölünce ya da onu bonus eylemle gönderince kaybolur. Eşya ertesi şafağa dek bu şekilde yeniden kullanılamaz.",
+   "nadirlik": "Rare"
+  },
+  "bracers-of-archery": {
+   "ne": "Takılıyken Longbow ve Shortbow yetkinliği kazanırsın ve bu silahlarla hasar zarlarına +2 bonus alırsın.",
+   "kimler": "Hasar bonusu yalnız Longbow ve Shortbow ile geçerlidir.",
+   "nadirlik": "Uncommon"
+  },
+  "brazier-of-commanding-fire-elementals": {
+   "ne": "Mangala 5 ft içindeyken Magic eylemiyle bir Fire Elemental çağırırsın. Elemental mangala olabildiğince yakın boş bir alanda belirir, dillerini anlar, buyruklarına uyar ve inisiyatifte hemen senden sonra oynar.",
+   "nasil": "Elemental 1 saat sonra, ölünce ya da onu bonus eylemle gönderince kaybolur. Eşya ertesi şafağa dek bu şekilde yeniden kullanılamaz.",
+   "nadirlik": "Rare"
+  },
+  "brooch-of-shielding": {
+   "ne": "Takılıyken kuvvet hasarına direncin olur ve Magic Missile büyüsünün hasarına bağışıklık kazanırsın.",
+   "nadirlik": "Uncommon"
+  },
+  "broom-of-flying": {
+   "ne": "Üstüne binip havalandırdığın süpürgenin 50 ft uçuş hızı vardır. 400 lb'ye kadar taşır, ama 200 lb'nin üstünde uçuş hızı 30 ft'e düşer.",
+   "nasil": "Üstüne binip Magic eylemiyle havalandırırsın; yere inince ya da inince süzülmeyi bırakır. Magic eylemiyle 1 mil içinde adını söylediğin ve tanıdığın bir yere tek başına yollayabilirsin; hâlâ 1 mil içindeyse Magic eylemi ve komut sözcüğüyle geri gelir.",
+   "nadirlik": "Uncommon"
+  },
+  "candle-of-invocation": {
+   "ne": "Yanarken 30 ft yarıçapta loş ışık saçar. Bu ışığın içindeyken D20 Testlerinde avantajlısın; ışıktaki bir Cleric ya da Druid hazırladığı 1. seviye büyüleri slot harcamadan yapabilir.",
+   "nasil": "Yakmak Magic eylemidir. 4 saat yandıktan sonra yok olur; erken söndürülüp sonra kullanılabilir (yanan süre dakika dakika düşülür). İlk yakışta mumla Gate de yapabilirsin; mum yok olur ve geçit GM'in seçtiği ya da zarla belirlenen bir Dış Düzleme açılır.",
+   "kimler": "Slotsuz büyü yapma yalnız Cleric ve Druid içindir.",
+   "nadirlik": "Very Rare"
+  },
+  "cape-of-the-mountebank": {
+   "ne": "Giyerken Magic eylemiyle Dimension Door yaparsın. Işınlandığın yerde bir duman bulutu kalır; terk ettiğin alan bir sonraki turunun sonuna dek hafif örtülüdür (Lightly Obscured).",
+   "nasil": "Ertesi şafağa dek yeniden kullanılamaz.",
+   "nadirlik": "Rare"
+  },
+  "carpet-of-flying": {
+   "ne": "Halıyı havalandırıp uçurursun; 30 ft içindeysen yönergelerine göre hareket eder. Dört boyutu vardır; GM seçer ya da zarla belirler. Bu kayıtta uçuş hızı 60 ft.",
+   "nasil": "Magic eylemi ve halının komut sözcüğüyle havalanır.",
+   "risk": "Normal taşıma kapasitesinin iki katına kadar yük alır, ama kapasiteyi aşınca uçuş hızı yarıya düşer.",
+   "nadirlik": "Very Rare"
+  },
+  "censer-of-controlling-air-elementals": {
+   "ne": "Buhurdanı yavaşça sallarken Magic eylemiyle bir Air Elemental çağırırsın. Elemental buhurdana olabildiğince yakın boş bir alanda belirir, dillerini anlar, buyruklarına uyar ve inisiyatifte hemen senden sonra oynar.",
+   "nasil": "Elemental 1 saat sonra, ölünce ya da onu bonus eylemle gönderince kaybolur. Eşya ertesi şafağa dek bu şekilde yeniden kullanılamaz.",
+   "nadirlik": "Rare"
+  },
+  "chime-of-opening": {
+   "ne": "Yaklaşık bir fit boyunda metal boru. Magic eylemiyle vurunca Knock büyüsü yapılır; büyünün vuruş sesi yerine 300 ft'ten duyulan berrak bir çan sesi çıkar.",
+   "risk": "On kez kullanılabilir; onuncu kullanımdan sonra çatlar ve işe yaramaz hâle gelir.",
+   "nadirlik": "Rare"
+  },
+  "circlet-of-blasting": {
+   "ne": "Takılıyken Scorching Ray büyüsünü yaparsın (saldırı +5).",
+   "nasil": "Ertesi şafağa dek bu büyüyü yeniden yapamaz.",
+   "nadirlik": "Uncommon"
+  },
+  "cloak-of-arachnida": {
+   "ne": "Giyerken zehir hasarına direncin olur; hızın kadar tırmanma hızın olur ve ellerin boşken dikey yüzeylerde ve tavanda yürürsün. Hiçbir ağa takılmazsın, ağların içinden zorlu arazideymiş gibi geçersin.",
+   "nasil": "Web büyüsünü yapabilirsin (kurtarma DC 13); ağ normalin iki katı alanı kaplar. Bu özellik ertesi şafağa dek yeniden kullanılamaz.",
+   "nadirlik": "Very Rare"
+  },
+  "cloak-of-elvenkind": {
+   "ne": "Giyerken seni algılamak için yapılan Perception kontrolleri dezavantajlıdır ve sen Stealth kontrollerinde avantajlısın.",
+   "nadirlik": "Uncommon"
+  },
+  "cloak-of-invisibility": {
+   "ne": "Başlığı başına çekip 1 yük harcayarak 1 saat Invisible olursun.",
+   "nasil": "Pelerini giyerken Magic eylemiyle kullanılır. 3 yükü vardır, her şafakta 1d3 harcanmış yükü yenilenir.",
+   "risk": "Başlığı indirirsen (eylem gerekmez) ya da pelerini çıkarırsan etki erken biter.",
+   "nadirlik": "Legendary"
+  },
+  "cloak-of-the-bat": {
+   "ne": "Giyerken Stealth kontrollerinde avantajlısın. Loş ışıkta ya da karanlıkta pelerinin kenarlarını tutarak 40 ft uçuş hızı kazanırsın.",
+   "nasil": "Loş ışıkta ya da karanlıkta kendine Polymorph yapıp Bat biçimine girebilirsin; INT, WIS ve CHA değerlerin korunur. Bu kullanım ertesi şafağa dek yenilenmez.",
+   "risk": "Uçarken kenarları tutamazsan ya da loş ışık veya karanlıktan çıkarsan uçuş hızını kaybedersin.",
+   "nadirlik": "Rare"
+  },
+  "cloak-of-the-manta-ray": {
+   "ne": "Giyerken su altında nefes alabilirsin ve 60 ft yüzme hızın olur.",
+   "nadirlik": "Uncommon"
+  },
+  "crystal-ball": {
+   "ne": "Kristal küreye dokunurken onunla Scrying büyüsünü yaparsın (kurtarma DC 17).",
+   "nadirlik": "Very Rare"
+  },
+  "crystal-ball-of-mind-reading": {
+   "ne": "Kristal küreye dokunurken Scrying yaparsın (kurtarma DC 17). Ayrıca büyünün algılayıcısının 30 ft içinde gördüğün yaratıklara Detect Thoughts (kurtarma DC 17) yapabilirsin.",
+   "nasil": "Bu Detect Thoughts için konsantrasyon gerekmez, ama Scrying bitince o da biter.",
+   "nadirlik": "Legendary"
+  },
+  "crystal-ball-of-telepathy": {
+   "ne": "Kristal küreye dokunurken Scrying yaparsın (kurtarma DC 17). Algılayıcının 30 ft içinde gördüğün yaratıklarla telepatik konuşabilir, birine algılayıcı üzerinden Suggestion (kurtarma DC 17) yapabilirsin.",
+   "nasil": "Bu Suggestion için konsantrasyon gerekmez, ama Scrying bitince o da biter. Suggestion bu yolla ertesi şafağa dek yeniden yapılamaz.",
+   "nadirlik": "Legendary"
+  },
+  "crystal-ball-of-true-seeing": {
+   "ne": "Kristal küreye dokunurken Scrying yaparsın (kurtarma DC 17). Ayrıca büyünün algılayıcısını merkez alan 120 ft Truesight kazanırsın.",
+   "nadirlik": "Legendary"
+  },
+  "cube-of-force": {
+   "ne": "Küpün altı yüzünden birine basıp gereken yükü harcayarak o yüzün büyüsünü yaparsın (kurtarma DC 17): Mage Armor, Shield, Tiny Hut, Private Sanctum, Resilient Sphere ya da Wall of Force. Harcanan yük büyüye göre değişir.",
+   "nasil": "10 yükle başlar; her şafakta 1d6 harcanmış yükü yenilenir.",
+   "nadirlik": "Rare"
+  },
+  "cubic-gate": {
+   "ne": "Altı yüzü ayrı bir varoluş düzlemine bağlı küp (biri Material Plane, diğerlerini GM belirler). 1 yük harcayıp bir yüze bir kez basarak o düzleme Gate açar, iki kez basarak hedefleri oraya Plane Shift ile gönderirsin.",
+   "nasil": "Magic eylemiyle kullanılır. 3 yükü vardır, her şafakta 1d3 harcanmış yükü yenilenir.",
+   "nadirlik": "Legendary"
+  },
+  "dagger-of-venom": {
+   "ne": "Bu silahla saldırı ve hasar zarlarına +1 bonus verir. Zehirlenmiş bıçak bir yaratığa isabet edince yaratık DC 15 CON kurtarma zarında başarısız olursa 2d10 zehir hasarı alır ve 1 dakika Poisoned olur.",
+   "nasil": "Bonus eylemle bıçağı zehirlersin; zehir 1 dakika ya da ilk isabete dek kalır. Ertesi şafağa dek yeniden kullanılamaz.",
+   "kimler": "Dagger'dır.",
+   "nadirlik": "Rare"
+  },
+  "dancing-sword": {
+   "ne": "Havaya attığın kılıç süzülür, 30 ft'e kadar uçar ve 5 ft içindeki seçtiğin bir yaratığa saldırır; senin saldırı zarını kullanır ve hasara yetenek değiştiricini ekler.",
+   "nasil": "Bonus eylemle havaya atılır. Süzülürken bonus eylemle 30 ft içinde başka bir yere uçurup aynı eylemle yine saldırtabilirsin. Dördüncü saldırısından sonra eline dönmeye çalışır.",
+   "risk": "Boş elin yoksa alanına düşer; sana açık yol yoksa yaklaşabildiği kadar yaklaşıp yere düşer. Onu tutarsan ya da 30 ft'ten uzaklaşırsan süzülmeyi bırakır.",
+   "kimler": "Greatsword, Longsword, Rapier, Scimitar ya da Shortsword olur.",
+   "nadirlik": "Very Rare"
+  },
+  "decanter-of-endless-water": {
+   "ne": "Tıpayı çıkarıp üç komut sözcüğünden birini söylersin: Splash 1 galon, Fountain 5 galon, Geyser 30 galon tatlı ya da tuzlu su akıtır. Geyser 30 ft uzunluk, 1 ft genişlikte bir çizgi oluşturur; çizgide seçtiğin bir yaratık DC 13 STR kurtarma zarında başarısız olursa 1d4 ezici hasar alır ve Prone olur.",
+   "nasil": "Magic eylemiyle kullanılır; su bir sonraki turunun başında kesilir. Elinde tutuyorsan gayzeri eylem harcamadan yönlendirirsin; yaratık yerine taşınmayan, 200 lb'yi geçmeyen bir nesneyi devirebilirsin.",
+   "nadirlik": "Uncommon"
+  },
+  "deck-of-illusions": {
+   "ne": "Rastgele çektiğin kartı 30 ft içinde bir noktaya atarsın; kartın üstünde zarar veremeyen ama gerçeği gibi görünüp davranan bir yaratık yanılsaması belirir. Tam deste 34 karttır; bulunan destede genellikle 1d20 − 1 kart eksiktir.",
+   "nasil": "Kart çekmek Magic eylemidir; kartlar rastgele çekilmezse çalışmaz. 120 ft içinde ve görebiliyorken Magic eylemiyle yanılsamayı kartının 30 ft içinde taşırsın.",
+   "risk": "Fiziksel temas yanılsamayı ele verir; Study eylemiyle DC 15 Investigation kontrolü de tanır. Kart taşınınca ya da Dispel Magic gibi bir etkiyle yanılsama biter; o kart bir daha kullanılamaz.",
+   "nadirlik": "Uncommon"
+  },
+  "defender": {
+   "ne": "Bu silahla saldırı ve hasar zarlarına +3 bonus verir. Her turundaki ilk saldırında bu bonusun bir kısmını ya da tamamını AC'ne aktarabilirsin (örneğin saldırı ve hasara +1, AC'ye +2).",
+   "nasil": "Ayarlanan bonuslar bir sonraki turunun başına dek sürer; AC bonusu için silahı tutuyor olmalısın.",
+   "kimler": "Herhangi bir yakın dövüş silahı olabilir.",
+   "nadirlik": "Legendary"
+  },
+  "demon-armor": {
+   "ne": "Giyerken AC'ne +1 bonus verir ve Abyssal bilirsin. Pençeli eldivenleri sayesinde Unarmed Strike'ın 1d8 kesici hasar verir ve saldırı ile hasar zarlarına +1 alır.",
+   "risk": "Lanetli: bir kez giyince Remove Curse ya da benzeri bir büyüyle hedef alınmadıkça çıkaramazsın. Giyerken iblislere (demon) karşı saldırı zarlarında ve onların büyü ve özel yeteneklerine karşı kurtarma zarlarında dezavantajlısın.",
+   "nadirlik": "Very Rare"
+  },
+  "dimensional-shackles": {
+   "ne": "Incapacitated bir yaratığa takılan prangalar (Small ile Large arası boyuta uyar). Bağlı yaratık ışınlanma ve başka düzleme geçiş dahil hiçbir boyut ötesi hareket yöntemi kullanamaz; boyutlar arası bir geçitten geçmesini ise engellemez.",
+   "nasil": "Takmak Utilize eylemidir. Sen ve takarken belirlediğin yaratıklar Utilize eylemiyle çıkarabilir.",
+   "risk": "Bağlı yaratık 30 günde bir DC 30 Athletics kontrolü yapabilir; başarıda prangaları kırar ve yok eder.",
+   "nadirlik": "Rare"
+  },
+  "dragon-orb": {
+   "ne": "İçinde ejderha özü taşıyan kristal küre. Yönetirsen yük harcayarak tablodaki büyüleri (Daylight, Death Ward, Detect Magic, Scrying (DC 18) gibi) yapar, Call Dragons ile 40 mil içindeki kromatik ejderhaları kendine çağırırsın.",
+   "nasil": "Uyumluyken Magic eylemiyle içine bakıp DC 15 CHA kurtarma zarı atarsın; başarıda uyum sürdükçe küreyi yönetirsin. 7 yükü vardır, her şafakta 1d4 + 3 harcanmış yükü yenilenir. Call Dragons Magic eylemidir ve 1 saat yeniden kullanılamaz.",
+   "risk": "Kurtarma zarında başarısızsan uyum sürdükçe Charmed olursun: uyumu kendi isteğinle bırakamazsın ve küre sana istediği an Suggestion (DC 18) yaparak seni kötü amaçlarına iter. Çağrılan ejderhalar sana düşman olabilir. Küre AC 20'dir; yalnız +3 bir silahın ya da Disintegrate'in hasarıyla yok olur.",
+   "nadirlik": "Artifact"
+  },
+  "dragon-scale-mail": {
+   "ne": "Giyerken AC'ne +1 bonus verir, ejderhaların nefes silahlarına karşı kurtarma zarlarında avantajlısın ve pulların geldiği ejderha türüne göre bir hasar türüne direncin olur (bu kayıtta ateş).",
+   "nasil": "Magic eylemiyle 30 mil içindeki, zırhla aynı türden en yakın ejderhanın uzaklığını ve yönünü sezersin; ertesi şafağa dek yeniden kullanılamaz.",
+   "kimler": "Scale Mail'dir.",
+   "nadirlik": "Very Rare"
+  },
+  "dragon-slayer": {
+   "ne": "Bu silahla saldırı ve hasar zarlarına +1 bonus verir. Hedef bir Dragon ise silahın türünden ek 3d6 hasar verir.",
+   "nadirlik": "Rare"
+  },
+  "dust-of-disappearance": {
+   "ne": "Havaya attığın tozla sen ve 10 ft yayılımdaki her yaratık ve nesne 2d4 dakika Invisible olur; süre herkes için aynıdır.",
+   "nasil": "Utilize eylemiyle havaya atılır; tek kullanımlıktır ve etkiyle birlikte tükenir.",
+   "risk": "Etkilenen bir yaratık saldırı zarı atar, hasar verir ya da büyü yaparsa Invisible hemen biter.",
+   "nadirlik": "Uncommon"
+  },
+  "dust-of-dryness": {
+   "ne": "1d6 + 4 tutam toz. Suya serpilen bir tutam, 15 ft küplük suyu misket büyüklüğünde bir topağa çevirir; topak sert bir yüzeye vurulunca dağılır ve suyu bırakır. Çoğunlukla sudan oluşan bir Elemental'e serpilirse DC 13 CON kurtarma zarı atar: başarısızsa 10d6 nekrotik hasar, başarılıysa yarısı.",
+   "nasil": "Her tutam Utilize eylemiyle serpilir; Elemental 5 ft içinde olmalıdır. Topağı parçalamak da Utilize eylemidir.",
+   "nadirlik": "Uncommon"
+  },
+  "dust-of-sneezing-and-choking": {
+   "ne": "Havaya attığın tozla sen ve 30 ft yayılımdaki her yaratık DC 15 CON kurtarma zarı atar; başarısız olan durmadan hapşırır, Incapacitated olur ve boğulur. Her tur sonunda zarı tekrarlar, başarıda kurtulur; Lesser Restoration da etkiyi bitirir.",
+   "nasil": "Utilize eylemiyle havaya atılır; tek kullanımlıktır.",
+   "risk": "Seni de etkiler. Dust of Disappearance'a benzer; Identify bile onu öyle gösterir. Construct, Elemental, Ooze, Plant ve Undead kurtarma zarını otomatik geçer.",
+   "nadirlik": "Uncommon"
+  },
+  "dwarven-plate": {
+   "ne": "Giyerken AC'ne +2 bonus verir.",
+   "nasil": "Bir etki seni isteğin dışında yerde hareket ettirince tepkinle bu mesafeyi 10 ft'e kadar azaltabilirsin.",
+   "kimler": "Half Plate Armor ya da Plate Armor'dır.",
+   "nadirlik": "Very Rare"
+  },
+  "dwarven-thrower": {
+   "ne": "Bu silahla saldırı ve hasar zarlarına +3 bonus verir. Thrown özelliği vardır (normal menzil 20 ft, uzun menzil 60 ft). Menzilli isabette ek 1d8 kuvvet hasarı, hedef Giant ise ek 2d8 kuvvet hasarı verir.",
+   "nasil": "İsabet ya da ıskadan hemen sonra eline uçarak döner.",
+   "kimler": "Warhammer'dır. Uyum yalnız bir cüce ya da Belt of Dwarvenkind'e uyum kurmuş bir yaratık içindir.",
+   "nadirlik": "Very Rare",
+   "oyunFarki": "Oyun verisinde ek hasar ezici (SRD kuvvet)."
+  },
+  "efficient-quiver": {
+   "ne": "Üç bölmeli sadak; her bölme bir boyut ötesi alana açılır ve sadak hiçbir zaman 2 lb'den ağır olmaz. En kısa bölme 60 ok ya da cıvata, orta bölme 18 cirit, en uzun bölme yay, Quarterstaff, Spear gibi 6 uzun nesne alır.",
+   "nasil": "İçindekileri sıradan bir sadaktan ya da kınlıktan çeker gibi çekersin.",
+   "nadirlik": "Uncommon"
+  },
+  "efreeti-bottle": {
+   "ne": "Tıpayı açınca kalın duman yükselir; turunun sonunda 30 ft içinde boş bir alanda bir Efreeti belirir. İlk açılışta ne olacağını GM zarla belirler: çoğunlukla efreet 1 saat buyruklarına uyar, nadiren senin için bir kez Wish yapar.",
+   "nasil": "Tıpayı açmak Magic eylemidir. Hizmet eden efreet 1 saat sonra şişeye döner ve yeni tıpa 24 saat açılamaz; sonraki iki açılışta da aynı şey olur.",
+   "risk": "Kötü sonuçta efreet sana saldırır; 5 tur dövüştükten sonra kaybolur ve şişe sihrini yitirir. Dördüncü açılışta efreet kaçar ve şişe sihrini yitirir; Wish verdikten sonra da şişe sihrini yitirir.",
+   "nadirlik": "Very Rare"
+  },
+  "elemental-gem": {
+   "ne": "Kırınca taşın türüne göre bir elemental çağrılır: mavi safir Air, zümrüt Water, kırmızı korindon Fire, sarı elmas Earth Elemental. Elemental dillerini anlar, buyruklarına uyar ve inisiyatifte hemen senden sonra oynar.",
+   "nasil": "Taşı kırmak Utilize eylemidir. Elemental 1 saat sonra, ölünce ya da onu bonus eylemle gönderince kaybolur.",
+   "risk": "Taş tek kullanımlıktır; kırılınca sihrini yitirir.",
+   "nadirlik": "Uncommon"
+  },
+  "elixir-of-health": {
+   "ne": "İçince bütün büyülü hastalıklardan kurtulursun; üzerindeki Blinded, Deafened, Paralyzed ve Poisoned durumları biter.",
+   "nasil": "Oyunda bonus eylemle içilir; 5 ft içindeki bir dosta da içirebilirsin.",
+   "nadirlik": "Rare"
+  },
+  "elven-chain": {
+   "ne": "Giyerken AC'ne +1 bonus verir. Orta ya da ağır zırh eğitimin olmasa da bu zırhta eğitimli sayılırsın.",
+   "kimler": "Chain Mail ya da Chain Shirt'tür.",
+   "nadirlik": "Rare"
+  },
+  "energy-bow": {
+   "ne": "Bu silahla saldırı ve hasar zarlarına +1 bonus verir. İpi yoktur; her çekişte altın enerji oku belirir, delici yerine kuvvet hasarı verir ve kaybolana dek 20 ft parlak, ek 20 ft loş ışık saçar.",
+   "nasil": "Arrow of Restraint: hasar yerine hedefi bağlamayı seçebilirsin; isabette hedef DC 15 STR kurtarma zarında başarısız olursa 1 dakika Restrained olur (eylemle DC 20 Athletics kontrolüyle kurtulur). Arrow of Transport: Magic eylemiyle 60 ft içindeki gönüllü Medium ya da daha küçük bir yaratığı ya da 5 ft küpe sığan taşınmayan bir nesneyi 10 ft içinde gördüğün boş bir alana ışınlarsın. Energy Ladder: Magic eylemiyle 60 ft'e kadar uzaklıktaki bir duvarda 60 ft'e kadar uzun bir merdiven oluşturursun; 1 dakika sürer.",
+   "kimler": "Longbow ya da Shortbow'dur.",
+   "nadirlik": "Very Rare"
+  },
+  "eversmoking-bottle": {
+   "ne": "Açılınca şişeden yayılan kalın duman 60 ft yayılımı doldurur; içi yoğun örtülüdür (Heavily Obscured). Şişe açık kaldıkça her dakika 10 ft büyür, en çok 120 ft olur.",
+   "nasil": "Magic eylemiyle açılıp kapanır. Kapatınca bulut yerinde sabitlenir ve 10 dakika sonra dağılır.",
+   "risk": "Güçlü bir rüzgâr (Gust of Wind gibi) bulutu 1 dakikada dağıtır.",
+   "nadirlik": "Uncommon"
+  },
+  "eyes-of-charming": {
+   "ne": "Gözlere takılan kristal mercekler; yük harcayarak Charm Person (kurtarma DC 13) yapmanı sağlar. Fazladan harcadığın her yük büyünün seviyesini bir artırır.",
+   "nasil": "3 yükü vardır. Takılıyken 1 ya da daha çok yük harcarsın: 1 yük 1. seviye büyü demektir. Harcanan bütün yükler her şafakta yenilenir.",
+   "nadirlik": "Uncommon"
+  },
+  "eyes-of-minute-seeing": {
+   "ne": "Kristal mercekler 1 ft içinde görüşünü keskinleştirir: o mesafede Darkvision ve oradaki bir şeyi incelerken INT (Investigation) kontrollerinde avantaj verir.",
+   "nasil": "Gözlere takılır; etkisi takılıyken sürer.",
+   "nadirlik": "Uncommon"
+  },
+  "eyes-of-the-eagle": {
+   "ne": "Görmeye dayalı WIS (Perception) kontrollerinde avantaj verir. Açık havada çok uzaktaki 2 ft kadar küçük yaratık ve nesnelerin ayrıntısını seçersin.",
+   "nasil": "Gözlere takılır; etkisi takılıyken sürer.",
+   "nadirlik": "Uncommon",
+   "oyunFarki": "Oyun verisinde uyum gerekiyor (SRD uyum istemez)."
+  },
+  "feather-token": {
+   "ne": "Tek kullanımlık tüy biçiminde sihirli belirteç; türüne göre farklı bir etki verir: Anchor (gemiyi 24 saat sabitler), Bird (saldırmayan dev bir Roc kuşu), Fan (yelkene rüzgâr), Swan Boat (kuğu biçimli tekne), Tree (60 ft boyunda meşe) ya da Whip (uçan kırbaç).",
+   "nasil": "Her tür Magic eylemiyle kullanılır. Whip, 10 ft içine fırlatılınca belirir; bonus eylemle kırbacın 10 ft içindeki yaratığa yakın dövüş büyü saldırısı yaparsın (saldırı bonusu 9), isabette 1d6 + 5 kuvvet hasarı. Bonus eylemle kırbacı 20 ft uçurup yeniden saldırtabilirsin.",
+   "risk": "Belirteç kullanılınca kaybolur. Bird 0 HP'ye düşerse ya da günlük uçuşunu bitirince kaybolur; Whip 1 saat sonra ya da sen ölünce veya Incapacitated olunca kaybolur.",
+   "nadirlik": "Varies"
+  },
+  "figurine-of-wondrous-power": {
+   "ne": "Cep boyu heykelcik; 60 ft içinde yere atınca türüne göre canlı bir yaratığa dönüşür (ör. Bronze Griffon bir Griffon'a, en çok 6 saat). Yaratık sana ve dostlarına dosttur, emirlerine uyar ve senin sıranın hemen ardından oynar.",
+   "nasil": "Atmak bir Magic eylemidir; dokunup yeniden Magic eylemi harcarsan heykelciğe geri döner. Süre bitince de döner; sonra türüne göre belli bir süre (Bronze Griffon için 5 gün) kullanılamaz.",
+   "risk": "Yaratığın çıkacağı yer doluysa ya da sığmıyorsa dönüşüm olmaz. Yaratık 0 HP'ye düşerse erkenden heykelciğe döner. Emir vermezsen yalnız kendini savunur.",
+   "nadirlik": "Varies"
+  },
+  "flame-tongue": {
+   "ne": "Komut sözcüğüyle silahın ağzı alev alır: isabette ek 2d6 ateş hasarı verir; alevler 40 ft parlak, ek 40 ft loş ışık saçar.",
+   "nasil": "Silahı tutarken bonus eylem ve komut sözcüğüyle yakarsın; komutu yeniden bonus eylemle verince ya da silahı bırakınca, kaldırınca veya kınına sokunca söner.",
+   "nadirlik": "Rare"
+  },
+  "folding-boat": {
+   "ne": "Yüzen küçük ahşap kutu; içine eşya konabilir. Komutla Rowboat ya da Keelboat'a açılır, yeniden kutuya katlanır.",
+   "nasil": "Üç komut sözcüğünün her biri Magic eylemi ister: birincisi Rowboat, ikincisi Keelboat açar; üçüncüsü tekneyi kutuya katlar (yalnız içinde kimse yokken). Kutuya sığmayan eşyalar dışarıda kalır.",
+   "risk": "Tekne 0 HP'ye düşerse Folding Boat yok olur.",
+   "nadirlik": "Rare"
+  },
+  "frost-brand": {
+   "ne": "Saldırı zarıyla isabette hedefe ek 1d6 soğuk hasarı verir; silahı tutarken ateş hasarına direnç kazanırsın. Dondurucu soğukta 10 ft parlak, ek 10 ft loş ışık saçar.",
+   "nasil": "Silahı çektiğinde 30 ft içindeki bütün büyüsüz alevleri söndürebilirsin; bu özellik 1 saatte bir kullanılır.",
+   "kimler": "Glaive, Greatsword, Longsword, Rapier, Scimitar ya da Shortsword olarak bulunur.",
+   "nadirlik": "Very Rare"
+  },
+  "gem-of-brightness": {
+   "ne": "50 yüklü prizma. Yüksüz ışık verir (30 ft parlak, ek 30 ft loş); 1 yükle 60 ft içindeki bir yaratığa ışın atar, 5 yükle 30 ft koni saçar. Işına yakalanan DC 15 CON kurtarma zarını tutturamazsa 1 dakika Blinded olur.",
+   "nasil": "Taşı tutarken Magic eylemi ve üç komut sözcüğünden biriyle kullanılır. Işık bonus eylemle komut yinelenince ya da başka işlev kullanılınca söner. Blinded olan her tur sonunda kurtarma zarını yineler, başarıda kurtulur.",
+   "risk": "Bütün yükleri bitince büyüsüz, 50 GP değerinde bir mücevhere dönüşür.",
+   "nadirlik": "Uncommon"
+  },
+  "gem-of-seeing": {
+   "ne": "Taşın içinden bakarken 10 dakika boyunca 120 ft Truesight kazanırsın.",
+   "nasil": "3 yükü vardır; Magic eylemiyle 1 yük harcarsın. Her şafakta 1d3 yük yenilenir.",
+   "nadirlik": "Rare"
+  },
+  "giant-slayer": {
+   "ne": "Saldırı ve hasar zarlarına +1 verir. Giant'a isabette ek 2d6 hasar (silahın türünde) verir ve Giant DC 15 STR kurtarma zarını tutturamazsa Prone olur.",
+   "kimler": "Herhangi bir Simple ya da Martial silah olabilir.",
+   "nadirlik": "Rare"
+  },
+  "glamoured-studded-leather": {
+   "ne": "Giyiliyken AC'ye +1 verir. Görünümünü sıradan bir kıyafete ya da başka bir zırha çevirebilirsin; renk, biçim ve aksesuarı sen seçersin.",
+   "nasil": "Bonus eylemle görünümü değiştirirsin; yanılsama, özelliği yeniden kullanana ya da zırhı çıkarana dek sürer.",
+   "risk": "Yalnız görünüm değişir; zırhın hacmi ve ağırlığı aynı kalır.",
+   "nadirlik": "Rare"
+  },
+  "gloves-of-missile-snaring": {
+   "ne": "Menzilli ya da fırlatılan silahla vurulduğunda aldığın hasarı 1d10 + DEX değiştiricin kadar azaltabilirsin. Hasarı 0'a indirirsen eline sığan mermiyi ya da silahı yakalayabilirsin.",
+   "nasil": "Eldivenler takılıyken ve bir elin boşken tepki harcarsın.",
+   "nadirlik": "Uncommon"
+  },
+  "gloves-of-swimming-and-climbing": {
+   "ne": "Takılıyken hızın kadar Climb ve Swim hızı kazanırsın; tırmanma ve yüzme için yapılan STR (Athletics) kontrollerine +5 alırsın.",
+   "nasil": "Etkisi eldivenler takılıyken sürer.",
+   "nadirlik": "Uncommon"
+  },
+  "gloves-of-thievery": {
+   "ne": "Takılıyken fark edilmeyen eldivenler; DEX (Sleight of Hand) kontrollerine +5 verir.",
+   "nasil": "Etkisi eldivenler takılıyken sürer.",
+   "nadirlik": "Uncommon"
+  },
+  "goggles-of-night": {
+   "ne": "Takılıyken 60 ft Darkvision verir. Zaten Darkvision'ın varsa menzili 60 ft artar.",
+   "nasil": "Koyu mercekler gözlere takılır; etkisi takılıyken sürer.",
+   "nadirlik": "Uncommon"
+  },
+  "hammer-of-thunderbolts": {
+   "ne": "Saldırı ve hasar zarlarına +1 verir. Yük harcayıp fırlatırsın (20/60 ft); isabette gök gürültüsü patlar: hedef ve onun 30 ft içindeki herkes (sen hariç) DC 17 CON kurtarma zarını tutturamazsa sonraki turunun sonuna dek Stunned olur.",
+   "nasil": "5 yükü vardır; fırlatma 1 yük harcar ve çekiç hemen eline döner. Her şafakta 1d4 + 1 yük yenilenir. Belt of Giant Strength ya da Gauntlets of Ogre Power ile birlikte uyumluysan: Giant'a karşı 20 atınca hedef DC 17 CON kurtarma zarını tutturamazsa ölür ve o eşyanın verdiği STR 4 artar (en çok 30).",
+   "kimler": "Maul ya da Warhammer olarak bulunur.",
+   "nadirlik": "Legendary"
+  },
+  "handy-haversack": {
+   "ne": "Üç cebi başka boyuta açılan sırt çantası: her yan cep 200 lb, orta cep 500 lb alır. İçi ne olursa olsun 5 lb gelir; aradığın eşya hep en üsttedir.",
+   "nasil": "Eşya çıkarmak Utilize eylemi ya da bonus eylem ister. Her cepte 10 dakikalık hava vardır, içerideki nefes alan yaratık sayısına bölünür.",
+   "risk": "Cep aşırı doldurulur, delinir ya da yırtılırsa çanta parçalanır ve içindekiler sonsuza dek kaybolur. Bag of Holding ya da Portable Hole gibi başka boyutlu bir alana konursa ikisi de yok olur ve Astral Plane'e bir kapı açılır; 10 ft içinde Total Cover arkasında olmayan herkes içine çekilir.",
+   "nadirlik": "Rare"
+  },
+  "hat-of-disguise": {
+   "ne": "Takılıyken Disguise Self büyüsünü yapabilirsin.",
+   "nasil": "Şapka takılıyken büyüyü yaparsın.",
+   "risk": "Şapka çıkarılırsa büyü biter.",
+   "nadirlik": "Uncommon"
+  },
+  "hat-of-many-spells": {
+   "ne": "Wizard büyüleri için Spellcasting Focus olarak kullanılır. Bilmediğin, yapabileceğin seviyede, Wizard listesindeki 1. ya da üstü bir büyüyü şapkadan çekip yapmayı deneyebilirsin.",
+   "nasil": "Büyünün seviyesindeki bir yuvayı harcar, INT (Arcana) kontrolü yaparsın (DC 10 + büyünün seviyesi). Başarıda büyü yapılır ve özellik kısa ya da uzun dinlenmeye dek kullanılamaz. Şapkadan yapılan büyüler senin kurtarma DC'ni ve büyü saldırı bonusunu kullanır.",
+   "risk": "Kontrol başarısızsa büyü olmaz, yuva harcanır ve rastgele bir etki tablosundan sonuç gelir (rastgele bir büyü, Stunned kalma gibi). Malzeme bileşeni 1,000 GP'yi aşan büyü denenemez.",
+   "kimler": "Yalnız Wizard uyum kurabilir.",
+   "nadirlik": "Very Rare"
+  },
+  "helm-of-brilliance": {
+   "ne": "Elmas, yakut, ateş opali ve opal işlenmiş miğfer. Elmas varken 30 ft yayılım Undead'leri her tur 1d6 ışıma hasarıyla yakar; ateş opali silahını tutuşturur (isabette ek 1d6 ateş); yakut ateş hasarına direnç verir. Taş harcayarak Daylight, Fireball, Prismatic Spray ya da Wall of Fire (DC 18) yapılır.",
+   "nasil": "Taşlar 1d10 elmas, 2d10 yakut, 3d10 ateş opali, 4d10 opal olarak gelir. Silahı tutuşturmak Magic eylemi, söndürmek bonus eylemdir. Büyü yapınca kullanılan taş yok olur.",
+   "risk": "Taş sökülürse toz olur; bütün taşlar gidince miğfer büyüsünü yitirir. Bir büyünün kurtarma zarında başarısız olup ateş hasarı alırsan 1d20 atılır; 1 gelirse miğfer patlar: 60 ft içindeki herkes DC 17 DEX kurtarma zarını tutturamazsa kalan taş sayısı kadar ışıma hasarı alır.",
+   "nadirlik": "Very Rare"
+  },
+  "helm-of-comprehending-languages": {
+   "ne": "Takılıyken Comprehend Languages büyüsünü miğferden yapabilirsin.",
+   "nasil": "Miğfer takılıyken büyüyü yaparsın.",
+   "nadirlik": "Uncommon"
+  },
+  "helm-of-telepathy": {
+   "ne": "Takılıyken 30 ft menzilli telepati kazanırsın; miğferden Detect Thoughts ya da Suggestion (kurtarma DC 13) yapabilirsin.",
+   "nasil": "Her büyü miğferden bir kez yapılınca sonraki şafağa dek yeniden yapılamaz.",
+   "nadirlik": "Uncommon"
+  },
+  "helm-of-teleportation": {
+   "ne": "Takılıyken yük harcayarak miğferden Teleport büyüsünü yaparsın.",
+   "nasil": "3 yükü vardır; her döküm 1 yük harcar. Her şafakta 1d3 yük yenilenir.",
+   "nadirlik": "Rare",
+   "oyunFarki": "Oyun verisinde yüklü büyü Misty Step (SRD Teleport)."
+  },
+  "holy-avenger": {
+   "ne": "Saldırı ve hasar zarlarına +3 verir; Fiend ya da Undead'e isabette ek 2d10 ışıma hasarı. Çekili tutarken 10 ft yayılımda sen ve dostların büyülere ve diğer büyülü etkilere karşı kurtarma zarlarında avantaj kazanırsınız.",
+   "nasil": "Aura silah çekili ve elindeyken işler. 17 ya da daha çok Paladin seviyen varsa yayılım 30 ft olur.",
+   "kimler": "Yalnız Paladin uyum kurabilir.",
+   "nadirlik": "Legendary"
+  },
+  "horn-of-blasting": {
+   "ne": "Üflenince 30 ft koni gök gürültüsü: içindekiler DC 15 CON kurtarma zarı atar; başarısız olan 5d8 gök gürültüsü hasarı alır ve 1 dakika Deafened olur, başarılı olan yarı hasar alır. Konideki taşınmayan cam ya da kristal nesneler 10d8 hasar alır.",
+   "nasil": "Magic eylemiyle üflenir; patlama 600 ft öteden duyulur.",
+   "risk": "Her kullanımda %20 ihtimalle boru patlar: sana 10d6 kuvvet hasarı verir ve boru yok olur.",
+   "nadirlik": "Rare",
+   "oyunFarki": "Oyun verisinde hasar 5d6 (SRD 5d8)."
+  },
+  "horn-of-valhalla": {
+   "ne": "Üflenince 60 ft içinde Ysgard'dan Berserker istatistikli savaşçı ruhlar belirir; Charmed ve Frightened durumlarına bağışıktırlar. Ruh sayısı ve kullanım koşulu borunun metaline (gümüş, pirinç, tunç, demir) göre değişir.",
+   "nasil": "Magic eylemiyle üflenir. Ruhlar 1 saat sonra ya da 0 HP'ye düşünce döner. Boru bir kez kullanılınca 7 gün geçmeden yeniden kullanılamaz.",
+   "risk": "Borunun koşulunu karşılamadan üflersen çağrılan ruhlar sana saldırır.",
+   "kimler": "Gümüş borunun koşulu yoktur; pirinç tüm Simple silahlarda, demir tüm Martial silahlarda yetkinlik, tunç tüm Medium zırhlarda eğitim ister.",
+   "nadirlik": "Varies"
+  },
+  "horseshoes-of-speed": {
+   "ne": "Dördü birden aynı yaratığa takılıyken onun hızını 30 ft artırır.",
+   "nasil": "Dörtlü takımdır. Magic eylemiyle bir nalı at ya da benzeri bir yaratığın toynağına dokundurursun, kendiliğinden yapışır; çıkarmak da Magic eylemi ister.",
+   "kimler": "At ya da benzeri toynaklı bir yaratık için yapılmıştır.",
+   "nadirlik": "Rare"
+  },
+  "horseshoes-of-a-zephyr": {
+   "ne": "Dördü takılı yaratık yüzeyin biraz üstünde süzülerek normal yürür: su ya da lav gibi katı olmayan yüzeylerde durup geçebilir, iz bırakmaz ve zorlu araziyi yok sayar. Günde 12 saate dek yolculuktan Exhaustion almaz.",
+   "nasil": "Dörtlü takımdır. Magic eylemiyle bir nalı toynağa dokundurursun, kendiliğinden yapışır; çıkarmak da Magic eylemi ister.",
+   "kimler": "At ya da benzeri toynaklı bir yaratık için yapılmıştır.",
+   "nadirlik": "Very Rare"
+  },
+  "immovable-rod": {
+   "ne": "Düğmeye basınca demir çubuk olduğu yerde sabitlenir, yerçekimine rağmen kımıldamaz ve 8,000 lb'ye dek ağırlık taşır.",
+   "nasil": "Düğmeye basmak ve yeniden basıp serbest bırakmak Utilize eylemi ister. Bir yaratık Utilize eylemiyle DC 30 STR (Athletics) kontrolü yapıp başarırsa sabit çubuğu 10 ft'e dek oynatabilir.",
+   "risk": "Taşıyabileceğinden ağır yük binerse çubuk devre dışı kalır ve düşer.",
+   "nadirlik": "Uncommon"
+  },
+  "instant-fortress": {
+   "ne": "Küçük adamantin heykelcik komutla 20 ft genişlikte, 30 ft yükseklikte, iki katlı, mazgallı kare bir kuleye dönüşür. Kapı, duvar ve çatı AC 20, 100 HP'dir; kuşatma silahı dışındaki fiziksel hasara bağışık, diğer hasara dirençlidir.",
+   "nasil": "Magic eylemiyle yere koyup komut sözcüğünü söylersin; komutu yinelemek kuleyi (yalnız boşken) heykelciğe döndürür. Tek kapı yalnız senin komutunla açılır, bu bir bonus eylemdir; Knock büyüsü işlemez.",
+   "risk": "Kulenin çıktığı alandaki yaratık ve nesneler hemen dışarıya itilir. Heykelciğe dönmek hasarı onarmaz; kuleyi yalnız Wish onarır.",
+   "nadirlik": "Rare"
+  },
+  "ioun-stone": {
+   "ne": "Başının çevresinde dönen mermer boyu taş; türüne göre fayda verir. Ör. Protection AC'ye +1, Awareness inisiyatif ve WIS (Perception) kontrollerinde avantaj, Agility gibi taşlar bir yeteneği 2 artırır (en çok 20), Absorption tepkiyle 4. ya da düşük seviye büyüyü iptal eder.",
+   "nasil": "Magic eylemiyle havaya atarsın, taş başının 1d3 ft çevresinde döner; aynı anda en çok üç taş dönebilir. Mastery yeterlik bonusunu 1 artırır, Regeneration en az 1 HP'n varken saat sonunda 15 HP iyileştirir. Dönen taşları Utilize eylemiyle toplayıp kaldırırsın. Reserve taşı içine konan 1–4. seviye büyüleri saklar, sen de dönerken onları yaparsın.",
+   "risk": "Absorption ve Greater Absorption taşları toplam 20 seviye büyü iptal edince söner ve büyüsünü yitirir. Taşla uyumun biterse taş düşer.",
+   "nadirlik": "Varies"
+  },
+  "iron-bands": {
+   "ne": "Paslı demir küre; 60 ft içindeki Huge ya da daha küçük bir yaratığa fırlatırsın. İsabette demir bantlar hedefi Restrained yapar.",
+   "nasil": "Magic eylemiyle atar, DEX değiştiricin + yeterlik bonusunla menzilli saldırı yaparsın. Bonus eylemle verdiğin komut hedefi bırakır. Bir kez kullanılınca sonraki şafağa dek kullanılamaz.",
+   "risk": "Bantlara dokunabilen bir yaratık eylem harcayıp DC 20 STR (Athletics) kontrolüyle bantları kırarsa eşya yok olur. Başarısız olan yaratığın denemeleri 24 saat kendiliğinden başarısız olur.",
+   "kimler": "Yalnız Huge ya da daha küçük yaratıklara işler.",
+   "nadirlik": "Rare"
+  },
+  "iron-flask": {
+   "ne": "60 ft içinde gördüğün, başka bir varoluş düzleminden gelen yaratık DC 17 WIS kurtarma zarını tutturamazsa şişeye hapsolur. Serbest bırakınca 1 saat emirlerine uyar.",
+   "nasil": "Hapsetmek de tıpayı açıp salmak da Magic eylemi ister. Şişe aynı anda yalnız bir yaratık alır ve yalnız boşken işler.",
+   "risk": "Daha önce hapsedilmiş yaratık kurtarma zarında avantajlıdır. Süre bitince yaratık kendi eğilimine göre davranır. Yeni bulunan şişede önceden bir yaratık olabilir; türünü öğrenmenin tek yolu açmaktır.",
+   "nadirlik": "Legendary"
+  },
+  "javelin-of-lightning": {
+   "ne": "İsabette delici yerine yıldırım hasarı verebilir. Günde bir kez, 120 ft'e kadar uzaktaki hedefe atarken saldırı zarı yerine 5 ft genişlikte yıldırım çizgisine dönüşür: çizgidekiler DC 13 DEX kurtarma zarı atar, başarısızlıkta 4d6 yıldırım hasarı, başarıda yarısı.",
+   "nasil": "Lightning Bolt özelliği fırlatırken kullanılır; hasardan hemen sonra cirit eline döner. Sonraki şafağa dek yeniden kullanılamaz.",
+   "nadirlik": "Uncommon"
+  },
+  "lantern-of-revealing": {
+   "ne": "Yanarken 30 ft parlak, ek 30 ft loş ışık verir; parlak ışıktaki Invisible yaratık ve nesneler görünür olur.",
+   "nasil": "1 pint yağla 6 saat yanar. Utilize eylemiyle kapağı indirince ışık 5 ft loş ışığa düşer.",
+   "nadirlik": "Uncommon"
+  },
+  "luck-blade": {
+   "ne": "Saldırı ve hasar zarlarına +1, üzerindeyken kurtarma zarlarına +1 verir. Luck: başarısız bir D20 Testini yeniden attırır. Wish: yük harcayıp kılıçtan Wish yaparsın.",
+   "nasil": "Luck eylem gerektirmez, Incapacitated değilken kullanılır ve ikinci zar geçerlidir; sonraki şafağa dek bir kez. Silahın 1d3 yükü vardır; Wish için tutarken 1 yük harcarsın, özellik sonraki şafağa dek bir kez kullanılır.",
+   "risk": "Yükleri bitince Wish özelliği kaybolur.",
+   "kimler": "Glaive, Greatsword, Longsword, Rapier, Scimitar, Sickle ya da Shortsword olarak bulunur.",
+   "nadirlik": "Legendary"
+  },
+  "mace-of-disruption": {
+   "ne": "Fiend ya da Undead'e isabette ek 2d6 ışıma hasarı verir. Hedefin bu hasardan sonra 25 ya da daha az HP'si kalırsa DC 15 WIS kurtarma zarını tutturamazsa yok olur; başarırsa sonraki turunun sonuna dek Frightened olur.",
+   "nasil": "Elinde tutarken 20 ft parlak, ek 20 ft loş ışık saçar.",
+   "nadirlik": "Rare"
+  },
+  "mace-of-smiting": {
+   "ne": "Saldırı ve hasar zarlarına +1 verir; Construct'a saldırırken bonus +3 olur. Saldırıda 20 atarsan hedef ek 7 ezici hasar alır, Construct ise 14; bu hasardan sonra 25 ya da daha az HP'si kalan Construct yok olur.",
+   "nadirlik": "Rare"
+  },
+  "mace-of-terror": {
+   "ne": "Yük harcayınca korku dalgası: 30 ft içinde seçtiğin yaratıklar DC 15 WIS kurtarma zarını tutturamazsa 1 dakika Frightened olur, senden olabildiğince uzaklaşır, fırsat saldırısı yapamaz ve eylem olarak yalnız Dash ya da kurtulmaya çalışma kullanır.",
+   "nasil": "3 yükü vardır; tutarken Magic eylemiyle 1 yük harcarsın. Her şafakta 1d3 yük yenilenir. Etkilenen her tur sonunda kurtarma zarını yineler, başarıda kurtulur.",
+   "nadirlik": "Rare"
+  },
+  "mantle-of-spell-resistance": {
+   "ne": "Pelerin giyiliyken büyülere karşı kurtarma zarlarında avantaj kazanırsın.",
+   "nasil": "Etkisi pelerin giyiliyken sürer.",
+   "nadirlik": "Rare"
+  },
+  "manual-of-bodily-health": {
+   "ne": "Sağlık ve beslenme kitabı. İçeriğini çalışıp uygularsan CON puanın 2 artar (en çok 30).",
+   "nasil": "6 gün ya da daha kısa sürede toplam 48 saat çalışmak gerekir.",
+   "risk": "Sonra kitap büyüsünü yitirir; ancak bir yüzyıl sonra geri kazanır.",
+   "nadirlik": "Very Rare"
+  },
+  "manual-of-gainful-exercise": {
+   "ne": "Egzersiz kitabı. İçeriğini çalışıp uygularsan STR puanın 2 artar (en çok 30).",
+   "nasil": "6 gün ya da daha kısa sürede toplam 48 saat çalışmak gerekir.",
+   "risk": "Sonra kitap büyüsünü yitirir; ancak bir yüzyıl sonra geri kazanır.",
+   "nadirlik": "Very Rare"
+  },
+  "manual-of-golems": {
+   "ne": "Belli türde bir golem yapmanın bilgisini ve büyülerini içerir; tamamlanan golem senin denetimindedir ve emirlerine uyar.",
+   "nasil": "Tablodaki süre boyunca kesintisiz çalışır (günde en çok 8 saat dinlenerek) ve malzeme bedelini ödersin. Golem bitince kitap yanar; külü golemin üstüne serpilince golem canlanır.",
+   "risk": "Kitabı kullanamayan biri okumaya çalışırsa 6d6 psişik hasarı alır.",
+   "kimler": "Okuyup kullanmak için en az iki 5. seviye büyü yuvası olan bir büyücü olmalısın.",
+   "nadirlik": "Very Rare"
+  },
+  "manual-of-quickness-of-action": {
+   "ne": "Denge ve koordinasyon kitabı. İçeriğini çalışıp uygularsan DEX puanın 2 artar (en çok 30).",
+   "nasil": "6 gün ya da daha kısa sürede toplam 48 saat çalışmak gerekir.",
+   "risk": "Sonra kitap büyüsünü yitirir; ancak bir yüzyıl sonra geri kazanır.",
+   "nadirlik": "Very Rare"
+  },
+  "marvelous-pigments": {
+   "ne": "1d4 kap boya ve fırça. Bir kap boyayla 20 ft küp içine boyadığın nesneler ve arazi öğeleri (kapı, ağaç, çukur…) gerçek olur.",
+   "nasil": "Bir kap harcayıp 10 dakika boyunca küpün içinde kalarak ve konsantrasyonla çalışırsın.",
+   "risk": "Konsantrasyon bozulur ya da küpten çıkarsan boyananlar kaybolur ve kap boşa gider. Tek nesne en çok 25 GP, bir kabın toplamı en çok 500 GP değerinde olabilir; daha değerlisi sahte çıkar. Ateş ya da yıldırım gibi enerji boyanırsa zarar vermeden dağılır.",
+   "nadirlik": "Very Rare"
+  },
+  "medallion-of-thoughts": {
+   "ne": "Takılıyken yük harcayarak madalyondan Detect Thoughts (kurtarma DC 13) yaparsın.",
+   "nasil": "5 yükü vardır; her döküm 1 yük harcar. Her şafakta 1d4 yük yenilenir.",
+   "nadirlik": "Uncommon"
+  },
+  "mirror-of-life-trapping": {
+   "ne": "Etkinken 30 ft içinde yansımasını gören yaratık (sen hariç) DC 15 CHA kurtarma zarını tutturamazsa taşıdıklarıyla birlikte aynanın on iki hücresinden birine hapsolur. Hapsolan yaşlanmaz, yemek ve uyku istemez.",
+   "nasil": "Ayna dikey bir yüzeye asılıyken ve sen 5 ft içindeyken Magic eylemi ve komut sözcüğüyle açılıp kapanır. Magic eylemiyle bir tutsağı adlandırıp konuşabilir, ikinci komut sözcüğüyle birini salabilirsin.",
+   "risk": "Aynanın doğasını bilen avantajla atar, Construct'lar kendiliğinden başarır. Hücreler doluysa yeni tutsak için rastgele biri salınır. Ayna (AC 11, 10 HP, ezici hasara karşı savunmasız) kırılırsa herkes çıkar. Başka boyutlu bir alana konursa iki eşya da yok olur ve Astral Plane'e kapı açılır.",
+   "nadirlik": "Very Rare"
+  },
+  "mithral-armor": {
+   "ne": "Hafif, esnek mithral zırh; kıyafet altına giyilebilir. Zırh normalde DEX (Stealth) kontrollerine dezavantaj veriyor ya da STR şartı arıyorsa mithral hâli bunları kaldırır.",
+   "kimler": "Herhangi bir Medium ya da Heavy zırh türünde bulunur (Hide hariç).",
+   "nadirlik": "Uncommon"
+  },
+  "mysterious-deck": {
+   "ne": "Fildişi ya da parşömen kartlardan deste (çoğu on üç, bazıları yirmi iki kart). Çekilen her kartın büyüsü hemen işler; etkiler bir yeteneği artırmaktan (Star), Wish hakkı (Moon) ve mücevherden (Gem) bütün servetini yitirmeye (Ruin), lanete (Euryale: kurtarma zarlarına -2) ve ruhunun hapsolmasına (Void) kadar uzanır.",
+   "nasil": "Çekmeden önce kaç kart çekeceğini söylersin; her kartı bir öncekinden en geç 1 saat sonra çekmelisin. Çekilen kart kaybolur ve (Fool ile Jester dışında) desteye geri döner.",
+   "risk": "Söylediğin sayıyı çekmezsen kalan kartlar kendiliğinden fırlar ve hepsi birden işler. Donjon seni boyut dışı bir küreye hapseder, Talons bütün sihirli eşyalarını yok eder, Skull bir Avatar of Death çağırır; Donjon ve Void'den sonra kart çekemezsin.",
+   "nadirlik": "Legendary"
+  },
+  "necklace-of-adaptation": {
+   "ne": "Takılıyken her ortamda normal nefes alırsın; Poisoned durumundan kaçınmak ya da kurtulmak için kurtarma zarlarında avantaj kazanırsın.",
+   "nasil": "Etkisi kolye takılıyken sürer.",
+   "nadirlik": "Uncommon"
+  },
+  "necklace-of-fireballs": {
+   "ne": "Kolyede 1d6 + 3 boncuk asılıdır. Bir boncuğu 60 ft'e dek fırlatırsın; yolunun sonunda 3. seviye Fireball (kurtarma DC 15) olarak patlar.",
+   "nasil": "Magic eylemiyle bir boncuğu koparıp atarsın. Aynı anda birden çok boncuk ya da bütün kolyeyi atabilirsin: ilkinden sonraki her boncuk Fireball hasarını 1d6 artırır (en çok 12d6).",
+   "risk": "Atılan boncuk patlayarak tükenir.",
+   "nadirlik": "Rare"
+  },
+  "necklace-of-prayer-beads": {
+   "ne": "1d4 + 2 büyülü boncuklu kolye; her boncukta bir büyü vardır (ör. Bless, Cure Wounds, Lesser Restoration). Kurtarma gerekirse senin büyü kurtarma DC'n kullanılır.",
+   "nasil": "Kolye takılıyken boncuğun büyüsünü bonus eylemle yaparsın. Kullanılan boncuk sonraki şafağa dek yeniden kullanılamaz.",
+   "risk": "Kolyeden sökülen büyülü boncuk büyüsünü yitirir.",
+   "kimler": "Yalnız Cleric, Druid ya da Paladin uyum kurabilir.",
+   "nadirlik": "Rare"
+  },
+  "nine-lives-stealer": {
+   "ne": "Saldırı ve hasar zarlarına +2 verir. Life Stealing: 100 HP'den azı olan yaratığa saldırıda d20'de 20 atarsan yaratık DC 15 CON kurtarma zarını tutturamazsa anında ölür.",
+   "nasil": "Silahın 1d8 + 1 yükü vardır; yaratık ölürse 1 yük harcanır.",
+   "risk": "Yükler bitince Life Stealing özelliği kaybolur.",
+   "kimler": "Construct ve Undead kurtarma zarını kendiliğinden başarır.",
+   "nadirlik": "Very Rare"
+  },
+  "oathbow": {
+   "ne": "Menzilli saldırıda komut sözcüğünü söyleyince hedef yeminli düşmanın olur. Ona karşı menzilli saldırılarda avantajlısın, hedef Half ve Three-Quarters Cover'dan yararlanmaz, uzun menzil dezavantajı olmaz; isabette ek 3d6 delici hasar.",
+   "nasil": "Aynı anda tek yeminli düşmanın olabilir; ölünce ya da 7 gün sonraki şafakta yemin biter. Yeminli düşman ölünce yenisini ancak sonraki şafaktan sonra seçersin.",
+   "risk": "Yeminli düşmanın yaşadıkça diğer bütün silahlarla saldırı zarlarında dezavantajlısın.",
+   "kimler": "Longbow ya da Shortbow olarak bulunur.",
+   "nadirlik": "Very Rare"
+  },
+  "oil-of-etherealness": {
+   "ne": "Yağa bulanan yaratık 1 saat boyunca Etherealness büyüsünün etkisini kazanır.",
+   "nasil": "Bir şişe Medium ya da daha küçük bir yaratığı ve donanımını kaplar; Medium'dan büyük her boyut için bir şişe daha gerekir. Sürmek 10 dakika sürer.",
+   "nadirlik": "Rare"
+  },
+  "oil-of-sharpness": {
+   "ne": "Bir yakın dövüş silahını ya da yirmi mermiyi +3 silaha ya da +3 mermiye dönüştürür.",
+   "nasil": "Bir şişe bir yakın dövüş silahını ya da yirmi mermiyi kaplar; sürmek 1 dakika sürer, sonra yağ işlenir.",
+   "kimler": "Yalnız büyüsüz ve kesici ya da delici hasar veren yakın dövüş silahlarına ve mermilere işler.",
+   "nadirlik": "Very Rare"
+  },
+  "oil-of-slipperiness": {
+   "ne": "Sürülen yaratık 8 saat Freedom of Movement etkisi kazanır. Yere dökülürse 10 ft kareyi 8 saat Grease büyüsü gibi kaygan yapar.",
+   "nasil": "Bir şişe Medium ya da daha küçük bir yaratığı kaplar (büyük her boyut için bir şişe daha); sürmek 10 dakika sürer. Yere dökmek Magic eylemidir.",
+   "nadirlik": "Uncommon"
+  },
+  "pearl-of-power": {
+   "ne": "Üzerindeyken harcanmış 3. ya da daha düşük seviye bir büyü yuvasını geri kazanırsın.",
+   "nasil": "Magic eylemiyle kullanılır; sonraki şafağa dek yeniden kullanılamaz.",
+   "kimler": "Yalnız büyü yapabilen (Spellcaster) uyum kurabilir.",
+   "nadirlik": "Uncommon"
+  },
+  "periapt-of-health": {
+   "ne": "Takılıyken 2d4 + 2 HP geri kazanabilirsin; ayrıca Poisoned durumundan kaçınmak ya da kurtulmak için kurtarma zarlarında avantajlısın.",
+   "nasil": "İyileşme Magic eylemiyle olur ve sonraki şafağa dek yeniden kullanılamaz.",
+   "nadirlik": "Uncommon"
+  },
+  "periapt-of-proof-against-poison": {
+   "ne": "Takılıyken Poisoned durumuna ve zehir hasarına bağışık olursun.",
+   "nasil": "Etkisi kolye takılıyken sürer.",
+   "nadirlik": "Rare"
+  },
+  "periapt-of-wound-closure": {
+   "ne": "Life Preservation: ölüm kurtarma zarında 9 ya da daha düşük attığında sonucu 10 yapıp başarıya çevirebilirsin. Natural Healing Boost: HP kazanmak için attığın Hit Point Die'ların iyileştirmesi iki katına çıkar.",
+   "nasil": "Etkisi kolye takılıyken sürer.",
+   "nadirlik": "Uncommon"
+  },
+  "philter-of-love": {
+   "ne": "İçtikten sonra 10 dakika içinde gördüğün ilk yaratık tarafından 1 saat Charmed olursun.",
+   "nasil": "İçilerek kullanılır.",
+   "risk": "Etkiyi seçemezsin; gördüğün ilk yaratığa bağlanırsın.",
+   "nadirlik": "Uncommon"
+  },
+  "pipes-of-haunting": {
+   "ne": "Ürkütücü bir ezgi çalarsın: 30 ft içinde seçtiğin yaratıklar DC 15 WIS kurtarma zarını tutturamazsa 1 dakika Frightened olur.",
+   "nasil": "3 yükü vardır; Magic eylemiyle çalıp 1 yük harcarsın. Her şafakta 1d3 yük yenilenir. Frightened olan her tur sonunda kurtarma zarını yineler, başarıda kurtulur.",
+   "risk": "Kurtarma zarını başaran yaratık 24 saat bu kavalın etkisine bağışık olur.",
+   "nadirlik": "Uncommon"
+  },
+  "pipes-of-the-sewers": {
+   "ne": "Üzerindeyken sıradan ve dev fareler sana kayıtsızdır, tehdit etmedikçe saldırmaz. Yük harcayıp yakındaki fareleri Swarm of Rats olarak çağırabilir, çalarken sürüleri dost edebilirsin.",
+   "nasil": "3 yükü vardır, her şafakta 1d3 yenilenir. Magic eylemiyle çalarken bonus eylemle 1–3 yük harcar, her yük için bir sürü çağırırsın. Çalarken 30 ft içine giren sahipsiz sürü DC 15 WIS kurtarma zarı atar; başarısız olursa sen her tur Magic eylemiyle çaldıkça dostun olur ve emirlerine uyar.",
+   "risk": "Yeterli fare yoksa yük boşa gider; çağrılan sürüler senin denetiminde değildir. Turuna senden 30 ft'ten uzakta başlayan dost sürü üzerindeki denetimin biter; kurtarma zarını başaran ya da denetimden çıkan sürü 24 saat etkilenmez.",
+   "nadirlik": "Uncommon"
+  },
+  "plate-armor-of-etherealness": {
+   "ne": "Giyiliyken komut sözcüğüyle Etherealness büyüsünün etkisini kazanırsın.",
+   "nasil": "Magic eylemi ve komut sözcüğüyle açılır; zırhı çıkarınca ya da komutu Magic eylemiyle yineleyince hemen biter. Sonraki şafağa dek yeniden kullanılamaz.",
+   "kimler": "Half Plate Armor ya da Plate Armor olarak bulunur.",
+   "nadirlik": "Legendary"
+  },
+  "portable-hole": {
+   "ne": "Mendil gibi katlanan siyah kumaş; açılınca 6 ft çapında, 10 ft derinliğinde, başka bir düzlemde duran bir çukur olur. Katlanınca içindekiler orada kalır ve ağırlığı neredeyse sıfırdır.",
+   "nasil": "Açmak ve katlamak Magic eylemi ister; açık çukurdan tırmanarak çıkılır. Kapalı çukurdaki yaratık eylem harcayıp DC 10 STR (Athletics) kontrolüyle 5 ft içine çıkabilir.",
+   "risk": "Kapalı çukurda 1 saatlik hava vardır, nefes alanların sayısına bölünür. Bag of Holding ya da Handy Haversack gibi başka boyutlu bir alana konursa ikisi de yok olur ve Astral Plane'e kapı açılır; 10 ft içinde Total Cover arkasında olmayan herkes içine çekilir.",
+   "nadirlik": "Rare"
+  },
+  "potion-of-animal-friendship": {
+   "ne": "İçince Animal Friendship büyüsünün 3. seviye hâlini (kurtarma DC 13) yapabilirsin.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Uncommon"
+  },
+  "potion-of-clairvoyance": {
+   "ne": "İçince Clairvoyance büyüsünün etkisini kazanırsın; konsantrasyon gerekmez.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Rare"
+  },
+  "potion-of-climbing": {
+   "ne": "İçince 1 saat boyunca hızın kadar Climb hızı kazanırsın; bu sürede tırmanmak için yapılan STR (Athletics) kontrollerinde avantajlısın.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Common"
+  },
+  "potion-of-cloud-giant-strength": {
+   "ne": "İçince STR puanın 1 saat boyunca 27 olur (Cloud Giant).",
+   "nasil": "İçilerek kullanılır.",
+   "risk": "STR puanın zaten 27 ya da daha yüksekse iksirin etkisi olmaz.",
+   "nadirlik": "Varies"
+  },
+  "potion-of-diminution": {
+   "ne": "İçince 1d4 saat boyunca Enlarge/Reduce büyüsünün küçültme (reduce) etkisini kazanırsın; konsantrasyon gerekmez.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Rare"
+  },
+  "potion-of-fire-giant-strength": {
+   "ne": "İçince STR puanın 1 saat boyunca 25 olur (Fire Giant).",
+   "nasil": "İçilerek kullanılır.",
+   "risk": "STR puanın zaten 25 ya da daha yüksekse iksirin etkisi olmaz.",
+   "nadirlik": "Varies"
+  },
+  "potion-of-flying": {
+   "ne": "İçince 1 saat boyunca hızın kadar Fly hızı kazanır ve havada asılı kalabilirsin.",
+   "nasil": "İçilerek kullanılır.",
+   "risk": "Etki bittiğinde havadaysan ve seni tutan başka bir şey yoksa düşersin.",
+   "nadirlik": "Very Rare"
+  },
+  "potion-of-frost-giant-strength": {
+   "ne": "İçince STR puanın 1 saat boyunca 23 olur (Frost Giant).",
+   "nasil": "İçilerek kullanılır.",
+   "risk": "STR puanın zaten 23 ya da daha yüksekse iksirin etkisi olmaz.",
+   "nadirlik": "Varies"
+  },
+  "potion-of-gaseous-form": {
+   "ne": "İçince 1 saat boyunca Gaseous Form büyüsünün etkisini kazanırsın; konsantrasyon gerekmez.",
+   "nasil": "İçilerek kullanılır; etkiyi bonus eylemle erken bitirebilirsin.",
+   "nadirlik": "Rare"
+  },
+  "potion-of-growth": {
+   "ne": "İçince 10 dakika boyunca Enlarge/Reduce büyüsünün büyütme (enlarge) etkisini kazanırsın; konsantrasyon gerekmez.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Uncommon"
+  },
+  "potion-of-heroism": {
+   "ne": "İçince 1 saat süren 10 geçici HP kazanırsın; aynı süre boyunca Bless büyüsünün etkisi altındasın (konsantrasyon gerekmez).",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Rare"
+  },
+  "potion-of-hill-giant-strength": {
+   "ne": "İçince STR puanın 1 saat boyunca 21 olur (Hill Giant).",
+   "nasil": "İçilerek kullanılır.",
+   "risk": "STR puanın zaten 21 ya da daha yüksekse iksirin etkisi olmaz.",
+   "nadirlik": "Varies"
+  },
+  "potion-of-invisibility": {
+   "ne": "İçince 1 saat boyunca Invisible olursun.",
+   "nasil": "İçilerek kullanılır.",
+   "risk": "Saldırı zarı atarsan, hasar verirsen ya da büyü yaparsan etki erken biter.",
+   "nadirlik": "Rare"
+  },
+  "potion-of-invulnerability": {
+   "ne": "İçtikten sonra 1 dakika boyunca bütün hasar türlerine direnç kazanırsın.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Rare"
+  },
+  "potion-of-longevity": {
+   "ne": "İçince fiziksel yaşın 1d6 + 6 yıl azalır (en az 13 yaşa dek).",
+   "nasil": "İçilerek kullanılır.",
+   "risk": "Sonraki her Potion of Longevity içişinde %10 birikimli ihtimalle gençleşmek yerine 1d6 + 6 yıl yaşlanırsın.",
+   "nadirlik": "Very Rare"
+  },
+  "potion-of-mind-reading": {
+   "ne": "İçince 10 dakika boyunca Detect Thoughts büyüsünün etkisini (kurtarma DC 13) kazanırsın; konsantrasyon gerekmez.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Rare"
+  },
+  "potion-of-poison": {
+   "ne": "Potion of Healing gibi yararlı bir iksir görünümünde, yanılsamayla gizlenmiş zehir.",
+   "nasil": "Identify büyüsü gerçek doğasını ortaya çıkarır.",
+   "risk": "İçen 4d6 zehir hasarı alır ve DC 13 CON kurtarma zarını tutturamazsa 1 saat Poisoned olur.",
+   "nadirlik": "Uncommon"
+  },
+  "potion-of-resistance-acid": {
+   "ne": "İçince 1 saat boyunca asit hasarına direnç kazanırsın.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Uncommon"
+  },
+  "potion-of-resistance-bludgeoning": {
+   "ne": "İçince 1 saat boyunca ezici hasarına direnç kazanırsın.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Uncommon"
+  },
+  "potion-of-resistance-cold": {
+   "ne": "İçince 1 saat boyunca soğuk hasarına direnç kazanırsın.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Uncommon"
+  },
+  "potion-of-resistance-fire": {
+   "ne": "İçince 1 saat boyunca ateş hasarına direnç kazanırsın.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Uncommon"
+  },
+  "potion-of-resistance-force": {
+   "ne": "İçince 1 saat boyunca kuvvet hasarına direnç kazanırsın.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Uncommon"
+  },
+  "potion-of-resistance-lightning": {
+   "ne": "İçince 1 saat boyunca yıldırım hasarına direnç kazanırsın.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Uncommon"
+  },
+  "potion-of-resistance-necrotic": {
+   "ne": "İçince 1 saat boyunca nekrotik hasarına direnç kazanırsın.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Uncommon"
+  },
+  "potion-of-resistance-piercing": {
+   "ne": "İçince 1 saat boyunca delici hasarına direnç kazanırsın.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Uncommon"
+  },
+  "potion-of-resistance-poison": {
+   "ne": "İçince 1 saat boyunca zehir hasarına direnç kazanırsın.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Uncommon"
+  },
+  "potion-of-resistance-psychic": {
+   "ne": "İçince 1 saat boyunca psişik hasarına direnç kazanırsın.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Uncommon"
+  },
+  "potion-of-resistance-radiant": {
+   "ne": "İçince 1 saat boyunca ışıma hasarına direnç kazanırsın.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Uncommon"
+  },
+  "potion-of-resistance-slashing": {
+   "ne": "İçince 1 saat boyunca kesici hasarına direnç kazanırsın.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Uncommon"
+  },
+  "potion-of-resistance-thunder": {
+   "ne": "İçince 1 saat boyunca gök gürültüsü hasarına direnç kazanırsın.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Uncommon"
+  },
+  "potion-of-speed": {
+   "ne": "İçince 1 dakika boyunca Haste büyüsünün etkisini kazanırsın; konsantrasyon gerekmez ve etki bitince gelen uyuşukluk dalgası yaşanmaz.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Very Rare"
+  },
+  "potion-of-stone-giant-strength": {
+   "ne": "İçince STR puanın 1 saat boyunca 23 olur (Stone Giant).",
+   "nasil": "İçilerek kullanılır.",
+   "risk": "STR puanın zaten 23 ya da daha yüksekse iksirin etkisi olmaz.",
+   "nadirlik": "Varies"
+  },
+  "potion-of-storm-giant-strength": {
+   "ne": "İçince STR puanın 1 saat boyunca 29 olur (Storm Giant).",
+   "nasil": "İçilerek kullanılır.",
+   "risk": "STR puanın zaten 29 ya da daha yüksekse iksirin etkisi olmaz.",
+   "nadirlik": "Varies"
+  },
+  "potion-of-vitality": {
+   "ne": "İçince bütün Exhaustion seviyelerin silinir ve Poisoned durumun biter. Sonraki 24 saat harcadığın her Hit Point Die için alabileceğin en yüksek HP'yi kazanırsın.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Very Rare"
+  },
+  "potion-of-water-breathing": {
+   "ne": "İçtikten sonra 24 saat boyunca su altında nefes alabilirsin.",
+   "nasil": "İçilerek kullanılır.",
+   "nadirlik": "Uncommon"
+  },
+  "quarterstaff-of-the-acrobat": {
+   "ne": "Saldırı ve hasar zarlarına +2 verir. Asa ve sırık biçiminde DEX (Acrobatics) kontrollerinde avantaj; asa biçiminde 30/120 ft fırlatılabilir ve atıştan hemen sonra eline döner.",
+   "nasil": "Bonus eylemle (ya da inisiyatif atınca) 10 ft yeşil loş ışık yakar, bonus eylemle söndürürsün. Bonus eylemle biçimini değiştirirsin: cebe sığan çubuk, 10 ft sırık ya da asa. Attack Deflection: asa biçimindeyken vurulunca tepkiyle o saldırıya karşı AC'ye +5 alırsın; kısa ya da uzun dinlenmeye dek bir kez.",
+   "risk": "Silah yalnız çevredeki boşluğun izin verdiği kadar uzar.",
+   "nadirlik": "Very Rare"
+  },
+  "ring-of-animal-influence": {
+   "ne": "Takılıyken yük harcayıp yüzükten Animal Friendship, Fear (yalnız Beast'lere) ya da Speak with Animals (kurtarma DC 13) yaparsın.",
+   "nasil": "3 yükü vardır; her büyü 1 yük harcar. Her şafakta 1d3 yük yenilenir.",
+   "nadirlik": "Rare"
+  },
+  "ring-of-djinni-summoning": {
+   "ne": "Elemental Plane of Air'den belirli bir Djinni çağırırsın; 120 ft içinde seçtiğin boş bir yerde belirir, sana ve dostlarına dosttur ve emirlerine uyar.",
+   "nasil": "Magic eylemiyle çağırırsın. Djinni konsantrasyonun sürdükçe en çok 1 saat kalır ya da 0 HP'ye düşünce gider. Gittikten sonra 24 saat yeniden çağrılamaz.",
+   "risk": "Djinni ölürse yüzük büyüsünü yitirir. Emir vermezsen yalnız kendini savunur.",
+   "nadirlik": "Legendary"
+  },
+  "ring-of-elemental-command": {
+   "ne": "Dört Elemental Plane'den birine bağlı yüzük. Elemental'lere saldırıda avantajlısın, onlar sana dezavantajlı. 60 ft içinde gördüğün bir Elemental DC 18 WIS kurtarma zarını tutturamazsa sonraki turunun başına dek Charmed olur; hareketini ve eylemini sen belirlersin.",
+   "nasil": "Zorlama Magic eylemiyle yapılır. Düzleme göre ek güç: Air yıldırıma direnç ve uçuş, Earth aside direnç ve toprakta geçiş, Fire ateşe bağışıklık, Water 60 ft Swim hızı ve su altında nefes. Yüzüğün 5 yükü vardır; bağlı düzlemin listesinden yük harcayarak büyü yaparsın (kurtarma DC 18). Her şafakta 1d4 + 1 yük yenilenir.",
+   "risk": "Earth yüzüğüyle turunu katı toprak ya da kaya içinde bitirirsen en son bulunduğun en yakın boş yere fırlatılırsın.",
+   "nadirlik": "Legendary"
+  },
+  "ring-of-evasion": {
+   "ne": "Takılıyken başarısız olduğun bir DEX kurtarma zarını başarıya çevirebilirsin.",
+   "nasil": "3 yükü vardır; tepki harcayıp 1 yük kullanırsın. Her şafakta 1d3 yük yenilenir.",
+   "nadirlik": "Rare"
+  },
+  "ring-of-feather-falling": {
+   "ne": "Düşerken tur başına 60 ft hızla süzülerek iner, düşmeden hiç hasar almazsın.",
+   "nasil": "Yüzüğü takman yeterli; etki düştüğün anda kendiliğinden işler.",
+   "nadirlik": "Rare"
+  },
+  "ring-of-free-action": {
+   "ne": "Zorlu arazi sana fazladan hareket harcatmaz. Büyü hızlarını düşüremez, seni Paralyzed ya da Restrained durumuna sokamaz.",
+   "nasil": "Takılıyken sürekli işler; eylem gerekmez.",
+   "nadirlik": "Rare"
+  },
+  "ring-of-invisibility": {
+   "ne": "Kendini Invisible durumuna sokarsın. Yüzüğü çıkarana ya da yeniden görünür olmayı seçene dek görünmez kalırsın.",
+   "nasil": "Görünmez olmak bir Magic eylemi, yeniden görünür olmak bir bonus eylemdir.",
+   "nadirlik": "Legendary"
+  },
+  "ring-of-jumping": {
+   "ne": "Yüzükten istediğin kadar Jump büyüsü yapabilirsin; büyü yalnız seni hedef alabilir.",
+   "nasil": "Takılıyken büyüyü yüzükten yaparsın; yük ya da slot harcanmaz.",
+   "kimler": "Büyüyü başkasına yapamazsın; hedef yalnız takan kişidir.",
+   "nadirlik": "Uncommon"
+  },
+  "ring-of-mind-shielding": {
+   "ne": "Düşüncelerini okuyan, yalan söyleyip söylemediğini, hizalanmanı ya da yaratık türünü anlayan büyülere karşı bağışıksın; izin vermedikçe kimse seninle telepatiyle konuşamaz.",
+   "nasil": "Bir Magic eylemiyle yüzüğü görünmez kılar, bir Magic eylemiyle yeniden görünür yaparsın; çıkarınca ya da ölünce de görünür olur.",
+   "risk": "Takarken ölürsen ruhun (yüzükte başka ruh yoksa) yüzüğe girer; orada kalabilir ya da öte dünyaya gidebilirsin. Ruh yüzükteyken onu takan herkesle telepatiyle konuşur, takan bunu engelleyemez.",
+   "nadirlik": "Uncommon"
+  },
+  "ring-of-regeneration": {
+   "ne": "En az 1 Hit Point'in varsa her 10 dakikada 1d6 Hit Point kazanırsın. Kopan bir uzuv, o süre boyunca en az 1 Hit Point'te kaldıysan 1d6 + 1 gün içinde yeniden çıkar.",
+   "nasil": "Takılıyken kendiliğinden işler.",
+   "nadirlik": "Very Rare"
+  },
+  "ring-of-resistance-acid": {
+   "ne": "Yüzüğü taktığın sürece asit hasarına karşı Resistance kazanırsın. Türü yüzükteki taş belirtir.",
+   "nasil": "Takılıyken sürekli işler; eylem gerekmez.",
+   "nadirlik": "Rare",
+   "oyunFarki": "Oyun verisinde uyum gerekiyor (SRD uyum istemez)."
+  },
+  "ring-of-resistance-bludgeoning": {
+   "ne": "Yüzüğü taktığın sürece ezici hasarına karşı Resistance kazanırsın. Türü yüzükteki taş belirtir.",
+   "nasil": "Takılıyken sürekli işler; eylem gerekmez.",
+   "nadirlik": "Rare",
+   "oyunFarki": "Oyun verisinde uyum gerekiyor (SRD uyum istemez)."
+  },
+  "ring-of-resistance-cold": {
+   "ne": "Yüzüğü taktığın sürece soğuk hasarına karşı Resistance kazanırsın. Türü yüzükteki taş belirtir.",
+   "nasil": "Takılıyken sürekli işler; eylem gerekmez.",
+   "nadirlik": "Rare",
+   "oyunFarki": "Oyun verisinde uyum gerekiyor (SRD uyum istemez)."
+  },
+  "ring-of-resistance-fire": {
+   "ne": "Yüzüğü taktığın sürece ateş hasarına karşı Resistance kazanırsın. Türü yüzükteki taş belirtir.",
+   "nasil": "Takılıyken sürekli işler; eylem gerekmez.",
+   "nadirlik": "Rare",
+   "oyunFarki": "Oyun verisinde uyum gerekiyor (SRD uyum istemez)."
+  },
+  "ring-of-resistance-force": {
+   "ne": "Yüzüğü taktığın sürece kuvvet hasarına karşı Resistance kazanırsın. Türü yüzükteki taş belirtir.",
+   "nasil": "Takılıyken sürekli işler; eylem gerekmez.",
+   "nadirlik": "Rare",
+   "oyunFarki": "Oyun verisinde uyum gerekiyor (SRD uyum istemez)."
+  },
+  "ring-of-resistance-lightning": {
+   "ne": "Yüzüğü taktığın sürece yıldırım hasarına karşı Resistance kazanırsın. Türü yüzükteki taş belirtir.",
+   "nasil": "Takılıyken sürekli işler; eylem gerekmez.",
+   "nadirlik": "Rare",
+   "oyunFarki": "Oyun verisinde uyum gerekiyor (SRD uyum istemez)."
+  },
+  "ring-of-resistance-necrotic": {
+   "ne": "Yüzüğü taktığın sürece nekrotik hasarına karşı Resistance kazanırsın. Türü yüzükteki taş belirtir.",
+   "nasil": "Takılıyken sürekli işler; eylem gerekmez.",
+   "nadirlik": "Rare",
+   "oyunFarki": "Oyun verisinde uyum gerekiyor (SRD uyum istemez)."
+  },
+  "ring-of-resistance-piercing": {
+   "ne": "Yüzüğü taktığın sürece delici hasarına karşı Resistance kazanırsın. Türü yüzükteki taş belirtir.",
+   "nasil": "Takılıyken sürekli işler; eylem gerekmez.",
+   "nadirlik": "Rare",
+   "oyunFarki": "Oyun verisinde uyum gerekiyor (SRD uyum istemez)."
+  },
+  "ring-of-resistance-poison": {
+   "ne": "Yüzüğü taktığın sürece zehir hasarına karşı Resistance kazanırsın. Türü yüzükteki taş belirtir.",
+   "nasil": "Takılıyken sürekli işler; eylem gerekmez.",
+   "nadirlik": "Rare",
+   "oyunFarki": "Oyun verisinde uyum gerekiyor (SRD uyum istemez)."
+  },
+  "ring-of-resistance-psychic": {
+   "ne": "Yüzüğü taktığın sürece psişik hasarına karşı Resistance kazanırsın. Türü yüzükteki taş belirtir.",
+   "nasil": "Takılıyken sürekli işler; eylem gerekmez.",
+   "nadirlik": "Rare",
+   "oyunFarki": "Oyun verisinde uyum gerekiyor (SRD uyum istemez)."
+  },
+  "ring-of-resistance-radiant": {
+   "ne": "Yüzüğü taktığın sürece ışıltı hasarına karşı Resistance kazanırsın. Türü yüzükteki taş belirtir.",
+   "nasil": "Takılıyken sürekli işler; eylem gerekmez.",
+   "nadirlik": "Rare",
+   "oyunFarki": "Oyun verisinde uyum gerekiyor (SRD uyum istemez)."
+  },
+  "ring-of-resistance-slashing": {
+   "ne": "Yüzüğü taktığın sürece kesici hasarına karşı Resistance kazanırsın. Türü yüzükteki taş belirtir.",
+   "nasil": "Takılıyken sürekli işler; eylem gerekmez.",
+   "nadirlik": "Rare",
+   "oyunFarki": "Oyun verisinde uyum gerekiyor (SRD uyum istemez)."
+  },
+  "ring-of-resistance-thunder": {
+   "ne": "Yüzüğü taktığın sürece gök gürültüsü hasarına karşı Resistance kazanırsın. Türü yüzükteki taş belirtir.",
+   "nasil": "Takılıyken sürekli işler; eylem gerekmez.",
+   "nadirlik": "Rare",
+   "oyunFarki": "Oyun verisinde uyum gerekiyor (SRD uyum istemez)."
+  },
+  "ring-of-shooting-stars": {
+   "ne": "Dancing Lights ya da Light yapar; yükle Faerie Fire, ışık saçan yıldırım küreleri (DC 15 DEX, küre sayısına göre hasar) ve 15 ft küpte 5d4 ışıltı hasarı veren kayan yıldızlar (DC 15 DEX, yarı hasar) üretir.",
+   "nasil": "6 yükü var, şafakta 1d6 yük yenilenir. Faerie Fire 1 yük; yıldırım küreleri 2 yük ve Magic eylemi: 120 ft içinde en çok dört küre, konsantrasyonla 1 dakika, bonus eylemle her biri 30 ft taşınır. Kayan yıldızlar Magic eylemi, 1–3 yük, her yük için 60 ft içinde bir nokta.",
+   "risk": "Küre, sana değil 5 ft yakınına gelen ilk yaratığa boşalır ve kaybolur; dostlarını da çarpabilir.",
+   "nadirlik": "Very Rare"
+  },
+  "ring-of-spell-storing": {
+   "ne": "En çok 5 seviyelik büyü saklar; bulunduğunda içinde 1d6 − 1 seviyelik büyü vardır. Takan, saklanan büyüyü ilk yapanın slot seviyesi, DC'si ve saldırı bonusuyla yapar.",
+   "nasil": "Herhangi bir yaratık 1–5. seviye bir büyüyü yüzüğe dokunarak içine yapar; büyü yalnız saklanır. Yüzükten yapılan büyü boşalır ve yer açılır.",
+   "risk": "Yüzüğe sığmayan büyü hiçbir etki yaratmadan harcanır.",
+   "nadirlik": "Rare"
+  },
+  "ring-of-spell-turning": {
+   "ne": "Büyülere karşı kurtarma zarlarında Advantage kazanırsın; 7. seviye ya da altı bir büyüye karşı başarılı olursan büyü sana hiç işlemez.",
+   "nasil": "Yalnız seni hedef alan ve alan etkisi yaratmayan büyüde Reaction ile büyüyü yapana geri yollarsın; o, kendi DC'sine karşı kurtarma zarı atar.",
+   "nadirlik": "Legendary"
+  },
+  "ring-of-swimming": {
+   "ne": "Yüzüğü taktığın sürece 40 ft Yüzme Hızın olur.",
+   "nasil": "Takılıyken sürekli işler; uyum gerekmez.",
+   "nadirlik": "Uncommon"
+  },
+  "ring-of-telekinesis": {
+   "ne": "Yüzükten istediğin zaman Telekinesis büyüsü yapabilirsin.",
+   "nasil": "Takılıyken büyüyü yüzükten yaparsın; yük ya da slot harcanmaz.",
+   "nadirlik": "Very Rare"
+  },
+  "ring-of-three-wishes": {
+   "ne": "3 yükü vardır; her yük Wish büyüsü yapmanı sağlar.",
+   "nasil": "Takılıyken 1 yük harcayıp yüzükten Wish yaparsın.",
+   "risk": "Son yük harcanınca yüzük sıradan, büyüsüz bir yüzüğe dönüşür.",
+   "nadirlik": "Legendary"
+  },
+  "ring-of-warmth": {
+   "ne": "Soğuk hasarı aldığında yüzük hasarı 2d8 azaltır. Sen ve üstündekiler 0 Fahrenheit ve altı soğuktan zarar görmezsiniz.",
+   "nasil": "Takılıyken kendiliğinden işler.",
+   "nadirlik": "Uncommon"
+  },
+  "ring-of-water-walking": {
+   "ne": "Yüzükten Water Walk büyüsü yaparsın; büyü yalnız seni hedef alır.",
+   "nasil": "Takılıyken büyüyü yüzükten yaparsın.",
+   "kimler": "Büyüyü başkasına yapamazsın; hedef yalnız takan kişidir.",
+   "nadirlik": "Uncommon"
+  },
+  "ring-of-x-ray-vision": {
+   "ne": "1 dakika boyunca 30 ft menzilli X-ışını görüşü kazanırsın: katı nesneler saydam görünür. Görüş 1 ft taş, 1 inç metal ya da 3 ft ahşap/toprak geçer; ince kurşun levha keser.",
+   "nasil": "Bir Magic eylemiyle etkinleşir.",
+   "risk": "Uzun dinlenme yapmadan yeniden kullanırsan DC 15 CON kurtarma zarını geçemezsen 1 Exhaustion seviyesi alırsın.",
+   "nadirlik": "Rare"
+  },
+  "ring-of-the-ram": {
+   "ne": "60 ft içinde gördüğün bir yaratığa +7 ile menzilli büyü saldırısı yapan hayalet bir koç başı çağırır; isabette harcanan her yük için 2d10 kuvvet hasarı ve 5 ft itme. Yükle büyüsüz bir nesneyi kırmayı da deneyebilir.",
+   "nasil": "3 yükü var, şafakta 1d3 yük yenilenir. Magic eylemiyle 1–3 yük harcarsın. Nesne kırmada yüzük, her yük için +5 ile STR kontrolü yapar.",
+   "nadirlik": "Rare"
+  },
+  "robe-of-eyes": {
+   "ne": "Görmeye dayalı WIS (Perception) kontrollerinde Advantage, 120 ft Darkvision ve Truesight kazanırsın.",
+   "nasil": "Giyiliyken sürekli işler.",
+   "risk": "Cüppeye Light ya da 5 ft yakınına Daylight yapılırsa 1 dakika Blinded olursun; her tur sonu CON kurtarma zarıyla (Light için DC 11, Daylight için DC 15) kurtulursun.",
+   "nadirlik": "Rare"
+  },
+  "robe-of-scintillating-colors": {
+   "ne": "Bir sonraki turunun sonuna dek cüppe 30 ft parlak ışık, 30 ft daha loş ışık saçar; seni gören yaratıklar sana saldırırken Disadvantage alır. Etkinleştiğinde parlak ışıkta seni gören yaratık DC 15 WIS kurtarma zarını geçemezse etki bitene dek Stunned olur.",
+   "nasil": "3 yükü var, şafakta 1d3 yük yenilenir. Magic eylemi ve 1 yükle etkinleşir.",
+   "nadirlik": "Very Rare"
+  },
+  "robe-of-stars": {
+   "ne": "Kurtarma zarlarına +1 bonus verir. Büyük yıldızlardan birini koparıp 5. seviye Magic Missile yaparsın; cüppeyle Astral Plane'e geçebilirsin.",
+   "nasil": "Yıldız koparmak bir Magic eylemidir; her akşam 1d6 kopmuş yıldız geri gelir. Astral Plane'e gidiş ve dönüş birer Magic eylemi; dönünce son durduğun yere ya da en yakın boş yere çıkarsın.",
+   "nadirlik": "Very Rare"
+  },
+  "robe-of-useful-items": {
+   "ne": "Cüppedeki yamalar koparılınca gerçek nesne ya da yaratığa dönüşür. Her birinden iki tane bullseye fener (dolu ve yanık), hançer, ayna, sırık, sarılı ip ve çuval vardır; ayrıca Game Master'ın seçtiği ya da tablodan belirlediği 4d4 başka yama.",
+   "nasil": "Bir Magic eylemiyle tek yama koparırsın.",
+   "risk": "Son yama koparılınca cüppe sıradan bir giysiye dönüşür.",
+   "nadirlik": "Uncommon"
+  },
+  "robe-of-the-archmagi": {
+   "ne": "Zırh giymiyorsan temel AC'n 15 artı DEX değiştiricin olur. Büyülere ve diğer büyülü etkilere karşı kurtarma zarlarında Advantage; büyü kurtarma DC'n ve büyü saldırı bonusun +2 artar.",
+   "nasil": "Giyiliyken sürekli işler.",
+   "kimler": "Yalnız Sorcerer, Warlock ya da Wizard uyum sağlayabilir. AC özelliği zırhla işlemez.",
+   "nadirlik": "Legendary"
+  },
+  "rod-of-absorption": {
+   "ne": "Yalnız seni hedef alan, alan etkisi yaratmayan bir büyüyü emer; büyü iptal olur, enerjisi asaya geçer. Büyücüysen saklanan enerjiyi bildiğin büyüler için slot olarak kullanırsın (kendi slot seviyen kadar, en çok 5. seviye).",
+   "nasil": "Emmek bir Reaction'dır. Asa ömrü boyunca en çok 50 seviye emer; yeni bulunan asada genelde 1d10 seviye enerji vardır. Uyum sağlayınca toplam ve kalan enerjiyi bilirsin.",
+   "risk": "Saklayamadığı büyüye etkisizdir. Daha fazla ememeyen ve enerjisi biten asa büyüsünü yitirir.",
+   "nadirlik": "Very Rare"
+  },
+  "rod-of-alertness": {
+   "ne": "Elindeyken WIS (Perception) kontrollerinde ve inisiyatifte Advantage kazanırsın. Detect Evil and Good, Detect Magic, Detect Poison and Disease ve See Invisibility gibi büyüleri asadan yaparsın.",
+   "nasil": "Koruyucu Aura: Magic eylemiyle asayı yere dikersin; 60 ft parlak, 60 ft daha loş ışık saçar. Parlak ışıktaki sen ve dostların AC ve kurtarma zarlarına +1 alır, aynı ışıktaki Invisible yaratıkların yerini sezer. 10 dakika ya da asa sökülene dek sürer; şafağa dek bir kez.",
+   "nadirlik": "Very Rare"
+  },
+  "rod-of-lordly-might": {
+   "ne": "+3 bonuslu büyülü bir Mace. Altı düğmesiyle alev kılıcına (+2d6 ateş), +3 Battleaxe ya da Spear'e, 50 ft tırmanma sırığına, koçbaşına (kapı kırmada +10 Athletics) ya da pusulaya dönüşür. Drain Life (4d6 nekrotik), Paralyze ve Terrify (DC 17) güçleri vardır.",
+   "nasil": "Düğmeye basmak bir bonus eylemdir. Drain Life ve Paralyze yakın dövüş isabetinde DC 17 CON kurtarma zarı ister; Terrify bir Magic eylemiyle 30 ft içindekilere DC 17 WIS. Bu üç güç şafağa dek birer kez.",
+   "risk": "Tırmanma sırığı taşıyabileceğinden fazla yük ya da sağlam bir dayanak olmadan normal biçimine döner.",
+   "nadirlik": "Legendary"
+  },
+  "rod-of-resurrection": {
+   "ne": "Asadan Heal ya da Resurrection büyüsü yaparsın.",
+   "nasil": "5 yükü var; Heal 1 yük, Resurrection 5 yük harcar. Şafakta 1 yük yenilenir.",
+   "risk": "Son yükü harcayınca 1d20 at; 1 gelirse asa zararsız bir ışık patlamasıyla yok olur.",
+   "nadirlik": "Legendary"
+  },
+  "rod-of-rulership": {
+   "ne": "120 ft içinde gördüğün seçtiğin yaratıklar DC 15 WIS kurtarma zarını geçemezse 8 saat Charmed olur ve seni güvenilir lider sayar.",
+   "nasil": "Bir Magic eylemiyle asayı gösterirsin; şafağa dek bir kez.",
+   "risk": "Sen ya da dostların zarar verirse ya da doğasına aykırı bir emir verirsen etki biter.",
+   "nadirlik": "Rare"
+  },
+  "rod-of-security": {
+   "ne": "Seni ve gördüğün 199'a kadar istekli yaratığı biçimini senin seçtiğin, yiyecek ve suyu bol, zararsız bir yarı-düzleme taşır. Orada her saat bir Hit Point Die harcamış gibi iyileşilir ve yaşlanılmaz.",
+   "nasil": "Bir Magic eylemiyle etkinleşir; bir Magic eylemiyle de bitirirsin. Kalma süresi 200 günün yaratık sayısına bölümü kadardır (aşağı yuvarla); herkes çıktığı yere ya da en yakın boş yere döner. 10 gün geçmeden yeniden kullanılamaz.",
+   "risk": "Yarı-düzlemdeki şeyler dışarı çıkarılınca yok olur.",
+   "nadirlik": "Very Rare"
+  },
+  "rope-of-climbing": {
+   "ne": "60 ft'lik ip 3,000 pound taşır. Komutla ucu istediğin yere doğru ilerler, nesneye bağlanır ya da çözülür, düğümlenir ya da sarılır. Düğümlüyken 50 ft'e kısalır ve ip ile tırmanma kontrollerinde Advantage verir.",
+   "nasil": "Bir ucunu tutarken Magic eylemiyle komut verirsin; ilk komutta ve sonraki her tur başında 10 ft ilerler.",
+   "risk": "İpin AC 20, HP 20 değeri ve zehir ile psişik hasara bağışıklığı var; 0 Hit Point'e düşerse yok olur. En az 1 Hit Point'i varken her 5 dakikada 1 Hit Point kazanır.",
+   "nadirlik": "Uncommon"
+  },
+  "rope-of-entanglement": {
+   "ne": "30 ft'lik ipin ucu, 20 ft içinde gördüğün bir yaratığa atılır; DC 15 DEX kurtarma zarını geçemeyen Restrained olur.",
+   "nasil": "Bir ucunu tutarken Magic eylemiyle komut verirsin. İpi bırakarak ya da bonus eylemle komutu tekrarlayarak hedefi serbest bırakırsın. Hedef bir eylemle DC 15 STR (Athletics) ya da DEX (Acrobatics) kontrolüyle kurtulur; tutuyorsan Reaction ile ipi elinde toplarsın.",
+   "risk": "İpin AC 20, HP 20 değeri ve zehir ile psişik hasara bağışıklığı var; 0 Hit Point'e düşerse yok olur.",
+   "nadirlik": "Rare"
+  },
+  "scarab-of-protection": {
+   "ne": "AC'ye +1 bonus ve büyülere karşı kurtarma zarlarında Advantage verir. Necromancy büyüsüne ya da Undead kaynaklı zararlı bir etkiye karşı başarısız kurtarma zarını başarıya çevirebilirsin.",
+   "nasil": "Üzerinde taşıman yeterli. Kurtarma zarını çevirmek bir Reaction ve 1 yüktür; 12 yükü vardır.",
+   "risk": "Son yük harcanınca bok böceği toza dönüp yok olur.",
+   "nadirlik": "Legendary"
+  },
+  "scimitar-of-speed": {
+   "ne": "Bu büyülü Scimitar ile saldırı ve hasar zarlarına +2 bonus kazanırsın; her turunda bonus eylemle onunla bir saldırı daha yaparsın.",
+   "nasil": "Ek saldırı her turunda bir bonus eylemdir.",
+   "nadirlik": "Very Rare"
+  },
+  "sending-stones": {
+   "ne": "Çift olarak gelen iki taştan birine dokunup Sending büyüsü yaparsın; hedef öbür taşı taşıyan kişidir.",
+   "nasil": "Taşlardan biri kullanılınca ikisi de şafağa dek kullanılamaz. Öbür taşı kimse taşımıyorsa bunu hemen anlarsın ve büyü yapılmaz.",
+   "risk": "Çiftten biri yok edilirse öbürü büyüsünü yitirir.",
+   "nadirlik": "Uncommon"
+  },
+  "sentinel-shield": {
+   "ne": "Elindeyken inisiyatif zarlarında ve WIS (Perception) kontrollerinde Advantage kazanırsın.",
+   "nasil": "Kalkanı tutman yeterli; sürekli işler.",
+   "nadirlik": "Uncommon"
+  },
+  "shield-of-missile-attraction": {
+   "ne": "Elindeyken menzilli silah saldırılarının hasarına karşı Resistance kazanırsın.",
+   "nasil": "Kalkanı tutman yeterli.",
+   "risk": "Lanetlidir: uyum sağlamak seni Remove Curse ya da benzeri bir büyü yapılana dek lanetler; kalkanı bırakmak laneti bitirmez. 10 ft içindeki bir yaratığa menzilli silah saldırısı yapılınca hedef sen olursun.",
+   "nadirlik": "Rare"
+  },
+  "shield-of-the-cavalier": {
+   "ne": "Kalkanın normal bonusuna ek olarak AC'ye +2 verir. Forceful Bash ile kalkanla vurup 2d6 + 2 + STR kuvvet hasarı verir, 10 ft itersin. Protective Field ile 5 ft'lik geçilmez bir alan kurarsın.",
+   "nasil": "Forceful Bash: Attack eyleminde saldırılardan birini 5 ft içindeki hedefe kalkanla yaparsın; senin boyunda ya da küçükse Prone da edebilirsin. Protective Field: sen ya da 5 ft içindeki dost saldırıya uğrayınca ya da alan etkisine kurtarma zarı atınca Reaction ile; konsantrasyonla 1 dakikaya dek, şafağa dek bir kez.",
+   "risk": "Alanın içine ya da dışına hiçbir şey geçemez; içerideyken dışarıya zarar veremezsin.",
+   "nadirlik": "Very Rare"
+  },
+  "shield-1": {
+   "ne": "Elindeyken kalkanın normal AC bonusuna ek olarak +1 AC bonusu verir.",
+   "nasil": "Kalkanı tutman yeterli; uyum gerekmez.",
+   "nadirlik": "Varies"
+  },
+  "shield-2": {
+   "ne": "Elindeyken kalkanın normal AC bonusuna ek olarak +2 AC bonusu verir.",
+   "nasil": "Kalkanı tutman yeterli; uyum gerekmez.",
+   "nadirlik": "Varies"
+  },
+  "shield-3": {
+   "ne": "Elindeyken kalkanın normal AC bonusuna ek olarak +3 AC bonusu verir.",
+   "nasil": "Kalkanı tutman yeterli; uyum gerekmez.",
+   "nadirlik": "Varies"
+  },
+  "slippers-of-spider-climbing": {
+   "ne": "Duvarlarda ve tavanda, elleri serbest olarak yürürsün; Hızına eşit Tırmanma Hızı kazanırsın.",
+   "nasil": "Giyiliyken sürekli işler.",
+   "risk": "Buz ya da yağ gibi kaygan yüzeylerde bu biçimde hareket edemezsin.",
+   "nadirlik": "Uncommon"
+  },
+  "sovereign-glue": {
+   "ne": "İki nesneyi kalıcı olarak birbirine yapıştırır. Bulunduğunda kapta 1d6 + 1 ons vardır; her ons 1 ft karelik yüzeyi kaplar.",
+   "nasil": "Bir onsu sürmek Utilize eylemidir; tutkal 1 dakikada donar. Bağ yalnız Universal Solvent, Oil of Etherealness ya da Wish büyüsüyle çözülür.",
+   "risk": "İçi Oil of Slipperiness ile kaplı bir kavanoz ya da şişede saklanmalıdır.",
+   "nadirlik": "Legendary"
+  },
+  "spell-scroll": {
+   "ne": "Tek bir büyü taşır; büyü listende varsa okuyup Material bileşeni olmadan yaparsın. Büyünün DC'si ve saldırı bonusu parşömenin büyü seviyesine göre belirlenir.",
+   "nasil": "Büyünün normal yapım süresi kadar okursun. Büyü yapılınca parşömen toza döner; yapım kesilirse parşömen kaybolmaz. Wizard büyüsü, büyü kitabına INT (Arcana) kontrolüyle (zorluk: 10 + büyü seviyesi) kopyalanabilir.",
+   "risk": "Normalde yapabildiğinden yüksek seviyeli büyüde büyü yeteneğinle kontrol yaparsın (zorluk: 10 + büyü seviyesi); başarısızlıkta büyü parşömenden silinir. Kopyalamada kontrol başarılı da olsa başarısız da olsa parşömen yok olur.",
+   "kimler": "Büyü kendi büyü listende değilse parşömen okunamaz.",
+   "nadirlik": "Varies"
+  },
+  "spellguard-shield": {
+   "ne": "Elindeyken büyülere ve diğer büyülü etkilere karşı kurtarma zarlarında Advantage kazanırsın; sana yapılan büyü saldırıları Disadvantage alır.",
+   "nasil": "Kalkanı tutman yeterli.",
+   "nadirlik": "Very Rare"
+  },
+  "sphere-of-annihilation": {
+   "ne": "Değdiği ya da içinden geçtiği her maddeyi (Artifact'ler hariç) yok eden kara bir küre. Tam yutulmadan değen 8d10 kuvvet hasarı alır; bu hasarla 0 Hit Point'e düşen yaratık iz bırakmadan yok olur.",
+   "nasil": "60 ft içindeyken Magic eylemiyle DC 25 INT (Arcana) kontrolü yaparsın; başarıda bir sonraki turunun başına dek küre sendedir. Bonus eylemle INT değiştiricinin 5 katı ft (en az 5 ft) yürütürsün; girdiği yerdeki yaratık DC 19 DEX kurtarma zarını geçemezse 8d10 kuvvet hasarı alır.",
+   "risk": "Kontrol başarısız olursa küre sana doğru 10 ft düz ilerler. Bir geçide ya da boyutlar arası alana değerse sonucu Game Master tablodan belirler: küre yok olabilir, geçer ya da küreyi ve çevresindekileri rastgele bir düzleme savurur.",
+   "nadirlik": "Legendary"
+  },
+  "staff-of-charming": {
+   "ne": "Charm Person, Command ve Comprehend Languages büyülerini kendi büyü DC'nle asadan yaparsın. Seni hedef alan Enchantment büyülerine karşı koruma sağlar.",
+   "nasil": "10 yükü var; büyü başına 1 yük. Yalnız seni hedef alan Enchantment büyüsünde kurtarma zarını geçersen Reaction ve 1 yükle büyüyü yapana geri çevirirsin; başarısız zarı başarıya çevirmek şafağa dek bir kez. Şafakta 1d8 + 2 yük yenilenir.",
+   "risk": "Son yükü harcayınca 1d20 at; 1 gelirse asa toza döner.",
+   "kimler": "Yalnız Bard, Cleric, Druid, Sorcerer, Warlock ya da Wizard uyum sağlayabilir.",
+   "nadirlik": "Rare"
+  },
+  "staff-of-fire": {
+   "ne": "Elindeyken ateş hasarına karşı Resistance kazanırsın. Burning Hands, Fireball ve Wall of Fire büyülerini kendi büyü DC'nle asadan yaparsın.",
+   "nasil": "10 yükü var; her büyü tabloda belirtilen kadar yük harcar. Şafakta 1d6 + 4 yük yenilenir.",
+   "risk": "Son yükü harcayınca 1d20 at; 1 gelirse asa küle dönüp yok olur.",
+   "kimler": "Yalnız Druid, Sorcerer, Warlock ya da Wizard uyum sağlayabilir.",
+   "nadirlik": "Very Rare"
+  },
+  "staff-of-frost": {
+   "ne": "Elindeyken soğuk hasarına karşı Resistance kazanırsın. Cone of Cold, Fog Cloud, Ice Storm ve Wall of Ice büyülerini kendi büyü DC'nle asadan yaparsın.",
+   "nasil": "10 yükü var; her büyü tabloda belirtilen kadar yük harcar. Şafakta 1d6 + 4 yük yenilenir.",
+   "risk": "Son yükü harcayınca 1d20 at; 1 gelirse asa suya dönüp yok olur.",
+   "kimler": "Yalnız Druid, Sorcerer, Warlock ya da Wizard uyum sağlayabilir.",
+   "nadirlik": "Very Rare"
+  },
+  "staff-of-power": {
+   "ne": "+2 bonuslu büyülü bir Quarterstaff; elindeyken AC, kurtarma zarları ve büyü saldırılarına +2. Cone of Cold, Fireball, Globe of Invulnerability, Hold Monster, Levitate, Lightning Bolt, Magic Missile, Ray of Enfeeblement ve Wall of Force yapar.",
+   "nasil": "20 yükü var; büyüler kendi büyü DC'nle, tablodaki yük kadar. Şafakta 2d8 + 4 yük yenilenir. Retributive Strike: Magic eylemiyle asayı kırarsın; 30 ft'lik patlamada diğer yaratıklar DC 17 DEX kurtarma zarı atar, kalan yükün 4 katı kuvvet hasarı alır (başarıda yarısı).",
+   "risk": "Son yükte 1d20 at: 1'de asa yalnız +2 saldırı/hasar bonusunu korur, 20'de 1d8 + 2 yük kazanır. Retributive Strike'ta %50 ihtimalle rastgele bir düzleme kaçarsın; kaçamazsan kalan yükün 16 katı kuvvet hasarı alırsın.",
+   "kimler": "Yalnız Sorcerer, Warlock ya da Wizard uyum sağlayabilir.",
+   "nadirlik": "Very Rare"
+  },
+  "staff-of-striking": {
+   "ne": "+3 bonuslu büyülü bir Quarterstaff. Yakın dövüş isabetinde en çok 3 yük harcayabilirsin; her yük hedefe 1d6 ek kuvvet hasarı verir.",
+   "nasil": "10 yükü var; yükü isabetten sonra harcarsın. Şafakta 1d6 + 4 yük yenilenir.",
+   "risk": "Son yükü harcayınca 1d20 at; 1 gelirse büyüsüz bir Quarterstaff'a dönüşür.",
+   "nadirlik": "Very Rare"
+  },
+  "staff-of-swarming-insects": {
+   "ne": "Çevrende 30 ft'lik bir alanı 10 dakika boyunca senin dışındakiler için Heavily Obscured yapan zararsız böcek sürüsü yaratır. Giant Insect ve Insect Plague büyülerini kendi DC ve saldırı değiştiricinle asadan yaparsın.",
+   "nasil": "10 yükü var. Böcek bulutu Magic eylemi ve 1 yük; büyüler tablodaki yük kadar. Şafakta 1d6 + 4 yük yenilenir.",
+   "risk": "Güçlü bir rüzgâr (Gust of Wind gibi) sürüyü dağıtır. Son yükü harcayınca 1d20 at; 1 gelirse böcekler asayı yiyip yok eder.",
+   "kimler": "Yalnız Bard, Cleric, Druid, Sorcerer, Warlock ya da Wizard uyum sağlayabilir.",
+   "nadirlik": "Rare"
+  },
+  "staff-of-thunder-and-lightning": {
+   "ne": "+2 bonuslu büyülü bir Quarterstaff. İsabette 2d6 ek yıldırım hasarı ya da DC 17 CON ile Stunned verir; 5 ft genişlik, 120 ft çizgide 9d6 yıldırım (DC 17 DEX) ya da 60 ft içinde 2d6 gök gürültüsü ve Deafened (DC 17 CON) yaratır.",
+   "nasil": "Lightning ve Thunder isabette eylemsiz; isabetten hemen sonra bonus eylemle ikisi birlikte (günlük haklarını harcamadan). Lightning Strike ve Thunderclap birer Magic eylemi. Her güç şafağa dek bir kez.",
+   "risk": "Thunderclap'te kurtarma zarını geçen de yarı hasar alır.",
+   "nadirlik": "Very Rare"
+  },
+  "staff-of-withering": {
+   "ne": "Büyülü bir Quarterstaff. İsabette 1 yük harcayıp 2d10 ek nekrotik hasar verirsin; hedef DC 15 CON kurtarma zarını geçemezse 1 saat STR ya da CON kullanan yetenek kontrolleri ve kurtarma zarlarında Disadvantage alır.",
+   "nasil": "3 yükü var, şafakta 1d3 yük yenilenir; yükü isabetten sonra harcarsın.",
+   "nadirlik": "Rare"
+  },
+  "staff-of-the-magi": {
+   "ne": "+2 bonuslu büyülü bir Quarterstaff; büyü saldırılarına +2 ve büyülere karşı kurtarma zarlarında Advantage. Seni hedef alan büyüyü emer; Fireball, Lightning Bolt, Plane Shift, Wall of Fire gibi birçok büyüyü yapar.",
+   "nasil": "50 yükü var; büyüler kendi büyü DC'nle, tablodaki yük kadar. Yalnız seni hedef alan büyüyü Reaction ile emersin; asa büyünün seviyesi kadar yük kazanır. Şafakta 4d6 + 2 yük yenilenir; son yükte 1d20'de 20 gelirse 1d12 + 1 yük kazanır. Retributive Strike: Magic eylemiyle asayı kırarsın.",
+   "risk": "Emilen büyü yükü 50'nin üstüne çıkarırsa asa Retributive Strike gibi patlar. Patlamada %50 ihtimalle başka düzleme kaçarsın; kaçamazsan kalan yükün 16 katı, 30 ft içindekiler DC 17 DEX ile kalan yükün 6 katı kuvvet hasarı alır.",
+   "kimler": "Yalnız Sorcerer, Warlock ya da Wizard uyum sağlayabilir.",
+   "nadirlik": "Legendary"
+  },
+  "staff-of-the-python": {
+   "ne": "Asayı 10 ft içinde boş bir yere atarsın; asa senin kontrolündeki bir Giant Constrictor Snake'e dönüşür ve senin inisiyatifinde, hemen ardından oynar.",
+   "nasil": "Atmak bir Magic eylemidir. 60 ft içindeyse ve Incapacitated değilsen yılanı eylemsiz yönetirsin; komut vermezsen yalnız kendini savunur. Bonus eylemle asaya geri döndürürsün; dönen yılanın tüm Hit Point'leri yenilenir, özellik 1 saat kullanılamaz.",
+   "risk": "Yılan 0 Hit Point'e düşerse ölür, asaya döner ve asa kırılıp yok olur.",
+   "nadirlik": "Uncommon"
+  },
+  "staff-of-the-woodlands": {
+   "ne": "+2 bonuslu büyülü bir Quarterstaff; büyü saldırılarına +2. Animal Friendship, Awaken, Barkskin, Locate Animals or Plants, Pass without Trace, Speak with Animals, Speak with Plants ve Wall of Thorns yapar; asayı 60 ft'lik bir ağaca dönüştürebilirsin.",
+   "nasil": "6 yükü var; büyüler kendi büyü DC'nle, tablodaki yük kadar. Ağaç Biçimi: Magic eylemi ve 1 yükle asayı toprağa dikersin; ağaca dokunarak Magic eylemiyle geri alırsın. Şafakta 1d6 yük yenilenir.",
+   "risk": "Ağaç asaya dönünce üstündekiler düşer. Son yükü harcayınca 1d20 at; 1 gelirse büyüsüz bir Quarterstaff'a dönüşür.",
+   "kimler": "Yalnız Druid uyum sağlayabilir.",
+   "nadirlik": "Rare",
+   "oyunFarki": "Oyun verisinde 10 yük (SRD 6)."
+  },
+  "stone-of-controlling-earth-elementals": {
+   "ne": "30 ft içinde seçtiğin boş bir yere, emirlerine uyan bir Earth Elemental çağırırsın; senin inisiyatifinde, hemen ardından oynar.",
+   "nasil": "Taşı yere dokundurup Magic eylemiyle çağırırsın. Elemental 1 saat sonra, ölünce ya da bonus eylemle gönderince kaybolur. Şafağa dek bir kez.",
+   "nadirlik": "Rare"
+  },
+  "stone-of-good-luck": {
+   "ne": "Üzerinde taşıdığın sürece yetenek kontrollerine ve kurtarma zarlarına +1 bonus verir.",
+   "nasil": "Üzerinde taşıman yeterli.",
+   "nadirlik": "Uncommon"
+  },
+  "sun-blade": {
+   "ne": "Işıltıdan bir bıçağı olan, Finesse özellikli Longsword gibi işleyen büyülü silah: saldırı ve hasara +2, kesici yerine ışıltı hasarı; Undead'e isabette 1d8 ek ışıltı. Bıçak 15 ft parlak, 15 ft daha loş güneş ışığı saçar.",
+   "nasil": "Bıçağı açıp kapatmak bir bonus eylemdir. Magic eylemiyle parlak ve loş ışık yarıçapını 5 ft'lik adımlarla büyütür ya da küçültürsün (her biri en çok 30 ft, en az 10 ft).",
+   "kimler": "Longsword ya da Shortsword yetkinliğin varsa bu silahta da yetkinsin.",
+   "nadirlik": "Rare"
+  },
+  "sword-of-life-stealing": {
+   "ne": "Saldırıda d20'de 20 atarsan hedef (Construct ya da Undead değilse) 15 ek nekrotik hasar alır, sen de aldığı nekrotik hasar kadar Temporary Hit Point kazanırsın.",
+   "nasil": "Etki doğal 20'de kendiliğinden işler.",
+   "kimler": "Ek hasar Construct ve Undead'e işlemez.",
+   "nadirlik": "Rare"
+  },
+  "sword-of-sharpness": {
+   "ne": "Nesneye isabette silahın hasar zarları en yüksek değeri verir. Yaratığa saldırıda d20'de 20 atarsan hedef 14 ek kesici hasar alır ve 1 Exhaustion seviyesi kazanır.",
+   "nasil": "Etkiler isabette ve doğal 20'de kendiliğinden işler.",
+   "nadirlik": "Very Rare",
+   "oyunFarki": "Oyun verisinde kritik isabette 4d6 kesici (SRD 14 kesici ve 1 Exhaustion)."
+  },
+  "sword-of-wounding": {
+   "ne": "İsabet ettiğin yaratık 2d6 ek nekrotik hasar alır; DC 15 CON kurtarma zarını geçemezse 1 saat Hit Point kazanamaz.",
+   "nasil": "Hedef her tur sonunda kurtarma zarını yineler; başarıda etki biter.",
+   "nadirlik": "Rare",
+   "oyunFarki": "Oyun verisinde ek hasar 2d4 nekrotik (SRD 2d6)."
+  },
+  "talisman-of-pure-good": {
+   "ne": "Holy Symbol olarak kullanılır ve büyü saldırılarına +2 verir. Pure Rebuke ile 120 ft içinde yerdeki bir yaratığın altında alevli bir yarık açarsın: DC 20 DEX'i geçemeyen yarığa düşüp iz bırakmadan yok olur, geçen 4d6 psişik hasar alır.",
+   "nasil": "7 yükü var; Pure Rebuke Magic eylemi ve 1 yüktür. Fiend ve Undead bu kurtarma zarında Disadvantage alır.",
+   "risk": "Son yük harcanınca tılsım altın ışık zerrelerine dağılıp yok olur. Ona dokunan Fiend ya da Undead 8d6 ışıltı hasarı alır ve tutmaya devam ettikçe her tur sonunda yine alır.",
+   "kimler": "Yalnız Cleric ya da Paladin uyum sağlayabilir.",
+   "nadirlik": "Legendary"
+  },
+  "talisman-of-ultimate-evil": {
+   "ne": "Holy Symbol olarak kullanılır ve büyü saldırılarına +2 verir. Ultimate End ile 120 ft içinde yerdeki bir yaratığın altında alevli bir yarık açarsın: DC 20 DEX'i geçemeyen yarığa düşüp iz bırakmadan yok olur, geçen 4d6 psişik hasar alır.",
+   "nasil": "6 yükü var; Ultimate End Magic eylemi ve 1 yüktür. Celestial'lar bu kurtarma zarında Disadvantage alır.",
+   "risk": "Son yük harcanınca tılsım kötü kokulu bir balçığa dönüşüp yok olur. Ona dokunan, Fiend ya da Undead olmayan yaratık 8d6 nekrotik hasar alır ve tutmaya devam ettikçe her tur sonunda yine alır.",
+   "kimler": "Fiend ya da Undead olmayan yaratıklar tılsıma dokununca hasar alır.",
+   "nadirlik": "Legendary"
+  },
+  "talisman-of-the-sphere": {
+   "ne": "Sphere of Annihilation'ı kontrol etmek için yaptığın INT (Arcana) kontrollerinde Advantage verir; küreyi daha uzağa ve düz olmayan bir yolda taşırsın.",
+   "nasil": "Turuna küreyi kontrol ederek başlarsan Magic eylemiyle onu 10 ft artı INT değiştiricinin 10 katı ft taşırsın.",
+   "nadirlik": "Legendary"
+  },
+  "thunderous-greatclub": {
+   "ne": "Uyumluyken STR'n en az 20 olur. Yaratığa isabette 1d8, taşınmayan nesneye 3d8 ek gök gürültüsü hasarı. Clap of Thunder 30 ft konide DC 15 STR ile Prone; Earthquake 50 ft yarıçapta DC 20 DEX ile Prone ve 30 ft derin yarık açar.",
+   "nasil": "Clap of Thunder ve Earthquake birer Magic eylemidir. Earthquake şafağa dek bir kez; alandaki yapılar 50 ezici hasar alır, konsantre olan DC 20 CON ile konsantrasyonunu korur.",
+   "risk": "Yarığın açıldığı yerdeki yaratık DC 20 DEX kurtarma zarını geçemezse içine düşer; yarıktaki yapılar çöker.",
+   "nadirlik": "Very Rare"
+  },
+  "tome-of-clear-thought": {
+   "ne": "Kitabı çalışıp öğütlerini uygularsan INT değerin 2 artar (en çok 30).",
+   "nasil": "En çok 6 günlük bir süreye yayılmış 48 saat çalışma gerekir.",
+   "risk": "Kullanılınca kitap büyüsünü yitirir; bir yüzyıl sonra yeniden kazanır.",
+   "nadirlik": "Very Rare"
+  },
+  "tome-of-leadership-and-influence": {
+   "ne": "Kitabı çalışıp öğütlerini uygularsan CHA değerin 2 artar (en çok 30).",
+   "nasil": "En çok 6 günlük bir süreye yayılmış 48 saat çalışma gerekir.",
+   "risk": "Kullanılınca kitap büyüsünü yitirir; bir yüzyıl sonra yeniden kazanır.",
+   "nadirlik": "Very Rare"
+  },
+  "tome-of-understanding": {
+   "ne": "Kitabı çalışıp öğütlerini uygularsan WIS değerin 2 artar (en çok 30).",
+   "nasil": "En çok 6 günlük bir süreye yayılmış 48 saat çalışma gerekir.",
+   "risk": "Kullanılınca kitap büyüsünü yitirir; bir yüzyıl sonra yeniden kazanır.",
+   "nadirlik": "Very Rare"
+  },
+  "trident-of-fish-command": {
+   "ne": "Yüzme Hızı olan bir Beast'e Dominate Beast (DC 15) yaparsın.",
+   "nasil": "Taşırken 1 yük harcarsın; 3 yükü var, şafakta 1d3 yük yenilenir.",
+   "kimler": "Büyü yalnız Yüzme Hızı olan Beast'leri hedef alabilir.",
+   "nadirlik": "Uncommon"
+  },
+  "universal-solvent": {
+   "ne": "Her ons, değdiği 1 kare ft'e kadar yapıştırıcıyı (Sovereign Glue dahil) anında çözer. Bulunduğunda tüpte 1d6 + 1 ons vardır.",
+   "nasil": "Erişimindeki bir yüzeye Utilize eylemiyle 1 ya da daha çok ons dökersin.",
+   "nadirlik": "Legendary"
+  },
+  "vicious-weapon": {
+   "ne": "İsabet ettiğin her yaratığa 2d6 ek hasar verir; ek hasar silahın normal hasar türündendir.",
+   "nasil": "İsabette kendiliğinden işler; uyum gerekmez.",
+   "nadirlik": "Rare",
+   "oyunFarki": "Oyun verisinde ek hasar yalnız kritik isabette 7 (SRD her isabette 2d6)."
+  },
+  "vorpal-sword": {
+   "ne": "Saldırı ve hasara +3 bonus; kesici hasara karşı Resistance'ı yok sayar. Başı olan yaratığa d20'de 20 atarsan bir başını keser; o başsız yaşayamıyorsa ölür.",
+   "nasil": "Baş kesme doğal 20'de kendiliğinden işler.",
+   "kimler": "Kesici hasara bağışık, başı olmayan ya da başa ihtiyacı olmayan ya da Game Master'a göre fazla büyük yaratığın başı kesilmez; bunun yerine 30 ek kesici hasar alır. Legendary Resistance'lı yaratık bir günlük hakkını harcayıp ek hasarı seçebilir.",
+   "nadirlik": "Legendary"
+  },
+  "wand-of-binding": {
+   "ne": "Hold Monster ve Hold Person büyülerini DC 17 ile değnekten yaparsın.",
+   "nasil": "7 yükü var; her büyü tabloda belirtilen kadar yük harcar. Şafakta 1d6 + 1 yük yenilenir.",
+   "risk": "Son yükü harcayınca 1d20 at; 1 gelirse değnek küle dönüp yok olur.",
+   "nadirlik": "Rare"
+  },
+  "wand-of-enemy-detection": {
+   "ne": "1 dakika boyunca 60 ft içindeki sana düşman en yakın yaratığın yönünü (uzaklığını değil) bilirsin; Invisible, ethereal, kılık değiştirmiş ya da saklanan düşmanları da sezer.",
+   "nasil": "Magic eylemi ve 1 yükle etkinleşir; değneği bırakırsan etki biter. 7 yükü var, şafakta 1d6 + 1 yük yenilenir.",
+   "risk": "Son yükü harcayınca 1d20 at; 1 gelirse değnek küle dönüp yok olur.",
+   "nadirlik": "Rare"
+  },
+  "wand-of-fear": {
+   "ne": "Command (yalnız kaç ya da yerde sürün) ve konili Fear büyülerini DC 15 ile değnekten yaparsın.",
+   "nasil": "7 yükü var; her büyü tabloda belirtilen kadar yük harcar. Şafakta 1d6 + 1 yük yenilenir.",
+   "risk": "Son yükü harcayınca 1d20 at; 1 gelirse değnek küle dönüp yok olur.",
+   "nadirlik": "Rare"
+  },
+  "wand-of-lightning-bolts": {
+   "ne": "Değnekten Lightning Bolt (DC 15) yaparsın; 1 yükle 3. seviye, her ek yükle bir seviye yukarı.",
+   "nasil": "Bir dökümde en çok 3 yük harcarsın; 7 yükü var, şafakta 1d6 + 1 yük yenilenir.",
+   "risk": "Son yükü harcayınca 1d20 at; 1 gelirse değnek küle dönüp yok olur.",
+   "kimler": "Yalnız büyü yapabilen bir yaratık uyum sağlayabilir.",
+   "nadirlik": "Rare"
+  },
+  "wand-of-magic-detection": {
+   "ne": "Değnekten Detect Magic büyüsü yaparsın.",
+   "nasil": "1 yük harcarsın; 3 yükü var, şafakta 1d3 yük yenilenir.",
+   "nadirlik": "Uncommon"
+  },
+  "wand-of-paralysis": {
+   "ne": "60 ft içinde gördüğün bir yaratığa ince mavi bir ışın yollarsın; DC 15 CON kurtarma zarını geçemezse 1 dakika Paralyzed olur.",
+   "nasil": "Magic eylemi ve 1 yük. Hedef her tur sonunda kurtarma zarını yineler. 7 yükü var, şafakta 1d6 + 1 yük yenilenir.",
+   "risk": "Son yükü harcayınca 1d20 at; 1 gelirse değnek küle dönüp yok olur.",
+   "kimler": "Yalnız büyü yapabilen bir yaratık uyum sağlayabilir.",
+   "nadirlik": "Rare"
+  },
+  "wand-of-polymorph": {
+   "ne": "Değnekten Polymorph (DC 15) yaparsın.",
+   "nasil": "1 yük harcarsın; 7 yükü var, şafakta 1d6 + 1 yük yenilenir.",
+   "risk": "Son yükü harcayınca 1d20 at; 1 gelirse değnek küle dönüp yok olur.",
+   "kimler": "Yalnız büyü yapabilen bir yaratık uyum sağlayabilir.",
+   "nadirlik": "Very Rare"
+  },
+  "wand-of-secrets": {
+   "ne": "60 ft içinde gizli bir kapı ya da tuzak varsa değnek titreyip en yakınını gösterir.",
+   "nasil": "Magic eylemi ve 1 yük; 3 yükü var, şafakta 1d3 yük yenilenir.",
+   "nadirlik": "Uncommon"
+  },
+  "wand-of-web": {
+   "ne": "Değnekten Web (DC 13) yaparsın.",
+   "nasil": "1 yük harcarsın; 7 yükü var, şafakta 1d6 + 1 yük yenilenir.",
+   "risk": "Son yükü harcayınca 1d20 at; 1 gelirse değnek küle dönüp yok olur.",
+   "kimler": "Yalnız büyü yapabilen bir yaratık uyum sağlayabilir.",
+   "nadirlik": "Uncommon",
+   "oyunFarki": "Oyun verisinde DC 15 (SRD DC 13)."
+  },
+  "wand-of-wonder": {
+   "ne": "120 ft içinde seçtiğin nokta, Wand of Wonder tablosundan rastgele belirlenen bir büyünün ya da büyülü etkinin çıkış noktası olur. Değnekten çıkan büyülerin DC'si 15'tir; menzili kısa büyüler 120 ft'e çıkar.",
+   "nasil": "Magic eylemi ve 1 yük; 7 yükü var, şafakta 1d6 + 1 yük yenilenir.",
+   "risk": "Sonuç rastgeledir; birden çok olası hedef varsa etkilenenleri Game Master rastgele seçer. Son yükü harcayınca 1d20 at; 1 gelirse değnek toza dönüp yok olur.",
+   "nadirlik": "Rare"
+  },
+  "wand-of-the-war-mage-1": {
+   "ne": "Elindeyken büyü saldırılarına +1 bonus kazanırsın; büyü saldırılarında Half Cover'ı yok sayarsın.",
+   "nasil": "Değneği tutman yeterli.",
+   "kimler": "Yalnız büyü yapabilen bir yaratık uyum sağlayabilir.",
+   "nadirlik": "Varies"
+  },
+  "wand-of-the-war-mage-2": {
+   "ne": "Elindeyken büyü saldırılarına +2 bonus kazanırsın; büyü saldırılarında Half Cover'ı yok sayarsın.",
+   "nasil": "Değneği tutman yeterli.",
+   "kimler": "Yalnız büyü yapabilen bir yaratık uyum sağlayabilir.",
+   "nadirlik": "Varies"
+  },
+  "wand-of-the-war-mage-3": {
+   "ne": "Elindeyken büyü saldırılarına +3 bonus kazanırsın; büyü saldırılarında Half Cover'ı yok sayarsın.",
+   "nasil": "Değneği tutman yeterli.",
+   "kimler": "Yalnız büyü yapabilen bir yaratık uyum sağlayabilir.",
+   "nadirlik": "Varies"
+  },
+  "weapon-of-warning": {
+   "ne": "Silah erişimindeyken sen ve 30 ft içindeki dostların inisiyatif zarlarında Advantage kazanır; savaş başlarken doğal uykudaki herkes uyanır.",
+   "nasil": "Uyumluysan ve silah erişimindeyse kendiliğinden işler.",
+   "kimler": "Büyüyle uyutulmuş yaratıkları uyandırmaz.",
+   "nadirlik": "Uncommon"
+  },
+  "weapon-1": {
+   "ne": "Bu büyülü silahla yaptığın saldırı ve hasar zarlarına +1 bonus kazanırsın.",
+   "nasil": "Silahı kullanman yeterli; uyum gerekmez.",
+   "nadirlik": "Varies"
+  },
+  "weapon-2": {
+   "ne": "Bu büyülü silahla yaptığın saldırı ve hasar zarlarına +2 bonus kazanırsın.",
+   "nasil": "Silahı kullanman yeterli; uyum gerekmez.",
+   "nadirlik": "Varies"
+  },
+  "weapon-3": {
+   "ne": "Bu büyülü silahla yaptığın saldırı ve hasar zarlarına +3 bonus kazanırsın.",
+   "nasil": "Silahı kullanman yeterli; uyum gerekmez.",
+   "nadirlik": "Varies"
+  },
+  "well-of-many-worlds": {
+   "ne": "Açılınca 6 ft çapında, başka bir dünyaya ya da düzleme açılan iki yönlü dairesel bir geçit oluşturur; nereye açılacağına her seferinde Game Master karar verir.",
+   "nasil": "Magic eylemiyle açıp sağlam bir yüzeye serersin. Geçide 5 ft içindeki bir yaratık Magic eylemiyle kumaşı katlayıp kapatır.",
+   "risk": "Bir geçit açtıktan sonra 1d8 saat yeniden açamaz.",
+   "nadirlik": "Legendary"
+  },
+  "wind-fan": {
+   "ne": "Yelpazeden Gust of Wind (DC 13) yaparsın.",
+   "nasil": "Elinde tutarken büyüyü yelpazeden yaparsın.",
+   "risk": "Aynı gün şafaktan önce her yeni kullanımda yüzde 20 birikerek artan bir başarısızlık ihtimali vardır; işlemezse yelpaze yırtılıp büyüsüz paçavraya döner.",
+   "nadirlik": "Uncommon"
+  },
+  "winged-boots": {
+   "ne": "1 saat boyunca 30 ft Uçma Hızı kazanırsın.",
+   "nasil": "Magic eylemi ve 1 yük; 4 yükü var, şafakta 1d4 yük yenilenir.",
+   "risk": "Süre biterken uçuyorsan yere değene dek tur başına 30 ft alçalırsın.",
+   "nadirlik": "Uncommon"
+  },
+  "wings-of-flying": {
+   "ne": "Pelerin sırtında kanatlara dönüşür; 1 saat boyunca 60 ft Uçma Hızı verir.",
+   "nasil": "Magic eylemiyle açılır; bir Magic eylemiyle erken de bitirebilirsin.",
+   "risk": "Kanatlar kaybolduğunda havadaysan düşersin. Kaybolduktan sonra 1d12 saat yeniden kullanılamaz.",
+   "nadirlik": "Rare"
+  }
+ }
+}
