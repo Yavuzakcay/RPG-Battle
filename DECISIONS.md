@@ -61,6 +61,9 @@ beklentisi 24 → 25 (`statusFx.test.ts`, `areaView.test.ts`, `s1.test.ts`, `g1.
   süresi şartı, konsantrasyon ve sonraki tur başında bitiş SRD ile uyumlu (`ready.ts`, kural sürümü 90). Kısmi kalan: yanıt listesi
   tek saldırı / hareket / büyü (SRD "the action you will take": Utilize, Help, Dash … yanıtları yok), yapay zekâ Ready kullanmaz.
   Kod değişmedi.
+- **Hızlı regresyon (ortak motor değişti; 100 tohum, 5. seviye standart parti):** `KURAL_SURUMU=100|101 npm run sim -- 100 col kale
+  magara orman`: Çöl %81 → %81, Kale %36 → %36, Mağara %85 → %85, Orman %64 → %64 (ortalama tur, ölüm, düşen aynı). Gece
+  senaryoları ölçülmedi (`DENGE.md` "ölçülecek"). Paket 450,06 / 500 kB; `check:harita` 92/92, `check:ses` 15/0.
 - **9. Dropping Prone** (s. 14 "On your turn, you can give yourself the Prone condition … without using an action or any of your Speed,
   but you can't do so if your Speed is 0."): yeni komut `drop_prone` (olay `condition_changed` `drop_prone`), Hareket menüsünde
   "Yere yat"; yapay zekâ kullanmaz.

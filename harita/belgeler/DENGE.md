@@ -2,6 +2,24 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Not: KARAR101 (2026-11-21, kural sürümü 101) — ölçülmedi, ölçülecek
+
+Kural sürümü 101 (gece kuyruğu Aşama 2): `nightVision` yeni savaşta **varsayılan açık** (gece varyantlarında SRD görüşü: görmeyen
+saldıran/hedef avantaj/dezavantaj; Kale Gece için kayıtlı kullanıcı kararı %73 → %90 idi) — **ölçülecek** (gece senaryoları: Kale
+gece, Orman gece, Buzul/Dağ/Bataklık/Çöl gece varyantları). Diğer 101 maddeleri (sürünme, Knocking Out yalnız oyuncu, Dash eki
+Dash anındaki hızdan, yakalama/kalkan/Dropping Prone yalnız oyuncu komutu, High Jump yalnız oyuncu) yapay zekâ kararını değiştirmez.
+
+Hızlı regresyon (yalnız 100 ↔ 101, 100 tohum, 5. seviye standart parti; gündüz/karanlık senaryolar):
+
+| Senaryo | 100 | 101 |
+|---|---:|---:|
+| Çöl — Gündüz | %81 | %81 |
+| Kale — Gündüz (Kale ve avlu) | %36 | %36 |
+| Mağara — karanlık | %85 | %85 |
+| Orman | %64 | %64 |
+
+Ortalama tur, ölüm ve düşen sayıları dört senaryoda da aynı. Aralık dışı (Kale %36, Mağara %85, Çöl %81) 100'de de vardı.
+
 ## Not: KALAN100 (2026-11-21, kural sürümü 100) — ölçülmedi
 
 Sim partisinde Bor ve Rook kalkan + Longsword yakın dövüşçü kaldı; TE99'dan beri kalkanla kullanılamayan Two-Handed menzilli silahları

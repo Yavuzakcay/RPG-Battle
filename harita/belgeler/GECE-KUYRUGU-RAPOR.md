@@ -11,7 +11,14 @@ worktree'si bulunmuyor; hiçbirine dokunulmadı.
 - Ayrıca işin ana dosyası `icerik/ek-cleric.json` gitignore'lu ve bu bulut kopyasında yok; `check:icerik`, `as2.test` sayımı,
   dd-gorsel üretimi, `icerik-liste.txt` ile `icerik/` eşlemesi burada doğrulanamaz.
 - Yapılan: hiçbir dosya değişmedi. Sonraki aşamalar (2–7) Aşama 1'in çıktısına bağlı değil; zincir sürdü.
-- Karar gerekli (A1-1): ad işi (77fe3e69) yerelde push'lanınca Aşama 1 yerel checkout'ta (`icerik/` olan ortamda) çalıştırılmalı.
+- Karar gerekli (A1-1): ad işi (77fe3e69) yerelde push'lanınca Aşama 1'in `icerik/` kısmı yerel checkout'ta çalıştırılmalı.
+- **Güncelleme (17:21):** başka bir oturum (`47dab278`, session_01VVQfWxxvBbP8rsaSvgbJBz) depo tarafını yaptı ve `birlesik`'e
+  birleşti: `alt-sinif-gorunum.json` `kaldirilan` + `yedekKimlik` (life-domain → `imza_birlik`), Cleric varsayılanı `imza_birlik`,
+  `migrateSubclasses` bir kerelik bildirim, test sayıları (görünen 120 → 119), dd-gorsel yeniden üretimi. Bu oturum o işe dokunmadı.
+- Hâlâ açık: `icerik/ek-cleric.json`'dan life-domain kaydının silinmesi (depo dışı), `check:icerik` 108 → 107 sayımı, ve
+  "Bağlılık Yemini Büyüleri" → "Sadakat Töresi Büyüleri" adı: depoda yalnız fikstürde (`src/rules/fixtures/srd-alt-siniflar.json`,
+  alt sınıf adı da "Bağlılık Yemini"); alt sınıf adı ad işinde (77fe3e69, uzakta yok) değiştiği için özellik adı tek başına
+  değiştirilmedi (tutarsız kalırdı). Ad işi gelince birlikte yapılmalı.
 
 ## Aşama 2: Karar kalanları SRD'ye göre (kural sürümü 101) — TAMAM
 
@@ -29,4 +36,7 @@ worktree'si bulunmuyor; hiçbirine dokunulmadı.
   `g1`; `ready.test` ≥ 24); `night.test.ts` gece gizlenme testleri `nightVision: false` ile (101'de varsayılan açık: görmeyen gözcü
   hiç görmez; testin konusu gece gizlenme kuralı).
 - İlgili test turu (`src/battle src/ui src/app src/rules`, 369 dosya): 4792 geçti, 1 düştü (`night.test.ts`, düzeltildi); build
-  450,06 / 500 kB.
+  450,06 / 500 kB; `check:harita` 92/92 geçti; `check:ses` 15 kontrol, 0 hata (Chromium yolu `PW_CHROMIUM`).
+- Commit: `01622902` (birleştirme `95298494`).
+- Hızlı regresyon 100 ↔ 101 (100 tohum): Çöl %81/%81, Kale %36/%36, Mağara %85/%85, Orman %64/%64 (aynı; gece senaryoları
+  ölçülmedi, `DENGE.md` "ölçülecek").
