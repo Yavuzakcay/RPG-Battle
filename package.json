@@ -64,6 +64,7 @@
     "paket-durum": "vite-node scripts/paket-durum.ts",
     "efekt-tablosu": "node scripts/buyu-efekt-tablosu.mjs",
     "dd-gorsel": "vite-node scripts/dungeondex-gorsel-esleme.ts",
+    "gorsel-dokum": "vite-node scripts/gorsel-dokum.ts --",
     "buyu-efekt-tablosu": "node scripts/buyu-efekt-tablosu.mjs"
   },
   "dependencies": {
