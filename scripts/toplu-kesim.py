@@ -23,7 +23,7 @@ CLASSES = {
  'sorcerer': (3, 3, 'SC-', ['Ejderha Büyücülüğü', 'Alevbaz', 'Ceren Ürperten', 'İlahi Kan', 'Lanetli', 'Otonom Evren', 'Paratoner', 'Titan Kanı', 'Dunganga'], {}),
  'barbarian': (3, 3, 'ID', ['Varis', 'Element', 'Kaos', 'Şaman', 'İlkelliğin', 'Vahşet', 'Heybet', 'Çılgın Savaşçı', 'Geride Kalanın'], {}),
  'bard': (3, 3, 'ID', ['Bilgi', 'Ağıt', 'Akrobat', 'Arzu', 'Harp', 'Hatip', 'Islık', 'Varoluş', 'Şair'], {}),
- 'cleric': (3, 3, 'ID', ['Yaşam', 'Aydın', 'Barış', 'Demirci', 'Fırtına', 'Mezar', 'Savaş', 'Yakamoz', 'Birlik Manastırı'], {}),
+ 'cleric': (3, 3, 'ID', ['Yaşam (kullanılmıyor)', 'Aydın', 'Barış', 'Demirci', 'Fırtına', 'Mezar', 'Savaş', 'Yakamoz', 'Birlik Manastırı'], {}),
  'druid': (4, 2, 'ID', ['Toprak', 'Anka', 'Çağrı', 'Çürüyüş', 'Element', 'Feza', 'Uyku', 'Karadul'], {'erkek': [8]}),
  'fighter': (4, 3, 'ID', ['Şahin Gözlü', 'Çapkın Kavalye', 'Hissi Kablel', 'Pehlivan', 'Pehlivan (dev hali)', 'Ninja', 'Çift Dikiş', 'Samuray', 'Hokkabaz', 'Sancaktar', 'İmparator'], {'kadin': [11]}),
  'monk': (4, 3, 'ID', ['Açık El', 'Astral', 'Ayyaşlık', 'Azizlik', 'Ejderha', 'Element', 'Işık', 'Karanlık', 'Keskinlik', 'Ölümsüzlük', 'Yaşlı Bilge'], {}),

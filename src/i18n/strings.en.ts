@@ -180,7 +180,9 @@ export const en: Strings = {
     descTrOnly: 'Description available in Turkish only.',
     home: 'Home', cancel: 'Cancel', save: 'Save', edit: 'Edit', delete: 'Delete', confirmDelete: 'Delete? Yes',
     close: 'Close', all: 'All', loading: 'Loading…', loadingMonsters: 'Loading monsters…', monsterLoadError: 'Monster data could not be loaded; reload the page.', classLoadError: 'Class data could not be loaded; reload the page.',
-    subclassAssigned: (list: string) => `Characters without a subclass were given the SRD subclass (${list}). You can change it in the builder.`,
+    subclassAssigned: (list: string) => `Characters without a subclass were given the default subclass (${list}). You can change it in the builder.`,
+    // 2026-11-21: a removed subclass (Life Domain) id now points to its replacement; one-time notice.
+    subclassRenamed: (list: string) => `A subclass no longer in the game was replaced (${list}). You can change it in the builder.`,
     lineageAssigned: (list: string) => `Characters without a lineage were given the first lineage (${list}). You can change it in the builder.`,
     // Kuyruk AS1a: species with an optional lineage (Dwarf, Halfling, Orc, Human) keep old saves lineage-less; one-time notice.
     lineagePick: (list: string) => `Pick a sub-lineage: ${list}. Until you do, no sub-lineage effect applies. You can pick it in the builder.`,

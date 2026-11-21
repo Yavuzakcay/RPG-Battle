@@ -2,6 +2,27 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Yaşam Manastırı (life-domain) kaldırıldı; yerini Birlik Manastırı alır (2026-11-21, kullanıcı kararı)
+
+- `icerik/ek-cleric.json`'dan `life-domain` ve bütün özellikleri (Yaşam Manastırı Büyüleri dahil) silinir (yerel paket; depoya girmez).
+  Sayılar: paket 109 → 108 (Barış Alanı gizli), görünen 120 → 119 (107 paket + 12 bizim); Cleric paket 7 → 6 (+ Birlik).
+- Barış Alanı emsali (`data/alt-sinif-gorunum.json` `kaldirilan` + yönlendirme), bir farkla: Barış Alanı pakette durduğu için `eskiKimlik`
+  her zaman yönlenir; `life-domain` için yeni `yedekKimlik` (`life-domain` → `imza_birlik`) yalnız kimlik kayıtta yoksa yönlenir
+  (`effectiveSubclassId`; uygulamada paket olmadığından hep). Böylece test fikstüründeki Yaşam mekanik testleri (cleric, b93cleric)
+  değişmeden çalışır. `findSubclass` ve savaş kurulumu (`create.ts` `imzaSheet`: imza bayrağı ve imza özellikleri) bununla.
+- Kayıtlı karakter: `migrateSubclasses` `yedekKimlik`teki kimliği açılışta bir kez yeni kimliğe yazar ve bildirir (`common.subclassRenamed`;
+  Barış Alanı kayıtları eskisi gibi yazılmadan açılır). Savaş kayıtları ve replay etkilenmez: savaşçının özellik/iz/kaynakları
+  `battle_started` durumunda; kural sürümü ve kayıt sürümü değişmedi.
+- Simülasyon değişmedi: `data/sim-partiler.json` Cleric üyesi `life-domain` kalır; `loadSimContent` fikstür kaydını doğrudan varlığa bakarak
+  ekler (yerel `icerik/`te de), altın imzalı regresyonlar aynı. Sim partisinin Birlik'e geçmesi denge görevine kalır.
+- Varsayılan Cleric alt sınıfı (eski kayıt ataması, sihirbaz önerisi) `imza_birlik`. Atama bildirimi "SRD alt sınıfı" yerine "varsayılan alt sınıf".
+- Mekanik değişmedi: `cleric.ts` Disciple of Life / Blessed Healer / Supreme Healing / Preserve Life kodu ve fikstürdeki `life-domain`
+  kaydı test için kalır (`src/rules/fixtures/srd-alt-siniflar.json`; testler `kaldirilan` ile pakette olmadığını bilir). `scripts/srd12-paket-ekle.ts`
+  kaldırılanı pakete geri eklemez.
+- Kullanılmayan (silinmedi): `data/cleric-jeton.json` `life-domain` → ID1, `cleric-*-ID1.webp` jetonları, `data/hizalanma-baslangic.json`
+  `life-domain`, `strings*.ts` `cleric/life-domain:preserve-life` etiketi. `dd-gorsel` `kaldirilan`ı atladığından eşlemeden düştü.
+- Bilinen yan etki: `src/sim/imzaRun.ts` ve `k59Denge.ts` "SRD karşılığı"nı varsayılan alt sınıftan alır; Cleric'te artık Birlik ↔ Birlik.
+
 ## Görev KALAN100: genel savaş denetiminden ertelenen kalanlar (2026-11-21; kural sürümü 100 `KALAN100_VERSION`)
 
 Kaynak `harita/belgeler/GENEL-SAVAS-DENETIM.md` ("Düzeltme durumu"), GENEL96/B98/TE99 ertelenenleri, `TUR-FEAT-ESYA-DENETIM.md`.

@@ -7,7 +7,7 @@
  */
 import { classData, loadClassData, type SubclassDef } from '../data';
 import { loadLocalFolder } from '../content/store';
-import { findSubclass } from '../rules/subclasses';
+import { subclassDefs } from '../rules/subclasses';
 import fixture from '../rules/fixtures/srd-alt-siniflar.json';
 
 /** Yüklenen kaynak: `icerik` (yerel klasör) ya da `fikstur` (12 kayıt). */
@@ -15,7 +15,10 @@ export async function loadSimContent(): Promise<'icerik' | 'fikstur'> {
   await loadClassData();
   await loadLocalFolder(null);
   const subs = (fixture as unknown as { subclasses: SubclassDef[] }).subclasses;
-  if (subs.every((s) => findSubclass(s.class, s.id))) return 'icerik';
-  for (const s of subs) if (!findSubclass(s.class, s.id)) classData.subclasses.push(s);
+  // 2026-11-21: doğrudan kayıtta mı (findSubclass life-domain'i kayıtta yoksa Birlik Manastırı'na yönlendirir). Paketten silinen
+  // Yaşam Manastırı fikstürden eklenir: sim partisi (`data/sim-partiler.json`) iki ortamda da eski mekanikle oynar (altın imzalar aynı).
+  const has = (s: SubclassDef) => subclassDefs(s.class).some((x) => x.id === s.id);
+  if (subs.every(has)) return 'icerik';
+  for (const s of subs) if (!has(s)) classData.subclasses.push(s);
   return 'fikstur';
 }
