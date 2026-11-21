@@ -54,7 +54,7 @@ import { ilhamOf, inspirePayable } from './battle/bard';
 import { loadSettings as loadPreviewSettings, loadStore as loadDiscovery, record as recordDiscovery, saveStore as saveDiscovery } from './app/discovery';
 import { focusActionProblem, stunningProblem } from './battle/martial';
 import { civiliansAlive, isTargetable } from './battle/common';
-import { hexLabel, highJumpProblem, highJumpReachFt, occupantAt, occupantsAt, speedHexes } from './battle/movement';
+import { hexLabel, highJumpFt, highJumpProblem, highJumpReachFt, occupantAt, occupantsAt, speedHexes } from './battle/movement';
 import { SHARE_SHIFT, planMotes, swarmKind, type SwarmMote } from './ui/swarmView';
 import { altitudeCapFt, atCeiling, ceilingFt, climbingAloft, wallHex } from './battle/altitude';
 import { climbStartInfo, dexClimber, holdSurface } from './battle/climbing';
@@ -194,7 +194,7 @@ import { burstSprite, objectSprite, zoneLook } from './ui/sprites';
 import { zoneShownTo } from './battle/hiddenZones';
 import { ruleVersion } from './battle/ruleVersion';
 import { groundItemsNear } from './battle/heldItems';
-import { climbs, fliesOrHovers, flySpeed, hovers, ownFlyCapFt, spellJumpFt } from './battle/flight';
+import { climbs, fliesOrHovers, flySpeed, hovers, ownFlyCapFt } from './battle/flight';
 import { SpriteBurst, SurfaceLayer, type SurfaceItem } from './ui/SpriteZone';
 import { failHit, goalHexes, goalStatus } from './battle/goals';
 import { failText, goalText } from './ui/goalText';
@@ -3402,7 +3402,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                 </>
               )}
               {/* Kuyruk K68b (sürüm 52): Jump: yerinde yüksek zıplama (bu tur yakın dövüşte dikey erişim). */}
-              {ruleVersion(state) >= 52 && !highJumpProblem(state, actor) && <button className="hud-btn small" onClick={() => run({ type: 'jump', actorId, to: actor.pos as Offset })}>{B.k68.highJump(Math.min(spellJumpFt(actor), altitudeCapFt(state, actor)))}</button>}
+              {ruleVersion(state) >= 52 && !highJumpProblem(state, actor) && <button className="hud-btn small" onClick={() => run({ type: 'jump', actorId, to: actor.pos as Offset })}>{B.k68.highJump(Math.min(highJumpFt(state, actor), altitudeCapFt(state, actor)))}</button>}
               {highJumpReachFt(state, actor) > 0 && <span>{B.k68.jumped(highJumpReachFt(state, actor))}</span>}
               {ruleVersion(state) >= 41 && Object.values(state.combatants).filter((c) => c.effects?.some((e) => e.levitate && e.sourceId === actorId)).map((c) => (
                 <span key={`lev${c.id}`}>

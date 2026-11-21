@@ -24,8 +24,8 @@ const PIN: Record<string, Record<string, number>> = {
 };
 /** Sürüm 87 imzaları, D2'den önceki ağaçta (083e4b93) ölçüldü. */
 const ALTIN: Record<number, Record<string, string>> = {
-  1: { 'orman-ork': '7f79c441b334', 'orman-kemik': '2db6e523404b', 'k29-col-vaha': 'a32214659c72', 'derin-karakol': '2760b2d4340f' },
-  3: { 'orman-ork': '1bfa98d8e6a5', 'orman-kemik': '51f2279071a3', 'k29-col-vaha': 'c6c84dc932bc', 'derin-karakol': 'db6d843569be' },
+  1: { 'orman-ork': '3274e4d0c263', 'orman-kemik': 'b9b1bea597dc', 'k29-col-vaha': '67fe62a425ae', 'derin-karakol': 'd9abdf0cc6f9' },
+  3: { 'orman-ork': '299617a2c53f', 'orman-kemik': '093c31c6f491', 'k29-col-vaha': 'd95679fc8e3d', 'derin-karakol': 'c1c12a499c79' },
 };
 /** Savaşta eklenen canavar (takviye, kemik yığını, kum pususu, kat). */
 const LATE = /^(takviye-|kemik-|kum-solucani|kat-)/;

@@ -7,6 +7,30 @@
 
 ## Düzeltme durumu (2026-11-20, GENEL-SAVAS-DENETIM düzeltmeleri)
 
+### KALAN100 (2026-11-21, kural sürümü 100; `src/battle/kalan100Surum.ts`, testler `src/battle/kalan100.test.ts`, DECISIONS.md "KALAN100")
+
+Ertelenen kalanların ikinci turu. 99 ve altı (eski kayıt, replay) eski davranışta; kayıt sürümü değişmedi.
+
+| Satır | Konu | Sonuç | SRD 5.2.1 |
+|---|---|---|---|
+| B20 | Sürüklemede Tiny / iki boy küçük istisnası | **düzeldi** (100) | s. 182 Grappled "Movable" |
+| B9 | Saldırı ekinden gelen Charmed büyüleyene saldırıyı engeller | **düzeldi** (100) | s. 178 "Can't Harm the Charmer" |
+| C17 | Grapple boş el (kalkan + tutulan yakalamalar), el başına bir yakalama | **düzeldi, kısmi** (100): yakalarken Two-Handed/Versatile engeli yok (bırakma komutu yok) | s. 190, s. 182 "One Grapple per Hand", s. 177 Attack (silah bırakma) |
+| A32 | Serbest nesne etkileşimi tek bütçe; ikincisi Utilize | **düzeldi** (100) | s. 13 Interacting with Things |
+| E13/F15 | Büyüsüz High Jump (3 + STR, durarak yarısı) | **düzeldi, kısmi** (100): katmansız haritada yerinde zıplama; "hemen önce" izlenmez ⚠ | s. 183 High Jump |
+| A45 | Yapay zekâ Dash yapmıyor | **düzeldi** (100, davranış değişikliği; denge ölçülmedi) | s. 180 Dash |
+| E8 | Sürünme + zorlu arazi (3 mü 4 mü) | **doğrulanmadı** (metin birikmeyi söylemiyor; ×2 × 2 = 4 kaldı) | s. 179 Crawling, s. 181 Difficult Terrain |
+| E26 | Başkasının alanında tur sonu Prone | **doğrulanmadı** (oyunda paylaşım yalnız Swarm/binici/Gaseous Form özel kurallarıyla) | s. 14 |
+| G6/D21 | 0 HP'de uzun dinlenme yasağı | **bilinçli sapma** (Serüven bozgun tekrarı, Hapishane `dragBack`; kod değişmedi) | s. 185, s. 18 |
+| B40 | Baygının elindekini düşürmesi | **ertelendi** (yapay zekâ yerden silah almıyor) | s. 191 |
+| A7/E3 | Dash ve hız bütçesinde yürüme/uçuş ayrımı | **ertelendi, karar gerekli** (hareket bütçesi modeli) | s. 180, s. 188 |
+| H3/H4/H12 | `nightVision` varsayılanı, `darkness` haritaları | **ertelendi, karar gerekli** (kayıtlı denge kararı; ölçüm gerekir) | s. 10, s. 15 |
+| D10 | Knocking Out | **ertelendi, karar gerekli** (savaş sonu `winnerOf`, Serüven esir anlamı, saldırı anı seçimi) | s. 17 |
+
+TE99 kalanları (`TUR-FEAT-ESYA-DENETIM.md`): Stone's Endurance ortak ön-hasar kancası, kalkan tak/çıkar komutu, eşya ↔ silah bağı
+**ertelendi, karar gerekli**; Nick hangi silahta **doğrulanmadı**. Sim partisinde Bor ve Rook kalkan + Javelin (denge ölçülmedi).
+
+
 Karar kuralı (kullanıcı): SRD 5.2.1 ölçüttür; çelişen madde SRD'ye hizalanır, tek istisna oyun mekaniğini kökten bozan madde
 ("ertelendi, karar gerekli"). SRD dışı yeni mekanik eklenmez; SRD'den doğrulanamayan uygulanmaz ("doğrulanmadı"). Karar DECISIONS.md
 "GENEL-SAVAS-DENETIM düzeltmeleri, sürümsüz grup".
@@ -414,6 +438,9 @@ Yalnız SRD 5.2.1 maddeleri; yeni mekanik önerilmedi.
 kaldı); 9 Tiny/iki boy yapıldı (E26 kaldı); 10 kalkma yapıldı (sürünme doğrulanmadı, sürükleme ve hız ayrımı ertelendi); 11 Dodge,
 Yardım, `pick_up`, menzilli bitişik yapıldı (Grapple boş el ve tek bütçe ertelendi); 15 Long Jump yapıldı (High Jump ertelendi);
 6 yapıldı, 0 HP uzun dinlenme ertelendi (G6/D21); 14 ertelendi (denge); 16 sonraki tur; 17 yapıldı.
+**KALAN100 (2026-11-21, sürüm 100):** 9'un E26'sı doğrulanmadı; 10'un sürükleme kolu yapıldı (B20), sürünme yine doğrulanmadı, hız ayrımı
+ertelendi; 11'in Grapple boş el (C17, kısmi) ve tek bütçe (A32) kolları yapıldı; 14'ün Dash kolu yapıldı (A45; stabilize kolu A49 değişmedi);
+15'in High Jump kolu yapıldı (kısmi); 5'in B9'u yapıldı; G6/D21 bilinçli sapma.
 
 Öneri sırası: 1–3 (ölüm ve baygın: en ağır sonuçlar) → 4–5 (durum/kontrol tek yolu) → 6 (sürümsüz, ölçümle) → 7–12 (tek toplu
 sürümde) → 13–14 (arayüz/YZ) → 15–17.

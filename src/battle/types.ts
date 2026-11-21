@@ -2146,6 +2146,8 @@ export type BattleEvent =
       loadingFired?: boolean;
       /** Görev WS92 (92+): biçim Multiattack bileşimi: bu saldırının adı (eylem başına sayılır). */
       beast?: string;
+      /** Görev KALAN100 (100+): turun serbest nesne etkileşimi kullanıldı (`kind: 'attack'`, saldırı sayısı değişmez). */
+      interaction?: true;
     }
   | { type: 'dashed'; actorId: string }
   /**

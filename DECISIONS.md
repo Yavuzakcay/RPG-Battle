@@ -2,6 +2,97 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev KALAN100: genel savaş denetiminden ertelenen kalanlar (2026-11-21; kural sürümü 100 `KALAN100_VERSION`)
+
+Kaynak `harita/belgeler/GENEL-SAVAS-DENETIM.md` ("Düzeltme durumu"), GENEL96/B98/TE99 ertelenenleri, `TUR-FEAT-ESYA-DENETIM.md`.
+Tek sabit `src/battle/kalan100Surum.ts` (`KALAN100_VERSION` 100, `kalan100On`); 99 ve altı (eski kayıt, replay) eski davranışta.
+Kayıt sürümü değişmedi (yeni olay türü yok; yalnız isteğe bağlı `action_used.interaction`). Ölçüt SRD 5.2.1 (`docs/SRD_CC_v5.2.1.pdf`,
+PDF sayfası); metni belirsiz madde uygulanmadı ("doğrulanmadı"), çekirdeği bozan ya da yeni sistem isteyen madde ertelendi.
+Testler `src/battle/kalan100.test.ts` (15; her sürümlü madde 99 ↔ 100, replay).
+
+- **Yapıldı (sürümlü):**
+  - **B20 sürükleme** (s. 182 Grappled "Movable. The grappler can drag or carry you when it moves, but every foot of movement costs it 1
+    extra foot unless you are Tiny or two or more sizes smaller than it."): Tiny ya da iki+ boy küçük yakalanan ek maliyet istemez
+    (`movement.ts` `hexCostFn`).
+  - **B9 rider Charmed** (s. 178 "Can't Harm the Charmer. You can't attack the charmer or target the charmer with damaging abilities or
+    magical effects."): süreli durum sayacından (saldırı eki: pirate, sprite, lamia) gelen Charmed da kaynağına (`sourceId`) saldırıyı ve
+    zararlı hedeflemeyi engeller (`range.ts` `charmedAgainst`; Aura of Devotion ve Calm Emotions istisnaları aynı).
+  - **C17 Grapple boş el** (s. 190 Unarmed Strike "This grapple is possible only if … you have a hand free to grab it"; s. 182
+    Grappling "One Grapple per Hand. A creature must have a hand free to grapple another creature."): boş el = 2 − kalkan − tutulan
+    yakalamalar (`forced.ts` `freeHands`). Silahlar sayılmaz: s. 177 Attack "You can either equip or unequip one weapon when you make an
+    attack as part of this action" (Grapple bir Unarmed Strike saldırısı). **Kısmi:** yakalama tutarken Two-Handed silahla saldırı ve
+    Versatile iki el engellenmez: oyunda yakalamayı bırakma komutu yok (SRD "release … at any time (no action required)"); engel
+    eklenirse oyuncu kilitlenirdi.
+  - **A32 tek etkileşim bütçesi** (s. 13 "You can interact with one object or feature of the environment for free … If you want to
+    interact with a second object, you need to take the Utilize action."): kapı aç/kapa, `take`, `put` ve `pick_up` turda tek serbest
+    etkileşimi paylaşır (`economy.interacted`, olay `action_used` `kind: 'attack'` + `interaction`, saldırı sayısı değişmez); ikincisi
+    Utilize maliyet yolundan (Fast Hands bonus eylemle). Yapay zekâ kapı akışı `tryCmd` ile denetlediği için kırılmaz; ikinci kapıyı
+    eylemiyle açabilir (davranış değişikliği, ölçülmedi).
+  - **E13/F15 High Jump** (s. 183 "you leap into the air a number of feet equal to 3 plus your Strength modifier (minimum of 0 feet) if
+    you move at least 10 feet on foot immediately before the jump. When you make a standing High Jump, you can jump only half that
+    distance. Either way, each foot of the jump costs a foot of movement."): yerinde zıplama (K68b) büyüsüz de; yükseklik bu tur
+    yakın dövüş dikey erişimine (Jump büyüsü ve Standing Leap'le en yükseği; `srdHighJumpFt`, `highJumpFt`), maliyet ft başına (5 ft
+    altıgene yukarı), turda bir. ⚠ Koşu: bu tur ≥ 10 ft (2 altıgen) yürümüş ve son hareketi yürüyüş; "immediately before" arası
+    izlenmez. Katmanlı haritada değişmedi (yüksek altıgene tırmanma). Yapay zekâ kullanmaz (yalnız oyuncu düğmesi; metin aynı).
+- **Yapıldı (davranış, yapay zekâ; sürümlü):** **A45 Dash** (s. 180 Dash "you gain extra movement for the current turn. The increase
+  equals your Speed after applying any modifiers"): turu bitirecekken bu tur yürümüş ve bütün hareketini harcamış, eylemi boş, Dash
+  yapmamış ve bitişiğinde düşman olmayan yaratık Dash yapar (`ai.ts` `dashCommand`); ek hareketi sonraki adım kendi kuralıyla kullanır.
+  Eksiklik açıktı (hiçbir savaşçı Dash seçmiyordu, probe PA12). Denge ölçülmedi (kullanıcı: simülasyon yok); `DENGE.md`'ye not.
+- **Bilinçli sapma (kod değişmedi):** **G6/D21 0 HP'de uzun dinlenme** (s. 185 "To start a Long Rest, you must have at least 1 Hit
+  Point"): Serüven bozgunda yeniden deneme (`bozgundaYenidenDene`: bütün parti 0 HP → uzun dinlenme) ve Hapishane `dragBack` akışı 0 HP
+  karakteri uzun dinlenmeyle kaldırır; SRD'nin kendi çıkışı ("A Stable creature that isn't healed regains 1 Hit Point after 1d4 hours",
+  s. 18) savaş dışı zaman modeli ve ölmekte/stabil kaydı ister. Kayıtlı sapma.
+- **Ertelendi (belge):** **B40 Unconscious eşya düşürme** (s. 191 "you drop whatever you're holding"): yapay zekâ yerden silah almıyor
+  (`pick_up` adayı yok); uyanan YZ yaratığı savaş boyu silahsız kalırdı. Sim partisi değişmedi.
+- **Doğrulanmadı (uygulanmadı):** **E8 sürünme + zorlu arazi** (s. 179 Crawling (denetimde s. 180): "While you're crawling, each foot of movement costs
+  1 extra foot (2 extra feet in Difficult Terrain)."; s. 181 Difficult Terrain "every foot of movement in that space costs 1 extra
+  foot … Difficult Terrain isn't cumulative"). Metin, parantezdeki 2 ek ft'in zorlu arazinin kendi 1 ek ft'ini içerip içermediğini
+  söylemiyor (toplam 3 ya da 4; "isn't cumulative" yalnız zorlu arazi kaynaklarını anar). Oyun ×2 × 2 = 4 kalır. **E26 başkasının
+  alanında tur sonu Prone** (s. 14 "If you somehow end a turn in a space with another creature, you have the Prone condition unless you
+  are Tiny or are of a larger size than the other creature."): oyunda paylaşım yalnız kuralın izin verdiği yollarda (Swarm "can occupy
+  another creature's space", binici, Gaseous Form); bunlar "somehow" mu, özel kural mı metinden çıkmıyor; zorla dönüş (Banishment) en
+  yakın boş altıgene. Uygulanmadı. **Nick** (s. 90 "When you make the extra attack of the Light property, you can make it as part of
+  the Attack action instead of as a Bonus Action."): ustalığın ana silahta mı ek saldırı silahında mı olacağı yazmıyor (TE99 K-S2).
+- **Ertelendi, karar gerekli:**
+  - **A7/E3 Dash ve hız ayrımı** (s. 180 Dash "If you have a special speed, such as a Fly Speed … you can use that speed instead";
+    s. 188 Speed): oyunda uçuş hızlı yaratık hep uçar (`isAirborne`), yerde yürüme kipi yok; tek bütçe (`speedHexes`) yürüme/uçuş
+    ayrımı hareket modelinin değişmesini ister.
+  - **`nightVision` varsayılanı ve `darkness` haritaları** (H3, H4, H12; s. 10, 15): kayıtlı kullanıcı kararı (Kale Gece %73 → %90)
+    denge gerekçeli; değiştirmek ölçüm ister (bu görevde simülasyon yok).
+  - **D10 Knocking Out** (s. 17 "When you would reduce a creature to 0 Hit Points with a melee attack, you can instead reduce the
+    creature to 1 Hit Point and give it the Unconscious condition. It then starts a Short Rest …"): savaş sonu kuralı (`winnerOf` 0 HP
+    sayar; 1 HP baygın düşman savaşı bitirmez), Serüven'de esir/yenilgi anlamı ve saldırı anında yeni oyuncu seçimi gerekir. Karar:
+    bayıltılan yenilmiş sayılsın mı, esir alma olacak mı?
+  - **Stone's Endurance** (s. 85 "When you take damage, you can take a Reaction to roll 1d12 … reduce the damage by that total."):
+    hasar 26 dosyada 47 `damageEffects` çağrısından olaya dönüşüyor; tepkili ön-hasar kancası yeni ortak sistem ister (şimdi yalnız
+    saldırı isabetinde).
+  - **Kalkan tak/çıkar** (s. 92 "Shield (Utilize Action to Don or Doff)"): yeni komut ve olay türü (kayıt sürümü 23), TE99'un savaş
+    başında süzdüğü saldırı listesinin dinamik olması, savaş sonu karaktere yazımı ve yapay zekâ kararı ister.
+  - **Eşyayı belirli silaha bağlama** (Weapon +N, Javelin of Lightning'in Lightning Bolt çizgisi, Ammunition of Slaying tür seçimi):
+    eşya ↔ silah bağı yeni şema ister (TE99 K-D2).
+- **Sim partisi (veri):** TE99'dan beri kalkanla Two-Handed saldırı yok; Bor (Light crossbow) ve Rook (Longbow) menzilli seçeneksiz
+  kalıyordu (Orman %63 → %59, TE99 notu). İkisi de kalkan + Longsword yakın dövüşçü (Defense stili) olduğundan menzilli silah tek elli
+  Javelin (Thrown 30/120) oldu; ustalık listesinde aynı yer (`light-crossbow`/`longbow` → `javelin`). Sheet ve `levels` aynı; parti testi
+  yeşil. Denge **ölçülmedi** (`DENGE.md`'ye not). Demo Bor (`src/demo.ts`, yalnız test/sim) aynı değişiklik.
+- **Hızlı regresyon (ortak motor değişti; 100 tohum, 5. seviye standart parti, iki parti de Javelin'li):** `KURAL_SURUMU=99|100 npm run
+  sim -- 100 col kale magara orman`: Çöl %80 → %81, Kale %36 → %36, Mağara %85 → %85, Orman %64 → %64 (ortalama tur, ölüm ve düşen
+  sayıları aynı ya da ±0,03). Dash nadiren tetikleniyor; denge kararı değil. Kale %36 bant dışı (99'da da): `DENGE.md`'ye not.
+- **Paket sınırı (yalnız rapor):** `data/paket-siniri.json` `anaParcaKb` 500 (kullanıcı kararları: K57 420 → KQ4 PB1 450 → 2026-11-19
+  500). CLAUDE.md'deki "420 kB" satırı eski; build bu yüzden geçiyor (TE99: 449,90 / 500 kB). Sınır değiştirilmedi.
+- **Değişen eski testler:** `ruleVersion.test.ts`, `g6.test.ts` (güncel sürüm 99 → 100); TE99'da 98'e sabitlenen `ui.test.ts`,
+  `hud.test.ts`, `mapView.test.ts` güncel sürüme döndü (Bor'un menzilli silahı Javelin; `ui.test` Javelin yakın + fırlatma iki
+  seçenek: 3 → 4), `features.test.ts` "kılıca ulaşabiliyorsa yürür" testi kalkansız Light crossbow'lu Bor kopyasıyla güncel sürümde
+  (konusu yakın ↔ menzilli seçimi; Javelin'li Bor 4 altıgende kılıç yerine fırlatıyor).
+- **Altın imzalı regresyon testleri (veri değişikliği, kural değil):** 20 `src/sim/*Regresyon.test.ts` dosyasının eski sürüm altın
+  imzaları sim partisinin Light crossbow/Longbow'lu hâliyle kayıtlıydı. Yeni altınlar **KALAN100 öncesi ağaçta** (9e8e2ce4, geçici
+  worktree) yeni parti verisiyle üretildi; ana ağaçla aynı 79 eski → yeni çift çıktı (KALAN100 kodu eski sürümleri değiştirmiyor).
+  Varsayılan tohum sayısının altınları (79) ve ucuz ek altınlar (tohum 1: shape91, srdD1, srdD2, srdD3, ws87; matris 3; 23) yenilendi.
+  **Eski kaldı:** yalnız ortam değişkeniyle koşan 10/30 tohumlu ölçüm altınları (`ALTIN_30`, matris 10); tam test turunda yeni
+  partiyle yeniden ölçülmeli. `k73a.test.ts` kilitlenme testi tohum 1 → 5 (Javelin'li partiyle tohum 1'de 61 artık kilitlenmiyor;
+  tohum 5: 61 zaman aşımı, 62 ve güncel parti kazanır).
+- **Önceden var olan hata (dokunulmadı):** `src/dungeondex/dungeondex.test.tsx` "kategori listesi ve Lisanslar ve atıf" `birlesik`
+  HEAD'inde (9e8e2ce4) de düşüyor (kitap kabuğunda `dex-tab-lisans` yok); başka oturumun işi, bu görevin kapsamı dışında.
+
 ## Görev TE99: tür, feat ve eşya denetimi düzeltmeleri (2026-11-21; kural sürümü 99 `TE99_VERSION`)
 
 Kaynak `harita/belgeler/TUR-FEAT-ESYA-DENETIM.md` (225 satır; "Düzeltme durumu" bölümü). Tek sabit `src/battle/te99Surum.ts`

@@ -23,6 +23,11 @@ Durum sözlüğü: **tam** · **kısmi** · **yok** · **bilinçli sapma** (DECI
 
 ## Düzeltme durumu (Görev TE99, kural sürümü 99; 2026-11-21)
 
+> **KALAN100 (2026-11-21, kural sürümü 100):** TE99'dan kalanlar yeniden okundu (DECISIONS.md "KALAN100"): Stone's Endurance ortak
+> ön-hasar kancası, kalkan tak/çıkar (Utilize) komutu ve eşya ↔ silah bağı **ertelendi, karar gerekli** (yeni sistem); Nick'in hangi
+> silahta sayılacağı **doğrulanmadı** (s. 90 metni yazmıyor). Sim partisinde Bor ve Rook kalkan + Javelin; TE99'da 98'e sabitlenen dört
+> test güncel sürümde.
+
 Her satırın sonucu. **düzeldi (99)**: kural sürümü 99 ve sonrası (98 ve altı eski davranış); **sürümsüz**: oluşturucu/veri/uygulama katmanı; **ertelendi**: yapılmadı (neden yanında; ayrıntı DECISIONS.md TE99). "değişmedi" yazan satırlar tam ya da bilinçli sapmaydı. Testler `src/battle/te99.test.ts`.
 
 | # | Konu | Sonuç |

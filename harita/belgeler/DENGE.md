@@ -2,6 +2,25 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Not: KALAN100 (2026-11-21, kural sürümü 100) — ölçülmedi
+
+Sim partisinde Bor ve Rook kalkan + Longsword yakın dövüşçü kaldı; TE99'dan beri kalkanla kullanılamayan Two-Handed menzilli silahları
+(Light crossbow, Longbow) tek elli Javelin (Thrown 30/120) ile değişti. Kural sürümü 100'de yapay zekâ yetişemeyince Dash yapar,
+nesne etkileşimleri tek serbest bütçe, Grapple boş el ister, Tiny/iki boy küçük sürükleme ek maliyetsiz. Denge **ölçülmedi** (kullanıcı:
+denge simülasyonu yok); yalnız hızlı regresyon (99 ↔ 100, DECISIONS.md KALAN100). TE99 notu: Orman %63 → %59 (Bor/Rook yaysız) bu
+değişiklikle yeniden ölçülmeli.
+
+Hızlı regresyon (yalnız 99 ↔ 100 karşılaştırması, 100 tohum, 5. seviye standart parti Javelin'li Bor ile):
+
+| Senaryo | 99 | 100 |
+|---|---:|---:|
+| Çöl — Gündüz | %80 | %81 |
+| Kale — Gündüz (Kale ve avlu) | %36 | %36 |
+| Mağara — karanlık | %85 | %85 |
+| Orman | %64 | %64 |
+
+Aralık dışı (hedef %60–80): Kale %36 ve Mağara %85, Çöl %81 (100); düzeltme yapılmadı.
+
 ## ÖN-DÜZELTME TABANI — Dungeondex öncesi denge turu (2026-11-18)
 
 > **Durum (kullanıcı kararı, 2026-11-18): düzeltme turları (liste/çarpan ayarı) mekanik matris düzeltmelerinden (Restrained DEX save, görünmezlik hedefleme, Counterspell, alan büyüleri) sonraya ertelendi.** Bu düzeltmeler savaş sonuçlarını değiştireceğinden şimdi ayarlanan listeler boşa giderdi. Bu bölüm yalnız **ölçüm tabanıdır**: aşağıdaki taban tabloları **orijinal listelerle** (commit 085e318, hiçbir düzeltme uygulanmadan) ölçüldü; aralık dışı satırlar ve bant dışı haritalar listelenir, liste/çarpan düzeltmesi yapılmaz. Görev sırasında denenmiş tur 1–3 düzeltmeleri (commit 5705637, d9fa4c6, 811278d, 8011702) **geri alındı** (taban yeniden üretilebilsin diye); ne denendiği ve ne sonuç verdiği "Geri alınan düzeltme denemeleri" altında saklıdır. Mekanik matris düzeltmelerinden sonra aynı komutlarla yeniden ölçüp bu tabanla karşılaştırın, ardından düzeltme turlarını yapın.

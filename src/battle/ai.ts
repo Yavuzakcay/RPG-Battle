@@ -126,6 +126,7 @@ import { difficultyOf, evaluateCandidates, pickByDifficulty, roleOf } from './ai
 import aiRoles from '../../data/yz-roller.json';
 import { bonusPoolCands } from './ai/behaviors';
 import { aiStats, previewCommand } from './ai/preview';
+import { kalan100On } from './kalan100Surum';
 
 const noRoll = () => 0.5;
 const ctxOf = (c: Combatant): CommandContext =>
@@ -1767,13 +1768,30 @@ export function chooseCommand(state: BattleState): Command {
   // azalanın inişi (düşme riski yok).
   const cmd1 = cmd0.type === 'end_turn' && k73aOn(state) ? landCommand(state, actor) ?? cmd0 : cmd0;
   // Kuyruk MB2 (74+): binici bu adımda bir şey yapamıyorsa kontrollü bineğini yürütür (binicinin turunda, binicinin kararıyla).
-  const cmd = cmd1.type === 'end_turn' ? controlledMountStep(state, actor) ?? cmd1 : cmd1;
+  const cmd2 = cmd1.type === 'end_turn' ? controlledMountStep(state, actor) ?? cmd1 : cmd1;
+  // Görev KALAN100 (100+): yaklaşırken bütün hareketini harcamış, eylemi boş ve düşmana yetişemeyen yaratık Dash yapar.
+  const cmd = cmd2.type === 'end_turn' && kalan100On(state) ? dashCommand(state, actor) ?? cmd2 : cmd2;
   // Ejderhayı uyandırmaması gereken düşman: komut yine de uyandırıyorsa (gürültülü saldırı gibi) yapmaz.
   if (cmd.type !== 'end_turn' && mustNotWake(state, actor)) {
     const r = tryCmd(state, actor, cmd);
     if (r.ok && wakesDragon(r.events)) return end;
   }
   return cmd;
+}
+
+/**
+ * Görev KALAN100 (sürüm 100+; GENEL-SAVAS-DENETIM A45): yapay zekânın Dash'i. Turu bitirecekken bu tur yürümüş ve bütün
+ * hareketini harcamış, eylemi boş, Dash yapmamış ve bitişiğinde düşman olmayan yaratık Dash yapar; sonraki adım ek hareketi
+ * kendi kuralıyla (yaklaşma, kaçış) kullanır. Sivil ve hareketsiz/bekleyen yaratık (bu tur yürümemiş) yapmaz.
+ */
+function dashCommand(state: BattleState, actor: Combatant): Command | null {
+  if (actor.civilian || !actor.pos || actor.economy.action || actor.economy.dashes > 0 || actor.movementUsed <= 0) return null;
+  const sp = speedHexes(actor);
+  if (sp <= 0 || actor.movementUsed < sp) return null;
+  const foes = foesOf(state, actor).filter((f) => f.pos && f.hp > 0);
+  if (!foes.length || foes.some((f) => gap(state, f, actor) <= 1)) return null;
+  const cmd: Command = { type: 'dash', actorId: actor.id };
+  return tryCmd(state, actor, cmd).ok ? cmd : null;
 }
 
 /**

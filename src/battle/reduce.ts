@@ -762,6 +762,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.fleet) economy.fleetUsed = true;
       if (event.apotheosis) economy.apotheosisUsed = true;
       if (event.loadingFired) economy.loadingFired = true;
+      // Görev KALAN100: serbest nesne etkileşimi (aç/kapa, al, bırak) bu tur kullanıldı.
+      if (event.interaction) economy.interacted = true;
       // Görev TE99: Loading silah başına (yeni eylemde liste yeniden başlar).
       if (event.loadingId) economy.loadingIds = [...(event.kind === 'action' ? [] : economy.loadingIds ?? []), event.loadingId];
       // Görev TE99: bu turun eylemi Attack ya da Magic mi (Blink Steps; 99+ kullanılır, eski kayıtta okunmaz).

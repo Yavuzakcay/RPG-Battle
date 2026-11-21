@@ -24,8 +24,8 @@ const PIN: Record<string, Record<string, number>> = {
 };
 /** Sürüm 85 imzaları, D1'den önceki ağaçta (a26ef5c3) ölçüldü. */
 const ALTIN: Record<number, Record<string, string>> = {
-  1: { col: '5dfc29f297e6', kale: '5ec20c096d0d', magara: '6f533d569f09', orman: 'e4597b48ee6b' },
-  3: { col: 'e9bbed6d684c', kale: '03666ff49530', magara: '2255fa6c3dd8', orman: 'aee12d6ce842' },
+  1: { col: 'fc426ab339e7', kale: '1755a8be6361', magara: '811fa59bbd5d', orman: 'd8caffa58abd' },
+  3: { col: '9cfa1b3921ef', kale: 'b14a3c4b7782', magara: 'dc4113ae94a8', orman: '64c5920fa317' },
 };
 
 afterEach(() => setDefaultRuleVersion(CURRENT_RULES));

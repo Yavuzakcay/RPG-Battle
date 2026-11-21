@@ -3,6 +3,7 @@
  * menzili, büyü menzili. Haritasız savaşta (veya konumu olmayan savaşçıda) hiçbir şey
  * denetlenmez, eski davranış aynen sürer. Mesafe altıgen cinsinden (1 altıgen = 5 ft).
  */
+import { kalan100On } from './kalan100Surum';
 import { burrowTargetProblem } from './burrow';
 import { adjacent3D, k73bOn, separated } from './adjacency';
 import { cageBoxBlock } from './forcecage';
@@ -56,7 +57,11 @@ export function enemyAdjacent(state: BattleState, c: Combatant): boolean {
  * içinde ve Calm Emotions bastırmasında (Kuyruk S1) yasak işlemez. `checkReach` ve Arcane Hand yumruğu (B22) ortak.
  */
 export function charmedAgainst(state: BattleState, attacker: Combatant, target: Combatant): boolean {
-  return !!attacker.effects?.some((e) => e.charm && e.sourceId === target.id) && !inProtectiveAura(state, attacker, 'aura-of-devotion')
+  // Görev KALAN100 (100+; SRD 5.2.1 s. 178 Charmed "You can't attack the charmer or target the charmer with damaging abilities
+  // or magical effects"): saldırı ekinden (süreli durum sayacı, kaynağı `sourceId`) gelen Charmed da büyüleyene karşı.
+  const timer = kalan100On(state) && attacker.conditions.includes('Charmed')
+    && !!attacker.conditionTimers?.some((t) => t.condition === 'Charmed' && t.sourceId === target.id);
+  return (timer || !!attacker.effects?.some((e) => e.charm && e.sourceId === target.id)) && !inProtectiveAura(state, attacker, 'aura-of-devotion')
     && !attacker.effects?.some((e) => e.suppressed?.some((x) => x.condition === 'Charmed'));
 }
 

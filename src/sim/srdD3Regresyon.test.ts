@@ -23,8 +23,8 @@ const CASES = [
 ] as const;
 /** Sürüm 88 imzaları, D3'ten önceki ağaçta (18d86fc8) ölçüldü. */
 const ALTIN: Record<number, Record<string, string>> = {
-  1: { orman: 'dc6f732a4c9d', magara: '62a77d9e3fb7', kale: '1b3a385a4e2c', col: '5dfc29f297e6' },
-  3: { orman: '12a784a78146', magara: 'c9e8806eda84', kale: '959490ebe305', col: 'e9bbed6d684c' },
+  1: { orman: 'c939e6446845', magara: '91f8b97c2d81', kale: '46bf794f5f03', col: 'fc426ab339e7' },
+  3: { orman: 'd68513a8a10b', magara: '3d020e9b7052', kale: 'a00c2e45dad6', col: '9cfa1b3921ef' },
 };
 
 afterEach(() => { setDefaultRuleVersion(CURRENT_RULES); setPartyKind('standart'); });

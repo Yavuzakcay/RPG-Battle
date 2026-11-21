@@ -67,18 +67,15 @@ describe('etkileşim yardımcıları', () => {
     expect(Array.isArray(jumpHexes(s.state, actorId))).toBe(true);
   });
   it('saldırı önizlemesi menzil dışını gerekçesiyle gösterir', () => {
-    // Görev TE99: 99+'da kalkanla Two-Handed silah (Bor'un Light crossbow'u) yok; bu test silah seçimini 98 kuralıyla sınar.
-    setDefaultRuleVersion(98);
-    try {
-      const s = started('col');
-      const st = { ...s.state, turnIndex: s.state.order.indexOf('bor') };
-      const choices = attackChoices(st, 'bor', 'troll');
-      const sword = choices.find((c) => c.label.startsWith('Longsword'));
-      expect(sword?.command).toBe(null);
-      expect(sword?.detail).toContain('erişim dışında');
-      const bow = choices.find((c) => c.label === 'Light crossbow');
-      expect(bow?.detail).toMatch(/altıgen/);
-    } finally { setDefaultRuleVersion(CURRENT_RULES); }
+    // Görev KALAN100: Bor'un menzilli silahı Javelin (TE99'dan beri kalkanla Two-Handed Light crossbow yok); güncel kural sürümüyle.
+    const s = started('col');
+    const st = { ...s.state, turnIndex: s.state.order.indexOf('bor') };
+    const choices = attackChoices(st, 'bor', 'troll');
+    const sword = choices.find((c) => c.label.startsWith('Longsword'));
+    expect(sword?.command).toBe(null);
+    expect(sword?.detail).toContain('erişim dışında');
+    const bow = choices.find((c) => c.label === 'Javelin');
+    expect(bow?.detail).toMatch(/altıgen/);
   });
   it('alan büyüsü önizlemesi ve zemin bilgisi', () => {
     const s = started('col');

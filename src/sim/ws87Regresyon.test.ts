@@ -22,8 +22,8 @@ const PIN: Record<string, Record<string, number>> = {
 };
 /** Sürüm 86 imzaları, WS87'den önceki ağaçta (15ad4633) ölçüldü. */
 const ALTIN: Record<number, Record<string, string>> = {
-  1: { col: '669923cdea77', kale: '8855df0f932b', magara: '7665c9af6f49' },
-  3: { col: '20df772f4602', kale: '172ab9c38fd2', magara: 'b8df1fb490bf' },
+  1: { col: '81136ec72735', kale: 'e428eb733dd6', magara: 'e975856760ac' },
+  3: { col: '8e8241d137c6', kale: '572e12d10d04', magara: '8ac4cd5b9cdd' },
 };
 
 afterEach(() => { setDefaultRuleVersion(CURRENT_RULES); setPartyKind('standart'); });

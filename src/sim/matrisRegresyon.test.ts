@@ -25,8 +25,8 @@ const PIN: Record<string, Record<string, number>> = {
   orman: { owlbear: 2, werewolf: 2, 'giant-spider': 3, 'dire-wolf': 3, ettercap: 2, wolf: 2 },
 };
 /** Sürüm 82 imzaları, düzeltmelerden önceki ağaçta (3116efd) ölçüldü. */
-const ALTIN_1: Record<string, string> = { col: '59c8902f4a10', kale: '899777217ec5', magara: '0973bb2c4ac4', orman: '2fccd98fbd52' };
-const ALTIN_3: Record<string, string> = { col: 'd0dfe3867d71', kale: '4cfaaa44acaa', magara: 'e51d7bdd6201', orman: 'bf14c67cbddb' };
+const ALTIN_1: Record<string, string> = { col: 'ca7fdff55df1', kale: 'f0961cb2b785', magara: '0c0d7fe85e30', orman: '1bf588c93432' };
+const ALTIN_3: Record<string, string> = { col: 'b400225a5eaa', kale: '5b1212e0ad0b', magara: '120c8e6b190c', orman: '16a7b4ba5005' };
 const ALTIN_10: Record<string, string> = { col: '7941ed30b8d3', kale: '245fdef426d3', magara: '3f5a17e6f187', orman: '1a5c6b93af3f' };
 
 afterEach(() => setDefaultRuleVersion(CURRENT_RULES));
