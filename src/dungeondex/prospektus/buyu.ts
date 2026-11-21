@@ -16,7 +16,7 @@ export interface BuyuKayit extends ProText { yukari?: string; malzeme?: string; 
 export const BUYU_DATA = buyuJson as unknown as { kayitlar: Record<string, BuyuKayit> };
 
 /** Tamamlama blokları (scripts/lib/buyu-durum.mjs `BLOCKS` ile aynı sıra; test eşitliği denetler). */
-export const SPELL_BLOCKS = ['a4', 'a6', 'a7', 'a8', 's1', 's2', 'g6', 'k61', 'k62', 'k63', 'k64', 'k65', 'k66', 'k67', 'k68', 'k70', 'y1', 'k73c'];
+export const SPELL_BLOCKS = ['a4', 'a6', 'a7', 'a8', 's1', 's2', 'g6', 'k61', 'k62', 'k63', 'k64', 'k65', 'k66', 'k67', 'k68', 'k70', 'y1', 'k73c', 'b102'];
 
 /** Oyundaki durum (BUYU-DURUM ölçütü): ton + not (Türkçe). */
 export function spellStatus(s: Spell): { tone: ProTone; note?: string } {

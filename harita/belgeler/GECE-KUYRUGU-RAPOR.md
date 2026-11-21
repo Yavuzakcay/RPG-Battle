@@ -1,5 +1,17 @@
 # Gece kuyruğu raporu (2026-11-21)
 
+## Özet tablo
+
+| Aşama | Durum | Kural sürümü | Commit |
+|---|---|---|---|
+| 1 Yaşam Manastırı kaldırma | durduruldu (önkoşul 77fe3e69 yok, `icerik/` bulutta yok); depo tarafını başka oturum yaptı (`47dab278`) | — | `86e86155` (rapor) |
+| 2 Karar kalanları | tamam (5e ertelendi) | 101 (kayıt sürümü 25) | `01622902`, `6a603efa` |
+| 3 SRD büyüleri | tamam (Storm of Vengeance aşamaları ertelendi) | 102 | `1ce61a14` |
+| 4 Canavar + sınıf açıkları | tamam (yapışma/likantropi/boğulma ertelendi) | 103 | `cba977ab` |
+| 5 SRD-KAPSAM ikinci çalışma | tamam | — | `ad6edc1e` |
+| 6 Eksik taraması | tamam | — | `524ff83b` |
+| 7 Son doğrulama | tamam | — | bu commit |
+
 Yedi aşamalı gece kuyruğunun ilerleme kaydı. Ortam: bulut oturumu (taze klon), dal `birlesik` (`origin/birlesik` f799e851'den).
 Bu ortamda depo dışı içerik yok: `icerik/` (gitignore), `docs/sabah/`, `public/Subclass/`, `zar-kuru.txt` ve RPG-Battle-motor
 worktree'si bulunmuyor; hiçbirine dokunulmadı.
@@ -99,3 +111,56 @@ worktree'si bulunmuyor; hiçbirine dokunulmadı.
 - Ölçülmüş sayılar (tekil kaynak + konu 710): açık ve SRD'de 464, bilinçli ertelenen 126, karar gerektiren 26 (+ 16 elle soru),
   bayat 19 (kapanmış konu, kaynak belge güncellenmemiş: E8, E9, E13, D10, B35, A7, A44, H12, T27, Z9, Evocation Savant …),
   savaş dışı 75 (+ 12 sistem için tasarım adımı), probe 14. "Serüven öncesi mutlaka" 15 madde.
+
+## Aşama 7: Son doğrulama ve rapor — TAMAM
+
+- **Tam `npm test` (bir kez):** 527 dosya; 5776 geçti, 11 atlandı (yerel `icerik/` yok: AS2 sayımı ve benzerleri), **2 düştü**:
+  1. `src/dungeondex/prospektus/buyu.test.ts` "oyundaki durum BUYU-DURUM ölçütüyle aynı": Aşama 3'ün `b102` bloğu Dungeondex'in
+     `SPELL_BLOCKS` listesine eklenmemişti → **düzeltildi** (`src/dungeondex/prospektus/buyu.ts`; dosya tek başına yeşil).
+  2. `src/dungeondex/dungeondex.test.tsx` "kategori listesi ve Lisanslar ve atıf" (`dex-tab-lisans` sekmesi yok): **önceden var olan**
+     hata — gece kuyruğu başlangıç ağacında (`f799e851`, geçici worktree) da düşüyor (KALAN100 kaydında da). Başka oturumun Dungeondex
+     kitap kabuğu işi; dokunulmadı.
+  `surfaces.test` zaman aşımına düşmedi; `esyaIkon` testi atlandı/geçti (depo dışı ham dosya).
+- **typecheck, build, check:harita, check:ses (son çalıştırma):** typecheck temiz; build ana parça 451,53 / 500 kB; `check:harita` 92/92;
+  `check:ses` 15 kontrol, 0 hata (Chromium: `PW_CHROMIUM=/opt/pw-browsers/chromium-1243/chrome-linux64/chrome`). **check:icerik:** büyü betimlemeleri 339/339, 0 hata; `icerik/`
+  klasörü bu bulut ortamında yok (paket doğrulaması yapılamadı).
+- **Regresyon tabloları (hızlı, 100 tohum, 5. seviye standart parti):**
+
+| Senaryo | 100 | 101 | 102 | 103 |
+|---|---:|---:|---:|---:|
+| Çöl — Gündüz | %81 | %81 | %81 | %81 |
+| Kale — Gündüz (Kale ve avlu) | %36 | %36 | %36 | %32 |
+| Mağara — karanlık | %85 | %85 | %85 | %78 |
+| Orman | %64 | %64 | %64 | %68 |
+
+  101 ve 102 aynı (değişiklikler oyuncu komutları, gece varyantı ve büyü verisi; bu senaryolarda etkisiz). 103 farkı **kural kaynaklı**
+  (canavar inisiyatifi SRD stat bloğundan; veri hatası değil). Altın imzalı regresyon testleri (`src/sim/*Regresyon.test.ts`) eski
+  sürümleri sınadığı için düşmedi.
+- **Değişen eski testler ve gerekçeleri:** `ruleVersion.test.ts`, `g6.test.ts` (güncel sürüm 100 → 103, her aşamada); `SAVE_VERSION`
+  24 → 25 (`statusFx`, `areaView`, `s1`, `g1`; `ready.test` ≥ 24); `night.test.ts` (101'de `nightVision` varsayılan açık: gece gizlenme
+  testleri anahtar kapalıyla); `e2Verify.ts` görsel doğrulama düzeni (Earthquake 102'de büyücünün kendi konsantrasyonunu bozar) +
+  `data/efekt-e2-dogrulama.json`; `b93.test.ts` Magic Missile (103'te Empowered Evocation INT değiştiricisi); `ridersA2.test.ts` duman
+  testi (eski aktarım adı `eskiAd`); `dungeondex/prospektus/buyu.ts` `SPELL_BLOCKS` (+ `b102`).
+
+## Karar gerekli (numaralı, önerili)
+
+1. **Aşama 1'in kalanı:** 77fe3e69 (ad işi) push'lanınca `icerik/ek-cleric.json`'dan life-domain silinsin ve "Bağlılık Yemini Büyüleri" →
+   "Sadakat Töresi Büyüleri" adı alt sınıf adıyla birlikte değişsin. Öneri: yerel checkout'ta (icerik/ olan) tek adım.
+2. **Eşyayı silaha bağlama** (KARAR101 5e; SRD tanımlı): oluşturucuda eşyaya silah seçimi mi, ana silah varsayılanı mı? Öneri: seçim + varsayılan.
+3. **Knocking Out sonrası** (KARAR101): bayıltılan yenilmiş sayılıyor; Serüven'de esir alma olsun mu? Öneri: şimdilik yenilmiş, esir alma ayrı.
+4. **`nightVision` varsayılan açık** (101): denge ölçümü (gece senaryoları) — tam turda ölçülsün mü, yoksa varsayılan geri mi? Öneri: ölç.
+5. **103 inisiyatif dengesi:** Kale %36 → %32. Öneri: tam turda düşman listeleri yeniden ölçülsün (canavar verisi denge için değişmez).
+6. **Storm of Vengeance aşamaları** (BUYU-TAM §4.1): alan tetikleyicisine aşama sayacı (sürüm 104+)? Öneri: evet.
+7. **Yapışma / likantropi / boğulma** (KAPSAM103): yeni "bağlı yaratık" + `noBreath` + 0 HP biçim değişimi tek görevde mi? Öneri: evet.
+8. **Savaş dışı süreler ve maliyetli materyal** (BUYU-TAM §4.2, §4.5): Serüven zaman/ekonomi modeline bağlansın mı? Öneri: Serüven ile.
+9. **0 HP uzun dinlenme** (G6): Normal'de SRD'ye dönülsün mü? Öneri: Normal SRD, Kolay ev kuralı.
+10. **Otomatik seçimlerin oyuncuya sorulması** (Preserve Life, Sculpt Spells, Stroke of Luck…; KAPSAM103 ertelenenler): `askChoice` ile
+    hepsi "Sor" ayarına bağlansın mı? Öneri: evet, tek görev.
+
+Ayrıntılı soru listesi `harita/belgeler/EKSIK-TARAMA.md` (bölüm 3, 16 soru) ve `BUYU-TAM-TARAMA.md` §4.
+
+## Ertelenenler
+
+KARAR101 5e (eşya ↔ silah bağı); Storm of Vengeance aşamaları; yapışma, likantrop laneti, boğulma; SRD-12 sınıf özelliği sapmaları
+(Cutting Words ıskada, Quivering Palm vazgeçme, Holy Nimbus/Hurl Through Hell yenilenme, Dark One's Own Luck, Supreme Sneak, Fast
+Hands/Use Magic Device savaş dışı, otomatik seçimler); Ready yanıt listesi ve YZ Ready; denge ölçümleri (101 gece, 103 inisiyatif).
