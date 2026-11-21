@@ -91,7 +91,7 @@
     "hunters-mark": "cast_spell {\"targetId\":\"B\"}",
     "ice-knife": "cast_spell {\"targetId\":\"B\"}",
     "ice-storm": "cast_spell {\"targetId\":\"B\"}",
-    "incendiary-cloud": "cast_spell {\"targetHex\":{\"col\":12,\"row\":5}}",
+    "incendiary-cloud": "cast_spell {\"targetHex\":{\"col\":9,\"row\":5}}",
     "inflict-wounds": "cast_spell {\"targetId\":\"C\"}",
     "insect-plague": "cast_spell {\"targetHex\":{\"col\":9,\"row\":5}}",
     "irresistible-dance": "cast_spell {\"targetId\":\"B\"}",

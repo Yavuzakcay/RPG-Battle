@@ -61,15 +61,15 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | Kimlik | Sv | Durum | Mekanik anahtarı | İşleyen dosyalar |
 |---|---|---|---|---|
 | power-word-kill | 9 | çalışır | `powerWord` | src/battle/spells69.ts |
-| time-stop | 9 | çalışır | `timeStop` | src/battle/commands.ts, src/battle/common.ts, src/battle/reduce.ts, src/battle/spells69.ts, src/battle/types.ts |
+| time-stop | 9 | çalışır | `timeStop` | src/battle/commands.ts, src/battle/common.ts, src/battle/ready.ts, src/battle/reduce.ts, src/battle/spells69.ts, src/battle/types.ts |
 | mass-heal | 9 | çalışır | `massHeal` | src/battle/spells69.ts |
 | prismatic-spray | 7 | çalışır | `prismatic` | src/battle/spells69.ts |
 | reverse-gravity | 7 | çalışır | `reverseGravity` | src/battle/spells69.ts |
 | divine-word | 7 | çalışır | `hpTiers` | src/battle/spells69.ts |
-| control-water | 4 | savaş dışı (Game Master anahtarı `spellsK19` açıkken savaşta) | `terraform` | src/battle/spells.ts, src/battle/terraform.ts |
-| stone-shape | 4 | savaş dışı (Game Master anahtarı `spellsK19` açıkken savaşta) | `terraform` | src/battle/spells.ts, src/battle/terraform.ts |
+| control-water | 4 | savaş dışı (Game Master anahtarı `spellsK19` açıkken savaşta) | `terraform` | src/battle/girdap.ts, src/battle/spells.ts, src/battle/terraform.ts |
+| stone-shape | 4 | savaş dışı (Game Master anahtarı `spellsK19` açıkken savaşta) | `terraform` | src/battle/girdap.ts, src/battle/spells.ts, src/battle/terraform.ts |
 | modify-memory | 5 | savaş dışı (Game Master anahtarı `spellsK19` açıkken savaşta) | `upgrade` | src/battle/spells.ts, src/battle/zones.ts |
-| passwall | 5 | savaş dışı (Game Master anahtarı `spellsK19` açıkken savaşta) | `terraform` | src/battle/spells.ts, src/battle/terraform.ts |
+| passwall | 5 | savaş dışı (Game Master anahtarı `spellsK19` açıkken savaşta) | `terraform` | src/battle/girdap.ts, src/battle/spells.ts, src/battle/terraform.ts |
 
 ## Liste
 
@@ -265,7 +265,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | blight | 4 | spells-45.json | çalışır |  |  |  |
 | charm-monster | 4 | spells-45.json | çalışır |  |  |  |
 | compulsion | 4 | spells-45.json | çalışır |  |  |  |
-| confusion | 4 | spells-45.json | çalışır |  |  |  |
+| confusion | 4 | spells-45.json | çalışır | b102 (sürüm 102) |  |  |
 | conjure-minor-elementals | 4 | spells-45.json | çalışır |  |  |  |
 | conjure-woodland-beings | 4 | spells-45.json | çalışır |  |  |  |
 | control-water | 4 | spells-45.json | savaş dışı |  |  |  |
@@ -300,7 +300,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | commune | 5 | spells-45.json | savaş dışı |  |  |  |
 | commune-with-nature | 5 | spells-45.json | savaş dışı |  |  |  |
 | cone-of-cold | 5 | spells.json | çalışır |  |  |  |
-| conjure-elemental | 5 | spells-45.json | çalışır |  |  |  |
+| conjure-elemental | 5 | spells-45.json | çalışır | b102 (sürüm 102) |  |  |
 | contact-other-plane | 5 | spells-45.json | savaş dışı |  |  |  |
 | contagion | 5 | spells-45.json | çalışır |  |  |  |
 | creation | 5 | spells-45.json | savaş dışı |  |  |  |
@@ -314,7 +314,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | hold-monster | 5 | spells-45.json | çalışır |  |  |  |
 | insect-plague | 5 | spells-45.json | çalışır |  |  |  |
 | legend-lore | 5 | spells-45.json | savaş dışı |  |  |  |
-| mass-cure-wounds | 5 | spells-45.json | çalışır |  |  |  |
+| mass-cure-wounds | 5 | spells-45.json | çalışır | b102 (sürüm 102) |  |  |
 | mislead | 5 | spells-45.json | çalışır |  |  |  |
 | modify-memory | 5 | spells-45.json | savaş dışı |  |  |  |
 | passwall | 5 | spells-45.json | savaş dışı |  |  |  |
@@ -365,7 +365,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | conjure-celestial | 7 | spells-69.json | çalışır | k73c (sürüm 64) |  | hayır |
 | delayed-blast-fireball | 7 | spells-69.json | çalışır | k62 (sürüm 46) |  | hayır |
 | divine-word | 7 | spells-69.json | çalışır |  |  | hayır |
-| etherealness | 7 | spells-69.json | çalışır |  |  | hayır |
+| etherealness | 7 | spells-69.json | çalışır | b102 (sürüm 102) |  | hayır |
 | finger-of-death | 7 | spells-69.json | çalışır |  |  | hayır |
 | fire-storm | 7 | spells-69.json | çalışır | k65 (sürüm 49) |  | hayır |
 | forcecage | 7 | spells-69.json | çalışır | y1 (sürüm 55) |  | hayır |
@@ -389,7 +389,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | control-weather | 8 | spells-69.json | savaş dışı |  |  | hayır |
 | demiplane | 8 | spells-69.json | savaş dışı |  |  | hayır |
 | dominate-monster | 8 | spells-69.json | çalışır |  |  | hayır |
-| earthquake | 8 | spells-69.json | çalışır | k66 (sürüm 50) |  | hayır |
+| earthquake | 8 | spells-69.json | çalışır | b102 (sürüm 102) |  | hayır |
 | glibness | 8 | spells-69.json | çalışır |  |  | hayır |
 | holy-aura | 8 | spells-69.json | çalışır | a4 (sürüm 32) |  | hayır |
 | incendiary-cloud | 8 | spells-69.json | çalışır |  |  | hayır |

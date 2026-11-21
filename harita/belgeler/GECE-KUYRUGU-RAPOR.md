@@ -40,3 +40,20 @@ worktree'si bulunmuyor; hiçbirine dokunulmadı.
 - Commit: `01622902` (birleştirme `95298494`).
 - Hızlı regresyon 100 ↔ 101 (100 tohum): Çöl %81/%81, Kale %36/%36, Mağara %85/%85, Orman %64/%64 (aynı; gece senaryoları
   ölçülmedi, `DENGE.md` "ölçülecek").
+
+## Aşama 3: SRD büyüleri ve büyü etkileri (kural sürümü 102) — TAMAM (1 eksik ertelendi)
+
+- 3a: `scripts/buyu-tam-tarama.ts` → `harita/belgeler/BUYU-TAM-TARAMA.md`: 339 büyü (cantrip–9) alan alan; sonuç (102): tam 214,
+  kısmi (otomatik not, elle doğrulandı) 16, şüpheli 0, savaş dışı 109, eksik 0. İlk çalıştırmada şüpheli 34 (çoğu gösterim farkı /
+  `applied` bayrağısız uygulanan yukarı slot); elle doğrulamada 5 gerçek fark + ölü veri alanı taramasında 2 hata + 1 eksik bulundu.
+- 3b düzeltmeler (`b102` bloğu, tek sabit `src/battle/buyuTamSurum.ts`): Confusion yukarı slot yarıçapı; Etherealness (etki hiç
+  Ethereal yapmıyordu) + yukarı slot hedefleri; Earthquake konsantrasyon bozma (veri alanı okunmuyordu); Conjure Elemental 10
+  dakika; Mass Cure Wounds 30 ft küre. Testler `src/battle/buyuTam102.test.ts` (6 test grubu, 101 ↔ 102 + replay).
+- Eksik, ertelendi: Storm of Vengeance 2–10. tur aşamaları (BUYU-TAM-TARAMA §4.1, öneriyle).
+- Karar gerekli (BUYU-TAM-TARAMA §4): savaş dışı süreler, eşya büyüleri, Wish serbest dilek, maliyetli materyal.
+- 3c: `scripts/buyu-efekt-eksik.mjs` → `harita/belgeler/BUYU-EFEKT-EKSIK.md`: büyüye özgü efekt bağlaması olmayan 78 büyü (süren 42).
+- Değişen eski testler: `ruleVersion.test.ts`, `g6.test.ts` (101 → 102); E2/E4c görsel doğrulama düzeninde büyücünün DEX save'i
+  (gerekçe DECISIONS BUYU-TAM), `data/efekt-e2-dogrulama.json` yeniden üretildi.
+- Test turu (`src/battle src/ui src/app src/rules src/data`, 387 dosya): 4922 geçti, 3 düştü (E2/E4c Earthquake görsel doğrulaması,
+  düzeltildi; `src/ui/fx` 115/115). Hızlı regresyon 101 ↔ 102 aynı (Çöl %81, Kale %36, Mağara %85, Orman %64). Build
+  451,00 / 500 kB; `check:harita` 92/92; `check:ses` 15/0.

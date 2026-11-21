@@ -361,6 +361,12 @@ export interface SpellMechanics {
   mb7?: Partial<SpellMechanics>;
   /** Mekanik matris düzeltmeleri (kural sürümü 83+; harita/belgeler/MEKANIK-MATRIS.md): bloktaki alanlar üstüne yazılır. */
   m83?: Partial<SpellMechanics>;
+  /** Gece kuyruğu Aşama 3 (kural sürümü 102, BUYU-TAM): SRD tam tarama düzeltmeleri (mekaniğin üstüne yazılır). */
+  b102?: Partial<SpellMechanics>;
+  /** BUYU-TAM (102): çok hedefli iyileştirmede hedefler menzil içinde merkezli bu yarıçaplı kürede (Mass Cure Wounds 30 ft). */
+  healSphereFt?: number;
+  /** BUYU-TAM (102): büyünün menzili (ft) bu değerle değişir (Etherealness yukarı slot hedefleri "within 10 feet"). */
+  castRangeFt?: number;
   /**
    * Control Water girdabı (kural sürümü 84, Game Master anahtarı `controlWaterWhirlpool`; `src/battle/girdap.ts`): anahtar açıkken
    * yapım bu bloğun girdabıyla (`whirlpool`); kapalıyken ve 83 ve altında eski mekanik (`upgrade`, `spellsK19`).
@@ -720,6 +726,10 @@ export interface EffectSpec {
   side: 'ally' | 'enemy' | 'any';
   /** Görev B1: yalnızca büyücünün kendisi (Shillelagh, Blur). */
   self?: boolean;
+  /** BUYU-TAM (102): büyücü hedeflerden biri olmalı (Etherealness yukarı slot). */
+  includeSelf?: boolean;
+  /** BUYU-TAM (102): hedef Ethereal düzleme geçer (hedef alınmaz; Etherealness). 101 ve altında etkiye yazılmıyordu. */
+  ethereal?: boolean;
   rounds: number;
   dice?: { die: string; sign: 1 | -1; on: Array<'attack' | 'save' | 'check'>; skill?: 'chosen'; single?: boolean };
   reduce?: { die: string; type: 'chosen' };
