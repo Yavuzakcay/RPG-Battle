@@ -51,6 +51,7 @@ import { monsterAvatar, sheetAvatar } from './avatar';
 import { monsterAttackArea } from '../rules/areaParse';
 import { hasBonusUnarmed, offHandAttackOption, unarmedStrikeOption, weaponAttackOptions } from './weapons';
 import { activeMasteries, weaponMasteryId } from '../rules/mastery';
+import { effectiveSubclassId } from '../rules/subclasses';
 import { classKit, classResources, depotStart, gainedFeatures, resourceDef } from '../rules/classFeatures';
 import { environmentFor, getMap, resolveMapChoice } from '../map/maps';
 import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type AttackOption, type UsableFeature, type Avatar, type BattleEvent, type BattleState, type ActiveEffect, type Combatant, type DragonWakeMode, type Goals, type GroupState, type MapState, type SleepGroup, type SpellZone, type SurfaceKind } from './types';
@@ -170,6 +171,12 @@ const armorStealthDisadvantage = (name: string): boolean =>
  * Kuyruk 19 (SRD denetimi): sihirli eşyaların savaş parçaları (`itemEffects.ts`) temel savaşçıya eklenir: kalıcı
  * etkiler, isabet ekleri, silah ve büyü bonusu, yüklü büyüler (slotsuz, kaynak `item:<id>`).
  */
+/** 2026-11-21: imza denetimi etkin alt sınıf kimliğiyle (paketten silinen `life-domain` kayıtta yoksa Birlik Manastırı). */
+const imzaSheet = (sheet: CharacterSheet): CharacterSheet => {
+  const id = effectiveSubclassId(sheet.classId, sheet.subclassId);
+  return id === sheet.subclassId ? sheet : { ...sheet, subclassId: id };
+};
+
 export function combatantFromSheet(
   sheet: CharacterSheet,
   opts: { id: string; ownerId: string; height?: Height; carryRule?: CarryRule },
@@ -444,9 +451,10 @@ function combatantFromSheetBase(
     ...(kit.frenzy ? { frenzy: true } : {}),
     ...(kit.primalSkills.length > 0 ? { primalSkills: kit.primalSkills as Skill[] } : {}),
     // Savaşta kullanılan sınıf özellikleri (Lay On Hands, Sacred Weapon; veriden).
-    ...((): Partial<Combatant> => { const f = [...kit.usable, ...lineageFeatures(lineage), ...soyFeatures(sheet, d.speed), ...celestialFeatures(sheet.raceId, sheet.level, sheet.celestialAwakening), ...karadulFeatures(sheet), ...imzaFeatures(sheet), ...boonFeatures(featEffects(sheetFeats(sheet)).traits)]; return f.length > 0 ? { features: f } : {}; })(),
+    ...((): Partial<Combatant> => { const f = [...kit.usable, ...lineageFeatures(lineage), ...soyFeatures(sheet, d.speed), ...celestialFeatures(sheet.raceId, sheet.level, sheet.celestialAwakening), ...karadulFeatures(sheet), ...imzaFeatures(imzaSheet(sheet)), ...boonFeatures(featEffects(sheetFeats(sheet)).traits)]; return f.length > 0 ? { features: f } : {}; })(),
     // Kuyruk K50: imza alt sınıfı (pasifler ve saldırı kancası; kural kapalıysa `withImza` etkisiz bırakır).
-    ...(isImza(sheet.subclassId) && sheet.level >= 3 ? { imza: imzaId(sheet.subclassId) as string } : {}),
+    // 2026-11-21: paketten silinen Yaşam Manastırı (kayıtta yoksa) Birlik Manastırı olarak kurulur (`effectiveSubclassId`).
+    ...(isImza(imzaSheet(sheet).subclassId) && sheet.level >= 3 ? { imza: imzaId(imzaSheet(sheet).subclassId) as string } : {}),
     // Görev P0: ek paket ilkelleri ve yaratıkları (veri savaşçıda; düğmeler/pasifler `withPaket`).
     ...((): Partial<Combatant> => { const bag = paketBag(sheet); return bag ? { paket: bag } : {}; })(),
     // Kuyruk 19 (Irresistible Offense): artırılan skor (Overwhelming Strike).
