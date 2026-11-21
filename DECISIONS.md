@@ -2,6 +2,36 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev BUYU-TAM (gece kuyruğu Aşama 3): SRD 5.2.1 büyü tam taraması ve düzeltmeleri (2026-11-21; kural sürümü 102 `BUYU_TAM_VERSION`)
+
+Tek sabit `src/battle/buyuTamSurum.ts` (`BUYU_TAM_VERSION` 102, `buyuTamOn`); büyü verisinde `b102` bloğu (sırayla en son birleşir:
+`spells.ts` `LATER`, `spellVersion.ts` `mechanicsAt`, `scripts/lib/buyu-durum.mjs` `BLOCKS`). 101 ve altı (eski kayıt, replay) aynen.
+Kayıt sürümü değişmedi (yeni olay yok). Tarama ve gerekçeler `harita/belgeler/BUYU-TAM-TARAMA.md` (otomatik fark betiği
+`scripts/buyu-tam-tarama.ts`; 339 büyü: tam 214, kısmi (otomatik notlu, elle doğrulandı) 16, şüpheli 0, savaş dışı 109). Efekt
+bağlaması olmayanlar `harita/belgeler/BUYU-EFEKT-EKSIK.md` (`scripts/buyu-efekt-eksik.mjs`; 78 büyü). Testler
+`src/battle/buyuTam102.test.ts` (her düzeltme 101 ↔ 102, replay). Değişen eski testler: `ruleVersion.test.ts`, `g6.test.ts` (güncel
+sürüm 101 → 102).
+
+- **Confusion** (SRD "The Sphere’s radius increases by 5 feet for each spell slot level above 4."): yukarı slotta yarıçap (`b102.upcast
+  .radiusFt` 5; `executeAreaCast` 102+'da `upcast.radiusFt`'i alan büyülerinde de uygular; önceden yalnız alan kuran büyülerde).
+- **Etherealness** (SRD "You can target up to three willing creatures (including yourself) for each spell slot level above 7. The
+  creatures must be within 10 feet of you"): **önceden etki `ethereal` alanını taşımıyordu (büyü etkisizdi)**; 102'de etkiye yazılır,
+  yukarı slot başına +3 hedef, menzil 10 ft, büyücü hedeflerden biri (`includeSelf`, `castRangeFt`).
+- **Earthquake** (SRD "On a failed save, a creature has the Prone condition and its Concentration is broken."): veri `breakConcentration`
+  (motorun okumadığı ad) → `dropConcentration` (102).
+- **Conjure Elemental** (SRD "Concentration, up to 10 minutes"): alan 10 → 100 tur.
+- **Mass Cure Wounds** (SRD "up to six creatures in a 30-foot-radius Sphere centered on a point within range"): hedefleri kapsayan,
+  menzil içinde merkezli 30 ft küre olmalı (`healSphereFt`, `healSphereFits`; Mass Healing Word'de küre yok, aynen).
+- **Eksik, ertelendi:** Storm of Vengeance 2–10. tur aşamaları (`stages` verisi motor tarafından okunmuyor; yalnız döküm turu);
+  öneri BUYU-TAM-TARAMA §4.1. **Karar gerekli** (§4): savaş dışı süreler, eşya büyüleri, Wish serbest dilek, maliyetli materyal.
+- **Doğrulanıp değiştirilmeyen** (otomatik betiğin yanlış alarmları, §2): Spare the Dying menzil kademesi (GENEL96), cantrip
+  ölçeklemeleri, `applied` bayrağısız yukarı slot yolları, Self kökenli alan menzilleri, Fire Storm serbest şekli.
+- **Yapay zekâ büyü seçimine dokunulmadı.**
+- **Görsel doğrulama düzeni:** `src/ui/fx/e2Verify.ts` büyücüsünün DEX save'i 30 (Earthquake 102'de büyücünün kendi
+  konsantrasyonunu bozabildiği için alan çizimi doğrulanamıyordu); `data/efekt-e2-dogrulama.json` yeniden üretildi (166/166; yalnız
+  Incendiary Cloud'un denenen nişanı değişti).
+- **Hızlı regresyon (101 ↔ 102, 100 tohum):** Çöl %81/%81, Kale %36/%36, Mağara %85/%85, Orman %64/%64 (tur, ölüm, düşen aynı).
+
 ## Görev KARAR101 (gece kuyruğu Aşama 2): KALAN100 karar kalanları SRD 5.2.1'e göre (2026-11-21; kural sürümü 101 `KARAR101_VERSION`)
 
 Tek sabit `src/battle/karar101Surum.ts` (`KARAR101_VERSION` 101, `karar101On`), motor `src/battle/karar101.ts`. 100 ve altı (eski
