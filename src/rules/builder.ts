@@ -13,9 +13,9 @@ import { armor, classes, getClass, items, races, spells, weapons } from '../data
 import { ABILITIES, type Ability } from './abilities';
 import { rollDice, rollTag, type Rng } from './dice';
 import { SKILL_IDS, SKILLS, type Skill } from './skills';
-import { backgroundSkills, magicInitiateProblems, otherSkillMax } from './backgrounds';
+import { backgroundById, backgroundOf, backgroundSkills, bonusesOf, magicInitiateProblems, otherSkillMax, speciesSkillChoice } from './backgrounds';
 import { MAX_ATTUNED, classSkillProblem, deriveStats, finalScores, spellSlotsFor, type CharacterSheet, type Scores } from './stats';
-import { advancementProblems, featEffects, sheetFeats } from './advancement';
+import { advancementProblems, casterCtx, featEffects, sheetFeats } from './advancement';
 import { classKit, defaultSubclass, gainedFeatures, optionTraining, subclassLevel, subclassesOf, tableValue } from './classFeatures';
 import { masteryProblems } from './mastery';
 import { carryLoad, type CarryRule } from './carry';
@@ -378,6 +378,10 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
   if (race?.id === 'human' && s.lineageId === ALT_SOY_GORUNUM.ten.surgun.kultur && !ALT_SOY_GORUNUM.ten.surgun.secenekler.includes(s.exileCulture ?? '')) push(I().exileMissing);
   step = 'scores';
   if (c.method === 'standard' && !usesStandardArray(s.baseScores)) push(I().standardArray);
+  // Görev TE99 (SRD 5.2.1 s. 21 "increase one of these scores by 2 and a different one by 1, or increase all three by 1"):
+  // geçmiş seçiliyse artış zorunlu (geçmiş değişince sıfırlanan bonus da). Geçmişsiz eski kayıt muaf.
+  const bgOf = backgroundOf(s);
+  if (bgOf && backgroundPattern(bonusesOf(s)) === 'none') push(I().backgroundBonusMissing(bgOf.name));
   if (c.method === 'roll' && !usesRolled(s.baseScores, c.rolled)) push(c.rolled ? I().rolledArray : I().rollNeeded);
   if (c.method === 'pointBuy') {
     const cost = pointBuyCost(s.baseScores);
@@ -396,6 +400,9 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
   // Görev G1: geçmişin iki becerisi kilitli; sınıftan da seçilmişse çakışma (K20 uyarısı gibi).
   for (const x of backgroundSkills(s)) if (c.classSkills.includes(x)) push(I().skillFromBackground(SKILLS[x].name));
   if (c.otherSkills.some((x) => !SKILL_IDS.includes(x))) push(I().skillUnknown);
+  // Görev TE99 (SRD 5.2.1 s. 85 Keen Senses): Elf'in tür becerisi yalnız Insight, Perception ya da Survival.
+  const sc = backgroundSkills(s).length ? speciesSkillChoice(s) : undefined;
+  if (sc?.from && otherSkillsOf(c).some((x) => !sc.from?.includes(x))) push(I().speciesSkillList(sc.from.map((x) => SKILLS[x].name).join(', ')));
   step = 'equipment';
   if (!armor.some((a) => a.name === s.armorName)) push(I().armorMissing);
   // Görev K4: SRD "Attunement": en çok 3 uyumlu eşya (fazlasının etkisi savaşta uygulanmaz).
@@ -464,7 +471,7 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
     // Görev G1: Magic Initiate (Acolyte, Sage) iki cantrip ve bir 1. seviye büyü.
     magicInitiateProblems(s).forEach(push);
     try {
-      advancementProblems(s, { scores: finalScores({ ...s, advancements: [] }), casterClass: getClass(s.classId).casting !== null }).forEach(push);
+      advancementProblems(s, { scores: finalScores({ ...s, advancements: [] }), ...casterCtx(s.classId, s.level, s.subclassId) }).forEach(push);
     } catch (e) {
       push(e instanceof Error ? e.message : String(e));
     }
@@ -593,7 +600,11 @@ export function characterFromSheet(id: string, sheet: CharacterSheet): SavedChar
 
 export function newCharacter(id: string): SavedCharacter {
   const c = blankCharacter(id);
-  return { ...c, sheet: { ...c.sheet, backgroundId: 'soldier' } };
+  // Görev TE99: geçmiş bonusu zorunlu; yeni karakter sınıfın öncelik sırasıyla +2/+1 başlar (oluşturucu önerisiyle aynı).
+  const bg = backgroundById('soldier');
+  const order = getClass(c.sheet.classId).abilityPriority;
+  const [a, b] = [...(bg?.abilities ?? [])].sort((x, y) => order.indexOf(x) - order.indexOf(y));
+  return { ...c, sheet: { ...c.sheet, backgroundId: 'soldier', backgroundBonuses: { ...(a ? { [a]: 2 } : {}), ...(b ? { [b]: 1 } : {}) } } };
 }
 
 /** Boş bir karakter (Human Fighter, standart dizi). */

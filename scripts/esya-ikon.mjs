@@ -87,7 +87,8 @@ export function oyunKayitlari(root = ROOT) {
   const map = new Map();
   for (const i of [...oku('items.json'), ...oku('items-srd.json')]) map.set(i.id, { id: i.id, srd: srdOf(i.srd) });
   for (const w of oku('weapons.json')) map.set(w.id, { id: w.id, srd: srdOf(w.srd) });
-  for (const a of oku('armor.json')) if (a.srd) { const id = srdOf(a.srd); map.set(id, { id, srd: id }); }
+  // Görev TE99: kalkan kaydı (`type: shield`, yalnız AC verisi) oyun eşyası değil; eskisi gibi kayıtsız kalır.
+  for (const a of oku('armor.json')) if (a.srd && a.type !== 'shield') { const id = srdOf(a.srd); map.set(id, { id, srd: id }); }
   return [...map.values()];
 }
 

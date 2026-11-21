@@ -25,6 +25,7 @@ import type { BattleEvent, BattleState, Combatant, ConditionTimer, StageSpec } f
 /** Görev A3: ikinci aşamanın tanımı (eski biçim: yalnızca durum adı → kalan süre, save'siz). */
 export const stageOf = (e: string | StageSpec): StageSpec => (typeof e === 'string' ? { condition: e } : e);
 import { damageEffect } from './maprules';
+import { saveVs } from './te99Surum';
 
 export const DODGE = 'Dodge';
 /** Yardım işareti hedef düşmanda durur: `Help:<yardım eden taraf>`. */
@@ -105,7 +106,7 @@ export function timerEvents(state: BattleState, ownerId: string, end: ConditionT
       if (t.save && c.hp > 0) {
         // Kuyruk A6: Protection from Evil and Good (kaynak korunulan türdense Charmed/Frightened save'i avantajlı).
         const pfeg = pfegRepeatAdv(state, c.id, t.sourceId, [t.condition]);
-        const r = resolveSave({ extra: saveDice(c, t.save.ability), modifier: c.saves[t.save.ability], dc: t.save.dc, mode: saveMode(pfeg ? 'advantage' : 'normal', c, t.save.ability, undefined, { against: [t.condition] }),
+        const r = resolveSave({ extra: saveDice(c, t.save.ability), modifier: c.saves[t.save.ability], dc: t.save.dc, mode: saveMode(pfeg ? 'advantage' : 'normal', c, t.save.ability, undefined, { against: [t.condition] }), ...saveVs(c, [t.condition]),
           autoFail: (t.save.ability === 'str' || t.save.ability === 'dex') && autoFailsStrDexSave(c.conditions) }, rollTag(rng, { by: c.id }));
         out.push({ type: 'condition_save', targetId: c.id, condition: t.condition, ability: t.save.ability, dc: t.save.dc,
           d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { bonusDice: r.extra } : {}) });

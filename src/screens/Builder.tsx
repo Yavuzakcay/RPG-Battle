@@ -42,7 +42,7 @@ import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLe
 import { findSubclass, genderVisible, isOtherClassSubclass, subclassMissing, subclassPlainName } from '../rules/subclasses';
 import { wishPickKey } from '../battle/paket/bag';
 import {
-  ASI_FEAT, advancementSlots, asiCanRaise, asiPointsLeft, asiStep, scoresBeforeSlot, featById, featMechanic, featOptions, featEffects, featProblem, isStyleChoice, slotAlternativeById,
+  ASI_FEAT, advancementSlots, casterCtx, asiCanRaise, asiPointsLeft, asiStep, scoresBeforeSlot, featById, featMechanic, featOptions, featEffects, featProblem, isStyleChoice, slotAlternativeById,
   originFeats, sheetFeats, type Advancement, type AdvancementSlot, type Scores,
 } from '../rules/advancement';
 import { offHandOptionProblem, offHandProblem } from '../rules/hands';
@@ -52,7 +52,7 @@ import { abilityTip, lineageAbilityList, lineageLine } from '../ui/lineageText';
 import { lineageName, lineageOf, lineageSummary, raceDarkvision, raceSpeed, type LineageAbility } from '../rules/lineage';
 import { lineageNotes } from '../ui/lineageNotes';
 import { cultureSkinTone, exileName, exileOptions, pickCulture, tonesFor } from '../ui/lineageLook';
-import { MI_LISTS, backgroundOf, backgroundSkills, backgrounds, bonusesOf, magicInitiateAll, magicInitiateOf, magicInitiateOptions, originFeatOf, otherSkillMax, type MagicInitiatePick } from '../rules/backgrounds';
+import { MI_LISTS, backgroundOf, backgroundSkills, backgrounds, bonusesOf, magicInitiateAll, magicInitiateOf, magicInitiateOptions, originFeatOf, otherSkillMax, speciesSkillChoice, type MagicInitiatePick } from '../rules/backgrounds';
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail, weaponSummary } from '../ui/equipmentText';
 import { getLang, t } from '../i18n';
 import { Fold, InfoPop, InfoTip, toggle } from './builder/shared';
@@ -528,6 +528,17 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
           </div>
           {race.lineageOptional && !lineage && <p className="soft-warn">⚠ {W.lineageOptionalHint}</p>}
           {lineage && <LineageNotes raceId={race.id} lineage={lineage} />}
+          {/* Görev TE99 (SRD 5.2.1 s. 85–86): soy büyülerinin yeteneği soy seçilirken (INT, WIS ya da CHA). */}
+          {lineage?.spells?.length ? (
+            <div className="form-row lineage-ability">
+              <label>{W.lineageAbility}
+                <select value={s.lineageAbility ?? ''} onChange={(e: { target: { value: string } }) => set({ lineageAbility: (e.target.value || undefined) as CharacterSheet['lineageAbility'] })}>
+                  <option value="">{W.lineageAbilityAuto}</option>
+                  {(['int', 'wis', 'cha'] as const).map((a) => <option key={a} value={a}>{abilityName(a)}</option>)}
+                </select>
+              </label>
+            </div>
+          ) : null}
           {race.id === 'human' && exiles.length > 0 && (
             <>
               {/* Sur Dışı: Sürgün seçimi ZORUNLU (yalnız görünüm); seçim ten tonunu kendiliğinden belirler. */}
@@ -1008,7 +1019,8 @@ function SkillsStep({ c, setC, set, expertiseOnly }: StepProps & { /** Görev B9
         <Fold title={W.skillsOther} summary={W.countOther(other.length, otherMax)} className="skills-other">
           {otherFull && <p className="mute limit-note">{W.limitFull(otherMax)}</p>}
           <div className="chips">
-            {SKILL_IDS.filter((k) => !bgSkills.includes(k) && !c.classSkills.includes(k)).map((k) => {
+            {/* Görev TE99: Elf Keen Senses yalnız üç beceri (`data/races.json` `skillChoice.from`). */}
+            {(bg ? speciesSkillChoice(s)?.from ?? SKILL_IDS : SKILL_IDS).filter((k) => !bgSkills.includes(k) && !c.classSkills.includes(k)).map((k) => {
               const on = other.includes(k);
               return (
                 <button key={k} type="button" className={`chip${on ? ' on' : ''}`} aria-pressed={on} disabled={!on && otherFull}
@@ -1276,7 +1288,7 @@ function withSlot(list: Advancement[], slot: AdvancementSlot, next: Advancement 
 function asiCapableSlots(s: CharacterSheet, scores: Scores): AdvancementSlot[] {
   const asi = featById(ASI_FEAT);
   if (!asi) return [];
-  const ctx = { scores, casterClass: getClass(s.classId).casting !== null };
+  const ctx = { scores, ...casterCtx(s.classId, s.level, s.subclassId) };
   return advancementSlots(s.classId, s.level, s.subclassId).filter((x) => x.kind !== 'style' && featProblem(asi, x, ctx) === null);
 }
 
@@ -1337,7 +1349,7 @@ function AdvancementPanel(props: {
   const s = props.sheet;
   const bg = backgroundOf(s);
   const slots = advancementSlots(s.classId, s.level, s.subclassId);
-  const ctx = { scores: finalScores({ ...s, advancements: [] }), casterClass: getClass(s.classId).casting !== null };
+  const ctx = { scores: finalScores({ ...s, advancements: [] }), ...casterCtx(s.classId, s.level, s.subclassId) };
   const asiOk = new Set(asiCapableSlots(s, ctx.scores).map((x) => `${x.level}:${x.kind}`));
   const list = s.advancements ?? [];
   const put = (slot: AdvancementSlot, next: Advancement | null) => props.set({ advancements: withSlot(list, slot, next) });
@@ -1374,6 +1386,20 @@ function AdvancementPanel(props: {
         )}
         {originId && <FeatCard id={originId} />}
         {magicInitiateOf(s) && <MagicInitiatePicker sheet={s} set={props.set} />}
+        {/* Görev TE99 (SRD 5.2.1 s. 86 Versatile): Human'ın ek köken feat'i (Magic Initiate listeyle: `magic-initiate@liste`). */}
+        {races.find((r) => r.id === s.raceId)?.originFeat && (
+          <div className="form-row versatile">
+            <label>{T.versatileTitle} <InfoPop text={T.versatileHelp} />
+              <select value={s.speciesFeat ?? ''} onChange={(e: { target: { value: string } }) => props.set({ speciesFeat: e.target.value || undefined })}>
+                <option value="">{T.versatileNone}</option>
+                {originFeats().flatMap((f) => f.id === 'magic-initiate'
+                  ? MI_LISTS.map((l) => <option key={`${f.id}@${l}`} value={`${f.id}@${l}`}>{`${f.name} (${getClass(l).name})`}</option>)
+                  : [<option key={f.id} value={f.id}>{f.name}</option>])}
+              </select>
+            </label>
+            {s.speciesFeat?.startsWith('magic-initiate@') && <MagicInitiatePicker sheet={s} set={props.set} list={s.speciesFeat.split('@')[1]} />}
+          </div>
+        )}
         {featSkillCount(props.c) > 0 && (
           <Fold title={T.skilledTitle(featSkillCount(props.c))} summary={T.skilledCount((props.c.featSkills ?? []).length, featSkillCount(props.c))}
             open={(props.c.featSkills ?? []).length !== featSkillCount(props.c)} className="skilled-fold">

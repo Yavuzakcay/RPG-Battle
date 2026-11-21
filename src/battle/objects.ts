@@ -39,6 +39,7 @@ import { areaDamageOf, elementReactionEvents, surfaceEvent } from './surfaces';
 import { terrainOf } from '../map/terrain';
 import { p12On } from './paket/p12surum';
 import type { AttackOption, BattleEvent, BattleState, Combatant, Command, MapObject, ObjectAction, ObjectKind, ObjectState } from './types';
+import { te99On } from './te99Surum';
 
 const sizeOf = (s: BattleState) => ({ cols: s.map?.tiles[0]?.length ?? 0, rows: s.map?.tiles.length ?? 0 });
 const tileOf = (s: BattleState, h: Offset) => terrainOf(s.map?.tiles[h.row]?.[h.col] ?? '#');
@@ -220,8 +221,14 @@ export function executeObjectUse(state: BattleState, actor: Combatant, objectId:
       if ((state.map?.objects ?? []).some((o) => o.carriedBy === actor.id && OBJECTS[o.kind]?.key)) {
         return finish(state, [{ type: 'object_changed', objectId: obj.id, state: 'closed', label: `${name} kilidi anahtarla açıldı` }]);
       }
-      const bonus = skillBonus(actor, 'sleightOfHand');
-      const d = rollD20('normal', rollTag(rng, { by: actor.id, kind: 'check' }));
+      // Görev TE99 (99+, SRD 5.2.1 s. 93 Thieves' Tools "Utilize: Pick a lock (DC 15)", s. 20 alet yetkinliği): DEX kontrolü,
+      // aletle yetkinse + yeterlilik, Sleight of Hand'de de yetkinse avantaj. Envanter modeli yok: aleti yetkin olan taşıyor sayılır,
+      // olmayan kilit açamaz (⚠ DECISIONS TE99). 98 ve altı: herkes Sleight of Hand bonusuyla.
+      const t99 = te99On(state);
+      const tool = !!actor.toolProfs?.includes('thieves-tools');
+      if (t99 && !tool) return fail("Kilit açmak için Thieves' Tools gerekir.");
+      const bonus = t99 ? actor.modifiers.dex + actor.proficiency : skillBonus(actor, 'sleightOfHand');
+      const d = rollD20(t99 && actor.skills.sleightOfHand !== undefined ? 'advantage' : 'normal', rollTag(rng, { by: actor.id, kind: 'check' }));
       const total = d.kept + bonus;
       const success = total >= dc;
       return finish(state, [{ type: 'object_changed', objectId: obj.id, ...(success ? { state: 'closed' as const } : {}), label: success ? `${name} kilidi açıldı` : `${name} kilidi açılamadı`,
@@ -254,7 +261,8 @@ export function executeObjectUse(state: BattleState, actor: Combatant, objectId:
     if (obj.carriedBy) return fail('Nesneyi biri taşıyor.');
     if (actor.civilian || actor.summon) return fail('Bu savaşçı nesne taşımaz.');
     // Kuyruk 36: doğaçlama silah (SRD Improvised Weapons: yetkinliksiz, STR; hasar zarı veriden).
-    const arm = def.weapon ? improvisedOption(actor, def.tr, def.weapon) : undefined;
+    // Görev TE99 (99+, SRD 5.2.1 s. 183 "An Improvised weapon … deals 1d4 damage"): gerçek silah eşdeğeri olmayan nesne 1d4.
+    const arm = def.weapon ? improvisedOption(actor, def.tr, te99On(state) && !def.weapon.equivalent ? { ...def.weapon, damage: '1d4' } : def.weapon) : undefined;
     // Kuyruk KQ3 NA1 (sürüm 80): kapasiteyi aşan nesne tek kişiye reddedilir; yeterliyse bitişik dostlar yükü paylaşır.
     const plan = nesneOn(state) ? liftPlan(state, actor, obj) : { helpers: [] as string[] };
     if ('problem' in plan) return fail(plan.problem);

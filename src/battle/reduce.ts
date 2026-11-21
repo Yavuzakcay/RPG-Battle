@@ -38,6 +38,7 @@ import { sinif97On } from './sinif97Surum';
 import { monsterPrevOf, withMonsterPart, withoutMonsterPart } from './shapeMonsterCore';
 import { genel96On } from './genel96Surum';
 import { helpOnlySelf } from './genel96';
+import { te99On } from './te99Surum';
 
 /** Yürüyüşün sonundaki düz koşuyu bulur; önceki koşu aynı yönde sürüyorsa üstüne ekler. */
 function runAfter(start: Offset, path: Offset[], before: Combatant['run']): Combatant['run'] {
@@ -515,7 +516,8 @@ function markDeaths(before: BattleState, after: BattleState): BattleState {
  * (Incapacitated verir, hız 0). Ölen ya da düşmüş yaratığa uygulanmaz.
  */
 function lethargyAfter(state: BattleState, c: Combatant, lost: ActiveEffect[]): BattleState {
-  const h = lost.find((e) => e.lethargy);
+  // Görev TE99 (99+, SRD 5.2.1 s. 236 Potion of Speed "without suffering the wave of lethargy"): eşyanın Haste etkisi uyuşukluk vermez.
+  const h = lost.find((e) => e.lethargy && !(te99On(state) && e.id.startsWith('item:')));
   if (!h || c.hp <= 0 || c.life === 'dead') return state;
   const cur = state.combatants[c.id] as Combatant;
   const effect: ActiveEffect = { id: `${h.id}/lethargy`, name: `${h.name}: uyuşukluk`, sourceId: h.sourceId, until: state.round + 1, speedZero: true, grants: ['Incapacitated'] };
@@ -760,8 +762,12 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.fleet) economy.fleetUsed = true;
       if (event.apotheosis) economy.apotheosisUsed = true;
       if (event.loadingFired) economy.loadingFired = true;
+      // Görev TE99: Loading silah başına (yeni eylemde liste yeniden başlar).
+      if (event.loadingId) economy.loadingIds = [...(event.kind === 'action' ? [] : economy.loadingIds ?? []), event.loadingId];
+      // Görev TE99: bu turun eylemi Attack ya da Magic mi (Blink Steps; 99+ kullanılır, eski kayıtta okunmaz).
+      if (event.kind === 'action') economy.attackOrMagic = event.what === 'Attack' || !!event.magic;
       // Yeni eylem (Attack): önceki eylemin Loading atışı sayılmaz.
-      if (event.kind === 'action' && !event.loadingFired) economy.loadingFired = false;
+      if (event.kind === 'action' && !event.loadingFired) { economy.loadingFired = false; delete economy.loadingIds; }
       // Görev WS92 (92+): biçim Multiattack bileşimi: yeni eylemde sayaç sıfırlanır, saldırının adı sayılır.
       if (event.kind === 'action') delete economy.beastUsed;
       if (event.beast) economy.beastUsed = { ...(economy.beastUsed ?? {}), [event.beast]: (economy.beastUsed?.[event.beast] ?? 0) + 1 };

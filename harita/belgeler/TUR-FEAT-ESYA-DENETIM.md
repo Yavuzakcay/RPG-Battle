@@ -21,6 +21,240 @@ Durum sözlüğü: **tam** · **kısmi** · **yok** · **bilinçli sapma** (DECI
 | 6. Savaşla ilgili donanım (D) | 38 | 10 | 16 | 7 | 4 | 1 |
 | **Toplam** | **225** | **119** | **61** | **22** | **21** | **2** |
 
+## Düzeltme durumu (Görev TE99, kural sürümü 99; 2026-11-21)
+
+Her satırın sonucu. **düzeldi (99)**: kural sürümü 99 ve sonrası (98 ve altı eski davranış); **sürümsüz**: oluşturucu/veri/uygulama katmanı; **ertelendi**: yapılmadı (neden yanında; ayrıntı DECISIONS.md TE99). "değişmedi" yazan satırlar tam ya da bilinçli sapmaydı. Testler `src/battle/te99.test.ts`.
+
+| # | Konu | Sonuç |
+|---|---|---|
+| T1 | Boyut: Dragonborn, Dwarf, Elf, Goliath, Orc Medium; Gnome, Halfling Small | değişmedi (tam) |
+| T2 | Human ve Tiefling boyutu Small ya da Medium, tür seçilirken | ertelendi (bu turun kapsamı dışında) |
+| T3 | Hız 30 ft; Goliath 35; Wood Elf 35 | değişmedi (tam) |
+| T4 | Darkvision 60 ft; Dwarf, Orc, Drow 120; Goliath, Halfling, Human yok | değişmedi (tam) |
+| T5 | Dragonborn Draconic Ancestry tablosu + Damage Resistance | değişmedi (tam) |
+| T6 | Breath Weapon: Attack eyleminde bir saldırının yerine, 15 ft koni / 30×5 ft çizgi, DEX … | değişmedi (tam) |
+| T7 | Draconic Flight: 5+, bonus eylem, 10 dk, uçuş = Speed, Incapacitated olunca biter, uzun… | kısmen düzeldi (99: kaynak uzun dinlenmeye bağlı); Incapacitated olunca bitme ertelendi |
+| T8 | Dwarven Resilience: Poison direnci | değişmedi (tam) |
+| T9 | Dwarven Resilience: Poisoned'dan kaçınma/bitirme save'lerinde avantaj | düzeldi (99) |
+| T10 | Dwarven Toughness: seviye başına +1 HP | değişmedi (tam) |
+| T11 | Stonecunning: bonus eylem, taş yüzeyde 60 ft Tremorsense 10 dk, PB kullanım, uzun dinlenme | kısmen düzeldi (99: kaynak kalıcı); Tremorsense ↔ yeri bilme ertelendi |
+| T12 | Elven Lineage 1. seviye: Drow DV 120 + Dancing Lights, High Elf Prestidigitation, Wood … | değişmedi (tam) |
+| T13 | High Elf: uzun dinlenmede cantrip'i başka Wizard cantrip'iyle değiştirme | ertelendi (bu turun kapsamı dışında) |
+| T14 | Soy/Legacy 3. ve 5. seviye büyüsü: hep hazır, uzun dinlenmede bir kez slotsuz, slotla da | değişmedi (tam) |
+| T15 | Soy büyülerinin yeteneği INT/WIS/CHA, soy seçilirken seçilir | sürümsüz (oluşturucu: soy büyüsü yeteneği seçimi `lineageAbility`) |
+| T16 | Fey Ancestry: Charmed'dan kaçınma/bitirme save'lerinde avantaj | düzeldi (99) |
+| T17 | Keen Senses: Insight, Perception ya da Survival yetkinliği | sürümsüz (Elf yalnız Insight/Perception/Survival) |
+| T18 | Trance: büyü uyutamaz; 4 saatte uzun dinlenme | değişmedi (tam) |
+| T19 | Gnomish Cunning: INT/WIS/CHA save avantajı | değişmedi (tam) |
+| T20 | Forest Gnome: Minor Illusion + Speak with Animals PB kez slotsuz, uzun dinlenme, slotla da | değişmedi (tam) |
+| T21 | Rock Gnome: Mending + Prestidigitation | değişmedi (tam) |
+| T22 | Rock Gnome: saat işi aygıt (AC 5, 1 HP; en çok 3) | ertelendi (bu turun kapsamı dışında) |
+| T23 | Giant Ancestry: PB kullanım, uzun dinlenme | değişmedi (tam) |
+| T24 | Cloud's Jaunt: bonus eylem, görülen boş altıgene 30 ft ışınlanma | değişmedi (tam) |
+| T25 | Fire's Burn / Frost's Chill / Hill's Tumble: saldırı zarıyla isabette, seçimli, tur sın… | düzeldi (99) (tur sınırı yok, büyü saldırısı, kullanım sorulur) |
+| T26 | Frost's Chill hız −10 ft sonraki turun başına dek; Hill's Tumble Large ve küçüğü Prone | değişmedi (tam) |
+| T27 | Stone's Endurance: hasar alınca tepki, 1d12 + CON azaltma | ertelendi (hasar öncesi ortak azaltma kancası yeni sistem ister) |
+| T28 | Storm's Thunder: 60 ft içinden hasar verene tepkiyle 1d8 Thunder | değişmedi (tam) |
+| T29 | Large Form: 5+, bonus eylem, yer yetiyorsa, 10 dk Large, STR kontrollerinde avantaj, hı… | kısmen düzeldi (99: kaynak kalıcı); multiHex sığma ertelendi |
+| T30 | Powerful Build: Grappled'ı bitirme kontrolünde avantaj | değişmedi (tam) |
+| T31 | Powerful Build: taşıma kapasitesinde bir boy büyük | değişmedi (tam) |
+| T32 | Brave: Frightened'dan kaçınma/bitirme save'lerinde avantaj | düzeldi (99) |
+| T33 | Halfling Nimbleness: bir boy büyük yaratığın alanından geçer, duramaz | değişmedi (tam) |
+| T34 | Luck: D20 Test'te doğal 1 yeniden atılır | ertelendi (bu turun kapsamı dışında) |
+| T35 | Naturally Stealthy: en az bir boy büyük yaratıkla örtülüyken Hide | ertelendi (bu turun kapsamı dışında) |
+| T36 | Resourceful: uzun dinlenmede Heroic Inspiration | düzeldi (99) (uzun dinlenmede dolar, kullanım sorulur) |
+| T37 | Skillful: bir beceri yetkinliği | sürümsüz (serbest beceri yalnız Human/Elf) |
+| T38 | Versatile: seçilen bir Origin feat | sürümsüz (Versatile `speciesFeat`) |
+| T39 | Adrenaline Rush: bonus eylemle Dash + PB geçici HP; PB kullanım, kısa/uzun dinlenme | düzeldi (99) |
+| T40 | Relentless Endurance: anında ölmeden 0 HP'de 1 HP; uzun dinlenmede bir | düzeldi (99) |
+| T41 | Fiendish Legacy 1. seviye: direnç + cantrip (Abyssal Poison/Poison Spray, Chthonic Necr… | değişmedi (tam) |
+| T42 | Fiendish Legacy 3./5. seviye büyüleri | değişmedi (tam) |
+| T43 | Otherworldly Presence: Thaumaturgy cantrip'i, Legacy yeteneğiyle | ertelendi (bu turun kapsamı dışında) |
+| T44 | Tür kaynaklarının savaşlar arası takibi | düzeldi (99) |
+| T45 | Aasimar (SRD 5.2.1'de yok; ölçülen PDF'te geçmiyor) | değişmedi (bilinçli sapma) |
+| C1 | Celestial: Medium ya da Small (bizim veri `sizes: ["M","S"]`) | ertelendi (bu turun kapsamı dışında) |
+| C2 | Celestial: Darkvision 60, Radiant + Necrotic direnci (bizim metin "Düşmüşün Görüşü", "G… | değişmedi (tam) |
+| C3 | Celestial: Light cantrip'i, Şifa Eli (eylem, PB×d4, uzun dinlenme), Göksel Uyanış (3+, … | değişmedi (tam) |
+| C4 | Celestial biçimleri: Parlayan Ruh, Gece Gözyaşı, Kırık Kanat (13+ normal uçuş) (bizim m… | değişmedi (tam) |
+| C5 | Celestial kalıcı ırk (K49, sürüm 22+) ile metin | ertelendi (bu turun kapsamı dışında) |
+| L1 | Alt soy buff/debuff mekaniği (38 soy; bizim metin `alt-soy-metin.json`, `docs/ALT-SOY-4… | değişmedi (tam) |
+| L2 | Tiefling Kanatlı: metin "soy hasar direncini kaybedersin; orta/ağır zırhla uçamazsın" | ertelendi (bu turun kapsamı dışında) |
+| F1 | ASI/feat yuvaları 4/8/12/16, Fighter +6/14, Rogue +10, 19 Epic Boon; Fighting Style yuv… | değişmedi (tam) |
+| F2 | ASI özelliği "ASI feat'i ya da koşulunu sağladığın başka bir feat"; Fighting Style feat… | sürümsüz (Fighting Style özelliği olan sınıf ASI/Epic yuvasında) |
+| F3 | Epic Boon yuvası: Epic Boon ya da koşulunu sağladığın başka bir feat (ASI dahil); ASI y… | değişmedi (tam) |
+| F4 | Ön koşul seviyesi (Grappler/ASI "Level 4+", Boon "Level 19+") | değişmedi (tam) |
+| F5 | Ön koşul yeteneği: Grappler "Strength or Dexterity 13+" | ertelendi (bu turun kapsamı dışında) |
+| F6 | Ön koşul "Spellcasting Feature" (Boon of Spell Recall) | sürümsüz (Warlock Pact Magic ön koşulu tutmaz; paket alt sınıf büyücüsü ertelendi) |
+| F7 | Fighting Style feat'i yalnız Fighting Style özelliğiyle; yuvada yalnız Fighting Style k… | değişmedi (tam) |
+| F8 | Köken feat'i geçmişten gelir | değişmedi (tam) |
+| F9 | Human Versatile: seçilen ek bir köken feat'i | sürümsüz (Versatile) |
+| F10 | Tekrarsız feat ikinci kez alınamaz ("Repeatable" yoksa bir kez) | değişmedi (tam) |
+| F11 | Repeatable: ASI, Skilled | değişmedi (tam) |
+| F12 | Magic Initiate Repeatable, her seferinde farklı liste | değişmedi (tam) |
+| F13 | ASI: bir skora +2 ya da iki skora +1, 20'yi aşmaz | değişmedi (tam) |
+| F14 | Grappler +1 STR/DEX, en çok 20 | değişmedi (tam) |
+| F15 | Epic Boon +1, en çok 30; Spell Recall INT/WIS/CHA, Irresistible Offense STR/DEX | değişmedi (tam) |
+| F16 | Alert: inisiyatife PB | değişmedi (tam) |
+| F17 | Alert Initiative Swap: inisiyatiften hemen sonra gönüllü bir dostla takas, ikisi de Inc… | ertelendi (bu turun kapsamı dışında) |
+| F18 | Magic Initiate: iki cantrip + 1. seviye büyü aynı listeden, INT/WIS/CHA, her zaman hazı… | değişmedi (tam) |
+| F19 | Magic Initiate Spell Change: yalnız seviye atlarken bir büyü değişir | değişmedi (bilinçli sapma) |
+| F20 | Savage Attacker: turda bir, **silahla** isabette silahın hasar zarları iki kez | düzeldi (99) |
+| F21 | Savage Attacker "either roll" | değişmedi (bilinçli sapma) |
+| F22 | Skilled: üç beceri ya da alet | değişmedi (tam) |
+| F23 | Grappler Punch and Grab: Attack eylemindeki Unarmed Strike isabetinde hasar + Grapple, … | değişmedi (tam) |
+| F24 | Grappler Attack Advantage | değişmedi (tam) |
+| F25 | Grappler Fast Wrestler: kendi boyunda/küçüğü sürüklemek ek hareket istemez | doğrulandı (test, hata yok) |
+| F26 | Archery: Ranged silahla saldırıya +2 (fırlatılan yakın silah değil) | değişmedi (tam) |
+| F27 | Defense: Light/Medium/Heavy zırhla +1 AC | değişmedi (tam) |
+| F28 | Great Weapon Fighting: iki elle tutulan Melee silahta (Two-Handed/Versatile) 1–2 → 3 | değişmedi (tam) |
+| F29 | Two-Weapon Fighting: Light ek saldırısına yetenek değiştiricisi | değişmedi (tam) |
+| F30 | Boon of Combat Prowess, Peerless Aim: ıskayı isabete çevir, sonraki tur başına dek bir | düzeldi (99) (kullanım sorulur) |
+| F31 | Boon of Dimensional Travel, Blink Steps: **Attack ya da Magic eyleminden hemen sonra** … | düzeldi (99) |
+| F32 | Boon of Fate, Improve Fate: 60 ft'te D20 Testine ±2d4, inisiyatif ya da dinlenmeyle yen… | düzeldi (99) (kullanım sorulur) |
+| F33 | Irresistible Offense, Overcome Defenses: verdiğin **bütün** B/P/S hasarı direnci yok sayar | düzeldi (99) (bütün B/P/S hasarı, `profileIn` kaynağıyla) |
+| F34 | Irresistible Offense, Overwhelming Strike: saldırı zarında 20 → artırılan skor kadar ek… | düzeldi (99) (büyü saldırısında da) |
+| F35 | Boon of Spell Recall, Free Casting: 1–4. seviye slotla her büyüde 1d4 = slot seviyesi →… | ertelendi (bu turun kapsamı dışında) |
+| F36 | Night Spirit, Merge with Shadows: loşta/karanlıkta bonus eylemle Invisible, eylem/bonus… | değişmedi (bilinçli sapma) |
+| F37 | Night Spirit, Shadowy Form: loşta/karanlıkta Psychic/Radiant dışı direnç | değişmedi (bilinçli sapma) |
+| F38 | Boon of Truesight: 60 ft Truesight | değişmedi (tam) |
+| G1 | Yetenek artışı yalnız geçmişin üç yeteneğine, +2/+1 ya da +1/+1/+1, hiçbiri 20'yi aşamaz | değişmedi (tam) |
+| G2 | Artış zorunlu ("increase one by 2…", s. 21) | sürümsüz (geçmiş seçiliyse bonus zorunlu) |
+| G3 | Acolyte: INT/WIS/CHA, Magic Initiate (Cleric), Insight + Religion | değişmedi (tam) |
+| G4 | Criminal: DEX/CON/INT, Alert, Sleight of Hand + Stealth | değişmedi (tam) |
+| G5 | Sage: CON/INT/WIS, Magic Initiate (Wizard), Arcana + History | değişmedi (tam) |
+| G6 | Soldier: STR/DEX/CON, Savage Attacker, Athletics + Intimidation | değişmedi (tam) |
+| G7 | Köken feat'i geçmişten gelir ("specified Origin feat", s. 20, s. 83) | değişmedi (tam) |
+| G8 | Magic Initiate: listeden 2 cantrip + 1. seviye büyü, INT/WIS/CHA seçimi, uzun dinlenmed… | değişmedi (tam) |
+| G9 | Alert ve Savage Attacker savaşta | değişmedi (tam) |
+| G10 | Skilled: "üç beceri **ya da alet**" | ertelendi (bu turun kapsamı dışında) |
+| G11 | İki beceri yeterliliği (s. 20, s. 83); sınıf becerisiyle çakışma | değişmedi (tam) |
+| G12 | Tür becerisi yalnız Human Skillful (her beceri) ve Elf Keen Senses (Insight/Perception/… | sürümsüz |
+| G13 | Alet yetkinliği: alet kullanan kontrole PB, beceri de yetkinse avantaj | ertelendi (genel alet yetkinliği; yalnız Thieves' Tools savaşta) |
+| G14 | Seçmeli alet: Soldier "one kind of Gaming Set" (s. 83); bizim Soylu (Gaming Set), Soyta… | ertelendi (bu turun kapsamı dışında) |
+| G15 | Thieves' Tools ile kilit açma: DEX, DC 15, aleti gerektirir | kısmen düzeldi (99: DEX + PB, avantaj; envanter yok) |
+| G16 | Başlangıç donanımı: A paketi ya da 50 GP; para hemen harcanabilir | ertelendi (başlangıç donanımı A/50 GP) |
+| G17 | Geçmiş değişince geçersiz seçimler (bonus, beceri, MI listesi) | değişmedi (tam) |
+| G18 | Geçmişsiz eski kayıt (SRD'de karşılığı yok) | değişmedi (bilinçli sapma) |
+| G19 | Yeni karakter: varsayılan geçmiş ve öneri (oluşturucu) | değişmedi (tam) |
+| G20 | Madenci (`buz-madencisi`): STR/CON/WIS, Savage Attacker, Survival + Investigation, Maso… | değişmedi (tam) |
+| G21 | Köylü (`ciftci`): STR/CON/WIS, Magic Initiate (Druid), Animal Handling + Nature, Carpen… | değişmedi (tam) |
+| G22 | Tüccar (`tuccar`): DEX/INT/CHA, Skilled, Persuasion + Insight, Cartographer's Tools (bi… | değişmedi (tam) |
+| G23 | Mürettebat (`denizci`): STR/DEX/WIS, Savage Attacker, Acrobatics + Perception, Navigato… | değişmedi (tam) |
+| G24 | Soytarı (`gezgin-ozan`): DEX/INT/CHA, Magic Initiate (Wizard), Performance + Deception,… | değişmedi (tam) |
+| G25 | Şifacı (`sifaci-yardimcisi`): CON/WIS/CHA, Magic Initiate (Cleric), Medicine + Nature, … | değişmedi (tam) |
+| G26 | Ödül Avcısı (`avci-izci`): DEX/CON/WIS, Alert, Survival + Perception, Leatherworker's T… | değişmedi (tam) |
+| G27 | Soylu (`soylu`): STR/INT/CHA, Skilled, Persuasion + History, Gaming Set (bizim metin) | değişmedi (tam) |
+| G28 | Özgün geçmiş kuralı: köken feat'i SRD'nin 4 köken feat'inden, aletler SRD aletleri, DEC… | değişmedi (tam) |
+| S1 | Simple Melee 10 silah: zar, tür, özellikler | değişmedi (tam) |
+| S2 | Simple Ranged 4 silah (Dart, Light Crossbow, Shortbow, Sling) | değişmedi (tam) |
+| S3 | Martial Melee 18 silah | değişmedi (tam) |
+| S4 | Martial Ranged 6 silah; Blowgun sabit 1 hasar, yetenek eklenmez | değişmedi (tam) |
+| S5 | Her silahın ustalığı (Mastery sütunu) | değişmedi (tam) |
+| S6 | Weapon Proficiency: yetkin değilse PB eklenmez; Melee STR, Ranged DEX | değişmedi (tam) |
+| S7 | Ammunition: her saldırı bir cephane harcar; cephane yoksa atış yok | değişmedi (tam) |
+| S8 | Ammunition: savaştan sonra harcananın yarısı geri kazanılır | değişmedi (bilinçli sapma) |
+| S9 | Ammunition: tek elli silahı doldurmak için boş el gerekir | ertelendi (bu turun kapsamı dışında) |
+| S10 | Finesse: STR/DEX'ten biri, saldırı ve hasarda aynı | değişmedi (tam) |
+| S11 | Heavy: Melee'de STR < 13, Ranged'de DEX < 13 dezavantaj | değişmedi (tam) |
+| S12 | Light: Attack eyleminde Light silahla saldırınca bonus eylemle farklı Light silahla ek … | değişmedi (tam) |
+| S13 | Light: "different Light weapon" (aynı türden iki silah, ör. iki Dagger) | değişmedi (bilinçli sapma) |
+| S14 | Loading: bir eylem/bonus eylem/tepkide o silahtan tek atış | düzeldi (99) (silah başına) |
+| S15 | Range: normal menzil ötesi dezavantaj, uzun menzil ötesi saldırı yok | değişmedi (tam) |
+| S16 | Yakın düşman: 5 ft içinde seni gören, Incapacitated olmayan düşman varken menzilli sald… | değişmedi (tam) |
+| S17 | Reach: +5 ft erişim; fırsat saldırısında da o silahla | ertelendi (bu turun kapsamı dışında) |
+| S18 | Thrown: fırlatınca menzilli saldırı, yakın dövüş silahında aynı yetenek | değişmedi (tam) |
+| S19 | Thrown: fırlatılan silah elden çıkar (yerde kalır) | değişmedi (bilinçli sapma) |
+| S20 | Two-Handed: saldırıda iki el gerekir | düzeldi (99) |
+| S21 | Lance: Two-Handed (binekte değilse) | değişmedi (tam) |
+| S22 | Versatile: iki elle parantezdeki zar, yalnız yakın dövüşte | değişmedi (tam) |
+| S23 | Cleave: yakın dövüş isabetinde ilkine 5 ft, erişimdeki ikinci yaratığa saldırı, hasara … | değişmedi (tam) |
+| S24 | Graze: ıskada saldırı yeteneği değiştiricisi kadar aynı türde hasar | değişmedi (tam) |
+| S25 | Nick: Light ek saldırısı Attack eyleminin içinde, turda bir | ertelendi (metin belirsiz: Nick hangi silahta, K-S2) |
+| S26 | Push: isabette Large ya da küçüğü "10 ft'e kadar" düz uzağa itebilirsin | düzeldi (99) (5/10 ft seçimi; otomatik seçim kuralı aynı) |
+| S27 | Sap: isabet alan yaratığın senin sonraki turunun başına dek sonraki saldırı zarı dezava… | ertelendi (bu turun kapsamı dışında) |
+| S28 | Slow: hasarlı isabette hız −10 ft, sonraki turunun başına dek, birikmez | değişmedi (tam) |
+| S29 | Topple: CON save DC 8 + yetenek + PB, başarısızsa Prone | değişmedi (tam) |
+| S30 | Vex: hasarlı isabette o yaratığa sonraki saldırı zarı avantajlı, sonraki turunun sonuna… | ertelendi (bu turun kapsamı dışında) |
+| S31 | Ustalık yalnız özelliği açan karaktere; seçilen silahlar, hak sayısı | değişmedi (tam) |
+| S32 | Improvised Weapons: PB yok, 1d4, GM benzer silahı o silah sayabilir | kısmen düzeldi (99: nesne silahı 1d4; eşdeğer silah yetkinliği ertelendi) |
+| S33 | Improvised: menzilli silahla yakın dövüş, Thrown'suz yakın silahı fırlatma (1d4, 20/60,… | ertelendi (bu turun kapsamı dışında) |
+| S34 | Nesne fırlatma ≈ doğaçlama fırlatma | değişmedi (bilinçli sapma) |
+| S35 | Net: Attack'in bir saldırısı yerine, 15 ft, görülen yaratık, DEX save DC 8+DEX+PB, Rest… | ertelendi (bu turun kapsamı dışında) |
+| S36 | Martial Arts: Monk silahlarında DEX ve Martial Arts zarı (yakın dövüşle sınırlı değil) | ertelendi (bu turun kapsamı dışında) |
+| Z1 | Light zırh: Padded 11, Leather 11, Studded 12 + DEX, sınırsız | değişmedi (tam) |
+| Z2 | Medium zırh: Hide 12, Chain Shirt 13, Scale 14, Breastplate 14, Half Plate 15 + DEX (en… | değişmedi (tam) |
+| Z3 | Heavy zırh: Ring 14, Chain 16, Splint 17, Plate 18, DEX eklenmez | değişmedi (tam) |
+| Z4 | Strength sütunu: Chain Mail Str 13, Splint/Plate Str 15; karşılanmazsa hız −10 ft | değişmedi (tam) |
+| Z5 | Strength cezası her giyene | değişmedi (bilinçli sapma) |
+| Z6 | Stealth sütunu: Padded, Scale, Half Plate, Ring, Chain, Splint, Plate "Disadvantage" | değişmedi (tam) |
+| Z7 | Stealth dezavantajı Dexterity (Stealth) kontrollerinde | değişmedi (tam) |
+| Z8 | Giyme/çıkarma: Light 1 dk, Medium 5/1 dk, Heavy 10/5 dk | değişmedi (tam) |
+| Z9 | Shield "Utilize Action to Don or Doff" | ertelendi (kalkan tak/çıkar komutu) |
+| Z10 | Shield +2 AC | sürümsüz (kalkan kaydı `data/armor.json`) |
+| Z11 | Kalkan AC'si yalnız eğitimle | değişmedi (tam) |
+| Z12 | Eğitimsiz kalkanda hiçbir AC faydası yok | ertelendi (bu turun kapsamı dışında) |
+| Z13 | Tek zırh, tek kalkan | değişmedi (tam) |
+| Z14 | Eğitimsiz zırh: büyü yapılamaz | değişmedi (tam) |
+| Z15 | Eğitimsiz zırh: STR/DEX save'leri dezavantajlı | değişmedi (tam) |
+| Z16 | Eğitimsiz zırh: STR ya da DEX içeren saldırı zarı dezavantajlı | düzeldi (99) (yalnız STR/DEX saldırısı) |
+| Z17 | Eğitimsiz zırh: DEX (Stealth) kontrolü dezavantajlı | düzeldi (99) |
+| Z18 | Eğitimsiz zırh: Initiative (DEX kontrolü, s. 13) dezavantajlı | düzeldi (99) |
+| Z19 | Eğitim kaynağı: sınıf "Armor Training" (s. 28–63), Divine Order Protector, paket `yetki… | değişmedi (tam) |
+| Z20 | Elven Chain: "considered trained" | ertelendi (bu turun kapsamı dışında) |
+| Z21 | Oluşturucu: eğitimsiz zırh/kalkan uyarısı | değişmedi (tam) |
+| Z22 | Barbarian Unarmored Defense: zırhsız 10 + DEX + CON, kalkanla geçerli | değişmedi (tam) |
+| Z23 | Monk Unarmored Defense: zırh ve kalkan yokken 10 + DEX + WIS (s. 50); Unarmored Movemen… | değişmedi (tam) |
+| Z24 | Birden fazla taban AC hesabı: biri seçilir, birleşmez | değişmedi (tam) |
+| Z25 | Mage Armor: taban AC 13 + DEX; kalkan ve diğer bonuslar tabana eklenir | düzeldi (99) |
+| Z26 | Mage Armor yalnız zırhsız hedefe | değişmedi (tam) |
+| Z27 | Barkskin: AC 17'den düşükse 17 | değişmedi (tam) |
+| Z28 | Defense (Fighting Style): Light/Medium/Heavy zırh giyerken +1 | değişmedi (tam) |
+| Z29 | Sihirli zırh +N: yalnız o zırh türüne (Armor, +N "any"; Dwarven Plate = Plate; Elven Ch… | ertelendi (bu turun kapsamı dışında) |
+| Z30 | Mithral Armor: Stealth dezavantajı ve Strength şartı kalkar | ertelendi (bu turun kapsamı dışında) |
+| Z31 | Two-Handed silah iki el ister: kalkanla saldırılamaz | düzeldi (99) (oluşturucuda uyarı); kalkan tak/çıkar ertelendi |
+| Z32 | Rage: Heavy zırhla başlatılamaz, Heavy giyilince biter | değişmedi (tam) |
+| Z33 | Canavar: stat bloğundaki zırhta eğitimli, AC bloktan | değişmedi (tam) |
+| D1 | İksir içmek ya da 5 ft içindeki yaratığa içirmek Bonus Action | değişmedi (tam) |
+| D2 | Potions of Healing: 2d4+2 / 4d4+4 / 8d4+8 / 10d4+20 | değişmedi (tam) |
+| D3 | İksir sarf edilir, "used up" (s. 204); envanterde birden çok iksir | ertelendi (gerçek envanterden iksir düşmesi) |
+| D4 | Potion of Heroism: 10 geçici HP + Bless, 1 saat | değişmedi (tam) |
+| D5 | Potion of Invisibility: 1 saat, saldırı/hasar/büyüyle biter | değişmedi (tam) |
+| D6 | Potion of Speed: Haste etkisi 1 dakika, konsantrasyonsuz, **uyuşukluk dalgası yok** | düzeldi (99) |
+| D7 | Potion of Poison: 4d6 Poison **her durumda**; DC 13 CON save başarısızsa 1 saat Poisoned | düzeldi (99) |
+| D8 | Potion of Giant Strength (6 tür): STR skoru 1 saat X olur | değişmedi (bilinçli sapma) |
+| D9 | Diğer içecek/yağ etkileri: Resistance ×13, Flying, Growth, Diminution, Gaseous Form, In… | doğrulandı (44 kayıt testi, hata yok) |
+| D10 | Antitoxin: Bonus Action, 1 saat Poisoned save avantajı | değişmedi (tam) |
+| D11 | Acid: Attack eyleminde bir saldırı yerine, 20 ft, DEX DC 8+DEX+PB, 2d6 Acid | değişmedi (tam) |
+| D12 | Alchemist's Fire: 1d4 Fire + Burning; Burning tur başı 1d4, söndürme **eylem + Prone** | düzeldi (99) (eylem + Prone ile söner) |
+| D13 | Holy Water: 2d8 Radiant yalnız Fiend/Undead | değişmedi (tam) |
+| D14 | Net: 15 ft, Restrained; **Huge+ otomatik başarı**; DC 10 STR (Athletics) kurtulma, ağ A… | ertelendi (bu turun kapsamı dışında) |
+| D15 | Basic Poison: Bonus Action, yalnız Piercing/Slashing hasarda +1d4 Poison, 1 dakika **ya… | ertelendi (bu turun kapsamı dışında) |
+| D16 | Oil: yaratığa fırlatma (DEX save, ateşte +5 Fire), alana dökme ve yakma | ertelendi (Utilize eşyaları) |
+| D17 | Caltrops (DC 15, 1 Piercing, hız 0) ve Ball Bearings (DC 10 Prone), Utilize | ertelendi (Utilize eşyaları) |
+| D18 | Hunting Trap (DC 13, 1d4, zincir), Manacles (DC 13 bağlama) | ertelendi (Utilize eşyaları) |
+| D19 | Healer's Kit: Utilize ile zarsız stabilize, 10 kullanım | ertelendi (bu turun kapsamı dışında) |
+| D20 | Torch 20 ft parlak + 20 ft loş, Simple Melee saldırı 1 Fire; Lantern Hooded 30+30, Bull… | ertelendi (bu turun kapsamı dışında) |
+| D21 | Ammunition özelliği: atış başına 1 cephane, bitince atış yok; savaştan sonra yarısı geri | ertelendi (cephane stoku) |
+| D22 | Attunement: aynı anda en çok 3 eşya | değişmedi (tam) |
+| D23 | Uyum ön şartı: sınıf ya da "by a Spellcaster" | ertelendi (bu turun kapsamı dışında) |
+| D24 | Armor/Shield +1..+3, Ring/Cloak of Protection (+1 AC ve save), Bracers of Defense (+2 z… | değişmedi (tam) |
+| D25 | Yetenek skoru ayarlayan eşyalar: Belt of Giant Strength ×6, Gauntlets of Ogre Power, He… | değişmedi (tam) |
+| D26 | Weapon +1/+2/+3: **o silahla** saldırı ve hasar | ertelendi (eşya ↔ silah bağı yeni şema ister, K-D2) |
+| D27 | Ammunition +1/+2/+3: yalnız o cephaneyle, isabetten sonra büyüsü biter | kısmen düzeldi (99: yalnız cephaneli silah; parçanın tek kullanımı ertelendi) |
+| D28 | Flame Tongue: Bonus Action ile tutuşur, tutuşukken +2d6 Fire, 40 ft parlak + 40 ft loş | ertelendi (bu turun kapsamı dışında) |
+| D29 | Javelin of Lightning: isabette Lightning'e çevir; Lightning Bolt: 120 ft 5 ft çizgi, DC… | kısmen düzeldi (99: +4d6 kalktı, Javelin Lightning türü; Lightning Bolt ertelendi) |
+| D30 | Ammunition of Slaying: seçilen tür, DC 17 CON, 6d10 **Force** (yarı), sonra büyüsüz | kısmen düzeldi (99: yalnız cephaneli silah; tür, DC 17 CON, Force, tek kullanım ertelendi) |
+| D31 | Diğer isabet ekli silahlar (24 `onHit`; Dragon/Giant Slayer, Holy Avenger, Mace of Disr… | ertelendi (eşya ↔ silah bağı, K-D2) |
+| D32 | Yüklü büyü eşyaları: Wand of Magic Missiles (1–3 yük, yük başına +1 seviye), Wand of Fi… | kısmen düzeldi (yük kalıcı; yükle yukarı seviye ertelendi) |
+| D33 | Şarjların kalıcılığı ve şafakta yenilenme (1d6+1 vb.), son yükte 1d20 | sürümsüz (yük durumda, veride `recharge`) + 99 tür kaynağı |
+| D34 | Boots of Speed: Bonus Action ile hız ×2 **ve fırsat saldırısına dezavantaj**, toplam 10… | ertelendi (bu turun kapsamı dışında) |
+| D35 | Cloak of Displacement: saldırılara dezavantaj; hasar alınca sonraki turuna dek, hız 0'd… | ertelendi (bu turun kapsamı dışında) |
+| D36 | Wand of the War Mage +N: **yalnız büyü saldırısına** +N ve yarım siperi yok sayma | ertelendi (bu turun kapsamı dışında) |
+| D37 | (c) grubu, 14 eşya: Vorpal Sword, Nine Lives Stealer, Defender, Berserker Axe, Energy B… | ertelendi (Game Master eşyalarının `bonus`'u) |
+| D38 | Yapay zekânın eşya kullanması (SRD kuralı değil; oyun) | değişmedi (bilinçli sapma) |
+
+Özet: değişmedi 131, ertelendi 47, düzeldi 25, sürümsüz 11, kısmen düzeldi 9, doğrulandı 2
+
 ## En önemli bulgular
 
 1. **Eşya şarjları ve tür kaynakları savaşlar arasında yanlış taşınıyor (D33, T44).** `src/app/partyStatus.ts:14` `withStatus` savaşçının kaynaklarını kayıtlı durumla tümden değiştiriyor: yüklü 41 sihirli eşya (değnek, asa, kolye) ikinci savaşta yüksüz başlıyor (probe: Wand of Magic Missiles 7 → yok, büyü reddi). Tersine, `withSpecies` (`src/battle/create.ts:89–95`) tür kaynaklarını her savaşta yeniden dolduruyor: Relentless Endurance, Adrenaline Rush, Resourceful, Draconic Flight, Large Form, Stonecunning savaş başına bir (SRD: uzun/kısa dinlenmede). Breath Weapon, Giant Ancestry ve soy büyüleri doğru.

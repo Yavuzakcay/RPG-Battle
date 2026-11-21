@@ -50,6 +50,15 @@ export const registerSummonRider = (key: string, spec: RiderSpec): void => { SUM
 export const riderOf = (monsterId: string | undefined, attackName: string): RiderSpec | undefined =>
   monsterId ? RIDERS[`${monsterId}:${attackName}`] ?? SUMMON_RIDERS[`${monsterId}:${attackName}`] : undefined;
 export const allRiders = () => RIDERS;
+/**
+ * Görev TE99: canavar save saldırısının (başarısızlıkta) verebileceği durumlar (süreli etki + rider): tür save avantajı
+ * (`saveVs`) için.
+ */
+export function attackConditions(monsterId: string | undefined, attackName: string, timed?: { condition?: string }): string[] {
+  const r = riderOf(monsterId, attackName);
+  return [timed?.condition, r?.condition, ...(r?.conditions ?? []).map((x) => x.condition), ...(r?.grapple ? ['Grappled', ...(r.grapple.restrained ? ['Restrained'] : [])] : []), ...(r?.prone ? ['Prone'] : [])]
+    .filter((x): x is string => !!x);
+}
 
 const bloodied = (c: Combatant) => c.hp <= c.maxHp / 2;
 function holds(when: When, mode: RollMode, actor: Combatant, target: Combatant, feet = 20): boolean {

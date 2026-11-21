@@ -7,7 +7,7 @@
  * gelir). Saf: ekran ya da depolama bilmez.
  */
 import backgroundsJson from '../../data/backgrounds.json';
-import { classes, spells } from '../data';
+import { classes, races, spells } from '../data';
 import type { Ability } from './abilities';
 import type { Skill } from './skills';
 import { I } from './issueText';
@@ -27,6 +27,8 @@ export interface Background {
   featList?: string;
   skills: Skill[];
   tool: { tr: string; en: string };
+  /** Görev TE99: savaşta kullanılan alet yetkinliği (yalnız Thieves' Tools; `data/srd/tools.json` kimliği). */
+  toolId?: string;
   summary: { tr: string; en: string };
 }
 
@@ -48,6 +50,10 @@ export const miResource = (list: string): string => `magic-initiate-${list}`;
 
 interface BackgroundSheet {
   backgroundId?: string;
+  /** Görev TE99: türün beceri hakkı (Skillful, Keen Senses) ve Human Versatile köken feat'i (`speciesFeat`). */
+  raceId?: string;
+  /** Görev TE99 (SRD 5.2.1 s. 86 Versatile): Human'ın ek Origin feat'i (`kimlik[@liste]`; Magic Initiate listeyle). */
+  speciesFeat?: string;
   /** F1: seviye yuvalarındaki Magic Initiate (`list`). */
   advancements?: Array<{ level: number; featId: string; list?: string }>;
   backgroundBonuses?: Partial<Record<Ability, number>>;
@@ -78,8 +84,23 @@ export const originFeatOf = (sheet: BackgroundSheet): string | undefined => back
 /** Geçmişten gelen beceriler (kilitli). */
 export const backgroundSkills = (sheet: BackgroundSheet): Skill[] => backgroundOf(sheet)?.skills ?? [];
 
-/** Geçmiş ve türden serbest beceri sayısı: geçmiş seçilince geçmişin iki becerisi bu üç haktan düşer. */
-export const otherSkillMax = (sheet: BackgroundSheet): number => 3 - backgroundSkills(sheet).length;
+/**
+ * Geçmiş ve türden serbest beceri sayısı. Görev TE99 (SRD 5.2.1 s. 85–86): geçmiş seçiliyse yalnız türün beceri hakkı
+ * (Human Skillful 1, Elf Keen Senses 1; diğer türler 0; `data/races.json` `skillChoice`). Geçmişsiz eski kayıt 3 (G1).
+ * Fazla seçilmiş beceri sessizce yok sayılır (`otherSkillsOf`).
+ */
+export const otherSkillMax = (sheet: BackgroundSheet): number =>
+  backgroundOf(sheet) ? speciesSkillChoice(sheet)?.count ?? 0 : 3 - backgroundSkills(sheet).length;
+
+/** Görev TE99: türün beceri hakkı (Elf: yalnız Insight, Perception, Survival). */
+export const speciesSkillChoice = (sheet: BackgroundSheet): { count: number; from?: Skill[] } | undefined =>
+  races.find((r) => r.id === sheet.raceId)?.skillChoice as { count: number; from?: Skill[] } | undefined;
+
+/** Görev TE99 (SRD 5.2.1 s. 86 Versatile): türün ek köken feat'i (kimlik; seçilmemişse ya da tür vermiyorsa undefined). */
+export function speciesFeatOf(sheet: BackgroundSheet): string | undefined {
+  if (!sheet.speciesFeat || !races.find((r) => r.id === sheet.raceId)?.originFeat) return undefined;
+  return sheet.speciesFeat.split('@')[0] || undefined;
+}
 
 /** Magic Initiate'in seçilebilecek büyüleri (listenin cantrip'leri ve 1. seviye büyüleri). */
 export function magicInitiateOptions(list: string): { cantrips: string[]; spells: string[] } {
@@ -109,13 +130,18 @@ export function magicInitiateOf(sheet: BackgroundSheet): { list: string; cantrip
  * F1: karakterin bütün Magic Initiate'leri: geçmişten ve seviye yuvalarından (SRD 5.2.1: tekrar alınabilir, her
  * seferinde farklı liste). Yuvada liste seçilmemişse `list` boş (eksik olarak görünür).
  */
-export function magicInitiateAll(sheet: BackgroundSheet): Array<{ source: 'background' | number | 'lessons'; list: string; cantrips: string[]; spell?: string; ability: 'int' | 'wis' | 'cha' }> {
+export function magicInitiateAll(sheet: BackgroundSheet): Array<{ source: 'background' | number | 'lessons' | 'species'; list: string; cantrips: string[]; spell?: string; ability: 'int' | 'wis' | 'cha' }> {
   const out: ReturnType<typeof magicInitiateAll> = [];
   const bg = magicInitiateOf(sheet);
   if (bg) out.push({ source: 'background', ...bg });
   for (const a of sheet.advancements ?? []) {
     if (a.featId !== 'magic-initiate') continue;
     out.push(a.list ? { source: a.level, ...miPick(sheet, a.list) } : { source: a.level, list: '', cantrips: [], ability: 'int' });
+  }
+  // Görev TE99: Human Versatile ile alınan Magic Initiate (liste `@` ile).
+  if (speciesFeatOf(sheet) === 'magic-initiate') {
+    const list = sheet.speciesFeat?.split('@')[1] ?? '';
+    out.push(list ? { source: 'species', ...miPick(sheet, list) } : { source: 'species', list: '', cantrips: [], ability: 'int' });
   }
   // Kuyruk 19: Lessons of the First Ones ile alınan Magic Initiate (liste `@` ile).
   for (const x of lessonsFeats(sheet.invocations)) {
@@ -155,7 +181,7 @@ export function magicInitiateProblems(sheet: BackgroundSheet): string[] {
   const out: string[] = [];
   const all = magicInitiateAll(sheet);
   for (const mi of all) {
-    const where = mi.source === 'background' ? 'Magic Initiate' : mi.source === 'lessons' ? 'Lessons of the First Ones: Magic Initiate' : I().miLevel(mi.source);
+    const where = mi.source === 'background' ? 'Magic Initiate' : mi.source === 'lessons' ? 'Lessons of the First Ones: Magic Initiate' : mi.source === 'species' ? 'Versatile: Magic Initiate' : I().miLevel(mi.source);
     if (!mi.list) { out.push(I().miList(where)); continue; }
     if (mi.cantrips.length !== 2) out.push(I().miCantrips(where, mi.cantrips.length));
     if (!mi.spell) out.push(I().miSpell(where));

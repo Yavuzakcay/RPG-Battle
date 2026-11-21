@@ -3,6 +3,8 @@ import { createMapSession } from '../demo';
 import { scripted } from '../battle/fixtures';
 import { attackTargets, bubbleAt, hasSlotFor, radialLayout, slotChoices, spellMenu, spellTargets } from './hud';
 import { dispatch } from './session';
+import { setDefaultRuleVersion } from '../battle/create';
+import { CURRENT_RULES } from '../battle/ruleVersion';
 
 const BOX = { w: 700, h: 390 };
 
@@ -73,14 +75,18 @@ describe('önizleme balonu', () => {
 describe('parlayan hedefler', () => {
   const started = () => dispatch(createMapSession('col', 'gunduz', false, scripted()), { type: 'start_battle' }, scripted());
   it('Bor uzaktaki düşmanlara Light crossbow ile vurabilir; Mira Fire Bolt ile', () => {
-    const s = started().state;
-    const bor = { ...s, turnIndex: s.order.indexOf('bor') };
-    const targets = attackTargets(bor, 'bor');
-    expect(targets.length).toBeGreaterThan(0);
-    expect(targets.every((id) => bor.combatants[id]?.side === 'enemies')).toBe(true);
-    const mira = { ...s, turnIndex: s.order.indexOf('mira') };
-    expect(spellTargets(mira, 'mira', 'Fire Bolt').length).toBeGreaterThan(0);
-    expect(spellTargets(mira, 'mira', 'Cure Wounds')).not.toContain('troll');
+    // Görev TE99: 99+'da kalkanla Two-Handed silah (Bor'un Light crossbow'u) yok; bu test silah seçimini 98 kuralıyla sınar.
+    setDefaultRuleVersion(98);
+    try {
+      const s = started().state;
+      const bor = { ...s, turnIndex: s.order.indexOf('bor') };
+      const targets = attackTargets(bor, 'bor');
+      expect(targets.length).toBeGreaterThan(0);
+      expect(targets.every((id) => bor.combatants[id]?.side === 'enemies')).toBe(true);
+      const mira = { ...s, turnIndex: s.order.indexOf('mira') };
+      expect(spellTargets(mira, 'mira', 'Fire Bolt').length).toBeGreaterThan(0);
+      expect(spellTargets(mira, 'mira', 'Cure Wounds')).not.toContain('troll');
+    } finally { setDefaultRuleVersion(CURRENT_RULES); }
   });
   it('büyü menüsü türleri ve slot durumu', () => {
     const mira = started().state.combatants.mira;

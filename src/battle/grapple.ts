@@ -33,6 +33,7 @@ import { a2Events } from './ridersA2';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
 import { flySpeed } from './flight';
 import { globalRule } from './ruleControl';
+import { saveVs } from './te99Surum';
 
 const SIZES = ['T', 'S', 'M', 'L', 'H', 'G'] as const;
 /** Hedef boyut sınırına uyuyor mu ("Large or smaller"). */
@@ -161,7 +162,7 @@ export function chargeHolds(actor: Combatant, target: Combatant, feet: number): 
 }
 
 function saveFails(target: Combatant, save: { ability: Ability; dc: number }, rng: Rng, events: BattleEvent[], condition: string): boolean {
-  const r = resolveSave({ extra: saveDice(target, save.ability), modifier: target.saves[save.ability], dc: save.dc, mode: saveMode('normal' as RollMode, target, save.ability, undefined, { against: [condition], genis: true }),
+  const r = resolveSave({ extra: saveDice(target, save.ability), modifier: target.saves[save.ability], dc: save.dc, mode: saveMode('normal' as RollMode, target, save.ability, undefined, { against: [condition], genis: true }), ...saveVs(target, [condition]),
     autoFail: (save.ability === 'str' || save.ability === 'dex') && autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
   events.push({ type: 'condition_save', targetId: target.id, condition, ability: save.ability, dc: save.dc, d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { bonusDice: r.extra } : {}) });
   return !r.success;

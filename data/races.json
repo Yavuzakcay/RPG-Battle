@@ -467,7 +467,15 @@
         "durum": "calisir"
       }
     ],
-    "defaultLineage": "drow"
+    "defaultLineage": "drow",
+    "skillChoice": {
+      "count": 1,
+      "from": [
+        "insight",
+        "perception",
+        "survival"
+      ]
+    }
   },
   {
     "id": "gnome",
@@ -885,7 +893,11 @@
           }
         }
       }
-    ]
+    ],
+    "skillChoice": {
+      "count": 1
+    },
+    "originFeat": true
   },
   {
     "id": "orc",

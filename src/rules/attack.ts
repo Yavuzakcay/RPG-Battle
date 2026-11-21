@@ -10,6 +10,8 @@ export interface ExtraDie {
   label: string; die: string; sign: 1 | -1; effectId?: string; holderId?: string; single?: boolean;
   /** Görev B98 (sürüm 98+, Bardic Inspiration): zarı kullanmadan önce taşıyana sorulur (`askReaction`, tetik `inspire`; öneri: kullan). */
   ask?: boolean;
+  /** Görev TE99: kararın tetiği (yoksa `inspire`); `boon`: Peerless Aim, Improve Fate, Heroic Inspiration (her ikinci şans türünde). */
+  askTrigger?: 'boon';
   /**
    * Görev F: başarısız zarın ardından (eklenti olarak atılmaz). `d20`: yeniden at, `rerollBonus` ekle (Indomitable);
    * `twenty`: zar 20 sayılır (Stroke of Luck); `onFail`: `die` kadar ekle, tutarsa harca (Tactical Mind). Kullanılınca
@@ -95,10 +97,13 @@ export function secondChance(
   if (!x) return null;
   // Görev B98 (sürüm 98+, SRD 5.2.1 s. 31 "it can roll the die"): taşıyan d20 sonucunu görünce karar verir; kullanmazsa zar
   // atılmaz, etki kalır ve sıradaki ikinci şans denenir. Öneri (yapay zekâ, kancasız Rng): kullan (eski davranış).
-  if (x.ask && x.reroll === 'onFail') {
-    const answer = askReaction(rng, { reactorId: x.holderId ?? '', trigger: 'inspire', sourceId: x.holderId,
-      info: { label: x.label, total: fail.total, ac: fail.need }, options: [{ id: 'inspire', name: x.label }], suggested: { option: 'inspire' } });
-    if (answer?.option !== 'inspire') return secondChance((extra ?? []).filter((e) => e !== x), fail, rng);
+  // Görev TE99 (sürüm 99+, SRD 5.2.1 s. 8, s. 88 "you can"): Peerless Aim, Improve Fate, Heroic Inspiration de sorulur (`boon`).
+  if (x.ask && (x.reroll === 'onFail' || x.askTrigger)) {
+    const trigger = x.askTrigger ?? 'inspire';
+    const id = trigger === 'inspire' ? 'inspire' : 'use';
+    const answer = askReaction(rng, { reactorId: x.holderId ?? '', trigger, sourceId: x.holderId,
+      info: { label: x.label, total: fail.total, ac: fail.need }, options: [{ id, name: x.label }], suggested: { option: id } });
+    if (answer?.option !== id) return secondChance((extra ?? []).filter((e) => e !== x), fail, rng);
   }
   // Görev BARD: tek kullanımlık etkinin zarı (Bardic Inspiration) atılınca etki biter (reducer: `single` + `effectId`).
   const base = { label: x.label, ...(x.holderId ? { holderId: x.holderId } : {}), ...(x.single && x.effectId ? { single: true, effectId: x.effectId } : {}) };
@@ -261,6 +266,12 @@ export function spoilChance(extra: ExtraDie[] | undefined, ok: { total: number; 
   const parsed = /^(\d+)d(\d+)$/.exec(x.die);
   // En büyük olası ceza bile bozamıyorsa zar atılmaz (karar: yalnızca sonucu değiştirebilecekse).
   if (parsed && ok.total - Number(parsed[1]) * Number(parsed[2]) >= ok.need) return null;
+  // Görev TE99 (sürüm 99+, Improve Fate "you can roll 2d4"): zar atılmadan önce boon sahibine sorulur.
+  if (x.ask) {
+    const answer = askReaction(rng, { reactorId: x.holderId ?? '', trigger: 'boon', sourceId: x.holderId,
+      info: { label: x.label, total: ok.total, ac: ok.need }, options: [{ id: 'use', name: x.label }], suggested: { option: 'use' } });
+    if (answer?.option !== 'use') return null;
+  }
   const v = rollDice(x.die, rollTag(rng, { kind: ok.kind })).total;
   if (ok.total - v >= ok.need) return null;
   return { total: ok.total - v, entry: { label: x.label, die: x.die, value: -v, ...(x.holderId ? { holderId: x.holderId } : {}), ...(x.resource ? { resource: x.resource } : {}) } };

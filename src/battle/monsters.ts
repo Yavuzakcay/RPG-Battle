@@ -10,7 +10,7 @@ import { sightConditions } from './sight';
 import { attackDice, saveDice } from './effectDice';
 import { attackEffect, saveMode, timedCondition } from './durations';
 import { attackEffectEvents, riderConditionEvents } from './grapple';
-import { riderExtras, riderOf, riderReplace } from './riders';
+import { attackConditions, riderExtras, riderOf, riderReplace } from './riders';
 import { drainEvents } from './drain';
 import { getEnvironment } from '../data';
 import { extrasTotal, resolveAttack, resolveSave, rollExtras, type RolledExtra } from '../rules/attack';
@@ -41,6 +41,7 @@ import { possessSpecOf, possessionProblem, possessionStartEvents } from './posse
 import { effectiveAc, wardSources } from './divine';
 import { afterAttackReactions, corrodeEvents, hitReactions, targetedHookReactions, targetedReactions, type HitOutcome } from './reactions';
 import { formMonsterId } from './shapeMonsterCore';
+import { saveVs } from './te99Surum';
 
 
 /** Tek bir canavar saldırısını çözer ve olaylarını döndürür. */
@@ -97,7 +98,9 @@ export function monsterAttackEvents(
       (atk.save.ability === 'str' || atk.save.ability === 'dex') && autoFailsStrDexSave(target.conditions);
     const dexCover = atk.save.ability === 'dex' ? inReach.cover : 0;
     const save = resolveSave(
-      { extra: saveDice(target, atk.save.ability), modifier: target.saves[atk.save.ability] + dexCover, dc: atk.save.dc, mode: saveMode(mode, target, atk.save.ability, actor, { damage: damageType }), autoFail },
+      { extra: saveDice(target, atk.save.ability), modifier: target.saves[atk.save.ability] + dexCover, dc: atk.save.dc, mode: saveMode(mode, target, atk.save.ability, actor, { damage: damageType }), autoFail,
+        // Görev TE99 (99+): save'in önlediği durumlara tür save avantajı (Dwarven Resilience: Poisoned…).
+        ...saveVs(target, attackConditions(formMonsterId(actor), atk.name, attackEffect(formMonsterId(actor), atk.name))) },
       rollTag(rng, { by: target.id }),
     );
     // Kuyruk A2 (sürüm 30+): hasarsız save saldırısına veriden hasar (Yarı-Ejderha nefesi).

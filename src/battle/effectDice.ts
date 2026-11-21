@@ -51,11 +51,14 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   if (on === 'save' && c.shoulderBy) k18.push({ label: 'Omuz Ver', die: `+${c.shoulderBy.bonus}`, sign: 1, reroll: 'plus', rerollBonus: c.shoulderBy.bonus, reaction: true, holderId: c.shoulderBy.id });
   if (on !== 'attack' && c.burstBy) k18.push({ label: 'Burst of Ingenuity', die: '+2', sign: 1, reroll: 'plus', rerollBonus: 2, reaction: true, holderId: c.burstBy.id, pool: c.burstBy.pool });
   // Kuyruk 19 (Epic Boon): Improve Fate: 60 ft'teki boon sahibi dostun başarısızına +2d4, düşmanın başarısına −2d4.
-  if (c.fateBy) k18.push({ label: 'Improve Fate', die: '2d4', sign: 1, reroll: 'onFail', resource: 'improveFate', holderId: c.fateBy });
-  if (c.fateFoe) k18.push({ label: 'Improve Fate', die: '2d4', sign: -1, reroll: 'onSuccess', resource: 'improveFate', holderId: c.fateFoe });
+  // Görev TE99 (sürüm 99+, `te99` işareti): Improve Fate, Peerless Aim ve Heroic Inspiration kullanılmadan önce sahibine sorulur
+  // (Sor/Her zaman/Asla; yapay zekâ ve kancasız Rng eskisi gibi kullanır).
+  const ask = c.te99 ? { ask: true, askTrigger: 'boon' as const } : {};
+  if (c.fateBy) k18.push({ label: 'Improve Fate', die: '2d4', sign: 1, reroll: 'onFail', resource: 'improveFate', holderId: c.fateBy, ...ask });
+  if (c.fateFoe) k18.push({ label: 'Improve Fate', die: '2d4', sign: -1, reroll: 'onSuccess', resource: 'improveFate', holderId: c.fateFoe, ...ask });
   // Kuyruk 19 (Epic Boon): Peerless Aim: ıskalanan saldırı isabet olur (sonraki turuna dek bir).
   if (on === 'attack' && c.k19Traits && c.traits?.includes('peerless-aim') && resourceLeft(c, 'peerlessAim') > 0) {
-    k18.unshift({ label: 'Peerless Aim', die: 'hit', sign: 1, reroll: 'success', resource: 'peerlessAim', holderId: c.id });
+    k18.unshift({ label: 'Peerless Aim', die: 'hit', sign: 1, reroll: 'success', resource: 'peerlessAim', holderId: c.id, ...ask });
   }
   // Kuyruk 19 (sihirli eşyalar, Antitoxin): belli durumlara/büyülere karşı save avantajı = başarısızlıkta yeniden atış (olasılık aynı).
   if (on === 'save') {
@@ -73,7 +76,7 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   // Kuyruk 18 H3: Heroic Warrior: Heroic Inspiration ile başarısız d20 bir kez yeniden atılır (tur başında yenilenir).
   // Kuyruk 19: Human Resourceful aynı kaynakla (savaş başında bir).
   if ((c.traits?.includes('heroic-warrior') || c.traits?.includes('resourceful')) && resourceLeft(c, 'heroicInspiration') > 0) {
-    k18.push({ label: 'Heroic Inspiration', die: 'd20', sign: 1, reroll: 'd20', resource: 'heroicInspiration', holderId: c.id });
+    k18.push({ label: 'Heroic Inspiration', die: 'd20', sign: 1, reroll: 'd20', resource: 'heroicInspiration', holderId: c.id, ...ask });
   }
   // Görev P6: ek paket girişleri (d20 alt sınırı, zar mührü, zorla sonuç; menzil `syncAuras` → `pkSans`).
   k18.push(...paketChances(c, on));

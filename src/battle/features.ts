@@ -81,12 +81,14 @@ import { damagePenalty } from './effects';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Combatant, type CunningOption, type ExtraDamage } from './types';
 import { hiddenTo } from './k74Surum';
 import { attackCtx96 } from './genel96';
+import { te99On } from './te99Surum';
 
 const profileOf = (c: Combatant) => damageProfile(c);
 
 /** F1: Savage Attacker bu saldırıda kullanılabilir mi (silah saldırısı, işaret var, bu tur kullanılmadı). */
+// Görev TE99 (99+, SRD 5.2.1 s. 87 "when you hit a target with a weapon"; Unarmed Strike silah değil, s. 183): Unarmed Strike'ta yok.
 const savageReady = (state: BattleState, actor: Combatant, option: AttackOption): boolean =>
-  !option.spell && !option.beast && hasTrait(actor, 'savage-attacker') && !usedThisTurn(state, actor, 'savage-attacker');
+  !option.spell && !option.beast && !(te99On(state) && option.weaponId === 'unarmed-strike') && hasTrait(actor, 'savage-attacker') && !usedThisTurn(state, actor, 'savage-attacker');
 
 /** Zar ifadesinin ortalaması ("2d6+3" → 10). */
 function avg(dice: string | undefined): number {
@@ -254,7 +256,7 @@ export function weaponAttackEvents(
   const marks = markSources(actor, target, option);
   sources.push(...marks.sources);
   // Hedefin korumaları (Shining Smite: avantaj; Protection from Evil and Good: belli türlere dezavantaj).
-  sources.push(...wardSources(state, actor, target, { melee: !option.ranged, str: option.spell ? false : option.ability ? option.ability === 'str' : !option.ranged }));
+  sources.push(...wardSources(state, actor, target, { melee: !option.ranged, str: option.spell ? false : option.ability ? option.ability === 'str' : !option.ranged, ...(option.spell || option.pact ? { notStrDex: true } : {}) }));
   // Kuyruk 19 (SRD Heavy): STR (yakın) ya da DEX (menzilli) 13'ten azsa Heavy silahla dezavantaj.
   if (option.heavyDis && globalRule(state, 'srdK19')) sources.push({ effect: 'disadvantage', reason: 'Heavy' });
   // Görev F: Steady Aim, Precise Hunter, Escape the Horde; Elusive avantajı düşürür.

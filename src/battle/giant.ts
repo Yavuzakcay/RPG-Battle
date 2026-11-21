@@ -13,6 +13,8 @@ import { damageProfile } from './common';
 import { turnKey } from './economy';
 import { sizeRank } from './forced';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Combatant, type ExtraDamage } from './types';
+import { te99On } from './te99Surum';
+import { askReaction } from '../rules/reactionChoice';
 
 export const GIANT_RESOURCE = 'giantAncestry';
 const TRAIT = 'giant-ancestry';
@@ -35,8 +37,16 @@ export interface GiantHit {
 /** Silah isabetinde Giant Ancestry: kullanım kaldıysa ve bu tur kullanılmadıysa; yoksa null. */
 export function giantHit(state: BattleState, actor: Combatant, target: Combatant, option: AttackOption, critical: boolean, rng: Rng): GiantHit | null {
   const spec = actor.giant ? HIT[actor.giant] : undefined;
-  if (!spec || option.spell || resourceLeft(actor, GIANT_RESOURCE) <= 0 || usedThisTurn(state, actor, TRAIT)) return null;
+  // Görev TE99 (sürüm 99+, SRD 5.2.1 s. 85 "When you hit a target with an attack roll and deal damage to it, you can"): tur
+  // sınırı yok, büyü saldırısı da sayılır, kullanım seçimli (sahibine sorulur; yapay zekâ ve kancasız Rng kullanır).
+  const t99 = te99On(state);
+  if (!spec || (option.spell && !t99) || resourceLeft(actor, GIANT_RESOURCE) <= 0 || (!t99 && usedThisTurn(state, actor, TRAIT))) return null;
   if (actor.giant === 'hill' && sizeRank(target.size) > sizeRank('L')) return null;
+  if (t99) {
+    const answer = askReaction(rng, { reactorId: actor.id, trigger: 'giant', sourceId: actor.id, info: { label: spec.label },
+      options: [{ id: 'use', name: spec.label }], suggested: { option: 'use' } });
+    if (answer?.option !== 'use') return null;
+  }
   const before: BattleEvent[] = [{ type: 'feature_used', actorId: actor.id, feature: GIANT_RESOURCE, remaining: resourceLeft(actor, GIANT_RESOURCE) - 1 }];
   let extra: ExtraDamage | undefined;
   if (spec.dice && spec.type) {

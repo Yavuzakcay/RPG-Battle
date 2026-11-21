@@ -40,6 +40,7 @@ import { globalRule } from './ruleControl';
 import { b94On } from './b94Surum';
 import { gap64 } from './adjacency';
 import { hiddenTo } from './k74Surum';
+import { saveVs } from './te99Surum';
 
 /** Kuyruk 19 (srdK19): Ink Cloud kancası (`monsterAbilities.ts` yükleyince kaydeder; döngüsel içe aktarma yok). */
 type InkHook = (state: BattleState, id: string, on: 'turnEnd' | 'damaged', rng: Rng) => BattleEvent[];
@@ -868,7 +869,7 @@ export function turnStartReactions(state: BattleState, actorId: string, rng: Rng
     const ability = spec.save ?? 'wis';
     const dc = spec.dc ?? 10;
     const condition = spec.condition ?? 'Frightened';
-    const save = resolveSave({ extra: saveDice(a, ability), modifier: a.saves[ability], dc, mode: saveMode('normal', a, ability, undefined, { against: [condition], genis: true }) }, rollTag(rng, { by: a.id }));
+    const save = resolveSave({ extra: saveDice(a, ability), modifier: a.saves[ability], dc, mode: saveMode('normal', a, ability, undefined, { against: [condition], genis: true }), ...saveVs(a, [condition]) }, rollTag(rng, { by: a.id }));
     const added = !save.success && !a.conditions.includes(condition) ? [condition] : [];
     events.push({
       type: 'save_resolved', actorId: r.id, targetId: a.id, label: spec.name, ability, dc, mode: 'normal', reasons: [],

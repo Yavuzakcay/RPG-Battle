@@ -1,5 +1,6 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
 import { SINIF97_VERSION } from './sinif97Surum';
+import { TE99_VERSION, te99On } from './te99Surum';
 import srdSpells from '../../data/srd/spells.json';
 import { B94_VERSION } from './b94Surum';
 import { WS92_VERSION } from './ws92Surum';
@@ -21,7 +22,7 @@ import { activeItemNames, armorProficient, deriveStats, raceResistances, type Ch
 import { armor, getClass, getMonster, getRace, items, spells, weapons, type Lineage, type Monster, type ReactionMechanic } from '../data';
 import { lineageOf, lineageSpells, raceDarkvision } from '../rules/lineage';
 import { featEffects, sheetFeats } from '../rules/advancement';
-import { featFreeSpells, featResources, magicInitiateAbilities, magicInitiateSpells } from '../rules/backgrounds';
+import { backgroundById, featFreeSpells, featResources, magicInitiateAbilities, magicInitiateSpells } from '../rules/backgrounds';
 import { carryLoad, carrySpeedPenalty, heavilyLoaded, type CarryRule } from '../rules/carry';
 import { GIANT_RESOURCE } from './giant';
 import { boonResources } from './boons';
@@ -84,6 +85,9 @@ function monsterReactionFields(monsterId: string): Partial<Combatant> {
 /** Görev K3: Goliath Cloud's Jaunt (bonus eylemle 30 ft ışınlanma; Giant Ancestry kaynağı). */
 /** Kuyruk 19 (görev 7): tür özelliklerinin kalanları (`species.ts`) anahtar açıkken savaş başında eklenir. */
 function withSpecies(state: BattleState): BattleState {
+  // Görev TE99 (sürüm 99+, SRD 5.2.1 s. 84–86 "regain … when you finish a Long/Short Rest"): tür kaynakları savaş başında
+  // yeniden dolmaz; savaşçıdaki (kayıtlı durumdan gelen) değer kalır. 98 ve altı: her savaş dolu (eski davranış).
+  const keep = te99On(state);
   const combatants: Record<string, Combatant> = {};
   for (const [id, c0] of Object.entries(state.combatants)) {
     const sp = c0.raceId && !c0.monsterId ? speciesParts(c0.raceId, c0.level, c0.proficiency, c0.speed, id) : null;
@@ -91,7 +95,7 @@ function withSpecies(state: BattleState): BattleState {
       ...c0,
       effects: [...(c0.effects ?? []), ...sp.effects],
       ...(sp.features.length ? { features: [...(c0.features ?? []), ...sp.features] } : {}),
-      resources: { ...c0.resources, ...sp.resources },
+      resources: keep ? { ...sp.resources, ...c0.resources } : { ...c0.resources, ...sp.resources },
       ...(sp.traits.length ? { traits: [...new Set([...(c0.traits ?? []), ...sp.traits])] } : {}),
     };
   }
@@ -186,7 +190,15 @@ export function combatantFromSheet(
     // Gloves of Missile Snaring: menzilli silah isabetine tepkiyle 1d10 + DEX azaltma.
     ...(p.rangedReduce ? { reactions: [...(c.reactions ?? []), { id: 'item:gloves-of-missile-snaring', name: 'Gloves of Missile Snaring', kind: 'reduce' as const, dice: `${p.rangedReduce}${c.modifiers.dex >= 0 ? '+' : ''}${c.modifiers.dex}`, ranged: true }] } : {}),
     ...(Object.keys(p.casts).length ? { itemCasts: p.casts } : {}),
-    ...(p.weaponBonus ? { weaponOptions: c.weaponOptions.map((o) => (o.weaponId === 'unarmed-strike' ? o : withWeaponBonus(o, p.weaponBonus))) } : {}),
+    ...(p.weaponBonus ? { weaponOptions: c.weaponOptions.map((o) => {
+      if (o.weaponId === 'unarmed-strike') return o;
+      const old = withWeaponBonus(o, p.weaponBonus);
+      // Görev TE99 (99+, SRD 5.2.1 s. 209 "attack rolls and damage rolls made with this piece of magic ammunition"): cephane
+      // bonusu yalnız cephaneli silaha; 99 seçeneği `te99Alt` (savaş başında sürüme göre seçilir).
+      const n99 = o.ammo ? Math.max(p.weaponBonusNoAmmo, p.ammoBonus) : p.weaponBonusNoAmmo;
+      const alt = n99 > 0 ? withWeaponBonus(o, n99) : o;
+      return JSON.stringify(alt) === JSON.stringify(old) ? old : { ...old, te99Alt: alt };
+    }) } : {}),
     ...(p.spellBonus && c.spellSaveDc !== null ? { spellSaveDc: c.spellSaveDc + p.spellBonus } : {}),
     ...(p.spellBonus && c.spellAttack !== null ? { spellAttack: c.spellAttack + p.spellBonus } : {}),
     ...(p.addSpells.length ? {
@@ -223,7 +235,7 @@ function combatantFromSheetBase(
   const standing: ActiveEffect[] = [
     ...(heavy ? [{ id: 'load:heavy', name: 'Ağır yüklü', sourceId: opts.id, attackDis: {}, saveDis: ['str', 'dex', 'con'], checkDis: ['str', 'dex', 'con'] } satisfies ActiveEffect] : []),
     ...soyEffects(sheet, opts.id),
-    ...(untrained ? [{ id: 'armor:untrained', name: 'Eğitimsiz zırh', sourceId: opts.id, attackDis: {}, saveDis: ['str', 'dex'], checkDis: ['str', 'dex'], noCast: true } satisfies ActiveEffect] : []),
+    ...(untrained ? [{ id: 'armor:untrained', name: 'Eğitimsiz zırh', sourceId: opts.id, attackDis: { strDex: true }, saveDis: ['str', 'dex'], checkDis: ['str', 'dex'], noCast: true } satisfies ActiveEffect] : []),
   ];
   const race = getRace(sheet.raceId);
   const cls = getClass(sheet.classId);
@@ -259,8 +271,9 @@ function combatantFromSheetBase(
   const known = [...known5, ...ritualOnly];
   // Soy büyülerinin yeteneği (SRD: INT, WIS ya da CHA, soy seçilirken): büyücü sınıfta sınıfın yeteneği, değilse en
   // yükseği (yaklaşık; DECISIONS.md, Görev K3).
+  // Görev TE99 (SRD 5.2.1 s. 85–86 "choose the ability when you select the lineage"): oyuncunun seçtiği yetenek (`lineageAbility`).
   const castAbility = cls.casting?.ability
-    ?? (fromLineage.length > 0 ? (['int', 'wis', 'cha'] as const).reduce((a, b) => (d.modifiers[b] > d.modifiers[a] ? b : a)) : null);
+    ?? (fromLineage.length > 0 ? sheet.lineageAbility ?? (['int', 'wis', 'cha'] as const).reduce((a, b) => (d.modifiers[b] > d.modifiers[a] ? b : a)) : null);
   const castMod = castAbility ? d.modifiers[castAbility] : 0;
   return {
     id: opts.id,
@@ -273,6 +286,8 @@ function combatantFromSheetBase(
     side: 'party',
     ownerId: opts.ownerId,
     ac: d.ac,
+    // Görev TE99: AC'nin taban dışı parçaları (kalkan, feat, eşya, alt soy): Mage Armor tabanı bunları yutmaz.
+    ...((): Partial<Combatant> => { const x = d.acParts.filter((p) => p.kind === 'shield' || p.kind === 'feat' || p.kind === 'item').reduce((n, p) => n + p.value, 0); return x ? { acExtra: x } : {}; })(),
     hp: d.maxHp,
     maxHp: d.maxHp,
     speed: Math.max(0, d.speed - carrySpeedPenalty(load.level, carryRule)),
@@ -285,7 +300,8 @@ function combatantFromSheetBase(
         const fx = spells.find((s) => s.name === n)?.mechanics.effect;
         if (!fx?.acMin || armor.find((a) => a.name === sheet.armorName)?.type !== 'none') return [];
         const ac = fx.acMin === 'mageArmor' ? 13 + d.modifiers.dex : fx.acMin;
-        return [{ id: `invocation:${n}`, name: n, sourceId: opts.id, acMin: ac } satisfies ActiveEffect];
+        // Görev TE99: taban AC (`acBase`; 99+ kalkan/eşya üstüne eklenir), 98 ve altı `acMin`.
+        return [{ id: `invocation:${n}`, name: n, sourceId: opts.id, acMin: ac, ...(fx.acMin === 'mageArmor' ? { acBase: ac } : {}) } satisfies ActiveEffect];
       });
       const all = [...standing, ...pre];
       return all.length > 0 ? { effects: all } : {};
@@ -329,6 +345,8 @@ function combatantFromSheetBase(
     // Görev WS92: eşyalardan gelen kurtarma eki (Wild Shape biçiminde eşya kaynaşır: biçimde düşülür).
     ...(d.itemSaveBonus ? { itemSaveBonus: d.itemSaveBonus } : {}),
     skills: d.skills,
+    // Görev TE99: alet yetkinliği (sınıf ve geçmiş verisinden; Thieves' Tools kilit açma).
+    ...((): Partial<Combatant> => { const t = [...new Set([...(cls.tools ?? []), ...(backgroundById(sheet.backgroundId)?.toolId ? [backgroundById(sheet.backgroundId)!.toolId!] : [])])]; return t.length ? { toolProfs: t } : {}; })(),
     ...(d.jack ? { jack: d.jack } : {}),
     // Görev DRUID: bilinen Wild Shape biçimleri (seçilmediyse uygun bütün biçimler).
     ...(sheet.wildShapeForms?.length ? { wildShapeForms: sheet.wildShapeForms } : {}),
@@ -380,7 +398,10 @@ function combatantFromSheetBase(
     // F1: Magic Initiate büyüleri feat'in yeteneğiyle (sınıf büyüsü olarak da biliniyorsa sınıfınki geçerli).
     ...((): Partial<Combatant> => {
       const own = new Set([...(sheet.spellNames ?? []), ...kit.alwaysPrepared]);
-      const stats = Object.fromEntries(Object.entries(magicInitiateAbilities(sheet)).filter(([n]) => !own.has(n))
+      // Görev TE99: seçilen soy büyüsü yeteneği (büyücü sınıfta da; sınıf listesinde bilinen büyü sınıfınkiyle).
+      const la = sheet.lineageAbility;
+      const lin: Record<string, 'int' | 'wis' | 'cha'> = la ? Object.fromEntries(lineageSpells(sheet).map((n) => [n, la])) : {};
+      const stats = Object.fromEntries(Object.entries({ ...lin, ...magicInitiateAbilities(sheet) }).filter(([n]) => !own.has(n))
         .map(([n, ab]) => [n, { dc: 8 + d.proficiency + d.modifiers[ab], attack: d.proficiency + d.modifiers[ab] }]));
       return Object.keys(stats).length ? { spellStats: stats } : {};
     })(),
@@ -836,6 +857,17 @@ export function startBattle(
   if (rules >= B94_VERSION) participants = participants.map(unbakeOwnAura);
   // Görev B95-B (97+): durum görmeyen sınıf yardımcıları (Relentless Rage…) için savaşçı işareti.
   if (rules >= SINIF97_VERSION) participants = participants.map((p) => ({ ...p, sinif97: true }));
+  // Görev TE99 (99+, SRD 5.2.1 s. 90 Two-Handed): kalkan takılıyken iki elli silah seçeneği saldırı listesinden çıkar
+  // (yapay zekâ, fırsat saldırısı, Hazırla aynı listeden); arayüz nedeniyle gösterir (`shieldBlocked`).
+  // Görev TE99: eşya bonusu bağı (`te99Alt`) sürüme göre; Javelin of Lightning (99+) Javelin seçeneğine Lightning türü.
+  participants = participants.map((p) => !p.weaponOptions.some((o) => o.te99Alt) ? p
+    : { ...p, weaponOptions: p.weaponOptions.map(({ te99Alt, ...o }) => (rules >= TE99_VERSION && te99Alt ? te99Alt : o)) });
+  if (rules >= TE99_VERSION) participants = participants.map((p) => {
+    const swap = (p.itemHits ?? []).filter((h) => h.replaceType && h.weaponId);
+    if (swap.length) p = { ...p, weaponOptions: p.weaponOptions.map((o) => { const h = swap.find((x) => x.weaponId === o.weaponId); return h ? { ...o, altDamageType: h.type } : o; }) };
+    const blocked = p.weaponOptions.filter((o) => o.shieldBusy);
+    return blocked.length ? { ...p, weaponOptions: p.weaponOptions.filter((o) => !o.shieldBusy), shieldBlocked: blocked } : p;
+  });
   // Görev B94 (sürüm 94+, SRD 5.2.1 s. 46 Natural Recovery: "a spell … from your Circle Spells feature"): seçili arazinin dışındaki
   // daire büyüleri slotsuz yapılmaz. 93 ve altı savaşta eski liste (`freeSpellsPre94` geri eklenir).
   participants = participants.map((p) => {
@@ -854,7 +886,9 @@ export function startBattle(
       || (p.traits?.includes('initiative-advantage') === true && !!globalRule({ map, kuralSurumu: rules } as unknown as BattleState, 'srdK19'))
       // Kuyruk P9: ek paket `zarEtkisi.inisiyatifAvantaji` (sürüm 38+).
       || (rules >= 38 && paketInitAdv(p));
-    const dis = isIncapacitated(p.conditions);
+    // Görev TE99 (sürüm 99+, SRD 5.2.1 s. 13 inisiyatif DEX kontrolü; s. 92 Armor Training "any D20 Test that involves …
+    // Dexterity"): DEX kontrol dezavantajı (eğitimsiz zırh, ağır yük) inisiyatifte de.
+    const dis = isIncapacitated(p.conditions) || (rules >= TE99_VERSION && (p.effects ?? []).some((e) => e.checkDis?.includes('dex')));
     const d = adv !== dis ? rollD20(adv ? 'advantage' : 'disadvantage', tag).kept : rollDie(20, tag);
     // Bitkinlik (Görev S1): inisiyatif DEX kontrolü, −2 × seviye.
     // Kuyruk AS1b (sürüm 71): iç mekân haritasında alt soyun inisiyatif farkı.
@@ -895,7 +929,8 @@ export function startBattle(
   // Mekanik matris (sürüm 83+): durum bilmeyen save yolları için sürüm işareti baştan (sonra `syncAuras` korur; replay aynı).
   const m83 = matrisOn(built);
   const g96 = genel96On(built);
-  const final = m83 || g96 ? { ...built, combatants: Object.fromEntries(Object.entries(built.combatants).map(([k, c]) => [k, { ...c, ...(m83 ? { srd83: true as const } : {}), ...(g96 ? { srd96: true as const } : {}) }])) } : built;
+  const t99 = te99On(built);
+  const final = m83 || g96 ? { ...built, combatants: Object.fromEntries(Object.entries(built.combatants).map(([k, c]) => [k, { ...c, ...(m83 ? { srd83: true as const } : {}), ...(g96 ? { srd96: true as const } : {}), ...(t99 ? { te99: true as const } : {}) }])) } : built;
   return { state: final, events: [{ type: 'battle_started', state: final }] };
 }
 

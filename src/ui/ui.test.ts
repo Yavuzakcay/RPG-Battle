@@ -4,19 +4,25 @@ import { describeEvent } from './log';
 import { contextFor, dispatch } from './session';
 import { scripted } from '../battle/fixtures';
 import type { BattleEvent } from '../battle';
+import { setDefaultRuleVersion } from '../battle/create';
+import { CURRENT_RULES } from '../battle/ruleVersion';
 
 /** Sıra: Troll (19), Mira (13), Bor (6), Wolf 1 (5), Wolf 2 (4). */
 const demo = () => createDemoSession(scripted([20, 10], [20, 5], [20, 18], [20, 3], [20, 2]));
 
 describe('demo savaşı', () => {
   it('kurulum ve ilk sıra', () => {
-    const s = demo();
-    expect(s.state.order).toEqual(['troll', 'mira', 'bor', 'wolf1', 'wolf2']);
-    expect(s.state.combatants.mira?.maxHp).toBe(32);
-    expect(s.state.combatants.bor?.ac).toBe(18);
-    // Görev F: iki silah + herkesin silahsız vuruşu (1 + STR).
-    expect(s.state.combatants.bor?.weaponOptions.length).toBe(3);
-    expect(s.lines[0]).toBe('Savaş başladı. Sıra: Troll, Mira, Bor, Wolf 1, Wolf 2.');
+    // Görev TE99: 99+'da kalkanla Two-Handed silah (Bor'un Light crossbow'u) yok; bu test silah seçimini 98 kuralıyla sınar.
+    setDefaultRuleVersion(98);
+    try {
+      const s = demo();
+      expect(s.state.order).toEqual(['troll', 'mira', 'bor', 'wolf1', 'wolf2']);
+      expect(s.state.combatants.mira?.maxHp).toBe(32);
+      expect(s.state.combatants.bor?.ac).toBe(18);
+      // Görev F: iki silah + herkesin silahsız vuruşu (1 + STR).
+      expect(s.state.combatants.bor?.weaponOptions.length).toBe(3);
+      expect(s.lines[0]).toBe('Savaş başladı. Sıra: Troll, Mira, Bor, Wolf 1, Wolf 2.');
+    } finally { setDefaultRuleVersion(CURRENT_RULES); }
   });
 });
 

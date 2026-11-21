@@ -207,6 +207,7 @@ import { MoralBar } from './ui/MoralBar';
 import { DamageChip, GlyphBadges, GlyphText } from './ui/glyph/Glyph';
 import { glyphLabel } from './ui/glyph/glyphs';
 import { ResourceChip, iconed, plain, sharedIcons } from './ui/ResourceChip';
+import { te99On } from './battle/te99Surum';
 
 /** Görev OD1B: düşman HP görünürlüğü tek çözücüden (`ui/hpVisibility`). */
 const enemyHpFraction = hpFraction;
@@ -812,7 +813,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   const [cunningPicks, setCunningPicks] = useState<CunningOption[]>([]);
   useEffect(() => { setCunningPicks([]); setBrutalPicks([]); setTacticalPick(''); }, [actorId, state.round]);
   // Kuyruk 19: Push ustalığı isteğe bağlı (anahtar `pushChoice`): seçim saldırı seçeneğine yazılır.
-  const [pushPick, setPushPick] = useState<'auto' | 'push' | 'skip'>('auto');
+  const [pushPick, setPushPick] = useState<'auto' | 'push' | 'push5' | 'skip'>('auto');
   // Kuyruk 19: Brutal Strike seçimi (oyuncu): yok ya da etki(ler).
   const [brutalPicks, setBrutalPicks] = useState<BrutalBlow[]>([]);
   // Görev B95-B: Tactical Master (Fighter 9, SRD 5.2.1 s. 48): ustalıklı silahta bu saldırı için Push/Sap/Slow.
@@ -822,7 +823,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     && (spell.mechanics.conditionChoices ?? spell.mechanics.damageChoices ?? spell.mechanics.restoreChoices ?? spell.mechanics.abilityChoices ?? []).includes(choicePick) ? { ...cmd, choice: choicePick } : cmd);
   const withCunning = (cmd: Command): Command => {
     let out = cmd.type === 'attack' && cunningPicks.length > 0 ? { ...cmd, cunning: cunningPicks } : cmd;
-    if (out.type === 'attack' && pushPick !== 'auto' && out.option.mastery === 'push') out = { ...out, option: { ...out.option, pushChoice: pushPick } };
+    // Görev TE99 (99+): 5 ft itme seçeneği (SRD "up to 10 feet").
+    if (out.type === 'attack' && pushPick !== 'auto' && out.option.mastery === 'push') out = { ...out, option: { ...out.option, pushChoice: pushPick === 'push5' ? 'push' : pushPick, ...(pushPick === 'push5' ? { pushFeet: 5 as const } : {}) } };
     if (out.type === 'attack' && tacticalPick && out.option.mastery && actor?.traits?.includes('tactical-master')) out = { ...out, mastery: tacticalPick };
     if (out.type === 'attack' && brutalPicks.length && actor && brutalReady(state, actor, out.option)) out = { ...out, brutal: brutalPicks[0], ...(brutalPicks[1] ? { brutal2: brutalPicks[1] } : {}) };
     // Kuyruk 19: Grappler'ın Punch and Grab'i Unarmed Strike'ta kendiliğinden (motor turda bir kez uygular).
@@ -1692,7 +1694,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       act: () => run({ type: 'escape_grapple', actorId }) }] : []),
     ...(stuckInBog(state, actor) ? [{ key: 'escape', label: N.escape, reason: why({ type: 'escape', actorId }) ?? undefined, act: () => run({ type: 'escape', actorId }) }] : []),
     // CILA: büyünün tuttuğu yaratık (Entangle, Web) eylemle Athletics kontrolüyle kurtulur.
-    ...(!stuckInBog(state, actor) && actor.effects?.some((e) => e.escapeCheck) ? [{ key: 'escapeSpell', label: isBuried(actor) ? B.k66.escapeRubble : N.escapeSpell, reason: why({ type: 'escape', actorId }) ?? undefined, act: () => run({ type: 'escape', actorId }) }] : []),
+    // Görev TE99: yanan yaratık (Alchemist's Fire, 99+) aynı düğmeyle eylem harcayıp Prone olarak söndürür.
+    ...(!stuckInBog(state, actor) && actor.effects?.some((e) => e.escapeCheck || e.ongoing?.extinguish) ? [{ key: 'escapeSpell', label: isBuried(actor) ? B.k66.escapeRubble : actor.effects?.some((e) => e.ongoing?.extinguish) ? N.extinguish : N.escapeSpell, reason: why({ type: 'escape', actorId }) ?? undefined, act: () => run({ type: 'escape', actorId }) }] : []),
     ...(actor.pos && Object.values(state.combatants).some((c) => c.side === actor.side && c.id !== actor.id && c.pos && actor.pos
       && distance(c.pos, actor.pos) === 1 && stuckInBog(state, c))
       ? [{ key: 'pull', label: N.pull, reason: why({ type: 'pull', actorId, targetId: '' }) ?? undefined, act: () => { reset(); setMode('pull'); setMenuOpen(false); } }] : []),
@@ -2853,7 +2856,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                 {mode === 'attack' && actor && globalRule(state, 'pushChoice') && actor.weaponOptions.some((o) => o.mastery === 'push') && (
                   <fieldset className="cunning-picks">
                     <legend>{N.pushPick}</legend>
-                    {(['auto', 'push', 'skip'] as const).map((k) => (
+                    {(['auto', 'push', ...(te99On(state) ? ['push5' as const] : []), 'skip'] as const).map((k) => (
                       <label key={k}><input type="radio" name="push-pick" checked={pushPick === k} onChange={() => setPushPick(k)} /> {N.pushOpt[k]}</label>
                     ))}
                   </fieldset>

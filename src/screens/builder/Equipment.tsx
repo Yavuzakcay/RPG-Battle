@@ -150,6 +150,10 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
           {/* Görev K9d: eğitimsiz zırh ve kalkan uyarısı (SRD 5.2.1 Armor Training). */}
           {!armorProficient(s.classId, chosenArmor?.type, s.featureChoices, s) && <p className="warn armor-warn">{W.armorUntrained}</p>}
           {s.shield && !trained('shield') && <p className="warn armor-warn">{W.shieldUntrained}</p>}
+          {/* Görev TE99: kalkan + Two-Handed silah (savaşta kural sürümü 99+ saldırı yok; Lance binekte serbest). */}
+          {s.shield && chosenWeapons.some((w) => w.twoHanded && !w.twoHandedUnlessMounted) && (
+            <p className="warn armor-warn">{W.shieldTwoHanded(chosenWeapons.filter((w) => w.twoHanded && !w.twoHandedUnlessMounted).map((w) => w.name).join(', '))}</p>
+          )}
         </div>
 
         {/* Silahlar: sayı sınırı yok; ustalık hakkı ayrı sayaç. */}

@@ -2,6 +2,84 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev TE99: tür, feat ve eşya denetimi düzeltmeleri (2026-11-21; kural sürümü 99 `TE99_VERSION`)
+
+Kaynak `harita/belgeler/TUR-FEAT-ESYA-DENETIM.md` (225 satır; "Düzeltme durumu" bölümü). Tek sabit `src/battle/te99Surum.ts`
+(`TE99_VERSION` 99, `te99On`; durum bilmeyen yollar için savaşçıda `te99` işareti, `srd96` deseni: savaş başında ve `syncAuras`).
+98 ve altı (eski kayıt, replay) eski davranışta. Kayıt sürümü değişmedi (yeni alanlar isteğe bağlı: `action_used.magic`,
+`action_used.loadingId`, `AttackOption.shieldBusy/te99Alt/pushFeet`, `Combatant.te99/acExtra/shieldBlocked/toolProfs`,
+`ActiveEffect.acBase`, `ongoing.extinguish`). Ölçüt SRD 5.2.1; çekirdeği bozan ya da yeni sistem isteyen madde ertelendi.
+Testler `src/battle/te99.test.ts` (41; her sürümlü madde 98 ↔ 99).
+
+- **1. Savaşlar arası kaynak taşıma (sürümlü + uygulama katmanı).** Eşya yükü (SRD s. 206 Charges; değnek "regains 1d6 + 1
+  expended charges daily at dawn"): yük `CharacterStatus.resources`'ta (`item:<id>`, kanca kaynağı `pk-esya-…`; `rules/itemCharges.ts`),
+  `withStatus` savaşçının durumda olmayan kaynaklarını artık silmez. Yenilenme veride (`data/items*.json` `recharge`: zar, sabit ya da
+  `all`; SRD metninden 35 eşya; Bead of Force, Necklace of Fireballs, Elemental Gem, Feather Token, Gem of Brightness, Helm of
+  Brilliance tek kullanımlık, dolmaz). "Dawn" = uzun dinlenme (⚠ yaklaşım). Zarlı yenilenme `longRestStatus(…, rng)`; Serüven/yolculuk
+  olayları zarsız hesaplandığı için rng yoksa durumdan tohumlu tekrarlanabilir zar. Tür kaynakları (s. 84–86 "regain … when you finish a
+  Long Rest"; Adrenaline Rush "Short or Long Rest"): `data/class-features.json`'da `race` kaynağı (Relentless Endurance, Adrenaline Rush,
+  Heroic Inspiration, Stonecunning, Draconic Flight 5+, Large Form 5+); 99'da `withSpecies` kayıtlı değeri ezmez. Savaşçıda olmayan
+  eşya/tür kaynağı savaş sonunda kayıtlı değerinde kalır. **Ertelendi:** son yükte 1d20 imha, değnek yüküyle yukarı seviye.
+- **2. Tür save avantajları (sürümlü).** "Advantage on saving throws you make to avoid or end the Poisoned condition" (Dwarven
+  Resilience; Fey Ancestry, Brave aynı). Tek çözücü: save'in karşı koyduğu durumlar `resolveSave`'e (`saveVs`, `te99Surum.ts`);
+  `effectDice` ikinci şansı (`saveAdvAgainst`) her yolda işler: canavar save saldırısı ve alanı (`riders.ts` `attackConditions`),
+  saldırı ekleri (`grapple.ts`, `ridersA2.ts`), tur sonu tekrar save'i (`durations.ts`, `effects.ts`), tepki save'i, fırlatma, Potion of Poison.
+- **3. Kalkan + Two-Handed (sürümlü).** s. 90 Two-Handed "This weapon requires two hands when you attack with it". 99'da kalkan
+  taşıyanın Two-Handed seçenekleri (Lance hariç: binekte serbest) saldırı listesinden çıkar (`shieldBlocked`; yapay zekâ, fırsat
+  saldırısı, Hazırla aynı listeden), arayüz nedenini gösterir, komut reddedilir; oluşturucuda uyarı (kaydı engellemez). Sim partilerinde
+  Bor (Light crossbow) ve Rook (Longbow) kalkanlı: 99'da yay seçenekleri yok, denge ölçülmedi. **Ertelendi:** savaşta kalkan tak/çıkar
+  (Utilize) komutu.
+- **4. Mage Armor (sürümlü).** s. 145 "the target's base AC becomes 13 plus its Dexterity modifier"; s. 177 taban tek hesaptan. Etki
+  `acBase` (Armor of Shadows da); `effectiveAc` tabanı zırhsız taban hesabıyla karşılaştırır, kalkan/feat/eşya (`acExtra`) üstüne
+  eklenir; Barkskin (`acMin`) toplamın tabanı. Biçimdeyken (`shape`) `acExtra` sayılmaz.
+- **5. Eğitimsiz zırh (sürümlü).** s. 92 "Disadvantage on any D20 Test that involves Strength or Dexterity, and you can't cast
+  spells". İnisiyatif (DEX kontrolü, s. 13) ve Gizlen dezavantajlı (DEX `checkDis`; ağır yük de); saldırı dezavantajı yalnız STR/DEX'li
+  saldırıda (`attackDis.strDex`; büyü saldırısı, Pact of the Blade CHA hariç).
+- **6. Feat'ler (sürümlü).** Savage Attacker "when you hit a target with a weapon" (s. 87; s. 183 Unarmed Strike silah değil):
+  Unarmed Strike'ta yok. Blink Steps "Immediately after you take the Attack action or the Magic action" (s. 88): `economy.attackOrMagic`
+  (eylemle büyü `action_used.magic`). Irresistible Offense "The Bludgeoning, Piercing, and Slashing damage you deal always ignores
+  Resistance" ve Overwhelming Strike "When you roll a 20 on the d20 for an attack roll": tek nokta `profileIn(…, source)`
+  (`overcomesDefenses`), büyü saldırısı/save/alan/kalıcı alan hasarında da; doğal 20 eki büyü saldırısında da.
+- **7. Eşya bağı (sürümlü, kısmen).** Ammunition, +N "made with this piece of magic ammunition": bonus yalnız cephaneli silaha
+  (`bonus.ammoOnly`, `te99Alt`). Javelin of Lightning "deal Lightning damage instead of Piercing damage": +4d6 eki kalktı, Javelin
+  seçeneğinde Lightning türü (`altDamageType`, en iyi tür kendiliğinden). Ammunition of Slaying yalnız cephaneli silahta. Potion of Speed
+  "without suffering the wave of lethargy": uyuşukluk yok. Potion of Poison "you take 4d6 Poison damage and must succeed on a DC 13
+  Constitution saving throw or have the Poisoned condition": hasar her durumda tam. **Ertelendi (eşya ↔ silah bağı yeni şema ister,
+  K-D2):** "Weapon, +N" ve diğer silah eşyalarının bağlı silahı, Javelin'in Lightning Bolt çizgisi, Ammunition of Slaying'in tür seçimi,
+  DC 17 CON save ve Force hasarı, cephane parçasının tek kullanımı.
+- **8. Oluşturucu (sürümsüz).** Human Versatile "You gain an Origin feat of your choice" (s. 86): `CharacterSheet.speciesFeat`
+  (`kimlik[@liste]`; Magic Initiate listeyle), `sheetFeats`, İlerleme adımında seçici; tekrarsız feat geçmişinkiyle aynıysa sorun. Boş
+  bırakılabilir (eski kayıt bozulmasın; ⚠). Serbest tür becerisi yalnız Human Skillful (1) ve Elf Keen Senses (1; Insight, Perception,
+  Survival) (`data/races.json` `skillChoice`); geçmişli diğer türlerde 0, fazlası sessizce yok sayılır; geçmişsiz eski kayıt 3.
+- **9. Ön koşullar (sürümsüz).** Fighting Style feat'i "Prerequisite: Fighting Style Feature" (s. 87): Fighting Style yuvası olan sınıf
+  ASI/Epic yuvasında da alır (`casterCtx` `hasStyle`). Boon of Spell Recall "Spellcasting Feature": s. 24 çoklu sınıf metni "the Pact
+  Magic feature … and the Spellcasting feature" ikisini ayırdığından Warlock ön koşulu tutmaz. Giant Ancestry (sürümlü) "When you hit a
+  target with an attack roll and deal damage to it, you can": tur sınırı kalktı, büyü saldırısı dahil, kullanım sorulur (tetik `giant`).
+  Soy büyüsü yeteneği "choose the ability when you select the lineage": `CharacterSheet.lineageAbility` (seçilmezse eski kural).
+  **Ertelendi:** Stone's Endurance "When you take damage": hasar uygulanmadan önce azaltma kancası yalnız saldırı isabetinde; alan/save/
+  zemin hasarı için ortak kanca yeni sistem ister. Alt sınıftan gelen Spellcasting (paket büyücüleri) modelde yok.
+- **10. Silah/donanım (sürümlü).** Loading "only one piece of ammunition from a Loading weapon" (s. 90): silah başına
+  (`economy.loadingIds`). Push "up to 10 feet": arayüzde 5 ft seçeneği (`pushFeet`; `pushChoice` anahtarıyla). Improvised "deals 1d4
+  damage" (s. 183): nesne silahı 1d4; gerçek silah eşdeğeri (`weapon.equivalent`, Kılıç = Longsword) zarını korur. Alchemist's Fire /
+  Burning (s. 178) "As an action, you can extinguish fire on yourself by giving yourself the Prone condition": tur başı DEX save yok,
+  `escape` komutu (eylem) Prone verip söndürür. **Ertelendi (metin belirsiz, K-S2):** Nick'in hangi silahta sayılacağı; eşdeğer silahta
+  yetkinlik (savaşçıda silah yetkinliği bilgisi yok).
+- **11. Kararlar (sürümlü).** Peerless Aim, Improve Fate (±2d4 atılmadan önce), Heroic Inspiration ("you can"): B98 deseniyle
+  `askReaction` tetik `boon` (oyuncu tepki ayarı Sor/Her zaman/Asla); yapay zekâ ve kancasız Rng eskisi gibi kullanır.
+- **12. Thieves' Tools (sürümlü).** s. 93 "Utilize: Pick a lock (DC 15)", s. 20 alet yetkinliği: DEX kontrolü, aletle yetkinse +PB,
+  Sleight of Hand'de de yetkinse avantaj. Alet yetkinliği veriden (`data/classes.json` Rogue `tools`, `data/backgrounds.json`
+  Criminal `toolId`; `Combatant.toolProfs`). ⚠ Envanter modeli yok: aleti yetkin olan taşıyor sayılır, olmayan anahtarsız kilit açamaz.
+- **13. Doğrulama testleri.** Grappler Fast Wrestler (kendi boyu ek maliyetsiz, büyüğü iki kat) ve 44 içecek/yağ etkisi (kullanım,
+  etki alanı, adet, replay) test edildi; hata çıkmadı.
+- **B. Sürümsüz veri/oluşturucu.** Kalkan kaydı `data/armor.json`'da (`type: shield`, +2; `SHIELD`, zırh listesinden süzülür; davranış
+  aynı). Geçmiş bonusu zorunlu (s. 21): geçmiş seçiliyse bonus boşken `characterIssues` sorunu (Kaydet nedenini söyler); geçmişsiz
+  eski kayıt muaf; `newCharacter` önerilen +2/+1 ile başlar.
+- **C. Ertelendi (Serüven sonrası, yalnız belge):** gerçek envanterden iksir/cephane düşmesi, başlangıç donanımı A paketi / 50 GP, genel
+  alet yetkinliği, Caltrops/kapan/kelepçe savaş eşyaları, Game Master'a bırakılan eşyaların `bonus`'u, kalkan tak/çıkar komutu.
+- **Değişen eski testler:** `characterRest.test.ts` (Dwarf Stonecunning savaşçıda yoksa kayıtlı değerde kalır), `advancement.test.ts`
+  (Fighter ASI yuvasında Archery artık geçerli; Rogue'da yine "alınamaz"), `g1.test.tsx` (Human Versatile seçicisi aynı kutuda),
+  `ruleVersion.test.ts` / `g6.test.ts` (güncel sürüm 99).
+
 ## Görev B98: Bardic Inspiration kararı, fırlatılan Melee silah, Lay On Hands, SD4 ad hizalaması (2026-11-20; kural sürümü 98 `B98_VERSION`)
 
 Kural sürümü 98 (`src/battle/b98Surum.ts`; GENEL96 kalanlarıyla aynı sürüm numarası); 97 ve altı kayıt/replay eski davranışta. Kayıt sürümü değişmedi (yeni alanlar isteğe bağlı: `attack_resolved.meleeWeapon`, `AttackOption.meleeWeapon`, `Combatant.inspireAsk`).

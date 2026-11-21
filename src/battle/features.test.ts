@@ -12,6 +12,8 @@ import { chooseCommand } from './ai';
 import { moveCostFn } from './movement';
 import { distance, type Offset } from '../rules/hex';
 import { GM, P1, mk, scripted } from './fixtures';
+import { setDefaultRuleVersion } from './create';
+import { CURRENT_RULES } from './ruleVersion';
 
 const o = (col: number, row: number): Offset => ({ col, row });
 const board = () => Array.from({ length: 7 }, () => '.'.repeat(15));
@@ -368,12 +370,16 @@ describe('parti yapay zekâsı sınıf özelliklerini kullanır', () => {
     expect(chooseCommand(s)).toEqual({ type: 'spell_followup', actorId: 'Tavi', targetId: 'E' });
   });
   it('savaşçı bu tur yürüyerek kılıcına ulaşabiliyorsa arbaletle atmak yerine yürür', () => {
-    const s = battle([bor(), dummy('E')], { Bor: o(2, 3), E: o(6, 3) });
-    const cmd = chooseCommand(s);
-    expect(cmd.type).toBe('move');
-    const far = battle([bor(), dummy('E')], { Bor: o(0, 3), E: o(14, 3) });
-    // Kılıca bu tur ulaşamıyor: yerinden arbaletle atar.
-    expect(chooseCommand(far)).toMatchObject({ type: 'attack', option: { label: 'Light crossbow' } });
+    // Görev TE99: 99+'da kalkanla Two-Handed silah (Bor'un Light crossbow'u) yok; bu test silah seçimini 98 kuralıyla sınar.
+    setDefaultRuleVersion(98);
+    try {
+      const s = battle([bor(), dummy('E')], { Bor: o(2, 3), E: o(6, 3) });
+      const cmd = chooseCommand(s);
+      expect(cmd.type).toBe('move');
+      const far = battle([bor(), dummy('E')], { Bor: o(0, 3), E: o(14, 3) });
+      // Kılıca bu tur ulaşamıyor: yerinden arbaletle atar.
+      expect(chooseCommand(far)).toMatchObject({ type: 'attack', option: { label: 'Light crossbow' } });
+    } finally { setDefaultRuleVersion(CURRENT_RULES); }
   });
   it('olaylar baştan oynatılınca aynı durum çıkar (konsantrasyon, kaynaklar, Sneak Attack)', async () => {
     const { replay } = await import('./index');

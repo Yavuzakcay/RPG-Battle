@@ -16,7 +16,7 @@ import { executeWaterOption, executeWhirlpool, whirlpoolCast } from './girdap';
 import { executeTelekinesis, telekinesisOn } from './telekinesis';
 import { disperseEvents } from './surfaceMix';
 import { polymorphEvents } from './polymorph';
-import { newZoneId, profileIn } from './zones';
+import { newZoneId, overcomesDefenses, profileIn } from './zones';
 import { cloudCastProblem, cloudOf, cloudPointProblem, cloudZoneEvent, stormSourceOf } from './cloud';
 import { airCenterProblem, airSpanFt, cylinderHeightFt, inAirSpan } from './airArea';
 import { k73cOn } from './k73cSurum';
@@ -86,6 +86,8 @@ import { resourceDef } from '../rules/classFeatures';
 import { anyListResource } from './anyList';
 import { hurlEvents } from './apex';
 import type { ActiveEffect, AttackOption, CommandWord, BattleEvent, BattleState, Combatant, Command, ExtraDamage, MapObject, SpellZone } from './types';
+import { giantHit, type GiantHit } from './giant';
+import { te99On } from './te99Surum';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 
@@ -336,10 +338,10 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     // Görev B94 (sürüm 94+, Superior Hunter's Defense "when you take damage"): büyü alan hasarında da tepkiyle o türe direnç.
     const shd = b94On(state) && amount > 0 ? hunterDefenseEvents(current, t, actor.id, damageType) : [];
     if (shd.length) { events.push(...shd); current = applyEvents(current, shd); }
-    const prof94 = shd.length && damageType ? { ...profileIn(state, t, true), resistances: [...profileIn(state, t, true).resistances, damageType] } : profileIn(state, t, true);
+    const prof94 = shd.length && damageType ? { ...profileIn(state, t, true, actor), resistances: [...profileIn(state, t, true, actor).resistances, damageType] } : profileIn(state, t, true, actor);
     const adjusted = amount > 0 ? adjustDamage(amount, damageType, prof94) : { amount: 0, note: null };
     const amount2 = second ? saveDamage(t, ability, save.success, second.total, !!m.halfOnSave) : 0;
-    const adjusted2 = second && amount2 > 0 ? adjustDamage(amount2, second.type, profileIn(state, t, true)) : { amount: 0, note: null };
+    const adjusted2 = second && amount2 > 0 ? adjustDamage(amount2, second.type, profileIn(state, t, true, actor)) : { amount: 0, note: null };
     const fx = damageEffects(t, adjusted.amount + adjusted2.amount, damageType ?? '', false, rng);
     // Görev B3: başarısızlıkta süren etki varsa durumlar etkiyle gelir (Fear, Hypnotic Pattern).
     // Kuyruk 19: yeni eklenen başarısızlık etkisi anahtara bağlı (`failEffectGate`; Vitriolic Sphere'in gecikmeli asidi).
@@ -923,7 +925,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     // Görev B94 (sürüm 94+): Superior Hunter's Defense save'li tek hedef büyü hasarında da.
     const shd = b94On(state) && amount > 0 ? hunterDefenseEvents(applyEvents(state, events), target, actor.id, m.damageType) : [];
     events.push(...shd);
-    const prof94 = shd.length && m.damageType ? { ...profileIn(state, target, true), resistances: [...profileIn(state, target, true).resistances, m.damageType] } : profileIn(state, target, true);
+    const prof94 = shd.length && m.damageType ? { ...profileIn(state, target, true, actor), resistances: [...profileIn(state, target, true, actor).resistances, m.damageType] } : profileIn(state, target, true, actor);
     const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, prof94) : { amount: 0, note: null };
     const fx = damageEffects(target, adjusted.amount, m.damageType ?? '', false, rng);
     const added = !save.success ? (m.conditions ?? []).filter((c) => !target.conditions.includes(c)) : [];
@@ -1003,6 +1005,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     struck.add(t.id);
     const expr = damageExpr(m, actor, tier, upcast, spell.school, spell.name, v93 ? SKIP_ALL : undefined);
     let ev: BattleEvent;
+    let gh: GiantHit | null = null;
     if (m.kind === 'attack') {
       const sc = sightConditions(actor, t, current, !rangedSpell);
       const sources = [
@@ -1013,7 +1016,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
           targetAsleep: t.asleep === true,
         }),
         ...rangeSources,
-        ...wardSources(current, actor, t, { melee: !rangedSpell, str: false }),
+        ...wardSources(current, actor, t, { melee: !rangedSpell, str: false, notStrDex: true }),
         // Görev F: Precise Hunter (Steady Aim yalnızca silah saldırısında harcanır).
         ...traitSources(current, actor, t).filter((x) => x.reason !== 'Steady Aim'),
         // Görev SORCERER: Innate Sorcery etkinken büyü saldırısında avantaj.
@@ -1039,7 +1042,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       const once = res.hit && onceLeft > 0 ? onceLeft : 0;
       if (once) onceLeft = 0;
       const raw = (res.damage?.total ?? 0) - rolls0.reduce((n, x) => n + x, 0) + rolls1.reduce((n, x) => n + x, 0) + once;
-      const adj = res.hit ? adjustDamage(raw, m.damageType, profileIn(state, t, true)) : { amount: 0, note: null };
+      const adj = res.hit ? adjustDamage(raw, m.damageType, profileIn(state, t, true, actor)) : { amount: 0, note: null };
       // Hunter's Mark: işaretli hedefe büyü saldırısı isabetinde de ek hasar.
       let bonus = res.hit ? hitExtras(current, actor, t, { mode, critical: res.critical }, rng) : { extras: [] as ExtraDamage[] };
       // Görev SORCERER: patlayan zar (Sorcerous Burst): en yüksek yüzde ek zar, en çok büyü yeteneği değiştiricisi kadar.
@@ -1047,9 +1050,17 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
         const boom = explodeRolls(rolls1, m.explode, Math.max(0, actor.spellMod), actor, rng);
         if (boom.length) {
           const sum = boom.reduce((n, x) => n + x, 0);
-          const a = adjustDamage(sum, m.damageType, profileIn(state, t, true));
+          const a = adjustDamage(sum, m.damageType, profileIn(state, t, true, actor));
           bonus = { ...bonus, extras: [...bonus.extras, { label: `${spell.name} (patlama)`, rolls: boom, raw: sum, applied: a.amount, type: m.damageType ?? '', note: a.note }] };
         }
+      }
+      // Görev TE99 (99+, SRD 5.2.1 s. 85 Giant Ancestry "hit a target with an attack roll"): büyü saldırısında da.
+      gh = res.hit && raw > 0 && te99On(current) ? giantHit(current, actor, t, { spell: true } as AttackOption, res.critical, rng) : null;
+      if (gh?.extra) bonus = { ...bonus, extras: [...bonus.extras, gh.extra] };
+      // Görev TE99 (99+, SRD 5.2.1 s. 88 Overwhelming Strike "When you roll a 20 on the d20 for an attack roll"): büyü saldırısında da.
+      if (res.hit && res.d20?.kept === 20 && overcomesDefenses(current, actor) && actor.boonScore) {
+        const a = adjustDamage(actor.boonScore, m.damageType, profileIn(state, t, true, actor));
+        bonus = { ...bonus, extras: [...bonus.extras, { label: 'Overwhelming Strike', rolls: [], raw: actor.boonScore, applied: a.amount, type: m.damageType ?? '', note: a.note }] };
       }
       const ac = effectiveAc(current, t) + cover;
       // Hedefin isabet tepkisi (Shield, Parry, Uncanny Dodge; Görev R1).
@@ -1064,7 +1075,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       const miss = !hit && (m.halfOnMiss || (v93 && !!m.damage && potentCantrip(actor, spell))) ? (() => {
         const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }));
         const once = onceLeft; onceLeft = 0;
-        const a = adjustDamage(Math.floor((d.total + once) / 2), m.damageType, profileIn(state, t, true));
+        const a = adjustDamage(Math.floor((d.total + once) / 2), m.damageType, profileIn(state, t, true, actor));
         return { rolls: d.rolls, raw: Math.floor((d.total + once) / 2), amount: a.amount, note: a.note };
       })() : null;
       const total = hit ? hr?.damage ?? 0 : miss?.amount ?? 0;
@@ -1092,7 +1103,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       if (shdA.length) { events.push(...shdA); current = applyEvents(current, shdA); }
       // Sonraki dartlar: aynı türe direnç bu tur sürer (etki `shd-<tür>`).
       const shdOn = shdA.length > 0 || (b94On(state) && !!current.combatants[t.id]?.effects?.some((e) => e.id === `shd-${m.damageType}`));
-      const profA = shdOn && m.damageType ? { ...profileIn(state, t, true), resistances: [...profileIn(state, t, true).resistances, m.damageType] } : profileIn(state, t, true);
+      const profA = shdOn && m.damageType ? { ...profileIn(state, t, true, actor), resistances: [...profileIn(state, t, true, actor).resistances, m.damageType] } : profileIn(state, t, true, actor);
       const adj = guard?.blocked ? { amount: 0, note: null } : adjustDamage(d.total, m.damageType, profA);
       const fx = damageEffects(t, adj.amount, m.damageType ?? '', false, rng);
       ev = {
@@ -1103,8 +1114,10 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
         ...(guard?.blocked ? { reacted: { name: 'Shield', reduced: d.total } } : {}),
       };
     }
+    if (gh && ev.type === 'attack_resolved' && ev.hit) { events.push(...gh.before); current = applyEvents(current, gh.before); }
     events.push(ev);
     current = applyEvents(current, [ev]);
+    if (gh && ev.type === 'attack_resolved' && ev.hit) { const ga = gh.after(current); events.push(...ga); current = applyEvents(current, ga); }
     // Görev B1: isabetten sonra kalan etki (Acid Arrow, Heat Metal) ve can emme (Vampiric Touch).
     if (ev.type === 'attack_resolved' && ev.hit) {
       const after = afterHitEvents(current, actor, t.id, spell, ev.appliedDamage, rng, upcast);
@@ -2028,7 +2041,8 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
       // Kuyruk 19: Banishment: yerli olmayan tam sürede geri dönmez.
       ...(spec.banished && globalRule(state, 'spellsK19') && EXTRAPLANAR.includes(t.creatureType ?? '') ? { banishForever: true } : {}),
       // Mage Armor: AC tabanı 13 + hedefin DEX değiştiricisi.
-      ...(spec.acMin === 'mageArmor' ? { acMin: 13 + t.modifiers.dex } : {}) } });
+      // Görev TE99 (99+, SRD 5.2.1 s. 145 "base AC becomes 13 + its Dexterity modifier"): taban (`acBase`); kalkan/eşya üstüne eklenir.
+      ...(spec.acMin === 'mageArmor' ? { acMin: 13 + t.modifiers.dex, acBase: 13 + t.modifiers.dex } : {}) } });
     // Kuyruk 18 H2: Polymorph: biçim ve geçici HP (seçim `choice` = Beast kimliği).
     if (spec.polymorph) added.push(...polymorphEvents(current, actor, t, cmd.choice));
     // Görev B5: yapılınca kalkan durumlar (Protection from Poison: Poisoned).

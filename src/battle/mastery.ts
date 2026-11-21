@@ -29,6 +29,7 @@ import { checkReach, optionReach } from './range';
 import { applyEvents } from './reduce';
 import type { AttackOption, BattleEvent, BattleState, Combatant, MasteryMark } from './types';
 import { hiddenTo } from './k74Surum';
+import { te99On } from './te99Surum';
 
 const profileOf = (c: Combatant) => damageProfile(c);
 const alive = (c: Combatant | undefined): c is Combatant => !!c && c.hp > 0 && isTargetable(c);
@@ -139,7 +140,9 @@ export function masteryEvents(
       const choice = globalRule(state, 'pushChoice') ? option.pushChoice : undefined;
       if (choice === 'skip') return [];
       if (choice !== 'push' && !option.ranged && !hit.opportunity && !lastAttackOfAction(before, option)) return [];
-      const pushed = pushAwayEvents(state, actor.pos, target.id, mech.feet ?? 10, actor.id, rng);
+      // Görev TE99 (99+, SRD "up to 10 feet"): oyuncunun seçtiği mesafe (5 ya da 10 ft).
+      const feet = te99On(state) && option.pushFeet ? Math.min(option.pushFeet, mech.feet ?? 10) : mech.feet ?? 10;
+      const pushed = pushAwayEvents(state, actor.pos, target.id, feet, actor.id, rng);
       return pushed.length > 0 ? [base, ...pushed] : [];
     }
     case 'sap':

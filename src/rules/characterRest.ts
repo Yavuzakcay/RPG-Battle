@@ -8,6 +8,7 @@
 import { gainedFeatures } from './classFeatures';
 import { lineageOf } from './lineage';
 import { featResources } from './backgrounds';
+import { itemResources, rechargeItems } from './itemCharges';
 import { getClass } from '../data';
 import type { Rng } from './dice';
 import { classResources, depotStart, rechargeResources, resourceDef } from './classFeatures';
@@ -58,7 +59,8 @@ const moralPart = (s: CharacterStatus): Pick<CharacterStatus, 'moral' | 'moralOl
 export function fullStatus(sheet: CharacterSheet): CharacterStatus {
   const d = deriveStats(sheet);
   // F1: feat kaynakları (Magic Initiate) da uzun dinlenmede dolar.
-  const resources = { ...classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineageOf(sheet)?.id, sheet.subclassId), ...featResources(sheet) };
+  // Görev TE99: yüklü eşyaların yükü de durumda (SRD 5.2.1 s. 206 Charges; yenilenme `itemCharges.ts`).
+  const resources = { ...classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineageOf(sheet)?.id, sheet.subclassId), ...featResources(sheet), ...itemResources(sheet) };
   // Kuyruk P12: sayaç kaynağı (paket `yenilenme: depo`) dinlenmiş durumda başlangıç değerinde; en çok değer üst sınır.
   return { hp: d.maxHp, hitDiceSpent: 0, resources: depotStart(resources), slots: [...d.spellSlots], slotMax: [...d.spellSlots], resourceMax: { ...resources }, hpMax: d.maxHp };
 }
@@ -130,8 +132,8 @@ export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus |
   return {
     status: {
       hp: r.state.hp, hitDiceSpent: sheet.level - r.state.hitDiceLeft, slots: r.state.spellSlots, slotMax: s.slotMax ?? [], resourceMax: s.resourceMax ?? {}, hpMax: s.hpMax ?? r.state.hp,
-      resources: sorcerousRestoration(sheet, rechargeResources({ ...s.resources, ...(recovery.used ? { arcaneRecovery: 0 } : {}), ...(natural.used ? { naturalRecovery: 0 } : {}) },
-        max, 'short', sheet.level), max),
+      resources: rechargeItems(sheet, sorcerousRestoration(sheet, rechargeResources({ ...s.resources, ...(recovery.used ? { arcaneRecovery: 0 } : {}), ...(natural.used ? { naturalRecovery: 0 } : {}) },
+        max, 'short', sheet.level), max), 'short', rng),
       // Kuyruk 18 H3: Tireless (Ranger 10): kısa dinlenme Exhaustion'ı 1 azaltır.
       ...(tirelessAfter(sheet, s.exhaustion) ? { exhaustion: tirelessAfter(sheet, s.exhaustion) } : {}),
       ...moralPart(s),
@@ -201,13 +203,15 @@ export function arcaneRecovery(sheet: CharacterSheet, resources: Record<string, 
 }
 
 /** Uzun dinlenme: HP, slotlar ve bütün kaynaklar dolar; harcanan HP zarlarının tamamı geri gelir (SRD 5.2.1 s. 185). */
-export function longRestStatus(sheet: CharacterSheet, status: CharacterStatus | undefined): CharacterStatus {
+export function longRestStatus(sheet: CharacterSheet, status: CharacterStatus | undefined,
+  /** Görev TE99: eşya yükünün zarlı yenilenmesi (yoksa durumdan tohumlu, tekrarlanabilir). */ rng?: Rng): CharacterStatus {
   const s = currentStatus(sheet, status);
   if (s.dead) return s;
   const r = longRest(restState(sheet, s));
   return {
     hp: r.hp, hitDiceSpent: sheet.level - r.hitDiceLeft, slots: r.spellSlots, slotMax: s.slotMax ?? [], resourceMax: s.resourceMax ?? {}, hpMax: s.hpMax ?? r.hp,
-    ...waitedLongRest(rechargeResources(s.resources, fullStatus(sheet).resourceMax ?? fullStatus(sheet).resources, 'long', sheet.level), s.waits),
+    // Görev TE99: eşya yükleri "daily at dawn" kuralıyla (veride `recharge`; tek kullanımlık eşya dolmaz).
+    ...waitedLongRest(rechargeItems(sheet, rechargeResources(s.resources, fullStatus(sheet).resourceMax ?? fullStatus(sheet).resources, 'long', sheet.level), 'long', rng), s.waits),
     // Bitkinlik (SRD 5.2.1): uzun dinlenme 1 seviye azaltır.
     ...(exhaustionAfterLongRest(s.exhaustion) > 0 ? { exhaustion: exhaustionAfterLongRest(s.exhaustion) } : {}),
     ...moralPart(s),

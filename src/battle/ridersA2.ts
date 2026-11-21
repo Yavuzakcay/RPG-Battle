@@ -23,6 +23,7 @@ import { forcedMove } from './motion';
 import { applyEvents } from './reduce';
 import { ruleVersion } from './ruleVersion';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
+import { saveVs } from './te99Surum';
 
 /** A2 eklerinin kural sürümü. */
 export const RIDERS_A2_VERSION = 30;
@@ -81,7 +82,7 @@ function effectOf(state: BattleState, actor: Combatant, attackName: string, spec
 }
 
 function saveFails(target: Combatant, save: { ability: Ability; dc: number }, rng: Rng, out: BattleEvent[], condition: string): boolean {
-  const r = resolveSave({ extra: saveDice(target, save.ability), modifier: target.saves[save.ability], dc: save.dc, mode: saveMode('normal', target, save.ability, undefined, { against: [condition] }),
+  const r = resolveSave({ extra: saveDice(target, save.ability), modifier: target.saves[save.ability], dc: save.dc, mode: saveMode('normal', target, save.ability, undefined, { against: [condition] }), ...saveVs(target, [condition]),
     autoFail: (save.ability === 'str' || save.ability === 'dex') && autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
   out.push({ type: 'condition_save', targetId: target.id, condition, ability: save.ability, dc: save.dc, d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { bonusDice: r.extra } : {}) });
   return !r.success;

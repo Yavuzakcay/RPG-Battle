@@ -50,7 +50,8 @@ describe('veri: Barbarian sınıf kiti (SRD tablosundan)', () => {
     const c3 = combatantFromSheet(sheet(3), { id: 'g', ownerId: 'p1' });
     expect(c3).toMatchObject({ rageDamage: 2, canReckless: true, frenzy: true, saveAdvantage: ['dex'], resources: { rage: 3 } });
     expect(c3.primalSkills).toContain('stealth');
-    expect(combatantFromSheet(sheet(1), { id: 'g', ownerId: 'p1' }).resources).toEqual({ rage: 2 });
+    // Görev TE99: Human Resourceful'ün Heroic Inspiration'ı tür kaynağı (uzun dinlenmede dolar).
+    expect(combatantFromSheet(sheet(1), { id: 'g', ownerId: 'p1' }).resources).toEqual({ rage: 2, heroicInspiration: 1 });
     // Fighter'da Rage yok.
     expect(combatantFromSheet({ ...sheet(5), classId: 'fighter' }, { id: 'f', ownerId: 'p1' }).rageDamage).toBeUndefined();
   });
