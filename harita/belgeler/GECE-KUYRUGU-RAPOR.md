@@ -91,3 +91,11 @@ worktree'si bulunmuyor; hiçbirine dokunulmadı.
   gerçek sınama); yöntem belgede.
 - CLAUDE.md "Bilinen eksikler" kodla doğrulandı: Dinlenme satırı (Arcane Recovery/Sorcerous Restoration "yok") ve "Yapay zekânın
   gizlenmesi" ("yok") bayattı, düzeltildi; Ready ve Dropping Prone satırları doğru/güncel.
+
+## Aşama 6: Eksik taraması (sürümsüz, yalnız belge) — TAMAM
+
+- `harita/belgeler/EKSIK-TARAMA.md` ← `python3 scripts/eksik-tarama.py` (+ elle bölümler `scripts/eksik-tarama-elle.md`). Kaynaklar:
+  SRD-KAPSAM, GENEL-SAVAS-DENETIM, DECISIONS, CLAUDE.md Bilinen eksikler, BUYU-TAM-TARAMA §4, BUYU-KISMI, PAKET-SIGMAYAN, 27 `*-DENETIM.md`.
+- Ölçülmüş sayılar (tekil kaynak + konu 710): açık ve SRD'de 464, bilinçli ertelenen 126, karar gerektiren 26 (+ 16 elle soru),
+  bayat 19 (kapanmış konu, kaynak belge güncellenmemiş: E8, E9, E13, D10, B35, A7, A44, H12, T27, Z9, Evocation Savant …),
+  savaş dışı 75 (+ 12 sistem için tasarım adımı), probe 14. "Serüven öncesi mutlaka" 15 madde.
