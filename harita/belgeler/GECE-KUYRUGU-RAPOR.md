@@ -80,3 +80,14 @@ worktree'si bulunmuyor; hiçbirine dokunulmadı.
 - Hızlı regresyon 102 ↔ 103 (100 tohum): Çöl %81/%81, Kale %36/%32, Mağara %85/%78 (berabere %4), Orman %64/%68 — kural kaynaklı
   (canavar inisiyatifi), `DENGE.md` "ölçülecek".
 - Build 451,53 / 500 kB; `check:harita` 92/92; `check:ses` 15/0.
+
+## Aşama 5: SRD-KAPSAM.md ikinci çalışma (sürümsüz, yalnız belge) — TAMAM
+
+- Belge baştan üretilmedi; Aşama 1–4'te değişen satırlar güncellendi (**[Gece kuyruğu]** işaretli). Önce → sonra (1870 satır):
+  var-test edilmiş 715 → 775, var-testsiz 370 → 414, kısmi 427 → 324, yok 41 → 40, savaş dışı 317 → 317, hiç olmayan 95 → 94.
+- En büyük değişim canavar/hayvan satırları (inisiyatif farkı 110 satırda; 94'ünde başka kısmi neden kalmadı).
+- Yeni bulgu (kırılma değil): Storm of Vengeance 2–10. tur aşamaları yok (var-test edilmiş → kısmi). Aşama 1–4'te bozulan eski kural yok.
+- "Test edilmiş" örnekleme doğrulaması (12 satır, tohum 103): 5 kuralı sınıyor, 4 yüzeysel, 1 yalnız veri, 2 test bulunamadı (≈ %42
+  gerçek sınama); yöntem belgede.
+- CLAUDE.md "Bilinen eksikler" kodla doğrulandı: Dinlenme satırı (Arcane Recovery/Sorcerous Restoration "yok") ve "Yapay zekânın
+  gizlenmesi" ("yok") bayattı, düzeltildi; Ready ve Dropping Prone satırları doğru/güncel.

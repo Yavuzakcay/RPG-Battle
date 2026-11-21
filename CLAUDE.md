@@ -241,13 +241,13 @@ Durum: **yok** ya da **kısmen**.
 | Koni ve çizgi alanlar (nefes silahları) | kısmen | Görev R4: canavarların 86 alanlı saldırısı (koni, çizgi, yayılım, küre) alan olarak. Kısmen: silindir yükseklikli değil (küre sayılır); "saldırının yerine nefes" Multiattack seçenekleri ayrı eylem; Djinni Create Whirlwind ve Gelatinous Cube Engulf alan değil |
 | Durum bağışıklığı | kısmen | Kuyruk 19: SRD canavar verisinden savaş başında (`monsterTraits.ts`, `srdK19`); anahtar kapalıyken yok |
 | Canavar özellikleri (Pack Tactics, Magic Resistance…) | kısmen | Kuyruk 19: Magic Resistance, duyular, Spider Climb, Web Walker, Ice Walk, Fire Aura, Stench, Sunlight Sensitivity ve 103 canavarın yetenekleri (`monsterAbilities.ts`); kalanlar `docs/SRD-DENETIM.md` |
-| Dinlenme (kısa/uzun) | kısmen | Savaşlar arası (karakter listesi, Game Master kurulumu); SRD 5.2.1: uzun dinlenme bütün HP zarları, kısa dinlenmede zar başına en az 1 HP ve 0 HP'de kısa dinlenme yok (2026-11-20; 0 HP uzun dinlenme yasağı karar bekliyor, GENEL-SAVAS-DENETIM G6); Arcane Recovery, Sorcerous Restoration gibi dinlenme özellikleri yok |
+| Dinlenme (kısa/uzun) | kısmen | Savaşlar arası (karakter listesi, Game Master kurulumu); SRD 5.2.1: uzun dinlenme bütün HP zarları, kısa dinlenmede zar başına en az 1 HP ve 0 HP'de kısa dinlenme yok (2026-11-20; 0 HP uzun dinlenme yasağı karar bekliyor, GENEL-SAVAS-DENETIM G6); Arcane Recovery, Natural Recovery ve Sorcerous Restoration karakter listesindeki dinlenmede var (`src/rules/characterRest.ts`; gece kuyruğu Aşama 5 doğrulaması, eski "yok" bayattı) |
 | Tepkiler | kısmen | Görev R1: fırsat saldırısı, Shield, Counterspell, Hellish Rebuke, Feather Fall, Uncanny Dodge, Deflect Attacks, Slow Fall, Retaliation; Superior Hunter's Defense kısmen (yalnızca isabet). Cutting Words (Z2) ve Countercharm (Kuyruk 18, `auras.ts`) var. A0: tepki büyüleri (Shield, Counterspell, Feather Fall) eylemle yapılınca slot harcayıp etkisiz kalıyor (A1 kapsamı dışı). Hellish Rebuke Spirit Guardians ve harita hasarında tetiklenmez |
 | Sabit hasar | kısmen | Sabit hasar "1d2 + (N − 1)" ile yaklaşıklanıyor (21 canavar) |
 | GM'e gizli tuzak görünümü | yok | Bulunmamış tuzak kimseye çizilmiyor (gizli jeton katmanı kullanılabilir) |
 | Ağ üzerinden çok oyunculu | yok | Tek ekran paylaşımlı |
 | Savaş içi kat değişimi (çok katlı harita) | kısmen | Kuyruk 18 H4: `floorLink` (Maden Ocağı ↔ Mezar Labirenti); kat değiştiren hep bütün parti, iki kat aynı anda çizilmez |
-| Yapay zekânın gizlenmesi | yok | Yapay zekâ Gizlen kullanmaz; gece kuralı bu yüzden simülasyonda etkisiz (Orman/Kale gece = gündüz) |
+| Yapay zekânın gizlenmesi | kısmen | Yalnız sızmada (Kuyruk 14 K14A: uyuyan/habersiz grup varken gözcüye yaklaşınca Gizlen, `ai.ts`); savaşta Gizlen kullanmaz (gece kuralı simülasyonda çoğunlukla etkisiz). Gece kuyruğu Aşama 5 doğrulaması |
 | İngilizce (EN) arayüz | kısmen | Ekran metinleri, günlük ve açıklamalar (büyü, eşya, tür/sınıf/alt sınıf özelliği, Invocation, feat, durum, canavar, betimleme; Görev EN-ACIKLAMA) çevrili; motor hata/gerekçe metinleri, harita/zemin adları ve Dungeondex prospektüs paragrafları yalnızca Türkçe |
 
 Önerilen sıra:
@@ -257,7 +257,7 @@ Durum: **yok** ya da **kısmen**.
 4. 4.+ seviye büyüler (önce yukarı slot etkileri)
 5. Canavar büyüleri, tepkileri, bağışıklıkları ve özellikleri
 6. Kalıcı alan büyüleri (Görev B2 ve B4'te çoğu; Cloud of Daggers ve diğerleri kaldı)
-7. Dinlenmeyle çalışan sınıf özellikleri (Arcane Recovery…)
+7. Dinlenmeyle çalışan sınıf özelliklerinin kalanları (Arcane Recovery, Natural Recovery, Sorcerous Restoration var)
 8. Çok altıgenlik canavarlar
 9. GM tuzak görünümü
 10. Ağ üzerinden çok oyunculu

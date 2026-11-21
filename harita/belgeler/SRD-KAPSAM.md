@@ -4,6 +4,24 @@ Tarih: 2026-11-21 · Taban: `origin/birlesik` 9e8e2ce4 · Kural sürümü 99. **
 
 **Amaç:** SRD 5.2.1'de olup oyunda hiç olmayan ya da eksik kalan her şeyi bulmak. Bölümler SRD'nin içindekiler sırasıyla: oynama kuralları (s. 5–18), karakter oluşturma (s. 19–27), 12 sınıf ve SRD alt sınıfları (s. 28–82), geçmişler ve türler (s. 83–86), feat'ler (s. 87–88), donanım (s. 89–103), büyüler (s. 104–175), kural sözlüğü (s. 176–191), oyun araç kutusu (s. 192–203), sihirli eşyalar (s. 204–253), canavarlar (s. 254–343) ve hayvanlar (s. 344–364). Sayfa numaraları PDF'teki basılı numaradır.
 
+> **İkinci çalışma (2026-11-21, gece kuyruğu Aşama 5; kural sürümü 103):** belge baştan üretilmedi; gece kuyruğu Aşama 1–4'te
+> değişen satırlar elle güncellendi (betikler `/tmp`'de; yalnız belge). Satırların "Önerilen adım" sütununda **[Gece kuyruğu]** işareti.
+> Önce/sonra (1870 satır): var-test edilmiş 715 → 775, var-testsiz 370 → 414, kısmi 427 → 324, yok 41 → 40, savaş dışı 317 → 317.
+> Değişenler: canavar inisiyatifi (Stat Block satırı + 110 canavar/hayvan satırı; 94'ünde kalan kısmi neden yok), Gold Dragon Weakening
+> Breath, Sphinx Weight of Years, Cloud Giant Misty Step (KAPSAM103); Crawling, Dash, High Jump, Knocking Out (yok → var), Grappling,
+> Prone (Dropping Prone), Dropping to 0 HP, Vision and Light, Shield tak/çıkar, Stone's Endurance (KARAR101); Confusion, Conjure
+> Elemental, Earthquake, Etherealness, Mass Cure Wounds (BUYU-TAM); Empowered Evocation, Evocation Savant, Reliable Talent, Gift of the
+> Depths (KAPSAM103). **Yeni bulgu (kırılma değil, eski eksik):** Storm of Vengeance 2–10. tur aşamaları yok (var-test edilmiş →
+> kısmi; BUYU-TAM-TARAMA §4.1); Etherealness'in Ethereal etkisi önceden hiç uygulanmıyordu (102'de düzeldi). Aşama 1–4'te bozulan
+> eski kural yok (test turları ve 4 senaryolu hızlı regresyonlar; 103'te inisiyatif kaynaklı denge farkı DENGE.md'de).
+> **"Test edilmiş" doğrulaması (örnekleme, tohum 103, 12 rastgele "var-test edilmiş" satırı):** durum "adı bir mekanik test dosyasında
+> geçiyor" demek; testin o kuralı sınayıp sınamadığı ayrıca okundu: **5/12 kuralı sınıyor** (Wall of Ice paneli, Wight can emmesi,
+> Great Weapon Fighting zarı, Mammoth Trample, Mage'in Shield tepkisi), **4/12 yüzeysel** (Eagle familiar biçimi var, Goat biçim
+> değişimi reddi, Tough takviye kimliği, Studied Attacks işareti var), **1/12 yalnız veri** (Ancient Red Dragon efsanevi eylem DC'si),
+> **2/12 adı listelenen dosyada bulunamadı** (Giant Constrictor Snake `p7.test.ts`, Foe Slayer). Sonuç: "var-test edilmiş" sayısı üst
+> sınırdır; kuralı gerçekten sınayan oran örneklemde ≈ %42. Bu çalışmada eklenen satır kanıtları (`karar101.test.ts`,
+> `buyuTam102.test.ts`, `kapsam103.test.ts`) kuralı 100/101, 101/102, 102/103 karşılaştırmasıyla sınar.
+
 ## Kaynaklar ve yöntem
 
 - **SRD tarafı:** `docs/SRD_CC_v5.2.1.pdf` (pdftotext/pdfplumber: kural sözlüğünün 155 başlığı, araç kutusu ve donanım alt başlıkları, canavar stat bloklarındaki "Initiative" değerleri), `data/srd/*.json` (sınıf ilerlemesi, alt sınıflar, feat'ler, türler, geçmişler, silah/zırh/ustalık, donanım, aletler, 339 büyü, 258 sihirli eşya, 330 canavar; `rapor.json`: sorun yok, 8 atlanan yan kutu/stat blok), `data/canavar-ozellik.json` (canavar başına özellik ve eylem listesi).
@@ -28,17 +46,17 @@ Tarih: 2026-11-21 · Taban: `origin/birlesik` 9e8e2ce4 · Kural sürümü 99. **
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | 1. Oynama kuralları (Playing the Game) | s. 5–18 | 41 | 20 | 0 | 18 | 0 | 3 | 2 |
 | 2. Karakter oluşturma (Character Creation) | s. 19–27 | 13 | 5 | 1 | 1 | 3 | 3 | 5 |
-| 3. Sınıflar (Classes) | s. 28–82 | 280 | 158 | 11 | 104 | 0 | 7 | 5 |
-| 4. Karakter kökenleri (Backgrounds, Species) | s. 83–86 | 72 | 28 | 27 | 14 | 3 | 0 | 3 |
+| 3. Sınıflar (Classes) | s. 28–82 | 280 | 160 | 13 | 100 | 0 | 7 | 5 |
+| 4. Karakter kökenleri (Backgrounds, Species) | s. 83–86 | 72 | 30 | 26 | 13 | 3 | 0 | 3 |
 | 5. Feat'ler (Feats) | s. 87–88 | 29 | 14 | 8 | 7 | 0 | 0 | 0 |
-| 6. Donanım (Equipment) | s. 89–103 | 254 | 57 | 58 | 43 | 5 | 91 | 33 |
-| 7. Büyüler (Spells) | s. 104–175 | 355 | 187 | 28 | 26 | 0 | 114 | 0 |
-| 8. Kural sözlüğü (Rules Glossary) | s. 176–191 | 155 | 85 | 4 | 53 | 3 | 10 | 10 |
+| 6. Donanım (Equipment) | s. 89–103 | 254 | 58 | 58 | 42 | 5 | 91 | 33 |
+| 7. Büyüler (Spells) | s. 104–175 | 355 | 187 | 27 | 27 | 0 | 114 | 0 |
+| 8. Kural sözlüğü (Rules Glossary) | s. 176–191 | 155 | 89 | 4 | 50 | 2 | 10 | 9 |
 | 9. Oyun araç kutusu (Gameplay Toolbox) | s. 192–203 | 54 | 5 | 0 | 16 | 27 | 6 | 33 |
 | 10. Sihirli eşyalar (Magic Items) | s. 204–253 | 267 | 27 | 142 | 17 | 0 | 81 | 3 |
-| 11. Canavarlar (Monsters A–Z) | s. 254–343 | 254 | 78 | 51 | 123 | 0 | 2 | 1 |
-| 12. Hayvanlar (Animals) | s. 344–364 | 96 | 51 | 40 | 5 | 0 | 0 | 0 |
-| **Toplam** | | **1870** | **715** | **370** | **427** | **41** | **317** | **95** |
+| 11. Canavarlar (Monsters A–Z) | s. 254–343 | 254 | 126 | 93 | 33 | 0 | 2 | 1 |
+| 12. Hayvanlar (Animals) | s. 344–364 | 96 | 54 | 42 | 0 | 0 | 0 | 0 |
+| **Toplam** | | **1870** | **775** | **414** | **324** | **40** | **317** | **94** |
 
 \* "hiç olmayan" = `yok` satırları + oyunda hiçbir karşılığı olmayan `savaş dışı` satırları (aşağıdaki listenin satırları). Canavar satırları canavar başına; canavarların hiç olmayan tek tek girişleri listede ayrıca.
 
@@ -46,23 +64,36 @@ Tarih: 2026-11-21 · Taban: `origin/birlesik` 9e8e2ce4 · Kural sürümü 99. **
 
 Yeni (bu denetimden önce hiçbir belgede yazılı değil) olanlar **[YENİ]** işaretli.
 
-1. **[YENİ] Canavar inisiyatifi SRD stat bloğundan değil, yalnız DEX'ten.** `src/battle/create.ts:560` `initiativeBonus: mods.dex`; `data/monsters.json`'da inisiyatif alanı yok. SRD 5.2.1 stat bloklarındaki "Initiative +X (skor)" değeri 330 canavarın **110**'unda DEX değiştiricisinden farklı (PDF taraması): Adult Black Dragon +12 (oyunda +2), Ancient Black Dragon +16 (+2), Balor +14 (+2), Aboleth +7 (−1), Assassin +10 (+4). Etki: güçlü ve efsanevi canavarlar SRD'ye göre geç davranıyor. Öneri: `monsters.json`'a SRD inisiyatif değeri, `create.ts`'te kural sürümüyle kullanım (100+; eski kayıt ve replay eski davranış).
-2. **[YENİ] Adult ve Ancient Gold Dragon'da Weakening Breath eylemi yok.** `data/monsters.json` saldırıları Rend, Fire Breath, Spellcasting; `data/multiattack.json` `replace` listesi `Weakening Breath`'e işaret ediyor ama eylem tanımlı değil (Gold Dragon Wyrmling ve Young Gold Dragon'da var). Öneri: Young Gold Dragon kaydındaki biçimle iki ejderhaya eklemek (`damagePenalty` + `checkDis`, ENVANTER-CANAVARLAR "Özel hasar metni").
-3. **[YENİ] Sphinx of Lore ve Sphinx of Valor'un "Weight of Years" efsanevi eylemi yok** (`data/efsanevi.json`'da yalnız Arcane Prowl).
-4. Cloud Giant'ın **Misty Step** bonus eylemi yok (SRD-DENETIM'de "açık iş" olarak duruyordu).
+1. ~~**[YENİ] Canavar inisiyatifi SRD stat bloğundan değil, yalnız DEX'ten.**~~ **Kapandı (KAPSAM103, sürüm 103).** `src/battle/create.ts:560` `initiativeBonus: mods.dex`; `data/monsters.json`'da inisiyatif alanı yok. SRD 5.2.1 stat bloklarındaki "Initiative +X (skor)" değeri 330 canavarın **110**'unda DEX değiştiricisinden farklı (PDF taraması): Adult Black Dragon +12 (oyunda +2), Ancient Black Dragon +16 (+2), Balor +14 (+2), Aboleth +7 (−1), Assassin +10 (+4). Etki: güçlü ve efsanevi canavarlar SRD'ye göre geç davranıyor. Öneri: `monsters.json`'a SRD inisiyatif değeri, `create.ts`'te kural sürümüyle kullanım (100+; eski kayıt ve replay eski davranış).
+2. ~~**[YENİ] Adult ve Ancient Gold Dragon'da Weakening Breath eylemi yok.**~~ **Kapandı (KAPSAM103: aktarımdaki "Spellcasting" saldırısı).** `data/monsters.json` saldırıları Rend, Fire Breath, Spellcasting; `data/multiattack.json` `replace` listesi `Weakening Breath`'e işaret ediyor ama eylem tanımlı değil (Gold Dragon Wyrmling ve Young Gold Dragon'da var). Öneri: Young Gold Dragon kaydındaki biçimle iki ejderhaya eklemek (`damagePenalty` + `checkDis`, ENVANTER-CANAVARLAR "Özel hasar metni").
+3. ~~**[YENİ] Sphinx of Lore ve Sphinx of Valor'un "Weight of Years" efsanevi eylemi yok**~~ **Kapandı (KAPSAM103).** (`data/efsanevi.json`'da yalnız Arcane Prowl).
+4. ~~Cloud Giant'ın **Misty Step** bonus eylemi yok~~ **Kapandı (KAPSAM103)** (SRD-DENETIM'de "açık iş" olarak duruyordu).
 5. **Karakter oluşturma:** çoklu sınıf (Multiclassing, s. 24–25) tamamen yok (karakterde tek `classId`); diller (Common + iki dil, Thieves' Cant/Druidic dilleri) yok; sınıf/geçmiş başlangıç donanımı A/B paketleri ve "Starting at Higher Levels" donanım tablosu yok; Human/Tiefling boyut seçimi (Small/Medium) yok.
 6. **Sosyal ve keşif kuralları:** Influence eylemi, tutumlar (Friendly/Indifferent/Hostile), Charmed'ın sosyal avantajı, Help ile yetenek kontrolüne yardım, Search/Study'nin geniş kullanımı yok ya da kısmi.
 7. **Oyun araç kutusu:** 14 örnek zehrin hiçbiri, zehir hasadı, üç büyülü salgın (Cackle Fever, Sewer Plague, Sight Rot), Extreme Heat, Mental Stress, zorlu yürüyüş (Extended Travel) ve tempo seçimi yok; 8 örnek tuzağın 5'i yok, 3'ü yalnız yaklaşık; tuzağı etkisiz kılma yok.
 8. **Büyü bileşenleri:** motorda yalnız Verbal kısıtı var; Somatic (boş el) ve Material (odak, fiyatlı/tüketilen malzeme) yalnız bilgi (`src/rules/spellComponents.ts`).
 9. **Kısmi satırlar içinde hiç uygulanmamış alt kurallar** (ayrıntı aşağıdaki listede): Knocking Out, isteğe bağlı yere yatma, baygının elindekini düşürmesi, dar açıklık zorlu arazisi, büyüsüz High Jump, 0 HP'de uzun dinlenme yasağı, dinlenme kesintileri, yapışma/likantropi/boğulma gibi canavar ekleri.
 10. **[YENİ] Kod okumasıyla görülen, sınıf denetimlerinde yazılı olmayan açıklar** (çalıştırılmadı, doğrulama testi önerilir):
-    - Gift of the Depths (Warlock): yüzme hızı veriyor (`deepWater.ts:80`) ama su altında soluma `breathesWater` (`underwaterCore.ts:52`) bu Invocation'a bakmıyor.
-    - Evocation Savant: veride `maxBaseLevel: 2` var, `src/rules/builder.ts` `bookBonus` okumuyor (ilk iki bedelsiz büyüde seviye sınırı yok).
-    - Empowered Evocation: büyünün Wizard büyüsü olup olmadığına bakılmıyor (Magic Initiate/soy kaynaklı Evocation büyüleri de +INT alıyor).
-    - Reliable Talent: TE99'daki Thieves' Tools kilit açma kontrolüne uygulanmıyor.
+    - **[Kapandı, KAPSAM103]** Gift of the Depths (Warlock): yüzme hızı veriyor (`deepWater.ts:80`) ama su altında soluma `breathesWater` (`underwaterCore.ts:52`) bu Invocation'a bakmıyor.
+    - **[Kapandı, KAPSAM103]** Evocation Savant: veride `maxBaseLevel: 2` var, `src/rules/builder.ts` `bookBonus` okumuyor (ilk iki bedelsiz büyüde seviye sınırı yok).
+    - **[Kapandı, KAPSAM103]** Empowered Evocation: büyünün Wizard büyüsü olup olmadığına bakılmıyor (Magic Initiate/soy kaynaklı Evocation büyüleri de +INT alıyor).
+    - **[Kapandı, KAPSAM103]** Reliable Talent: TE99'daki Thieves' Tools kilit açma kontrolüne uygulanmıyor.
     - Lore Bonus Proficiencies (Bard): Serüven seçim kipinde ek üç beceri seçilemiyor (`levelChoices.ts` `CHOICE_FIELDS`, Barbarian C6 ile aynı kök).
     - Improved Elemental Fury: +300 ft menzil Druid dışı cantrip'lere de uygulanıyor; `k19tier4b.test.ts` bunu doğru diye bekliyor.
     - Countercharm: B94 aura/alan genişlemesinin testi yok (B94 tablosunda adı geçen testte bulunamadı).
+
+## CLAUDE.md "Bilinen eksikler" doğrulaması (Aşama 5, kodla)
+
+| Satır | CLAUDE.md durumu | Kodda | Sonuç |
+|---|---|---|---|
+| Hazırla (Ready) eylemi | kısmen | `src/battle/ready.ts` (sürüm 90): tek saldırı / hareket / büyü yanıtı; YZ kullanmaz | doğru (SRD s. 186–187 ile uyumlu; yanıt listesi dar) |
+| Yakalama ve yere düşme (Dropping Prone) | kısmen, "komutu yok" | `drop_prone`, `release_grapple` (`karar101.ts`, sürüm 101) | güncellendi (CLAUDE.md satırı) |
+| Dinlenme (Arcane Recovery, Sorcerous Restoration) | "yok" | `src/rules/characterRest.ts` (Arcane Recovery, Natural Recovery, Sorcerous Restoration; `Screens.tsx` dinlenme seçenekleri; testler `wizard.test.ts`, `b93wizard.test.ts`) | **bayattı**, CLAUDE.md düzeltildi |
+| Yapay zekânın gizlenmesi | yok | `ai.ts` sızmada `hide` komutu (Kuyruk 14 K14A) | **kısmen**, CLAUDE.md düzeltildi |
+| GM'e gizli tuzak görünümü | yok | arayüzde tuzak katmanı yok | doğru |
+| Ağ üzerinden çok oyunculu | yok | — | doğru |
+| 4.+ seviye büyüler | kısmen | BUYU-TAM-TARAMA: 339 büyü, şüpheli 0; Storm of Vengeance aşamaları eksik | doğru (ayrıntı BUYU-TAM-TARAMA) |
+| Canavar saldırı ekleri | kısmen | yapışma, likantropi, boğulma yok (KAPSAM103 ertelendi) | doğru |
 
 ## SRD'de olup oyunda hiç olmayanlar
 
@@ -118,7 +149,7 @@ Bölüm sırasıyla. `yok`: savaşla ilgili, uygulanmamış. `savaş dışı, ka
 - s. 183 — Hostile [Attitude] (savaş dışı, karşılık yok)
 - s. 184 — Indifferent [Attitude] (savaş dışı, karşılık yok)
 - s. 184 — Influence [Action] (yok): A19 yok: Influence
-- s. 184 — Knocking Out a Creature (yok): D10 yok: Knocking Out: yakın dövüş saldırısıyla 0 HP'ye indirecekken 1 HP + Unc…
+- ~~s. 184 — Knocking Out a Creature (yok):~~ **[Kapandı, KARAR101]** D10 yok: Knocking Out: yakın dövüş saldırısıyla 0 HP'ye indirecekken 1 HP + Unc…
 - s. 185 — Malnutrition [Hazard] (savaş dışı, karşılık yok)
 - s. 190 — Telepathy (savaş dışı, karşılık yok)
 
@@ -149,11 +180,11 @@ Bölüm sırasıyla. `yok`: savaşla ilgili, uygulanmamış. `savaş dışı, ka
 
 - s. 256 — Stat Block: Languages ve Telepathy (savaş dışı, karşılık yok)
 - Canavar girişleri (stat bloğunda olup oyun verisinde olmayan, 5):
-  - s. 275 — Cloud Giant: Misty Step (bonus)
-  - s. 291 — Adult Gold Dragon: Weakening Breath (action)
-  - s. 292 — Ancient Gold Dragon: Weakening Breath (action)
-  - s. 327 — Sphinx of Lore: Weight of Years (legendary)
-  - s. 328 — Sphinx of Valor: Weight of Years (legendary)
+  - ~~s. 275 — Cloud Giant: Misty Step (bonus)~~ (KAPSAM103)
+  - ~~s. 291 — Adult Gold Dragon: Weakening Breath (action)~~ (KAPSAM103)
+  - ~~s. 292 — Ancient Gold Dragon: Weakening Breath (action)~~ (KAPSAM103)
+  - ~~s. 327 — Sphinx of Lore: Weight of Years (legendary)~~ (KAPSAM103)
+  - ~~s. 328 — Sphinx of Valor: Weight of Years (legendary)~~ (KAPSAM103)
 
 ### Kısmi satırların içinde hiç uygulanmamış alt kurallar
 
@@ -162,17 +193,17 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 - GENEL-SAVAS-DENETIM A14 (s. 182): Help: Assist an Ability Check
 - GENEL-SAVAS-DENETIM A19 (s. 184): Influence
 - GENEL-SAVAS-DENETIM A27: Ready: YZ kullanımı
-- GENEL-SAVAS-DENETIM A44 (s. 14): Dropping Prone: eylemsiz, hızsız, hız 0'da olmaz
+- **[Kapandı, KARAR101]** GENEL-SAVAS-DENETIM A44 (s. 14): Dropping Prone: eylemsiz, hızsız, hız 0'da olmaz
 - GENEL-SAVAS-DENETIM A45: YZ: Dash
 - GENEL-SAVAS-DENETIM A49: YZ: Search, Stabilize, Influence, Study, Ready
 - GENEL-SAVAS-DENETIM B10: Charmed: büyüleyenin sosyal kontrollerinde avantaj
 - GENEL-SAVAS-DENETIM B30: Petrified: ağırlık ×10, yaşlanma durur
-- GENEL-SAVAS-DENETIM B35: Prone: isteğe bağlı yere yatma (Dropping Prone, Speed kuralı)
+- **[Kapandı, KARAR101]** GENEL-SAVAS-DENETIM B35: Prone: isteğe bağlı yere yatma (Dropping Prone, Speed kuralı)
 - GENEL-SAVAS-DENETIM B40: Unconscious: elindekini düşürür
-- GENEL-SAVAS-DENETIM D10 (s. 17): Knocking Out: yakın dövüş saldırısıyla 0 HP'ye indirecekken 1 HP + Unconscious bırakma seçeneği; Short Rest sonunda, HP kazanınca ya da DC 1…
+- **[Kapandı, KARAR101]** GENEL-SAVAS-DENETIM D10 (s. 17): Knocking Out: yakın dövüş saldırısıyla 0 HP'ye indirecekken 1 HP + Unconscious bırakma seçeneği; Short Rest sonunda, HP kazanınca ya da DC 1…
 - GENEL-SAVAS-DENETIM E6 (s. 181): Dar açıklık (bir boy küçük yaratığa göre) zorlu arazidir; 5.2.1'de ayrı Squeezing kuralı yok
-- GENEL-SAVAS-DENETIM E9 (s. 14): Dropping Prone: eylemsiz ve hareketsiz, hız 0'da olmaz
-- GENEL-SAVAS-DENETIM F15 (s. 183): High Jump: 3 + STR mod ft (koşuyla), durarak yarısı; ft başına hareket
+- **[Kapandı, KARAR101]** GENEL-SAVAS-DENETIM E9 (s. 14): Dropping Prone: eylemsiz ve hareketsiz, hız 0'da olmaz
+- **[Kapandı, KARAR101: "immediately before"]** GENEL-SAVAS-DENETIM F15 (s. 183): High Jump: 3 + STR mod ft (koşuyla), durarak yarısı; ft başına hareket
 - GENEL-SAVAS-DENETIM F20: Help (yetenek kontrolü): müttefikin seçilen beceri kontrolü avantajlı
 - GENEL-SAVAS-DENETIM G6 (s. 185): Long Rest başlamak için en az 1 HP
 - GENEL-SAVAS-DENETIM G11 (s. 185): Kesintiler (inisiyatif, cantrip dışı büyü, hasar, 1 saat efor); kesilen Short Rest yararsız (s.185, s.187)
@@ -181,7 +212,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 - TUR-FEAT-ESYA G14 (s. 83): Seçmeli alet: Soldier "one kind of Gaming Set" (s. 83); bizim Soylu (Gaming Set), Soytarı (Musical Instrument) — ertelendi (bu turun kapsamı dışında)
 - TUR-FEAT-ESYA S9 (s. 89): Ammunition: tek elli silahı doldurmak için boş el gerekir — ertelendi (bu turun kapsamı dışında)
 - TUR-FEAT-ESYA S33 (s. 183): Improvised: menzilli silahla yakın dövüş, Thrown'suz yakın silahı fırlatma (1d4, 20/60, PB yok) — ertelendi (bu turun kapsamı dışında)
-- TUR-FEAT-ESYA Z9 (s. 92): Shield "Utilize Action to Don or Doff" — ertelendi (kalkan tak/çıkar komutu)
+- **[Kapandı, KARAR101]** TUR-FEAT-ESYA Z9 (s. 92): Shield "Utilize Action to Don or Doff" (`shield_toggle`)
 - TUR-FEAT-ESYA D16 (s. 98): Oil: yaratığa fırlatma (DEX save, ateşte +5 Fire), alana dökme ve yakma — ertelendi (Utilize eşyaları)
 - TUR-FEAT-ESYA D17 (s. 96): Caltrops (DC 15, 1 Piercing, hız 0) ve Ball Bearings (DC 10 Prone), Utilize — ertelendi (Utilize eşyaları)
 - TUR-FEAT-ESYA D18 (s. 97): Hunting Trap (DC 13, 1d4, zincir), Manacles (DC 13 bağlama) — ertelendi (Utilize eşyaları)
@@ -208,7 +239,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Oynama kuralları s. 10 | Social Interaction: Roleplaying | savaş dışı | oyunda karşılığı yok (sosyal sahne Game Master) |  |
 | Oynama kuralları s. 11 | Social Interaction: Ability Checks (Influence, tutumlar) | savaş dışı | GENEL-SAVAS-DENETIM A19 | A19 yok: Influence; Attitude (Friendly/Indifferent/Hostile) modeli yok |
 | Oynama kuralları s. 11 | Exploration: Adventuring Equipment | kısmi | bkz. 6. Donanım; savaşla ilgili eşyalar `data/items.json` | 81 SRD eşyasının 67'si savaş dışı işaretli |
-| Oynama kuralları s. 11 | Exploration: Vision and Light (parlak/loş/karanlık, örtü, duyular) | kısmi | GENEL-SAVAS-DENETIM H1, H2, H3, H4, H5, H6, H7, H8, H9, H10, H11, H12; `ai.test.ts`, `altSoy.test.ts` +14 | H3 bilinçli sapma: Karanlık = Heavily Obscured: oradakini görmeye çalışan Blinded sayılır…; H4 bilinçli sapma: Gece dışarısı karanlıktır; H12 kısmi: Görülmeyen hedef ya da saldıran (ışık yönü): dezavantaj ve avantaj |
+| Oynama kuralları s. 11 | Exploration: Vision and Light (parlak/loş/karanlık, örtü, duyular) | kısmi | GENEL-SAVAS-DENETIM H1, H2, H3, H4, H5, H6, H7, H8, H9, H10, H11, H12; `ai.test.ts`, `altSoy.test.ts` +14 | H3 bilinçli sapma: Karanlık = Heavily Obscured: oradakini görmeye çalışan Blinded sayılır…; H4 bilinçli sapma: Gece dışarısı karanlıktır; H12 kısmi: Görülmeyen hedef ya da saldıran (ışık yönü): dezavantaj ve avantaj **[Gece kuyruğu]** H3: `nightVision` 101+ savaşta varsayılan açık (denge ölçülecek). |
 | Oynama kuralları s. 11 | Exploration: Hiding | kısmi | GENEL-SAVAS-DENETIM A17, A18, C12; `genel96.test.ts` | A17 bilinçli sapma: Hide: DC 15 Stealth, yoğun örtü / ¾ siper, hiçbir düşmanın görüş hattı…; A18 bilinçli sapma: Hide biter: fısıltıdan yüksek ses, bulunma, saldırı zarı, Verbal bileş… |
 | Oynama kuralları s. 11 | Exploration: Interacting with Objects (turda bir serbest etkileşim) | kısmi | GENEL-SAVAS-DENETIM A31, A32, A33; `genel96.test.ts` | A32 kısmi: Turda bir serbest nesne etkileşimi; ikincisi Utilize |
 | Oynama kuralları s. 12 | Exploration: Hazards (yanma, düşme, boğulma, susuzluk, açlık) | kısmi | düşme `fall.ts`, yanma `maprules.ts`/`items.ts`, boğulma `underwaterCore.ts`; `a6spells.test.ts`, `area-spells.test.ts` +11 | Dehydration ve Malnutrition yok |
@@ -229,7 +260,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Oynama kuralları s. 17 | Resistance and Vulnerability (sıra: değiştirici → direnç → zayıflık) | var-test edilmiş | GENEL-SAVAS-DENETIM D6, D7, D8; `combat.test.ts`, `genel96.test.ts` |  |
 | Oynama kuralları s. 17 | Immunity (hasar ve durum) | kısmi | GENEL-SAVAS-DENETIM D6, B2, B3, B4; `combat.test.ts`, `genel96.test.ts` | B2 kısmi: Immunity: bağışık olunan durum hiç etkilemez |
 | Oynama kuralları s. 17 | Healing | var-test edilmiş | GENEL-SAVAS-DENETIM D1, D22; `combat.test.ts`, `deathsaves.test.ts` |  |
-| Oynama kuralları s. 17 | Dropping to 0 HP: anında ölüm, baygınlık, Knocking Out | kısmi | GENEL-SAVAS-DENETIM D10, D11, D12, D13, D14; `deathsaves.test.ts`, `genel96.test.ts` | D10 yok: Knocking Out: yakın dövüş saldırısıyla 0 HP'ye indirecekken 1 HP + Unc…; Knocking Out seçeneği yok (karar gerekli 7) |
+| Oynama kuralları s. 17 | Dropping to 0 HP: anında ölüm, baygınlık, Knocking Out | kısmi | GENEL-SAVAS-DENETIM D10, D11, D12, D13, D14; `deathsaves.test.ts`, `genel96.test.ts`; `karar101.test.ts` | D10 yok: Knocking Out: yakın dövüş saldırısıyla 0 HP'ye indirecekken 1 HP + Unc…; Knocking Out seçeneği yok (karar gerekli 7) **[Gece kuyruğu]** D10 Knocking Out kapandı (101). |
 | Oynama kuralları s. 17 | Death Saving Throws ve stabilize | kısmi | GENEL-SAVAS-DENETIM D15, D16, D17, D18, D19, D20, D21; `deathsaves.test.ts`, `economy.test.ts` +2 | D18 kısmi: Stabilize: Help eylemi + DC 10 WIS (Medicine); D21 kısmi: İyileşmeyen stabil yaratık 1d4 saat sonra 1 HP kazanır. 0 HP'deyken kı… |
 | Oynama kuralları s. 18 | Temporary Hit Points | kısmi | GENEL-SAVAS-DENETIM D23, D24, D25, D26; `effects.test.ts` | D26 kısmi: Geçici HP tükenene ya da uzun dinlenmeye dek sürer |
 
@@ -437,7 +468,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Sınıflar s. 63 | Rogue: Cunning Strike (5. sv) | kısmi | classTraits.ts cunningEvents/cunningCost; classTraits.test.ts (Trip, Withdraw), k19feat.test.ts (Poison), b95rogue.test.ts (yan el, fırsat saldırısı, Ready); ROGUE-DENETIM A10–A14, D7; B95-B | bilinçli sapma: Withdraw kayması saldırının hemen ardından değil tur sonuna dek bütçe (A12, K3); Horde Breaker yolunda seçilemez; YZ: yalnız Trip/Withdraw seçer (D7).; K3 kararı (anlık Withdraw); Horde Breaker komutuna cunning alanı; YZ seçenekleri denge turunda. |
 | Sınıflar s. 63 | Rogue: Uncanny Dodge (5. sv) | var-test edilmiş | reactions.ts (97: canSeeTarget, görünmez/Blinded'da yok); reactions.test.ts, b95rogue.test.ts; ROGUE-DENETIM A19–A20, D8; B95-B | YZ: yalnız ağır isabette kullanır (D8, bilinçli eşik). |
 | Sınıflar s. 63 | Rogue: Evasion (7. sv) | var-test edilmiş | classTraits.ts saveDamage (tek yol, Incapacitated iken yok); classTraits.test.ts; ROGUE-DENETIM A21 |  |
-| Sınıflar s. 63 | Rogue: Reliable Talent (7. sv) | kısmi | effectDice.ts checkNatural (yalnız yetkin beceri); classTraits.test.ts; ROGUE-DENETIM A22, B2; DECISIONS TE99-12 | Alet yetkinliği kısmı yok: TE99 Thieves' Tools kilit açma (objects.ts unlock) Reliable Talent'a bakmıyor (kod okuması).; Kilit açma zarına alet yetkinliği tabanı 10 (yeni kural sürümü). |
+| Sınıflar s. 63 | Rogue: Reliable Talent (7. sv) | var-testsiz | effectDice.ts checkNatural (yalnız yetkin beceri); classTraits.test.ts; ROGUE-DENETIM A22, B2; DECISIONS TE99-12 | Alet yetkinliği kısmı yok: TE99 Thieves' Tools kilit açma (objects.ts unlock) Reliable Talent'a bakmıyor (kod okuması).; Kilit açma zarına alet yetkinliği tabanı 10 (yeni kural sürümü). **[Gece kuyruğu]** 103: Thieves' Tools kilit açmada da (`objects.ts`); testi yok. |
 | Sınıflar s. 63 | Rogue: Improved Cunning Strike (11. sv) | var-test edilmiş | cunningOptions max 2, üçüncü seçim reddi; classTraits.test.ts (11. sv iki seçenek); ROGUE-DENETIM A15 |  |
 | Sınıflar s. 63 | Rogue: Devious Strikes (14. sv) | var-test edilmiş | classTraits.ts, economy.ts/movement.ts (Dazed); classTraits.test.ts (14. sv seçenekleri), k19feat.test.ts (Knock Out hasarla biter); ROGUE-DENETIM A16–A18, D7 | Daze ve Obscure süreleri yalnız probe ile doğrulandı (P2e); YZ: hiç seçmiyor (D7).; Daze/Obscure süre testlerini kalıcı teste çevir. |
 | Sınıflar s. 63 | Rogue: Slippery Mind (15. sv) | var-test edilmiş | class-features.json saveProficiency WIS/CHA; classTraits.test.ts; ROGUE-DENETIM A23 |  |
@@ -501,7 +532,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Sınıflar s. 72 | Warlock / seçenek: Ascendant Step (5. sv) | var-testsiz | atWill Levitate (kendine); doğrudan test yok (genel atWill yolu warlock.test.ts); WARLOCK-DENETIM A17, D6 | YZ: slotsuz Invocation büyülerinin kullanımı denenmedi (D6).; Slotsuz Levitate testi. |
 | Sınıflar s. 72 | Warlock / seçenek: Eldritch Smite (5. sv) | var-test edilmiş | eldritch_smite komutu (Pact slotu, (1 + slot)d8 Force, Prone); warlock.test.ts; WARLOCK-DENETIM A4, D3 |  |
 | Sınıflar s. 73 | Warlock / seçenek: Gaze of Two Minds (5. sv) | var-test edilmiş | gaze komutu (bonus eylem, 60 ft büyü çıkışı); k19chain.test.ts; WARLOCK-DENETIM A20 | Dokunma bitişik gönüllü dostla yaklaşıklanır. |
-| Sınıflar s. 73 | Warlock / seçenek: Gift of the Depths (5. sv) | kısmi | deepWater.ts yüzme (trait); srdD2.test.ts (işaret); WARLOCK-DENETIM A22; B93 D | Water Breathing günde bir sayaçsız (savaş dışı, etkisiz; ertelendi); kod okuması: su altında soluma breathesWater'da bu işarete bağlı değil (doğrulanmadı).; breathesWater'a gift-of-the-depths; Water Breathing sayacı. |
+| Sınıflar s. 73 | Warlock / seçenek: Gift of the Depths (5. sv) | var-test edilmiş | deepWater.ts yüzme (trait); srdD2.test.ts (işaret); WARLOCK-DENETIM A22; B93 D; `kapsam103.test.ts` | **[Gece kuyruğu]** 103: su altında solur (`breathesWater`) |
 | Sınıflar s. 73 | Warlock / seçenek: Investment of the Chain Master (5. sv) | kısmi | trait chain-master (uçuş/yüzme 40, bonus Attack, tür, DC); k19chain.test.ts; WARLOCK-DENETIM A13 | Direnç tepkisi yalnız isabet hasarında; save'li hasarda sorulmaz (A13, bilinen).; Save'li hasardan önce tepki zinciri. |
 | Sınıflar s. 73 | Warlock / seçenek: Master of Myriad Forms (5. sv) | var-testsiz | atWill Alter Self (kendine); doğrudan test yok; WARLOCK-DENETIM A17, D6 | YZ: denenmedi (D6).; Slotsuz Alter Self testi. |
 | Sınıflar s. 74 | Warlock / seçenek: One with Shadows (5. sv) | var-test edilmiş | atWill Invisibility, ışık koşulu oneWithShadows; warlock.test.ts; WARLOCK-DENETIM A17 |  |
@@ -530,10 +561,10 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Sınıflar s. 79 | Wizard: Memorize Spell (5. sv) | savaş dışı | class-features.json wizard:memorize-spell (not: serbest düzenleme kapsar); test yok; WIZARD-DENETIM B11; B93 A2 | Kendi mekanizması yok: Serüven dışında hazır liste her an serbest (bilinçli, B11); Serüven'de kısa dinlenme seçim penceresi yok (ertelendi).; Serüven kısa dinlenmesine tek büyü değişimi. |
 | Sınıflar s. 79 | Wizard: Spell Mastery (18. sv) | var-test edilmiş | kaynak spellMastery (slotsuz), spellPicks fromBook, castingTime action (93), Serüven'de dinlenmede bir değişim; b93wizard.test.ts, k19tier4b.test.ts, k18h3.test.ts; WIZARD-DENETIM A12–A14, B7; B93 C | Arayüz: slot seçicide varsayılan düğme slotsuz yapımı belirsiz gösteriyor (E3). |
 | Sınıflar s. 79 | Wizard: Signature Spells (20. sv) | var-test edilmiş | kaynaklar signatureSpells / signatureSpells2 (pickSlot, kısa dinlenme; 93), fromBook; b93wizard.test.ts, k18h3.test.ts; WIZARD-DENETIM A15, C3; B93 C | Arayüz: slot harcayıp serbest kullanımı saklamak slot seçicide belirsiz (E3).; Slot seçici varsayılanını düzelt. |
-| Sınıflar s. 82 | Wizard / alt sınıf: Evocation Savant (3. sv) | kısmi | class-features.json wizard/evoker:evocation-savant spellbookBonus; builder.ts bookBonus (93); b93wizard.test.ts, k6.test.tsx; WIZARD-DENETIM B5; B93 C | İlk iki büyünün 'en çok 2. seviye' sınırı veride (maxBaseLevel) var, kod okumuyor (kod okuması; bizim sürüm metninde sınır yok).; bookBonus'a maxBaseLevel denetimi. |
+| Sınıflar s. 82 | Wizard / alt sınıf: Evocation Savant (3. sv) | var-testsiz | class-features.json wizard/evoker:evocation-savant spellbookBonus; builder.ts bookBonus (93); b93wizard.test.ts, k6.test.tsx; WIZARD-DENETIM B5; B93 C | **[Gece kuyruğu]** `maxBaseLevel` oluşturucu denetiminde (sürümsüz); testi yok |
 | Sınıflar s. 82 | Wizard / alt sınıf: Potent Cantrip (3. sv) | var-test edilmiş | spells.ts potentCantrip (save başarısı ve ıskada yarı hasar, ek etki yok; 93); wizard.test.ts, b93wizard.test.ts; WIZARD-DENETIM A16–A17; B93 C |  |
 | Sınıflar s. 82 | Wizard / alt sınıf: Sculpt Spells (6. sv) | kısmi | spells.ts sculpt (executeAreaCast); wizard.test.ts; WIZARD-DENETIM A18; B93 C | bilinçli sapma: seçim otomatik, yalnız dostlar (büyücü dahil), 'görebildiğin' denetimi yok, yalnız alan yapımında (kalıcı alan/duvar/boncuk tetiklerinde yok) (A18, kullanıcı kararı bekliyor).; Kullanıcı kararı; ardından hedef seçimi ve kalıcı alan kapsamı. |
-| Sınıflar s. 82 | Wizard / alt sınıf: Empowered Evocation (10. sv) | kısmi | oneDieBonus.ts (93, bir hasar zarına +INT); b93.test.ts (Magic Missile bir kez), wizard.test.ts; WIZARD-DENETIM A19; B93 A1 | 'Wizard büyüsü' koşulu yok: okul + işaret yeter, başka kaynaktan (Magic Initiate, soy) Evocation büyüsüne de +INT (A19 kalanı, kod okuması).; oneDieBonus'a sınıf listesi denetimi. |
+| Sınıflar s. 82 | Wizard / alt sınıf: Empowered Evocation (10. sv) | var-test edilmiş | oneDieBonus.ts (93, bir hasar zarına +INT); b93.test.ts (Magic Missile bir kez), wizard.test.ts; WIZARD-DENETIM A19; B93 A1; `kapsam103.test.ts` | **[Gece kuyruğu]** 103: yalnız Wizard listesindeki büyü, INT |
 | Sınıflar s. 82 | Wizard / alt sınıf: Overchannel (14. sv) | var-test edilmiş | apex.ts overchannel (azami zar, 2./3./4. kullanımda Necrotic bedel), MapBattle aç/kapa; k19tier4b.test.ts; WIZARD-DENETIM A20, D2, E2 | YZ: hiç kullanmıyor (D2, ertelendi).; YZ Overchannel kararı (denge ölçümüyle). |
 
 ## 4. Karakter kökenleri (Backgrounds, Species) (s. 83–86)
@@ -582,7 +613,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Karakter kökenleri s. 85 | Tür Goliath: Fire’s Burn (Fire Giant) | var-testsiz | `species:goliath/fires-burn` |  |
 | Karakter kökenleri s. 85 | Tür Goliath: Frost’s Chill (Frost Giant) | var-testsiz | `species:goliath/frosts-chill` |  |
 | Karakter kökenleri s. 85 | Tür Goliath: Hill’s Tumble (Hill Giant) | var-testsiz | `species:goliath/hills-tumble` |  |
-| Karakter kökenleri s. 85 | Tür Goliath: Stone’s Endurance (Stone Giant) | var-testsiz | `species:goliath/stones-endurance` |  |
+| Karakter kökenleri s. 85 | Tür Goliath: Stone’s Endurance (Stone Giant) | var-test edilmiş | `species:goliath/stones-endurance`; `karar101.test.ts` |  |
 | Karakter kökenleri s. 85 | Tür Goliath: Storm’s Thunder (Storm Giant) | var-testsiz | `species:goliath/storms-thunder` |  |
 | Karakter kökenleri s. 85 | Tür Goliath: Large Form | kısmi | `species:goliath/large-form`; `k19items.test.ts`; TUR-FEAT-ESYA T29 | T29 kısmi: kısmen düzeldi (99: kaynak kalıcı); multiHex sığma ertelendi |
 | Karakter kökenleri s. 85 | Tür Goliath: Powerful Build | var-test edilmiş | `species:goliath/powerful-build`; `k19f.test.ts`, `carry.test.ts`; TUR-FEAT-ESYA T30, T31 |  |
@@ -608,7 +639,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Karakter kökenleri s. 85 | Tür kuralı: Cloud's Jaunt: bonus eylem, görülen boş altıgene 30 ft ışınlanma | var-test edilmiş | TUR-FEAT-ESYA T24; `lineage.test.ts` |  |
 | Karakter kökenleri s. 85 | Tür kuralı: Fire's Burn / Frost's Chill / Hill's Tumble: saldırı zarıyla isabette, seçimli, tur sınırı yok | var-test edilmiş | TUR-FEAT-ESYA T25; `te99.test.ts` |  |
 | Karakter kökenleri s. 85 | Tür kuralı: Frost's Chill hız −10 ft sonraki turun başına dek; Hill's Tumble Large ve küçüğü Prone | var-test edilmiş | TUR-FEAT-ESYA T26; `lineage.test.ts` |  |
-| Karakter kökenleri s. 85 | Tür kuralı: Stone's Endurance: hasar alınca tepki, 1d12 + CON azaltma | kısmi | TUR-FEAT-ESYA T27 | T27 bilinçli sapma: ertelendi (hasar öncesi ortak azaltma kancası yeni sistem ister) |
+| Karakter kökenleri s. 85 | Tür kuralı: Stone's Endurance: hasar alınca tepki, 1d12 + CON azaltma | var-test edilmiş | TUR-FEAT-ESYA T27; `karar101.test.ts` | **[Gece kuyruğu]** T27 kapandı: her hasarda tepki (101) |
 | Karakter kökenleri s. 86 | Tür kuralı: Storm's Thunder: 60 ft içinden hasar verene tepkiyle 1d8 Thunder | var-test edilmiş | TUR-FEAT-ESYA T28; `lineage.test.ts` |  |
 | Karakter kökenleri s. 84 | Tür kuralı: Tür kaynaklarının savaşlar arası takibi (s. 84–86 "regain… when you finish a Long/Short Rest") | var-test edilmiş | TUR-FEAT-ESYA T44; `te99.test.ts` |  |
 | Karakter kökenleri s. 84 | Tür kuralı: Aasimar (SRD 5.2.1'de yok; ölçülen PDF'te geçmiyor) | kısmi | TUR-FEAT-ESYA T45 | T45 bilinçli sapma: değişmedi (bilinçli sapma) |
@@ -731,7 +762,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Donanım s. 92 | Zırh: Chain Mail (AC 16) | var-test edilmiş | `data/armor.json`; `altSoy.test.ts`, `areaAttack.test.ts` +22; TUR-FEAT-ESYA Z4 |  |
 | Donanım s. 92 | Zırh: Splint Armor (AC 17) | var-test edilmiş | `data/armor.json`; `data.test.ts` |  |
 | Donanım s. 92 | Zırh: Plate Armor (AC 18) | var-test edilmiş | `data/armor.json`; `altSoy.test.ts`, `stealth.test.ts` +5 |  |
-| Donanım s. 92 | Zırh: Shield (AC +2) | kısmi | `data/armor.json`; `a6spells.test.ts`, `b93wizard.test.ts` +21; TUR-FEAT-ESYA Z9, Z10, Z11 | Z9 yok: ertelendi (kalkan tak/çıkar komutu) |
+| Donanım s. 92 | Zırh: Shield (AC +2) | var-test edilmiş | `data/armor.json`; `a6spells.test.ts`, `b93wizard.test.ts` +21; TUR-FEAT-ESYA Z9, Z10, Z11; `karar101.test.ts` | **[Gece kuyruğu]** Z9 kapandı: `shield_toggle` (Utilize; 101); ⚠ kalkana bağlı sınıf özellikleri savaş içinde yeniden türetilmez |
 | Donanım s. 92 | Zırh kuralı: Light zırh: Padded 11, Leather 11, Studded 12 + DEX, sınırsız | var-testsiz | TUR-FEAT-ESYA Z1 |  |
 | Donanım s. 92 | Zırh kuralı: Heavy zırh: Ring 14, Chain 16, Splint 17, Plate 18, DEX eklenmez | var-testsiz | TUR-FEAT-ESYA Z3 |  |
 | Donanım s. 92 | Zırh kuralı: Strength cezası her giyene | kısmi | TUR-FEAT-ESYA Z5 | Z5 bilinçli sapma: değişmedi (bilinçli sapma) |
@@ -980,10 +1011,10 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Büyüler s. 117 | Comprehend Languages (1. sv, Divination) | savaş dışı | `spells.json` |  |
 | Büyüler s. 117 | Compulsion (4. sv, Enchantment) | var-test edilmiş | `spells-45.json`; `k19spells.test.ts`, `matris83.test.ts` |  |
 | Büyüler s. 117 | Cone of Cold (5. sv, Evocation) | var-test edilmiş | `spells.json`; `areaAttack.test.ts`, `k19items.test.ts` +1 |  |
-| Büyüler s. 117 | Confusion (4. sv, Enchantment) | var-test edilmiş | `spells-45.json`; `k19spells.test.ts` |  |
+| Büyüler s. 117 | Confusion (4. sv, Enchantment) | var-test edilmiş | `spells-45.json`; `k19spells.test.ts`; `buyuTam102.test.ts` | **[Gece kuyruğu]** 102: yukarı slot yarıçapı (BUYU-TAM). |
 | Büyüler s. 117 | Conjure Animals (3. sv, Conjuration) | kısmi | `spells.json` (a6 (sürüm 35)); `a6spells.test.ts`, `b2.test.ts` | kapsam dışı: Large sürü, çok altıgen bayrağı kapalıyken tek altıgen (oyunun genel kuralı). |
 | Büyüler s. 118 | Conjure Celestial (7. sv, Conjuration) | var-test edilmiş | `spells-69.json` (k73c (sürüm 64)); `k67b.test.ts`, `matris83.test.ts` |  |
-| Büyüler s. 118 | Conjure Elemental (5. sv, Conjuration) | var-test edilmiş | `spells-45.json`; `k18h2.test.ts`, `k19spells.test.ts` +1 |  |
+| Büyüler s. 118 | Conjure Elemental (5. sv, Conjuration) | var-test edilmiş | `spells-45.json`; `k18h2.test.ts`, `k19spells.test.ts` +1; `buyuTam102.test.ts` | **[Gece kuyruğu]** 102: süre 10 dakika (BUYU-TAM). |
 | Büyüler s. 118 | Conjure Fey (6. sv, Conjuration) | kısmi | `spells-69.json` (k61 (sürüm 44)); `a6spells.test.ts`, `k61.test.ts` | kapsam dışı: Ruhun Fey görünüşü yalnızca görsel. |
 | Büyüler s. 118 | Conjure Minor Elementals (4. sv, Conjuration) | var-test edilmiş | `spells-45.json`; `k19spells.test.ts` |  |
 | Büyüler s. 118 | Conjure Woodland Beings (4. sv, Conjuration) | var-testsiz | `spells-45.json` |  |
@@ -1026,7 +1057,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Büyüler s. 126 | Dragon’s Breath (2. sv, Transmutation) | var-testsiz | `spells.json` (a7 (sürüm 36)) |  |
 | Büyüler s. 126 | Dream (5. sv, Illusion) | savaş dışı | `spells-45.json` |  |
 | Büyüler s. 126 | Druidcraft (cantrip, Transmutation) | savaş dışı | `spells.json`; `b5.test.ts`, `lineage.test.ts` +1 |  |
-| Büyüler s. 127 | Earthquake (8. sv, Transmutation) | var-test edilmiş | `spells-69.json` (k66 (sürüm 50)); `k61.test.ts`, `k66a.test.ts` +4 |  |
+| Büyüler s. 127 | Earthquake (8. sv, Transmutation) | var-test edilmiş | `spells-69.json` (k66 (sürüm 50)); `k61.test.ts`, `k66a.test.ts` +4; `buyuTam102.test.ts` | **[Gece kuyruğu]** 102: başarısız save konsantrasyonu bozar (BUYU-TAM). |
 | Büyüler s. 127 | Eldritch Blast (cantrip, Evocation) | var-test edilmiş | `spells.json`; `b93warlock.test.ts`, `effects.test.ts` +7 |  |
 | Büyüler s. 127 | Elementalism (cantrip, Transmutation) | savaş dışı | `spells.json`; `levelChoices.test.ts` |  |
 | Büyüler s. 127 | Enhance Ability (2. sv, Transmutation) | savaş dışı | `spells.json` (a7 (sürüm 36)); `b5.test.ts`, `g6.test.ts` +1 |  |
@@ -1034,7 +1065,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Büyüler s. 128 | Ensnaring Strike (1. sv, Conjuration) | var-test edilmiş | `spells.json` (a6 (sürüm 35)); `a6spells.test.ts`, `b1.test.ts` +1 |  |
 | Büyüler s. 128 | Entangle (1. sv, Conjuration) | kısmi | `spells.json` (a8 (sürüm 37)); `a8spells.test.ts`, `altSoy.test.ts` +4 | kapsam dışı: Bitkilerin büyü bitince çekilmesi görseldir; karede zemin zorlu arazi. |
 | Büyüler s. 128 | Enthrall (2. sv, Enchantment) | savaş dışı | `spells.json` |  |
-| Büyüler s. 128 | Etherealness (7. sv, Conjuration) | var-testsiz | `spells-69.json` |  |
+| Büyüler s. 128 | Etherealness (7. sv, Conjuration) | var-test edilmiş | `spells-69.json`; `buyuTam102.test.ts` | **[Gece kuyruğu]** 102: Ethereal etkisi (önceden etkisiz) + yukarı slot hedefleri (BUYU-TAM). |
 | Büyüler s. 129 | Expeditious Retreat (1. sv, Transmutation) | var-test edilmiş | `spells.json` (a4 (sürüm 32)); `a4spells.test.ts`, `b5.test.ts` |  |
 | Büyüler s. 129 | Eyebite (6. sv, Necromancy) | var-test edilmiş | `spells-69.json`; `a1.test.ts`, `a2leftovers.test.ts` |  |
 | Büyüler s. 129 | Fabricate (4. sv, Transmutation) | savaş dışı | `spells-45.json` |  |
@@ -1129,7 +1160,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Büyüler s. 146 | Magic Weapon (2. sv, Transmutation) | var-test edilmiş | `spells.json` (s1 (sürüm 40)); `a7spells.test.ts`, `k9b.test.ts` +3 |  |
 | Büyüler s. 147 | Magnificent Mansion (7. sv, Conjuration) | savaş dışı | `spells-69.json` |  |
 | Büyüler s. 147 | Major Image (3. sv, Illusion) | savaş dışı | `spells.json` |  |
-| Büyüler s. 147 | Mass Cure Wounds (5. sv, Abjuration) | var-test edilmiş | `spells-45.json`; `k40.test.ts` |  |
+| Büyüler s. 147 | Mass Cure Wounds (5. sv, Abjuration) | var-test edilmiş | `spells-45.json`; `k40.test.ts`; `buyuTam102.test.ts` | **[Gece kuyruğu]** 102: 30 ft küre (BUYU-TAM). |
 | Büyüler s. 147 | Mass Heal (9. sv, Abjuration) | var-test edilmiş | `spells-69.json`; `b93cleric.test.ts`, `k19spells69.test.ts` |  |
 | Büyüler s. 148 | Mass Healing Word (3. sv, Abjuration) | var-test edilmiş | `spells.json`; `b1.test.ts`, `b93cleric.test.ts` +1 |  |
 | Büyüler s. 148 | Mass Suggestion (6. sv, Enchantment) | var-test edilmiş | `spells-69.json` (s1 (sürüm 40)); `a6spells.test.ts`, `s1spells.test.ts` |  |
@@ -1224,7 +1255,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Büyüler s. 165 | Stinking Cloud (3. sv, Conjuration) | kısmi | `spells.json` (k68 (sürüm 52)); `a8spells.test.ts`, `b2.test.ts` +3 | kapsam dışı: Kürenin merkezi zeminde (havada merkezli küre yok); rüzgârla dağılma yüzey sistemiyle. |
 | Büyüler s. 165 | Stone Shape (4. sv, Transmutation) | savaş dışı | `spells-45.json`; `k19terraform.test.ts`; savaş dışı (Game Master anahtarı `spellsK19` açıkken savaşta) |  |
 | Büyüler s. 165 | Stoneskin (4. sv, Transmutation) | var-test edilmiş | `spells-45.json`; `k40.test.ts`, `ws92b.test.ts` |  |
-| Büyüler s. 165 | Storm of Vengeance (9. sv, Conjuration) | var-test edilmiş | `spells-69.json`; `k73c.test.ts`, `matris83.test.ts` |  |
+| Büyüler s. 165 | Storm of Vengeance (9. sv, Conjuration) | kısmi | `spells-69.json`; `k73c.test.ts`, `matris83.test.ts` | **[Gece kuyruğu]** **[YENİ kırılma değil, yeni bulgu]** 2–10. tur aşamaları yok (`stages` motor tarafından okunmuyor); BUYU-TAM-TARAMA §4.1 |
 | Büyüler s. 166 | Suggestion (2. sv, Enchantment) | var-test edilmiş | `spells.json` (s1 (sürüm 40)); `a6spells.test.ts`, `b3.test.ts` +1 |  |
 | Büyüler s. 166 | Summon Dragon (5. sv, Conjuration) | var-test edilmiş | `spells.json`; `binekMb7.test.ts`, `srdD2.test.ts` +3 |  |
 | Büyüler s. 166 | Sunbeam (6. sv, Evocation) | var-testsiz | `spells-69.json` |  |
@@ -1304,7 +1335,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Kural sözlüğü s. 179 | Condition | kısmi | GENEL-SAVAS-DENETIM B1, B2, B5; `incapacitated.test.ts` | B2 kısmi: Immunity: bağışık olunan durum hiç etkilemez |
 | Kural sözlüğü s. 179 | Cone [Area of Effect] | var-test edilmiş | `src/rules/area.ts` koni (genişlik = uzaklık); `a7spells.test.ts`, `areaAttack.test.ts` +4 |  |
 | Kural sözlüğü s. 179 | Cover | var-test edilmiş | GENEL-SAVAS-DENETIM C6; `area-spells.test.ts`, `maprules.test.ts` +1 |  |
-| Kural sözlüğü s. 179 | Crawling | kısmi | GENEL-SAVAS-DENETIM E8 | E8 kısmi: Sürünme: her ft 1 ek ft, zorlu arazide 2 ek ft |
+| Kural sözlüğü s. 179 | Crawling | var-test edilmiş | GENEL-SAVAS-DENETIM E8; `karar101.test.ts` | **[Gece kuyruğu]** 101: sürünme + zorlu arazi 3 ft/ft (KARAR101) |
 | Kural sözlüğü s. 179 | Creature | var-test edilmiş | terim; savaşçı (`Combatant`); `diceUnlock.test.ts`, `a1.test.ts` +242 |  |
 | Kural sözlüğü s. 179 | Creature Type | var-test edilmiş | `data/canavar-turleri.json` (D1 düzeltmeleri sonrası); `diceUnlock.test.ts`, `a2abilities.test.ts` +29 |  |
 | Kural sözlüğü s. 179 | Critical Hit | kısmi | GENEL-SAVAS-DENETIM C2, C4, C5; `combat.test.ts`, `paladin.test.ts` +1 | C5 kısmi: Genişletilmiş kritik aralığı (Improved Critical "can score a Critical … |
@@ -1318,7 +1349,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Kural sözlüğü s. 180 | Damage Types | var-test edilmiş | GENEL-SAVAS-DENETIM D5; `a6spells.test.ts`, `a7spells.test.ts` +1 |  |
 | Kural sözlüğü s. 180 | Darkness | kısmi | GENEL-SAVAS-DENETIM H3, H4, H8 | H3 bilinçli sapma: Karanlık = Heavily Obscured: oradakini görmeye çalışan Blinded sayılır…; H4 bilinçli sapma: Gece dışarısı karanlıktır |
 | Kural sözlüğü s. 180 | Darkvision | var-test edilmiş | GENEL-SAVAS-DENETIM H7; `ai.test.ts`, `altSoy.test.ts` +1 |  |
-| Kural sözlüğü s. 180 | Dash [Action] | kısmi | GENEL-SAVAS-DENETIM A6, A7, E2; `economy.test.ts` | A7 kısmi: Dash: özel hızlardan birini seçme |
+| Kural sözlüğü s. 180 | Dash [Action] | var-test edilmiş | GENEL-SAVAS-DENETIM A6, A7, E2; `economy.test.ts`; `karar101.test.ts` | **[Gece kuyruğu]** 101: Dash eki Dash anındaki hızdan, çoklu hız "subtract the distance already moved" (KARAR101); kip seçimi ⚠ (uçan hep uçar) |
 | Kural sözlüğü s. 180 | Dead | var-test edilmiş | GENEL-SAVAS-DENETIM D11, D12, G13; `deathsaves.test.ts` |  |
 | Kural sözlüğü s. 181 | Deafened [Condition] | kısmi | GENEL-SAVAS-DENETIM B11 | B11 kısmi: Deafened: duyma gerektiren kontrolde otomatik başarısız |
 | Kural sözlüğü s. 181 | Death Saving Throw | var-test edilmiş | GENEL-SAVAS-DENETIM D15, D16, D17; `deathsaves.test.ts`, `genel96.test.ts` |  |
@@ -1341,14 +1372,14 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Kural sözlüğü s. 182 | Friendly [Attitude] | savaş dışı | tutum modeli yok |  |
 | Kural sözlüğü s. 182 | Frightened [Condition] | kısmi | GENEL-SAVAS-DENETIM B16, B17; `ruleVersion.test.ts` | B16 kısmi: Frightened: kaynak görüş hattındayken saldırıda ve kontrolde dezavanta… |
 | Kural sözlüğü s. 182 | Grappled [Condition] | kısmi | GENEL-SAVAS-DENETIM B18, B19, B20 | B20 kısmi: Grappled: yakalayan sürükler, her ft +1 ft; hedef Tiny ya da iki+ boy … |
-| Kural sözlüğü s. 182 | Grappling | kısmi | GENEL-SAVAS-DENETIM B21, C17; `k19feat.test.ts` | B21 kısmi: Grappling: biter: kaçış (Athletics/Acrobatics vs DC), yakalayan Incapa…; C17 kısmi: Unarmed Strike, Grapple: hedef STR ya da DEX save'i seçer, DC 8 + STR … |
+| Kural sözlüğü s. 182 | Grappling | kısmi | GENEL-SAVAS-DENETIM B21, C17; `k19feat.test.ts`; `karar101.test.ts` | B21 kısmi: Grappling: biter: kaçış (Athletics/Acrobatics vs DC), yakalayan Incapa…; C17 kısmi: Unarmed Strike, Grapple: hedef STR ya da DEX save'i seçer, DC 8 + STR … **[Gece kuyruğu]** 101: yakalamayı bırakma (`release_grapple`), tutarken Two-Handed yok (KARAR101); uçan yakalayanın taşıması yok. |
 | Kural sözlüğü s. 182 | Hazard | kısmi | harita tehlikeleri (lav, çamur, ince buz, tuzak), düşme, yanma, boğulma; `as1a77.test.ts`, `k74.test.ts` +3 | Dehydration ve Malnutrition yok |
 | Kural sözlüğü s. 182 | Healing | var-test edilmiş | GENEL-SAVAS-DENETIM D1, D22; `combat.test.ts`, `deathsaves.test.ts` |  |
 | Kural sözlüğü s. 182 | Heavily Obscured | kısmi | GENEL-SAVAS-DENETIM H3, H5 | H3 bilinçli sapma: Karanlık = Heavily Obscured: oradakini görmeye çalışan Blinded sayılır… |
 | Kural sözlüğü s. 182 | Help [Action] | kısmi | GENEL-SAVAS-DENETIM A12, A13, A14, A15, F19, F20; `genel96.test.ts` | A14 yok: Help: Assist an Ability Check; A15 kısmi: Help: ilk yardım / stabilize, DC 10 WIS (Medicine) (s.18, glossary); F20 yok: Help (yetenek kontrolü): müttefikin seçilen beceri kontrolü avantajlı |
 | Kural sözlüğü s. 183 | Heroic Inspiration | kısmi | GENEL-SAVAS-DENETIM F21 | F21 kısmi: Heroic Inspiration: herhangi bir zarı hemen yeniden at, yeniyi kullan;… |
 | Kural sözlüğü s. 183 | Hide [Action] | kısmi | GENEL-SAVAS-DENETIM A17, A18 | A17 bilinçli sapma: Hide: DC 15 Stealth, yoğun örtü / ¾ siper, hiçbir düşmanın görüş hattı…; A18 bilinçli sapma: Hide biter: fısıltıdan yüksek ses, bulunma, saldırı zarı, Verbal bileş… |
-| Kural sözlüğü s. 183 | High Jump | kısmi | GENEL-SAVAS-DENETIM E13, F15 | E13 kısmi: High Jump: koşarak 3 + STR değiştiricisi ft, yerinde yarısı; F15 yok: High Jump: 3 + STR mod ft (koşuyla), durarak yarısı; ft başına hareket |
+| Kural sözlüğü s. 183 | High Jump | var-test edilmiş | GENEL-SAVAS-DENETIM E13, F15; `karar101.test.ts` | **[Gece kuyruğu]** 101: koşu "immediately before" (`walkStreak`, KARAR101) |
 | Kural sözlüğü s. 183 | Hit Point Dice | kısmi | GENEL-SAVAS-DENETIM G2, G3, G4; `b93wizard.test.ts`, `druid.test.ts` +2 | G3 kısmi: Her zardan sonra yenisini harcamaya karar verilir |
 | Kural sözlüğü s. 183 | Hit Points | var-test edilmiş | GENEL-SAVAS-DENETIM D1, D2; `a2abilities.test.ts`, `classTraits.test.ts` +2 |  |
 | Kural sözlüğü s. 183 | Hostile [Attitude] | savaş dışı | tutum modeli yok |  |
@@ -1362,7 +1393,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Kural sözlüğü s. 184 | Initiative | var-test edilmiş | GENEL-SAVAS-DENETIM F22, B23; `ruleVersion.test.ts` | canavarlarda SRD "Initiative +X" yerine DEX kullanılıyor (bkz. 11) |
 | Kural sözlüğü s. 184 | Invisible [Condition] | var-test edilmiş | GENEL-SAVAS-DENETIM B23, B24, B25; `ruleVersion.test.ts` |  |
 | Kural sözlüğü s. 184 | Jumping | kısmi | GENEL-SAVAS-DENETIM E10, E13 | E13 kısmi: High Jump: koşarak 3 + STR değiştiricisi ft, yerinde yarısı |
-| Kural sözlüğü s. 184 | Knocking Out a Creature | yok | GENEL-SAVAS-DENETIM D10 | D10 yok: Knocking Out: yakın dövüş saldırısıyla 0 HP'ye indirecekken 1 HP + Unc… |
+| Kural sözlüğü s. 184 | Knocking Out a Creature | var-test edilmiş | GENEL-SAVAS-DENETIM D10; `karar101.test.ts` | **[Gece kuyruğu]** 101: seçim istemi, 1 HP + Unconscious, HP/ilk yardımla uyanır; bayıltılan yenilmiş sayılır (karar); kısa dinlenme savaş dışı (KARAR101) |
 | Kural sözlüğü s. 184 | Lightly Obscured | var-test edilmiş | GENEL-SAVAS-DENETIM H2, H6; `b2.test.ts`, `b93wizard.test.ts` +4 |  |
 | Kural sözlüğü s. 184 | Line [Area of Effect] | var-test edilmiş | `src/rules/area.ts` çizgi (genişlikli); `areaAttack.test.ts`, `k65c.test.ts` +1 |  |
 | Kural sözlüğü s. 184 | Long Jump | kısmi | GENEL-SAVAS-DENETIM E10, E11, E12; `genel96.test.ts` | E12 bilinçli sapma: Long Jump alçak engel: Game Master seçeneğiyle DC 10 Athletics |
@@ -1383,7 +1414,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Kural sözlüğü s. 186 | Poisoned [Condition] | var-test edilmiş | GENEL-SAVAS-DENETIM B31, B32; `a1.test.ts`, `a4spells.test.ts` +2 |  |
 | Kural sözlüğü s. 186 | Possession | var-test edilmiş | Kuyruk K64a `src/battle/possession.ts`, `data/ele-gecirme.json`; `k64.test.ts`, `k64b.test.ts` +1 |  |
 | Kural sözlüğü s. 186 | Proficiency | var-test edilmiş | GENEL-SAVAS-DENETIM F7, F8; `abilities.test.ts`, `k19level20.test.ts` |  |
-| Kural sözlüğü s. 186 | Prone [Condition] | kısmi | GENEL-SAVAS-DENETIM B33, B34, B35, E7, E9; `genel96.test.ts`, `ruleVersion.test.ts` | B35 yok: Prone: isteğe bağlı yere yatma (Dropping Prone, Speed kuralı); E9 yok: Dropping Prone: eylemsiz ve hareketsiz, hız 0'da olmaz |
+| Kural sözlüğü s. 186 | Prone [Condition] | kısmi | GENEL-SAVAS-DENETIM B33, B34, B35, E7, E9; `genel96.test.ts`, `ruleVersion.test.ts`; `karar101.test.ts` | B35 yok: Prone: isteğe bağlı yere yatma (Dropping Prone, Speed kuralı); E9 yok: Dropping Prone: eylemsiz ve hareketsiz, hız 0'da olmaz **[Gece kuyruğu]** B35 kapandı: Dropping Prone `drop_prone` (101). |
 | Kural sözlüğü s. 186 | Reach | var-test edilmiş | `reachFt`, Reach silahları, 3B erişim (K73b); `setup.test.ts`, `a6spells.test.ts` +58 |  |
 | Kural sözlüğü s. 186 | Reaction | var-test edilmiş | GENEL-SAVAS-DENETIM A38, A39; `economy.test.ts`, `ready.test.ts` |  |
 | Kural sözlüğü s. 186 | Ready [Action] | kısmi | GENEL-SAVAS-DENETIM A22, A23, A24, A25, A26, A28; `genel96.test.ts`, `ready.test.ts` | A23 kısmi: Ready: yanıt "the action you will take" (her eylem); A24 bilinçli sapma: Ready: tetik "perceivable circumstance"; YZ kullanmaz (A27) |
@@ -1765,7 +1796,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Canavarlar s. 254 | Stat Block: Creature Type ve Descriptive Tags | var-test edilmiş | `data/canavar-turleri.json` (D1, sürüm 86); etiketler savaş dışı; `diceUnlock.test.ts`, `a2abilities.test.ts` +29 |  |
 | Canavarlar s. 254 | Stat Block: Alignment | savaş dışı | canavar hizalanması savaşta kullanılmaz (Talisman lanetleri Game Master) |  |
 | Canavarlar s. 254 | Stat Block: Armor Class | var-test edilmiş | `monsters.json` `ac` (SRD-VERI-DOGRULAMA doğru); `battleSave.test.ts`, `g2-smoke.test.ts` +76 |  |
-| Canavarlar s. 254 | Stat Block: Initiative (+X ve skor) | kısmi | oyunda canavar inisiyatifi yalnız DEX (`src/battle/create.ts:560` `initiativeBonus: mods.dex`); SRD stat bloğundaki değer 110/330 canavarda DEX'ten farklı (ör. Adult Black Dragon +12, oyunda +2) | `monsters.json`'a SRD inisiyatif değeri ve `create.ts`'te kullanım (kural sürümüyle) |
+| Canavarlar s. 254 | Stat Block: Initiative (+X ve skor) | var-test edilmiş | oyunda canavar inisiyatifi yalnız DEX (`src/battle/create.ts:560` `initiativeBonus: mods.dex`); SRD stat bloğundaki değer 110/330 canavarda DEX'ten farklı (ör. Adult Black Dragon +12, oyunda +2); `kapsam103.test.ts` | **[Gece kuyruğu]** 103: `data/monsters.json` `initiative` (330/330), `create.ts` (KAPSAM103) |
 | Canavarlar s. 255 | Stat Block: Hit Points, Speed (yürüme, uçma, yüzme, tırmanma, kazma, Hover) | var-test edilmiş | D1/D3 sonrası doğru; hızlar `monsterTraits.ts`; `binekMb1.test.ts`, `binekMb3.test.ts` +12 |  |
 | Canavarlar s. 255 | Stat Block: Ability Scores, Saves, Skills | var-test edilmiş | `monsters.json` (SRD-VERI-DOGRULAMA 7078 doğru alan); `battleSave.test.ts`, `g2-smoke.test.ts` +76 |  |
 | Canavarlar s. 255 | Stat Block: Resistances, Vulnerabilities, Immunities (hasar ve durum) | var-test edilmiş | `monsterTraits.ts`, durum bağışıklığı D1 (sürüm 86); `k19spells.test.ts`, `k53systems.test.ts` +6 |  |
@@ -1781,39 +1812,39 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Canavarlar s. 257 | Stat Block: Reactions | var-test edilmiş | `data/monster-reactions.json` (srdK19: hepsi); `reactions.test.ts` |  |
 | Canavarlar s. 257 | Stat Block: Legendary Actions (ve "in Lair" kullanımları) | var-test edilmiş | `data/efsanevi.json` (30 canavar, `yuva`), `boss.ts`; `boss.test.ts`, `k19legendary.test.ts` +1 |  |
 | Canavarlar s. 257 | Stat Block: Limited Usage (X/Day, Recharge X–Y, Recharge after a Rest) | var-test edilmiş | savaşta N kez; Recharge zarı; `areaAttack.test.ts`, `druid.test.ts` +8 |  |
-| Canavarlar s. 258 | Aboleth (CR 10) | kısmi | 11 giriş: var 7, kısmi 1, yok 0, savaş dışı 3 | Dominate Mind (2/Day) (kısmi: kalıcı zihin kontrolü/telepati yok); inisiyatif SRD +7, oyunda DEX -1; savaş dışı: Amphibious, Eldritch Restoration, Probing Telepathy |
-| Canavarlar s. 264 | Adult Black Dragon (CR 14) | kısmi | 9 giriş: var 8, kısmi 0, yok 0, savaş dışı 1; `k19legendary.test.ts` | inisiyatif SRD +12, oyunda DEX +2; savaş dışı: Amphibious |
-| Canavarlar s. 266 | Adult Blue Dragon (CR 16) | kısmi | 8 giriş: var 8, kısmi 0, yok 0, savaş dışı 0; `k19legendary.test.ts` | inisiyatif SRD +10, oyunda DEX +0 |
-| Canavarlar s. 268 | Adult Brass Dragon (CR 13) | kısmi | 9 giriş: var 9, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +10, oyunda DEX +0 |
-| Canavarlar s. 270 | Adult Bronze Dragon (CR 15) | kısmi | 10 giriş: var 9, kısmi 0, yok 0, savaş dışı 1 | inisiyatif SRD +10, oyunda DEX +0; savaş dışı: Amphibious |
-| Canavarlar s. 276 | Adult Copper Dragon (CR 14) | kısmi | 9 giriş: var 9, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +11, oyunda DEX +1 |
-| Canavarlar s. 291 | Adult Gold Dragon (CR 17) | kısmi | 10 giriş: var 8, kısmi 0, yok 1, savaş dışı 1 | Weakening Breath (yok); inisiyatif SRD +14, oyunda DEX +2; savaş dışı: Amphibious |
-| Canavarlar s. 294 | Adult Green Dragon (CR 15) | kısmi | 9 giriş: var 8, kısmi 0, yok 0, savaş dışı 1 | inisiyatif SRD +11, oyunda DEX +1; savaş dışı: Amphibious |
-| Canavarlar s. 318 | Adult Red Dragon (CR 17) | kısmi | 8 giriş: var 8, kısmi 0, yok 0, savaş dışı 0; `boss.test.ts`, `dragon.test.ts` +1 | inisiyatif SRD +12, oyunda DEX +0 |
-| Canavarlar s. 324 | Adult Silver Dragon (CR 16) | kısmi | 9 giriş: var 9, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +10, oyunda DEX +0 |
-| Canavarlar s. 340 | Adult White Dragon (CR 13) | kısmi | 8 giriş: var 8, kısmi 0, yok 0, savaş dışı 0; `srdD1.test.ts` | inisiyatif SRD +10, oyunda DEX +0 |
+| Canavarlar s. 258 | Aboleth (CR 10) | kısmi | 11 giriş: var 7, kısmi 1, yok 0, savaş dışı 3 | Dominate Mind (2/Day) (kısmi: kalıcı zihin kontrolü/telepati yok); savaş dışı: Amphibious, Eldritch Restoration, Probing Telepathy; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 264 | Adult Black Dragon (CR 14) | var-test edilmiş | 9 giriş: var 8, kısmi 0, yok 0, savaş dışı 1; `k19legendary.test.ts` | savaş dışı: Amphibious; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 266 | Adult Blue Dragon (CR 16) | var-test edilmiş | 8 giriş: var 8, kısmi 0, yok 0, savaş dışı 0; `k19legendary.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 268 | Adult Brass Dragon (CR 13) | var-testsiz | 9 giriş: var 9, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 270 | Adult Bronze Dragon (CR 15) | var-testsiz | 10 giriş: var 9, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Amphibious; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 276 | Adult Copper Dragon (CR 14) | var-testsiz | 9 giriş: var 9, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 291 | Adult Gold Dragon (CR 17) | var-test edilmiş | 10 giriş: var 9, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Amphibious; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan + Weakening Breath eklendi |
+| Canavarlar s. 294 | Adult Green Dragon (CR 15) | var-testsiz | 9 giriş: var 8, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Amphibious; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 318 | Adult Red Dragon (CR 17) | var-test edilmiş | 8 giriş: var 8, kısmi 0, yok 0, savaş dışı 0; `boss.test.ts`, `dragon.test.ts` +1 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 324 | Adult Silver Dragon (CR 16) | var-testsiz | 9 giriş: var 9, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 340 | Adult White Dragon (CR 13) | var-test edilmiş | 8 giriş: var 8, kısmi 0, yok 0, savaş dışı 0; `srdD1.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 258 | Air Elemental (CR 5) | var-testsiz | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 |  |
-| Canavarlar s. 265 | Ancient Black Dragon (CR 21) | kısmi | 9 giriş: var 8, kısmi 0, yok 0, savaş dışı 1 | inisiyatif SRD +16, oyunda DEX +2; savaş dışı: Amphibious |
-| Canavarlar s. 267 | Ancient Blue Dragon (CR 23) | kısmi | 8 giriş: var 8, kısmi 0, yok 0, savaş dışı 0; `areaAttack.test.ts` | inisiyatif SRD +14, oyunda DEX +0 |
-| Canavarlar s. 269 | Ancient Brass Dragon (CR 20) | kısmi | 9 giriş: var 9, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +12, oyunda DEX +0 |
-| Canavarlar s. 271 | Ancient Bronze Dragon (CR 22) | kısmi | 10 giriş: var 9, kısmi 0, yok 0, savaş dışı 1 | inisiyatif SRD +14, oyunda DEX +0; savaş dışı: Amphibious |
-| Canavarlar s. 277 | Ancient Copper Dragon (CR 21) | kısmi | 9 giriş: var 9, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +15, oyunda DEX +1 |
-| Canavarlar s. 292 | Ancient Gold Dragon (CR 24) | kısmi | 10 giriş: var 8, kısmi 0, yok 1, savaş dışı 1 | Weakening Breath (yok); inisiyatif SRD +16, oyunda DEX +2; savaş dışı: Amphibious |
-| Canavarlar s. 294 | Ancient Green Dragon (CR 22) | kısmi | 9 giriş: var 8, kısmi 0, yok 0, savaş dışı 1 | inisiyatif SRD +15, oyunda DEX +1; savaş dışı: Amphibious |
-| Canavarlar s. 319 | Ancient Red Dragon (CR 24) | kısmi | 8 giriş: var 8, kısmi 0, yok 0, savaş dışı 0; `boss.test.ts`, `dragon.test.ts` +1 | inisiyatif SRD +14, oyunda DEX +0 |
-| Canavarlar s. 325 | Ancient Silver Dragon (CR 23) | kısmi | 9 giriş: var 9, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +14, oyunda DEX +0 |
-| Canavarlar s. 341 | Ancient White Dragon (CR 20) | kısmi | 8 giriş: var 8, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +12, oyunda DEX +0 |
-| Canavarlar s. 259 | Animated Armor (CR 1) | kısmi | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +2, oyunda DEX +0 |
-| Canavarlar s. 259 | Animated Flying Sword (CR 1/4) | kısmi | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +4, oyunda DEX +2 |
-| Canavarlar s. 259 | Animated Rug of Smothering (CR 2) | kısmi | 1 giriş: var 0, kısmi 1, yok 0, savaş dışı 0 | Smother (kısmi: hasar yerine yakalama seçimi, boğulma yok); inisiyatif SRD +4, oyunda DEX +2 |
+| Canavarlar s. 265 | Ancient Black Dragon (CR 21) | var-testsiz | 9 giriş: var 8, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Amphibious; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 267 | Ancient Blue Dragon (CR 23) | var-test edilmiş | 8 giriş: var 8, kısmi 0, yok 0, savaş dışı 0; `areaAttack.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 269 | Ancient Brass Dragon (CR 20) | var-testsiz | 9 giriş: var 9, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 271 | Ancient Bronze Dragon (CR 22) | var-testsiz | 10 giriş: var 9, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Amphibious; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 277 | Ancient Copper Dragon (CR 21) | var-testsiz | 9 giriş: var 9, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 292 | Ancient Gold Dragon (CR 24) | var-test edilmiş | 10 giriş: var 9, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Amphibious; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan + Weakening Breath eklendi |
+| Canavarlar s. 294 | Ancient Green Dragon (CR 22) | var-testsiz | 9 giriş: var 8, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Amphibious; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 319 | Ancient Red Dragon (CR 24) | var-test edilmiş | 8 giriş: var 8, kısmi 0, yok 0, savaş dışı 0; `boss.test.ts`, `dragon.test.ts` +1 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 325 | Ancient Silver Dragon (CR 23) | var-testsiz | 9 giriş: var 9, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 341 | Ancient White Dragon (CR 20) | var-testsiz | 8 giriş: var 8, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 259 | Animated Armor (CR 1) | var-testsiz | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 259 | Animated Flying Sword (CR 1/4) | var-testsiz | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 259 | Animated Rug of Smothering (CR 2) | kısmi | 1 giriş: var 0, kısmi 1, yok 0, savaş dışı 0 | Smother (kısmi: hasar yerine yakalama seçimi, boğulma yok); **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 259 | Ankheg (CR 2) | var-testsiz | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 |  |
-| Canavarlar s. 305 | Archmage (CR 12) | kısmi | 6 giriş: var 6, kısmi 0, yok 0, savaş dışı 0; `k19items.test.ts`, `shape91.test.ts` +1 | inisiyatif SRD +7, oyunda DEX +2 |
-| Canavarlar s. 260 | Assassin (CR 8) | kısmi | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0; `grapple.test.ts` | inisiyatif SRD +10, oyunda DEX +4 |
+| Canavarlar s. 305 | Archmage (CR 12) | var-test edilmiş | 6 giriş: var 6, kısmi 0, yok 0, savaş dışı 0; `k19items.test.ts`, `shape91.test.ts` +1 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 260 | Assassin (CR 8) | var-test edilmiş | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0; `grapple.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 260 | Awakened Shrub (CR 0) | var-testsiz | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 260 | Awakened Tree (CR 2) | var-testsiz | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 260 | Axe Beak (CR 1/4) | var-testsiz | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 261 | Azer Sentinel (CR 2) | var-testsiz | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 |  |
-| Canavarlar s. 261 | Balor (CR 19) | kısmi | 8 giriş: var 8, kısmi 0, yok 0, savaş dışı 0; `ridersA2.test.ts` | inisiyatif SRD +14, oyunda DEX +2 |
+| Canavarlar s. 261 | Balor (CR 19) | var-test edilmiş | 8 giriş: var 8, kısmi 0, yok 0, savaş dışı 0; `ridersA2.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 261 | Bandit (CR 1/8) | var-test edilmiş | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0; `evaluate.test.ts`, `k59ai.test.ts` +10 |  |
 | Canavarlar s. 261 | Bandit Captain (CR 2) | var-test edilmiş | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `k19legendary.test.ts`, `srdD1.test.ts` +6 |  |
 | Canavarlar s. 262 | Barbed Devil (CR 5) | kısmi | 7 giriş: var 5, kısmi 1, yok 0, savaş dışı 1; `wildShape87.test.ts`, `ws87Regresyon.test.ts` | Hurl Flame (kısmi: yanıcı nesne hedeflenmez); savaş dışı: Diabolical Restoration |
@@ -1821,35 +1852,35 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Canavarlar s. 262 | Bearded Devil (CR 3) | var-test edilmiş | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `grapple.test.ts` |  |
 | Canavarlar s. 263 | Behir (CR 11) | var-test edilmiş | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0; `a2abilities.test.ts` |  |
 | Canavarlar s. 263 | Berserker (CR 2) | var-test edilmiş | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0; `forest.test.ts` |  |
-| Canavarlar s. 263 | Black Dragon Wyrmling (CR 2) | kısmi | 4 giriş: var 3, kısmi 0, yok 0, savaş dışı 1 | inisiyatif SRD +4, oyunda DEX +2; savaş dışı: Amphibious |
+| Canavarlar s. 263 | Black Dragon Wyrmling (CR 2) | var-testsiz | 4 giriş: var 3, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Amphibious; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 265 | Black Pudding (CR 4) | var-test edilmiş | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1; `k19vision.test.ts` | savaş dışı: Amorphous |
 | Canavarlar s. 266 | Blink Dog (CR 1/4) | var-testsiz | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0 |  |
-| Canavarlar s. 266 | Blue Dragon Wyrmling (CR 3) | kısmi | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +2, oyunda DEX +0 |
-| Canavarlar s. 267 | Bone Devil (CR 9) | kısmi | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1 | inisiyatif SRD +7, oyunda DEX +3; savaş dışı: Diabolical Restoration |
-| Canavarlar s. 268 | Brass Dragon Wyrmling (CR 1) | kısmi | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `ridersA2.test.ts` | inisiyatif SRD +2, oyunda DEX +0 |
-| Canavarlar s. 269 | Bronze Dragon Wyrmling (CR 2) | kısmi | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1 | inisiyatif SRD +2, oyunda DEX +0; savaş dışı: Amphibious |
+| Canavarlar s. 266 | Blue Dragon Wyrmling (CR 3) | var-testsiz | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 267 | Bone Devil (CR 9) | var-testsiz | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Diabolical Restoration; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 268 | Brass Dragon Wyrmling (CR 1) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `ridersA2.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 269 | Bronze Dragon Wyrmling (CR 2) | var-testsiz | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Amphibious; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 271 | Bugbear Stalker (CR 3) | var-test edilmiş | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0; `matrisRegresyon.test.ts`, `readyRegresyon.test.ts` |  |
 | Canavarlar s. 272 | Bugbear Warrior (CR 1) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `grapple.test.ts`, `app.test.ts` +2 |  |
 | Canavarlar s. 272 | Bulette (CR 5) | var-testsiz | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 272 | Centaur Trooper (CR 2) | var-testsiz | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 |  |
-| Canavarlar s. 272 | Chain Devil (CR 8) | kısmi | 6 giriş: var 5, kısmi 0, yok 0, savaş dışı 1; `reactions.test.ts` | inisiyatif SRD +5, oyunda DEX +2; savaş dışı: Diabolical Restoration |
+| Canavarlar s. 272 | Chain Devil (CR 8) | var-test edilmiş | 6 giriş: var 5, kısmi 0, yok 0, savaş dışı 1; `reactions.test.ts` | savaş dışı: Diabolical Restoration; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 273 | Chimera (CR 6) | var-testsiz | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 273 | Chuul (CR 4) | var-test edilmiş | 5 giriş: var 3, kısmi 0, yok 0, savaş dışı 2; `k73f.test.ts`, `te99.test.ts` | savaş dışı: Amphibious, Sense Magic |
-| Canavarlar s. 274 | Clay Golem (CR 9) | kısmi | 7 giriş: var 7, kısmi 0, yok 0, savaş dışı 0; `srdD1.test.ts` | inisiyatif SRD +3, oyunda DEX -1 |
-| Canavarlar s. 274 | Cloaker (CR 8) | kısmi | 6 giriş: var 5, kısmi 1, yok 0, savaş dışı 0 | Attach (kısmi: yapışma (attach) yok); inisiyatif SRD +5, oyunda DEX +2 |
-| Canavarlar s. 275 | Cloud Giant (CR 9) | kısmi | 5 giriş: var 4, kısmi 0, yok 1, savaş dışı 0 | Misty Step (yok); inisiyatif SRD +4, oyunda DEX +0 |
+| Canavarlar s. 274 | Clay Golem (CR 9) | var-test edilmiş | 7 giriş: var 7, kısmi 0, yok 0, savaş dışı 0; `srdD1.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 274 | Cloaker (CR 8) | kısmi | 6 giriş: var 5, kısmi 1, yok 0, savaş dışı 0 | Attach (kısmi: yapışma (attach) yok); **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 275 | Cloud Giant (CR 9) | var-test edilmiş | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan + Misty Step eklendi |
 | Canavarlar s. 275 | Cockatrice (CR 1/2) | var-test edilmiş | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0; `srdD1.test.ts`, `twostage.test.ts` |  |
 | Canavarlar s. 275 | Commoner (CR 0) | var-test edilmiş | 2 giriş: var 1, kısmi 0, yok 0, savaş dışı 1; `monsterEnv.test.ts` | savaş dışı: Training |
-| Canavarlar s. 275 | Copper Dragon Wyrmling (CR 1) | kısmi | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `ridersA2.test.ts` | inisiyatif SRD +3, oyunda DEX +1 |
+| Canavarlar s. 275 | Copper Dragon Wyrmling (CR 1) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `ridersA2.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 277 | Couatl (CR 4) | var-test edilmiş | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1; `diceUnlock.test.ts`, `grapple.test.ts` | savaş dışı: Shielded Mind |
 | Canavarlar s. 278 | Cultist (CR 1/8) | var-test edilmiş | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0; `ridersA2.test.ts` |  |
 | Canavarlar s. 278 | Cultist Fanatic (CR 2) | var-testsiz | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 |  |
-| Canavarlar s. 278 | Darkmantle (CR 1/2) | kısmi | 2 giriş: var 1, kısmi 1, yok 0, savaş dışı 0 | Crush (kısmi: yapışma (attach) yok); inisiyatif SRD +3, oyunda DEX +1 |
+| Canavarlar s. 278 | Darkmantle (CR 1/2) | kısmi | 2 giriş: var 1, kısmi 1, yok 0, savaş dışı 0 | Crush (kısmi: yapışma (attach) yok); **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 279 | Death Dog (CR 1) | kısmi | 2 giriş: var 1, kısmi 1, yok 0, savaş dışı 0; `srdD1.test.ts`, `wildShape87.test.ts` +5 | Bite (kısmi: HP maksimumu/24 saat save savaş dışı) |
 | Canavarlar s. 279 | Deva (CR 10) | var-testsiz | 6 giriş: var 5, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Exalted Restoration |
 | Canavarlar s. 280 | Djinni (CR 11) | kısmi | 8 giriş: var 5, kısmi 1, yok 0, savaş dışı 2; `ridersA2.test.ts` | Create Whirlwind (kısmi: hedef kasırgayla taşınmaz); savaş dışı: Elemental Restoration, Wishes |
 | Canavarlar s. 280 | Doppelganger (CR 3) | var-testsiz | 5 giriş: var 3, kısmi 0, yok 0, savaş dışı 2 | savaş dışı: Read Thoughts, Shape-Shift |
-| Canavarlar s. 281 | Dragon Turtle (CR 17) | kısmi | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1; `srdD1.test.ts` | inisiyatif SRD +6, oyunda DEX +0; savaş dışı: Amphibious |
+| Canavarlar s. 281 | Dragon Turtle (CR 17) | var-test edilmiş | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1; `srdD1.test.ts` | savaş dışı: Amphibious; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 281 | Dretch (CR 1/4) | var-testsiz | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 281 | Drider (CR 6) | var-testsiz | 7 giriş: var 7, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 282 | Druid (CR 2) | var-test edilmiş | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `diceUnlock.test.ts`, `b1spells.test.ts` +38 |  |
@@ -1857,74 +1888,74 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Canavarlar s. 307 | Dust Mephit (CR 1/2) | var-testsiz | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 282 | Earth Elemental (CR 5) | var-testsiz | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 283 | Efreeti (CR 11) | var-test edilmiş | 7 giriş: var 5, kısmi 0, yok 0, savaş dışı 2; `srdD1.test.ts` | savaş dışı: Elemental Restoration, Wishes |
-| Canavarlar s. 283 | Erinyes (CR 12) | kısmi | 7 giriş: var 4, kısmi 1, yok 0, savaş dışı 2 | Entangling Rope (Requires Magic Rope) (kısmi: ipin AC/HP'si, bonus eylemle bırakma yok); inisiyatif SRD +7, oyunda DEX +3; savaş dışı: Diabolical Restoration, Magic Rope |
+| Canavarlar s. 283 | Erinyes (CR 12) | kısmi | 7 giriş: var 4, kısmi 1, yok 0, savaş dışı 2 | Entangling Rope (Requires Magic Rope) (kısmi: ipin AC/HP'si, bonus eylemle bırakma yok); savaş dışı: Diabolical Restoration, Magic Rope; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 284 | Ettercap (CR 2) | var-test edilmiş | 7 giriş: var 7, kısmi 0, yok 0, savaş dışı 0; `a2abilities.test.ts` |  |
 | Canavarlar s. 284 | Ettin (CR 4) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `ridersA2.test.ts` |  |
 | Canavarlar s. 284 | Fire Elemental (CR 5) | var-test edilmiş | 6 giriş: var 6, kısmi 0, yok 0, savaş dışı 0; `ws92c.test.ts` |  |
-| Canavarlar s. 285 | Fire Giant (CR 9) | kısmi | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +3, oyunda DEX -1 |
+| Canavarlar s. 285 | Fire Giant (CR 9) | var-testsiz | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 285 | Flesh Golem (CR 5) | var-test edilmiş | 7 giriş: var 7, kısmi 0, yok 0, savaş dışı 0; `k19abilities.test.ts` |  |
-| Canavarlar s. 285 | Frost Giant (CR 8) | kısmi | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +2, oyunda DEX -1 |
-| Canavarlar s. 286 | Gargoyle (CR 2) | kısmi | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +2, oyunda DEX +0 |
+| Canavarlar s. 285 | Frost Giant (CR 8) | var-testsiz | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 286 | Gargoyle (CR 2) | var-testsiz | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 286 | Gelatinous Cube (CR 2) | kısmi | 4 giriş: var 2, kısmi 1, yok 0, savaş dışı 1; `ridersA2.test.ts` | Engulf (kısmi: boğulma, sözlü büyü yasağı, küple taşınma yok); savaş dışı: Ooze Cube |
 | Canavarlar s. 287 | Ghast (CR 2) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `k19items.test.ts` |  |
 | Canavarlar s. 287 | Ghost (CR 4) | var-test edilmiş | 7 giriş: var 6, kısmi 0, yok 0, savaş dışı 1; `k64.test.ts`, `k64b.test.ts` +1 | savaş dışı: Ethereal Sight |
 | Canavarlar s. 288 | Ghoul (CR 1) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `durations.test.ts`, `riders.test.ts` +1 |  |
 | Canavarlar s. 288 | Gibbering Mouther (CR 2) | var-test edilmiş | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `diceUnlock.test.ts`, `areaAttack.test.ts` +2 |  |
-| Canavarlar s. 289 | Glabrezu (CR 9) | kısmi | 6 giriş: var 5, kısmi 0, yok 0, savaş dışı 1 | inisiyatif SRD +6, oyunda DEX +2; savaş dışı: Demonic Restoration |
-| Canavarlar s. 289 | Gladiator (CR 5) | kısmi | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +5, oyunda DEX +2 |
+| Canavarlar s. 289 | Glabrezu (CR 9) | var-testsiz | 6 giriş: var 5, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Demonic Restoration; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 289 | Gladiator (CR 5) | var-test edilmiş | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 289 | Gnoll Warrior (CR 1/2) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `a2abilities.test.ts`, `matrisRegresyon.test.ts` +6 |  |
 | Canavarlar s. 290 | Goblin Boss (CR 1) | var-test edilmiş | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0; `k19reactions.test.ts`, `reactions.test.ts` |  |
 | Canavarlar s. 290 | Goblin Minion (CR 1/8) | var-test edilmiş | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0; `shape91Regresyon.test.ts`, `srdD1Regresyon.test.ts` +1 |  |
 | Canavarlar s. 290 | Goblin Warrior (CR 1/4) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `diceUnlock.test.ts`, `ai.test.ts` +20 |  |
-| Canavarlar s. 290 | Gold Dragon Wyrmling (CR 3) | kısmi | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1; `ridersA2.test.ts` | inisiyatif SRD +4, oyunda DEX +2; savaş dışı: Amphibious |
+| Canavarlar s. 290 | Gold Dragon Wyrmling (CR 3) | var-test edilmiş | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1; `ridersA2.test.ts` | savaş dışı: Amphibious; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 292 | Gorgon (CR 5) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `a2abilities.test.ts`, `ridersA2.test.ts` |  |
 | Canavarlar s. 293 | Gray Ooze (CR 1/2) | var-test edilmiş | 3 giriş: var 2, kısmi 0, yok 0, savaş dışı 1; `ridersA2.test.ts`, `shape91Regresyon.test.ts` +2 | savaş dışı: Amorphous |
-| Canavarlar s. 293 | Green Dragon Wyrmling (CR 2) | kısmi | 4 giriş: var 3, kısmi 0, yok 0, savaş dışı 1 | inisiyatif SRD +3, oyunda DEX +1; savaş dışı: Amphibious |
+| Canavarlar s. 293 | Green Dragon Wyrmling (CR 2) | var-testsiz | 4 giriş: var 3, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Amphibious; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 295 | Green Hag (CR 3) | var-test edilmiş | 6 giriş: var 3, kısmi 0, yok 0, savaş dışı 3; `k73f.test.ts`, `wilds.test.ts` | savaş dışı: Amphibious, Coven Magic, Mimicry |
 | Canavarlar s. 295 | Grick (CR 2) | var-testsiz | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 295 | Griffon (CR 2) | var-test edilmiş | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0; `monsterEnv.test.ts` |  |
 | Canavarlar s. 296 | Grimlock (CR 1/4) | var-testsiz | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 296 | Guard (CR 1/8) | var-testsiz | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0 |  |
-| Canavarlar s. 296 | Guard Captain (CR 4) | kısmi | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +4, oyunda DEX +2 |
+| Canavarlar s. 296 | Guard Captain (CR 4) | var-testsiz | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 296 | Guardian Naga (CR 10) | var-testsiz | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Celestial Restoration |
-| Canavarlar s. 297 | Half-Dragon (CR 5) | kısmi | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1 | inisiyatif SRD +5, oyunda DEX +2; savaş dışı: Draconic Origin |
+| Canavarlar s. 297 | Half-Dragon (CR 5) | var-testsiz | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Draconic Origin; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 297 | Harpy (CR 1) | kısmi | 2 giriş: var 1, kısmi 1, yok 0, savaş dışı 0 | Luring Song (kısmi: harpiye yürüme ve şarkı bitişi yok) |
 | Canavarlar s. 297 | Hell Hound (CR 3) | var-test edilmiş | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `monsterEnv.test.ts` |  |
-| Canavarlar s. 298 | Hezrou (CR 8) | kısmi | 6 giriş: var 5, kısmi 0, yok 0, savaş dışı 1 | inisiyatif SRD +6, oyunda DEX +3; savaş dışı: Demonic Restoration |
-| Canavarlar s. 298 | Hill Giant (CR 5) | kısmi | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `forced.test.ts`, `mastery.test.ts` +3 | inisiyatif SRD +2, oyunda DEX -1 |
+| Canavarlar s. 298 | Hezrou (CR 8) | var-testsiz | 6 giriş: var 5, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Demonic Restoration; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 298 | Hill Giant (CR 5) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `forced.test.ts`, `mastery.test.ts` +3 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 298 | Hippogriff (CR 1) | var-testsiz | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 |  |
-| Canavarlar s. 299 | Hobgoblin Captain (CR 3) | kısmi | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `matrisRegresyon.test.ts`, `readyRegresyon.test.ts` +3 | inisiyatif SRD +4, oyunda DEX +2 |
-| Canavarlar s. 298 | Hobgoblin Warrior (CR 1/2) | kısmi | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `data.test.ts`, `matrisRegresyon.test.ts` +1 | inisiyatif SRD +3, oyunda DEX +1 |
+| Canavarlar s. 299 | Hobgoblin Captain (CR 3) | var-test edilmiş | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `matrisRegresyon.test.ts`, `readyRegresyon.test.ts` +3 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 298 | Hobgoblin Warrior (CR 1/2) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `data.test.ts`, `matrisRegresyon.test.ts` +1 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 299 | Homunculus (CR 0) | var-testsiz | 2 giriş: var 1, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Telepathic Bond |
-| Canavarlar s. 299 | Horned Devil (CR 11) | kısmi | 6 giriş: var 4, kısmi 1, yok 0, savaş dışı 1 | Hurl Flame (kısmi: yanıcı nesne hedeflenmez); inisiyatif SRD +7, oyunda DEX +3; savaş dışı: Diabolical Restoration |
-| Canavarlar s. 300 | Hydra (CR 8) | kısmi | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1; `k19abilities.test.ts`, `k73f.test.ts` +1 | inisiyatif SRD +4, oyunda DEX +1; savaş dışı: Hold Breath |
-| Canavarlar s. 300 | Ice Devil (CR 14) | kısmi | 6 giriş: var 4, kısmi 1, yok 0, savaş dışı 1 | Ice Spear (kısmi: 'hareket ya da eylem, ikisi değil' kısıtı yok); inisiyatif SRD +7, oyunda DEX +2; savaş dışı: Diabolical Restoration |
+| Canavarlar s. 299 | Horned Devil (CR 11) | kısmi | 6 giriş: var 4, kısmi 1, yok 0, savaş dışı 1 | Hurl Flame (kısmi: yanıcı nesne hedeflenmez); savaş dışı: Diabolical Restoration; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 300 | Hydra (CR 8) | var-test edilmiş | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1; `k19abilities.test.ts`, `k73f.test.ts` +1 | savaş dışı: Hold Breath; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 300 | Ice Devil (CR 14) | kısmi | 6 giriş: var 4, kısmi 1, yok 0, savaş dışı 1 | Ice Spear (kısmi: 'hareket ya da eylem, ikisi değil' kısıtı yok); savaş dışı: Diabolical Restoration; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 307 | Ice Mephit (CR 1/2) | var-test edilmiş | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `srdD1.test.ts` |  |
 | Canavarlar s. 300 | Imp (CR 1) | var-testsiz | 4 giriş: var 3, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Shape-Shift |
 | Canavarlar s. 301 | Incubus (CR 4) | kısmi | 5 giriş: var 3, kısmi 1, yok 0, savaş dışı 1 | Restless Touch (kısmi: ek etki savaş dışı); savaş dışı: Succubus Form |
-| Canavarlar s. 301 | Invisible Stalker (CR 6) | kısmi | 5 giriş: var 4, kısmi 1, yok 0, savaş dışı 0 | Vortex (kısmi: sözlü büyü yasağı yok); inisiyatif SRD +7, oyunda DEX +4 |
-| Canavarlar s. 302 | Iron Golem (CR 16) | kısmi | 7 giriş: var 7, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +9, oyunda DEX -1 |
+| Canavarlar s. 301 | Invisible Stalker (CR 6) | kısmi | 5 giriş: var 4, kısmi 1, yok 0, savaş dışı 0 | Vortex (kısmi: sözlü büyü yasağı yok); **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 302 | Iron Golem (CR 16) | var-testsiz | 7 giriş: var 7, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 302 | Knight (CR 3) | var-test edilmiş | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `k19reactions.test.ts`, `reactions.test.ts` |  |
 | Canavarlar s. 302 | Kobold Warrior (CR 1/8) | var-testsiz | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 |  |
-| Canavarlar s. 303 | Kraken (CR 23) | kısmi | 10 giriş: var 9, kısmi 0, yok 0, savaş dışı 1; `k73f.test.ts`, `roam.test.ts` | inisiyatif SRD +14, oyunda DEX +0; savaş dışı: Amphibious |
+| Canavarlar s. 303 | Kraken (CR 23) | var-test edilmiş | 10 giriş: var 9, kısmi 0, yok 0, savaş dışı 1; `k73f.test.ts`, `roam.test.ts` | savaş dışı: Amphibious; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 303 | Lamia (CR 4) | var-testsiz | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 304 | Lemure (CR 0) | var-testsiz | 2 giriş: var 1, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Hellish Restoration |
-| Canavarlar s. 304 | Lich (CR 21) | kısmi | 10 giriş: var 9, kısmi 0, yok 0, savaş dışı 1; `diceUnlock.test.ts`, `k19legendary.test.ts` | inisiyatif SRD +17, oyunda DEX +3; savaş dışı: Spirit Jar |
+| Canavarlar s. 304 | Lich (CR 21) | var-test edilmiş | 10 giriş: var 9, kısmi 0, yok 0, savaş dışı 1; `diceUnlock.test.ts`, `k19legendary.test.ts` | savaş dışı: Spirit Jar; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 305 | Mage (CR 6) | var-test edilmiş | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0; `k19items.test.ts`, `reactions.test.ts` |  |
 | Canavarlar s. 307 | Magma Mephit (CR 1/2) | var-testsiz | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 305 | Magmin (CR 1/2) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `ridersA2.test.ts` |  |
 | Canavarlar s. 306 | Manticore (CR 3) | var-testsiz | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 |  |
-| Canavarlar s. 306 | Marilith (CR 16) | kısmi | 8 giriş: var 7, kısmi 0, yok 0, savaş dışı 1 | inisiyatif SRD +10, oyunda DEX +5; savaş dışı: Demonic Restoration |
-| Canavarlar s. 306 | Medusa (CR 6) | kısmi | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0; `k19abilities.test.ts`, `wildShape87.test.ts` | inisiyatif SRD +6, oyunda DEX +3 |
+| Canavarlar s. 306 | Marilith (CR 16) | var-testsiz | 8 giriş: var 7, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Demonic Restoration; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 306 | Medusa (CR 6) | var-test edilmiş | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0; `k19abilities.test.ts`, `wildShape87.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 308 | Merfolk Skirmisher (CR 1/8) | var-test edilmiş | 2 giriş: var 1, kısmi 0, yok 0, savaş dışı 1; `k73f.test.ts` | savaş dışı: Amphibious |
 | Canavarlar s. 308 | Merrow (CR 2) | var-test edilmiş | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1; `durations.test.ts`, `ridersA2.test.ts` +1 | savaş dışı: Amphibious |
-| Canavarlar s. 308 | Mimic (CR 2) | kısmi | 4 giriş: var 2, kısmi 0, yok 0, savaş dışı 2 | inisiyatif SRD +3, oyunda DEX +1; savaş dışı: Adhesive (Object Form Only), Shape-Shift |
+| Canavarlar s. 308 | Mimic (CR 2) | var-testsiz | 4 giriş: var 2, kısmi 0, yok 0, savaş dışı 2 | savaş dışı: Adhesive (Object Form Only), Shape-Shift; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 326 | Minotaur Skeleton (CR 2) | var-testsiz | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 309 | Minotaur of Baphomet (CR 3) | var-test edilmiş | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0; `data.test.ts` |  |
 | Canavarlar s. 309 | Mummy (CR 3) | kısmi | 3 giriş: var 2, kısmi 1, yok 0, savaş dışı 0; `ridersA2.test.ts` | Rotting Fist (kısmi: 24 saat HP maks. azalması savaş dışı) |
-| Canavarlar s. 309 | Mummy Lord (CR 15) | kısmi | 12 giriş: var 10, kısmi 1, yok 0, savaş dışı 1; `k19reactions.test.ts`, `k19vision.test.ts` | Rotting Fist (kısmi: HP maks. azalması, uzun dinlenme yasağı savaş dışı); inisiyatif SRD +10, oyunda DEX +0; savaş dışı: Undead Restoration |
-| Canavarlar s. 310 | Nalfeshnee (CR 13) | kısmi | 7 giriş: var 6, kısmi 0, yok 0, savaş dışı 1; `k19reactions.test.ts` | inisiyatif SRD +5, oyunda DEX +0; savaş dışı: Demonic Restoration |
-| Canavarlar s. 311 | Night Hag (CR 5) | kısmi | 8 giriş: var 4, kısmi 0, yok 0, savaş dışı 4; `srdD1.test.ts` | inisiyatif SRD +5, oyunda DEX +2; savaş dışı: Coven Magic, Soul Bag, Nightmare Haunting (1/Day; Requires Soul Bag), Shape-Shift |
+| Canavarlar s. 309 | Mummy Lord (CR 15) | kısmi | 12 giriş: var 10, kısmi 1, yok 0, savaş dışı 1; `k19reactions.test.ts`, `k19vision.test.ts` | Rotting Fist (kısmi: HP maks. azalması, uzun dinlenme yasağı savaş dışı); savaş dışı: Undead Restoration; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 310 | Nalfeshnee (CR 13) | var-test edilmiş | 7 giriş: var 6, kısmi 0, yok 0, savaş dışı 1; `k19reactions.test.ts` | savaş dışı: Demonic Restoration; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 311 | Night Hag (CR 5) | kısmi | 8 giriş: var 4, kısmi 0, yok 0, savaş dışı 4; `srdD1.test.ts` | savaş dışı: Coven Magic, Soul Bag, Nightmare Haunting (1/Day; Requires Soul Bag), Shape-Shift; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 311 | Nightmare (CR 3) | var-testsiz | 4 giriş: var 3, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Confer Fire Resistance |
 | Canavarlar s. 312 | Noble (CR 1/8) | var-testsiz | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 312 | Ochre Jelly (CR 2) | var-test edilmiş | 4 giriş: var 3, kısmi 0, yok 0, savaş dışı 1; `k19abilities.test.ts`, `reactions.test.ts` | savaş dışı: Amorphous |
@@ -1934,20 +1965,20 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Canavarlar s. 313 | Owlbear (CR 3) | var-test edilmiş | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0; `k59ai.test.ts`, `data.test.ts` +6 |  |
 | Canavarlar s. 313 | Pegasus (CR 2) | var-testsiz | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 313 | Phase Spider (CR 3) | var-test edilmiş | 6 giriş: var 5, kısmi 0, yok 0, savaş dışı 1; `ridersA2.test.ts` | savaş dışı: Ethereal Sight |
-| Canavarlar s. 314 | Pirate (CR 1) | kısmi | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `monsterEnv.test.ts` | inisiyatif SRD +5, oyunda DEX +3 |
-| Canavarlar s. 314 | Pirate Captain (CR 6) | kısmi | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0; `reactions.test.ts`, `ridersA2.test.ts` | inisiyatif SRD +7, oyunda DEX +4 |
-| Canavarlar s. 314 | Pit Fiend (CR 20) | kısmi | 9 giriş: var 8, kısmi 0, yok 0, savaş dışı 1; `a2abilities.test.ts` | inisiyatif SRD +14, oyunda DEX +2; savaş dışı: Diabolical Restoration |
-| Canavarlar s. 315 | Planetar (CR 16) | kısmi | 8 giriş: var 6, kısmi 0, yok 0, savaş dışı 2 | inisiyatif SRD +10, oyunda DEX +5; savaş dışı: Divine Awareness, Exalted Restoration |
+| Canavarlar s. 314 | Pirate (CR 1) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `monsterEnv.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 314 | Pirate Captain (CR 6) | var-test edilmiş | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0; `reactions.test.ts`, `ridersA2.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 314 | Pit Fiend (CR 20) | var-test edilmiş | 9 giriş: var 8, kısmi 0, yok 0, savaş dışı 1; `a2abilities.test.ts` | savaş dışı: Diabolical Restoration; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 315 | Planetar (CR 16) | var-testsiz | 8 giriş: var 6, kısmi 0, yok 0, savaş dışı 2 | savaş dışı: Divine Awareness, Exalted Restoration; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 316 | Priest (CR 2) | var-testsiz | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 316 | Priest Acolyte (CR 1/4) | var-testsiz | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 316 | Pseudodragon (CR 1/4) | var-testsiz | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 |  |
-| Canavarlar s. 316 | Purple Worm (CR 15) | kısmi | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0; `a2abilities.test.ts`, `srdD1.test.ts` | inisiyatif SRD +3, oyunda DEX -2 |
+| Canavarlar s. 316 | Purple Worm (CR 15) | var-test edilmiş | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0; `a2abilities.test.ts`, `srdD1.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 317 | Quasit (CR 1) | var-testsiz | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Shape-Shift |
-| Canavarlar s. 317 | Rakshasa (CR 13) | kısmi | 6 giriş: var 4, kısmi 1, yok 0, savaş dışı 1; `areaAttack.test.ts` | Cursed Touch (kısmi: ek etki savaş dışı); inisiyatif SRD +8, oyunda DEX +3; savaş dışı: Fiendish Restoration |
-| Canavarlar s. 318 | Red Dragon Wyrmling (CR 4) | kısmi | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `dragon.test.ts`, `sefer.test.ts` +1 | inisiyatif SRD +2, oyunda DEX +0 |
-| Canavarlar s. 319 | Remorhaz (CR 11) | kısmi | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `a2abilities.test.ts`, `srdD1.test.ts` | inisiyatif SRD +5, oyunda DEX +1 |
-| Canavarlar s. 320 | Roc (CR 11) | kısmi | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `a2abilities.test.ts` | inisiyatif SRD +8, oyunda DEX +0 |
-| Canavarlar s. 320 | Roper (CR 5) | kısmi | 5 giriş: var 4, kısmi 1, yok 0, savaş dışı 0; `a2abilities.test.ts`, `ridersA2.test.ts` | Tentacle (kısmi: dokunaç AC/HP yok); inisiyatif SRD +5, oyunda DEX -1 |
+| Canavarlar s. 317 | Rakshasa (CR 13) | kısmi | 6 giriş: var 4, kısmi 1, yok 0, savaş dışı 1; `areaAttack.test.ts` | Cursed Touch (kısmi: ek etki savaş dışı); savaş dışı: Fiendish Restoration; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 318 | Red Dragon Wyrmling (CR 4) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `dragon.test.ts`, `sefer.test.ts` +1 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 319 | Remorhaz (CR 11) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `a2abilities.test.ts`, `srdD1.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 320 | Roc (CR 11) | var-test edilmiş | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `a2abilities.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 320 | Roper (CR 5) | kısmi | 5 giriş: var 4, kısmi 1, yok 0, savaş dışı 0; `a2abilities.test.ts`, `ridersA2.test.ts` | Tentacle (kısmi: dokunaç AC/HP yok); **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 320 | Rust Monster (CR 1/2) | var-test edilmiş | 6 giriş: var 4, kısmi 0, yok 0, savaş dışı 2; `k19reactions.test.ts`, `matris83.test.ts` | savaş dışı: Iron Scent, Destroy Metal |
 | Canavarlar s. 321 | Sahuagin Warrior (CR 1/2) | var-test edilmiş | 6 giriş: var 4, kısmi 0, yok 0, savaş dışı 2; `a2abilities.test.ts` | savaş dışı: Limited Amphibiousness, Shark Telepathy |
 | Canavarlar s. 321 | Salamander (CR 5) | var-testsiz | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 |  |
@@ -1958,62 +1989,62 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Canavarlar s. 323 | Shambling Mound (CR 5) | kısmi | 4 giriş: var 3, kısmi 1, yok 0, savaş dışı 0 | Engulf (kısmi: yığınla birlikte taşınma yok) |
 | Canavarlar s. 323 | Shield Guardian (CR 7) | var-test edilmiş | 6 giriş: var 4, kısmi 0, yok 0, savaş dışı 2; `k19reactions.test.ts` | savaş dışı: Bound, Spell Storing |
 | Canavarlar s. 286 | Shrieker Fungus (CR 0) | var-testsiz | 1 giriş: var 0, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Shriek |
-| Canavarlar s. 324 | Silver Dragon Wyrmling (CR 2) | kısmi | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `ridersA2.test.ts` | inisiyatif SRD +2, oyunda DEX +0 |
+| Canavarlar s. 324 | Silver Dragon Wyrmling (CR 2) | var-test edilmiş | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `ridersA2.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 325 | Skeleton (CR 1/4) | var-test edilmiş | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0; `a6spells.test.ts`, `b2.test.ts` +4 |  |
-| Canavarlar s. 326 | Solar (CR 21) | kısmi | 11 giriş: var 9, kısmi 0, yok 0, savaş dışı 2 | inisiyatif SRD +20, oyunda DEX +6; savaş dışı: Divine Awareness, Exalted Restoration |
+| Canavarlar s. 326 | Solar (CR 21) | var-testsiz | 11 giriş: var 9, kısmi 0, yok 0, savaş dışı 2 | savaş dışı: Divine Awareness, Exalted Restoration; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 327 | Specter (CR 1) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `a2abilities.test.ts`, `srdD1.test.ts` +1 |  |
-| Canavarlar s. 327 | Sphinx of Lore (CR 11) | kısmi | 8 giriş: var 6, kısmi 0, yok 1, savaş dışı 1 | Weight of Years (yok); inisiyatif SRD +10, oyunda DEX +2; savaş dışı: Inscrutable |
-| Canavarlar s. 328 | Sphinx of Valor (CR 17) | kısmi | 8 giriş: var 6, kısmi 0, yok 1, savaş dışı 1 | Weight of Years (yok); inisiyatif SRD +12, oyunda DEX +0; savaş dışı: Inscrutable |
+| Canavarlar s. 327 | Sphinx of Lore (CR 11) | var-test edilmiş | 8 giriş: var 7, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Inscrutable; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan + Weight of Years eklendi |
+| Canavarlar s. 328 | Sphinx of Valor (CR 17) | var-test edilmiş | 8 giriş: var 7, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Inscrutable; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan + Weight of Years eklendi |
 | Canavarlar s. 327 | Sphinx of Wonder (CR 1) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `k19reactions.test.ts` |  |
 | Canavarlar s. 329 | Spirit Naga (CR 8) | var-testsiz | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Fiendish Restoration |
 | Canavarlar s. 329 | Sprite (CR 1/4) | kısmi | 4 giriş: var 3, kısmi 1, yok 0, savaş dışı 0; `as1cGorunum.test.tsx` | Heart Sight (kısmi: ek etki savaş dışı) |
-| Canavarlar s. 329 | Spy (CR 1) | kısmi | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +4, oyunda DEX +2 |
+| Canavarlar s. 329 | Spy (CR 1) | var-testsiz | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 308 | Steam Mephit (CR 1/4) | var-test edilmiş | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `k19abilities.test.ts` |  |
 | Canavarlar s. 329 | Stirge (CR 1/8) | kısmi | 1 giriş: var 0, kısmi 1, yok 0, savaş dışı 0 | Proboscis (kısmi: yapışma (attach) yok) |
-| Canavarlar s. 330 | Stone Giant (CR 7) | kısmi | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `k19reactions.test.ts`, `reactions.test.ts` +1 | inisiyatif SRD +5, oyunda DEX +2 |
-| Canavarlar s. 330 | Stone Golem (CR 10) | kısmi | 6 giriş: var 6, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +3, oyunda DEX -1 |
-| Canavarlar s. 330 | Storm Giant (CR 13) | kısmi | 6 giriş: var 5, kısmi 0, yok 0, savaş dışı 1 | inisiyatif SRD +7, oyunda DEX +2; savaş dışı: Amphibious |
+| Canavarlar s. 330 | Stone Giant (CR 7) | var-test edilmiş | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `k19reactions.test.ts`, `reactions.test.ts` +1 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 330 | Stone Golem (CR 10) | var-testsiz | 6 giriş: var 6, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 330 | Storm Giant (CR 13) | var-testsiz | 6 giriş: var 5, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Amphibious; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 331 | Succubus (CR 4) | var-testsiz | 6 giriş: var 4, kısmi 0, yok 0, savaş dışı 2 | savaş dışı: Incubus Form, Shape-Shift |
 | Canavarlar s. 278 | Swarm of Crawling Claws (CR 3) | var-test edilmiş | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0; `monsterEnv.test.ts` |  |
-| Canavarlar s. 331 | Tarrasque (CR 30) | kısmi | 12 giriş: var 12, kısmi 0, yok 0, savaş dışı 0; `diceUnlock.test.ts`, `a2abilities.test.ts` | inisiyatif SRD +18, oyunda DEX +0 |
+| Canavarlar s. 331 | Tarrasque (CR 30) | var-test edilmiş | 12 giriş: var 12, kısmi 0, yok 0, savaş dışı 0; `diceUnlock.test.ts`, `a2abilities.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 332 | Tough (CR 1/2) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `forest.test.ts`, `data.test.ts` |  |
 | Canavarlar s. 332 | Tough Boss (CR 4) | var-test edilmiş | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `srdD2Regresyon.test.ts` |  |
-| Canavarlar s. 333 | Treant (CR 9) | kısmi | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0; `a2abilities.test.ts` | inisiyatif SRD +3, oyunda DEX -1 |
+| Canavarlar s. 333 | Treant (CR 9) | var-test edilmiş | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0; `a2abilities.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 333 | Troll (CR 5) | var-test edilmiş | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0; `ai.test.ts`, `battle.test.ts` +10 |  |
 | Canavarlar s. 333 | Troll Limb (CR 1/2) | var-test edilmiş | 3 giriş: var 2, kısmi 0, yok 0, savaş dışı 1; `monsterEnv.test.ts`, `encounter.test.ts` | savaş dışı: Troll Spawn |
-| Canavarlar s. 334 | Unicorn (CR 5) | kısmi | 9 giriş: var 9, kısmi 0, yok 0, savaş dışı 0; `k19legendary.test.ts` | inisiyatif SRD +8, oyunda DEX +2 |
-| Canavarlar s. 335 | Vampire (CR 13) | kısmi | 11 giriş: var 9, kısmi 1, yok 0, savaş dışı 1; `diceUnlock.test.ts`, `srdD3.test.ts` | Bite (Bat or Vampire Form Only) (kısmi: ek etki savaş dışı); inisiyatif SRD +14, oyunda DEX +4; savaş dışı: Shape-Shift |
-| Canavarlar s. 334 | Vampire Familiar (CR 3) | kısmi | 4 giriş: var 3, kısmi 0, yok 0, savaş dışı 1; `srdD3.test.ts` | inisiyatif SRD +5, oyunda DEX +3; savaş dışı: Vampiric Connection |
+| Canavarlar s. 334 | Unicorn (CR 5) | var-test edilmiş | 9 giriş: var 9, kısmi 0, yok 0, savaş dışı 0; `k19legendary.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 335 | Vampire (CR 13) | kısmi | 11 giriş: var 9, kısmi 1, yok 0, savaş dışı 1; `diceUnlock.test.ts`, `srdD3.test.ts` | Bite (Bat or Vampire Form Only) (kısmi: ek etki savaş dışı); savaş dışı: Shape-Shift; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 334 | Vampire Familiar (CR 3) | var-test edilmiş | 4 giriş: var 3, kısmi 0, yok 0, savaş dışı 1; `srdD3.test.ts` | savaş dışı: Vampiric Connection; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 334 | Vampire Spawn (CR 5) | var-testsiz | 6 giriş: var 6, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 286 | Violet Fungus (CR 1/4) | var-testsiz | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 336 | Vrock (CR 6) | var-testsiz | 6 giriş: var 5, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Demonic Restoration |
 | Canavarlar s. 326 | Warhorse Skeleton (CR 1/2) | var-testsiz | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 336 | Warrior Infantry (CR 1/8) | var-testsiz | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0 |  |
-| Canavarlar s. 337 | Warrior Veteran (CR 3) | kısmi | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `matrisRegresyon.test.ts`, `readyRegresyon.test.ts` | inisiyatif SRD +3, oyunda DEX +1 |
+| Canavarlar s. 337 | Warrior Veteran (CR 3) | var-test edilmiş | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `matrisRegresyon.test.ts`, `readyRegresyon.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 337 | Water Elemental (CR 5) | kısmi | 5 giriş: var 4, kısmi 1, yok 0, savaş dışı 0 | Whelm (Recharge 4–6) (kısmi: boğulma yok) |
-| Canavarlar s. 337 | Werebear (CR 5) | kısmi | 5 giriş: var 3, kısmi 1, yok 0, savaş dışı 1 | Bite (Bear or Hybrid Form Only) (kısmi: likantrop laneti yok); inisiyatif SRD +3, oyunda DEX +0; savaş dışı: Shape-Shift |
-| Canavarlar s. 338 | Wereboar (CR 4) | kısmi | 5 giriş: var 3, kısmi 1, yok 0, savaş dışı 1 | Gore (Boar or Hybrid Form Only) (kısmi: likantrop laneti yok); inisiyatif SRD +2, oyunda DEX +0; savaş dışı: Shape-Shift |
+| Canavarlar s. 337 | Werebear (CR 5) | kısmi | 5 giriş: var 3, kısmi 1, yok 0, savaş dışı 1 | Bite (Bear or Hybrid Form Only) (kısmi: likantrop laneti yok); savaş dışı: Shape-Shift; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 338 | Wereboar (CR 4) | kısmi | 5 giriş: var 3, kısmi 1, yok 0, savaş dışı 1 | Gore (Boar or Hybrid Form Only) (kısmi: likantrop laneti yok); savaş dışı: Shape-Shift; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 338 | Wererat (CR 2) | kısmi | 5 giriş: var 3, kısmi 1, yok 0, savaş dışı 1; `riders.test.ts` | Bite (Rat or Hybrid Form Only) (kısmi: likantrop laneti yok); savaş dışı: Shape-Shift |
 | Canavarlar s. 339 | Weretiger (CR 4) | kısmi | 6 giriş: var 4, kısmi 1, yok 0, savaş dışı 1 | Bite (Tiger or Hybrid Form Only) (kısmi: likantrop laneti yok); savaş dışı: Shape-Shift |
-| Canavarlar s. 339 | Werewolf (CR 3) | kısmi | 6 giriş: var 4, kısmi 1, yok 0, savaş dışı 1 | Bite (Wolf or Hybrid Form Only) (kısmi: likantrop laneti yok); inisiyatif SRD +4, oyunda DEX +2; savaş dışı: Shape-Shift |
-| Canavarlar s. 339 | White Dragon Wyrmling (CR 2) | kısmi | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +2, oyunda DEX +0 |
-| Canavarlar s. 341 | Wight (CR 3) | kısmi | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0; `k19drain.test.ts`, `srdD1.test.ts` | inisiyatif SRD +4, oyunda DEX +2 |
+| Canavarlar s. 339 | Werewolf (CR 3) | kısmi | 6 giriş: var 4, kısmi 1, yok 0, savaş dışı 1 | Bite (Wolf or Hybrid Form Only) (kısmi: likantrop laneti yok); savaş dışı: Shape-Shift; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 339 | White Dragon Wyrmling (CR 2) | var-testsiz | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 341 | Wight (CR 3) | var-test edilmiş | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0; `k19drain.test.ts`, `srdD1.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 341 | Will-o’-Wisp (CR 2) | var-test edilmiş | 6 giriş: var 5, kısmi 0, yok 0, savaş dışı 1; `a2abilities.test.ts`, `k19abilities.test.ts` | savaş dışı: Ephemeral |
 | Canavarlar s. 342 | Winter Wolf (CR 3) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `monsterEnv.test.ts` |  |
 | Canavarlar s. 342 | Worg (CR 1/2) | var-testsiz | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0 |  |
 | Canavarlar s. 342 | Wraith (CR 5) | var-test edilmiş | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `a2abilities.test.ts`, `srdD1.test.ts` +1 |  |
 | Canavarlar s. 343 | Wyvern (CR 6) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `durations.test.ts`, `monsters.test.ts` +3 |  |
 | Canavarlar s. 343 | Xorn (CR 5) | var-testsiz | 6 giriş: var 5, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Treasure Sense |
-| Canavarlar s. 264 | Young Black Dragon (CR 7) | kısmi | 4 giriş: var 3, kısmi 0, yok 0, savaş dışı 1 | inisiyatif SRD +5, oyunda DEX +2; savaş dışı: Amphibious |
-| Canavarlar s. 266 | Young Blue Dragon (CR 9) | kısmi | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `k19smoke.test.ts` | inisiyatif SRD +4, oyunda DEX +0 |
-| Canavarlar s. 268 | Young Brass Dragon (CR 6) | kısmi | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +3, oyunda DEX +0 |
-| Canavarlar s. 270 | Young Bronze Dragon (CR 8) | kısmi | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1 | inisiyatif SRD +3, oyunda DEX +0; savaş dışı: Amphibious |
-| Canavarlar s. 276 | Young Copper Dragon (CR 7) | kısmi | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +4, oyunda DEX +1 |
-| Canavarlar s. 291 | Young Gold Dragon (CR 10) | kısmi | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1 | inisiyatif SRD +6, oyunda DEX +2; savaş dışı: Amphibious |
-| Canavarlar s. 293 | Young Green Dragon (CR 8) | kısmi | 4 giriş: var 3, kısmi 0, yok 0, savaş dışı 1 | inisiyatif SRD +4, oyunda DEX +1; savaş dışı: Amphibious |
-| Canavarlar s. 318 | Young Red Dragon (CR 10) | kısmi | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `diceUnlock.test.ts`, `areaAttack.test.ts` +8 | inisiyatif SRD +4, oyunda DEX +0 |
-| Canavarlar s. 324 | Young Silver Dragon (CR 9) | kısmi | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +4, oyunda DEX +0 |
-| Canavarlar s. 340 | Young White Dragon (CR 6) | kısmi | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `k19abilities.test.ts`, `srdD1.test.ts` +1 | inisiyatif SRD +3, oyunda DEX +0 |
+| Canavarlar s. 264 | Young Black Dragon (CR 7) | var-testsiz | 4 giriş: var 3, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Amphibious; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 266 | Young Blue Dragon (CR 9) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `k19smoke.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 268 | Young Brass Dragon (CR 6) | var-testsiz | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 270 | Young Bronze Dragon (CR 8) | var-testsiz | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Amphibious; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 276 | Young Copper Dragon (CR 7) | var-testsiz | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 291 | Young Gold Dragon (CR 10) | var-testsiz | 5 giriş: var 4, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Amphibious; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 293 | Young Green Dragon (CR 8) | var-testsiz | 4 giriş: var 3, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Amphibious; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 318 | Young Red Dragon (CR 10) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `diceUnlock.test.ts`, `areaAttack.test.ts` +8 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 324 | Young Silver Dragon (CR 9) | var-testsiz | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
+| Canavarlar s. 340 | Young White Dragon (CR 6) | var-test edilmiş | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `k19abilities.test.ts`, `srdD1.test.ts` +1 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Canavarlar s. 343 | Zombie (CR 1/4) | var-test edilmiş | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0; `monsters.test.ts`, `s1.test.ts` +4 |  |
 
 ## 12. Hayvanlar (Animals) (s. 344–364)
@@ -2044,7 +2075,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Hayvanlar s. 348 | Elk (CR 1/4) | var-testsiz | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0 |  |
 | Hayvanlar s. 348 | Flying Snake (CR 1/8) | var-testsiz | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0 |  |
 | Hayvanlar s. 348 | Frog (CR 0) | var-test edilmiş | 3 giriş: var 2, kısmi 0, yok 0, savaş dışı 1; `srdD2.test.ts`, `ws92c.test.ts` | savaş dışı: Amphibious |
-| Hayvanlar s. 349 | Giant Ape (CR 7) | kısmi | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +5, oyunda DEX +2 |
+| Hayvanlar s. 349 | Giant Ape (CR 7) | var-testsiz | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Hayvanlar s. 349 | Giant Badger (CR 1/4) | var-testsiz | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0 |  |
 | Hayvanlar s. 349 | Giant Bat (CR 1/4) | var-test edilmiş | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0; `shape91.test.ts` |  |
 | Hayvanlar s. 349 | Giant Boar (CR 2) | var-testsiz | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0 |  |
@@ -2053,7 +2084,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Hayvanlar s. 350 | Giant Crab (CR 1/8) | var-test edilmiş | 2 giriş: var 1, kısmi 0, yok 0, savaş dışı 1; `yuzme.test.ts` | savaş dışı: Amphibious |
 | Hayvanlar s. 350 | Giant Crocodile (CR 5) | var-testsiz | 4 giriş: var 3, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Hold Breath |
 | Hayvanlar s. 350 | Giant Eagle (CR 1) | var-test edilmiş | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0; `karadul.test.ts`, `shape91.test.ts` +2 |  |
-| Hayvanlar s. 351 | Giant Elk (CR 2) | kısmi | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0; `wildShape87.test.ts` | inisiyatif SRD +6, oyunda DEX +4 |
+| Hayvanlar s. 351 | Giant Elk (CR 2) | var-test edilmiş | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0; `wildShape87.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Hayvanlar s. 351 | Giant Fire Beetle (CR 0) | var-test edilmiş | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0; `ws92c.test.ts` |  |
 | Hayvanlar s. 351 | Giant Frog (CR 1/4) | var-test edilmiş | 4 giriş: var 3, kısmi 0, yok 0, savaş dışı 1; `a2abilities.test.ts`, `srdD1.test.ts` +6 | savaş dışı: Amphibious |
 | Hayvanlar s. 351 | Giant Goat (CR 1/2) | var-testsiz | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0 |  |
@@ -2064,7 +2095,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Hayvanlar s. 353 | Giant Rat (CR 1/8) | var-testsiz | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0 |  |
 | Hayvanlar s. 353 | Giant Scorpion (CR 3) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `matrisRegresyon.test.ts`, `readyRegresyon.test.ts` +3 |  |
 | Hayvanlar s. 353 | Giant Seahorse (CR 1/2) | var-test edilmiş | 3 giriş: var 2, kısmi 0, yok 0, savaş dışı 1; `a2abilities.test.ts` | savaş dışı: Water Breathing |
-| Hayvanlar s. 353 | Giant Shark (CR 5) | kısmi | 3 giriş: var 2, kısmi 0, yok 0, savaş dışı 1; `srdD1.test.ts` | inisiyatif SRD +3, oyunda DEX +0; savaş dışı: Water Breathing |
+| Hayvanlar s. 353 | Giant Shark (CR 5) | var-test edilmiş | 3 giriş: var 2, kısmi 0, yok 0, savaş dışı 1; `srdD1.test.ts` | savaş dışı: Water Breathing; **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Hayvanlar s. 353 | Giant Spider (CR 1) | var-test edilmiş | 4 giriş: var 4, kısmi 0, yok 0, savaş dışı 0; `b1spells.test.ts`, `druid.test.ts` +6 |  |
 | Hayvanlar s. 354 | Giant Toad (CR 1) | var-test edilmiş | 4 giriş: var 3, kısmi 0, yok 0, savaş dışı 1; `a2abilities.test.ts`, `shape91.test.ts` +5 | savaş dışı: Amphibious |
 | Hayvanlar s. 354 | Giant Venomous Snake (CR 1/4) | var-test edilmiş | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0; `srdD1.test.ts` |  |
@@ -2081,7 +2112,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Hayvanlar s. 356 | Killer Whale (CR 3) | var-testsiz | 2 giriş: var 1, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Hold Breath |
 | Hayvanlar s. 356 | Lion (CR 1) | var-test edilmiş | 5 giriş: var 5, kısmi 0, yok 0, savaş dışı 0; `shape91.test.ts`, `ws92c.test.ts` |  |
 | Hayvanlar s. 357 | Lizard (CR 0) | var-test edilmiş | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0; `srdD2.test.ts` |  |
-| Hayvanlar s. 357 | Mammoth (CR 6) | kısmi | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `a2abilities.test.ts` | inisiyatif SRD +2, oyunda DEX -1 |
+| Hayvanlar s. 357 | Mammoth (CR 6) | var-test edilmiş | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0; `a2abilities.test.ts` | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Hayvanlar s. 357 | Mastiff (CR 1/8) | var-test edilmiş | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0; `binekMb2.test.ts`, `ws92d.test.ts` |  |
 | Hayvanlar s. 357 | Mule (CR 1/8) | var-testsiz | 2 giriş: var 1, kısmi 0, yok 0, savaş dışı 1 | savaş dışı: Beast of Burden |
 | Hayvanlar s. 357 | Octopus (CR 0) | var-test edilmiş | 4 giriş: var 2, kısmi 0, yok 0, savaş dışı 2; `k19reactions.test.ts`, `srdD2.test.ts` +2 | savaş dışı: Compression, Water Breathing |
@@ -2110,7 +2141,7 @@ Yukarıdaki satırlar "kısmi" sayıldığı için listeye girmeyen, ama kendi b
 | Hayvanlar s. 362 | Swarm of Venomous Snakes (CR 2) | var-testsiz | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0 |  |
 | Hayvanlar s. 363 | Tiger (CR 1) | var-testsiz | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0 |  |
 | Hayvanlar s. 363 | Triceratops (CR 5) | var-testsiz | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0 |  |
-| Hayvanlar s. 363 | Tyrannosaurus Rex (CR 8) | kısmi | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 | inisiyatif SRD +3, oyunda DEX +0 |
+| Hayvanlar s. 363 | Tyrannosaurus Rex (CR 8) | var-testsiz | 3 giriş: var 3, kısmi 0, yok 0, savaş dışı 0 | **[Gece kuyruğu]** 103: inisiyatif SRD stat bloğundan |
 | Hayvanlar s. 363 | Venomous Snake (CR 1/8) | var-testsiz | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0 |  |
 | Hayvanlar s. 363 | Vulture (CR 0) | var-testsiz | 2 giriş: var 2, kısmi 0, yok 0, savaş dışı 0 |  |
 | Hayvanlar s. 364 | Warhorse (CR 1/2) | var-test edilmiş | 1 giriş: var 1, kısmi 0, yok 0, savaş dışı 0; `binekMb2.test.ts`, `binekMb6b.test.ts` |  |
