@@ -24,7 +24,7 @@
 | Zar teması | 72 | 63 | 0 | 9 | ikon 63, yedek 9 |
 | **Toplam** | **1534** | **1192** | **116** | **226** | |
 
-Dungeondex denetimi: Dungeondex'in 1287 kaydının hepsi eşlemede, her `ref` çözülüyor (public/ dosyası ya da `yedekler` anahtarı): sorun 0. CSV 266 satır.
+Dungeondex denetimi: Dungeondex'in 1383 kaydının hepsi eşlemede, her `ref` çözülüyor (public/ dosyası ya da `yedekler` anahtarı): sorun 0. CSV 266 satır.
 
 ## Eksik ve düzeltilecek
 
@@ -634,7 +634,7 @@ Jeton: `public/monsters/<kimlik>.webp` (256×256; `monsterAvatar`). **330/330 do
 | `celestial/kirik-kanat` | var | kanat (celestial-kirik-kanat) |
 
 - **Sınıf:** 12/12 sınıf-genel jeton. Aynı Dungeondex kategorisindeki 28 Invocation ve 10 Metamagic görselsiz (glif; bkz. g).
-- **Alt sınıf:** 120 (jeton tabloları `data/<sınıf>-jeton.json`; Barış Alanı kaldırıldı, Birlik Manastırı hücresini paylaşırdı). **Gerçek jeton 120/120, yedek 0**; her alt sınıfın kendi hücresi ve 10 tür × izinli cinsiyet jetonu var (cinsiyet kısıtı: Karadul yalnız kadın, İmparator yalnız erkek; ikinci form: Pehlivan 10+). **İçerik eksik 96/120** bu ortamda (bulut: `icerik/` yok, fikstür 12 SRD + 12 bizim yüklü); tarayıcıda `icerik/` yoksa yalnız 12 bizim alt sınıf yüklenir (108/120 "içerik eksik"), jeton yine çözülür (jeton tablosu içerikten bağımsız).
+- **Alt sınıf:** 120 (jeton tabloları `data/<sınıf>-jeton.json`; Barış Alanı kaldırıldı, Birlik Manastırı hücresini paylaşırdı). **Gerçek jeton 120/120, yedek 0**; her alt sınıfın kendi hücresi ve 10 tür × izinli cinsiyet jetonu var (cinsiyet kısıtı: Karadul yalnız kadın, İmparator yalnız erkek; ikinci form: Pehlivan 10+). **İçerik eksik 0/120** bu ortamda (yerel `icerik/`); tarayıcıda `icerik/` yoksa yalnız 12 bizim alt sınıf yüklenir (108/120 "içerik eksik"), jeton yine çözülür (jeton tablosu içerikten bağımsız).
 
 ## (e) Durumlar, yüzeyler, nesneler, alanlar, zar temaları
 

@@ -841,7 +841,7 @@ export const TR_EXTRA = {
     title: 'Dungeondex', back: 'Geri', search: 'Ara (Türkçe ya da İngilizce ad)', categories: 'Kategoriler', loading: 'Yükleniyor…',
     error: 'Dungeondex verisi yüklenemedi.',
     cat: { buyu: 'Büyüler', esya: 'Eşyalar', canavar: 'Canavarlar', tur: 'Türler', altsoy: 'Alt soylar', sinif: 'Sınıflar', altsinif: 'Alt sınıflar', feat: "Feat'ler", gecmis: 'Geçmişler', durum: 'Durumlar' } as Record<string, string>,
-    license: 'Lisanslar ve atıf',
+    license: 'Lisanslar ve atıf', licenseNav: 'Lisans / Atıf',
     licenseIntro: (app: string) => `${app}, aşağıdaki kaynaktan mekanik ve kural malzemesi içerir. Atıf metni NOTICE dosyasından olduğu gibi gösterilir:`,
     licenseNote: 'Kurallar Dungeons & Dragons 5. sürümünün SRD 5.2.1 metnine dayanır; D&D adı yalnız mekaniğin kaynağını belirtmek için anılır. Bu uygulama Wizards of the Coast ürünü değildir, onunla bağlantılı ya da onun onayladığı bir ürün değildir.',
     licenseLink: 'Lisans: Creative Commons Attribution 4.0 International (CC-BY-4.0)',

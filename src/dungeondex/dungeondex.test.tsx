@@ -99,9 +99,15 @@ describe('Dungeondex ekranı', () => {
     expect(lic).toContain('Creative Commons Attribution 4.0');
     expect(lic).toContain(APP_NAME.replace('&', '&amp;'));
     expect(notice).toContain('SRD 5.2.1');
-    // Kitap kabuğunda lisans sayfasına iki yol: içindekiler görünümü ve sekme şeridi (her görünümde).
+    // Kitap kabuğunda lisans sayfasına iki yol: içindekiler görünümü ve parşömen gezinmesindeki "Lisans / Atıf" düğmesi
+    // (her görünümde, lisans sayfasının kendisi hariç; sekme şeridi parşömen gezinmesiyle kalktı, ad137e7c).
     expect(m).toContain('dex-cat-lisans');
-    expect(html({ cat: 'buyu', id: 'fireball' })).toContain('dex-tab-lisans');
+    for (const v of [{ cat: null, id: null }, { cat: 'buyu', id: null }, { cat: 'buyu', id: 'fireball' }, { cat: 'altsinif', id: null }] as DexView[]) {
+      const h = html(v);
+      expect(h, JSON.stringify(v)).toContain('data-testid="dex-nav-lisans"');
+      expect(h.slice(h.indexOf('ddk-pagenav'), h.indexOf('</nav>', h.indexOf('ddk-pagenav')))).toContain(t().dex.licenseNav);
+    }
+    expect(lic).not.toContain('dex-nav-lisans');
     expect(lic).toContain(notice.split(/\r?\n/).slice(1).join('\n').trim().slice(0, 60));
   });
   it('alt sınıf kartı: prospektüs rol ve özellik satırlarını tekrarlamaz, durum sayımını ekler', () => {

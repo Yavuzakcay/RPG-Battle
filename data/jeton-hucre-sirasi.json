@@ -44,7 +44,7 @@
    "3": "Kaos",
    "4": "Şaman",
    "5": "İlkelliğin",
-   "6": "Vahşet",
+   "6": "Kutsal Hiddet",
    "7": "Heybet",
    "8": "Çılgın Savaşçı",
    "9": "Geride Kalanın"
@@ -83,13 +83,13 @@
   },
   "fighter": {
    "1": "Şahin Gözlü",
-   "2": "Çapkın Kavalye",
+   "2": "Hat Bekçisi",
    "3": "Hissi Kablel",
    "4": "Pehlivan",
    "5": "Pehlivan (dev/büyüme hali)",
    "6": "Ninja",
    "7": "Çift Dikiş",
-   "8": "Samuray",
+   "8": "Ronin",
    "9": "Hokkabaz",
    "10": "Sancaktar",
    "11": "İmparator",
@@ -97,8 +97,8 @@
   },
   "monk": {
    "1": "Açık El",
-   "2": "Astral",
-   "3": "Ayyaşlık",
+   "2": "Yıldız Ruhu",
+   "3": "Diyojen",
    "4": "Azizlik",
    "5": "Ejderha",
    "6": "Element",
@@ -111,7 +111,7 @@
   "paladin": {
    "1": "Bağlılık",
    "2": "Antik",
-   "3": "Asi/Yemin Bozan",
+   "3": "Asi",
    "4": "Biat",
    "5": "Fetih",
    "6": "İntikam",
@@ -136,10 +136,10 @@
    "2": "Dedektif",
    "3": "İllüzyonist",
    "4": "Kamufle",
-   "5": "Kaşif",
-   "6": "Psişik Hançerler",
+   "5": "Öncü",
+   "6": "Psişik Kirpi",
    "7": "Silahşör",
-   "8": "Suikastçı",
+   "8": "Sessiz Ecel",
    "9": "Taktisyen",
    "10": "İnfazcı"
   }

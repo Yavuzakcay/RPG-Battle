@@ -152,6 +152,11 @@ export function Dungeondex(props: { onBack: () => void; /** Testler: hazır ek v
               nav={
                 <nav className="ddk-pagenav" aria-label={L.title}>
                   <button type="button" className="dex-back" onClick={back} aria-label={L.back}>← {view.cat && !view.id && !trail.length ? L.toc : L.back}</button>
+                  {/* CC-BY-4.0 atfı her görünümden bir dokunuşla (parşömen gezinmesinde; Geri bulunduğun yere döner). */}
+                  {view.cat !== 'lisans' && (
+                    <button type="button" className="dex-nav-lisans" data-testid="dex-nav-lisans" title={L.license}
+                      onClick={() => { setTrail((tr) => [...tr, view]); setView({ cat: 'lisans', id: null }); }}>{L.licenseNav}</button>
+                  )}
                   {entry && (
                     <span className="ddk-nav">
                       <button type="button" data-testid="dex-prev" onClick={() => step(-1)} disabled={idx <= 0} aria-label={L.prev} title={L.prev}>‹</button>

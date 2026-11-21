@@ -7,6 +7,8 @@ sim-sonuc/
 # Dış içerik paketleri (Görev E1): depoya girmez.
 data/custom/
 icerik/
+# Alt sınıf ad temizliği öncesi paket metin yedekleri (yerel).
+_yedek-metin-*/
 
 # Görev K21: soy maskesi inceleme sayfası (npm run soy-incele üretir).
 docs/sabah/soy-inceleme/

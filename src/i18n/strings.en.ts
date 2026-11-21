@@ -194,7 +194,7 @@ export const en: Strings = {
     title: 'Dungeondex', back: 'Back', search: 'Search (English or Turkish name)', categories: 'Categories', loading: 'Loading…',
     error: 'Could not load the Dungeondex data.',
     cat: { buyu: 'Spells', esya: 'Items', canavar: 'Monsters', tur: 'Species', altsoy: 'Lineages', sinif: 'Classes', altsinif: 'Subclasses', feat: 'Feats', gecmis: 'Backgrounds', durum: 'Conditions' } as Record<string, string>,
-    license: 'Licenses and attribution',
+    license: 'Licenses and attribution', licenseNav: 'License / Credits',
     licenseIntro: (app: string) => `${app} includes rules material from the source below. The attribution text is shown as written in the NOTICE file:`,
     licenseNote: 'The rules are based on the SRD 5.2.1 text of the 5th edition of Dungeons & Dragons; the D&D name is mentioned only to state the source of the mechanics. This app is not a Wizards of the Coast product and is not affiliated with or endorsed by it.',
     licenseLink: 'License: Creative Commons Attribution 4.0 International (CC-BY-4.0)',

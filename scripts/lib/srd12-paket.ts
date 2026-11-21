@@ -2,12 +2,13 @@
 import type { SubclassDef } from '../../src/data';
 
 /**
- * Paketteki Türkçe ad (kitapçık adı): `harita/belgeler/AS2-FARKLAR.md` "Alt sınıf adı farkı" ve `AS2-ENVANTER.md` tablosundan.
+ * Paketteki Türkçe ad (kitapçık adı): `harita/belgeler/AS2-FARKLAR.md` "Alt sınıf adı farkı" ve `AS2-ENVANTER.md` tablosundan;
+ * 2026-11-21 alt sınıf ad temizliğinden beri (DECISIONS.md) yerel paketteki yeni ad (Cleric "… Manastırı", Paladin "… Töresi").
  * Burada olmayan kimlik için ad uydurulmaz (betik listeler ve durur).
  */
 export const AD_TR: Record<string, string> = {
-  'path-of-the-berserker': 'Berserker Yolu', 'college-of-lore': 'Kadim Bilgi Koleji', 'life-domain': 'Yaşam Alanı', 'circle-of-the-land': 'Toprak Çemberi',
-  'champion': 'Gladyatör', 'warrior-of-the-open-hand': 'Sadelik Disiplini', 'oath-of-devotion': 'Sadakat Yemini', 'hunter': 'Avcı', 'thief': 'Hırsız',
+  'path-of-the-berserker': 'Berserker Yolu', 'college-of-lore': 'Kadim Bilgi Koleji', 'life-domain': 'Yaşam Manastırı', 'circle-of-the-land': 'Toprak Çemberi',
+  'champion': 'Gladyatör', 'warrior-of-the-open-hand': 'Sadelik Disiplini', 'oath-of-devotion': 'Sadakat Töresi', 'hunter': 'Avcı', 'thief': 'Hırsız',
   'draconic-sorcery': 'Pulkanat', 'fiend-patron': 'Zebani', 'evoker': 'Azap Öğretisi',
 };
 /** Alt ad (kayıt adı; seçicide görünmez, rol satırının başında): yalnız Warlock'ta kullanıcı kararı. */

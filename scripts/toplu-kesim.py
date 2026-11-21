@@ -21,15 +21,15 @@ RACES = ['human', 'elf', 'dwarf', 'halfling', 'gnome', 'orc', 'tiefling', 'golia
 CLASSES = {
  'warlock': (4, 3, 'WL-', ['İblis Hamisi', 'Cin', 'Muhterem', 'Hortlak', 'Kargışçı', 'Kraken', 'Melek', 'Gulyabani', 'Paradoks', 'Ruhsar', 'Astrolog'], {}),
  'sorcerer': (3, 3, 'SC-', ['Ejderha Büyücülüğü', 'Alevbaz', 'Ceren Ürperten', 'İlahi Kan', 'Lanetli', 'Otonom Evren', 'Paratoner', 'Titan Kanı', 'Dunganga'], {}),
- 'barbarian': (3, 3, 'ID', ['Varis', 'Element', 'Kaos', 'Şaman', 'İlkelliğin', 'Vahşet', 'Heybet', 'Çılgın Savaşçı', 'Geride Kalanın'], {}),
+ 'barbarian': (3, 3, 'ID', ['Varis', 'Element', 'Kaos', 'Şaman', 'İlkelliğin', 'Kutsal Hiddet', 'Heybet', 'Çılgın Savaşçı', 'Geride Kalanın'], {}),
  'bard': (3, 3, 'ID', ['Bilgi', 'Ağıt', 'Akrobat', 'Arzu', 'Harp', 'Hatip', 'Islık', 'Varoluş', 'Şair'], {}),
  'cleric': (3, 3, 'ID', ['Yaşam', 'Aydın', 'Barış', 'Demirci', 'Fırtına', 'Mezar', 'Savaş', 'Yakamoz', 'Birlik Manastırı'], {}),
  'druid': (4, 2, 'ID', ['Toprak', 'Anka', 'Çağrı', 'Çürüyüş', 'Element', 'Feza', 'Uyku', 'Karadul'], {'erkek': [8]}),
- 'fighter': (4, 3, 'ID', ['Şahin Gözlü', 'Çapkın Kavalye', 'Hissi Kablel', 'Pehlivan', 'Pehlivan (dev hali)', 'Ninja', 'Çift Dikiş', 'Samuray', 'Hokkabaz', 'Sancaktar', 'İmparator'], {'kadin': [11]}),
- 'monk': (4, 3, 'ID', ['Açık El', 'Astral', 'Ayyaşlık', 'Azizlik', 'Ejderha', 'Element', 'Işık', 'Karanlık', 'Keskinlik', 'Ölümsüzlük', 'Yaşlı Bilge'], {}),
- 'paladin': (4, 3, 'ID', ['Bağlılık', 'Antik', 'Asi/Yemin Bozan', 'Biat', 'Fetih', 'İntikam', 'Kefaret', 'Muhafız', 'Zafer', 'Hızır'], {}),
+ 'fighter': (4, 3, 'ID', ['Şahin Gözlü', 'Hat Bekçisi', 'Hissi Kablel', 'Pehlivan', 'Pehlivan (dev hali)', 'Ninja', 'Çift Dikiş', 'Ronin', 'Hokkabaz', 'Sancaktar', 'İmparator'], {'kadin': [11]}),
+ 'monk': (4, 3, 'ID', ['Açık El', 'Yıldız Ruhu', 'Diyojen', 'Azizlik', 'Ejderha', 'Element', 'Işık', 'Karanlık', 'Keskinlik', 'Ölümsüzlük', 'Yaşlı Bilge'], {}),
+ 'paladin': (4, 3, 'ID', ['Bağlılık', 'Antik', 'Asi', 'Biat', 'Fetih', 'İntikam', 'Kefaret', 'Muhafız', 'Zafer', 'Hızır'], {}),
  'ranger': (3, 3, 'ID', ['Avcı', 'Avare', 'Çoban', 'Ejder Muhafızı', 'İbliskıran', 'İzci', 'Kovancı', 'Seyyah', 'Çiftçi'], {}),
- 'rogue': (4, 3, 'ID', ['Hırsız', 'Dedektif', 'İllüzyonist', 'Kamufle', 'Kaşif', 'Psişik Hançerler', 'Silahşör', 'Suikastçı', 'Taktisyen', 'İnfazcı'], {}),
+ 'rogue': (4, 3, 'ID', ['Hırsız', 'Dedektif', 'İllüzyonist', 'Kamufle', 'Öncü', 'Psişik Kirpi', 'Silahşör', 'Sessiz Ecel', 'Taktisyen', 'İnfazcı'], {}),
 }
 TALL = {'warlock': 8}  # kendi boyuna göre ölçeklenen uzun hücre
 
@@ -628,7 +628,7 @@ def apply_new(old_scales):
 # KQ6-14 TOPLU KESİM TEK TUR (`--yeni`): 52 sayfa (dragonborn sınıf, wizard dragonborn a/b, gariban, Hızır; wizard human yalnız referans).
 ORIG = list(CLASSES)
 GARIBAN = ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard']
-CLASSES['wizard_a'] = (4, 2, 'WZ-A', ['Patlama', 'Aldatmaca', 'Anka', 'Diriliş', 'Savaş', 'Kâtip', 'Kehanet', 'Kılıç Şarkısı'], {})
+CLASSES['wizard_a'] = (4, 2, 'WZ-A', ['Patlama', 'Aldatmaca', 'Anka', 'Diriliş', 'Savaş', 'Kâtip', 'Kehanet', 'Keskin Ezgi'], {})
 CLASSES['wizard_b'] = (4, 2, 'WZ-B', ['Seraplar', 'Sığınak', 'Simya', 'Tezahür', 'Uzay Bükücü', 'Zaman', 'Harita'], {'erkek': [], 'kadin': []})
 CLASSES['gariban'] = (4, 3, 'GR', [c.capitalize() for c in GARIBAN], {})
 CLASSES['hizir'] = (3, 3, '', [f'hücre {i}' for i in range(1, 10)], {})

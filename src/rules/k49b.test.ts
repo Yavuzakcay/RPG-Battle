@@ -23,7 +23,7 @@ describe('alt sınıf görünümü', () => {
     expect(visibleSubclasses('cleric').some((s) => s.id === 'baris-alani')).toBe(false);
   });
   it('adlar: parantezli takma ad, Cleric Alanı → Manastırı, Barış → Birlik; "dış içerik" eki yok', () => {
-    expect(displayName({ tr: 'Psişik Hançerler (Kirpi)', en: 'Psychic Blades (Hedgehog)' })).toEqual({ tr: 'Kirpi', en: 'Hedgehog' });
+    expect(displayName({ tr: 'Uzun Ad (Kirpi)', en: 'Long Name (Hedgehog)' })).toEqual({ tr: 'Kirpi', en: 'Hedgehog' });
     expect(displayName({ tr: 'Işık Alanı', en: 'Light Domain' }, 'cleric').tr).toBe('Işık Manastırı');
     expect(displayName({ tr: 'Barış Alanı', en: 'Peace Domain' }, 'cleric')).toEqual({ tr: 'Birlik Manastırı', en: 'Unity Domain' });
     expect(displayName({ tr: 'Toprak Çemberi', en: 'Circle of the Land' }, 'druid').tr).toBe('Toprak Çemberi');

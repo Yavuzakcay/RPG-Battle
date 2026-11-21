@@ -2,6 +2,33 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Alt sınıf ad temizliği (telif) ve Dungeondex lisans girişi (2026-11-21; kural sürümü değişmedi)
+
+- **Adlar değişti, kimlik/seviye/mekanik aynı.** Yerel 108 paket alt sınıfında (`icerik/ek-*.json`) 26 alt sınıf ve 224 özellik
+  adı değişti (Cleric "… Alanı" → "… Manastırı", Paladin "… Yemini" → "… Töresi", Champion → Gladyatör/Gladiator…). Kimlik
+  bazlı eşlemede kimlik, seviye, özellik sayısı ve sırası birebir aynı; tek fark Cleric `baris-alani` paket dosyasından da çıktı
+  (kimliği `eskiKimlik` ile Birlik Manastırı'na yönlenmeye devam eder). Kayıtlı karakterler kimlikle açıldığı için etkilenmez.
+  `icerik/` ve metin yedekleri (`_yedek-metin-*`, yeni gitignore satırı) yerel kalır, depoya girmez; eşleme listesi yerelde
+  `icerik/_ad-degisiklikleri.md`. **APK'da paketlerin gömülmesi ayrı karar** (Görev AS2 ürün sorunu açık).
+- **Depoda güncellenen:** `icerik-liste.txt` (23 ad; kimlikler aynı, `baris-alani` satırı jeton tablosu için kaldı),
+  `scripts/lib/srd12-paket.ts` `AD_TR` (life-domain "Yaşam Manastırı", oath-of-devotion "Sadakat Töresi"; eskisi kalsaydı
+  `srd12-paket-ekle.ts --adlari-guncelle` yeni adı eskisiyle ezerdi), hücre etiketleri (`data/jeton-hucre-sirasi.json`,
+  `scripts/toplu-kesim.py`, `data/wizard-jeton.json` `hucreAdi`; hücre koduna bağlı, metin yalnız etiket: sayı ve sıra aynı),
+  kod yorumları ve test başlıkları, `as2.test` sayımı 109 → 108 (paket dosyasında Barış Alanı yok; eski 109 koşulu testi
+  sessizce atlatıyordu), `k49b.test` parantezli takma ad kuralı kurgusal örnekle. `data/dungeondex-gorsel-esleme.json` ve
+  `GORSEL-ENVANTER.md` `npm run dd-gorsel` ile yeniden üretildi (yerel paketle: alt sınıf adları paketten).
+- **Bilerek dokunulmayan (ad anahtar):** `docs/ek-yama/p8.yama.json` (ek-yama özelliği TR adla eşler; 45 eski ad) ve
+  `scripts/lib/ucus-envanter.mjs` `HEDEFLER` (alt sınıfı TR adla arar; 4 eski Cleric/Paladin adı). Yeniden çalıştırılırlarsa bu
+  satırlar eşleşmez; kimliğe geçirmek ayrı iş. Elle yazılmış eski belgeler (AS2-ENVANTER/FARKLAR, ENVANTER-JETON-VE-BUYU,
+  U1B-ENVANTER, PAKET-SIGMAYAN, bu dosyanın geçmişi, `docs/` raporları) ve SRD fikstürü (`src/rules/fixtures/srd-alt-siniflar.json`,
+  SRD çevirisi TR adlar) aynen.
+- **İngilizce adlar** (SRD dışı `name.en` Türkçe adla aynı): yeni Türkçe adlardan çeviri üretildi, resmî İngilizce adlara dönülmedi;
+  SRD 12 SRD adında (Champion → Gladiator istisnası). Liste kullanıcı onayında (`icerik/_en-adlar-onay.md`), pakete henüz yazılmadı.
+- **Dungeondex lisans girişi.** Parşömen gezinmesi (ad137e7c) sekme şeridini kaldırınca lisans sayfasına içindekiler dışından yol
+  kalmamıştı; CC-BY-4.0 atfının uygulama içinde her görünümden erişilebilir olması gerektiği için parşömen gezinmesine (`ddk-pagenav`)
+  görünür "Lisans / Atıf" düğmesi eklendi (`dex-nav-lisans`; Geri önceki görünüme döner, lisans sayfasında gizli). Test bu yolu
+  dört görünümde arar.
+
 ## Görev TE99: tür, feat ve eşya denetimi düzeltmeleri (2026-11-21; kural sürümü 99 `TE99_VERSION`)
 
 Kaynak `harita/belgeler/TUR-FEAT-ESYA-DENETIM.md` (225 satır; "Düzeltme durumu" bölümü). Tek sabit `src/battle/te99Surum.ts`

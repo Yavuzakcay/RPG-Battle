@@ -1,6 +1,6 @@
 /**
  * Kuyruk 17 G3: dış alt sınıf motor doğrulaması (veri kullanıcıda; burada yalnızca kurgusal paketler). Harp Koleji S10
- * kullanımı (10. seviyede ek bonus eylem), Biat Yemini S3 kullanımı (dış paketten tasma özelliği, A4 kancası), etkin seviye
+ * kullanımı (10. seviyede ek bonus eylem), Biat Töresi S3 kullanımı (dış paketten tasma özelliği, A4 kancası), etkin seviye
  * max(seviye, 3) kuralı ve onaylı uyarlamaların seviyelerinde kurgusal yer tutucularla savaş duman testi.
  */
 import { afterEach, describe, expect, it } from 'vitest';

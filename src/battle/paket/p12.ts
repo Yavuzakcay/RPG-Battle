@@ -140,7 +140,7 @@ registerHitHook((state, actor, target, ctx, rng) => {
     after: [() => [{ type: 'feature_used', actorId: actor.id, feature: key, remaining: 0 }]] };
 });
 
-// ------------------------------------------------------------------ rastgele büyü listesi (Sınırlı Dilek)
+// ------------------------------------------------------------------ rastgele büyü listesi (Dile Benden Ne Dilersen)
 
 /** Büyünün şu an geçerli bir hedefi var mı (menzilde uygun yaratık; alan/kendine büyüler her zaman; savaş dışı değil). */
 export function wishSpellValid(state: BattleState, a: Combatant, s: Spell): boolean {
@@ -215,7 +215,7 @@ const rowRank = (row: VertigoRow | undefined, state: BattleState, c: Combatant):
   return foes ? 1 : 2.5; // ışınlanma: düşman yakında değilse değerli
 };
 
-/** Vertigo zarı (Kontrol Sağlama: iki zar, seçim). */
+/** Vertigo zarı (Kaosa Dizgin: iki zar, seçim). */
 function vertigoFace(state: BattleState, c: Combatant, r: Ref, rng: Rng): number {
   const sides = vertigoSides(r.p);
   const a = rollDie(sides, rollTag(rng, { by: c.id }));
