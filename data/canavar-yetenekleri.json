@@ -1488,5 +1488,19 @@
   "passive": {
    "split": true
   }
+ },
+ "cloud-giant": {
+  "abilities": [
+   {
+    "id": "misty-step",
+    "en": "Misty Step",
+    "tr": "Misty Step",
+    "cost": "bonus",
+    "kind": "teleport",
+    "ft": 30,
+    "surum": 103,
+    "srd": "SRD 5.2.1 s. 275 Cloud Giant Bonus Actions: Misty Step (büyüyü Spellcasting yeteneğiyle yapar)"
+   }
+  ]
  }
 }

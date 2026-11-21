@@ -2,6 +2,7 @@
 import { SINIF97_VERSION } from './sinif97Surum';
 import { TE99_VERSION, te99On } from './te99Surum';
 import { KARAR101_VERSION } from './karar101Surum';
+import { KAPSAM103_VERSION } from './kapsam103Surum';
 import { STONE_ID } from './karar101';
 import srdSpells from '../../data/srd/spells.json';
 import { B94_VERSION } from './b94Surum';
@@ -569,7 +570,9 @@ export function combatantFromMonster(
     maxHp: monster.hp,
     speed: monster.speed,
     ...(swimFt ? { swimFt } : {}),
-    initiativeBonus: mods.dex,
+    // KAPSAM103 (103+; SRD 5.2.1 stat bloğu "Initiative +X"): canavarın inisiyatifi stat bloğundan (yetkinlik/özellik dahil);
+    // alan yoksa (özel canavar) ya da eski savaşta DEX değiştiricisi.
+    initiativeBonus: v >= KAPSAM103_VERSION && monster.initiative !== undefined ? monster.initiative : mods.dex,
     initiative: 0,
     height: opts.height ?? 0,
     pos: null,
@@ -870,6 +873,8 @@ export function startBattle(
   if (rules >= B94_VERSION) participants = participants.map(unbakeOwnAura);
   // Görev B95-B (97+): durum görmeyen sınıf yardımcıları (Relentless Rage…) için savaşçı işareti.
   if (rules >= SINIF97_VERSION) participants = participants.map((p) => ({ ...p, sinif97: true }));
+  // KAPSAM103 (103+): durum görmeyen sınıf yardımcıları (Empowered Evocation, Gift of the Depths) için savaşçı işareti.
+  if (rules >= KAPSAM103_VERSION) participants = participants.map((p) => ({ ...p, k103: true }));
   // Görev TE99 (99+, SRD 5.2.1 s. 90 Two-Handed): kalkan takılıyken iki elli silah seçeneği saldırı listesinden çıkar
   // (yapay zekâ, fırsat saldırısı, Hazırla aynı listeden); arayüz nedeniyle gösterir (`shieldBlocked`).
   // Görev TE99: eşya bonusu bağı (`te99Alt`) sürüme göre; Javelin of Lightning (99+) Javelin seçeneğine Lightning türü.

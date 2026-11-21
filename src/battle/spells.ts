@@ -117,6 +117,9 @@ function spellDamageRoll(expr: string, actor: Combatant, rng: Rng): { rolls: num
 /** Kuyruk P12 (paket `buyuDegisimi.ikizOkul`; savaşçıda `pkTwinSchool`, sürüm 43+): bu okulun alansız, menzilli büyüsü bir hedef fazla. */
 const schoolTwin = (actor: Combatant, spell: Spell): boolean => !!actor.pkTwinSchool && spell.school === actor.pkTwinSchool && !spell.area && spell.rangeFt > 0;
 
+/** KAPSAM103: büyü Wizard listesinde mi (Empowered Evocation "a Wizard spell"; adı bilinmeyende evet). */
+const wizardSpell = (name?: string): boolean => !name || !!spells.find((s) => s.name === name)?.classes.includes('Wiz');
+
 /** Görev WIZARD: Potent Cantrip (Evoker): save'li cantrip'te başarıda da yarı hasar. */
 const potentCantrip = (actor: Combatant, spell: Spell) => spell.level === 0 && !!actor.traits?.includes('potent-cantrip');
 
@@ -129,7 +132,7 @@ function damageExpr(m: SpellMechanics, actor: Combatant, tier: number, upcast = 
   const bonus = spec.bonus + upFlat + (m.addCastingMod ? actor.spellMod : 0) + (m.scalesWithLevel && !m.addCastingMod && m.kind !== 'heal' ? cantripBonus(actor) : 0)
     // Görev WIZARD: Empowered Evocation (Evoker 10, +INT) ve Görev SORCERER: Elemental Affinity (Draconic, +CHA): bir hasar
     // zarına. Görev B93 (sürüm 93+): çok zarlı/ışınlı büyüde çağıran `skip` ile yalnız bir zara bırakır (`oneDieBonus.ts`).
-    + oneDieBonus(actor, m, school, skip)
+    + oneDieBonus(actor, m, school, skip, wizardSpell(name))
     // Görev P0: ek paket buyuDegisimi (hasar eklentisi).
     + (m.kind !== 'heal' && actor.paket ? paketSpellBonus(actor, m.damageType, school, name ? spells.find((s) => s.name === name)?.rangeFt : undefined, !!actor.paket.v42) : 0)
     // Görev WARLOCK: Agonizing Blast: seçilen cantrip'in hasar zarına (her ışına) büyü yeteneği.
@@ -262,7 +265,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const hit = auraQuiet ? [] : reached;
   const splitParts = matrisOn(state) && m.split && m.split.length === 2 && globalRule(state, 'spellsK19')
     ? m.split.map((p, i) => ({ damageType: p.type, dice: damageExpr({ ...m, damage: p.dice, damageType: p.type, upcast: p.upcast ? { dice: p.upcast, applied: true } : undefined }, actor, tierOf(actor), (slot.slotLevel ?? spell.level) - spell.level, spell.school, spell.name,
-      i > 0 && buyucu93On(state) ? usedOnce(actor, { kind: m.kind, damageType: m.split![0]!.type }, spell.school) : undefined) }))
+      i > 0 && buyucu93On(state) ? usedOnce(actor, { kind: m.kind, damageType: m.split![0]!.type }, spell.school, undefined, wizardSpell(spell.name)) : undefined) }))
     : null;
   events.push({
     type: 'spell_cast', actorId: actor.id, targetId: null, label: label ?? (repeat ? `${spell.name} (tekrar)` : spell.name), slotLevel: slot.slotLevel,
@@ -313,7 +316,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const split = m.split && m.split.length === 2 && globalRule(state, 'spellsK19') ? m.split : null;
   // Görev B93 (sürüm 93+): ikinci parçada, birinci parçaya eklenmiş tek-zar ekleri (Empowered Evocation, Elemental Affinity) atlanır.
   const partExpr = (p: { dice: string; type: string; upcast?: string }, second = false) => damageExpr({ ...m, damage: p.dice, damageType: p.type, upcast: p.upcast ? { dice: p.upcast, applied: true } : undefined }, actor, tierOf(actor), upcast, spell.school, spell.name,
-    second && split && buyucu93On(state) ? usedOnce(actor, { kind: m.kind, damageType: split[0]!.type }, spell.school) : undefined);
+    second && split && buyucu93On(state) ? usedOnce(actor, { kind: m.kind, damageType: split[0]!.type }, spell.school, undefined, wizardSpell(spell.name)) : undefined);
   const damageType = split ? split[0]!.type : m.damageType;
   const damage0 = split ? spellDamageRoll(partExpr(split[0]!), actor, rng)
     : m.damage ? spellDamageRoll(damageExpr(m, actor, tierOf(actor), upcast, spell.school, spell.name), actor, rng) : { rolls: [] as number[], total: 0 };
@@ -997,7 +1000,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   // Görev B93 (sürüm 93+): Empowered Evocation / Elemental Affinity tek zara (ilk hasar veren ışına/darta); Empowered Spell
   // büyü başına en çok CHA zar (ışınlar arasında ortak), otomatik isabetli dartlarda da (SRD 5.2.1 s. 66, 70, 82).
   const v93 = buyucu93On(state);
-  let onceLeft = v93 ? oneDieBonus(actor, m, spell.school) : 0;
+  let onceLeft = v93 ? oneDieBonus(actor, m, spell.school, undefined, wizardSpell(spell.name)) : 0;
   let empowerLeft = v93 && actor.traits?.includes('mm-empowered') ? Math.max(1, actor.modifiers.cha) : undefined;
   const empower = (rolls: number[], sides: number): number[] => {
     if (empowerLeft === undefined) return empowerRolls(actor, rolls, sides, rng);

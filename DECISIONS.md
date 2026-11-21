@@ -2,6 +2,56 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev KAPSAM103 (gece kuyruğu Aşama 4): canavar verisi SRD uyumu ve sınıf açıkları (2026-11-21; kural sürümü 103 `KAPSAM103_VERSION`)
+
+Tek sabit `src/battle/kapsam103Surum.ts` (`KAPSAM103_VERSION` 103, `kapsam103On`); durum bilmeyen yardımcılar için savaşçıda `k103`
+işareti (savaş başında, `sinif97` deseni). 102 ve altı (eski kayıt, replay) aynen. Kayıt sürümü değişmedi. Testler
+`src/battle/kapsam103.test.ts` (102 ↔ 103). Değişen eski testler: `ruleVersion.test.ts`, `g6.test.ts` (102 → 103).
+
+- **`data/monsters.json` istisnası (CLAUDE.md "canavar verisini denge için değiştirme" kuralının istisnası; denge için değil, SRD stat
+  bloğu uyumu):** (a) 330 canavara `initiative` (SRD stat bloğu "Initiative +X", `scripts/srd-canavar.mjs` ← PDF; `data/srd/monsters.json`
+  `initiative`) ve `srdPage` (stat bloğu sayfası) eklendi; (b) Adult ve Ancient Gold Dragon'un SRD aktarımında "Spellcasting" adıyla
+  gelen saldırısı (metni Spellcasting, save ve eki Weakening Breath) **Weakening Breath** oldu (SRD metni, 60/90 ft koni). (b) sürümlü:
+  `data/srd-duzeltme.json` `surum: 103` (102 ve altı eski ad ve metin); ek bağlaması `data/canavar-ekleri-a2.json` iki adla.
+- **1. Canavar inisiyatifi** (SRD 5.2.1 s. 254 stat bloğu "Initiative"): 103+ savaşta `initiativeBonus` stat bloğundan (yetkinlik/özellik
+  dahil; 330 canavarın 110'unda DEX'ten farklı), alan yoksa (özel canavar) DEX (`create.ts` `combatantFromMonster`).
+- **2. Eksik yetenekler:** Cloud Giant **Misty Step** (s. 275 Bonus Actions; `data/canavar-yetenekleri.json` `teleport` 30 ft, `surum`
+  103, `abilitiesOf` sürüm süzgeci); Adult/Ancient Gold Dragon **Weakening Breath** (s. 291–292; Multiattack "replace one attack" artık
+  adıyla eşleşir); Sphinx of Lore/Valor **Weight of Years** (s. 327–328 efsanevi eylem: CON DC 16, 120 ft, 1 Exhaustion, sonraki turunun
+  başına dek bir kez; `data/efsanevi.json` `surum` 103, `legendaryOf` süzgeci). ⚠ Sphinx'in veride Arcane Prowl'a karışmış save alanları
+  (CON 16, 120 ft) eski kayıt uyumu için değiştirilmedi; strike türünde okunmuyor.
+- **3. Saldırı ekleri — ertelendi, karar gerekli:** yapışma (Stirge Proboscis, Darkmantle Crush, Cloaker Attach: yapışık kalıp hareket,
+  her tur hasar, 5 ft hareketle ya da eylemle sökme) yeni "bağlı yaratık" sistemi ister; likantrop laneti (SRD s. 339 vb.: "If the cursed
+  target drops to 0 Hit Points, it instead becomes a Werewolf under the GM's control and has 10 Hit Points") biçim değişimi + taraf
+  değişimi ister (Polymorph `shape_changed` + `allegianceSwap` birleşimi); boğulma (Rug Smother, Water Elemental Whelm, Gelatinous
+  Cube Engulf "can't breathe"): K73c nefes sistemi yalnız su altında; "nefes alamaz" etkisi yeni bağ ister. Öneri: tek "nefessiz"
+  etkisi (`ActiveEffect.noBreath` → `breathLimit`) ile üçü birden; likantropi için GM paneli "lanetli" işareti + 0 HP kancası.
+- **4. Sınıf açıkları:**
+  - **Empowered Evocation** (s. 82 "Whenever you cast a Wizard spell from the Evocation school, you can add your Intelligence modifier
+    to one damage roll"): 103'te yalnız Wizard listesindeki büyüde ve INT değiştiricisiyle (`oneDieBonus.ts`, `k103`). ⚠ "Wizard spell"
+    = Wizard listesinde (çoklu sınıf yok).
+  - **Reliable Talent** (s. 63 "ability check that uses one of your skill or tool proficiencies … treat a d20 roll of 9 or lower as a 10"):
+    103'te Thieves' Tools ile kilit açmada da (`objects.ts`).
+  - **Evocation Savant** (s. 82 "each of which must be no higher than level 2"): oluşturucu `maxBaseLevel`'i denetler (sürümsüz;
+    `builder.ts` `bookSchoolLow` sorunu).
+  - **Gift of the Depths** (s. 73 "You can breathe underwater"): 103'te su altında solur (`underwaterCore.ts` `breathesWater`).
+  - **Ertelendi (SRD-12 sınıf özelliği sapmaları, gerekçe):** Cutting Words yalnız isabette (tetik `miss` ve hasar sonrası istem ortak
+    tepki zamanlamasını değiştirir; Bard denetimi B94); Quivering Palm'da saldırıdan vazgeçerek bitirme (Monk eylem ekonomisi yeni
+    komut); Holy Nimbus / Hurl Through Hell yenilenmesi (dinlenme modeli savaş dışı); Dark One's Own Luck (zar sonrası seçim istemi
+    B98 ilham kalıbıyla yapılabilir, ayrı iş); Supreme Sneak siper denetimi (Hide modeli); Fast Hands / Use Magic Device savaş dışı
+    parçalar; Preserve Life, Land's Aid, Sculpt Spells, Superior Hunter's Prey, Intimidating Presence oyuncu seçimi yerine otomatik seçim
+    (her biri yeni seçim istemi; `askChoice` kalıbı hazır). **Thief's Reflexes** "Surprised değilken": SRD 5.2.1 metni ("You can take
+    two turns during the first round of any combat. You take your first turn at your normal Initiative and your second turn at your
+    Initiative minus 10.") Surprised koşulu içermiyor; oyundaki koşulsuz uygulama SRD ile **aynı** (doğrulandı, değişiklik yok).
+- **5. SRD-KAPSAM kısmi canavar satırlarının desenleri (128 satır):** inisiyatif farkı 110 (**bu görevde kapandı**), savaş dışı not 53
+  (değişmez), Weakening Breath 2 ve Weight of Years 2 (**kapandı**), Misty Step 1 (**kapandı**), Hurl Flame 2 (yanıcı nesneyi
+  hedefleme: canavar saldırısı nesne hedeflemez; nesne hedefi yeni yol), boğulma 3 (yukarıda, ertelendi), Vortex sözlü büyü yasağı 1
+  (yutma/girdap "can't cast spells with Verbal" `noVerbal` etkisiyle yapılabilir, küçük), dokunaç AC/HP 1 (yeni nesne-parça modeli),
+  Rotting Fist 24 saat 1 (savaş dışı).
+- **Yapay zekâ:** Weight of Years ve Misty Step veriyle mevcut efsanevi/yetenek seçicisine girer (yeni karar kodu yok).
+- **Hızlı regresyon (102 ↔ 103, 100 tohum):** Çöl %81/%81, Kale %36/%32, Mağara %85/%78 (berabere %4), Orman %64/%68. Fark **kural
+  kaynaklı** (canavar inisiyatifi stat bloğundan; sim partisi ve listeler aynı); `DENGE.md` "ölçülecek".
+
 ## Görev BUYU-TAM (gece kuyruğu Aşama 3): SRD 5.2.1 büyü tam taraması ve düzeltmeleri (2026-11-21; kural sürümü 102 `BUYU_TAM_VERSION`)
 
 Tek sabit `src/battle/buyuTamSurum.ts` (`BUYU_TAM_VERSION` 102, `buyuTamOn`); büyü verisinde `b102` bloğu (sırayla en son birleşir:

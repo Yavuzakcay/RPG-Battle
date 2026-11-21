@@ -51,6 +51,8 @@ const breathers = new Map<string, boolean>();
 /** Su soluyor mu: canavar notunda Water Breathing / Amphibious / Hold Breath (savaş boyu yeter), ya da `waterBreathing` etkisi. */
 export function breathesWater(c: Combatant): boolean {
   if (c.effects?.some((e) => e.id.includes('water-breathing'))) return true;
+  // KAPSAM103 (103+, `k103` işareti; SRD 5.2.1 Gift of the Depths "You can breathe underwater"): Eldritch Invocation.
+  if (c.k103 && c.traits?.includes('gift-of-the-depths')) return true;
   // Görev WS91: Wild Shape/Polymorph biçiminde biçimin notu.
   const id = formMonsterId(c);
   if (!id) return false;

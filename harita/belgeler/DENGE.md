@@ -2,6 +2,22 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Not: KAPSAM103 (2026-11-21, kural sürümü 103) — ölçülmedi, ölçülecek
+
+Kural sürümü 103 (gece kuyruğu Aşama 4): canavar inisiyatifi SRD stat bloğundan (330 canavarın 110'unda DEX'ten yüksek/farklı;
+ejderhalar, devler, iblisler çoğunlukla daha önce davranır). **Kural kaynaklı** fark (veri hatası değil): sim partisi ve düşman listeleri
+aynı. Denge **ölçülmedi** (kullanıcı: simülasyon yok); yalnız hızlı regresyon:
+
+| Senaryo | 102 | 103 |
+|---|---:|---:|
+| Çöl — Gündüz | %81 | %81 |
+| Kale — Gündüz (Kale ve avlu) | %36 | %32 |
+| Mağara — karanlık | %85 | %78 (berabere %4) |
+| Orman | %64 | %68 |
+
+Aralık dışı (hedef %60–80): Kale %32 (bant altı, 102'de de %36), Çöl %81. Düzeltme yapılmadı; tam turda düşman listeleri yeniden
+ölçülmeli (inisiyatif yeni girdisiyle).
+
 ## Not: KARAR101 (2026-11-21, kural sürümü 101) — ölçülmedi, ölçülecek
 
 Kural sürümü 101 (gece kuyruğu Aşama 2): `nightVision` yeni savaşta **varsayılan açık** (gece varyantlarında SRD görüşü: görmeyen

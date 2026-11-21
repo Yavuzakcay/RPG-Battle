@@ -338,6 +338,7 @@ const tr = {
     altCantripCap: (max: number, n: number) => `Blessed Warrior gibi seçenekten en çok ${max} cantrip (${n} seçildi).`,
     cantripsOver: (n: number, lim: number) => `Cantrip fazla (${n} / ${lim}).`, preparedOver: (n: number, lim: number) => `Hazırlanan büyü fazla (${n} / ${lim}).`,
     bookSchool: (school: string, n: number) => `Büyü kitabındaki ek ${n} büyü ${school} okulundan olmalı (Evocation Savant).`,
+    bookSchoolLow: (school: string, n: number, lv: number) => `Evocation Savant'ın ilk ${n} bedelsiz büyüsü en çok ${lv}. seviye ${school} büyüsü olmalı.`,
     bookOver: (n: number, lim: number) => `Büyü kitabı fazla (${n} / ${lim}).`, notInBook: (sp: string) => `${sp} büyü kitabında değil.`,
     subclassNeeded: (lvl: number) => `Alt sınıf seçilmeli (${lvl}. seviyede).`,
     metamagicCount: (count: number, n: number) => `Metamagic: ${count} seçenek seçilmeli (${n} seçildi).`, metamagicUnknown: 'Metamagic: bilinmeyen seçenek.',

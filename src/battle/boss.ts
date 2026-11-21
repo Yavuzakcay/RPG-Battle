@@ -48,6 +48,8 @@ export interface LegendaryAction {
   /** Shimmering Shield; World-Shaking Movement; Psychic Drain. */
   tempHp?: string; ac?: number; radiusFt?: number; needs?: string[];
   attack?: string; count?: number; dice?: string; damageType?: string; bonus?: number; rangeFt?: number; oncePerTurn?: boolean;
+  /** KAPSAM103: bu kural sürümünden başlayan savaşta (eski savaşta eylem yok). */
+  surum?: number;
   /** Kuyruk 43: Pounce: saldırıdan önce hızın yarısı kadar hareket (SRD 5.2.1). */
   halfMove?: boolean;
   /** Kuyruk 43: Commanding Presence: Command (2. seviye: iki hedef), WIS save DC'si ve söz. */
@@ -63,7 +65,9 @@ export function legendaryOf(state: BattleState, c: Combatant): LegendarySpec | n
   const id = formMonsterId(c);
   if (id && DATA.monsters[id]) {
     const spec = DATA.monsters[id] as LegendarySpec;
-    return spec.k19 && !globalRule(state, 'srdK19') ? null : spec;
+    if (spec.k19 && !globalRule(state, 'srdK19')) return null;
+    // KAPSAM103: sürümlü eylemler (Weight of Years 103+) eski savaşta yok.
+    return spec.actions.some((a) => a.surum) ? { ...spec, actions: spec.actions.filter((a) => !a.surum || ruleVersion(state) >= a.surum) } : spec;
   }
   if (state.map?.dragon?.id === c.id) return DATA.yuva;
   return null;

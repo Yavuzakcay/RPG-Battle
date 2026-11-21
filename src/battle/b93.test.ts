@@ -16,7 +16,8 @@ const dmgOf = (evs: BattleEvent[], id = 'B') => evs.filter((e) => e.type === 'at
 
 describe('A1: tek zara eklenen değerler (Empowered Evocation, Elemental Affinity)', () => {
   it('Magic Missile: Empowered Evocation +INT yalnız bir darta (93); 92\'de her darta', () => {
-    const a = caster({ spellNames: ['Magic Missile'], traits: ['empowered-evocation'] });
+    // KAPSAM103 (103+): Empowered Evocation INT değiştiricisiyle (büyücü fikstürü INT = büyü değiştiricisi 4).
+    const a = caster({ spellNames: ['Magic Missile'], traits: ['empowered-evocation'], modifiers: { str: 0, dex: 0, con: 0, int: 4, wis: 0, cha: 0 } });
     const now = arena(a, [['B', {}, o(5, 3)]]).do({ type: 'cast_spell', actorId: 'A', spellName: 'Magic Missile', targetId: 'B' });
     const old = arena(a, [['B', {}, o(5, 3)]], { rules: 92 }).do({ type: 'cast_spell', actorId: 'A', spellName: 'Magic Missile', targetId: 'B' });
     // 3 dart × (1d4 = 3, +1) = 12; +4 bir kez.

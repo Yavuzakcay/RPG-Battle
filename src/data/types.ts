@@ -1092,6 +1092,10 @@ export type CreatureSize = 'T' | 'S' | 'M' | 'L' | 'H' | 'G';
 export interface Monster {
   id: string;
   name: string;
+  /** KAPSAM103 (kural sürümü 103+): SRD stat bloğundaki "Initiative +X" (`scripts/srd-canavar.mjs`; yoksa DEX değiştiricisi). */
+  initiative?: number;
+  /** SRD 5.2.1 PDF sayfası (stat bloğu; `data/srd/monsters.json` `page`). */
+  srdPage?: number;
   /** Kuyruk K75 (79+): binicisini kabul etmeye eğitilmiş binek (kontrollü binek; `data/binek.json` `egitimli` listesine ek, özel canavar için). */
   egitimli?: boolean;
   /** Boyut; verilmezse Medium. */

@@ -990,6 +990,58 @@
    "sayfa": 364,
    "surum": 92,
    "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "adult-gold-dragon",
+   "alan": "attacks[Weakening Breath]",
+   "eski": {
+    "name": "Spellcasting",
+    "bonus": 0,
+    "damage": "The dragon casts one of the following spells, requiring no Material components and using Charisma as the spellcasting ability (spell save DC 21, +13 to hit with spell attacks): At Will: Detect Magic, Guiding Bolt (level 2 version), Shapechange (Beast or Humanoid form only, no Temporary Hit Points ga",
+    "save": {
+     "ability": "str",
+     "dc": 21,
+     "halfOnSave": false
+    },
+    "ranged": true,
+    "range": [
+     60,
+     60
+    ],
+    "rider": "The target has Disadvantage on Strength-based D20 Tests and subtracts 3 (1d6) from its damage rolls. It repeats the save at the end of each of its turns, ending the effect on itself on a success. After 1 minute, it succeeds automatically.",
+    "repeat": 0
+   },
+   "yeni": "Weakening Breath (SRD adı ve metni; 60/90 ft koni)",
+   "sayfa": 291,
+   "surum": 103,
+   "not": "Gece kuyruğu Aşama 4 (KAPSAM103): SRD aktarımında saldırı adı 'Spellcasting' (Weakening Breath metni); 103+ SRD adı ve metni (60/90 ft koni), Multiattack yerine geçmesi çalışır"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "ancient-gold-dragon",
+   "alan": "attacks[Weakening Breath]",
+   "eski": {
+    "name": "Spellcasting",
+    "bonus": 0,
+    "damage": "The dragon casts one of the following spells, requiring no Material components and using Charisma as the spellcasting ability (spell save DC 24, +16 to hit with spell attacks): At Will: Detect Magic, Guiding Bolt (level 4 version), Shapechange (Beast or Humanoid form only, no Temporary Hit Points ga",
+    "save": {
+     "ability": "str",
+     "dc": 24,
+     "halfOnSave": false
+    },
+    "ranged": true,
+    "range": [
+     90,
+     90
+    ],
+    "rider": "The target has Disadvantage on Strength-based D20 Tests and subtracts 5 (1d10) from its damage rolls. It repeats the save at the end of each of its turns, ending the effect on itself on a success. After 1 minute, it succeeds automatically.",
+    "repeat": 0
+   },
+   "yeni": "Weakening Breath (SRD adı ve metni; 60/90 ft koni)",
+   "sayfa": 292,
+   "surum": 103,
+   "not": "Gece kuyruğu Aşama 4 (KAPSAM103): SRD aktarımında saldırı adı 'Spellcasting' (Weakening Breath metni); 103+ SRD adı ve metni (60/90 ft koni), Multiattack yerine geçmesi çalışır"
   }
  ]
 }

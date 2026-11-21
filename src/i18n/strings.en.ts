@@ -658,6 +658,7 @@ export const en: Strings = {
     altCantripCap: (max: number, n: number) => `At most ${max} cantrips from an option like Blessed Warrior (${n} chosen).`,
     cantripsOver: (n: number, lim: number) => `Too many cantrips (${n} / ${lim}).`, preparedOver: (n: number, lim: number) => `Too many prepared spells (${n} / ${lim}).`,
     bookSchool: (school: string, n: number) => `The ${n} extra spellbook spells must be from the ${school} school (Evocation Savant).`,
+    bookSchoolLow: (school: string, n: number, lv: number) => `Evocation Savant's first ${n} free spells must be ${school} spells of level ${lv} or lower.`,
     bookOver: (n: number, lim: number) => `Spellbook too big (${n} / ${lim}).`, notInBook: (sp: string) => `${sp} is not in the spellbook.`,
     subclassNeeded: (lvl: number) => `Pick a subclass (at level ${lvl}).`,
     metamagicCount: (count: number, n: number) => `Metamagic: pick ${count} options (${n} chosen).`, metamagicUnknown: 'Metamagic: unknown option.',

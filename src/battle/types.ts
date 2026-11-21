@@ -807,6 +807,8 @@ export interface Combatant {
   inspireAsk?: boolean;
   /** Görev B95-B: savaş kural sürümü 97+ (durum görmeyen yardımcılar için; `createBattle` yazar). */
   sinif97?: boolean;
+  /** KAPSAM103 (kural sürümü 103+): savaş başında konan işaret (Empowered Evocation Wizard büyüsü + INT, Gift of the Depths su soluma). */
+  k103?: true;
   /** Görev B94: yalnız savaş kurulumuna dek (startBattle siler): 93 ve altı savaşta geri eklenecek eski slotsuz büyüler. */
   freeSpellsPre94?: Record<string, string>;
   /** Kuyruk K50: imza alt sınıfı (`data/imza.json`; pasifler, saldırı kancası). */

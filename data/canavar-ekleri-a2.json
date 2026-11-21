@@ -511,7 +511,33 @@
     "unique": true
    },
    "tur": "hizEylem",
-   "not_": "SRD aktarımında saldırı adı 'Spellcasting' (Weakening Breath metni). STR tabanlı d20 Testlerinde dezavantaj, hasardan −1d6, her tur sonu STR save, 1 dk."
+   "not_": "SRD aktarımında saldırı adı 'Spellcasting' (Weakening Breath metni). STR tabanlı d20 Testlerinde dezavantaj, hasardan −1d6, her tur sonu STR save, 1 dk.",
+   "eskiAd": 103
+  },
+  "adult-gold-dragon:Weakening Breath": {
+   "effect": {
+    "name": "Weakening Breath",
+    "checkDis": [
+     "str"
+    ],
+    "saveDis": [
+     "str"
+    ],
+    "attackDis": {
+     "melee": true
+    },
+    "damagePenalty": {
+     "die": "1d6"
+    },
+    "repeatSave": {
+     "ability": "str",
+     "dc": 21
+    },
+    "sure": "rounds:10",
+    "unique": true
+   },
+   "tur": "hizEylem",
+   "not_": "KAPSAM103 (103+): saldırı SRD adıyla (Weakening Breath); SRD aktarımında saldırı adı 'Spellcasting' (Weakening Breath metni). STR tabanlı d20 Testlerinde dezavantaj, hasardan −1d6, her tur sonu STR save, 1 dk."
   },
   "ancient-gold-dragon:Spellcasting": {
    "effect": {
@@ -536,7 +562,33 @@
     "unique": true
    },
    "tur": "hizEylem",
-   "not_": "SRD aktarımında saldırı adı 'Spellcasting' (Weakening Breath metni). STR tabanlı d20 Testlerinde dezavantaj, hasardan −1d10, her tur sonu STR save, 1 dk."
+   "not_": "SRD aktarımında saldırı adı 'Spellcasting' (Weakening Breath metni). STR tabanlı d20 Testlerinde dezavantaj, hasardan −1d10, her tur sonu STR save, 1 dk.",
+   "eskiAd": 103
+  },
+  "ancient-gold-dragon:Weakening Breath": {
+   "effect": {
+    "name": "Weakening Breath",
+    "checkDis": [
+     "str"
+    ],
+    "saveDis": [
+     "str"
+    ],
+    "attackDis": {
+     "melee": true
+    },
+    "damagePenalty": {
+     "die": "1d10"
+    },
+    "repeatSave": {
+     "ability": "str",
+     "dc": 24
+    },
+    "sure": "rounds:10",
+    "unique": true
+   },
+   "tur": "hizEylem",
+   "not_": "KAPSAM103 (103+): saldırı SRD adıyla (Weakening Breath); SRD aktarımında saldırı adı 'Spellcasting' (Weakening Breath metni). STR tabanlı d20 Testlerinde dezavantaj, hasardan −1d10, her tur sonu STR save, 1 dk."
   },
   "harpy:Luring Song": {
    "effect": {

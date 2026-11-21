@@ -57,3 +57,26 @@ worktree'si bulunmuyor; hiçbirine dokunulmadı.
 - Test turu (`src/battle src/ui src/app src/rules src/data`, 387 dosya): 4922 geçti, 3 düştü (E2/E4c Earthquake görsel doğrulaması,
   düzeltildi; `src/ui/fx` 115/115). Hızlı regresyon 101 ↔ 102 aynı (Çöl %81, Kale %36, Mağara %85, Orman %64). Build
   451,00 / 500 kB; `check:harita` 92/92; `check:ses` 15/0.
+
+## Aşama 4: Canavar verisi + sınıf açıkları (kural sürümü 103) — TAMAM (saldırı ekleri ertelendi)
+
+- Tek sabit `src/battle/kapsam103Surum.ts`, testler `src/battle/kapsam103.test.ts` (8 test; 102 ↔ 103). Ayrıntı DECISIONS.md
+  "Görev KAPSAM103".
+- Yapılan: (1) canavar inisiyatifi SRD stat bloğundan (330/330 değer PDF'ten `scripts/srd-canavar.mjs`; 110 canavarda DEX'ten farklı;
+  `data/monsters.json` `initiative`, `srdPage`); (2) Adult/Ancient Gold Dragon Weakening Breath (aktarımdaki "Spellcasting" adlı saldırı;
+  `srd-duzeltme.json` surum 103), Cloud Giant Misty Step, Sphinx of Lore/Valor Weight of Years; (4) Empowered Evocation yalnız Wizard
+  büyüsü + INT, Reliable Talent kilit açmada, Gift of the Depths su soluma, Evocation Savant `maxBaseLevel` (oluşturucu, sürümsüz);
+  Thief's Reflexes "Surprised" SRD metninde yok (doğrulandı, değişiklik yok).
+- Ertelendi, karar gerekli: (3) yapışma (Stirge, Darkmantle, Cloaker), likantrop laneti (5 canavar), boğulma (Rug, Water Elemental,
+  Gelatinous Cube); SRD-12 sınıf özelliği sapmaları (Cutting Words ıskada, Quivering Palm vazgeçme, Holy Nimbus/Hurl Through Hell
+  yenilenme, Dark One's Own Luck, Supreme Sneak siper zamanı, Fast Hands/Use Magic Device savaş dışı, otomatik seçimler) — gerekçeler DECISIONS.
+- (5) SRD-KAPSAM kısmi canavar desenleri (128 satır): inisiyatif 110 + Weakening Breath 2 + Weight of Years 2 + Misty Step 1 kapandı;
+  kalan: savaş dışı 53, Hurl Flame 2, boğulma 3, Vortex 1, dokunaç 1, Rotting Fist 1.
+- `data/monsters.json` istisnası (SRD uyumu, denge değil) DECISIONS ve CLAUDE.md Yasaklar satırında.
+- Değişen eski testler: `ruleVersion.test.ts`, `g6.test.ts` (102 → 103); `b93.test.ts` Magic Missile testi büyücü fikstürüne INT 4
+  (103'te Empowered Evocation INT değiştiricisiyle; testin konusu "bir darta bir kez"); `ridersA2.test.ts` duman testi eski aktarım adını
+  (`eskiAd`) güncel sürümde atlar. Ek verisi: `data/attack-riders.json` ve `data/canavar-ekleri-a2.json` Weakening Breath anahtarları.
+- Test turu (`src/battle src/ui src/app src/rules src/data src/screens`, 418 dosya): 5124 geçti, 4 düştü (yukarıdaki üç dosya; düzeltildi).
+- Hızlı regresyon 102 ↔ 103 (100 tohum): Çöl %81/%81, Kale %36/%32, Mağara %85/%78 (berabere %4), Orman %64/%68 — kural kaynaklı
+  (canavar inisiyatifi), `DENGE.md` "ölçülecek".
+- Build 451,53 / 500 kB; `check:harita` 92/92; `check:ses` 15/0.

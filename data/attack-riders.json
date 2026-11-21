@@ -328,6 +328,11 @@
    "text": "The target has Disadvantage on Strength-based D20 Tests and subtracts 3 (1d6) from its damage rolls. It repeats the save at the end of each of its turns, ending the effect on itself on a success. Afte",
    "status": "yok"
   },
+  "adult-gold-dragon:Weakening Breath": {
+   "unsupported": "özel hasar metni uygulanmıyor",
+   "text": "The target has Disadvantage on Strength-based D20 Tests and subtracts 3 (1d6) from its damage rolls. It repeats the save at the end of each of its turns, ending the effect on itself on a success. Afte",
+   "status": "yok"
+  },
   "adult-green-dragon:Rend": {
    "extra": [
     {
@@ -440,6 +445,11 @@
    "status": "uygulandı"
   },
   "ancient-gold-dragon:Spellcasting": {
+   "unsupported": "özel hasar metni uygulanmıyor",
+   "text": "The target has Disadvantage on Strength-based D20 Tests and subtracts 5 (1d10) from its damage rolls. It repeats the save at the end of each of its turns, ending the effect on itself on a success. Aft",
+   "status": "yok"
+  },
+  "ancient-gold-dragon:Weakening Breath": {
    "unsupported": "özel hasar metni uygulanmıyor",
    "text": "The target has Disadvantage on Strength-based D20 Tests and subtracts 5 (1d10) from its damage rolls. It repeats the save at the end of each of its turns, ending the effect on itself on a success. Aft",
    "status": "yok"
