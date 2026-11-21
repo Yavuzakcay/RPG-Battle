@@ -10,7 +10,7 @@
 | 4 Canavar + sınıf açıkları | tamam (yapışma/likantropi/boğulma ertelendi) | 103 | `cba977ab` |
 | 5 SRD-KAPSAM ikinci çalışma | tamam | — | `ad6edc1e` |
 | 6 Eksik taraması | tamam | — | `524ff83b` |
-| 7 Son doğrulama | tamam | — | bu commit |
+| 7 Son doğrulama | tamam | — | `c23bdcc4` |
 
 Yedi aşamalı gece kuyruğunun ilerleme kaydı. Ortam: bulut oturumu (taze klon), dal `birlesik` (`origin/birlesik` f799e851'den).
 Bu ortamda depo dışı içerik yok: `icerik/` (gitignore), `docs/sabah/`, `public/Subclass/`, `zar-kuru.txt` ve RPG-Battle-motor
