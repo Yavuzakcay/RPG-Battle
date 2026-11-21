@@ -20,6 +20,7 @@ import { rollD20, rollDice, rollTag, type Rng } from '../rules/dice';
 import { markSources } from './mastery';
 import { combineModes, environmentSources, invertMode, underwaterSources } from '../rules/modes';
 import { damageEffects } from './damage-effects';
+import { knockOutFx } from './karar101';
 import { fail, finish, isTargetable, withinFiveFt, type CommandResult, type Failure, damageProfile } from './common';
 import { afterAttackMarks, elusiveFilter, saveDamage, traitSources } from './classTraits';
 import { applyEvents } from './reduce';
@@ -224,7 +225,8 @@ export function monsterAttackEvents(
     const dealt = hit ? hr?.damage ?? 0 : 0;
     melee = !atk.ranged;
     damageType = dmgType ?? '';
-    const fx = damageEffects(target, dealt, dmgType ?? '', critical, rng);
+    // KARAR101 (101+, SRD Knocking Out): yakın dövüş canavar saldırısında da (oyuncunun yönettiği çağrı/biçim; yapay zekâ bayıltmaz).
+    const fx = knockOutFx(state, actor, target, !atk.ranged, damageEffects(target, dealt, dmgType ?? '', critical, rng), rng);
     events.push({
       type: 'attack_resolved', actorId: actor.id, targetId: target.id, label: atk.name, mode,
       reasons: sources.map((s) => s.reason), d20, natural, total, targetAc: hr?.ac ?? targetAc, hit, critical, fumble,

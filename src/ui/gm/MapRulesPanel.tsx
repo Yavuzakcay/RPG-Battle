@@ -4,7 +4,7 @@
  * değer; değerler savaşın başlangıç durumuna yazılır (`ruleControl.ts` `controlState`).
  */
 import { useState } from 'react';
-import { controllableRules, validParam, WIND_DIRS, type RuleParams, type RuleParamSpec } from '../../battle/ruleControl';
+import { controllableRules, specDefault, validParam, WIND_DIRS, type RuleParams, type RuleParamSpec } from '../../battle/ruleControl';
 import type { MapRuleData } from '../../map/maps';
 import { getLang, t } from '../../i18n';
 import groups from '../../../data/kurulum-gruplari.json';
@@ -24,11 +24,11 @@ export function MapRulesPanel(props: {
   const list = controllableRules(props.mapId, props.variantId).filter((x) => !HIDDEN_IN_SETUP.has(x.rule.id));
   if (!list.length) return null;
   const on = (id: string, def: boolean) => props.toggles[id] ?? def;
-  const count = list.filter(({ rule, spec }) => on(rule.id, spec.default !== false)).length;
+  const count = list.filter(({ rule, spec }) => on(rule.id, specDefault(spec))).length;
   const U = t().setupUi;
   const setGroup = (ids: string[], value: boolean) => props.onChange({ ...props.toggles, ...Object.fromEntries(ids.map((id) => [id, value])) }, props.params);
   const row = ({ rule, spec }: (typeof list)[number]) => {
-    const enabled = on(rule.id, spec.default !== false);
+    const enabled = on(rule.id, specDefault(spec));
     return (
       <div key={rule.id} className="map-rule">
         <label className="house-rule">
@@ -50,7 +50,7 @@ export function MapRulesPanel(props: {
       {GROUPS.gruplar.map((g) => {
         const items = list.filter((x) => groupOf(x.rule.id) === g.id);
         if (items.length === 0) return null;
-        const n = items.filter(({ rule, spec }) => on(rule.id, spec.default !== false)).length;
+        const n = items.filter(({ rule, spec }) => on(rule.id, specDefault(spec))).length;
         return (
           <details key={g.id} className="rule-group">
             <summary>{en ? g.en : g.tr} ({n}/{items.length})</summary>

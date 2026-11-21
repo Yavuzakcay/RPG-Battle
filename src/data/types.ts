@@ -919,6 +919,8 @@ export interface ReactionMechanic {
   types?: string[];
   /** Azaltma zarı (`reduce`). */
   dice?: string;
+  /** KARAR101 (sürüm 101+, Stone's Endurance "When you take damage"): her hasarda (`damageEffects`), yalnız isabette değil. */
+  anyDamage?: boolean;
   /** Karşılık saldırısı (Riposte): canavar saldırısının adı. */
   counterAttack?: string;
   /** Recharge (d6 ≥ değer; tur başında). */

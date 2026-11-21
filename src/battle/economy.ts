@@ -46,6 +46,7 @@ const ACTION_NAMES: Partial<Record<Command['type'], string>> = {
   distract: 'Dikkat dağıt',
   use_item: 'Eşya kullan',
   escape_grapple: 'yakalamadan kaçış',
+  shield_toggle: 'Utilize',
 };
 
 /** Yan el ek saldırısı (Light; Görev P1) şu an yapılabilir mi: sorun yoksa null (hedef ayrıca denetlenir). */
@@ -276,6 +277,7 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     case 'pull':
     case 'dodge':
     case 'escape_grapple':
+    case 'shield_toggle':
       // Kuyruk 19: Freedom of Movement ile kurtulmak eylem değil (5 ft hareket).
       if (cmd.type === 'escape_grapple' && actor.effects?.some((e) => e.freeMove)) return { ok: true, event: null };
       // Kuyruk K68a (sürüm 52): enkazdan Freedom of Movement ile kurtulmak eylem değil (5 ft hareket).

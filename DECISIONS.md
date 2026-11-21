@@ -2,6 +2,69 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev KARAR101 (gece kuyruğu Aşama 2): KALAN100 karar kalanları SRD 5.2.1'e göre (2026-11-21; kural sürümü 101 `KARAR101_VERSION`)
+
+Tek sabit `src/battle/karar101Surum.ts` (`KARAR101_VERSION` 101, `karar101On`), motor `src/battle/karar101.ts`. 100 ve altı (eski
+kayıt, replay) eski davranışta. **Kayıt sürümü 24 → 25** (yeni olay `shield_changed`, hasar etkileri `knocked_out` ve `stone_endurance`;
+3–25 yüklenir). Kullanıcı yokken alınan kararlar (soru sorulmadı; en güvenli SRD yolu). Testler `src/battle/karar101.test.ts` (22;
+her madde 100 ↔ 101, replay). Değişen eski testler: `ruleVersion.test.ts`, `g6.test.ts` (güncel sürüm 100 → 101), `SAVE_VERSION`
+beklentisi 24 → 25 (`statusFx.test.ts`, `areaView.test.ts`, `s1.test.ts`, `g1.test.tsx`; `ready.test.ts` ≥ 24).
+
+- **1. Sürünme + zorlu arazi** (s. 179 Crawling: "While you're crawling, each foot of movement costs 1 extra foot (2 extra feet in
+  Difficult Terrain)."; s. 14 Difficult Terrain "costs 1 extra foot"): parantez toplam eki 2 sayar (zorlu arazinin kendi 1 ek ft'i
+  dahil): sürünürken normal zemin 2, zorlu 3 ft/ft (100: 4). `movement.ts` `moveCostFn`: sürünme zemin maliyetine +1 (yavaşlatma
+  çarpanları ayrı). ⚠ Okuma kullanıcı talimatıyla seçildi (metin "toplam" demiyor).
+- **2. Knocking Out** (s. 17 "When you would reduce a creature to 0 Hit Points with a melee attack, you can instead reduce the creature
+  to 1 Hit Point and give it the Unconscious condition. It then starts a Short Rest, at the end of which that condition ends on it. The
+  condition ends early if the creature regains any Hit Points or if someone takes an action to administer first aid to it, making a
+  successful DC 10 Wisdom (Medicine) check."; s. 186 sözlük aynı): yakın dövüş saldırısı (silah, Unarmed Strike, yakın büyü saldırısı,
+  canavar yakın saldırısı) hedefi 0 HP'ye düşürecekken saldırana seçim istemi (`askChoice`; tepki ayarı Sor/Her zaman/Asla yolu:
+  "Her zaman/Asla" ayarında öneri = bayıltma yok). Seçilirse 1 HP + Unconscious (`knocked_out` etkisi, savaşçıda `knockedOut`),
+  0 HP'ye bağlı sonuçlar (ölüm save'i, anında ölüm, yenilenme) düşer. HP kazanınca ya da ilk yardımla (`stabilize` komutu, eylem,
+  DC 10 WIS (Medicine)) Unconscious biter (Prone kalır, GENEL96 A2). **Karar (SRD tanımlamıyor):** bayıltılan yaratık savaş sonu
+  hesabında **yenilmiş** sayılır (`winnerOf`). Yapay zekâ bayıltmaz (öneri null). Kısa dinlenme (1 saat) savaş dışı: savaş sonunda
+  1 HP'de kalır, uyanma Serüven zamanına bağlanmadı (⚠). Esir alma yok (karar gerekli değil; SRD'de yok).
+- **3. Dash ve çoklu hız** (s. 188 Speed "If you have more than one speed, choose which one to use when you move; you can switch between
+  the speeds during your move. Whenever you switch, subtract the distance already moved from the new speed."; s. 180 Dash "The increase
+  equals your Speed after applying any modifiers … If you have a special speed, such as a Fly Speed or Swim Speed, you can use that speed
+  instead of your Speed when you take this action."): bütçe = şimdiki kipin hızı (yürüme/uçuş/yüzme/kazma) + Dash'lerin **Dash anında
+  sabitlenen** eki (`economy.dashFt`); harcanan hareket (`movementUsed`) ortak düşer (geçişte "subtract the distance already moved").
+  100: şimdiki hız × (1 + Dash) (Dash'ten sonra hız değişirse ek de değişiyordu). Dash eki Dash anında kullanılan kipin hızı (⚠ SRD
+  oyuncuya seçtirir; oyunda uçan hep uçar, kip seçimi yok). Binme/inme ve ayağa kalkma bütçeleri aynı modele (`walkBudgetHexes`,
+  `speedHexesNoDash`).
+- **4. nightVision varsayılan açık** (s. 10/15 Vision and Light): yeni savaşta (101+) gece varyantlarında SRD görüşü açık; veri
+  `data/kural-kontrol.json` `acikSurum: 101`, okuma `ruleControl.ts` `specDefault(spec, surum)` (savaşın sürümüyle; 100 ve altı
+  kayıt kapalı kalır). Game Master yine kapatabilir. Denge **ölçülmedi** (kullanıcı: simülasyon yok); `DENGE.md`'ye "ölçülecek" notu.
+- **5a. Yakalama ve eller** (s. 182 "One Grapple per Hand"; "release the creature at any time (no action required)"; s. 90 Two-Handed
+  "requires two hands when you attack with it"): yakalama tutan yaratık Two-Handed silahla saldıramaz (fırlatma ve binekteki Lance
+  hariç), Versatile silah tek elle (tek elli zar, Great Weapon Fighting yok) (`grappleHands`, `weaponAttackEvents` ve komut denetimi;
+  fırsat saldırısı ve Hazırla aynı yoldan). Yeni komut `release_grapple` (eylemsiz; olay `grapple_ended` `released`). ⚠ Bırakma yalnız
+  kendi turunda (komut sırası denetimi); "at any time" başkasının turunda arayüz yolu yok.
+- **5b. High Jump koşusu** (s. 183 "if you move at least 10 feet on foot immediately before the jump"): 101'de koşu = kesintisiz son
+  yürüyüş ≥ 2 altıgen (`walkStreak`: yerdeki `moved` olayı ekler, yaratığın başka her olayı sıfırlar; `syncKarar101`). 100: bu tur
+  ≥ 2 altıgen ve son hareket yürüyüş (araya giren eylem izlenmiyordu).
+- **5c. Stone's Endurance** (s. 85 "When you take damage, you can take a Reaction to roll 1d12. Add your Constitution modifier to the number
+  rolled and reduce the damage by that total."): 101'de her hasarda (`damageEffects` → `stoneEnduranceFx`; tepki `anyDamage` işareti
+  savaş başında), isabet tepkisi yolundan çıktı (çift soru yok). Tepki ve Giant Ancestry kullanımı harcanır (`stone_endurance` etkisi).
+  ⚠ Azaltma direnç/bağışıklık sonrası tutara (isabet yolundaki eski sırayla aynı).
+- **5d. Kalkan tak/çıkar** (s. 92 "Shield … (Utilize Action to Don or Doff)"): yeni komut `shield_toggle` (Utilize = eylem), olay
+  `shield_changed`; AC kalkan katkısı kadar (`shieldAc`: kalkan + eşyaların `shieldAcBonus`'u; `rules/stats.ts`), Two-Handed seçenekleri
+  açılır/kapanır (TE99 `shieldBlocked`), boş el sayımı (`freeHands`) `shieldHeld` ile. Takmak için boş el gerekir (yan el silahı ya da
+  tutulan yakalama varken olmaz). Savaş sonunda karakterin donanımı değişmez (kalkan karakterde). ⚠ Kalkana bağlı sınıf özellikleri
+  (Monk Unarmored Defense/Martial Arts, Barbarian Unarmored Defense) savaş içinde yeniden türetilmez. Yapay zekâ kullanmaz.
+- **5e. Eşyayı silaha bağlama — ertelendi, karar gerekli:** SRD tanımlı (s. 253 Weapon +1/+2/+3 "You have a bonus to attack and
+  damage rolls made with this magic weapon"), ama karakter kaydında hangi silahın büyülü olduğu yok (`weapons[].itemId` şeması ve
+  oluşturucuda seçim alanı gerekir; TE99 K-D2). Önerilen: sihirbazın donanım adımında eşyaya silah seçimi, varsayılan ilk uygun silah.
+- **6. Nick ve "başkasının altıgeninde tur sonu Prone":** SRD metni belirsiz (KALAN100 kaydı); dokunulmadı.
+- **7. CLAUDE.md paket sınırı:** `birlesik`'te satır zaten "Ana parça 500 kB altında" (veriyle aynı); değişiklik gerekmedi.
+- **8. Hazırla (Ready) doğrulaması** (s. 186–187): komut, tetik, tepki harcama, büyüde slotun hazırlarken harcanması, eylem döküm
+  süresi şartı, konsantrasyon ve sonraki tur başında bitiş SRD ile uyumlu (`ready.ts`, kural sürümü 90). Kısmi kalan: yanıt listesi
+  tek saldırı / hareket / büyü (SRD "the action you will take": Utilize, Help, Dash … yanıtları yok), yapay zekâ Ready kullanmaz.
+  Kod değişmedi.
+- **9. Dropping Prone** (s. 14 "On your turn, you can give yourself the Prone condition … without using an action or any of your Speed,
+  but you can't do so if your Speed is 0."): yeni komut `drop_prone` (olay `condition_changed` `drop_prone`), Hareket menüsünde
+  "Yere yat"; yapay zekâ kullanmaz.
+
 ## Görev KALAN100: genel savaş denetiminden ertelenen kalanlar (2026-11-21; kural sürümü 100 `KALAN100_VERSION`)
 
 Kaynak `harita/belgeler/GENEL-SAVAS-DENETIM.md` ("Düzeltme durumu"), GENEL96/B98/TE99 ertelenenleri, `TUR-FEAT-ESYA-DENETIM.md`.

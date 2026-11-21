@@ -1,6 +1,8 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
 import { SINIF97_VERSION } from './sinif97Surum';
 import { TE99_VERSION, te99On } from './te99Surum';
+import { KARAR101_VERSION } from './karar101Surum';
+import { STONE_ID } from './karar101';
 import srdSpells from '../../data/srd/spells.json';
 import { B94_VERSION } from './b94Surum';
 import { WS92_VERSION } from './ws92Surum';
@@ -325,6 +327,8 @@ function combatantFromSheetBase(
     // Kuyruk S2: metal zırh (Heat Metal; zırh verisinde `metal`).
     ...((armor.find((a) => a.name === sheet.armorName) as { metal?: boolean } | undefined)?.metal ? { metalArmor: true } : {}),
     ...(sheet.shield ? { shieldHeld: true } : {}),
+    // KARAR101: kalkanın AC katkısı (tak/çıkar komutu; yalnız 101+ savaşta okunur).
+    ...(d.shieldAc ? { shieldAc: d.shieldAc } : {}),
     // Devil's Sight (Görev WARLOCK): 120 ft (büyülü karanlık dahil; `maprules.canSee`).
     darkvision: inv.traits.includes('devils-sight') ? Math.max(120, raceDarkvision(sheet)) : raceDarkvision(sheet),
     civilian: false,
@@ -769,7 +773,7 @@ function multiHexWide(map: { tiles?: string[] }): boolean {
  * anahtarlarıyla).
  */
 export function buildMapState(m: ReturnType<typeof getMap>, variantId: string, toggles: Record<string, boolean>, params?: Record<string, Record<string, unknown>>,
-  options?: string[]): MapState {
+  options?: string[], surum?: number): MapState {
   return {
     id: m.id, variantId, mirrored: m.mirrored, tiles: [...m.tiles],
     ...(options && options.length > 0 ? { options: [...options] } : {}),
@@ -780,7 +784,8 @@ export function buildMapState(m: ReturnType<typeof getMap>, variantId: string, t
     // Kuyruk 16 K16B: hazır yüzeyler (yalnızca `surfaces` alanı olan haritada; eski haritalarda alan yok).
     ...(m.surfaces?.length ? { zones: presetZones(m.surfaces) } : {}),
     // Kuyruk 24: Game Master'ın mekanik anahtarları/parametreleri (yalnızca varsayılandan farklılar).
-    ...controlState(m.id, variantId, toggles, params as never),
+    // KARAR101: varsayılan savaşın kural sürümüne göre (`acikSurum`).
+    ...controlState(m.id, variantId, toggles, params as never, surum),
     // Kuyruk 26: yükseklik katmanı (yalnızca katmanlı haritada; eski haritalarda alan yok).
     ...(m.heights ? { heights: m.heights.map((row) => [...row]) } : {}),
     ...(m.ramps?.length ? { ramps: m.ramps.map((h) => `${h.col},${h.row}`) } : {}),
@@ -809,7 +814,7 @@ export function startBattle(
     const m = getMap(opts.map.id, { mirrored, ...(opts.map.variantId ? { variantId: opts.map.variantId } : {}) });
     const variant = opts.map.variantId ? m.variants.find((v) => v.id === opts.map?.variantId) : m.variants[0];
     if (!variant) throw new Error(`Harita varyantı bulunamadı: "${opts.map.variantId ?? ''}"`);
-    map = buildMapState(m, variant.id, opts.map.ruleToggles ?? defaultRuleToggles(), opts.map.ruleParams, opts.map.options);
+    map = buildMapState(m, variant.id, opts.map.ruleToggles ?? defaultRuleToggles(), opts.map.ruleParams, opts.map.options, opts.kuralSurumu ?? defaultRuleVersion());
     env = environmentFor(m, variant.id);
     if (opts.goals === undefined && m.goals) goals = goalsFromData(m.goals);
     groups = groupsFrom(m.groups, opts.groupStates);
@@ -862,6 +867,12 @@ export function startBattle(
   // Görev TE99: eşya bonusu bağı (`te99Alt`) sürüme göre; Javelin of Lightning (99+) Javelin seçeneğine Lightning türü.
   participants = participants.map((p) => !p.weaponOptions.some((o) => o.te99Alt) ? p
     : { ...p, weaponOptions: p.weaponOptions.map(({ te99Alt, ...o }) => (rules >= TE99_VERSION && te99Alt ? te99Alt : o)) });
+  // KARAR101: kalkan tak/çıkar yalnız 101+ savaşta (eski savaşta alan yok: durum eskisiyle aynı).
+  if (rules < KARAR101_VERSION) participants = participants.map((p) => { if (p.shieldAc === undefined) return p; const { shieldAc: _s, ...rest } = p; return rest; });
+  // KARAR101 (101+; SRD 5.2.1 s. 85 Stone's Endurance "When you take damage, you can take a Reaction"): her hasarda tepki
+  // (`damageEffects`); isabet tepkisi yolundan çıkar.
+  if (rules >= KARAR101_VERSION) participants = participants.map((p) => !p.reactions?.some((r) => r.id === STONE_ID) ? p
+    : { ...p, reactions: p.reactions.map((r) => (r.id === STONE_ID ? { ...r, anyDamage: true } : r)) });
   if (rules >= TE99_VERSION) participants = participants.map((p) => {
     const swap = (p.itemHits ?? []).filter((h) => h.replaceType && h.weaponId);
     if (swap.length) p = { ...p, weaponOptions: p.weaponOptions.map((o) => { const h = swap.find((x) => x.weaponId === o.weaponId); return h ? { ...o, altDamageType: h.type } : o; }) };

@@ -46,7 +46,7 @@ describe('alan önizlemesi', () => {
     expect(p.hexes.every((h) => !sameHex(h, o(2, 3)))).toBe(true);
   });
   it('kayıt sürümü 19 (Görev B2); eski (15) kayıt yüklenir', () => {
-    expect(SAVE_VERSION).toBe(24); // Hazırla (Ready) olayları için 24 (Kuyruk 43: item_used, distracted için 22–23)
+    expect(SAVE_VERSION).toBe(25); // KARAR101 shield_changed, knocked_out/stone_endurance için 25 (Ready 24; Kuyruk 43: 22–23)
     expect(LOADABLE_VERSIONS).toContain(15);
     expect(restoreSession(JSON.stringify({ version: 15, savedAt: '', events: [{ type: 'battle_started', state: arena() }] })).ok).toBe(true);
   });

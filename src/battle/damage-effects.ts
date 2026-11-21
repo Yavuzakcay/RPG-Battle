@@ -5,6 +5,7 @@ import { saveDice } from './effectDice';
 import { applyDamage } from '../rules/damage';
 import type { Combatant, DamageEffect } from './types';
 import { spells } from '../data';
+import { stoneEnduranceFx } from './karar101';
 
 export function damageEffects(
   target: Combatant,
@@ -31,6 +32,9 @@ export function damageEffects(
     effects.push({ kind: 'reduced', label: red.name, effectId: red.id, roll, amount });
     applied -= amount;
   }
+  // KARAR101 (sürüm 101+; SRD 5.2.1 s. 85): Stone's Endurance her hasarda tepki (işaret `anyDamage` yalnız 101+ savaşta).
+  const stone = stoneEnduranceFx(target, applied, rng);
+  if (stone) { effects.push(stone); applied -= stone.amount; }
   // Geçici HP önce harcanır (Heroism; Görev R2). Konsantrasyon DC'si alınan hasarın tamamıyla.
   const temp = Math.min(target.tempHp ?? 0, applied);
   if (temp > 0) effects.push({ kind: 'temp_absorbed', amount: temp, left: (target.tempHp ?? 0) - temp });

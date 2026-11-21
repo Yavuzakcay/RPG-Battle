@@ -67,7 +67,7 @@ export function executeChangeFloor(state: BattleState, actor: Combatant, rng: Rn
   const stored = state.floors?.[link.to];
   const m = getMap(link.to, link.toVariant ? { variantId: link.toVariant } : {});
   const variantId = link.toVariant ?? m.variants[0]?.id ?? '';
-  const map = stored ?? buildMapState(m, variantId, state.map?.ruleToggles ?? {}, state.map?.ruleParams);
+  const map = stored ?? buildMapState(m, variantId, state.map?.ruleToggles ?? {}, state.map?.ruleParams, undefined, state.kuralSurumu ?? 1);
   const env = environmentFor(m, variantId);
   // Taşınanlar: ölü olmayan parti savaşçıları ve çağrıları (bu kattakiler).
   const here = Object.values(state.combatants).filter((c) => !c.offFloor);

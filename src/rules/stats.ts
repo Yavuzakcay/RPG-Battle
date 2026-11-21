@@ -92,6 +92,8 @@ export interface DerivedStats {
   modifiers: Scores;
   proficiency: number;
   ac: number;
+  /** KARAR101: kalkanın AC katkısı (kalkan yoksa 0). */
+  shieldAc?: number;
   /**
    * AC'nin bileşenleri (özet ekranı için): `base` zırhsız 10, `armor` zırhın taban AC'si, `dex`/`con`/`wis`
    * yetenek katkısı, `shield` kalkan, `item` eşya bonusları (`name` eşyanın adı).
@@ -308,6 +310,9 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     if (v) acParts.push({ kind: 'item', value: v, name: n });
   }
   const ac = acParts.reduce((n, p) => n + p.value, 0);
+  // KARAR101: kalkanın AC katkısı (kalkan parçası + eşyaların `shieldAcBonus`'u); kalkan tak/çıkar komutu bu kadar değiştirir.
+  const shieldAc = !sheet.shield ? 0 : acParts.filter((p) => p.kind === 'shield').reduce((n, p) => n + p.value, 0)
+    + activeItemNames(sheet).reduce((n, x) => n + (findItem(x).effects.shieldAcBonus ?? 0), 0);
 
   // HP
   const hd = cls.hitDie;
@@ -345,6 +350,7 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     proficiency: prof,
     ac,
     acParts,
+    ...(shieldAc ? { shieldAc } : {}),
     ...(armorStrengthShort !== undefined ? { armorStrengthShort } : {}),
     maxHp,
     speed,

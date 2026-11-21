@@ -15,7 +15,7 @@ const board = (fill: string, patch: Array<[Offset, string]> = []) => {
   for (const [h, ch] of patch) (rows[h.row] as string[])[h.col] = ch;
   return rows.map((r) => r.join(''));
 };
-function field(map: { id: string; variantId?: string; options?: string[] }, parts: Combatant[], at: Record<string, Offset>, tiles?: string[]): BattleState {
+function field(map: { id: string; variantId?: string; options?: string[]; ruleToggles?: Record<string, boolean> }, parts: Combatant[], at: Record<string, Offset>, tiles?: string[]): BattleState {
   const { state } = startBattle('s', 'd-z-zemin', parts, scripted(...parts.map((_, i) => [20, 20 - i] as [number, number])), { map });
   const combatants = { ...state.combatants };
   for (const [id, pos] of Object.entries(at)) combatants[id] = { ...(combatants[id] as Combatant), pos };
@@ -75,8 +75,10 @@ describe('pasif Algı ve bitişikteki düşman', () => {
 });
 
 describe('gece', () => {
+  // KARAR101 (101+): `nightVision` yeni savaşta varsayılan açık (görmeyen gözcü hiç görmez); bu testler gece gizlenme kuralını
+  // SRD görüş kuralı kapalıyken sınar (Game Master anahtarı).
   const night = (p: Partial<Combatant> = {}) =>
-    field({ id: 'orman', variantId: 'gece' }, [A(), W(p)], { A: o(4, 3), W: o(9, 3) }, board('.', [[o(3, 3), 'a']]));
+    field({ id: 'orman', variantId: 'gece', ruleToggles: { nightVision: false } }, [A(), W(p)], { A: o(4, 3), W: o(9, 3) }, board('.', [[o(3, 3), 'a']]));
   it('Orman gece varyantı: aynı zemin, gece kuralı, ay ışıklı iki açıklık', () => {
     const m = getMap('orman');
     expect(m.variants.map((v) => v.id)).toEqual(['orman', 'gece']);

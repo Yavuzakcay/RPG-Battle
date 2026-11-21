@@ -6,6 +6,8 @@
  * en sona bırakıldı (Adım 12).
  */
 import { sinif97On } from './battle/sinif97Surum';
+import { karar101On } from './battle/karar101Surum';
+import { heldBy } from './battle/karar101';
 import { activePossession, possessedEffect } from './battle/possessionCore';
 import { setupWardOf } from './battle/possession';
 import { freeAddProblem, freeRemoveProblem, freeShapeOf, pathAddProblem } from './battle/freeShape';
@@ -1083,7 +1085,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     if (mode === 'stabilize') {
       // GENEL96 A15 (SRD 5.2.1 s. 18 Stabilizing): ölmekte olan yaratıklar (motorda denenerek).
       return new Set(Object.values(state.combatants)
-        .filter((c) => c.id !== actorId && c.life === 'dying' && execute(state, { type: 'stabilize', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
+        .filter((c) => c.id !== actorId && (c.life === 'dying' || c.knockedOut) && execute(state, { type: 'stabilize', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
         .map((c) => c.id));
     }
     if (mode === 'steer' && actor && !steerableSummon(state, actor)?.summon?.hand) return new Set(ramTargets(state, actor).map((c) => c.id));
@@ -1605,7 +1607,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       attack: attackTargets(state, actorId).length,
       shove: tryOn((id) => ({ type: 'shove', actorId, targetId: id, effect: 'prone' })),
       help: tryOn((id) => ({ type: 'help', actorId, targetId: id })),
-      stabilize: Object.values(state.combatants).some((c) => c.life === 'dying') ? tryOn((id) => ({ type: 'stabilize', actorId, targetId: id }), true) : 0,
+      stabilize: Object.values(state.combatants).some((c) => c.life === 'dying' || c.knockedOut) ? tryOn((id) => ({ type: 'stabilize', actorId, targetId: id }), true) : 0,
       followup: actor.concentration || actor.effects?.some((e) => e.held) ? tryOn((id) => ({ type: 'spell_followup', actorId, targetId: id }), true) : 0,
     };
   }, [state, actorId, menuShown]);
@@ -1690,8 +1692,16 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     { key: 'search', label: N.search, reason: why({ type: 'search', actorId }) ?? undefined, act: () => run({ type: 'search', actorId }) },
     ...(actor.conditions.includes('Prone') ? [{ key: 'stand', label: N.stand, reason: standUpProblem(actor) ?? undefined,
       act: () => run({ type: 'stand_up', actorId }) }] : []),
+    // KARAR101 (101+; SRD Dropping Prone): eylemsiz, hızsız yere yat.
+    ...(karar101On(state) && !actor.conditions.includes('Prone') ? [{ key: 'drop_prone', label: N.dropProne, reason: why({ type: 'drop_prone', actorId }) ?? undefined,
+      act: () => run({ type: 'drop_prone', actorId }) }] : []),
     ...(actor.grapple ? [{ key: 'escape_grapple', label: N.escapeGrapple, reason: why({ type: 'escape_grapple', actorId }) ?? undefined,
       act: () => run({ type: 'escape_grapple', actorId }) }] : []),
+    // KARAR101 (101+): tutulan yakalamayı bırak (eylemsiz) ve kalkan tak/çıkar (Utilize).
+    ...(karar101On(state) ? heldBy(state, actor).map((h) => ({ key: 'release_grapple', label: N.releaseGrapple(h.name), reason: why({ type: 'release_grapple', actorId, targetId: h.id }) ?? undefined,
+      act: () => run({ type: 'release_grapple', actorId, targetId: h.id }) })) : []),
+    ...(karar101On(state) && actor.shieldAc !== undefined ? [{ key: 'shield_toggle', label: actor.shieldOff ? N.shieldOn : N.shieldOff, reason: why({ type: 'shield_toggle', actorId }) ?? undefined,
+      act: () => run({ type: 'shield_toggle', actorId }) }] : []),
     ...(stuckInBog(state, actor) ? [{ key: 'escape', label: N.escape, reason: why({ type: 'escape', actorId }) ?? undefined, act: () => run({ type: 'escape', actorId }) }] : []),
     // CILA: büyünün tuttuğu yaratık (Entangle, Web) eylemle Athletics kontrolüyle kurtulur.
     // Görev TE99: yanan yaratık (Alchemist's Fire, 99+) aynı düğmeyle eylem harcayıp Prone olarak söndürür.

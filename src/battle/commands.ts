@@ -33,6 +33,8 @@ import { desertRoundEvents } from './desert';
 import { lairEvents, legendaryEvents, legendaryRefreshEvents, registerLegendaryCaster } from './boss';
 import { swallowBlockedAttack } from './swallow92';
 import { ws92On } from './ws92Surum';
+import { karar101On } from './karar101Surum';
+import { dropProneEvents, grappleHands, releaseGrappleEvents, shieldToggleProblem } from './karar101';
 import { anyTurnEndEvents, reactionTurnEndEvents, executeMonsterAbility, monsterAfterEvents, monsterTurnEvents, abilitiesOf } from './monsterAbilities';
 import { concealed } from './hiddenObjects';
 import { waterDecayEvents } from './waterDecay';
@@ -110,7 +112,7 @@ import { executeAttackObject, executeObjectUse, executePlaceObject, objectAreaEv
 import { caveDiscoveryEvents, executeForestUse, forestAfterEvents, forestRoundEvents } from './forest';
 import { greaseAfterEvents } from './ignite';
 import { hexResolverOn, resolveCommandEffects } from './hexResolver';
-import { applyEvents } from './reduce';
+import { applyEvents, speedHexes } from './reduce';
 import { goalEvents } from './goals';
 import { executeRally, moraleAfterEvents, moraleStartEvents } from './morale';
 import { alarmEvents, executeAlarmGroup, formGroupsEvent, patrolEvents, patrolOf } from './alarm';
@@ -591,7 +593,12 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (dropped && (((cmd.type === 'attack' || cmd.type === 'offhand_attack') && !('option' in cmd && cmd.option?.weaponId === 'unarmed-strike')) || cmd.type === 'monster_attack' || cmd.type === 'multiattack')) return fail(`${dropped.name}: silahını bıraktı, silahla saldıramaz.`);
   // Kuyruk MB1 (68+, B23; SRD Lance "Two-Handed (unless mounted)"): binekte değilken diğer el doluysa (kalkan, yan el) kullanılamaz.
   if (cmd.type === 'attack' && cmd.option?.unlessMounted && cmd.option.handBusy && !actor.riding && binekOn(state)) return fail(`${cmd.option.label}: binekte değilken iki el ister (kalkan ya da yan el silahıyla kullanılamaz).`);
-  // Görev TE99 (99+, SRD 5.2.1 s. 90 Two-Handed): kalkan takılıyken iki elli silahla saldırı yok (kalkan tak/çıkar komutu ertelendi).
+  // KARAR101 (101+, SRD 5.2.1 s. 182 + s. 90): yakalama tutarken Two-Handed silahla saldırı yok.
+  if ((cmd.type === 'attack' || cmd.type === 'horde_breaker' || cmd.type === 'attack_object' || cmd.type === 'attack_gate') && 'option' in cmd && cmd.option) {
+    const hands = grappleHands(state, actor, cmd.option);
+    if ('problem' in hands) return fail(hands.problem);
+  }
+  // Görev TE99 (99+, SRD 5.2.1 s. 90 Two-Handed): kalkan takılıyken iki elli silahla saldırı yok (KARAR101: `shield_toggle`).
   if ((cmd.type === 'attack' || cmd.type === 'horde_breaker' || cmd.type === 'attack_object' || cmd.type === 'attack_gate') && 'option' in cmd && cmd.option?.shieldBusy && te99On(state)) return fail(`${cmd.option.label}: kalkan takılıyken iki elli silah kullanılamaz.`);
   // Görev WS92 (92+): yutan midesinde yaratık varken Bite'ı kullanamaz (Giant Frog/Toad; biçimde de).
   const swBlock = cmd.type === 'attack' ? swallowBlockedAttack(state, actor, cmd.option?.beast?.attack ?? cmd.option?.label)
@@ -700,11 +707,29 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Kuyruk K64a: bedenin Multiattack'ı ele geçirenin saldırılarıyla (ev sahibinin SRD planı geçmez).
   if (cmd.type === 'multiattack') return executeMultiattack(state, actor, cmd.targetId, rng, actor.shape?.possession ? undefined : cmd.plan);
 
+  // KARAR101 (101+; SRD 5.2.1 s. 14 Dropping Prone): eylemsiz, hızsız; hız 0 iken olmaz.
+  if (cmd.type === 'drop_prone') {
+    const r = dropProneEvents(state, actor, speedHexes(actor));
+    return r.ok ? finish(state, r.events) : fail(r.error);
+  }
+  // KARAR101 (101+; SRD 5.2.1 s. 182): yakalamayı bırakmak eylemsiz.
+  if (cmd.type === 'release_grapple') {
+    const r = releaseGrappleEvents(state, actor, cmd.targetId);
+    return r.ok ? finish(state, r.events) : fail(r.error);
+  }
+  // KARAR101 (101+; SRD 5.2.1 s. 92): kalkan tak/çıkar (Utilize eylemi; ekonomi `economy.ts`).
+  if (cmd.type === 'shield_toggle') {
+    const why = shieldToggleProblem(state, actor);
+    if (why) return fail(why);
+    return finish(state, [{ type: 'shield_changed', actorId: actor.id, on: !!actor.shieldOff }]);
+  }
   if (cmd.type === 'stabilize') {
     const target = state.combatants[cmd.targetId];
     if (!target) return fail('Hedef bulunamadı.');
     if (target.id === actor.id) return fail('Kendini stabilize edemezsin.');
-    if (target.life !== 'dying') return fail('Hedef ölmekte değil.');
+    // KARAR101 (101+, SRD Knocking Out): bayıltılana ilk yardım (eylem, DC 10 WIS (Medicine)) Unconscious'ı bitirir.
+    const firstAid = !!target.knockedOut && karar101On(state);
+    if (target.life !== 'dying' && !firstAid) return fail('Hedef ölmekte değil.');
     // Kuyruk 19 (SRD Healer's Kit): kitle zarsız stabilize; kitsiz WIS (Medicine) DC 10 (`srdK19`; eskide yalnızca WIS).
     const k19s = !!globalRule(state, 'srdK19');
     if (k19s && actor.traits?.includes('healers-kit')) {
