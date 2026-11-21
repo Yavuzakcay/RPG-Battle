@@ -1,11 +1,12 @@
 /**
- * Alt sınıf seçici denetimi (fikstürle; icerik/ gerekmez, as2.test.ts ile çelişmez): SRD'nin 12 alt sınıfı kendi sınıfının
- * seçicisinde görünür (kaldırılan yalnız Barış Alanı, cinsiyet kuralı yalnız İmparator ve Karadul), adları boş/yinelenen değil.
+ * Alt sınıf seçici denetimi (fikstürle; icerik/ gerekmez, as2.test.ts ile çelişmez): SRD'nin 12 alt sınıfından 11'i kendi sınıfının
+ * seçicisinde görünür (kaldırılan Barış Alanı ve 2026-11-21'den beri Yaşam Manastırı `life-domain`: fikstürde mekanik testleri için kalır, pakette ve seçicide yok; cinsiyet kuralı yalnız İmparator ve Karadul), adları boş/yinelenen değil.
  * Test kurulumu SRD fikstürünü `classData.subclasses`'a ekler (src/test-setup.ts); bu dosya dış paketi sıfırlar.
  */
 import { beforeAll, describe, expect, it } from 'vitest';
 import { classData, type SubclassDef } from '../data';
-import { displayName, genderVisible, setExternalSubclasses, subclassDefs, visibleSubclasses } from '../rules/subclasses';
+import { displayName, findSubclass, genderVisible, setExternalSubclasses, subclassDefs, visibleSubclasses } from '../rules/subclasses';
+import { defaultSubclass } from '../rules/classFeatures';
 import { subclassesOf } from '../rules/classFeatures';
 import fixture from '../rules/fixtures/srd-alt-siniflar.json';
 
@@ -18,26 +19,32 @@ describe('alt sınıf seçici denetimi (fikstür)', () => {
     expect(SRD.map((s) => s.class).sort()).toEqual([...CLASSES].sort());
     expect(SRD.map((s) => s.id).sort()).toEqual(['champion', 'circle-of-the-land', 'college-of-lore', 'draconic-sorcery', 'evoker', 'fiend-patron', 'hunter', 'life-domain', 'oath-of-devotion', 'path-of-the-berserker', 'thief', 'warrior-of-the-open-hand']);
   });
-  it('her SRD alt sınıfı ilgili sınıfın seçicisinde (oluşturucunun kullandığı subclassesOf + cinsiyet süzgeci) iki cinsiyette de görünür', () => {
-    for (const s of SRD) {
+  it('her SRD alt sınıfı (life-domain hariç) ilgili sınıfın seçicisinde (oluşturucunun kullandığı subclassesOf + cinsiyet süzgeci) iki cinsiyette de görünür', () => {
+    for (const s of SRD.filter((x) => x.id !== 'life-domain')) {
       for (const gender of ['erkek', 'kadin']) {
         const shown = subclassesOf(s.class).filter((x) => genderVisible(x, { gender }));
         expect(shown.map((x) => x.id), `${s.class}/${s.id} ${gender}`).toContain(s.id);
       }
     }
   });
-  it('sınıf başına sayı: fikstür + bizim imza (+ Karadul Druid\'te, yalnız kadına); toplam 12 SRD + 12 bizim', () => {
+  it('Yaşam Manastırı (life-domain) seçicide yok; fikstürde yüklü kaldığı için kimliği kendi mekaniğini bulur; Cleric varsayılanı Birlik Manastırı', () => {
+    for (const gender of ['erkek', 'kadin']) expect(subclassesOf('cleric').filter((x) => genderVisible(x, { gender })).map((x) => x.id)).not.toContain('life-domain');
+    expect(findSubclass('cleric', 'life-domain')?.id).toBe('life-domain');
+    expect(defaultSubclass('cleric')).toBe('imza_birlik');
+  });
+  it('sınıf başına sayı: fikstür + bizim imza (+ Karadul Druid\'te, yalnız kadına); toplam 11 SRD + 12 bizim', () => {
     let total = 0;
     for (const cls of CLASSES) {
       const all = visibleSubclasses(cls);
-      expect(all.filter((s) => !s.ev).length, cls).toBe(1);
+      expect(all.filter((s) => !s.ev).length, cls).toBe(cls === 'cleric' ? 0 : 1);
       expect(all.filter((s) => s.ev).length, cls).toBe(1);
       total += all.length;
       // Cinsiyet kuralı yalnız Karadul (kadın) ve İmparator (erkek): öteki sınıflarda iki cinsiyet aynı listeyi görür.
       const m = all.filter((s) => genderVisible(s, { gender: 'erkek' })).length, f = all.filter((s) => genderVisible(s, { gender: 'kadin' })).length;
-      expect([cls, m, f]).toEqual([cls, cls === 'druid' ? 1 : 2, cls === 'fighter' ? 1 : 2]);
+      const own = cls === 'cleric' ? 1 : 2;
+      expect([cls, m, f]).toEqual([cls, cls === 'druid' ? 1 : own, cls === 'fighter' ? 1 : own]);
     }
-    expect(total).toBe(24);
+    expect(total).toBe(23);
   });
   it('adlar: kimlik başına TR ve EN ad dolu, görünen ad boş değil, sınıf içinde yinelenen kimlik ve görünen ad yok; Barış Alanı seçicide yok', () => {
     for (const cls of CLASSES) {

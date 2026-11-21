@@ -268,7 +268,8 @@ function hitOptions(state: BattleState, ctx: HitContext): { specs: ReactionSpec[
     else if (r.kind === 'halve' && ctx.damage > 0 && sees(state, t, ctx.attacker) && (!sinif97On(state) || canSeeTarget(state, t, ctx.attacker))) specs.push(r);
     else if (r.kind === 'resist' && ctx.damage > 0) specs.push(r);
     else if (r.kind === 'deflect' && t.deflect && ctx.damage > 0 && (t.deflect.types.includes(ctx.damageType) || !!t.traits?.includes('deflect-energy'))) specs.push(r);
-    else if (r.kind === 'reduce' && ctx.damage > 0 && (!r.types || r.types.includes(ctx.damageType))) specs.push(r);
+    // KARAR101 (101+): her hasarda tepki olan azaltma (Stone's Endurance `anyDamage`) isabet yolunda değil, `damageEffects`'te.
+    else if (r.kind === 'reduce' && !r.anyDamage && ctx.damage > 0 && (!r.types || r.types.includes(ctx.damageType))) specs.push(r);
   }
   // Öneri: ıskalatabilen AC tepkisi (bedavası önce), yoksa bedava azaltma, yoksa ağır isabette yarıya indirme.
   const turns = specs.filter((r) => (r.kind === 'parry' || r.kind === 'shield') && ctx.total < ctx.ac + (r.acBonus ?? 0))

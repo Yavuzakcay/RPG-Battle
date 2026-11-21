@@ -1,5 +1,5 @@
 {
- "note": "TOPLU-KESIM bağlaması: alt sınıf kimliği → hücre (jeton <irk>-<cinsiyet>-cleric-<hücre>.webp). Hücre adları data/jeton-hucre-sirasi.json. maskeHazir false iken boyası gereken karakter sınıf-genel jetonda kalır. `formlar` = seviyeye göre ikinci jeton formu (fighter-jeton.json ile aynı biçim: `esik` seviye ve üzeri `ikinci` hücre; `ikinciYok`: 'ırk-cinsiyet' listesi → 1. form). Birlik Manastırı (2026-11-19, kullanıcı kararı): seviye 3–16 hücre 3 (güvercinli genç rahip), 17+ hücre 9 (yaşlı çay ustası).",
+ "note": "TOPLU-KESIM bağlaması: alt sınıf kimliği → hücre (jeton <irk>-<cinsiyet>-cleric-<hücre>.webp). Hücre adları data/jeton-hucre-sirasi.json. maskeHazir false iken boyası gereken karakter sınıf-genel jetonda kalır. `formlar` = seviyeye göre ikinci jeton formu (fighter-jeton.json ile aynı biçim: `esik` seviye ve üzeri `ikinci` hücre; `ikinciYok`: 'ırk-cinsiyet' listesi → 1. form). Birlik Manastırı (2026-11-19, kullanıcı kararı): seviye 3–16 hücre 3 (güvercinli genç rahip), 17+ hücre 9 (yaşlı çay ustası). 2026-11-21: life-domain (Yaşam Manastırı) paketten silindi; kayıtlı karakter Birlik Manastırı'na yönlenir, `life-domain` → ID1 satırı artık kullanılmıyor (silinmedi; görsel dosyalar durur).",
  "sinif": "cleric",
  "irklar": {
     "dragonborn": ["erkek", "kadin"],

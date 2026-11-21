@@ -39,6 +39,8 @@ import { monsterPrevOf, withMonsterPart, withoutMonsterPart } from './shapeMonst
 import { genel96On } from './genel96Surum';
 import { helpOnlySelf } from './genel96';
 import { te99On } from './te99Surum';
+import { karar101On } from './karar101Surum';
+import { syncKarar101 } from './karar101';
 
 /** Yürüyüşün sonundaki düz koşuyu bulur; önceki koşu aynı yönde sürüyorsa üstüne ekler. */
 function runAfter(start: Offset, path: Offset[], before: Combatant['run']): Combatant['run'] {
@@ -75,7 +77,23 @@ export function speedHexes(c: Combatant): number {
   // Kuyruk KQ3 NA1: ortak taşımada (iki ya da daha çok taşıyıcı) hız yarıya (`data/nesne-agirlik.json`).
   const groupMult = c.groupCarry ? nesneAgirlik.grupHizCarpani : 1;
   const ft = Math.floor(Math.max(0, base + bonus - slowFeet(c) - exhaustionSpeedFt(c.exhaustion)) * mult * groupMult);
+  // KARAR101 (sürüm 101+; SRD 5.2.1 s. 188 Speed "Whenever you switch, subtract the distance already moved from the new speed";
+  // s. 180 Dash "The increase equals your Speed … If you have a special speed … you can use that speed instead"): bütçe şimdiki
+  // hızın (yürüme, uçuş, yüzme, kazma) kendisi + Dash'lerin Dash anında sabitlenen eki (`economy.dashFt`); harcanan hareket
+  // (`movementUsed`) ortak düşer. Alan yalnız 101+ savaşın `dashed` olayıyla oluşur; 100 ve altı şimdiki hız × (1 + Dash).
+  if (c.economy.dashFt !== undefined) return Math.floor(ft / 5) + Math.floor(c.economy.dashFt / 5);
   return Math.floor(ft / 5) * (1 + c.economy.dashes);
+}
+
+/** KARAR101: Dash'siz hız bütçesi (altıgen): Dash katı (100-) ya da Dash eki (101+) düşülmüş. */
+export function speedHexesNoDash(c: Combatant): number {
+  return speedHexes({ ...c, economy: { ...c.economy, dashes: 0, dashFt: undefined } });
+}
+
+/** KARAR101: Dash anında eklenecek hareket (ft): şimdiki hızın Dash'siz değeri. */
+function dashGainFt(c: Combatant): number {
+  const plain = speedHexes({ ...c, economy: { ...c.economy, dashes: 0, dashFt: undefined } });
+  return plain * 5;
 }
 
 const sameAt = (a: Offset, b: Offset) => a.col === b.col && a.row === b.row;
@@ -339,6 +357,17 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
       else if (h && Object.keys(e.effect).length) next = withCombatant(next, id, { effects: [...(h.effects ?? []).filter((x) => x.id !== `srd19:${id}:fx:${e.name}`),
         { ...e.effect, id: `srd19:${id}:fx:${e.name}`, name: e.name, sourceId: id, until: next.round + 1 } as ActiveEffect] });
     }
+    // KARAR101 (101+, SRD Knocking Out): 1 HP (olayın `targetHpAfter`'ı) + Unconscious; savaş sonunda yenilmiş sayılır.
+    if (e.kind === 'knocked_out') {
+      const h = next.combatants[id];
+      if (h) next = withCombatant(next, id, { knockedOut: true, conditions: h.conditions.includes('Unconscious') ? h.conditions : [...h.conditions, 'Unconscious'] });
+    }
+    // KARAR101 (101+): Stone's Endurance tepkisi ve kaynağı harcandı.
+    if (e.kind === 'stone_endurance') {
+      const h = next.combatants[id];
+      if (h) next = withCombatant(next, id, { economy: { ...h.economy, reaction: true },
+        ...(e.resource ? { resources: { ...h.resources, [e.resource]: Math.max(0, (h.resources[e.resource] ?? 0) - 1) } } : {}) });
+    }
     if (e.kind === 'relentless_endurance') {
       const h = next.combatants[id];
       if (h) next = withCombatant(next, id, { resources: { ...h.resources, relentlessEndurance: 0 } });
@@ -387,7 +416,7 @@ function syncGroupCarry(state: BattleState, event: BattleEvent): BattleState {
 }
 
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
-  return syncGroupCarry(syncUnconsciousProne(state, applyEventCore(state, event)), event);
+  return syncKarar101(state, syncGroupCarry(syncUnconsciousProne(state, applyEventCore(state, event)), event), event);
 }
 
 /**
@@ -762,6 +791,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.fleet) economy.fleetUsed = true;
       if (event.apotheosis) economy.apotheosisUsed = true;
       if (event.loadingFired) economy.loadingFired = true;
+      // Görev KALAN100: serbest nesne etkileşimi (aç/kapa, al, bırak) bu tur kullanıldı.
+      if (event.interaction) economy.interacted = true;
       // Görev TE99: Loading silah başına (yeni eylemde liste yeniden başlar).
       if (event.loadingId) economy.loadingIds = [...(event.kind === 'action' ? [] : economy.loadingIds ?? []), event.loadingId];
       // Görev TE99: bu turun eylemi Attack ya da Magic mi (Blink Steps; 99+ kullanılır, eski kayıtta okunmaz).
@@ -951,7 +982,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'dashed': {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
-      return withCombatant(state, event.actorId, { economy: { ...c.economy, dashes: c.economy.dashes + 1 } });
+      // KARAR101 (101+): Dash'in eki Dash anındaki hızdan sabitlenir (sonra hız değişse de ek aynı kalır).
+      const dashFt = karar101On(state) ? { dashFt: (c.economy.dashFt ?? 0) + dashGainFt(c) } : {};
+      return withCombatant(state, event.actorId, { economy: { ...c.economy, dashes: c.economy.dashes + 1, ...dashFt } });
     }
     case 'initiative_swapped': {
       const a = state.combatants[event.actorId];
@@ -1127,10 +1160,34 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         life: event.outcome === 'dead' ? 'dead' : event.outcome === 'stable' ? 'stable' : 'dying',
       });
     }
-    case 'stabilized':
+    case 'stabilized': {
+      // KARAR101 (101+, SRD Knocking Out "until someone uses an action to administer first aid to it … DC 10 Wisdom (Medicine)"):
+      // bayıltılanda ilk yardım Unconscious'ı bitirir (Prone kalır).
+      const ko = state.combatants[event.targetId];
+      if (ko?.knockedOut) {
+        if (!event.success) return state;
+        const { knockedOut: _k, ...rest } = ko;
+        return { ...state, combatants: { ...state.combatants, [ko.id]: { ...rest, conditions: ko.conditions.filter((x) => x !== 'Unconscious') } } };
+      }
       return event.success
         ? withCombatant(state, event.targetId, { life: 'stable', deathSaves: { successes: 0, failures: 0 } })
         : state;
+    }
+    case 'shield_changed': {
+      // KARAR101 (101+, SRD Shield "Utilize Action to Don or Doff"): AC kalkan katkısı kadar; Two-Handed seçenekleri açılır/kapanır.
+      const c = state.combatants[event.actorId];
+      if (!c || c.shieldAc === undefined || !!c.shieldOff === !event.on) return state;
+      const d = event.on ? c.shieldAc : -c.shieldAc;
+      const acExtra = c.acExtra !== undefined || d > 0 ? { acExtra: (c.acExtra ?? 0) + d } : {};
+      const { shieldOff: _o, shieldHeld: _h, ...rest } = c;
+      const opts = event.on
+        ? { weaponOptions: c.weaponOptions.filter((o) => !o.shieldBusy), shieldBlocked: [...(c.shieldBlocked ?? []), ...c.weaponOptions.filter((o) => o.shieldBusy)] }
+        : { weaponOptions: [...c.weaponOptions, ...(c.shieldBlocked ?? [])], shieldBlocked: [] as typeof c.weaponOptions };
+      const blocked = opts.shieldBlocked.length ? { shieldBlocked: opts.shieldBlocked } : {};
+      const { shieldBlocked: _sb, ...base } = rest;
+      return { ...state, combatants: { ...state.combatants, [c.id]: { ...base, ...blocked, weaponOptions: opts.weaponOptions, ac: c.ac + d, ...acExtra,
+        ...(event.on ? { shieldHeld: true } : { shieldOff: true }) } as Combatant } };
+    }
     case 'condition_changed': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
@@ -1317,7 +1374,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return state.map ? { ...state, map: { ...state.map, zones: [...(state.map.zones ?? []).filter((z) => z.id !== event.zone.id), event.zone] } } : state;
     case 'explore_step': {
       const c = state.combatants[event.actorId];
-      return c ? { ...state, combatants: { ...state.combatants, [c.id]: { ...c, movementUsed: 0, economy: { ...c.economy, dashes: 0 } } } } : state;
+      return c ? { ...state, combatants: { ...state.combatants, [c.id]: { ...c, movementUsed: 0, economy: { ...c.economy, dashes: 0, ...(c.economy.dashFt !== undefined ? { dashFt: 0 } : {}) } } } } : state;
     }
     case 'floor_changed':
       return applyFloorChange(state, event);

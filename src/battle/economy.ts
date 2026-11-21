@@ -26,6 +26,7 @@ import { stunningProblem } from './stunning';
 import { resourceLeft, type BattleEvent, type BattleState, type BonusOption, type Combatant, type Command, type Resources } from './types';
 import { ruleVersion } from './ruleVersion';
 import { te99On } from './te99Surum';
+import { kalan100On } from './kalan100Surum';
 const hasTrait = (c: Pick<Combatant, 'traits'>, t: string): boolean => !!c.traits?.includes(t);
 
 const ACTION_NAMES: Partial<Record<Command['type'], string>> = {
@@ -45,6 +46,7 @@ const ACTION_NAMES: Partial<Record<Command['type'], string>> = {
   distract: 'Dikkat dağıt',
   use_item: 'Eşya kullan',
   escape_grapple: 'yakalamadan kaçış',
+  shield_toggle: 'Utilize',
 };
 
 /** Yan el ek saldırısı (Light; Görev P1) şu an yapılabilir mi: sorun yoksa null (hedef ayrıca denetlenir). */
@@ -275,6 +277,7 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     case 'pull':
     case 'dodge':
     case 'escape_grapple':
+    case 'shield_toggle':
       // Kuyruk 19: Freedom of Movement ile kurtulmak eylem değil (5 ft hareket).
       if (cmd.type === 'escape_grapple' && actor.effects?.some((e) => e.freeMove)) return { ok: true, event: null };
       // Kuyruk K68a (sürüm 52): enkazdan Freedom of Movement ile kurtulmak eylem değil (5 ft hareket).
@@ -308,9 +311,16 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     }
     case 'object_use':
       // Görev S2: kapı açıp kapamak ve nesne almak (Görev S3) eylemsiz; kilit açma, masa devirme, mangal dökme eylem (Utilize).
-      if (cmd.action === 'open' || cmd.action === 'close' || cmd.action === 'take') return { ok: true, event: null };
-      // Kuyruk P12: büyü kitabını bırakmak serbest (nesne etkileşimi; almak `take` gibi).
-      if (cmd.action === 'put') return { ok: true, event: null };
+      // Görev KALAN100 (100+; SRD 5.2.1 s. 13 "You can interact with one object or feature of the environment for free … If you want
+      // to interact with a second object, you need to take the Utilize action"): aç/kapa, al, bırak ve yerden alma (`pick_up`) turda
+      // tek serbest etkileşimi paylaşır; ikincisi aşağıdaki Utilize yolundan.
+      if (kalan100On(state) && (cmd.action === 'open' || cmd.action === 'close' || cmd.action === 'take' || cmd.action === 'put')) {
+        if (!e.interacted) return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Etkileşim', interaction: true } };
+      } else {
+        if (cmd.action === 'open' || cmd.action === 'close' || cmd.action === 'take') return { ok: true, event: null };
+        // Kuyruk P12: büyü kitabını bırakmak serbest (nesne etkileşimi; almak `take` gibi).
+        if (cmd.action === 'put') return { ok: true, event: null };
+      }
       // A1: nesne fırlatmak eylem (Utilize değil; Fast Hands kapsamaz).
       if (cmd.action === 'throw') return spend(actor, 'action', 'Nesne fırlat');
       // Kuyruk 19 (featuresK19): Thief'in Fast Hands'i: Utilize bonus eylemle (eylem kullanılmışsa ya da her zaman tercih edilir).

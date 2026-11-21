@@ -423,6 +423,11 @@ export const TR_EXTRA = {
     stoodUp: (a: string, cost: number) => `${a} ayağa kalktı (hareketin ${cost} altıgeni).`,
     grappled: (a: string, by: string, label: string, dc: number, restrained: boolean) => `${a} yakalandı: ${by}, ${label} (kaçış DC ${dc}${restrained ? ', Restrained' : ''}).`,
     grappleEnded: (a: string, reason: string) => `${a}: yakalama bitti (${reason}).`,
+    // KARAR101 (sürüm 101+): yakalamayı bırakma, kalkan tak/çıkar, Knocking Out, Stone's Endurance (her hasarda).
+    grappleReleased: (a: string) => `${a}: yakalama bırakıldı.`,
+    shieldChanged: (a: string, on: boolean) => (on ? `${a} kalkanını taktı (Utilize).` : `${a} kalkanını çıkardı (Utilize).`),
+    knockedOutFx: () => `bayıltıldı: 1 HP, Unconscious (Knocking Out)`,
+    stoneEnduranceFx: (name: string, roll: number, amount: number) => `${name}: ${roll} → hasar −${amount}`,
     // Görev WS92: yutma (Swallow) satırları.
     swallow: {
       swallowed: (a: string, by: string) => `${a}${by ? `, ${by} tarafından` : ''} yutuldu: Blinded, Restrained, dışarıdan Total Cover.`,
@@ -465,7 +470,7 @@ export const TR_EXTRA = {
     why: whyTable('tr'),
     label: {
       move: 'Hareket', walk: 'Yürü', dash: 'Koş', disengage: 'Geri Çekil', back: '‹ Geri', jump: 'Atla', attack: 'Saldır', spell: 'Büyü',
-      hide: 'Gizlen', shove: 'İt', dodge: 'Kaçın', help: 'Yardım', stabilize: 'Stabilize et', distract: 'Dikkat dağıt', item: (name: string, n: number) => `${name} (${n})`, search: 'Ara', object: 'Nesne', throwObject: 'Nesne fırlat', stand: 'Kalk', escapeGrapple: 'Kaçmaya çalış',
+      hide: 'Gizlen', shove: 'İt', dodge: 'Kaçın', help: 'Yardım', stabilize: 'Stabilize et', distract: 'Dikkat dağıt', item: (name: string, n: number) => `${name} (${n})`, search: 'Ara', object: 'Nesne', throwObject: 'Nesne fırlat', stand: 'Kalk', escapeGrapple: 'Kaçmaya çalış', dropProne: 'Yere yat', releaseGrapple: (name: string) => `Yakalamayı bırak: ${name}`, shieldOff: 'Kalkanı çıkar', shieldOn: 'Kalkanı tak',
       escape: 'Çık', escapeSpell: 'Kurtul', extinguish: 'Ateşi söndür (Prone)', pull: 'Çek', surge: 'Action Surge', haste: 'Hızlı eylem', steer: 'Çağrıyı taşı', wind: 'Second Wind', mark: 'İşaret', weapon: 'Silah', repeat: 'Büyüyü sürdür', moveHex: 'Büyüyle taşı', commandSummons: 'Yaratıklara emret', famStrike: 'Yoldaş saldırsın', superiorDefense: 'Superior Defense', brutalPick: 'Brutal Strike', brutalName: { forceful: 'Forceful (it)', hamstring: 'Hamstring (yavaşlat)', staggering: 'Staggering (sarsıt)', sundering: 'Sundering (yar)' } as Record<string, string>, water: { whirlpool: 'Girdap', flood: 'Taşkın', part: 'Yarma', box: 'Kutu (10 ft, katı)', cage: 'Kafes (20 ft, parmaklık)' } as Record<string, string>, steed: { 'fell-glare': 'Korkunç Bakış (korkut)', 'fey-step': 'Peri Adımı (ışınlan)', 'healing-touch': 'Şifa Eli (iyileştir)' } as Record<string, string>, iswap: 'Sırayı değiş', shift: (ft: number) => `Serbest kay (${ft} ft)`, famOrder: 'Yoldaşa saldırı emri', gaze: 'İki Zihin Bakışı', sphereRoll: 'Küreyi yuvarla', sphereCarry: 'Küreyi kaldır', sphereDrop: 'Küreyi bırak', end: 'Turu bitir',
       rage: 'Rage', rageExtend: 'Rage\'i sürdür', reckless: 'Reckless Attack', offhand: 'Yan el', offhandNick: 'Yan el',
       // SD2: menüde çıkan her özellik için kısa düz Türkçe ad (ayrıntı üstüne gelince / ipucunda).
@@ -688,6 +693,9 @@ export const TR_EXTRA = {
     stand: 'Yerdesin (Prone): ayağa kalk. Hızının yarısı kadar hareket harcar; yürürken kendiliğinden kalkarsın. Yerdeyken yakın saldırılar sana avantajlı, uzaktan atışlar dezavantajlı.',
     escape_grapple: 'Yakalandın (Grappled): Athletics ya da Acrobatics zarıyla (yüksek olan) kaçış DC\'sini geç. Eylemini harcar. Yakalayan düşer ya da etkisiz kalırsa kendiliğinden kurtulursun.',
     pull: 'Batağa saplanmış bitişik müttefikini çekip kurtarmaya çalış. Eylemini harcar.',
+    drop_prone: 'Yere yat (Prone): eylem ve hareket harcamaz (SRD Dropping Prone). Uzaktan atışlar sana dezavantajlı; kalkmak hızının yarısı.',
+    release_grapple: 'Tuttuğun yaratığı bırak (eylemsiz; SRD Grappling). Elin boşalır: iki elli silah yeniden kullanılır.',
+    shield_toggle: 'Kalkanı çıkar ya da tak (Utilize eylemi; SRD Shield). Çıkarınca AC düşer, iki elli silahla saldırabilirsin.',
     surge: 'Atılım (Action Surge): bu tur bir eylem daha kazanırsın. Fighter, dinlenmeye kadar bir kez.',
     steer: 'Çağrıyı taşı: bonus eylemle Flaming Sphere\'i ya da ruh sürüsünü 30 ft taşı; küre bitişik düşmana çarpar.',
     famStrike: 'Pact of the Chain: Attack eyleminde bir saldırının yerine familiar tepkisiyle saldırır.',

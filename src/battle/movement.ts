@@ -1,4 +1,6 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
+import { kalan100On } from './kalan100Surum';
+import { karar101On } from './karar101Surum';
 import { sinif97On } from './sinif97Surum';
 import { getMonster } from '../data';
 import { formMonsterId } from './shapeMonsterCore';
@@ -334,7 +336,11 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
   const sizeRank = (x: string) => SZ.indexOf(x);
   const wrestler = !!actor.traits?.includes('grappler') && !!globalRule(state, 'featuresK19');
   // Kuyruk 19 (Bugbear Abduct): yakaladığını taşımak ek hareket istemez.
-  const dragging = !actor.traits?.includes('abduct') && Object.values(state.combatants).some((c) => c.grapple?.by === actor.id && !(wrestler && sizeRank(c.size) <= sizeRank(actor.size)));
+  // Görev KALAN100 (100+; SRD 5.2.1 s. 182 Grappled "Movable": "every foot of movement costs it 1 extra foot unless you are Tiny or
+  // two or more sizes smaller than it"): Tiny ya da iki+ boy küçük yakalanan ek maliyet istemez.
+  const k100 = kalan100On(state);
+  const dragging = !actor.traits?.includes('abduct') && Object.values(state.combatants).some((c) => c.grapple?.by === actor.id && !(wrestler && sizeRank(c.size) <= sizeRank(actor.size))
+    && !(k100 && (c.size === 'T' || sizeRank(c.size) <= sizeRank(actor.size) - 2)));
   const enemyAt = new Map<string, Combatant>();
   // Kuyruk K71c (sürüm 58+): yalnız yürüyenin düzeylerini (bandını) kaplayan düşman yolu keser; uçan düşmanın üstünden
   // (ya da altından) geçer (K6). Hızlı yol: havada kimse yokken bant hesabı yapılmaz (`fillsBand`). Değişken irtifada
@@ -373,6 +379,7 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
   const uphill = conveyorBlocks(state, actor, flying);
   // Kuyruk 20 A2: Prone yaratık yalnızca sürünür (SRD 5.2.1 Crawling: her ft için 1 ek ft); kural sürümü 2.
   const crawling = !flying && actor.conditions.includes('Prone') && srdConditions(state);
+  const crawl101 = karar101On(state);
   // Kuyruk 24d: çok derin su (kıyıdan eşikten uzak) yalnızca yüzücü, suda yürüyen ve uçan için (Game Master mekaniği).
   const tooDeep = aloft ? () => false : deepWaterBlocks(state, actor);
   const walker = waterWalks(state, actor);
@@ -494,8 +501,13 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
     const cost = ground === null || !enemy ? ground : phase || nimble ? Math.max(through, ground) : tinyPass ? ground
       : isIncapacitated(enemy.conditions) || sizePass ? Math.max(2, ground) : null;
     // Kuyruk 19 (stormRules): fırtınada uçmak iki kat hareket.
-    const slow = (slowed(h) ? 2 : 1) * (dragging ? 2 : 1) * (crawling ? 2 : 1) * (stormFly ? 2 : 1);
-    return cost === null ? null : cost * slow * (grip ? 2 : 1) * climbStep;
+    // KARAR101 (sürüm 101+; SRD 5.2.1 s. 179 Crawling "each foot of movement costs 1 extra foot (2 extra feet in Difficult
+    // Terrain)"; parantezdeki 2 ek ft zorlu arazinin kendi ekini içerir): sürünme zemine 1 ekler (normal 1 → 2, zorlu 2 → 3);
+    // 100 ve altı ×2 (zorluda 4).
+    const crawlAdd = crawling && crawl101;
+    const slow = (slowed(h) ? 2 : 1) * (dragging ? 2 : 1) * (crawling && !crawlAdd ? 2 : 1) * (stormFly ? 2 : 1);
+    const c101 = cost !== null && crawlAdd ? cost + 1 : cost;
+    return c101 === null ? null : c101 * slow * (grip ? 2 : 1) * climbStep;
   };
 }
 
@@ -682,20 +694,50 @@ export const HIGH_JUMP = 'spell:jump-high';
 export function highJumpReachFt(state: BattleState, c: Combatant): number {
   if (ruleVersion(state) < 52 || !usedThisTurn(state, c, HIGH_JUMP)) return 0;
   // Görev WS92 (92+): Standing Leap'in yüksek atlaması (Frog 5, Giant Frog/Toad 10 ft) da yerinde zıplama erişimi.
-  return Math.min(Math.max(spellJumpFt(c), leapOf(c)?.high ?? 0), altitudeCapFt(state, c));
+  // Görev KALAN100 (100+): büyüsüz High Jump; koşarak yapıldıysa (tur kaydı `HIGH_JUMP_RUN`) tam yükseklik.
+  const srd = kalan100On(state) ? srdHighJumpFt(c, usedThisTurn(state, c, HIGH_JUMP_RUN)) : 0;
+  return Math.min(Math.max(spellJumpFt(c), leapOf(c)?.high ?? 0, srd), altitudeCapFt(state, c));
+}
+/** Görev KALAN100: koşarak yapılan büyüsüz yüksek zıplamanın tur kaydı. */
+const HIGH_JUMP_RUN = 'kalan100:high-jump-run';
+/**
+ * Görev KALAN100 (SRD 5.2.1 s. 183 High Jump: "3 plus your Strength modifier (minimum of 0 feet) if you move at least 10 feet on
+ * foot immediately before the jump. When you make a standing High Jump, you can jump only half that distance"): ft.
+ */
+export function srdHighJumpFt(c: Pick<Combatant, 'modifiers' | 'strScore'>, running: boolean): number {
+  const mod = c.modifiers?.str ?? Math.floor(((c.strScore ?? 10) - 10) / 2);
+  const ft = Math.max(0, 3 + mod);
+  return running ? ft : Math.floor(ft / 2);
+}
+/**
+ * Görev KALAN100: koşu sayılır mı: bu tur yürüyerek en az 10 ft (2 altıgen hareket) ve son hareketi yürüyüş (`run` kaydı var).
+ * ⚠ "immediately before": arada yapılan eylem izlenmez (uzun atlamanın düz çizgi koşusu gibi yön de aranmaz).
+ */
+const highJumpRunning = (c: Combatant, state?: BattleState): boolean => !isAirborne(c)
+  // KARAR101 (101+, "immediately before"): kesintisiz son yürüyüş en az 2 altıgen (`walkStreak`; araya giren iş sıfırlar).
+  && (state && karar101On(state) ? (c.walkStreak ?? 0) >= 2 : c.run !== null && c.movementUsed >= 2);
+/** Görev KALAN100: yerinde zıplamanın yüksekliği (ft): Jump büyüsü, Standing Leap ya da (100+) büyüsüz High Jump'ın en yükseği. */
+export function highJumpFt(state: BattleState, c: Combatant): number {
+  const srd = kalan100On(state) ? srdHighJumpFt(c, highJumpRunning(c, state)) : 0;
+  return Math.max(spellJumpFt(c), leapOf(c)?.high ?? 0, srd);
 }
 /** Görev WS92: yerinde zıplamanın hareket maliyeti (Jump büyüsü 10 ft; Standing Leap yüksek atlaması ft başına 1 ft). */
-const highJumpCost = (c: Combatant): number => (spellJumpFt(c) > 0 ? SPELL_JUMP_COST : Math.max(1, Math.ceil((leapOf(c)?.high ?? 0) / 5)));
+const highJumpCost = (c: Combatant, state?: BattleState): number => (spellJumpFt(c) > 0 ? SPELL_JUMP_COST
+  : Math.max(1, Math.ceil(Math.max(leapOf(c)?.high ?? 0, state && kalan100On(state) ? srdHighJumpFt(c, highJumpRunning(c, state)) : 0) / 5)));
 
 /** Yerinde yüksek zıplamanın sorunu (yoksa null): sürüm 52, katmansız harita, Jump etkisi, bu tur zıplanmamış, 10 ft hareket. */
 export function highJumpProblem(state: BattleState, actor: Combatant): string | null {
   if (ruleVersion(state) < 52) return 'Zaten bu altıgende.';
-  if (spellJumpFt(actor) <= 0 && !leapOf(actor)?.high) return 'Yerinde zıplamak için Jump etkisi gerekir.';
+  const srdOnly = spellJumpFt(actor) <= 0 && !leapOf(actor)?.high;
+  if (srdOnly && !kalan100On(state)) return 'Yerinde zıplamak için Jump etkisi gerekir.';
+  // Görev KALAN100 (100+): büyüsüz High Jump (yükseklik 0 ise yok; turda bir yerinde zıplama yeter).
+  if (srdOnly && highJumpFt(state, actor) <= 0) return 'Zıplama yüksekliği 0 ft (3 + STR değiştiricisi; durarak yarısı).';
+  if (srdOnly && usedThisTurn(state, actor, HIGH_JUMP)) return 'Bu tur zaten yüksek zıpladın.';
   if (layerActive(state)) return 'Yükseklik katmanlı haritada yüksek zıplama komşu yüksek altıgene yapılır.';
   if (isAirborne(actor)) return 'Havadayken zıplanmaz.';
   if (usedThisTurn(state, actor, SPELL_JUMP)) return 'Jump bu tur kullanıldı.';
   if (altitudeCapFt(state, actor) <= 0) return 'Tavan çok alçak.';
-  if (highJumpCost(actor) > speedHexes(actor) - actor.movementUsed) return 'Hareket yetmiyor.';
+  if (highJumpCost(actor, state) > speedHexes(actor) - actor.movementUsed) return 'Hareket yetmiyor.';
   return null;
 }
 
@@ -738,7 +780,9 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
     const t = turnKey(state);
     // Görev WS92: Standing Leap (Jump etkisi yokken) Jump büyüsünün tur kaydını harcamaz.
     const spell = spellJumpFt(actor) > 0;
-    return finish(state, [{ type: 'jumped', actorId: actor.id, from, to, gap: 0, cost: highJumpCost(actor), running: false, traitTurns: spell ? { [SPELL_JUMP]: t, [HIGH_JUMP]: t } : { [HIGH_JUMP]: t } }]);
+    // Görev KALAN100: koşarak büyüsüz yüksek zıplama tur kaydına (erişim tam yükseklikle).
+    const run: Record<string, string> = !spell && kalan100On(state) && highJumpRunning(actor, state) ? { [HIGH_JUMP_RUN]: t } : {};
+    return finish(state, [{ type: 'jumped', actorId: actor.id, from, to, gap: 0, cost: highJumpCost(actor, state), running: false, traitTurns: spell ? { [SPELL_JUMP]: t, [HIGH_JUMP]: t } : { [HIGH_JUMP]: t, ...run } }]);
   }
   // Görev A4: tasma: atlayarak da uzaklaşılmaz.
   if (leashBlocks(leashOf(state, actor), to, from)) return fail('Tasma: bağlı olduğu yaratıktan daha uzağa gidemez.');

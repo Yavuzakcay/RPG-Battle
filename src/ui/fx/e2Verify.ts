@@ -20,7 +20,10 @@ const POS: Record<string, Offset> = { A: o(6, 5), C: o(7, 5), B: o(9, 5), D: o(9
 
 export function field(spell: Spell): BattleState {
   const A = mk('A', { ownerId: 'p1', level: 20, hp: 80, maxHp: 80, spellNames: [spell.name], spellAttack: 12, spellSaveDc: 19, spellMod: 5,
-    spellSlots: [4, 4, 4, 4, 4, 4, 4, 4, 4], modifiers: { str: 0, dex: 2, con: 2, int: 5, wis: 5, cha: 5 } });
+    spellSlots: [4, 4, 4, 4, 4, 4, 4, 4, 4], modifiers: { str: 0, dex: 2, con: 2, int: 5, wis: 5, cha: 5 },
+    // BUYU-TAM (102): Earthquake'in başarısız DEX save'i konsantrasyonu bozar (SRD); büyücü kendi alanında kalır, alan çizimi
+    // doğrulanabilsin diye büyücünün DEX save'i yüksek (yalnız görsel doğrulama düzeni).
+    saves: { str: 0, dex: 30, con: 0, int: 0, wis: 0, cha: 0 } });
   const C = mk('C', { ownerId: 'p1', hp: 3, maxHp: 30, conditions: ['Poisoned', 'Charmed'] });
   const Bn = mk('B', { side: 'enemies', ac: 5, hp: 300, maxHp: 300 });
   const D = mk('D', { side: 'enemies', ac: 5, hp: 300, maxHp: 300 });

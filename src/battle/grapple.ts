@@ -27,7 +27,7 @@ import { bodyFitProblem, occupantAt, placeProblem } from './movement';
 import { checkMode, skillBonus } from '../rules/skills';
 import { fail, finish, isTargetable, type CommandResult } from './common';
 import { attackEffect, makeTimer, saveMode, timedCondition } from './durations';
-import { speedHexes } from './reduce';
+import { speedHexes, speedHexesNoDash } from './reduce';
 import type { RiderSpec } from './riders';
 import { a2Events } from './ridersA2';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
@@ -45,7 +45,7 @@ export const fitsSize = (target: Combatant, max?: string) => !max || SIZES.index
  * sayılmaz). 95 ve altı: temel hızdan.
  */
 export const standUpCost = (c: Combatant) => (c.srd96
-  ? Math.ceil(Math.floor(speedHexes(c) / (1 + c.economy.dashes)) / 2)
+  ? Math.ceil((c.economy.dashFt !== undefined ? speedHexesNoDash(c) : Math.floor(speedHexes(c) / (1 + c.economy.dashes))) / 2)
   : Math.ceil(Math.floor((flySpeed(c) > 0 ? flySpeed(c) : c.speed) / 5) / 2));
 
 /** Ayağa kalkabilir mi; değilse neden. */

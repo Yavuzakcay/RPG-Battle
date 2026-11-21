@@ -17,6 +17,7 @@
    "type": "aberration",
    "alignment": "Lawful Evil",
    "ac": 17,
+   "initiative": 7,
    "hp": 150,
    "speed": {
     "walk": 10,
@@ -66,6 +67,7 @@
    "type": "elemental",
    "alignment": "Neutral",
    "ac": 15,
+   "initiative": 5,
    "hp": 90,
    "speed": {
     "walk": 10,
@@ -132,6 +134,7 @@
    "type": "construct",
    "alignment": "Unaligned",
    "ac": 18,
+   "initiative": 2,
    "hp": 33,
    "speed": {
     "walk": 25
@@ -189,6 +192,7 @@
    "type": "construct",
    "alignment": "Unaligned",
    "ac": 17,
+   "initiative": 4,
    "hp": 14,
    "speed": {
     "walk": 5,
@@ -248,6 +252,7 @@
    "type": "construct",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 4,
    "hp": 27,
    "speed": {
     "walk": 10
@@ -305,6 +310,7 @@
    "type": "monstrosity",
    "alignment": "Unaligned",
    "ac": 14,
+   "initiative": 0,
    "hp": 45,
    "speed": {
     "walk": 30,
@@ -353,6 +359,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 16,
+   "initiative": 10,
    "hp": 97,
    "speed": {
     "walk": 30
@@ -404,6 +411,7 @@
    "type": "plant",
    "alignment": "Neutral",
    "ac": 9,
+   "initiative": -1,
    "hp": 10,
    "speed": {
     "walk": 20
@@ -454,6 +462,7 @@
    "type": "plant",
    "alignment": "Neutral",
    "ac": 13,
+   "initiative": -2,
    "hp": 59,
    "speed": {
     "walk": 20
@@ -505,6 +514,7 @@
    "type": "monstrosity",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 1,
    "hp": 19,
    "speed": {
     "walk": 50
@@ -549,6 +559,7 @@
    "type": "elemental",
    "alignment": "Lawful Neutral",
    "ac": 17,
+   "initiative": 1,
    "hp": 39,
    "speed": {
     "walk": 30
@@ -600,6 +611,7 @@
    "tag": "Demon",
    "alignment": "Chaotic Evil",
    "ac": 19,
+   "initiative": 14,
    "hp": 287,
    "speed": {
     "walk": 40,
@@ -661,6 +673,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 12,
+   "initiative": 1,
    "hp": 11,
    "speed": {
     "walk": 30
@@ -706,6 +719,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 15,
+   "initiative": 3,
    "hp": 52,
    "speed": {
     "walk": 30
@@ -754,6 +768,7 @@
    "tag": "Devil",
    "alignment": "Lawful Evil",
    "ac": 15,
+   "initiative": 3,
    "hp": 110,
    "speed": {
     "walk": 30,
@@ -813,6 +828,7 @@
    "type": "monstrosity",
    "alignment": "Unaligned",
    "ac": 15,
+   "initiative": -1,
    "hp": 52,
    "speed": {
     "walk": 20
@@ -859,6 +875,7 @@
    "tag": "Devil",
    "alignment": "Lawful Evil",
    "ac": 13,
+   "initiative": 2,
    "hp": 58,
    "speed": {
     "walk": 30
@@ -914,6 +931,7 @@
    "type": "monstrosity",
    "alignment": "Neutral Evil",
    "ac": 17,
+   "initiative": 3,
    "hp": 168,
    "speed": {
     "walk": 50,
@@ -967,6 +985,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 13,
+   "initiative": 1,
    "hp": 67,
    "speed": {
     "walk": 30
@@ -1012,6 +1031,7 @@
    "tag": "Chromatic",
    "alignment": "Chaotic Evil",
    "ac": 17,
+   "initiative": 4,
    "hp": 33,
    "speed": {
     "walk": 30,
@@ -1067,6 +1087,7 @@
    "tag": "Chromatic",
    "alignment": "Chaotic Evil",
    "ac": 18,
+   "initiative": 5,
    "hp": 127,
    "speed": {
     "walk": 40,
@@ -1122,6 +1143,7 @@
    "tag": "Chromatic",
    "alignment": "Chaotic Evil",
    "ac": 19,
+   "initiative": 12,
    "hp": 195,
    "speed": {
     "walk": 40,
@@ -1177,6 +1199,7 @@
    "tag": "Chromatic",
    "alignment": "Chaotic Evil",
    "ac": 22,
+   "initiative": 16,
    "hp": 367,
    "speed": {
     "walk": 40,
@@ -1231,6 +1254,7 @@
    "type": "ooze",
    "alignment": "Unaligned",
    "ac": 7,
+   "initiative": -3,
    "hp": 68,
    "speed": {
     "walk": 20,
@@ -1291,6 +1315,7 @@
    "type": "fey",
    "alignment": "Lawful Good",
    "ac": 13,
+   "initiative": 3,
    "hp": 22,
    "speed": {
     "walk": 40
@@ -1340,6 +1365,7 @@
    "tag": "Chromatic",
    "alignment": "Lawful Evil",
    "ac": 17,
+   "initiative": 2,
    "hp": 65,
    "speed": {
     "walk": 30,
@@ -1395,6 +1421,7 @@
    "tag": "Chromatic",
    "alignment": "Lawful Evil",
    "ac": 18,
+   "initiative": 4,
    "hp": 152,
    "speed": {
     "walk": 40,
@@ -1450,6 +1477,7 @@
    "tag": "Chromatic",
    "alignment": "Lawful Evil",
    "ac": 19,
+   "initiative": 10,
    "hp": 212,
    "speed": {
     "walk": 40,
@@ -1505,6 +1533,7 @@
    "tag": "Chromatic",
    "alignment": "Lawful Evil",
    "ac": 22,
+   "initiative": 14,
    "hp": 481,
    "speed": {
     "walk": 40,
@@ -1560,6 +1589,7 @@
    "tag": "Devil",
    "alignment": "Lawful Evil",
    "ac": 16,
+   "initiative": 7,
    "hp": 161,
    "speed": {
     "walk": 40,
@@ -1619,6 +1649,7 @@
    "tag": "Metallic",
    "alignment": "Chaotic Good",
    "ac": 15,
+   "initiative": 2,
    "hp": 22,
    "speed": {
     "walk": 30,
@@ -1674,6 +1705,7 @@
    "tag": "Metallic",
    "alignment": "Chaotic Good",
    "ac": 17,
+   "initiative": 3,
    "hp": 110,
    "speed": {
     "walk": 40,
@@ -1730,6 +1762,7 @@
    "tag": "Metallic",
    "alignment": "Chaotic Good",
    "ac": 18,
+   "initiative": 10,
    "hp": 172,
    "speed": {
     "walk": 40,
@@ -1787,6 +1820,7 @@
    "tag": "Metallic",
    "alignment": "Chaotic Good",
    "ac": 20,
+   "initiative": 12,
    "hp": 332,
    "speed": {
     "walk": 40,
@@ -1844,6 +1878,7 @@
    "tag": "Metallic",
    "alignment": "Lawful Good",
    "ac": 15,
+   "initiative": 2,
    "hp": 39,
    "speed": {
     "walk": 30,
@@ -1899,6 +1934,7 @@
    "tag": "Metallic",
    "alignment": "Lawful Good",
    "ac": 17,
+   "initiative": 3,
    "hp": 142,
    "speed": {
     "walk": 40,
@@ -1955,6 +1991,7 @@
    "tag": "Metallic",
    "alignment": "Lawful Good",
    "ac": 18,
+   "initiative": 10,
    "hp": 212,
    "speed": {
     "walk": 40,
@@ -2011,6 +2048,7 @@
    "tag": "Metallic",
    "alignment": "Lawful Good",
    "ac": 22,
+   "initiative": 14,
    "hp": 444,
    "speed": {
     "walk": 40,
@@ -2067,6 +2105,7 @@
    "tag": "Goblinoid",
    "alignment": "Chaotic Evil",
    "ac": 15,
+   "initiative": 2,
    "hp": 65,
    "speed": {
     "walk": 30
@@ -2116,6 +2155,7 @@
    "tag": "Goblinoid",
    "alignment": "Chaotic Evil",
    "ac": 14,
+   "initiative": 2,
    "hp": 33,
    "speed": {
     "walk": 30
@@ -2164,6 +2204,7 @@
    "type": "monstrosity",
    "alignment": "Unaligned",
    "ac": 17,
+   "initiative": 0,
    "hp": 94,
    "speed": {
     "walk": 40,
@@ -2213,6 +2254,7 @@
    "type": "fey",
    "alignment": "Neutral Good",
    "ac": 16,
+   "initiative": 2,
    "hp": 45,
    "speed": {
     "walk": 50
@@ -2261,6 +2303,7 @@
    "tag": "Devil",
    "alignment": "Lawful Evil",
    "ac": 15,
+   "initiative": 5,
    "hp": 85,
    "speed": {
     "walk": 30
@@ -2318,6 +2361,7 @@
    "type": "monstrosity",
    "alignment": "Chaotic Evil",
    "ac": 14,
+   "initiative": 0,
    "hp": 114,
    "speed": {
     "walk": 30,
@@ -2366,6 +2410,7 @@
    "type": "aberration",
    "alignment": "Chaotic Evil",
    "ac": 16,
+   "initiative": 0,
    "hp": 76,
    "speed": {
     "walk": 30,
@@ -2419,6 +2464,7 @@
    "type": "construct",
    "alignment": "Unaligned",
    "ac": 14,
+   "initiative": 3,
    "hp": 123,
    "speed": {
     "walk": 30
@@ -2481,6 +2527,7 @@
    "type": "aberration",
    "alignment": "Chaotic Neutral",
    "ac": 14,
+   "initiative": 5,
    "hp": 91,
    "speed": {
     "walk": 10,
@@ -2532,6 +2579,7 @@
    "type": "giant",
    "alignment": "Neutral",
    "ac": 14,
+   "initiative": 4,
    "hp": 200,
    "speed": {
     "walk": 40,
@@ -2581,6 +2629,7 @@
    "type": "monstrosity",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 1,
    "hp": 22,
    "speed": {
     "walk": 20,
@@ -2631,6 +2680,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 10,
+   "initiative": 0,
    "hp": 4,
    "speed": {
     "walk": 30
@@ -2676,6 +2726,7 @@
    "tag": "Metallic",
    "alignment": "Chaotic Good",
    "ac": 16,
+   "initiative": 3,
    "hp": 22,
    "speed": {
     "walk": 30,
@@ -2731,6 +2782,7 @@
    "tag": "Metallic",
    "alignment": "Chaotic Good",
    "ac": 17,
+   "initiative": 4,
    "hp": 119,
    "speed": {
     "walk": 40,
@@ -2787,6 +2839,7 @@
    "tag": "Metallic",
    "alignment": "Chaotic Good",
    "ac": 18,
+   "initiative": 11,
    "hp": 184,
    "speed": {
     "walk": 40,
@@ -2843,6 +2896,7 @@
    "tag": "Metallic",
    "alignment": "Chaotic Good",
    "ac": 21,
+   "initiative": 15,
    "hp": 367,
    "speed": {
     "walk": 40,
@@ -2898,6 +2952,7 @@
    "type": "celestial",
    "alignment": "Lawful Good",
    "ac": 19,
+   "initiative": 5,
    "hp": 60,
    "speed": {
     "walk": 30,
@@ -2954,6 +3009,7 @@
    "swarm": "T",
    "alignment": "Neutral Evil",
    "ac": 12,
+   "initiative": 2,
    "hp": 49,
    "speed": {
     "walk": 30,
@@ -3022,6 +3078,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 12,
+   "initiative": 1,
    "hp": 9,
    "speed": {
     "walk": 30
@@ -3070,6 +3127,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 13,
+   "initiative": 2,
    "hp": 44,
    "speed": {
     "walk": 30
@@ -3118,6 +3176,7 @@
    "type": "aberration",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 3,
    "hp": 22,
    "speed": {
     "walk": 10,
@@ -3166,6 +3225,7 @@
    "type": "monstrosity",
    "alignment": "Neutral Evil",
    "ac": 12,
+   "initiative": 2,
    "hp": 39,
    "speed": {
     "walk": 40
@@ -3223,6 +3283,7 @@
    "tag": "Angel",
    "alignment": "Lawful Good",
    "ac": 17,
+   "initiative": 4,
    "hp": 229,
    "speed": {
     "walk": 30,
@@ -3282,6 +3343,7 @@
    "tag": "Genie",
    "alignment": "Neutral",
    "ac": 17,
+   "initiative": 2,
    "hp": 218,
    "speed": {
     "walk": 30,
@@ -3333,6 +3395,7 @@
    "type": "monstrosity",
    "alignment": "Neutral",
    "ac": 14,
+   "initiative": 4,
    "hp": 52,
    "speed": {
     "walk": 30
@@ -3384,6 +3447,7 @@
    "type": "dragon",
    "alignment": "Neutral",
    "ac": 20,
+   "initiative": 6,
    "hp": 356,
    "speed": {
     "walk": 20,
@@ -3434,6 +3498,7 @@
    "tag": "Demon",
    "alignment": "Chaotic Evil",
    "ac": 11,
+   "initiative": 0,
    "hp": 18,
    "speed": {
     "walk": 20
@@ -3489,6 +3554,7 @@
    "type": "monstrosity",
    "alignment": "Chaotic Evil",
    "ac": 19,
+   "initiative": 4,
    "hp": 123,
    "speed": {
     "walk": 30,
@@ -3540,6 +3606,7 @@
    "tag": "Druid",
    "alignment": "Neutral",
    "ac": 13,
+   "initiative": 1,
    "hp": 44,
    "speed": {
     "walk": 30
@@ -3588,6 +3655,7 @@
    "type": "fey",
    "alignment": "Neutral",
    "ac": 16,
+   "initiative": 1,
    "hp": 22,
    "speed": {
     "walk": 30
@@ -3636,6 +3704,7 @@
    "type": "elemental",
    "alignment": "Neutral",
    "ac": 17,
+   "initiative": -1,
    "hp": 147,
    "speed": {
     "walk": 30,
@@ -3696,6 +3765,7 @@
    "tag": "Genie",
    "alignment": "Neutral",
    "ac": 17,
+   "initiative": 1,
    "hp": 212,
    "speed": {
     "walk": 40,
@@ -3747,6 +3817,7 @@
    "tag": "Devil",
    "alignment": "Lawful Evil",
    "ac": 18,
+   "initiative": 7,
    "hp": 178,
    "speed": {
     "walk": 30,
@@ -3805,6 +3876,7 @@
    "type": "monstrosity",
    "alignment": "Neutral Evil",
    "ac": 13,
+   "initiative": 2,
    "hp": 44,
    "speed": {
     "walk": 30,
@@ -3855,6 +3927,7 @@
    "type": "giant",
    "alignment": "Chaotic Evil",
    "ac": 12,
+   "initiative": -1,
    "hp": 85,
    "speed": {
     "walk": 40
@@ -3910,6 +3983,7 @@
    "type": "elemental",
    "alignment": "Neutral",
    "ac": 13,
+   "initiative": 3,
    "hp": 93,
    "speed": {
     "walk": 50
@@ -3973,6 +4047,7 @@
    "type": "giant",
    "alignment": "Lawful Evil",
    "ac": 18,
+   "initiative": 3,
    "hp": 162,
    "speed": {
     "walk": 30
@@ -4023,6 +4098,7 @@
    "type": "construct",
    "alignment": "Neutral",
    "ac": 9,
+   "initiative": -1,
    "hp": 127,
    "speed": {
     "walk": 30
@@ -4079,6 +4155,7 @@
    "type": "giant",
    "alignment": "Neutral Evil",
    "ac": 15,
+   "initiative": 2,
    "hp": 149,
    "speed": {
     "walk": 40
@@ -4129,6 +4206,7 @@
    "type": "plant",
    "alignment": "Unaligned",
    "ac": 5,
+   "initiative": -5,
    "hp": 13,
    "speed": {
     "walk": 5
@@ -4180,6 +4258,7 @@
    "type": "plant",
    "alignment": "Unaligned",
    "ac": 5,
+   "initiative": -5,
    "hp": 18,
    "speed": {
     "walk": 5
@@ -4231,6 +4310,7 @@
    "type": "elemental",
    "alignment": "Chaotic Evil",
    "ac": 15,
+   "initiative": 2,
    "hp": 67,
    "speed": {
     "walk": 30,
@@ -4286,6 +4366,7 @@
    "type": "ooze",
    "alignment": "Unaligned",
    "ac": 6,
+   "initiative": -4,
    "hp": 63,
    "speed": {
     "walk": 15
@@ -4341,6 +4422,7 @@
    "type": "undead",
    "alignment": "Chaotic Evil",
    "ac": 13,
+   "initiative": 3,
    "hp": 36,
    "speed": {
     "walk": 30
@@ -4396,6 +4478,7 @@
    "type": "undead",
    "alignment": "Neutral",
    "ac": 11,
+   "initiative": 1,
    "hp": 45,
    "speed": {
     "walk": 5,
@@ -4467,6 +4550,7 @@
    "type": "undead",
    "alignment": "Chaotic Evil",
    "ac": 12,
+   "initiative": 2,
    "hp": 22,
    "speed": {
     "walk": 30
@@ -4519,6 +4603,7 @@
    "type": "aberration",
    "alignment": "Chaotic Neutral",
    "ac": 9,
+   "initiative": -1,
    "hp": 52,
    "speed": {
     "walk": 20,
@@ -4569,6 +4654,7 @@
    "tag": "Demon",
    "alignment": "Chaotic Evil",
    "ac": 17,
+   "initiative": 6,
    "hp": 189,
    "speed": {
     "walk": 40
@@ -4628,6 +4714,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 16,
+   "initiative": 5,
    "hp": 112,
    "speed": {
     "walk": 30
@@ -4675,6 +4762,7 @@
    "type": "fiend",
    "alignment": "Chaotic Evil",
    "ac": 15,
+   "initiative": 1,
    "hp": 27,
    "speed": {
     "walk": 30
@@ -4721,6 +4809,7 @@
    "tag": "Goblinoid",
    "alignment": "Chaotic Neutral",
    "ac": 12,
+   "initiative": 2,
    "hp": 7,
    "speed": {
     "walk": 30
@@ -4769,6 +4858,7 @@
    "tag": "Goblinoid",
    "alignment": "Chaotic Neutral",
    "ac": 15,
+   "initiative": 2,
    "hp": 10,
    "speed": {
     "walk": 30
@@ -4817,6 +4907,7 @@
    "tag": "Goblinoid",
    "alignment": "Chaotic Neutral",
    "ac": 17,
+   "initiative": 2,
    "hp": 21,
    "speed": {
     "walk": 30
@@ -4865,6 +4956,7 @@
    "tag": "Metallic",
    "alignment": "Lawful Good",
    "ac": 17,
+   "initiative": 4,
    "hp": 60,
    "speed": {
     "walk": 30,
@@ -4920,6 +5012,7 @@
    "tag": "Metallic",
    "alignment": "Lawful Good",
    "ac": 18,
+   "initiative": 6,
    "hp": 178,
    "speed": {
     "walk": 40,
@@ -4977,6 +5070,7 @@
    "tag": "Metallic",
    "alignment": "Lawful Good",
    "ac": 19,
+   "initiative": 14,
    "hp": 243,
    "speed": {
     "walk": 40,
@@ -5034,6 +5128,7 @@
    "tag": "Metallic",
    "alignment": "Lawful Good",
    "ac": 22,
+   "initiative": 16,
    "hp": 546,
    "speed": {
     "walk": 40,
@@ -5090,6 +5185,7 @@
    "type": "construct",
    "alignment": "Unaligned",
    "ac": 19,
+   "initiative": 0,
    "hp": 114,
    "speed": {
     "walk": 40
@@ -5141,6 +5237,7 @@
    "type": "ooze",
    "alignment": "Unaligned",
    "ac": 9,
+   "initiative": -2,
    "hp": 22,
    "speed": {
     "walk": 10,
@@ -5205,6 +5302,7 @@
    "tag": "Chromatic",
    "alignment": "Lawful Evil",
    "ac": 17,
+   "initiative": 3,
    "hp": 38,
    "speed": {
     "walk": 30,
@@ -5262,6 +5360,7 @@
    "tag": "Chromatic",
    "alignment": "Lawful Evil",
    "ac": 18,
+   "initiative": 4,
    "hp": 136,
    "speed": {
     "walk": 40,
@@ -5320,6 +5419,7 @@
    "tag": "Chromatic",
    "alignment": "Lawful Evil",
    "ac": 19,
+   "initiative": 11,
    "hp": 207,
    "speed": {
     "walk": 40,
@@ -5379,6 +5479,7 @@
    "tag": "Chromatic",
    "alignment": "Lawful Evil",
    "ac": 21,
+   "initiative": 15,
    "hp": 402,
    "speed": {
     "walk": 40,
@@ -5437,6 +5538,7 @@
    "type": "fey",
    "alignment": "Neutral Evil",
    "ac": 17,
+   "initiative": 1,
    "hp": 82,
    "speed": {
     "walk": 30,
@@ -5488,6 +5590,7 @@
    "type": "aberration",
    "alignment": "Unaligned",
    "ac": 14,
+   "initiative": 2,
    "hp": 54,
    "speed": {
     "walk": 30,
@@ -5536,6 +5639,7 @@
    "type": "monstrosity",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 59,
    "speed": {
     "walk": 30,
@@ -5584,6 +5688,7 @@
    "type": "aberration",
    "alignment": "Neutral Evil",
    "ac": 11,
+   "initiative": 1,
    "hp": 11,
    "speed": {
     "walk": 30,
@@ -5634,6 +5739,7 @@
    "type": "celestial",
    "alignment": "Lawful Good",
    "ac": 18,
+   "initiative": 4,
    "hp": 136,
    "speed": {
     "walk": 40,
@@ -5694,6 +5800,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 16,
+   "initiative": 1,
    "hp": 11,
    "speed": {
     "walk": 30
@@ -5741,6 +5848,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 18,
+   "initiative": 4,
    "hp": 75,
    "speed": {
     "walk": 30
@@ -5788,6 +5896,7 @@
    "type": "dragon",
    "alignment": "Neutral",
    "ac": 18,
+   "initiative": 5,
    "hp": 105,
    "speed": {
     "walk": 40
@@ -5839,6 +5948,7 @@
    "type": "monstrosity",
    "alignment": "Chaotic Evil",
    "ac": 11,
+   "initiative": 1,
    "hp": 38,
    "speed": {
     "walk": 20,
@@ -5884,6 +5994,7 @@
    "type": "fiend",
    "alignment": "Lawful Evil",
    "ac": 15,
+   "initiative": 1,
    "hp": 58,
    "speed": {
     "walk": 50
@@ -5935,6 +6046,7 @@
    "tag": "Demon",
    "alignment": "Chaotic Evil",
    "ac": 18,
+   "initiative": 6,
    "hp": 157,
    "speed": {
     "walk": 30
@@ -5990,6 +6102,7 @@
    "type": "giant",
    "alignment": "Chaotic Evil",
    "ac": 13,
+   "initiative": 2,
    "hp": 105,
    "speed": {
     "walk": 40
@@ -6036,6 +6149,7 @@
    "type": "monstrosity",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 1,
    "hp": 26,
    "speed": {
     "walk": 40,
@@ -6084,6 +6198,7 @@
    "tag": "Goblinoid",
    "alignment": "Lawful Evil",
    "ac": 18,
+   "initiative": 3,
    "hp": 11,
    "speed": {
     "walk": 30
@@ -6130,6 +6245,7 @@
    "tag": "Goblinoid",
    "alignment": "Lawful Evil",
    "ac": 17,
+   "initiative": 4,
    "hp": 58,
    "speed": {
     "walk": 30
@@ -6175,6 +6291,7 @@
    "type": "construct",
    "alignment": "Neutral",
    "ac": 13,
+   "initiative": 2,
    "hp": 4,
    "speed": {
     "walk": 20,
@@ -6228,6 +6345,7 @@
    "tag": "Devil",
    "alignment": "Lawful Evil",
    "ac": 18,
+   "initiative": 7,
    "hp": 199,
    "speed": {
     "walk": 30,
@@ -6283,6 +6401,7 @@
    "type": "monstrosity",
    "alignment": "Unaligned",
    "ac": 15,
+   "initiative": 4,
    "hp": 184,
    "speed": {
     "walk": 40,
@@ -6340,6 +6459,7 @@
    "tag": "Devil",
    "alignment": "Lawful Evil",
    "ac": 18,
+   "initiative": 7,
    "hp": 228,
    "speed": {
     "walk": 40
@@ -6397,6 +6517,7 @@
    "tag": "Devil",
    "alignment": "Lawful Evil",
    "ac": 13,
+   "initiative": 3,
    "hp": 21,
    "speed": {
     "walk": 20,
@@ -6456,6 +6577,7 @@
    "type": "fiend",
    "alignment": "Neutral Evil",
    "ac": 15,
+   "initiative": 3,
    "hp": 66,
    "speed": {
     "walk": 30,
@@ -6514,6 +6636,7 @@
    "type": "elemental",
    "alignment": "Neutral",
    "ac": 14,
+   "initiative": 7,
    "hp": 97,
    "speed": {
     "walk": 50,
@@ -6581,6 +6704,7 @@
    "type": "construct",
    "alignment": "Unaligned",
    "ac": 20,
+   "initiative": 9,
    "hp": 252,
    "speed": {
     "walk": 30
@@ -6639,6 +6763,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 18,
+   "initiative": 0,
    "hp": 52,
    "speed": {
     "walk": 30
@@ -6686,6 +6811,7 @@
    "type": "dragon",
    "alignment": "Neutral",
    "ac": 14,
+   "initiative": 2,
    "hp": 7,
    "speed": {
     "walk": 30
@@ -6732,6 +6858,7 @@
    "tag": "Titan",
    "alignment": "Chaotic Evil",
    "ac": 18,
+   "initiative": 14,
    "hp": 481,
    "speed": {
     "walk": 30,
@@ -6790,6 +6917,7 @@
    "type": "fiend",
    "alignment": "Chaotic Evil",
    "ac": 13,
+   "initiative": 1,
    "hp": 97,
    "speed": {
     "walk": 40
@@ -6840,6 +6968,7 @@
    "tag": "Devil",
    "alignment": "Lawful Evil",
    "ac": 9,
+   "initiative": -3,
    "hp": 9,
    "speed": {
     "walk": 20
@@ -6897,6 +7026,7 @@
    "tag": "Wizard",
    "alignment": "Neutral Evil",
    "ac": 20,
+   "initiative": 17,
    "hp": 315,
    "speed": {
     "walk": 30
@@ -6963,6 +7093,7 @@
    "tag": "Wizard",
    "alignment": "Neutral",
    "ac": 15,
+   "initiative": 2,
    "hp": 81,
    "speed": {
     "walk": 30
@@ -7013,6 +7144,7 @@
    "tag": "Wizard",
    "alignment": "Neutral",
    "ac": 17,
+   "initiative": 7,
    "hp": 170,
    "speed": {
     "walk": 30
@@ -7066,6 +7198,7 @@
    "type": "elemental",
    "alignment": "Chaotic Neutral",
    "ac": 14,
+   "initiative": 2,
    "hp": 13,
    "speed": {
     "walk": 30
@@ -7114,6 +7247,7 @@
    "type": "monstrosity",
    "alignment": "Lawful Evil",
    "ac": 14,
+   "initiative": 3,
    "hp": 68,
    "speed": {
     "walk": 30,
@@ -7161,6 +7295,7 @@
    "tag": "Demon",
    "alignment": "Chaotic Evil",
    "ac": 16,
+   "initiative": 10,
    "hp": 220,
    "speed": {
     "walk": 40,
@@ -7219,6 +7354,7 @@
    "type": "monstrosity",
    "alignment": "Lawful Evil",
    "ac": 15,
+   "initiative": 6,
    "hp": 127,
    "speed": {
     "walk": 30
@@ -7268,6 +7404,7 @@
    "type": "elemental",
    "alignment": "Neutral Evil",
    "ac": 12,
+   "initiative": 2,
    "hp": 17,
    "speed": {
     "walk": 30,
@@ -7326,6 +7463,7 @@
    "type": "elemental",
    "alignment": "Neutral Evil",
    "ac": 11,
+   "initiative": 1,
    "hp": 21,
    "speed": {
     "walk": 30,
@@ -7385,6 +7523,7 @@
    "type": "elemental",
    "alignment": "Neutral Evil",
    "ac": 11,
+   "initiative": 1,
    "hp": 18,
    "speed": {
     "walk": 30,
@@ -7443,6 +7582,7 @@
    "type": "elemental",
    "alignment": "Neutral Evil",
    "ac": 10,
+   "initiative": 0,
    "hp": 17,
    "speed": {
     "walk": 30,
@@ -7498,6 +7638,7 @@
    "type": "elemental",
    "alignment": "Neutral",
    "ac": 11,
+   "initiative": 1,
    "hp": 11,
    "speed": {
     "walk": 10,
@@ -7543,6 +7684,7 @@
    "type": "monstrosity",
    "alignment": "Chaotic Evil",
    "ac": 13,
+   "initiative": 2,
    "hp": 45,
    "speed": {
     "walk": 10,
@@ -7589,6 +7731,7 @@
    "type": "monstrosity",
    "alignment": "Neutral",
    "ac": 12,
+   "initiative": 3,
    "hp": 58,
    "speed": {
     "walk": 20
@@ -7641,6 +7784,7 @@
    "type": "monstrosity",
    "alignment": "Chaotic Evil",
    "ac": 14,
+   "initiative": 0,
    "hp": 85,
    "speed": {
     "walk": 40
@@ -7690,6 +7834,7 @@
    "type": "undead",
    "alignment": "Lawful Evil",
    "ac": 11,
+   "initiative": -1,
    "hp": 58,
    "speed": {
     "walk": 20
@@ -7750,6 +7895,7 @@
    "tag": "Cleric",
    "alignment": "Lawful Evil",
    "ac": 17,
+   "initiative": 10,
    "hp": 187,
    "speed": {
     "walk": 30
@@ -7813,6 +7959,7 @@
    "tag": "Demon",
    "alignment": "Chaotic Evil",
    "ac": 18,
+   "initiative": 5,
    "hp": 184,
    "speed": {
     "walk": 20,
@@ -7870,6 +8017,7 @@
    "type": "fiend",
    "alignment": "Neutral Evil",
    "ac": 17,
+   "initiative": 5,
    "hp": 112,
    "speed": {
     "walk": 30
@@ -7927,6 +8075,7 @@
    "type": "fiend",
    "alignment": "Neutral Evil",
    "ac": 13,
+   "initiative": 2,
    "hp": 68,
    "speed": {
     "walk": 60,
@@ -7977,6 +8126,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 15,
+   "initiative": 1,
    "hp": 9,
    "speed": {
     "walk": 30
@@ -8025,6 +8175,7 @@
    "type": "ooze",
    "alignment": "Unaligned",
    "ac": 8,
+   "initiative": -2,
    "hp": 52,
    "speed": {
     "walk": 20,
@@ -8086,6 +8237,7 @@
    "type": "giant",
    "alignment": "Chaotic Evil",
    "ac": 11,
+   "initiative": -1,
    "hp": 68,
    "speed": {
     "walk": 40
@@ -8131,6 +8283,7 @@
    "type": "fiend",
    "alignment": "Lawful Evil",
    "ac": 17,
+   "initiative": 0,
    "hp": 119,
    "speed": {
     "walk": 30,
@@ -8185,6 +8338,7 @@
    "type": "aberration",
    "alignment": "Neutral",
    "ac": 14,
+   "initiative": 0,
    "hp": 104,
    "speed": {
     "walk": 30
@@ -8230,6 +8384,7 @@
    "type": "monstrosity",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 1,
    "hp": 59,
    "speed": {
     "walk": 40,
@@ -8278,6 +8433,7 @@
    "type": "celestial",
    "alignment": "Chaotic Good",
    "ac": 12,
+   "initiative": 2,
    "hp": 59,
    "speed": {
     "walk": 60,
@@ -8325,6 +8481,7 @@
    "type": "monstrosity",
    "alignment": "Unaligned",
    "ac": 14,
+   "initiative": 3,
    "hp": 45,
    "speed": {
     "walk": 30,
@@ -8374,6 +8531,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 14,
+   "initiative": 5,
    "hp": 33,
    "speed": {
     "walk": 30
@@ -8419,6 +8577,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 17,
+   "initiative": 7,
    "hp": 84,
    "speed": {
     "walk": 30
@@ -8467,6 +8626,7 @@
    "tag": "Devil",
    "alignment": "Lawful Evil",
    "ac": 21,
+   "initiative": 14,
    "hp": 337,
    "speed": {
     "walk": 30,
@@ -8526,6 +8686,7 @@
    "tag": "Angel",
    "alignment": "Lawful Good",
    "ac": 19,
+   "initiative": 10,
    "hp": 262,
    "speed": {
     "walk": 40,
@@ -8585,6 +8746,7 @@
    "tag": "Cleric",
    "alignment": "Neutral",
    "ac": 13,
+   "initiative": 0,
    "hp": 11,
    "speed": {
     "walk": 30
@@ -8634,6 +8796,7 @@
    "tag": "Cleric",
    "alignment": "Neutral",
    "ac": 13,
+   "initiative": 0,
    "hp": 38,
    "speed": {
     "walk": 30
@@ -8682,6 +8845,7 @@
    "type": "dragon",
    "alignment": "Neutral Good",
    "ac": 14,
+   "initiative": 2,
    "hp": 10,
    "speed": {
     "walk": 15,
@@ -8732,6 +8896,7 @@
    "type": "monstrosity",
    "alignment": "Unaligned",
    "ac": 18,
+   "initiative": 3,
    "hp": 247,
    "speed": {
     "walk": 50,
@@ -8780,6 +8945,7 @@
    "tag": "Demon",
    "alignment": "Chaotic Evil",
    "ac": 13,
+   "initiative": 3,
    "hp": 25,
    "speed": {
     "walk": 40
@@ -8837,6 +9003,7 @@
    "type": "fiend",
    "alignment": "Lawful Evil",
    "ac": 17,
+   "initiative": 8,
    "hp": 221,
    "speed": {
     "walk": 40
@@ -8894,6 +9061,7 @@
    "tag": "Chromatic",
    "alignment": "Chaotic Evil",
    "ac": 17,
+   "initiative": 2,
    "hp": 75,
    "speed": {
     "walk": 30,
@@ -8949,6 +9117,7 @@
    "tag": "Chromatic",
    "alignment": "Chaotic Evil",
    "ac": 18,
+   "initiative": 4,
    "hp": 178,
    "speed": {
     "walk": 40,
@@ -9004,6 +9173,7 @@
    "tag": "Chromatic",
    "alignment": "Chaotic Evil",
    "ac": 19,
+   "initiative": 12,
    "hp": 256,
    "speed": {
     "walk": 40,
@@ -9059,6 +9229,7 @@
    "tag": "Chromatic",
    "alignment": "Chaotic Evil",
    "ac": 22,
+   "initiative": 14,
    "hp": 507,
    "speed": {
     "walk": 40,
@@ -9113,6 +9284,7 @@
    "type": "monstrosity",
    "alignment": "Unaligned",
    "ac": 17,
+   "initiative": 5,
    "hp": 195,
    "speed": {
     "walk": 40,
@@ -9164,6 +9336,7 @@
    "type": "monstrosity",
    "alignment": "Unaligned",
    "ac": 15,
+   "initiative": 8,
    "hp": 248,
    "speed": {
     "walk": 20,
@@ -9211,6 +9384,7 @@
    "type": "aberration",
    "alignment": "Neutral Evil",
    "ac": 20,
+   "initiative": 5,
    "hp": 93,
    "speed": {
     "walk": 10,
@@ -9260,6 +9434,7 @@
    "type": "monstrosity",
    "alignment": "Unaligned",
    "ac": 14,
+   "initiative": 1,
    "hp": 33,
    "speed": {
     "walk": 40
@@ -9305,6 +9480,7 @@
    "type": "fiend",
    "alignment": "Lawful Evil",
    "ac": 12,
+   "initiative": 0,
    "hp": 22,
    "speed": {
     "walk": 30,
@@ -9357,6 +9533,7 @@
    "type": "elemental",
    "alignment": "Neutral Evil",
    "ac": 15,
+   "initiative": 2,
    "hp": 90,
    "speed": {
     "walk": 30,
@@ -9409,6 +9586,7 @@
    "type": "fey",
    "alignment": "Chaotic Neutral",
    "ac": 13,
+   "initiative": 3,
    "hp": 31,
    "speed": {
     "walk": 40
@@ -9458,6 +9636,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 13,
+   "initiative": 2,
    "hp": 16,
    "speed": {
     "walk": 30
@@ -9507,6 +9686,7 @@
    "type": "fey",
    "alignment": "Chaotic Evil",
    "ac": 14,
+   "initiative": 1,
    "hp": 52,
    "speed": {
     "walk": 30,
@@ -9553,6 +9733,7 @@
    "type": "undead",
    "alignment": "Chaotic Evil",
    "ac": 12,
+   "initiative": 2,
    "hp": 27,
    "speed": {
     "walk": 40
@@ -9624,6 +9805,7 @@
    "type": "plant",
    "alignment": "Unaligned",
    "ac": 15,
+   "initiative": -1,
    "hp": 110,
    "speed": {
     "walk": 30,
@@ -9682,6 +9864,7 @@
    "type": "construct",
    "alignment": "Unaligned",
    "ac": 17,
+   "initiative": -1,
    "hp": 142,
    "speed": {
     "walk": 30
@@ -9739,6 +9922,7 @@
    "tag": "Metallic",
    "alignment": "Lawful Good",
    "ac": 17,
+   "initiative": 2,
    "hp": 45,
    "speed": {
     "walk": 30,
@@ -9793,6 +9977,7 @@
    "tag": "Metallic",
    "alignment": "Lawful Good",
    "ac": 18,
+   "initiative": 4,
    "hp": 168,
    "speed": {
     "walk": 40,
@@ -9848,6 +10033,7 @@
    "tag": "Metallic",
    "alignment": "Lawful Good",
    "ac": 19,
+   "initiative": 10,
    "hp": 216,
    "speed": {
     "walk": 40,
@@ -9903,6 +10089,7 @@
    "tag": "Metallic",
    "alignment": "Lawful Good",
    "ac": 22,
+   "initiative": 14,
    "hp": 468,
    "speed": {
     "walk": 40,
@@ -9957,6 +10144,7 @@
    "type": "undead",
    "alignment": "Lawful Evil",
    "ac": 14,
+   "initiative": 3,
    "hp": 13,
    "speed": {
     "walk": 30
@@ -10011,6 +10199,7 @@
    "type": "undead",
    "alignment": "Lawful Evil",
    "ac": 13,
+   "initiative": 1,
    "hp": 22,
    "speed": {
     "walk": 60
@@ -10065,6 +10254,7 @@
    "type": "undead",
    "alignment": "Lawful Evil",
    "ac": 12,
+   "initiative": 0,
    "hp": 45,
    "speed": {
     "walk": 40
@@ -10120,6 +10310,7 @@
    "tag": "Angel",
    "alignment": "Lawful Good",
    "ac": 21,
+   "initiative": 20,
    "hp": 297,
    "speed": {
     "walk": 50,
@@ -10178,6 +10369,7 @@
    "type": "undead",
    "alignment": "Chaotic Evil",
    "ac": 12,
+   "initiative": 2,
    "hp": 22,
    "speed": {
     "walk": 30,
@@ -10249,6 +10441,7 @@
    "type": "celestial",
    "alignment": "Lawful Good",
    "ac": 13,
+   "initiative": 3,
    "hp": 24,
    "speed": {
     "walk": 20,
@@ -10304,6 +10497,7 @@
    "type": "celestial",
    "alignment": "Lawful Neutral",
    "ac": 17,
+   "initiative": 10,
    "hp": 170,
    "speed": {
     "walk": 40,
@@ -10365,6 +10559,7 @@
    "type": "celestial",
    "alignment": "Lawful Neutral",
    "ac": 17,
+   "initiative": 12,
    "hp": 199,
    "speed": {
     "walk": 40,
@@ -10425,6 +10620,7 @@
    "type": "fiend",
    "alignment": "Chaotic Evil",
    "ac": 17,
+   "initiative": 3,
    "hp": 135,
    "speed": {
     "walk": 40
@@ -10476,6 +10672,7 @@
    "type": "fey",
    "alignment": "Neutral Good",
    "ac": 15,
+   "initiative": 4,
    "hp": 10,
    "speed": {
     "walk": 10,
@@ -10525,6 +10722,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 12,
+   "initiative": 4,
    "hp": 27,
    "speed": {
     "walk": 30,
@@ -10577,6 +10775,7 @@
    "type": "monstrosity",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 3,
    "hp": 5,
    "speed": {
     "walk": 10,
@@ -10623,6 +10822,7 @@
    "type": "giant",
    "alignment": "Neutral",
    "ac": 17,
+   "initiative": 5,
    "hp": 126,
    "speed": {
     "walk": 40
@@ -10672,6 +10872,7 @@
    "type": "construct",
    "alignment": "Unaligned",
    "ac": 18,
+   "initiative": 3,
    "hp": 220,
    "speed": {
     "walk": 30
@@ -10728,6 +10929,7 @@
    "type": "giant",
    "alignment": "Chaotic Good",
    "ac": 16,
+   "initiative": 7,
    "hp": 230,
    "speed": {
     "walk": 50,
@@ -10789,6 +10991,7 @@
    "type": "fiend",
    "alignment": "Neutral Evil",
    "ac": 15,
+   "initiative": 3,
    "hp": 71,
    "speed": {
     "walk": 30,
@@ -10848,6 +11051,7 @@
    "tag": "Titan",
    "alignment": "Unaligned",
    "ac": 25,
+   "initiative": 18,
    "hp": 697,
    "speed": {
     "walk": 60,
@@ -10913,6 +11117,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 12,
+   "initiative": 1,
    "hp": 32,
    "speed": {
     "walk": 30
@@ -10958,6 +11163,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 16,
+   "initiative": 2,
    "hp": 82,
    "speed": {
     "walk": 30
@@ -11002,6 +11208,7 @@
    "type": "plant",
    "alignment": "Chaotic Good",
    "ac": 16,
+   "initiative": 3,
    "hp": 138,
    "speed": {
     "walk": 30
@@ -11053,6 +11260,7 @@
    "type": "giant",
    "alignment": "Chaotic Evil",
    "ac": 15,
+   "initiative": 1,
    "hp": 94,
    "speed": {
     "walk": 30
@@ -11100,6 +11308,7 @@
    "type": "giant",
    "alignment": "Chaotic Evil",
    "ac": 13,
+   "initiative": 1,
    "hp": 14,
    "speed": {
     "walk": 20
@@ -11145,6 +11354,7 @@
    "type": "celestial",
    "alignment": "Lawful Good",
    "ac": 12,
+   "initiative": 8,
    "hp": 97,
    "speed": {
     "walk": 50
@@ -11198,6 +11408,7 @@
    "type": "humanoid",
    "alignment": "Neutral Evil",
    "ac": 15,
+   "initiative": 5,
    "hp": 65,
    "speed": {
     "walk": 30,
@@ -11255,6 +11466,7 @@
    "type": "undead",
    "alignment": "Neutral Evil",
    "ac": 16,
+   "initiative": 3,
    "hp": 90,
    "speed": {
     "walk": 30
@@ -11307,6 +11519,7 @@
    "type": "undead",
    "alignment": "Lawful Evil",
    "ac": 16,
+   "initiative": 14,
    "hp": 195,
    "speed": {
     "walk": 40,
@@ -11360,6 +11573,7 @@
    "tag": "Demon",
    "alignment": "Chaotic Evil",
    "ac": 15,
+   "initiative": 2,
    "hp": 152,
    "speed": {
     "walk": 40,
@@ -11417,6 +11631,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 13,
+   "initiative": 0,
    "hp": 9,
    "speed": {
     "walk": 30
@@ -11462,6 +11677,7 @@
    "type": "humanoid",
    "alignment": "Neutral",
    "ac": 17,
+   "initiative": 3,
    "hp": 65,
    "speed": {
     "walk": 30
@@ -11509,6 +11725,7 @@
    "type": "elemental",
    "alignment": "Neutral",
    "ac": 14,
+   "initiative": 2,
    "hp": 114,
    "speed": {
     "walk": 30,
@@ -11573,6 +11790,7 @@
    "tag": "Lycanthrope",
    "alignment": "Neutral Good",
    "ac": 15,
+   "initiative": 3,
    "hp": 135,
    "speed": {
     "walk": 30,
@@ -11624,6 +11842,7 @@
    "tag": "Lycanthrope",
    "alignment": "Neutral Evil",
    "ac": 15,
+   "initiative": 2,
    "hp": 97,
    "speed": {
     "walk": 30
@@ -11673,6 +11892,7 @@
    "tag": "Lycanthrope",
    "alignment": "Lawful Evil",
    "ac": 13,
+   "initiative": 3,
    "hp": 60,
    "speed": {
     "walk": 30,
@@ -11724,6 +11944,7 @@
    "tag": "Lycanthrope",
    "alignment": "Neutral",
    "ac": 12,
+   "initiative": 2,
    "hp": 120,
    "speed": {
     "walk": 30
@@ -11775,6 +11996,7 @@
    "tag": "Lycanthrope",
    "alignment": "Chaotic Evil",
    "ac": 15,
+   "initiative": 4,
    "hp": 71,
    "speed": {
     "walk": 30
@@ -11825,6 +12047,7 @@
    "tag": "Chromatic",
    "alignment": "Chaotic Evil",
    "ac": 16,
+   "initiative": 2,
    "hp": 32,
    "speed": {
     "walk": 30,
@@ -11881,6 +12104,7 @@
    "tag": "Chromatic",
    "alignment": "Chaotic Evil",
    "ac": 17,
+   "initiative": 3,
    "hp": 123,
    "speed": {
     "walk": 40,
@@ -11937,6 +12161,7 @@
    "tag": "Chromatic",
    "alignment": "Chaotic Evil",
    "ac": 18,
+   "initiative": 10,
    "hp": 200,
    "speed": {
     "walk": 40,
@@ -11993,6 +12218,7 @@
    "tag": "Chromatic",
    "alignment": "Chaotic Evil",
    "ac": 20,
+   "initiative": 12,
    "hp": 333,
    "speed": {
     "walk": 40,
@@ -12048,6 +12274,7 @@
    "type": "undead",
    "alignment": "Neutral Evil",
    "ac": 14,
+   "initiative": 4,
    "hp": 82,
    "speed": {
     "walk": 30
@@ -12105,6 +12332,7 @@
    "type": "undead",
    "alignment": "Chaotic Evil",
    "ac": 19,
+   "initiative": 9,
    "hp": 27,
    "speed": {
     "walk": 5,
@@ -12174,6 +12402,7 @@
    "type": "monstrosity",
    "alignment": "Neutral Evil",
    "ac": 13,
+   "initiative": 1,
    "hp": 75,
    "speed": {
     "walk": 50
@@ -12224,6 +12453,7 @@
    "type": "fey",
    "alignment": "Neutral Evil",
    "ac": 13,
+   "initiative": 1,
    "hp": 26,
    "speed": {
     "walk": 50
@@ -12272,6 +12502,7 @@
    "type": "undead",
    "alignment": "Neutral Evil",
    "ac": 13,
+   "initiative": 3,
    "hp": 67,
    "speed": {
     "walk": 5,
@@ -12341,6 +12572,7 @@
    "type": "dragon",
    "alignment": "Unaligned",
    "ac": 14,
+   "initiative": 0,
    "hp": 127,
    "speed": {
     "walk": 30,
@@ -12389,6 +12621,7 @@
    "type": "elemental",
    "alignment": "Neutral",
    "ac": 19,
+   "initiative": 0,
    "hp": 84,
    "speed": {
     "walk": 20,
@@ -12446,6 +12679,7 @@
    "type": "undead",
    "alignment": "Neutral Evil",
    "ac": 8,
+   "initiative": -2,
    "hp": 15,
    "speed": {
     "walk": 20
@@ -12497,6 +12731,7 @@
    "type": "undead",
    "alignment": "Neutral Evil",
    "ac": 8,
+   "initiative": -2,
    "hp": 85,
    "speed": {
     "walk": 30
@@ -12549,6 +12784,7 @@
    "tag": "Dinosaur",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 1,
    "hp": 51,
    "speed": {
     "walk": 60
@@ -12596,6 +12832,7 @@
    "tag": "Dinosaur",
    "alignment": "Unaligned",
    "ac": 15,
+   "initiative": 0,
    "hp": 68,
    "speed": {
     "walk": 30
@@ -12640,6 +12877,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 19,
    "speed": {
     "walk": 30,
@@ -12689,6 +12927,7 @@
    "tag": "Dinosaur",
    "alignment": "Unaligned",
    "ac": 17,
+   "initiative": 3,
    "hp": 90,
    "speed": {
     "walk": 20,
@@ -12736,6 +12975,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 3,
    "speed": {
     "walk": 30,
@@ -12781,6 +13021,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 0,
    "hp": 5,
    "speed": {
     "walk": 20,
@@ -12832,6 +13073,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 1,
    "speed": {
     "walk": 5,
@@ -12878,6 +13120,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 1,
    "hp": 19,
    "speed": {
     "walk": 30,
@@ -12927,6 +13170,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 7,
    "speed": {
     "walk": 10,
@@ -12974,6 +13218,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 0,
    "hp": 13,
    "speed": {
     "walk": 40
@@ -13018,6 +13263,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 1,
    "hp": 22,
    "speed": {
     "walk": 40,
@@ -13066,6 +13312,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 10,
+   "initiative": -1,
    "hp": 17,
    "speed": {
     "walk": 50
@@ -13111,6 +13358,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 2,
    "speed": {
     "walk": 40,
@@ -13160,6 +13408,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 2,
    "hp": 13,
    "speed": {
     "walk": 30,
@@ -13209,6 +13458,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 0,
    "hp": 3,
    "speed": {
     "walk": 20,
@@ -13257,6 +13507,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 0,
    "hp": 13,
    "speed": {
     "walk": 20,
@@ -13304,6 +13555,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 3,
    "hp": 4,
    "speed": {
     "walk": 50
@@ -13351,6 +13603,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 14,
+   "initiative": 2,
    "hp": 22,
    "speed": {
     "walk": 50
@@ -13399,6 +13652,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 10,
+   "initiative": 0,
    "hp": 15,
    "speed": {
     "walk": 40
@@ -13443,6 +13697,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 4,
    "speed": {
     "walk": 10,
@@ -13490,6 +13745,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": -1,
    "hp": 76,
    "speed": {
     "walk": 40
@@ -13534,6 +13790,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 10,
+   "initiative": 0,
    "hp": 11,
    "speed": {
     "walk": 50
@@ -13581,6 +13838,7 @@
    "type": "monstrosity",
    "alignment": "Unaligned",
    "ac": 14,
+   "initiative": 2,
    "hp": 5,
    "speed": {
     "walk": 30,
@@ -13628,6 +13886,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 1,
    "hp": 1,
    "speed": {
     "walk": 20,
@@ -13677,6 +13936,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 5,
    "hp": 168,
    "speed": {
     "walk": 40,
@@ -13726,6 +13986,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 0,
    "hp": 15,
    "speed": {
     "walk": 30,
@@ -13777,6 +14038,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 3,
    "hp": 22,
    "speed": {
     "walk": 10,
@@ -13823,6 +14085,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 0,
    "hp": 42,
    "speed": {
     "walk": 40
@@ -13867,6 +14130,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 14,
+   "initiative": 2,
    "hp": 9,
    "speed": {
     "walk": 30,
@@ -13913,6 +14177,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 60,
    "speed": {
     "walk": 30,
@@ -13961,6 +14226,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 15,
+   "initiative": 1,
    "hp": 13,
    "speed": {
     "walk": 30,
@@ -14009,6 +14275,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 14,
+   "initiative": -1,
    "hp": 85,
    "speed": {
     "walk": 30,
@@ -14056,6 +14323,7 @@
    "type": "celestial",
    "alignment": "Neutral Good",
    "ac": 13,
+   "initiative": 3,
    "hp": 26,
    "speed": {
     "walk": 10,
@@ -14107,6 +14375,7 @@
    "type": "celestial",
    "alignment": "Neutral Good",
    "ac": 14,
+   "initiative": 6,
    "hp": 42,
    "speed": {
     "walk": 60
@@ -14158,6 +14427,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 0,
    "hp": 4,
    "speed": {
     "walk": 30,
@@ -14207,6 +14477,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 1,
    "hp": 18,
    "speed": {
     "walk": 30,
@@ -14256,6 +14527,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 1,
    "hp": 19,
    "speed": {
     "walk": 40,
@@ -14304,6 +14576,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 45,
    "speed": {
     "walk": 50
@@ -14351,6 +14624,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 1,
    "hp": 19,
    "speed": {
     "walk": 40,
@@ -14397,6 +14671,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 1,
    "hp": 45,
    "speed": {
     "walk": 10,
@@ -14446,6 +14721,7 @@
    "type": "celestial",
    "alignment": "Neutral",
    "ac": 12,
+   "initiative": 2,
    "hp": 19,
    "speed": {
     "walk": 5,
@@ -14499,6 +14775,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 3,
    "hp": 7,
    "speed": {
     "walk": 30,
@@ -14547,6 +14824,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 15,
+   "initiative": 1,
    "hp": 52,
    "speed": {
     "walk": 40
@@ -14592,6 +14870,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 14,
+   "initiative": 1,
    "hp": 16,
    "speed": {
     "walk": 5,
@@ -14637,6 +14916,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 3,
    "hp": 92,
    "speed": {
     "walk": 5,
@@ -14685,6 +14965,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 14,
+   "initiative": 3,
    "hp": 26,
    "speed": {
     "walk": 30,
@@ -14734,6 +15015,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 1,
    "hp": 39,
    "speed": {
     "walk": 30,
@@ -14780,6 +15062,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 14,
+   "initiative": 4,
    "hp": 11,
    "speed": {
     "walk": 40,
@@ -14828,6 +15111,7 @@
    "type": "monstrosity",
    "alignment": "Neutral Evil",
    "ac": 10,
+   "initiative": 0,
    "hp": 25,
    "speed": {
     "walk": 10,
@@ -14879,6 +15163,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 2,
    "hp": 22,
    "speed": {
     "walk": 10,
@@ -14924,6 +15209,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 3,
    "hp": 9,
    "speed": {
     "walk": 40,
@@ -14974,6 +15260,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 3,
    "hp": 11,
    "speed": {
     "walk": 40,
@@ -15024,6 +15311,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 10,
+   "initiative": 0,
    "hp": 4,
    "speed": {
     "walk": 40,
@@ -15072,6 +15360,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 3,
    "hp": 1,
    "speed": {
     "walk": 10,
@@ -15119,6 +15408,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 14,
+   "initiative": -2,
    "hp": 82,
    "speed": {
     "walk": 30,
@@ -15166,6 +15456,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 45,
    "speed": {
     "walk": 5,
@@ -15214,6 +15505,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 1,
    "hp": 5,
    "speed": {
     "walk": 50
@@ -15261,6 +15553,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 3,
    "speed": {
     "walk": 40
@@ -15309,6 +15602,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 90,
    "speed": {
     "walk": 5,
@@ -15358,6 +15652,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 22,
    "speed": {
     "walk": 50
@@ -15406,6 +15701,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 10,
+   "initiative": 0,
    "hp": 2,
    "speed": {
     "walk": 20,
@@ -15452,6 +15748,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 2,
    "hp": 126,
    "speed": {
     "walk": 50
@@ -15496,6 +15793,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 5,
    "speed": {
     "walk": 40
@@ -15543,6 +15841,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 10,
+   "initiative": 0,
    "hp": 11,
    "speed": {
     "walk": 40
@@ -15587,6 +15886,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 3,
    "speed": {
     "walk": 5,
@@ -15636,6 +15936,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 1,
    "hp": 1,
    "speed": {
     "walk": 5,
@@ -15685,6 +15986,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 3,
    "hp": 13,
    "speed": {
     "walk": 50,
@@ -15734,6 +16036,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 3,
    "hp": 1,
    "speed": {
     "walk": 5,
@@ -15781,6 +16084,7 @@
    "tag": "Dinosaur",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 2,
    "hp": 68,
    "speed": {
     "walk": 20,
@@ -15829,6 +16133,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 42,
    "speed": {
     "walk": 40,
@@ -15881,6 +16186,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 10,
+   "initiative": 0,
    "hp": 11,
    "speed": {
     "walk": 40
@@ -15926,6 +16232,7 @@
    "tag": "Dinosaur",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 2,
    "hp": 13,
    "speed": {
     "walk": 10,
@@ -15973,6 +16280,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 10,
+   "initiative": 0,
    "hp": 1,
    "speed": {
     "walk": 20,
@@ -16021,6 +16329,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 2,
    "speed": {
     "walk": 10,
@@ -16068,6 +16377,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 22,
    "speed": {
     "walk": 5,
@@ -16116,6 +16426,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": -1,
    "hp": 45,
    "speed": {
     "walk": 40
@@ -16160,6 +16471,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 1,
    "hp": 13,
    "speed": {
     "walk": 60
@@ -16204,6 +16516,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 3,
    "hp": 52,
    "speed": {
     "walk": 40
@@ -16252,6 +16565,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 0,
    "hp": 1,
    "speed": {
     "walk": 10
@@ -16297,6 +16611,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 1,
    "hp": 1,
    "speed": {
     "walk": 5,
@@ -16345,6 +16660,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 1,
    "speed": {
     "walk": 20,
@@ -16394,6 +16710,7 @@
    "swarm": "T",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 11,
    "speed": {
     "walk": 5,
@@ -16456,6 +16773,7 @@
    "swarm": "T",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 1,
    "hp": 19,
    "speed": {
     "walk": 20,
@@ -16519,6 +16837,7 @@
    "swarm": "T",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 3,
    "hp": 28,
    "speed": {
     "walk": 5,
@@ -16581,6 +16900,7 @@
    "swarm": "T",
    "alignment": "Unaligned",
    "ac": 10,
+   "initiative": 0,
    "hp": 14,
    "speed": {
     "walk": 30,
@@ -16643,6 +16963,7 @@
    "swarm": "T",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 11,
    "speed": {
     "walk": 10,
@@ -16706,6 +17027,7 @@
    "swarm": "T",
    "alignment": "Unaligned",
    "ac": 14,
+   "initiative": 4,
    "hp": 36,
    "speed": {
     "walk": 30,
@@ -16767,6 +17089,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 3,
    "hp": 30,
    "speed": {
     "walk": 40
@@ -16816,6 +17139,7 @@
    "tag": "Dinosaur",
    "alignment": "Unaligned",
    "ac": 14,
+   "initiative": -1,
    "hp": 114,
    "speed": {
     "walk": 50
@@ -16861,6 +17185,7 @@
    "tag": "Dinosaur",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 3,
    "hp": 136,
    "speed": {
     "walk": 50
@@ -16907,6 +17232,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 5,
    "speed": {
     "walk": 30,
@@ -16953,6 +17279,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 10,
+   "initiative": 0,
    "hp": 5,
    "speed": {
     "walk": 10,
@@ -17000,6 +17327,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 11,
+   "initiative": 1,
    "hp": 19,
    "speed": {
     "walk": 60
@@ -17044,6 +17372,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 13,
+   "initiative": 3,
    "hp": 1,
    "speed": {
     "walk": 30,
@@ -17094,6 +17423,7 @@
    "type": "beast",
    "alignment": "Unaligned",
    "ac": 12,
+   "initiative": 2,
    "hp": 11,
    "speed": {
     "walk": 40

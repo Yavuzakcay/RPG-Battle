@@ -23,6 +23,8 @@
       "hide"
     ],
     "cr": "1/4",
+    "initiative": 2,
+    "srdPage": 290,
     "attacks": [
       {
         "name": "Scimitar",
@@ -67,6 +69,8 @@
     },
     "darkvision": 60,
     "cr": "1/4",
+    "initiative": 3,
+    "srdPage": 325,
     "attacks": [
       {
         "name": "Shortsword",
@@ -121,6 +125,8 @@
       "wis": 0
     },
     "cr": "1/4",
+    "initiative": -2,
+    "srdPage": 343,
     "attacks": [
       {
         "name": "Slam",
@@ -162,6 +168,8 @@
       "stealth": 4
     },
     "cr": "1/4",
+    "initiative": 2,
+    "srdPage": 364,
     "attacks": [
       {
         "name": "Bite",
@@ -194,6 +202,8 @@
     },
     "darkvision": 0,
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 332,
     "attacks": [
       {
         "name": "Mace",
@@ -237,6 +247,8 @@
     },
     "darkvision": 60,
     "cr": "1/2",
+    "initiative": 3,
+    "srdPage": 298,
     "attacks": [
       {
         "name": "Longsword",
@@ -285,6 +297,8 @@
       "stealth": 7
     },
     "cr": "1",
+    "initiative": 3,
+    "srdPage": 353,
     "attacks": [
       {
         "name": "Bite",
@@ -339,6 +353,8 @@
     },
     "darkvision": 60,
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 288,
     "attacks": [
       {
         "name": "Bite",
@@ -398,6 +414,8 @@
       "deception": 4
     },
     "cr": "2",
+    "initiative": 3,
+    "srdPage": 261,
     "attacks": [
       {
         "name": "Scimitar",
@@ -447,6 +465,8 @@
     },
     "darkvision": 60,
     "cr": "2",
+    "initiative": -1,
+    "srdPage": 312,
     "attacks": [
       {
         "name": "Greatclub",
@@ -495,6 +515,8 @@
       "perception": 5
     },
     "cr": "3",
+    "initiative": 1,
+    "srdPage": 313,
     "attacks": [
       {
         "name": "Rend",
@@ -535,6 +557,8 @@
       "survival": 7
     },
     "cr": "3",
+    "initiative": 0,
+    "srdPage": 309,
     "attacks": [
       {
         "name": "Abyssal Glaive",
@@ -583,6 +607,8 @@
       "perception": 5
     },
     "cr": "5",
+    "initiative": 1,
+    "srdPage": 333,
     "attacks": [
       {
         "name": "Rend",
@@ -624,6 +650,8 @@
       "perception": 2
     },
     "cr": "5",
+    "initiative": 2,
+    "srdPage": 298,
     "attacks": [
       {
         "name": "Tree Club",
@@ -679,6 +707,8 @@
       "perception": 4
     },
     "cr": "6",
+    "initiative": 0,
+    "srdPage": 343,
     "attacks": [
       {
         "name": "Bite",
@@ -732,6 +762,8 @@
       "stealth": 4
     },
     "cr": "10",
+    "initiative": 4,
+    "srdPage": 318,
     "attacks": [
       {
         "name": "Rend",
@@ -801,6 +833,8 @@
       "stealth": 4
     },
     "cr": "2",
+    "initiative": 4,
+    "srdPage": 263,
     "multiattack": true,
     "attacks": [
       {
@@ -867,6 +901,8 @@
       "stealth": 2
     },
     "cr": "3",
+    "initiative": 2,
+    "srdPage": 266,
     "multiattack": true,
     "attacks": [
       {
@@ -932,6 +968,8 @@
       "stealth": 2
     },
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 268,
     "attacks": [
       {
         "name": "Rend",
@@ -1009,6 +1047,8 @@
       "stealth": 2
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 269,
     "multiattack": true,
     "attacks": [
       {
@@ -1091,6 +1131,8 @@
       "stealth": 3
     },
     "cr": "1",
+    "initiative": 3,
+    "srdPage": 275,
     "attacks": [
       {
         "name": "Rend",
@@ -1168,6 +1210,8 @@
       "stealth": 4
     },
     "cr": "3",
+    "initiative": 4,
+    "srdPage": 290,
     "multiattack": true,
     "attacks": [
       {
@@ -1253,6 +1297,8 @@
       "stealth": 3
     },
     "cr": "2",
+    "initiative": 3,
+    "srdPage": 293,
     "multiattack": true,
     "attacks": [
       {
@@ -1323,6 +1369,8 @@
       "stealth": 2
     },
     "cr": "4",
+    "initiative": 2,
+    "srdPage": 318,
     "multiattack": true,
     "attacks": [
       {
@@ -1391,6 +1439,8 @@
       "stealth": 2
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 324,
     "multiattack": true,
     "attacks": [
       {
@@ -1474,6 +1524,8 @@
       "stealth": 2
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 339,
     "multiattack": true,
     "attacks": [
       {
@@ -1543,6 +1595,8 @@
       "stealth": 5
     },
     "cr": "7",
+    "initiative": 5,
+    "srdPage": 264,
     "multiattack": true,
     "attacks": [
       {
@@ -1610,6 +1664,8 @@
       "stealth": 4
     },
     "cr": "9",
+    "initiative": 4,
+    "srdPage": 266,
     "multiattack": true,
     "attacks": [
       {
@@ -1677,6 +1733,8 @@
       "stealth": 3
     },
     "cr": "6",
+    "initiative": 3,
+    "srdPage": 268,
     "multiattack": true,
     "attacks": [
       {
@@ -1761,6 +1819,8 @@
       "stealth": 3
     },
     "cr": "8",
+    "initiative": 3,
+    "srdPage": 270,
     "multiattack": true,
     "attacks": [
       {
@@ -1846,6 +1906,8 @@
       "stealth": 4
     },
     "cr": "7",
+    "initiative": 4,
+    "srdPage": 276,
     "multiattack": true,
     "attacks": [
       {
@@ -1931,6 +1993,8 @@
       "stealth": 6
     },
     "cr": "10",
+    "initiative": 6,
+    "srdPage": 291,
     "multiattack": true,
     "attacks": [
       {
@@ -2019,6 +2083,8 @@
       "stealth": 4
     },
     "cr": "8",
+    "initiative": 4,
+    "srdPage": 293,
     "multiattack": true,
     "attacks": [
       {
@@ -2091,6 +2157,8 @@
       "stealth": 4
     },
     "cr": "9",
+    "initiative": 4,
+    "srdPage": 324,
     "multiattack": true,
     "attacks": [
       {
@@ -2176,6 +2244,8 @@
       "stealth": 3
     },
     "cr": "6",
+    "initiative": 3,
+    "srdPage": 340,
     "multiattack": true,
     "attacks": [
       {
@@ -2246,6 +2316,8 @@
       "stealth": 7
     },
     "cr": "14",
+    "initiative": 12,
+    "srdPage": 264,
     "multiattack": true,
     "attacks": [
       {
@@ -2317,6 +2389,8 @@
       "stealth": 5
     },
     "cr": "16",
+    "initiative": 10,
+    "srdPage": 266,
     "multiattack": true,
     "attacks": [
       {
@@ -2389,6 +2463,8 @@
       "stealth": 5
     },
     "cr": "13",
+    "initiative": 10,
+    "srdPage": 268,
     "multiattack": true,
     "attacks": [
       {
@@ -2477,6 +2553,8 @@
       "stealth": 5
     },
     "cr": "15",
+    "initiative": 10,
+    "srdPage": 270,
     "multiattack": true,
     "attacks": [
       {
@@ -2566,6 +2644,8 @@
       "stealth": 6
     },
     "cr": "14",
+    "initiative": 11,
+    "srdPage": 276,
     "multiattack": true,
     "attacks": [
       {
@@ -2655,6 +2735,8 @@
       "stealth": 8
     },
     "cr": "17",
+    "initiative": 14,
+    "srdPage": 291,
     "multiattack": true,
     "attacks": [
       {
@@ -2688,9 +2770,9 @@
         "repeat": 0
       },
       {
-        "name": "Spellcasting",
+        "name": "Weakening Breath",
         "bonus": 0,
-        "damage": "The dragon casts one of the following spells, requiring no Material components and using Charisma as the spellcasting ability (spell save DC 21, +13 to hit with spell attacks): At Will: Detect Magic, Guiding Bolt (level 2 version), Shapechange (Beast or Humanoid form only, no Temporary Hit Points ga",
+        "damage": "Strength Saving Throw: DC 21, each creature that isn’t currently affected by this breath in a 60-foot Cone. Failure: The target has Disadvantage on Strength-based D20 Tests and subtracts 3 (1d6) from its damage rolls. It repeats the save at the end of each of its turns, ending the effect on itself o",
         "save": {
           "ability": "str",
           "dc": 21,
@@ -2748,6 +2830,8 @@
       "stealth": 6
     },
     "cr": "15",
+    "initiative": 11,
+    "srdPage": 294,
     "multiattack": true,
     "attacks": [
       {
@@ -2823,6 +2907,8 @@
       "stealth": 6
     },
     "cr": "17",
+    "initiative": 12,
+    "srdPage": 318,
     "multiattack": true,
     "attacks": [
       {
@@ -2897,6 +2983,8 @@
       "stealth": 5
     },
     "cr": "16",
+    "initiative": 10,
+    "srdPage": 324,
     "multiattack": true,
     "attacks": [
       {
@@ -2986,6 +3074,8 @@
       "stealth": 5
     },
     "cr": "13",
+    "initiative": 10,
+    "srdPage": 340,
     "multiattack": true,
     "attacks": [
       {
@@ -3058,6 +3148,8 @@
       "stealth": 9
     },
     "cr": "21",
+    "initiative": 16,
+    "srdPage": 265,
     "multiattack": true,
     "attacks": [
       {
@@ -3129,6 +3221,8 @@
       "stealth": 7
     },
     "cr": "23",
+    "initiative": 14,
+    "srdPage": 267,
     "multiattack": true,
     "attacks": [
       {
@@ -3204,6 +3298,8 @@
       "stealth": 6
     },
     "cr": "20",
+    "initiative": 12,
+    "srdPage": 269,
     "multiattack": true,
     "attacks": [
       {
@@ -3292,6 +3388,8 @@
       "stealth": 7
     },
     "cr": "22",
+    "initiative": 14,
+    "srdPage": 271,
     "multiattack": true,
     "attacks": [
       {
@@ -3384,6 +3482,8 @@
       "stealth": 8
     },
     "cr": "21",
+    "initiative": 15,
+    "srdPage": 277,
     "multiattack": true,
     "attacks": [
       {
@@ -3473,6 +3573,8 @@
       "stealth": 9
     },
     "cr": "24",
+    "initiative": 16,
+    "srdPage": 292,
     "multiattack": true,
     "attacks": [
       {
@@ -3506,9 +3608,9 @@
         "repeat": 0
       },
       {
-        "name": "Spellcasting",
+        "name": "Weakening Breath",
         "bonus": 0,
-        "damage": "The dragon casts one of the following spells, requiring no Material components and using Charisma as the spellcasting ability (spell save DC 24, +16 to hit with spell attacks): At Will: Detect Magic, Guiding Bolt (level 4 version), Shapechange (Beast or Humanoid form only, no Temporary Hit Points ga",
+        "damage": "Strength Saving Throw: DC 24, each creature that isn’t currently affected by this breath in a 90-foot Cone. Failure: The target has Disadvantage on Strength-based D20 Tests and subtracts 5 (1d10) from its damage rolls. It repeats the save at the end of each of its turns, ending the effect on itself o",
         "save": {
           "ability": "str",
           "dc": 24,
@@ -3566,6 +3668,8 @@
       "stealth": 8
     },
     "cr": "22",
+    "initiative": 15,
+    "srdPage": 294,
     "multiattack": true,
     "attacks": [
       {
@@ -3641,6 +3745,8 @@
       "stealth": 7
     },
     "cr": "24",
+    "initiative": 14,
+    "srdPage": 319,
     "multiattack": true,
     "attacks": [
       {
@@ -3715,6 +3821,8 @@
       "stealth": 7
     },
     "cr": "23",
+    "initiative": 14,
+    "srdPage": 325,
     "multiattack": true,
     "attacks": [
       {
@@ -3804,6 +3912,8 @@
       "stealth": 6
     },
     "cr": "20",
+    "initiative": 12,
+    "srdPage": 341,
     "multiattack": true,
     "attacks": [
       {
@@ -3867,6 +3977,8 @@
       "cha": 4
     },
     "cr": "0",
+    "initiative": 2,
+    "srdPage": 345,
     "attacks": [
       {
         "name": "Bite",
@@ -3904,6 +4016,8 @@
       "perception": 6
     },
     "cr": "0",
+    "initiative": 2,
+    "srdPage": 348,
     "attacks": [
       {
         "name": "Talons",
@@ -3937,6 +4051,8 @@
       "perception": 6
     },
     "cr": "0",
+    "initiative": 3,
+    "srdPage": 355,
     "attacks": [
       {
         "name": "Talons",
@@ -3975,6 +4091,8 @@
       "cha": 0
     },
     "cr": "0",
+    "initiative": 2,
+    "srdPage": 299,
     "attacks": [
       {
         "name": "Bite",
@@ -4019,6 +4137,8 @@
       "stealth": 5
     },
     "cr": "0",
+    "initiative": 1,
+    "srdPage": 358,
     "attacks": [
       {
         "name": "Talons",
@@ -4056,6 +4176,8 @@
       "perception": 3
     },
     "cr": "0",
+    "initiative": 2,
+    "srdPage": 359,
     "attacks": [
       {
         "name": "Beak",
@@ -4093,6 +4215,8 @@
       "perception": 3
     },
     "cr": "0",
+    "initiative": 0,
+    "srdPage": 363,
     "packTactics": true,
     "attacks": [
       {
@@ -4123,6 +4247,8 @@
       "cha": 10
     },
     "cr": "1/8",
+    "initiative": 1,
+    "srdPage": 261,
     "attacks": [
       {
         "name": "Scimitar",
@@ -4168,6 +4294,8 @@
       "perception": 6
     },
     "cr": "1/8",
+    "initiative": 2,
+    "srdPage": 345,
     "packTactics": true,
     "attacks": [
       {
@@ -4200,6 +4328,8 @@
       "cha": 5
     },
     "cr": "1/8",
+    "initiative": 2,
+    "srdPage": 348,
     "attacks": [
       {
         "name": "Bite",
@@ -4240,6 +4370,8 @@
       "stealth": 6
     },
     "cr": "1/8",
+    "initiative": 2,
+    "srdPage": 290,
     "bonusActions": [
       "disengage",
       "hide"
@@ -4288,6 +4420,8 @@
       "perception": 2
     },
     "cr": "1/8",
+    "initiative": 1,
+    "srdPage": 296,
     "attacks": [
       {
         "name": "Spear",
@@ -4330,6 +4464,8 @@
     },
     "darkvision": 60,
     "cr": "1/8",
+    "initiative": 2,
+    "srdPage": 302,
     "packTactics": true,
     "attacks": [
       {
@@ -4375,6 +4511,8 @@
       "cha": 12
     },
     "cr": "1/8",
+    "initiative": 1,
+    "srdPage": 308,
     "attacks": [
       {
         "name": "Ocean Spear",
@@ -4424,6 +4562,8 @@
     },
     "darkvision": 60,
     "cr": "1/8",
+    "initiative": 3,
+    "srdPage": 329,
     "attacks": [
       {
         "name": "Proboscis",
@@ -4454,6 +4594,8 @@
       "cha": 8
     },
     "cr": "1/8",
+    "initiative": 0,
+    "srdPage": 336,
     "packTactics": true,
     "attacks": [
       {
@@ -4500,6 +4642,8 @@
       "dex": 4
     },
     "cr": "1/4",
+    "initiative": 4,
+    "srdPage": 259,
     "attacks": [
       {
         "name": "Slash",
@@ -4539,6 +4683,8 @@
     },
     "darkvision": 60,
     "cr": "1/4",
+    "initiative": 0,
+    "srdPage": 281,
     "attacks": [
       {
         "name": "Rend",
@@ -4598,6 +4744,8 @@
       "cha": 6
     },
     "cr": "1/4",
+    "initiative": 3,
+    "srdPage": 349,
     "attacks": [
       {
         "name": "Bite",
@@ -4640,6 +4788,8 @@
       "stealth": 6
     },
     "cr": "1/4",
+    "initiative": 2,
+    "srdPage": 352,
     "attacks": [
       {
         "name": "Talons",
@@ -4682,6 +4832,8 @@
       "religion": 2
     },
     "cr": "1/4",
+    "initiative": 0,
+    "srdPage": 316,
     "attacks": [
       {
         "name": "Mace",
@@ -4734,6 +4886,8 @@
       "stealth": 4
     },
     "cr": "1/4",
+    "initiative": 2,
+    "srdPage": 316,
     "multiattack": true,
     "attacks": [
       {
@@ -4789,6 +4943,8 @@
       "perception": 1
     },
     "cr": "1/4",
+    "initiative": 2,
+    "srdPage": 359,
     "attacks": [
       {
         "name": "Bite",
@@ -4826,6 +4982,8 @@
       "stealth": 8
     },
     "cr": "1/4",
+    "initiative": 4,
+    "srdPage": 329,
     "attacks": [
       {
         "name": "Needle Sword",
@@ -4890,6 +5048,8 @@
       "stealth": 2
     },
     "cr": "1/4",
+    "initiative": 0,
+    "srdPage": 308,
     "attacks": [
       {
         "name": "Claw",
@@ -4949,6 +5109,8 @@
       "cha": 4
     },
     "cr": "1/4",
+    "initiative": 2,
+    "srdPage": 361,
     "attacks": [
       {
         "name": "Bites",
@@ -4994,6 +5156,8 @@
       "perception": 5
     },
     "cr": "1/4",
+    "initiative": 2,
+    "srdPage": 362,
     "attacks": [
       {
         "name": "Beaks",
@@ -5051,6 +5215,8 @@
       "perception": 3
     },
     "cr": "1/2",
+    "initiative": 2,
+    "srdPage": 344,
     "multiattack": true,
     "attacks": [
       {
@@ -5101,6 +5267,8 @@
     },
     "darkvision": 60,
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 275,
     "attacks": [
       {
         "name": "Petrifying Bite",
@@ -5138,6 +5306,8 @@
       "stealth": 3
     },
     "cr": "1/2",
+    "initiative": 3,
+    "srdPage": 278,
     "attacks": [
       {
         "name": "Crush",
@@ -5178,6 +5348,8 @@
       "stealth": 4
     },
     "cr": "1/2",
+    "initiative": 2,
+    "srdPage": 307,
     "attacks": [
       {
         "name": "Claw",
@@ -5236,6 +5408,8 @@
       "cha": 3
     },
     "cr": "1/2",
+    "initiative": 2,
+    "srdPage": 354,
     "attacks": [
       {
         "name": "Sting",
@@ -5270,6 +5444,8 @@
     },
     "darkvision": 60,
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 289,
     "attacks": [
       {
         "name": "Rend",
@@ -5320,6 +5496,8 @@
       "stealth": 3
     },
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 307,
     "attacks": [
       {
         "name": "Claw",
@@ -5385,6 +5563,8 @@
       "stealth": 3
     },
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 307,
     "attacks": [
       {
         "name": "Claw",
@@ -5449,6 +5629,8 @@
       "stealth": 5
     },
     "cr": "1/2",
+    "initiative": 3,
+    "srdPage": 321,
     "attacks": [
       {
         "name": "Hooves",
@@ -5505,6 +5687,8 @@
       "survival": 5
     },
     "cr": "1/2",
+    "initiative": 2,
+    "srdPage": 322,
     "multiattack": true,
     "attacks": [
       {
@@ -5553,6 +5737,8 @@
       "cha": 1
     },
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 361,
     "attacks": [
       {
         "name": "Bites",
@@ -5599,6 +5785,8 @@
       "survival": 2
     },
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 272,
     "attacks": [
       {
         "name": "Grab",
@@ -5658,6 +5846,8 @@
       "stealth": 5
     },
     "cr": "1",
+    "initiative": 1,
+    "srdPage": 282,
     "multiattack": true,
     "attacks": [
       {
@@ -5713,6 +5903,8 @@
       "perception": 6
     },
     "cr": "1",
+    "initiative": 3,
+    "srdPage": 350,
     "multiattack": true,
     "attacks": [
       {
@@ -5757,6 +5949,8 @@
       "perception": 3
     },
     "cr": "1",
+    "initiative": 0,
+    "srdPage": 354,
     "packTactics": true,
     "attacks": [
       {
@@ -5798,6 +5992,8 @@
       "stealth": 6
     },
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 290,
     "bonusActions": [
       "disengage",
       "hide"
@@ -5853,6 +6049,8 @@
       "cha": 13
     },
     "cr": "1",
+    "initiative": 1,
+    "srdPage": 297,
     "attacks": [
       {
         "name": "Claw",
@@ -5903,6 +6101,8 @@
       "perception": 5
     },
     "cr": "1",
+    "initiative": 1,
+    "srdPage": 298,
     "multiattack": true,
     "attacks": [
       {
@@ -5945,6 +6145,8 @@
       "stealth": 5
     },
     "cr": "1",
+    "initiative": 3,
+    "srdPage": 300,
     "attacks": [
       {
         "name": "Sting",
@@ -5993,6 +6195,8 @@
       "stealth": 4
     },
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 356,
     "packTactics": true,
     "multiattack": true,
     "attacks": [
@@ -6051,6 +6255,8 @@
       "cha": 4
     },
     "cr": "1",
+    "initiative": 5,
+    "srdPage": 314,
     "multiattack": true,
     "attacks": [
       {
@@ -6119,6 +6325,8 @@
       "stealth": 5
     },
     "cr": "1",
+    "initiative": 3,
+    "srdPage": 317,
     "attacks": [
       {
         "name": "Rend",
@@ -6183,6 +6391,8 @@
     },
     "darkvision": 60,
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 327,
     "attacks": [
       {
         "name": "Life Drain",
@@ -6240,6 +6450,8 @@
       "stealth": 5
     },
     "cr": "1",
+    "initiative": 3,
+    "srdPage": 327,
     "attacks": [
       {
         "name": "Rend",
@@ -6287,6 +6499,8 @@
       "stealth": 6
     },
     "cr": "1",
+    "initiative": 4,
+    "srdPage": 329,
     "attacks": [
       {
         "name": "Shortsword",
@@ -6335,6 +6549,8 @@
     },
     "darkvision": 60,
     "cr": "2",
+    "initiative": 0,
+    "srdPage": 259,
     "attacks": [
       {
         "name": "Bite",
@@ -6393,6 +6609,8 @@
       "perception": 3
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 272,
     "multiattack": true,
     "attacks": [
       {
@@ -6447,6 +6665,8 @@
       "perception": 5
     },
     "cr": "2",
+    "initiative": 1,
+    "srdPage": 282,
     "multiattack": true,
     "attacks": [
       {
@@ -6502,6 +6722,8 @@
       "survival": 3
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 284,
     "multiattack": true,
     "attacks": [
       {
@@ -6573,6 +6795,8 @@
       "stealth": 4
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 286,
     "multiattack": true,
     "attacks": [
       {
@@ -6614,6 +6838,8 @@
       "perception": 2
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 350,
     "multiattack": true,
     "attacks": [
       {
@@ -6671,6 +6897,8 @@
     },
     "darkvision": 60,
     "cr": "2",
+    "initiative": -1,
+    "srdPage": 288,
     "attacks": [
       {
         "name": "Bite",
@@ -6731,6 +6959,8 @@
       "perception": 5
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 295,
     "multiattack": true,
     "attacks": [
       {
@@ -6767,6 +6997,8 @@
     },
     "darkvision": 60,
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 308,
     "multiattack": true,
     "attacks": [
       {
@@ -6850,6 +7082,8 @@
       "perception": 6
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 313,
     "attacks": [
       {
         "name": "Hooves",
@@ -6888,6 +7122,8 @@
       "religion": 5
     },
     "cr": "2",
+    "initiative": 0,
+    "srdPage": 316,
     "multiattack": true,
     "attacks": [
       {
@@ -6939,6 +7175,8 @@
     },
     "darkvision": 60,
     "cr": "2",
+    "initiative": 1,
+    "srdPage": 322,
     "attacks": [
       {
         "name": "Claw",
@@ -6997,6 +7235,8 @@
       "stealth": 5
     },
     "cr": "2",
+    "initiative": 3,
+    "srdPage": 338,
     "multiattack": true,
     "attacks": [
       {
@@ -7059,6 +7299,8 @@
     },
     "darkvision": 120,
     "cr": "2",
+    "initiative": 9,
+    "srdPage": 341,
     "attacks": [
       {
         "name": "Shock",
@@ -7119,6 +7361,8 @@
       "survival": 3
     },
     "cr": "3",
+    "initiative": 2,
+    "srdPage": 271,
     "multiattack": true,
     "attacks": [
       {
@@ -7183,6 +7427,8 @@
       "insight": 3
     },
     "cr": "3",
+    "initiative": 4,
+    "srdPage": 280,
     "multiattack": true,
     "attacks": [
       {
@@ -7242,6 +7488,8 @@
       "perception": 5
     },
     "cr": "3",
+    "initiative": 1,
+    "srdPage": 297,
     "packTactics": true,
     "multiattack": true,
     "attacks": [
@@ -7299,6 +7547,8 @@
     },
     "darkvision": 60,
     "cr": "3",
+    "initiative": 4,
+    "srdPage": 299,
     "multiattack": true,
     "attacks": [
       {
@@ -7353,6 +7603,8 @@
       "con": 4
     },
     "cr": "3",
+    "initiative": 0,
+    "srdPage": 302,
     "multiattack": true,
     "attacks": [
       {
@@ -7406,6 +7658,8 @@
     },
     "darkvision": 60,
     "cr": "3",
+    "initiative": 3,
+    "srdPage": 306,
     "multiattack": true,
     "attacks": [
       {
@@ -7458,6 +7712,8 @@
       "wis": 3
     },
     "cr": "3",
+    "initiative": -1,
+    "srdPage": 309,
     "multiattack": true,
     "attacks": [
       {
@@ -7519,6 +7775,8 @@
       "cha": 15
     },
     "cr": "3",
+    "initiative": 2,
+    "srdPage": 311,
     "attacks": [
       {
         "name": "Hooves",
@@ -7569,6 +7827,8 @@
       "stealth": 7
     },
     "cr": "3",
+    "initiative": 5,
+    "srdPage": 334,
     "multiattack": true,
     "attacks": [
       {
@@ -7628,6 +7888,8 @@
       "perception": 2
     },
     "cr": "3",
+    "initiative": 3,
+    "srdPage": 337,
     "multiattack": true,
     "attacks": [
       {
@@ -7681,6 +7943,8 @@
       "stealth": 4
     },
     "cr": "3",
+    "initiative": 4,
+    "srdPage": 339,
     "packTactics": true,
     "multiattack": true,
     "attacks": [
@@ -7746,6 +8010,8 @@
       "stealth": 4
     },
     "cr": "3",
+    "initiative": 4,
+    "srdPage": 341,
     "multiattack": true,
     "attacks": [
       {
@@ -7823,6 +8089,8 @@
       "stealth": 5
     },
     "cr": "3",
+    "initiative": 1,
+    "srdPage": 342,
     "packTactics": true,
     "attacks": [
       {
@@ -7883,6 +8151,8 @@
       "con": 5
     },
     "cr": "4",
+    "initiative": 5,
+    "srdPage": 277,
     "attacks": [
       {
         "name": "Bite",
@@ -7945,6 +8215,8 @@
     },
     "darkvision": 60,
     "cr": "4",
+    "initiative": 1,
+    "srdPage": 287,
     "multiattack": true,
     "attacks": [
       {
@@ -8035,6 +8307,8 @@
       "perception": 4
     },
     "cr": "4",
+    "initiative": 4,
+    "srdPage": 296,
     "multiattack": true,
     "attacks": [
       {
@@ -8101,6 +8375,8 @@
       "stealth": 7
     },
     "cr": "4",
+    "initiative": 3,
+    "srdPage": 301,
     "multiattack": true,
     "attacks": [
       {
@@ -8153,6 +8429,8 @@
       "stealth": 7
     },
     "cr": "4",
+    "initiative": 3,
+    "srdPage": 331,
     "multiattack": true,
     "attacks": [
       {
@@ -8216,6 +8494,8 @@
       "cha": 2
     },
     "cr": "4",
+    "initiative": 2,
+    "srdPage": 332,
     "packTactics": true,
     "multiattack": true,
     "attacks": [
@@ -8268,6 +8548,8 @@
       "perception": 2
     },
     "cr": "4",
+    "initiative": 2,
+    "srdPage": 338,
     "multiattack": true,
     "attacks": [
       {
@@ -8343,6 +8625,8 @@
       "stealth": 4
     },
     "cr": "4",
+    "initiative": 2,
+    "srdPage": 339,
     "multiattack": true,
     "attacks": [
       {
@@ -8405,6 +8689,8 @@
     },
     "darkvision": 60,
     "cr": "5",
+    "initiative": 5,
+    "srdPage": 258,
     "multiattack": true,
     "attacks": [
       {
@@ -8481,6 +8767,8 @@
       "perception": 8
     },
     "cr": "5",
+    "initiative": 3,
+    "srdPage": 262,
     "multiattack": true,
     "attacks": [
       {
@@ -8556,6 +8844,8 @@
       "perception": 6
     },
     "cr": "5",
+    "initiative": 0,
+    "srdPage": 272,
     "multiattack": true,
     "attacks": [
       {
@@ -8613,6 +8903,8 @@
     },
     "darkvision": 60,
     "cr": "5",
+    "initiative": -1,
+    "srdPage": 282,
     "multiattack": true,
     "attacks": [
       {
@@ -8683,6 +8975,8 @@
       "performance": 5
     },
     "cr": "5",
+    "initiative": 5,
+    "srdPage": 289,
     "multiattack": true,
     "attacks": [
       {
@@ -8751,6 +9045,8 @@
       "perception": 7
     },
     "cr": "5",
+    "initiative": 0,
+    "srdPage": 292,
     "attacks": [
       {
         "name": "Gore",
@@ -8813,6 +9109,8 @@
       "stealth": 5
     },
     "cr": "5",
+    "initiative": 5,
+    "srdPage": 297,
     "multiattack": true,
     "attacks": [
       {
@@ -8869,6 +9167,8 @@
     },
     "darkvision": 60,
     "cr": "5",
+    "initiative": 2,
+    "srdPage": 321,
     "multiattack": true,
     "attacks": [
       {
@@ -8950,6 +9250,8 @@
       "perception": 7
     },
     "cr": "5",
+    "initiative": 3,
+    "srdPage": 337,
     "multiattack": true,
     "attacks": [
       {
@@ -9022,6 +9324,8 @@
     },
     "darkvision": 60,
     "cr": "5",
+    "initiative": 3,
+    "srdPage": 342,
     "attacks": [
       {
         "name": "Life Drain",
@@ -9076,6 +9380,8 @@
       "perception": 8
     },
     "cr": "6",
+    "initiative": 0,
+    "srdPage": 273,
     "multiattack": true,
     "attacks": [
       {
@@ -9157,6 +9463,8 @@
       "stealth": 10
     },
     "cr": "6",
+    "initiative": 4,
+    "srdPage": 281,
     "multiattack": true,
     "attacks": [
       {
@@ -9216,6 +9524,8 @@
       "stealth": 10
     },
     "cr": "6",
+    "initiative": 7,
+    "srdPage": 301,
     "multiattack": true,
     "attacks": [
       {
@@ -9288,6 +9598,8 @@
       "perception": 4
     },
     "cr": "6",
+    "initiative": 2,
+    "srdPage": 305,
     "multiattack": true,
     "attacks": [
       {
@@ -9346,6 +9658,8 @@
       "stealth": 6
     },
     "cr": "6",
+    "initiative": 6,
+    "srdPage": 306,
     "multiattack": true,
     "attacks": [
       {
@@ -9415,6 +9729,8 @@
       "perception": 5
     },
     "cr": "6",
+    "initiative": 7,
+    "srdPage": 314,
     "multiattack": true,
     "attacks": [
       {
@@ -9472,6 +9788,8 @@
       "cha": 2
     },
     "cr": "6",
+    "initiative": 2,
+    "srdPage": 336,
     "multiattack": true,
     "attacks": [
       {
@@ -9562,6 +9880,8 @@
       "survival": 4
     },
     "cr": "7",
+    "initiative": 5,
+    "srdPage": 349,
     "multiattack": true,
     "attacks": [
       {
@@ -9631,6 +9951,8 @@
       "perception": 4
     },
     "cr": "7",
+    "initiative": 0,
+    "srdPage": 312,
     "regeneration": 10,
     "multiattack": true,
     "attacks": [
@@ -9700,6 +10022,8 @@
       "stealth": 5
     },
     "cr": "7",
+    "initiative": 5,
+    "srdPage": 330,
     "multiattack": true,
     "attacks": [
       {
@@ -9759,6 +10083,8 @@
       "stealth": 10
     },
     "cr": "8",
+    "initiative": 10,
+    "srdPage": 260,
     "multiattack": true,
     "attacks": [
       {
@@ -9818,6 +10144,8 @@
       "con": 7
     },
     "cr": "8",
+    "initiative": 5,
+    "srdPage": 272,
     "multiattack": true,
     "attacks": [
       {
@@ -9891,6 +10219,8 @@
       "stealth": 5
     },
     "cr": "8",
+    "initiative": 5,
+    "srdPage": 274,
     "multiattack": true,
     "attacks": [
       {
@@ -9949,6 +10279,8 @@
       "perception": 3
     },
     "cr": "8",
+    "initiative": 2,
+    "srdPage": 285,
     "multiattack": true,
     "attacks": [
       {
@@ -10010,6 +10342,8 @@
       "cha": 6
     },
     "cr": "8",
+    "initiative": 3,
+    "srdPage": 329,
     "multiattack": true,
     "attacks": [
       {
@@ -10077,6 +10411,8 @@
       "insight": 6
     },
     "cr": "9",
+    "initiative": 7,
+    "srdPage": 267,
     "multiattack": true,
     "attacks": [
       {
@@ -10141,6 +10477,8 @@
       "perception": 11
     },
     "cr": "9",
+    "initiative": 4,
+    "srdPage": 275,
     "multiattack": true,
     "attacks": [
       {
@@ -10203,6 +10541,8 @@
       "perception": 6
     },
     "cr": "9",
+    "initiative": 3,
+    "srdPage": 285,
     "multiattack": true,
     "attacks": [
       {
@@ -10256,6 +10596,8 @@
       "cha": 12
     },
     "cr": "9",
+    "initiative": 3,
+    "srdPage": 333,
     "multiattack": true,
     "attacks": [
       {
@@ -10323,6 +10665,8 @@
       "perception": 10
     },
     "cr": "10",
+    "initiative": 7,
+    "srdPage": 258,
     "multiattack": true,
     "attacks": [
       {
@@ -10413,6 +10757,8 @@
       "perception": 9
     },
     "cr": "10",
+    "initiative": 4,
+    "srdPage": 279,
     "multiattack": true,
     "attacks": [
       {
@@ -10469,6 +10815,8 @@
       "religion": 11
     },
     "cr": "10",
+    "initiative": 4,
+    "srdPage": 296,
     "multiattack": true,
     "attacks": [
       {
@@ -10532,6 +10880,8 @@
     },
     "darkvision": 120,
     "cr": "10",
+    "initiative": 3,
+    "srdPage": 330,
     "multiattack": true,
     "attacks": [
       {
@@ -10595,6 +10945,8 @@
       "wis": 7
     },
     "cr": "11",
+    "initiative": 2,
+    "srdPage": 280,
     "multiattack": true,
     "attacks": [
       {
@@ -10664,6 +11016,8 @@
       "cha": 8
     },
     "cr": "11",
+    "initiative": 1,
+    "srdPage": 283,
     "multiattack": true,
     "attacks": [
       {
@@ -10729,6 +11083,8 @@
       "cha": 8
     },
     "cr": "11",
+    "initiative": 7,
+    "srdPage": 299,
     "multiattack": true,
     "attacks": [
       {
@@ -10816,6 +11172,8 @@
       "perception": 8
     },
     "cr": "11",
+    "initiative": 8,
+    "srdPage": 320,
     "multiattack": true,
     "attacks": [
       {
@@ -10869,6 +11227,8 @@
       "religion": 12
     },
     "cr": "11",
+    "initiative": 10,
+    "srdPage": 327,
     "multiattack": true,
     "attacks": [
       {
@@ -10945,6 +11305,8 @@
       "perception": 6
     },
     "cr": "12",
+    "initiative": 7,
+    "srdPage": 305,
     "multiattack": true,
     "attacks": [
       {
@@ -11009,6 +11371,8 @@
       "persuasion": 8
     },
     "cr": "12",
+    "initiative": 7,
+    "srdPage": 283,
     "multiattack": true,
     "attacks": [
       {
@@ -11083,6 +11447,8 @@
       "cha": 7
     },
     "cr": "13",
+    "initiative": 5,
+    "srdPage": 310,
     "multiattack": true,
     "attacks": [
       {
@@ -11138,6 +11504,8 @@
       "perception": 8
     },
     "cr": "13",
+    "initiative": 8,
+    "srdPage": 317,
     "multiattack": true,
     "attacks": [
       {
@@ -11214,6 +11582,8 @@
       "perception": 10
     },
     "cr": "13",
+    "initiative": 7,
+    "srdPage": 330,
     "multiattack": true,
     "attacks": [
       {
@@ -11306,6 +11676,8 @@
       "persuasion": 9
     },
     "cr": "14",
+    "initiative": 7,
+    "srdPage": 300,
     "multiattack": true,
     "attacks": [
       {
@@ -11385,6 +11757,8 @@
       "religion": 5
     },
     "cr": "15",
+    "initiative": 10,
+    "srdPage": 309,
     "multiattack": true,
     "attacks": [
       {
@@ -11468,6 +11842,8 @@
     },
     "darkvision": 120,
     "cr": "16",
+    "initiative": 9,
+    "srdPage": 302,
     "multiattack": true,
     "attacks": [
       {
@@ -11555,6 +11931,8 @@
       "perception": 11
     },
     "cr": "16",
+    "initiative": 10,
+    "srdPage": 315,
     "multiattack": true,
     "attacks": [
       {
@@ -11625,6 +12003,8 @@
       "con": 11
     },
     "cr": "17",
+    "initiative": 6,
+    "srdPage": 281,
     "multiattack": true,
     "attacks": [
       {
@@ -11707,6 +12087,8 @@
       "religion": 15
     },
     "cr": "17",
+    "initiative": 12,
+    "srdPage": 328,
     "multiattack": true,
     "attacks": [
       {
@@ -11817,6 +12199,8 @@
       "perception": 9
     },
     "cr": "19",
+    "initiative": 14,
+    "srdPage": 261,
     "multiattack": true,
     "attacks": [
       {
@@ -11887,6 +12271,8 @@
       "persuasion": 19
     },
     "cr": "20",
+    "initiative": 14,
+    "srdPage": 314,
     "multiattack": true,
     "attacks": [
       {
@@ -11969,6 +12355,8 @@
       "perception": 9
     },
     "cr": "21",
+    "initiative": 17,
+    "srdPage": 304,
     "multiattack": true,
     "attacks": [
       {
@@ -12046,6 +12434,8 @@
       "perception": 14
     },
     "cr": "21",
+    "initiative": 20,
+    "srdPage": 326,
     "multiattack": true,
     "attacks": [
       {
@@ -12137,6 +12527,8 @@
       "perception": 11
     },
     "cr": "23",
+    "initiative": 14,
+    "srdPage": 303,
     "multiattack": true,
     "attacks": [
       {
@@ -12249,6 +12641,8 @@
       "perception": 9
     },
     "cr": "30",
+    "initiative": 18,
+    "srdPage": 331,
     "multiattack": true,
     "attacks": [
       {
@@ -12344,6 +12738,8 @@
       "cha": 6
     },
     "cr": "0",
+    "initiative": -1,
+    "srdPage": 260,
     "attacks": [
       {
         "name": "Rake",
@@ -12382,6 +12778,8 @@
       "cha": 6
     },
     "cr": "0",
+    "initiative": 2,
+    "srdPage": 345,
     "packTactics": true,
     "attacks": [
       {
@@ -12419,6 +12817,8 @@
       "perception": 3
     },
     "cr": "0",
+    "initiative": 0,
+    "srdPage": 345,
     "attacks": [
       {
         "name": "Bite",
@@ -12463,6 +12863,8 @@
       "stealth": 4
     },
     "cr": "0",
+    "initiative": 2,
+    "srdPage": 346,
     "attacks": [
       {
         "name": "Scratch",
@@ -12497,6 +12899,8 @@
       "cha": 10
     },
     "cr": "0",
+    "initiative": 0,
+    "srdPage": 275,
     "attacks": [
       {
         "name": "Club",
@@ -12532,6 +12936,8 @@
       "stealth": 2
     },
     "cr": "0",
+    "initiative": 0,
+    "srdPage": 347,
     "attacks": [
       {
         "name": "Claw",
@@ -12571,6 +12977,8 @@
       "perception": 4
     },
     "cr": "0",
+    "initiative": 3,
+    "srdPage": 347,
     "attacks": [
       {
         "name": "Ram",
@@ -12608,6 +13016,8 @@
       "stealth": 3
     },
     "cr": "0",
+    "initiative": 1,
+    "srdPage": 348,
     "attacks": [
       {
         "name": "Bite",
@@ -12643,6 +13053,8 @@
       "cha": 3
     },
     "cr": "0",
+    "initiative": 0,
+    "srdPage": 351,
     "attacks": [
       {
         "name": "Bite",
@@ -12688,6 +13100,8 @@
       "perception": 2
     },
     "cr": "0",
+    "initiative": 0,
+    "srdPage": 355,
     "attacks": [
       {
         "name": "Ram",
@@ -12726,6 +13140,8 @@
       "perception": 3
     },
     "cr": "0",
+    "initiative": 1,
+    "srdPage": 356,
     "packTactics": true,
     "attacks": [
       {
@@ -12761,6 +13177,8 @@
       "stealth": 4
     },
     "cr": "0",
+    "initiative": 2,
+    "srdPage": 356,
     "attacks": [
       {
         "name": "Bite",
@@ -12791,6 +13209,8 @@
     },
     "darkvision": 120,
     "cr": "0",
+    "initiative": -3,
+    "srdPage": 304,
     "attacks": [
       {
         "name": "Vile Slime",
@@ -12832,6 +13252,8 @@
     },
     "darkvision": 30,
     "cr": "0",
+    "initiative": 0,
+    "srdPage": 357,
     "attacks": [
       {
         "name": "Bite",
@@ -12871,6 +13293,8 @@
       "stealth": 6
     },
     "cr": "0",
+    "initiative": 2,
+    "srdPage": 357,
     "attacks": [
       {
         "name": "Tentacles",
@@ -12908,6 +13332,8 @@
     },
     "darkvision": 60,
     "cr": "0",
+    "initiative": 3,
+    "srdPage": 358,
     "attacks": [
       {
         "name": "Bite",
@@ -12946,6 +13372,8 @@
       "perception": 2
     },
     "cr": "0",
+    "initiative": 0,
+    "srdPage": 359,
     "attacks": [
       {
         "name": "Bite",
@@ -12980,6 +13408,8 @@
       "cha": 2
     },
     "cr": "0",
+    "initiative": 0,
+    "srdPage": 360,
     "attacks": [
       {
         "name": "Sting",
@@ -13018,6 +13448,8 @@
       "stealth": 5
     },
     "cr": "0",
+    "initiative": 1,
+    "srdPage": 361,
     "attacks": [
       {
         "name": "Vuruş",
@@ -13053,6 +13485,8 @@
       "cha": 1
     },
     "cr": "0",
+    "initiative": -5,
+    "srdPage": 286,
     "attacks": [
       {
         "name": "Vuruş",
@@ -13092,6 +13526,8 @@
       "stealth": 4
     },
     "cr": "0",
+    "initiative": 2,
+    "srdPage": 361,
     "attacks": [
       {
         "name": "Bite",
@@ -13134,6 +13570,8 @@
       "stealth": 5
     },
     "cr": "0",
+    "initiative": 3,
+    "srdPage": 364,
     "attacks": [
       {
         "name": "Bite",
@@ -13171,6 +13609,8 @@
       "con": 5
     },
     "cr": "1/8",
+    "initiative": -1,
+    "srdPage": 346,
     "attacks": [
       {
         "name": "Bite",
@@ -13210,6 +13650,8 @@
       "religion": 2
     },
     "cr": "1/8",
+    "initiative": 1,
+    "srdPage": 278,
     "attacks": [
       {
         "name": "Ritual Sickle",
@@ -13243,6 +13685,8 @@
       "stealth": 3
     },
     "cr": "1/8",
+    "initiative": 1,
+    "srdPage": 350,
     "attacks": [
       {
         "name": "Claw",
@@ -13285,6 +13729,8 @@
       "perception": 2
     },
     "cr": "1/8",
+    "initiative": 3,
+    "srdPage": 353,
     "packTactics": true,
     "attacks": [
       {
@@ -13324,6 +13770,8 @@
       "stealth": 5
     },
     "cr": "1/8",
+    "initiative": 3,
+    "srdPage": 355,
     "attacks": [
       {
         "name": "Bite",
@@ -13363,6 +13811,8 @@
       "perception": 5
     },
     "cr": "1/8",
+    "initiative": 2,
+    "srdPage": 357,
     "attacks": [
       {
         "name": "Bite",
@@ -13396,6 +13846,8 @@
       "str": 4
     },
     "cr": "1/8",
+    "initiative": 0,
+    "srdPage": 357,
     "attacks": [
       {
         "name": "Hooves",
@@ -13433,6 +13885,8 @@
       "persuasion": 5
     },
     "cr": "1/8",
+    "initiative": 1,
+    "srdPage": 312,
     "attacks": [
       {
         "name": "Rapier",
@@ -13468,6 +13922,8 @@
       "str": 4
     },
     "cr": "1/8",
+    "initiative": 0,
+    "srdPage": 359,
     "attacks": [
       {
         "name": "Hooves",
@@ -13497,6 +13953,8 @@
       "cha": 3
     },
     "cr": "1/8",
+    "initiative": 2,
+    "srdPage": 363,
     "attacks": [
       {
         "name": "Bite",
@@ -13531,6 +13989,8 @@
       "cha": 5
     },
     "cr": "1/4",
+    "initiative": 1,
+    "srdPage": 260,
     "attacks": [
       {
         "name": "Beak",
@@ -13568,6 +14028,8 @@
       "stealth": 5
     },
     "cr": "1/4",
+    "initiative": 3,
+    "srdPage": 266,
     "attacks": [
       {
         "name": "Bite",
@@ -13600,6 +14062,8 @@
       "cha": 5
     },
     "cr": "1/4",
+    "initiative": 0,
+    "srdPage": 346,
     "attacks": [
       {
         "name": "Gore",
@@ -13637,6 +14101,8 @@
       "stealth": 4
     },
     "cr": "1/4",
+    "initiative": 2,
+    "srdPage": 346,
     "attacks": [
       {
         "name": "Bite",
@@ -13686,6 +14152,8 @@
       "cha": 7
     },
     "cr": "1/4",
+    "initiative": 0,
+    "srdPage": 347,
     "attacks": [
       {
         "name": "Hooves",
@@ -13722,6 +14190,8 @@
       "perception": 2
     },
     "cr": "1/4",
+    "initiative": 0,
+    "srdPage": 348,
     "attacks": [
       {
         "name": "Ram",
@@ -13759,6 +14229,8 @@
       "perception": 3
     },
     "cr": "1/4",
+    "initiative": 0,
+    "srdPage": 349,
     "attacks": [
       {
         "name": "Bite",
@@ -13794,6 +14266,8 @@
       "cha": 3
     },
     "cr": "1/4",
+    "initiative": 2,
+    "srdPage": 349,
     "attacks": [
       {
         "name": "Bite",
@@ -13833,6 +14307,8 @@
       "stealth": 4
     },
     "cr": "1/4",
+    "initiative": 1,
+    "srdPage": 351,
     "attacks": [
       {
         "name": "Bite",
@@ -13873,6 +14349,8 @@
       "dex": 3
     },
     "cr": "1/4",
+    "initiative": 1,
+    "srdPage": 352,
     "attacks": [
       {
         "name": "Bite",
@@ -13910,6 +14388,8 @@
       "perception": 2
     },
     "cr": "1/4",
+    "initiative": 4,
+    "srdPage": 354,
     "attacks": [
       {
         "name": "Bite",
@@ -13949,6 +14429,8 @@
       "stealth": 7
     },
     "cr": "1/4",
+    "initiative": 3,
+    "srdPage": 355,
     "attacks": [
       {
         "name": "Bite",
@@ -13989,6 +14471,8 @@
       "stealth": 5
     },
     "cr": "1/4",
+    "initiative": 1,
+    "srdPage": 296,
     "attacks": [
       {
         "name": "Bone Cudgel",
@@ -14028,6 +14512,8 @@
       "stealth": 7
     },
     "cr": "1/4",
+    "initiative": 3,
+    "srdPage": 358,
     "bonusActions": [
       "disengage",
       "hide"
@@ -14064,6 +14550,8 @@
       "cha": 7
     },
     "cr": "1/4",
+    "initiative": 1,
+    "srdPage": 360,
     "attacks": [
       {
         "name": "Hooves",
@@ -14100,6 +14588,8 @@
       "dex": 2
     },
     "cr": "1/4",
+    "initiative": 0,
+    "srdPage": 362,
     "attacks": [
       {
         "name": "Bites",
@@ -14140,6 +14630,8 @@
       "cha": 1
     },
     "cr": "1/4",
+    "initiative": -5,
+    "srdPage": 286,
     "multiattack": true,
     "attacks": [
       {
@@ -14179,6 +14671,8 @@
       "perception": 5
     },
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 345,
     "multiattack": true,
     "attacks": [
       {
@@ -14219,6 +14713,8 @@
       "stealth": 2
     },
     "cr": "1/2",
+    "initiative": 0,
+    "srdPage": 347,
     "attacks": [
       {
         "name": "Bite",
@@ -14261,6 +14757,8 @@
       "perception": 3
     },
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 351,
     "attacks": [
       {
         "name": "Ram",
@@ -14295,6 +14793,8 @@
       "cha": 5
     },
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 353,
     "attacks": [
       {
         "name": "Ram",
@@ -14334,6 +14834,8 @@
       "stealth": 2
     },
     "cr": "1/2",
+    "initiative": -2,
+    "srdPage": 293,
     "attacks": [
       {
         "name": "Pseudopod",
@@ -14377,6 +14879,8 @@
     },
     "darkvision": 60,
     "cr": "1/2",
+    "initiative": 2,
+    "srdPage": 305,
     "attacks": [
       {
         "name": "Touch",
@@ -14417,6 +14921,8 @@
       "perception": 2
     },
     "cr": "1/2",
+    "initiative": 2,
+    "srdPage": 360,
     "packTactics": true,
     "attacks": [
       {
@@ -14453,6 +14959,8 @@
     },
     "darkvision": 60,
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 320,
     "multiattack": true,
     "attacks": [
       {
@@ -14508,6 +15016,8 @@
       "perception": 5
     },
     "cr": "1/2",
+    "initiative": 0,
+    "srdPage": 321,
     "multiattack": true,
     "attacks": [
       {
@@ -14554,6 +15064,8 @@
       "stealth": 6
     },
     "cr": "1/2",
+    "initiative": 2,
+    "srdPage": 322,
     "attacks": [
       {
         "name": "Draining Swipe",
@@ -14605,6 +15117,8 @@
     },
     "darkvision": 60,
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 333,
     "regeneration": 5,
     "attacks": [
       {
@@ -14641,6 +15155,8 @@
       "wis": 3
     },
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 364,
     "attacks": [
       {
         "name": "Hooves",
@@ -14675,6 +15191,8 @@
     },
     "darkvision": 60,
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 326,
     "attacks": [
       {
         "name": "Hooves",
@@ -14719,6 +15237,8 @@
       "perception": 4
     },
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 342,
     "attacks": [
       {
         "name": "Bite",
@@ -14752,6 +15272,8 @@
       "cha": 1
     },
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 259,
     "multiattack": true,
     "attacks": [
       {
@@ -14795,6 +15317,8 @@
       "perception": 3
     },
     "cr": "1",
+    "initiative": 1,
+    "srdPage": 346,
     "multiattack": true,
     "attacks": [
       {
@@ -14846,6 +15370,8 @@
       "stealth": 4
     },
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 279,
     "multiattack": true,
     "attacks": [
       {
@@ -14886,6 +15412,8 @@
       "stealth": 4
     },
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 347,
     "packTactics": true,
     "attacks": [
       {
@@ -14924,6 +15452,8 @@
       "perception": 3
     },
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 352,
     "attacks": [
       {
         "name": "Bite",
@@ -14962,6 +15492,8 @@
       "stealth": 5
     },
     "cr": "1",
+    "initiative": 1,
+    "srdPage": 352,
     "attacks": [
       {
         "name": "Tentacles",
@@ -14999,6 +15531,8 @@
     },
     "darkvision": 60,
     "cr": "1",
+    "initiative": 1,
+    "srdPage": 354,
     "attacks": [
       {
         "name": "Bite",
@@ -15037,6 +15571,8 @@
     },
     "darkvision": 60,
     "cr": "1",
+    "initiative": 3,
+    "srdPage": 362,
     "attacks": [
       {
         "name": "Bites",
@@ -15083,6 +15619,8 @@
       "stealth": 7
     },
     "cr": "1",
+    "initiative": 3,
+    "srdPage": 363,
     "bonusActions": [
       "disengage",
       "hide"
@@ -15123,6 +15661,8 @@
       "perception": 5
     },
     "cr": "2",
+    "initiative": 1,
+    "srdPage": 344,
     "attacks": [
       {
         "name": "Bite",
@@ -15165,6 +15705,8 @@
       "cha": 1
     },
     "cr": "2",
+    "initiative": 4,
+    "srdPage": 259,
     "attacks": [
       {
         "name": "Smother",
@@ -15204,6 +15746,8 @@
       "cha": 7
     },
     "cr": "2",
+    "initiative": -2,
+    "srdPage": 260,
     "attacks": [
       {
         "name": "Slam",
@@ -15246,6 +15790,8 @@
       "con": 4
     },
     "cr": "2",
+    "initiative": 1,
+    "srdPage": 261,
     "attacks": [
       {
         "name": "Burning Hammer",
@@ -15285,6 +15831,8 @@
       "cha": 9
     },
     "cr": "2",
+    "initiative": 1,
+    "srdPage": 263,
     "attacks": [
       {
         "name": "Greataxe",
@@ -15325,6 +15873,8 @@
       "religion": 2
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 278,
     "attacks": [
       {
         "name": "Pact Blade",
@@ -15359,6 +15909,8 @@
       "cha": 1
     },
     "cr": "2",
+    "initiative": -4,
+    "srdPage": 286,
     "attacks": [
       {
         "name": "Pseudopod",
@@ -15417,6 +15969,8 @@
       "wis": 2
     },
     "cr": "2",
+    "initiative": 3,
+    "srdPage": 287,
     "attacks": [
       {
         "name": "Bite",
@@ -15470,6 +16024,8 @@
       "str": 5
     },
     "cr": "2",
+    "initiative": 0,
+    "srdPage": 349,
     "attacks": [
       {
         "name": "Gore",
@@ -15512,6 +16068,8 @@
       "perception": 4
     },
     "cr": "2",
+    "initiative": 6,
+    "srdPage": 351,
     "attacks": [
       {
         "name": "Ram",
@@ -15553,6 +16111,8 @@
       "stealth": 4
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 295,
     "multiattack": true,
     "attacks": [
       {
@@ -15601,6 +16161,8 @@
       "perception": 2
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 356,
     "attacks": [
       {
         "name": "Bite",
@@ -15640,6 +16202,8 @@
       "stealth": 5
     },
     "cr": "2",
+    "initiative": 3,
+    "srdPage": 308,
     "attacks": [
       {
         "name": "Bite",
@@ -15689,6 +16253,8 @@
     },
     "darkvision": 60,
     "cr": "2",
+    "initiative": 0,
+    "srdPage": 326,
     "attacks": [
       {
         "name": "Gore",
@@ -15738,6 +16304,8 @@
       "cha": 1
     },
     "cr": "2",
+    "initiative": -2,
+    "srdPage": 312,
     "attacks": [
       {
         "name": "Pseudopod",
@@ -15787,6 +16355,8 @@
       "wis": 0
     },
     "cr": "2",
+    "initiative": -2,
+    "srdPage": 344,
     "undeadFortitude": true,
     "attacks": [
       {
@@ -15828,6 +16398,8 @@
       "stealth": 4
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 358,
     "attacks": [
       {
         "name": "Bite",
@@ -15867,6 +16439,8 @@
       "stealth": 4
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 359,
     "multiattack": true,
     "attacks": [
       {
@@ -15905,6 +16479,8 @@
       "cha": 6
     },
     "cr": "2",
+    "initiative": -1,
+    "srdPage": 360,
     "attacks": [
       {
         "name": "Gore",
@@ -15947,6 +16523,8 @@
       "stealth": 7
     },
     "cr": "2",
+    "initiative": 3,
+    "srdPage": 360,
     "bonusActions": [
       "disengage",
       "hide"
@@ -15986,6 +16564,8 @@
       "cha": 3
     },
     "cr": "2",
+    "initiative": 4,
+    "srdPage": 362,
     "attacks": [
       {
         "name": "Bites",
@@ -16030,6 +16610,8 @@
       "str": 6
     },
     "cr": "3",
+    "initiative": 0,
+    "srdPage": 344,
     "multiattack": true,
     "attacks": [
       {
@@ -16066,6 +16648,8 @@
     },
     "darkvision": 60,
     "cr": "3",
+    "initiative": -1,
+    "srdPage": 262,
     "attacks": [
       {
         "name": "Bite",
@@ -16105,6 +16689,8 @@
       "cha": 4
     },
     "cr": "3",
+    "initiative": 2,
+    "srdPage": 262,
     "multiattack": true,
     "attacks": [
       {
@@ -16159,6 +16745,8 @@
       "cha": 3
     },
     "cr": "3",
+    "initiative": 1,
+    "srdPage": 353,
     "multiattack": true,
     "attacks": [
       {
@@ -16213,6 +16801,8 @@
       "stealth": 3
     },
     "cr": "3",
+    "initiative": 1,
+    "srdPage": 295,
     "multiattack": true,
     "attacks": [
       {
@@ -16256,6 +16846,8 @@
       "stealth": 4
     },
     "cr": "3",
+    "initiative": 2,
+    "srdPage": 356,
     "attacks": [
       {
         "name": "Bite",
@@ -16295,6 +16887,8 @@
       "stealth": 7
     },
     "cr": "3",
+    "initiative": 3,
+    "srdPage": 313,
     "multiattack": true,
     "attacks": [
       {
@@ -16335,6 +16929,8 @@
       "cha": 4
     },
     "cr": "3",
+    "initiative": 2,
+    "srdPage": 278,
     "attacks": [
       {
         "name": "Swarm of Grasping Hands",
@@ -16383,6 +16979,8 @@
       "stealth": 5
     },
     "cr": "4",
+    "initiative": 3,
+    "srdPage": 344,
     "multiattack": true,
     "attacks": [
       {
@@ -16419,6 +17017,8 @@
       "cha": 1
     },
     "cr": "4",
+    "initiative": -3,
+    "srdPage": 265,
     "attacks": [
       {
         "name": "Dissolving Pseudopod",
@@ -16469,6 +17069,8 @@
       "perception": 4
     },
     "cr": "4",
+    "initiative": 0,
+    "srdPage": 273,
     "multiattack": true,
     "attacks": [
       {
@@ -16526,6 +17128,8 @@
       "cha": 6
     },
     "cr": "4",
+    "initiative": -1,
+    "srdPage": 348,
     "multiattack": true,
     "attacks": [
       {
@@ -16566,6 +17170,8 @@
       "perception": 4
     },
     "cr": "4",
+    "initiative": -1,
+    "srdPage": 284,
     "multiattack": true,
     "attacks": [
       {
@@ -16619,6 +17225,8 @@
       "perception": 3
     },
     "cr": "4",
+    "initiative": -2,
+    "srdPage": 355,
     "multiattack": true,
     "attacks": [
       {
@@ -16661,6 +17269,8 @@
       "stealth": 5
     },
     "cr": "4",
+    "initiative": 1,
+    "srdPage": 303,
     "multiattack": true,
     "attacks": [
       {
@@ -16716,6 +17326,8 @@
     },
     "darkvision": 60,
     "cr": "5",
+    "initiative": 3,
+    "srdPage": 284,
     "multiattack": true,
     "attacks": [
       {
@@ -16766,6 +17378,8 @@
     },
     "darkvision": 60,
     "cr": "5",
+    "initiative": -1,
+    "srdPage": 285,
     "multiattack": true,
     "attacks": [
       {
@@ -16813,6 +17427,8 @@
       "stealth": 5
     },
     "cr": "5",
+    "initiative": -1,
+    "srdPage": 350,
     "multiattack": true,
     "attacks": [
       {
@@ -16864,6 +17480,8 @@
       "perception": 3
     },
     "cr": "5",
+    "initiative": 3,
+    "srdPage": 353,
     "multiattack": true,
     "attacks": [
       {
@@ -16908,6 +17526,8 @@
       "stealth": 5
     },
     "cr": "5",
+    "initiative": 5,
+    "srdPage": 311,
     "multiattack": true,
     "attacks": [
       {
@@ -16956,6 +17576,8 @@
       "con": 7
     },
     "cr": "5",
+    "initiative": 0,
+    "srdPage": 313,
     "multiattack": true,
     "attacks": [
       {
@@ -17023,6 +17645,8 @@
       "stealth": 5
     },
     "cr": "5",
+    "initiative": 5,
+    "srdPage": 320,
     "multiattack": true,
     "attacks": [
       {
@@ -17073,6 +17697,8 @@
       "stealth": 3
     },
     "cr": "5",
+    "initiative": -1,
+    "srdPage": 323,
     "multiattack": true,
     "attacks": [
       {
@@ -17134,6 +17760,8 @@
       "cha": 5
     },
     "cr": "5",
+    "initiative": -1,
+    "srdPage": 363,
     "multiattack": true,
     "attacks": [
       {
@@ -17170,6 +17798,8 @@
     },
     "darkvision": 60,
     "cr": "5",
+    "initiative": 8,
+    "srdPage": 334,
     "multiattack": true,
     "attacks": [
       {
@@ -17232,6 +17862,8 @@
       "stealth": 6
     },
     "cr": "5",
+    "initiative": 3,
+    "srdPage": 334,
     "multiattack": true,
     "attacks": [
       {
@@ -17294,6 +17926,8 @@
     },
     "darkvision": 60,
     "cr": "5",
+    "initiative": 2,
+    "srdPage": 337,
     "multiattack": true,
     "attacks": [
       {
@@ -17362,6 +17996,8 @@
       "stealth": 6
     },
     "cr": "5",
+    "initiative": 0,
+    "srdPage": 343,
     "multiattack": true,
     "attacks": [
       {
@@ -17418,6 +18054,8 @@
       "con": 8
     },
     "cr": "6",
+    "initiative": 2,
+    "srdPage": 357,
     "multiattack": true,
     "attacks": [
       {
@@ -17455,6 +18093,8 @@
     },
     "darkvision": 60,
     "cr": "7",
+    "initiative": -1,
+    "srdPage": 323,
     "regeneration": 10,
     "multiattack": true,
     "attacks": [
@@ -17505,6 +18145,8 @@
       "con": 8
     },
     "cr": "8",
+    "initiative": 6,
+    "srdPage": 298,
     "multiattack": true,
     "attacks": [
       {
@@ -17557,6 +18199,8 @@
       "perception": 6
     },
     "cr": "8",
+    "initiative": 4,
+    "srdPage": 300,
     "multiattack": true,
     "attacks": [
       {
@@ -17604,6 +18248,8 @@
       "perception": 4
     },
     "cr": "8",
+    "initiative": 3,
+    "srdPage": 363,
     "multiattack": true,
     "attacks": [
       {
@@ -17651,6 +18297,8 @@
     },
     "darkvision": 60,
     "cr": "9",
+    "initiative": 3,
+    "srdPage": 274,
     "multiattack": true,
     "attacks": [
       {
@@ -17713,6 +18361,8 @@
       "perception": 7
     },
     "cr": "9",
+    "initiative": 6,
+    "srdPage": 289,
     "multiattack": true,
     "attacks": [
       {
@@ -17782,6 +18432,8 @@
       "stealth": 7
     },
     "cr": "11",
+    "initiative": 3,
+    "srdPage": 263,
     "multiattack": true,
     "attacks": [
       {
@@ -17856,6 +18508,8 @@
     },
     "darkvision": 60,
     "cr": "11",
+    "initiative": 5,
+    "srdPage": 319,
     "attacks": [
       {
         "name": "Bite",
@@ -17908,6 +18562,8 @@
       "stealth": 9
     },
     "cr": "13",
+    "initiative": 14,
+    "srdPage": 335,
     "multiattack": true,
     "attacks": [
       {
@@ -17978,6 +18634,8 @@
       "con": 11
     },
     "cr": "15",
+    "initiative": 3,
+    "srdPage": 316,
     "multiattack": true,
     "attacks": [
       {
@@ -18037,6 +18695,8 @@
       "perception": 8
     },
     "cr": "16",
+    "initiative": 10,
+    "srdPage": 306,
     "multiattack": true,
     "attacks": [
       {

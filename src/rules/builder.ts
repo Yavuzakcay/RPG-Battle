@@ -16,6 +16,7 @@ import { SKILL_IDS, SKILLS, type Skill } from './skills';
 import { backgroundById, backgroundOf, backgroundSkills, bonusesOf, magicInitiateProblems, otherSkillMax, speciesSkillChoice } from './backgrounds';
 import { MAX_ATTUNED, classSkillProblem, deriveStats, finalScores, spellSlotsFor, type CharacterSheet, type Scores } from './stats';
 import { advancementProblems, casterCtx, featEffects, sheetFeats } from './advancement';
+import { legacySubclassTarget } from './subclasses';
 import { classKit, defaultSubclass, gainedFeatures, optionTraining, subclassLevel, subclassesOf, tableValue } from './classFeatures';
 import { masteryProblems } from './mastery';
 import { carryLoad, type CarryRule } from './carry';
@@ -173,7 +174,8 @@ export function tomeCantrips(s: Pick<CharacterSheet, 'classId' | 'level' | 'invo
 
 /** Görev K6: sınıfın bu seviyedeki büyü sınırları (SRD sınıf tablosu "Cantrips", "Prepared Spells"; Wizard büyü kitabı). */
 export interface SpellLimits { cantrips: number; prepared: number; maxLevel: number; spellbook: number | null;
-  /** Görev B93 (Evocation Savant): kitabın bu okuldan olması gereken ek büyüleri. */ bookSchool?: { school: string; count: number } }
+  /** Görev B93 (Evocation Savant): kitabın bu okuldan olması gereken ek büyüleri; KAPSAM103: ilk `base` tanesi en çok `maxBaseLevel`. */
+  bookSchool?: { school: string; count: number; base?: number; maxBaseLevel?: number } }
 export function spellLimits(classId: string, level: number, choices?: Record<string, string>, invocations?: string[], subclassId?: string): SpellLimits {
   const num = (v: number | string | null) => (typeof v === 'number' ? v : Number.parseInt(String(v ?? '0'), 10) || 0);
   const book = getClass(classId).spellbook;
@@ -191,11 +193,12 @@ export function spellLimits(classId: string, level: number, choices?: Record<str
 }
 
 /** Görev B93: alt sınıf özelliğinin bedelsiz kitap büyüleri (`spellbookBonus`; Evocation Savant). */
-function bookBonus(classId: string, level: number, subclassId?: string): { school: string; count: number } | null {
+function bookBonus(classId: string, level: number, subclassId?: string): { school: string; count: number; base: number; maxBaseLevel: number } | null {
   const f = subclassId ? gainedFeatures(classId, level, subclassId).find((x) => x.mechanic?.spellbookBonus) : undefined;
   const b = f?.mechanic?.spellbookBonus;
   if (!f || !b) return null;
-  return { school: b.school, count: b.base + b.perNewSlotLevel * Math.max(0, maxSpellLevel(classId, level) - maxSpellLevel(classId, f.level)) };
+  return { school: b.school, count: b.base + b.perNewSlotLevel * Math.max(0, maxSpellLevel(classId, level) - maxSpellLevel(classId, f.level)),
+    base: b.base, maxBaseLevel: b.maxBaseLevel };
 }
 
 /**
@@ -444,6 +447,14 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
       if (lim.bookSchool) {
         const other = cnt.book.filter((n) => spells.find((x) => x.name === n)?.school !== lim.bookSchool!.school).length;
         if (other > lim.spellbook - lim.bookSchool.count) push(I().bookSchool(lim.bookSchool.school, lim.bookSchool.count));
+        // KAPSAM103 (SRD 5.2.1 s. 82 Evocation Savant "Choose two Wizard spells from the Evocation school, each of which must be no
+        // higher than level 2"): okul büyülerinden en az `base` tanesi en çok `maxBaseLevel` seviyede (sürümsüz, oluşturucu).
+        const bs = lim.bookSchool;
+        if (bs.base && bs.maxBaseLevel) {
+          const low = cnt.book.filter((n) => { const x = spells.find((y) => y.name === n); return x?.school === bs.school && x.level <= (bs.maxBaseLevel ?? 9); }).length;
+          const school = cnt.book.filter((n) => spells.find((x) => x.name === n)?.school === bs.school).length;
+          if (school >= bs.count && low < bs.base) push(I().bookSchoolLow(bs.school, bs.base, bs.maxBaseLevel));
+        }
       }
       for (const n of s.spellNames ?? []) {
         if ((spells.find((x) => x.name === n)?.level ?? 0) > 0 && !cnt.book.includes(n)) push(I().notInBook(n));
@@ -519,16 +530,24 @@ export function needsSubclass(s: Pick<CharacterSheet, 'classId' | 'level'>): boo
  * Eski kayıtlar (Görev P-Paladin): alt sınıf seviyesine ulaşmış ama alt sınıfı boş karakterlere SRD'deki tek alt
  * sınıf atanır; kimlere atandığı döner (kullanıcıya bildirilir). Değişiklik yoksa aynı liste.
  */
-export function migrateSubclasses(list: SavedCharacter[]): { list: SavedCharacter[]; assigned: Array<{ name: string; subclass: string }> } {
+export function migrateSubclasses(list: SavedCharacter[]): { list: SavedCharacter[]; assigned: Array<{ name: string; subclass: string }>; renamed: Array<{ name: string; classId: string; subclassId: string }> } {
   const assigned: Array<{ name: string; subclass: string }> = [];
+  const renamed: Array<{ name: string; classId: string; subclassId: string }> = [];
   const out = list.map((c) => {
+    // 2026-11-21: paketten silinen alt sınıfın kimliği (`yedekKimlik`: Yaşam Manastırı) yeni kimliğe bir kez
+    // yazılır ve bildirilir. Savaş kayıtları etkilenmez (savaşçının özellikleri `battle_started` içinde).
+    const to = legacySubclassTarget(c.sheet.subclassId);
+    if (to) {
+      renamed.push({ name: c.sheet.name, classId: c.sheet.classId, subclassId: to });
+      return { ...c, sheet: { ...c.sheet, subclassId: to } };
+    }
     if (c.sheet.subclassId || !needsSubclass(c.sheet)) return c;
     const id = defaultSubclass(c.sheet.classId);
     if (!id) return c;
     assigned.push({ name: c.sheet.name, subclass: subclassesOf(c.sheet.classId).find((x) => x.id === id)?.name.en ?? id });
     return { ...c, sheet: { ...c.sheet, subclassId: id } };
   });
-  return { list: assigned.length > 0 ? out : list, assigned };
+  return { list: assigned.length > 0 || renamed.length > 0 ? out : list, assigned, renamed };
 }
 
 /** Oluşturucunun formu kayıtlı karaktere çevirmesi: beceri listesi sınıf + diğerleri. */

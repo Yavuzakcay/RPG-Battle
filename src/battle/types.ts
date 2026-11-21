@@ -37,6 +37,10 @@ export type DamageEffect =
   /** Kuyruk 19: Relentless Rage (Barbarian 11): öfkedeyken 0 HP'de CON save; başarıda HP = 2 × seviye. */
   | { kind: 'relentless_rage'; dc: number; natural: number; total: number; success: boolean; hp: number }
   | { kind: 'relentless_endurance' }
+  /** KARAR101 (sürüm 101+, SRD Knocking Out): saldıran 0 HP yerine 1 HP + Unconscious seçti. */
+  | { kind: 'knocked_out'; by: string }
+  /** KARAR101 (sürüm 101+): Stone's Endurance (her hasarda tepki): zar + CON kadar azaltma. */
+  | { kind: 'stone_endurance'; reactionId: string; name: string; roll: number; amount: number; resource?: string }
   /** Kuyruk 19: emilen hasar (iyileşme) ve hasar türüne bağlı canavar tepkisi (Freeze, Aversion to Fire, Hydra ateşi). */
   | { kind: 'absorbed'; amount: number }
   | { kind: 'trait_fx'; name: string; effect: Partial<ActiveEffect>; headsFire?: boolean }
@@ -530,6 +534,8 @@ export interface Economy {
   attacksLeft: number;
   /** Bu turda kaç kez koştu (Dash): her biri hızı bir kez daha ekler. */
   dashes: number;
+  /** KARAR101 (sürüm 101+): Dash'lerin Dash anında sabitlenen toplam eki (ft); yoksa eski model (hız × (1 + Dash)). */
+  dashFt?: number;
   /** Bu tur ayrılma (Disengage) yaptı: fırsat saldırısı tetiklemez. */
   disengaged: boolean;
   /** Bu tur Action Surge kullandı (ek eylem; o eylemle büyü yapılamaz). */
@@ -801,6 +807,8 @@ export interface Combatant {
   inspireAsk?: boolean;
   /** Görev B95-B: savaş kural sürümü 97+ (durum görmeyen yardımcılar için; `createBattle` yazar). */
   sinif97?: boolean;
+  /** KAPSAM103 (kural sürümü 103+): savaş başında konan işaret (Empowered Evocation Wizard büyüsü + INT, Gift of the Depths su soluma). */
+  k103?: true;
   /** Görev B94: yalnız savaş kurulumuna dek (startBattle siler): 93 ve altı savaşta geri eklenecek eski slotsuz büyüler. */
   freeSpellsPre94?: Record<string, string>;
   /** Kuyruk K50: imza alt sınıfı (`data/imza.json`; pasifler, saldırı kancası). */
@@ -999,6 +1007,14 @@ export interface Combatant {
   metalArmor?: boolean;
   /** Kuyruk A7: kalkan taşıyor (karakterde; Flame Blade boş el denetimi). */
   shieldHeld?: boolean;
+  /** KARAR101 (sürüm 101+): kalkanın AC katkısı (kalkan + eşya `shieldAcBonus`; tak/çıkar komutu `shield_toggle`). */
+  shieldAc?: number;
+  /** KARAR101: kalkan çıkarıldı (taşınıyor ama takılı değil; `shieldAc` kadar AC düşük). */
+  shieldOff?: true;
+  /** KARAR101 (sürüm 101+, SRD Knocking Out): yakın dövüşle bayıltıldı (1 HP, Unconscious; savaş sonunda yenilmiş sayılır). */
+  knockedOut?: true;
+  /** KARAR101 (sürüm 101+, High Jump "immediately before"): kesintisiz son yürüyüşün altıgen sayısı (başka iş sıfırlar). */
+  walkStreak?: number;
   /** Harita kurallarının savaşçıya bıraktığı izler (Adım 8). */
   mapStatus: MapStatus;
   /** Harcanan eylemler (true: bu tur kullanıldı). */
@@ -1765,6 +1781,10 @@ export type Command =
   | { type: 'initiative_swap'; actorId: string; allyId: string }
   /** Kuyruk 19: oyuncunun Grapple'ı (Attack eyleminde bir saldırının yerine). */
   | { type: 'grapple'; actorId: string; targetId: string }
+  /** KARAR101 (sürüm 101+; SRD 5.2.1 s. 182 "release the creature at any time (no action required)"): tutulan yakalamayı bırak. */
+  | { type: 'release_grapple'; actorId: string; targetId: string }
+  /** KARAR101 (sürüm 101+; SRD 5.2.1 s. 92 Shield "Utilize Action to Don or Doff"): kalkanı tak ya da çıkar (eylem). */
+  | { type: 'shield_toggle'; actorId: string }
   | { type: 'summon_move'; actorId: string; to: Offset; ramId?: string; /** Kuyruk 19: Arcane Hand etkisi. */ hand?: 'fist' | 'force' | 'grasp' | 'crush' | 'interpose' }
   /** Bitişikteki batmış müttefiki çeker (Athletics). */
   | { type: 'pull'; actorId: string; targetId: string }
@@ -1872,6 +1892,8 @@ export type Command =
   | { type: 'ready'; actorId: string; trigger: string; sourceId?: string; hex?: Offset; response: ReadyResponse }
   /** Ayağa kalk (Prone kalkar, hızın yarısı harcanır). */
   | { type: 'stand_up'; actorId: string }
+  /** KARAR101 (sürüm 101+; SRD 5.2.1 s. 14 Dropping Prone): kendi turunda eylemsiz, hızsız yere yat (hız 0 iken olmaz). */
+  | { type: 'drop_prone'; actorId: string }
   /** Yakalamadan kaçmaya çalış (eylem; Athletics ya da Acrobatics vs kaçış DC'si). */
   | { type: 'escape_grapple'; actorId: string }
   /** Yardım (Help): bitişik düşmana karşı tarafının ilk saldırısı avantajlı (sonraki turunun başına dek). */
@@ -2146,6 +2168,8 @@ export type BattleEvent =
       loadingFired?: boolean;
       /** Görev WS92 (92+): biçim Multiattack bileşimi: bu saldırının adı (eylem başına sayılır). */
       beast?: string;
+      /** Görev KALAN100 (100+): turun serbest nesne etkileşimi kullanıldı (`kind: 'attack'`, saldırı sayısı değişmez). */
+      interaction?: true;
     }
   | { type: 'dashed'; actorId: string }
   /**
@@ -2265,6 +2289,8 @@ export type BattleEvent =
   | { type: 'grappled'; targetId: string; by: string; escapeDc: number; restrained: boolean; label: string }
   /** Yakalama bitti (kaçtı, yakalayan düştü/etkisiz, uzaklaştı). */
   | { type: 'grapple_ended'; targetId: string; reason: string }
+  /** KARAR101 (sürüm 101+): kalkan takıldı (`on`) ya da çıkarıldı; AC `shieldAc` kadar değişir, Two-Handed seçenekleri açılır/kapanır. */
+  | { type: 'shield_changed'; actorId: string; on: boolean }
   /** Kaçış denemesi: Athletics ya da Acrobatics (yüksek olan) vs kaçış DC'si. */
   | { type: 'grapple_escape'; actorId: string; skill: 'athletics' | 'acrobatics' | 'investigation'; d20: number[]; total: number; dc: number; success: boolean; bonusDice?: RolledExtra[] }
   /** İtme: hedefin save'i ve sonucu; başarısızsa `effect` uygulanır (`to`: itileceği altıgen). */

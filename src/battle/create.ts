@@ -1,6 +1,9 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
 import { SINIF97_VERSION } from './sinif97Surum';
 import { TE99_VERSION, te99On } from './te99Surum';
+import { KARAR101_VERSION } from './karar101Surum';
+import { KAPSAM103_VERSION } from './kapsam103Surum';
+import { STONE_ID } from './karar101';
 import srdSpells from '../../data/srd/spells.json';
 import { B94_VERSION } from './b94Surum';
 import { WS92_VERSION } from './ws92Surum';
@@ -49,6 +52,7 @@ import { monsterAvatar, sheetAvatar } from './avatar';
 import { monsterAttackArea } from '../rules/areaParse';
 import { hasBonusUnarmed, offHandAttackOption, unarmedStrikeOption, weaponAttackOptions } from './weapons';
 import { activeMasteries, weaponMasteryId } from '../rules/mastery';
+import { effectiveSubclassId } from '../rules/subclasses';
 import { classKit, classResources, depotStart, gainedFeatures, resourceDef } from '../rules/classFeatures';
 import { environmentFor, getMap, resolveMapChoice } from '../map/maps';
 import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type AttackOption, type UsableFeature, type Avatar, type BattleEvent, type BattleState, type ActiveEffect, type Combatant, type DragonWakeMode, type Goals, type GroupState, type MapState, type SleepGroup, type SpellZone, type SurfaceKind } from './types';
@@ -168,6 +172,12 @@ const armorStealthDisadvantage = (name: string): boolean =>
  * Kuyruk 19 (SRD denetimi): sihirli eşyaların savaş parçaları (`itemEffects.ts`) temel savaşçıya eklenir: kalıcı
  * etkiler, isabet ekleri, silah ve büyü bonusu, yüklü büyüler (slotsuz, kaynak `item:<id>`).
  */
+/** 2026-11-21: imza denetimi etkin alt sınıf kimliğiyle (paketten silinen `life-domain` kayıtta yoksa Birlik Manastırı). */
+const imzaSheet = (sheet: CharacterSheet): CharacterSheet => {
+  const id = effectiveSubclassId(sheet.classId, sheet.subclassId);
+  return id === sheet.subclassId ? sheet : { ...sheet, subclassId: id };
+};
+
 export function combatantFromSheet(
   sheet: CharacterSheet,
   opts: { id: string; ownerId: string; height?: Height; carryRule?: CarryRule },
@@ -325,6 +335,8 @@ function combatantFromSheetBase(
     // Kuyruk S2: metal zırh (Heat Metal; zırh verisinde `metal`).
     ...((armor.find((a) => a.name === sheet.armorName) as { metal?: boolean } | undefined)?.metal ? { metalArmor: true } : {}),
     ...(sheet.shield ? { shieldHeld: true } : {}),
+    // KARAR101: kalkanın AC katkısı (tak/çıkar komutu; yalnız 101+ savaşta okunur).
+    ...(d.shieldAc ? { shieldAc: d.shieldAc } : {}),
     // Devil's Sight (Görev WARLOCK): 120 ft (büyülü karanlık dahil; `maprules.canSee`).
     darkvision: inv.traits.includes('devils-sight') ? Math.max(120, raceDarkvision(sheet)) : raceDarkvision(sheet),
     civilian: false,
@@ -440,9 +452,10 @@ function combatantFromSheetBase(
     ...(kit.frenzy ? { frenzy: true } : {}),
     ...(kit.primalSkills.length > 0 ? { primalSkills: kit.primalSkills as Skill[] } : {}),
     // Savaşta kullanılan sınıf özellikleri (Lay On Hands, Sacred Weapon; veriden).
-    ...((): Partial<Combatant> => { const f = [...kit.usable, ...lineageFeatures(lineage), ...soyFeatures(sheet, d.speed), ...celestialFeatures(sheet.raceId, sheet.level, sheet.celestialAwakening), ...karadulFeatures(sheet), ...imzaFeatures(sheet), ...boonFeatures(featEffects(sheetFeats(sheet)).traits)]; return f.length > 0 ? { features: f } : {}; })(),
+    ...((): Partial<Combatant> => { const f = [...kit.usable, ...lineageFeatures(lineage), ...soyFeatures(sheet, d.speed), ...celestialFeatures(sheet.raceId, sheet.level, sheet.celestialAwakening), ...karadulFeatures(sheet), ...imzaFeatures(imzaSheet(sheet)), ...boonFeatures(featEffects(sheetFeats(sheet)).traits)]; return f.length > 0 ? { features: f } : {}; })(),
     // Kuyruk K50: imza alt sınıfı (pasifler ve saldırı kancası; kural kapalıysa `withImza` etkisiz bırakır).
-    ...(isImza(sheet.subclassId) && sheet.level >= 3 ? { imza: imzaId(sheet.subclassId) as string } : {}),
+    // 2026-11-21: paketten silinen Yaşam Manastırı (kayıtta yoksa) Birlik Manastırı olarak kurulur (`effectiveSubclassId`).
+    ...(isImza(imzaSheet(sheet).subclassId) && sheet.level >= 3 ? { imza: imzaId(imzaSheet(sheet).subclassId) as string } : {}),
     // Görev P0: ek paket ilkelleri ve yaratıkları (veri savaşçıda; düğmeler/pasifler `withPaket`).
     ...((): Partial<Combatant> => { const bag = paketBag(sheet); return bag ? { paket: bag } : {}; })(),
     // Kuyruk 19 (Irresistible Offense): artırılan skor (Overwhelming Strike).
@@ -557,7 +570,9 @@ export function combatantFromMonster(
     maxHp: monster.hp,
     speed: monster.speed,
     ...(swimFt ? { swimFt } : {}),
-    initiativeBonus: mods.dex,
+    // KAPSAM103 (103+; SRD 5.2.1 stat bloğu "Initiative +X"): canavarın inisiyatifi stat bloğundan (yetkinlik/özellik dahil);
+    // alan yoksa (özel canavar) ya da eski savaşta DEX değiştiricisi.
+    initiativeBonus: v >= KAPSAM103_VERSION && monster.initiative !== undefined ? monster.initiative : mods.dex,
     initiative: 0,
     height: opts.height ?? 0,
     pos: null,
@@ -769,7 +784,7 @@ function multiHexWide(map: { tiles?: string[] }): boolean {
  * anahtarlarıyla).
  */
 export function buildMapState(m: ReturnType<typeof getMap>, variantId: string, toggles: Record<string, boolean>, params?: Record<string, Record<string, unknown>>,
-  options?: string[]): MapState {
+  options?: string[], surum?: number): MapState {
   return {
     id: m.id, variantId, mirrored: m.mirrored, tiles: [...m.tiles],
     ...(options && options.length > 0 ? { options: [...options] } : {}),
@@ -780,7 +795,8 @@ export function buildMapState(m: ReturnType<typeof getMap>, variantId: string, t
     // Kuyruk 16 K16B: hazır yüzeyler (yalnızca `surfaces` alanı olan haritada; eski haritalarda alan yok).
     ...(m.surfaces?.length ? { zones: presetZones(m.surfaces) } : {}),
     // Kuyruk 24: Game Master'ın mekanik anahtarları/parametreleri (yalnızca varsayılandan farklılar).
-    ...controlState(m.id, variantId, toggles, params as never),
+    // KARAR101: varsayılan savaşın kural sürümüne göre (`acikSurum`).
+    ...controlState(m.id, variantId, toggles, params as never, surum),
     // Kuyruk 26: yükseklik katmanı (yalnızca katmanlı haritada; eski haritalarda alan yok).
     ...(m.heights ? { heights: m.heights.map((row) => [...row]) } : {}),
     ...(m.ramps?.length ? { ramps: m.ramps.map((h) => `${h.col},${h.row}`) } : {}),
@@ -809,7 +825,7 @@ export function startBattle(
     const m = getMap(opts.map.id, { mirrored, ...(opts.map.variantId ? { variantId: opts.map.variantId } : {}) });
     const variant = opts.map.variantId ? m.variants.find((v) => v.id === opts.map?.variantId) : m.variants[0];
     if (!variant) throw new Error(`Harita varyantı bulunamadı: "${opts.map.variantId ?? ''}"`);
-    map = buildMapState(m, variant.id, opts.map.ruleToggles ?? defaultRuleToggles(), opts.map.ruleParams, opts.map.options);
+    map = buildMapState(m, variant.id, opts.map.ruleToggles ?? defaultRuleToggles(), opts.map.ruleParams, opts.map.options, opts.kuralSurumu ?? defaultRuleVersion());
     env = environmentFor(m, variant.id);
     if (opts.goals === undefined && m.goals) goals = goalsFromData(m.goals);
     groups = groupsFrom(m.groups, opts.groupStates);
@@ -857,11 +873,19 @@ export function startBattle(
   if (rules >= B94_VERSION) participants = participants.map(unbakeOwnAura);
   // Görev B95-B (97+): durum görmeyen sınıf yardımcıları (Relentless Rage…) için savaşçı işareti.
   if (rules >= SINIF97_VERSION) participants = participants.map((p) => ({ ...p, sinif97: true }));
+  // KAPSAM103 (103+): durum görmeyen sınıf yardımcıları (Empowered Evocation, Gift of the Depths) için savaşçı işareti.
+  if (rules >= KAPSAM103_VERSION) participants = participants.map((p) => ({ ...p, k103: true }));
   // Görev TE99 (99+, SRD 5.2.1 s. 90 Two-Handed): kalkan takılıyken iki elli silah seçeneği saldırı listesinden çıkar
   // (yapay zekâ, fırsat saldırısı, Hazırla aynı listeden); arayüz nedeniyle gösterir (`shieldBlocked`).
   // Görev TE99: eşya bonusu bağı (`te99Alt`) sürüme göre; Javelin of Lightning (99+) Javelin seçeneğine Lightning türü.
   participants = participants.map((p) => !p.weaponOptions.some((o) => o.te99Alt) ? p
     : { ...p, weaponOptions: p.weaponOptions.map(({ te99Alt, ...o }) => (rules >= TE99_VERSION && te99Alt ? te99Alt : o)) });
+  // KARAR101: kalkan tak/çıkar yalnız 101+ savaşta (eski savaşta alan yok: durum eskisiyle aynı).
+  if (rules < KARAR101_VERSION) participants = participants.map((p) => { if (p.shieldAc === undefined) return p; const { shieldAc: _s, ...rest } = p; return rest; });
+  // KARAR101 (101+; SRD 5.2.1 s. 85 Stone's Endurance "When you take damage, you can take a Reaction"): her hasarda tepki
+  // (`damageEffects`); isabet tepkisi yolundan çıkar.
+  if (rules >= KARAR101_VERSION) participants = participants.map((p) => !p.reactions?.some((r) => r.id === STONE_ID) ? p
+    : { ...p, reactions: p.reactions.map((r) => (r.id === STONE_ID ? { ...r, anyDamage: true } : r)) });
   if (rules >= TE99_VERSION) participants = participants.map((p) => {
     const swap = (p.itemHits ?? []).filter((h) => h.replaceType && h.weaponId);
     if (swap.length) p = { ...p, weaponOptions: p.weaponOptions.map((o) => { const h = swap.find((x) => x.weaponId === o.weaponId); return h ? { ...o, altDamageType: h.type } : o; }) };

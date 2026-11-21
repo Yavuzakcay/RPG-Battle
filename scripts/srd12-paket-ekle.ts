@@ -7,7 +7,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import fixture from '../src/rules/fixtures/srd-alt-siniflar.json';
 import type { SubclassDef } from '../src/data';
-import { AD_TR, ALT_AD, addIfMissing, toPackRecord } from './lib/srd12-paket';
+import { AD_TR, ALT_AD, addIfMissing, isRemovedFromPack, toPackRecord } from './lib/srd12-paket';
+import view from '../data/alt-sinif-gorunum.json';
 
 const args = process.argv.slice(2);
 const kuru = args.includes('--kuru');
@@ -23,6 +24,8 @@ for (const s of (fixture as unknown as { subclasses: SubclassDef[] }).subclasses
   const f = `ek-${s.class}.json`;
   const p = packs.get(f);
   if (!p) { skipped.push(`${s.class}/${s.id}: ${f} yok`); continue; }
+  // 2026-11-21: listeden kaldırılan (life-domain) pakete geri eklenmez.
+  if (isRemovedFromPack(s.id, view.kaldirilan)) { console.log(`- ${s.class}/${s.id}: kaldırıldı, eklenmez`); continue; }
   if (allIds.has(s.id)) { console.log(`= ${s.class}/${s.id}: pakette var`); continue; }
   const ad = AD_TR[s.id];
   if (!ad) { unknownName.push(`${s.class}/${s.id} (EN ${s.name.en})`); continue; }

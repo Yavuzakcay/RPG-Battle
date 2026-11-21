@@ -1,4 +1,4 @@
-/** SRD 12 alt sınıf kaydını dış paket kaydına çevirir (fikstürdeki kayıttan; `srd` alanı pakette yasak). Saf: dosya erişimi betikte. */
+/** SRD 12 alt sınıf kaydını (2026-11-21'den beri 11: life-domain pakette yok) dış paket kaydına çevirir (fikstürdeki kayıttan; `srd` alanı pakette yasak). Saf: dosya erişimi betikte. */
 import type { SubclassDef } from '../../src/data';
 
 /**
@@ -7,10 +7,15 @@ import type { SubclassDef } from '../../src/data';
  * Burada olmayan kimlik için ad uydurulmaz (betik listeler ve durur).
  */
 export const AD_TR: Record<string, string> = {
-  'path-of-the-berserker': 'Berserker Yolu', 'college-of-lore': 'Kadim Bilgi Koleji', 'life-domain': 'Yaşam Manastırı', 'circle-of-the-land': 'Toprak Çemberi',
+  'path-of-the-berserker': 'Berserker Yolu', 'college-of-lore': 'Kadim Bilgi Koleji', 'circle-of-the-land': 'Toprak Çemberi',
   'champion': 'Gladyatör', 'warrior-of-the-open-hand': 'Sadelik Disiplini', 'oath-of-devotion': 'Sadakat Töresi', 'hunter': 'Avcı', 'thief': 'Hırsız',
   'draconic-sorcery': 'Pulkanat', 'fiend-patron': 'Zebani', 'evoker': 'Azap Öğretisi',
 };
+/**
+ * Fikstürde kalan ama pakete eklenmeyen SRD alt sınıfları (`data/alt-sinif-gorunum.json` `kaldirilan`; 2026-11-21 kullanıcı
+ * kararı: Yaşam Manastırı `life-domain` paketten silindi, kimliği Birlik Manastırı'na yönlenir). Mekanik fikstürde test için kalır.
+ */
+export const isRemovedFromPack = (id: string, removed: ReadonlyArray<{ id: string }>): boolean => removed.some((r) => r.id === id);
 /** Alt ad (kayıt adı; seçicide görünmez, rol satırının başında): yalnız Warlock'ta kullanıcı kararı. */
 export const ALT_AD: Record<string, string> = { 'fiend-patron': 'İblis Hamisi' };
 

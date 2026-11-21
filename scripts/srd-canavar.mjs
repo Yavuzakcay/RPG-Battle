@@ -84,6 +84,11 @@ for (let b = 0; b < starts.length; b++) {
   };
   let j = i + 1;
   rec.ac = Number(/^AC (\d+)/.exec(lines[j].text)[1]);
+  // Gece kuyruğu Aşama 4 (KAPSAM103): stat bloğundaki "Initiative +X (Y)" (AC satırı ile HP arasında).
+  for (let k = j; k < end && !/^HP /.test(lines[k].text); k++) {
+    const ini = /Initiative ([+−-]\d+)/.exec(lines[k].text);
+    if (ini) { rec.initiative = Number(ini[1].replace('−', '-')); break; }
+  }
   while (j < end && !/^HP /.test(lines[j].text)) j++;
   rec.hp = Number(/^HP (\d+)/.exec(lines[j].text)[1]);
   j++;

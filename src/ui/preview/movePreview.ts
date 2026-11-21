@@ -11,6 +11,7 @@ import type { BattleEvent, BattleState, Command, CommandContext } from '../../ba
 import { visibleReactions, type DiscoveryStore, type PreviewSettings } from '../../app/discovery';
 
 import { flySpeed } from '../../battle/flight';
+import { walkBudgetHexes } from '../../battle/karar101Surum';
 
 export interface TargetLine {
   id: string;
@@ -57,7 +58,7 @@ function mountLine(state: BattleState, cmd: Command, p: CommandPreview): MovePre
   const e = p.events.find((x) => (x.type === 'mounted' || x.type === 'dismounted') && x.actorId === cmd.actorId) as Extract<BattleEvent, { type: 'mounted' | 'dismounted' }> | undefined;
   const a = state.combatants[cmd.actorId];
   if (!e || !a) return undefined;
-  const budget = Math.floor(a.speed / 5) * (1 + a.economy.dashes);
+  const budget = walkBudgetHexes(a);
   const left = Math.max(0, budget - a.movementUsed - e.cost) * 5;
   // Uçamayan binici havadaki binekten inince komut sonunda düşer (MB3).
   const fell = (e.type === 'dismounted' && (e.toFt ?? a.altitudeFt ?? 0) > 0 && flySpeed(a) <= 0) || undefined;

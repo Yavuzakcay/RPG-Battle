@@ -23,7 +23,8 @@ describe('SRD sınıf verisi (npm run srd)', () => {
     }
     expect(srdSubclasses.subclasses.map((s) => s.classId)).toEqual(classes.map((c) => c.id));
     // Kuyruk K48: ev kuralı alt sınıfı (Karadul, SRD dışı) sayılmaz.
-    for (const id of classes.map((c) => c.id)) expect(subclassesOf(id).filter((s) => !s.ev)).toHaveLength(1);
+    // 2026-11-21: Cleric'in SRD alt sınıfı (life-domain) seçicide yok; yerini imza Birlik Manastırı aldı.
+    for (const id of classes.map((c) => c.id)) expect(subclassesOf(id).filter((s) => !s.ev), id).toHaveLength(id === 'cleric' ? 0 : 1);
   });
   it('isabet zarı ve kurtarma zarları sınıf verisiyle (data/classes.json) aynı', () => {
     for (const p of classData.progression) {

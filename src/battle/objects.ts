@@ -40,6 +40,7 @@ import { terrainOf } from '../map/terrain';
 import { p12On } from './paket/p12surum';
 import type { AttackOption, BattleEvent, BattleState, Combatant, Command, MapObject, ObjectAction, ObjectKind, ObjectState } from './types';
 import { te99On } from './te99Surum';
+import { kapsam103On } from './kapsam103Surum';
 
 const sizeOf = (s: BattleState) => ({ cols: s.map?.tiles[0]?.length ?? 0, rows: s.map?.tiles.length ?? 0 });
 const tileOf = (s: BattleState, h: Offset) => terrainOf(s.map?.tiles[h.row]?.[h.col] ?? '#');
@@ -229,10 +230,13 @@ export function executeObjectUse(state: BattleState, actor: Combatant, objectId:
       if (t99 && !tool) return fail("Kilit açmak için Thieves' Tools gerekir.");
       const bonus = t99 ? actor.modifiers.dex + actor.proficiency : skillBonus(actor, 'sleightOfHand');
       const d = rollD20(t99 && actor.skills.sleightOfHand !== undefined ? 'advantage' : 'normal', rollTag(rng, { by: actor.id, kind: 'check' }));
-      const total = d.kept + bonus;
+      // KAPSAM103 (103+; SRD 5.2.1 s. 63 Reliable Talent "ability check that uses one of your skill or tool proficiencies … treat a
+      // d20 roll of 9 or lower as a 10"): alet yetkinliğiyle kilit açmada da.
+      const nat = kapsam103On(state) && tool && actor.traits?.includes('reliable-talent') && d.kept < 10 ? 10 : d.kept;
+      const total = nat + bonus;
       const success = total >= dc;
       return finish(state, [{ type: 'object_changed', objectId: obj.id, ...(success ? { state: 'closed' as const } : {}), label: success ? `${name} kilidi açıldı` : `${name} kilidi açılamadı`,
-        check: { d20: d.kept, total, dc, success } }]);
+        check: { d20: nat, total, dc, success } }]);
     }
   }
   // Kuyruk 21 D2b: kol çekilince yürüyen merdiven durur (geri alınmaz).

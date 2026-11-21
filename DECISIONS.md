@@ -67,6 +67,262 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   kalmamıştı; CC-BY-4.0 atfının uygulama içinde her görünümden erişilebilir olması gerektiği için parşömen gezinmesine (`ddk-pagenav`)
   görünür "Lisans / Atıf" düğmesi eklendi (`dex-nav-lisans`; Geri önceki görünüme döner, lisans sayfasında gizli). Test bu yolu
   dört görünümde arar.
+## Görev KAPSAM103 (gece kuyruğu Aşama 4): canavar verisi SRD uyumu ve sınıf açıkları (2026-11-21; kural sürümü 103 `KAPSAM103_VERSION`)
+
+Tek sabit `src/battle/kapsam103Surum.ts` (`KAPSAM103_VERSION` 103, `kapsam103On`); durum bilmeyen yardımcılar için savaşçıda `k103`
+işareti (savaş başında, `sinif97` deseni). 102 ve altı (eski kayıt, replay) aynen. Kayıt sürümü değişmedi. Testler
+`src/battle/kapsam103.test.ts` (102 ↔ 103). Değişen eski testler: `ruleVersion.test.ts`, `g6.test.ts` (102 → 103).
+
+- **`data/monsters.json` istisnası (CLAUDE.md "canavar verisini denge için değiştirme" kuralının istisnası; denge için değil, SRD stat
+  bloğu uyumu):** (a) 330 canavara `initiative` (SRD stat bloğu "Initiative +X", `scripts/srd-canavar.mjs` ← PDF; `data/srd/monsters.json`
+  `initiative`) ve `srdPage` (stat bloğu sayfası) eklendi; (b) Adult ve Ancient Gold Dragon'un SRD aktarımında "Spellcasting" adıyla
+  gelen saldırısı (metni Spellcasting, save ve eki Weakening Breath) **Weakening Breath** oldu (SRD metni, 60/90 ft koni). (b) sürümlü:
+  `data/srd-duzeltme.json` `surum: 103` (102 ve altı eski ad ve metin); ek bağlaması `data/canavar-ekleri-a2.json` iki adla.
+- **1. Canavar inisiyatifi** (SRD 5.2.1 s. 254 stat bloğu "Initiative"): 103+ savaşta `initiativeBonus` stat bloğundan (yetkinlik/özellik
+  dahil; 330 canavarın 110'unda DEX'ten farklı), alan yoksa (özel canavar) DEX (`create.ts` `combatantFromMonster`).
+- **2. Eksik yetenekler:** Cloud Giant **Misty Step** (s. 275 Bonus Actions; `data/canavar-yetenekleri.json` `teleport` 30 ft, `surum`
+  103, `abilitiesOf` sürüm süzgeci); Adult/Ancient Gold Dragon **Weakening Breath** (s. 291–292; Multiattack "replace one attack" artık
+  adıyla eşleşir); Sphinx of Lore/Valor **Weight of Years** (s. 327–328 efsanevi eylem: CON DC 16, 120 ft, 1 Exhaustion, sonraki turunun
+  başına dek bir kez; `data/efsanevi.json` `surum` 103, `legendaryOf` süzgeci). ⚠ Sphinx'in veride Arcane Prowl'a karışmış save alanları
+  (CON 16, 120 ft) eski kayıt uyumu için değiştirilmedi; strike türünde okunmuyor.
+- **3. Saldırı ekleri — ertelendi, karar gerekli:** yapışma (Stirge Proboscis, Darkmantle Crush, Cloaker Attach: yapışık kalıp hareket,
+  her tur hasar, 5 ft hareketle ya da eylemle sökme) yeni "bağlı yaratık" sistemi ister; likantrop laneti (SRD s. 339 vb.: "If the cursed
+  target drops to 0 Hit Points, it instead becomes a Werewolf under the GM's control and has 10 Hit Points") biçim değişimi + taraf
+  değişimi ister (Polymorph `shape_changed` + `allegianceSwap` birleşimi); boğulma (Rug Smother, Water Elemental Whelm, Gelatinous
+  Cube Engulf "can't breathe"): K73c nefes sistemi yalnız su altında; "nefes alamaz" etkisi yeni bağ ister. Öneri: tek "nefessiz"
+  etkisi (`ActiveEffect.noBreath` → `breathLimit`) ile üçü birden; likantropi için GM paneli "lanetli" işareti + 0 HP kancası.
+- **4. Sınıf açıkları:**
+  - **Empowered Evocation** (s. 82 "Whenever you cast a Wizard spell from the Evocation school, you can add your Intelligence modifier
+    to one damage roll"): 103'te yalnız Wizard listesindeki büyüde ve INT değiştiricisiyle (`oneDieBonus.ts`, `k103`). ⚠ "Wizard spell"
+    = Wizard listesinde (çoklu sınıf yok).
+  - **Reliable Talent** (s. 63 "ability check that uses one of your skill or tool proficiencies … treat a d20 roll of 9 or lower as a 10"):
+    103'te Thieves' Tools ile kilit açmada da (`objects.ts`).
+  - **Evocation Savant** (s. 82 "each of which must be no higher than level 2"): oluşturucu `maxBaseLevel`'i denetler (sürümsüz;
+    `builder.ts` `bookSchoolLow` sorunu).
+  - **Gift of the Depths** (s. 73 "You can breathe underwater"): 103'te su altında solur (`underwaterCore.ts` `breathesWater`).
+  - **Ertelendi (SRD-12 sınıf özelliği sapmaları, gerekçe):** Cutting Words yalnız isabette (tetik `miss` ve hasar sonrası istem ortak
+    tepki zamanlamasını değiştirir; Bard denetimi B94); Quivering Palm'da saldırıdan vazgeçerek bitirme (Monk eylem ekonomisi yeni
+    komut); Holy Nimbus / Hurl Through Hell yenilenmesi (dinlenme modeli savaş dışı); Dark One's Own Luck (zar sonrası seçim istemi
+    B98 ilham kalıbıyla yapılabilir, ayrı iş); Supreme Sneak siper denetimi (Hide modeli); Fast Hands / Use Magic Device savaş dışı
+    parçalar; Preserve Life, Land's Aid, Sculpt Spells, Superior Hunter's Prey, Intimidating Presence oyuncu seçimi yerine otomatik seçim
+    (her biri yeni seçim istemi; `askChoice` kalıbı hazır). **Thief's Reflexes** "Surprised değilken": SRD 5.2.1 metni ("You can take
+    two turns during the first round of any combat. You take your first turn at your normal Initiative and your second turn at your
+    Initiative minus 10.") Surprised koşulu içermiyor; oyundaki koşulsuz uygulama SRD ile **aynı** (doğrulandı, değişiklik yok).
+- **5. SRD-KAPSAM kısmi canavar satırlarının desenleri (128 satır):** inisiyatif farkı 110 (**bu görevde kapandı**), savaş dışı not 53
+  (değişmez), Weakening Breath 2 ve Weight of Years 2 (**kapandı**), Misty Step 1 (**kapandı**), Hurl Flame 2 (yanıcı nesneyi
+  hedefleme: canavar saldırısı nesne hedeflemez; nesne hedefi yeni yol), boğulma 3 (yukarıda, ertelendi), Vortex sözlü büyü yasağı 1
+  (yutma/girdap "can't cast spells with Verbal" `noVerbal` etkisiyle yapılabilir, küçük), dokunaç AC/HP 1 (yeni nesne-parça modeli),
+  Rotting Fist 24 saat 1 (savaş dışı).
+- **Yapay zekâ:** Weight of Years ve Misty Step veriyle mevcut efsanevi/yetenek seçicisine girer (yeni karar kodu yok).
+- **Hızlı regresyon (102 ↔ 103, 100 tohum):** Çöl %81/%81, Kale %36/%32, Mağara %85/%78 (berabere %4), Orman %64/%68. Fark **kural
+  kaynaklı** (canavar inisiyatifi stat bloğundan; sim partisi ve listeler aynı); `DENGE.md` "ölçülecek".
+
+## Görev BUYU-TAM (gece kuyruğu Aşama 3): SRD 5.2.1 büyü tam taraması ve düzeltmeleri (2026-11-21; kural sürümü 102 `BUYU_TAM_VERSION`)
+
+Tek sabit `src/battle/buyuTamSurum.ts` (`BUYU_TAM_VERSION` 102, `buyuTamOn`); büyü verisinde `b102` bloğu (sırayla en son birleşir:
+`spells.ts` `LATER`, `spellVersion.ts` `mechanicsAt`, `scripts/lib/buyu-durum.mjs` `BLOCKS`). 101 ve altı (eski kayıt, replay) aynen.
+Kayıt sürümü değişmedi (yeni olay yok). Tarama ve gerekçeler `harita/belgeler/BUYU-TAM-TARAMA.md` (otomatik fark betiği
+`scripts/buyu-tam-tarama.ts`; 339 büyü: tam 214, kısmi (otomatik notlu, elle doğrulandı) 16, şüpheli 0, savaş dışı 109). Efekt
+bağlaması olmayanlar `harita/belgeler/BUYU-EFEKT-EKSIK.md` (`scripts/buyu-efekt-eksik.mjs`; 78 büyü). Testler
+`src/battle/buyuTam102.test.ts` (her düzeltme 101 ↔ 102, replay). Değişen eski testler: `ruleVersion.test.ts`, `g6.test.ts` (güncel
+sürüm 101 → 102).
+
+- **Confusion** (SRD "The Sphere’s radius increases by 5 feet for each spell slot level above 4."): yukarı slotta yarıçap (`b102.upcast
+  .radiusFt` 5; `executeAreaCast` 102+'da `upcast.radiusFt`'i alan büyülerinde de uygular; önceden yalnız alan kuran büyülerde).
+- **Etherealness** (SRD "You can target up to three willing creatures (including yourself) for each spell slot level above 7. The
+  creatures must be within 10 feet of you"): **önceden etki `ethereal` alanını taşımıyordu (büyü etkisizdi)**; 102'de etkiye yazılır,
+  yukarı slot başına +3 hedef, menzil 10 ft, büyücü hedeflerden biri (`includeSelf`, `castRangeFt`).
+- **Earthquake** (SRD "On a failed save, a creature has the Prone condition and its Concentration is broken."): veri `breakConcentration`
+  (motorun okumadığı ad) → `dropConcentration` (102).
+- **Conjure Elemental** (SRD "Concentration, up to 10 minutes"): alan 10 → 100 tur.
+- **Mass Cure Wounds** (SRD "up to six creatures in a 30-foot-radius Sphere centered on a point within range"): hedefleri kapsayan,
+  menzil içinde merkezli 30 ft küre olmalı (`healSphereFt`, `healSphereFits`; Mass Healing Word'de küre yok, aynen).
+- **Eksik, ertelendi:** Storm of Vengeance 2–10. tur aşamaları (`stages` verisi motor tarafından okunmuyor; yalnız döküm turu);
+  öneri BUYU-TAM-TARAMA §4.1. **Karar gerekli** (§4): savaş dışı süreler, eşya büyüleri, Wish serbest dilek, maliyetli materyal.
+- **Doğrulanıp değiştirilmeyen** (otomatik betiğin yanlış alarmları, §2): Spare the Dying menzil kademesi (GENEL96), cantrip
+  ölçeklemeleri, `applied` bayrağısız yukarı slot yolları, Self kökenli alan menzilleri, Fire Storm serbest şekli.
+- **Yapay zekâ büyü seçimine dokunulmadı.**
+- **Görsel doğrulama düzeni:** `src/ui/fx/e2Verify.ts` büyücüsünün DEX save'i 30 (Earthquake 102'de büyücünün kendi
+  konsantrasyonunu bozabildiği için alan çizimi doğrulanamıyordu); `data/efekt-e2-dogrulama.json` yeniden üretildi (166/166; yalnız
+  Incendiary Cloud'un denenen nişanı değişti).
+- **Hızlı regresyon (101 ↔ 102, 100 tohum):** Çöl %81/%81, Kale %36/%36, Mağara %85/%85, Orman %64/%64 (tur, ölüm, düşen aynı).
+
+## Görev KARAR101 (gece kuyruğu Aşama 2): KALAN100 karar kalanları SRD 5.2.1'e göre (2026-11-21; kural sürümü 101 `KARAR101_VERSION`)
+
+Tek sabit `src/battle/karar101Surum.ts` (`KARAR101_VERSION` 101, `karar101On`), motor `src/battle/karar101.ts`. 100 ve altı (eski
+kayıt, replay) eski davranışta. **Kayıt sürümü 24 → 25** (yeni olay `shield_changed`, hasar etkileri `knocked_out` ve `stone_endurance`;
+3–25 yüklenir). Kullanıcı yokken alınan kararlar (soru sorulmadı; en güvenli SRD yolu). Testler `src/battle/karar101.test.ts` (22;
+her madde 100 ↔ 101, replay). Değişen eski testler: `ruleVersion.test.ts`, `g6.test.ts` (güncel sürüm 100 → 101), `SAVE_VERSION`
+beklentisi 24 → 25 (`statusFx.test.ts`, `areaView.test.ts`, `s1.test.ts`, `g1.test.tsx`; `ready.test.ts` ≥ 24).
+
+- **1. Sürünme + zorlu arazi** (s. 179 Crawling: "While you're crawling, each foot of movement costs 1 extra foot (2 extra feet in
+  Difficult Terrain)."; s. 14 Difficult Terrain "costs 1 extra foot"): parantez toplam eki 2 sayar (zorlu arazinin kendi 1 ek ft'i
+  dahil): sürünürken normal zemin 2, zorlu 3 ft/ft (100: 4). `movement.ts` `moveCostFn`: sürünme zemin maliyetine +1 (yavaşlatma
+  çarpanları ayrı). ⚠ Okuma kullanıcı talimatıyla seçildi (metin "toplam" demiyor).
+- **2. Knocking Out** (s. 17 "When you would reduce a creature to 0 Hit Points with a melee attack, you can instead reduce the creature
+  to 1 Hit Point and give it the Unconscious condition. It then starts a Short Rest, at the end of which that condition ends on it. The
+  condition ends early if the creature regains any Hit Points or if someone takes an action to administer first aid to it, making a
+  successful DC 10 Wisdom (Medicine) check."; s. 186 sözlük aynı): yakın dövüş saldırısı (silah, Unarmed Strike, yakın büyü saldırısı,
+  canavar yakın saldırısı) hedefi 0 HP'ye düşürecekken saldırana seçim istemi (`askChoice`; tepki ayarı Sor/Her zaman/Asla yolu:
+  "Her zaman/Asla" ayarında öneri = bayıltma yok). Seçilirse 1 HP + Unconscious (`knocked_out` etkisi, savaşçıda `knockedOut`),
+  0 HP'ye bağlı sonuçlar (ölüm save'i, anında ölüm, yenilenme) düşer. HP kazanınca ya da ilk yardımla (`stabilize` komutu, eylem,
+  DC 10 WIS (Medicine)) Unconscious biter (Prone kalır, GENEL96 A2). **Karar (SRD tanımlamıyor):** bayıltılan yaratık savaş sonu
+  hesabında **yenilmiş** sayılır (`winnerOf`). Yapay zekâ bayıltmaz (öneri null). Kısa dinlenme (1 saat) savaş dışı: savaş sonunda
+  1 HP'de kalır, uyanma Serüven zamanına bağlanmadı (⚠). Esir alma yok (karar gerekli değil; SRD'de yok).
+- **3. Dash ve çoklu hız** (s. 188 Speed "If you have more than one speed, choose which one to use when you move; you can switch between
+  the speeds during your move. Whenever you switch, subtract the distance already moved from the new speed."; s. 180 Dash "The increase
+  equals your Speed after applying any modifiers … If you have a special speed, such as a Fly Speed or Swim Speed, you can use that speed
+  instead of your Speed when you take this action."): bütçe = şimdiki kipin hızı (yürüme/uçuş/yüzme/kazma) + Dash'lerin **Dash anında
+  sabitlenen** eki (`economy.dashFt`); harcanan hareket (`movementUsed`) ortak düşer (geçişte "subtract the distance already moved").
+  100: şimdiki hız × (1 + Dash) (Dash'ten sonra hız değişirse ek de değişiyordu). Dash eki Dash anında kullanılan kipin hızı (⚠ SRD
+  oyuncuya seçtirir; oyunda uçan hep uçar, kip seçimi yok). Binme/inme ve ayağa kalkma bütçeleri aynı modele (`walkBudgetHexes`,
+  `speedHexesNoDash`).
+- **4. nightVision varsayılan açık** (s. 10/15 Vision and Light): yeni savaşta (101+) gece varyantlarında SRD görüşü açık; veri
+  `data/kural-kontrol.json` `acikSurum: 101`, okuma `ruleControl.ts` `specDefault(spec, surum)` (savaşın sürümüyle; 100 ve altı
+  kayıt kapalı kalır). Game Master yine kapatabilir. Denge **ölçülmedi** (kullanıcı: simülasyon yok); `DENGE.md`'ye "ölçülecek" notu.
+- **5a. Yakalama ve eller** (s. 182 "One Grapple per Hand"; "release the creature at any time (no action required)"; s. 90 Two-Handed
+  "requires two hands when you attack with it"): yakalama tutan yaratık Two-Handed silahla saldıramaz (fırlatma ve binekteki Lance
+  hariç), Versatile silah tek elle (tek elli zar, Great Weapon Fighting yok) (`grappleHands`, `weaponAttackEvents` ve komut denetimi;
+  fırsat saldırısı ve Hazırla aynı yoldan). Yeni komut `release_grapple` (eylemsiz; olay `grapple_ended` `released`). ⚠ Bırakma yalnız
+  kendi turunda (komut sırası denetimi); "at any time" başkasının turunda arayüz yolu yok.
+- **5b. High Jump koşusu** (s. 183 "if you move at least 10 feet on foot immediately before the jump"): 101'de koşu = kesintisiz son
+  yürüyüş ≥ 2 altıgen (`walkStreak`: yerdeki `moved` olayı ekler, yaratığın başka her olayı sıfırlar; `syncKarar101`). 100: bu tur
+  ≥ 2 altıgen ve son hareket yürüyüş (araya giren eylem izlenmiyordu).
+- **5c. Stone's Endurance** (s. 85 "When you take damage, you can take a Reaction to roll 1d12. Add your Constitution modifier to the number
+  rolled and reduce the damage by that total."): 101'de her hasarda (`damageEffects` → `stoneEnduranceFx`; tepki `anyDamage` işareti
+  savaş başında), isabet tepkisi yolundan çıktı (çift soru yok). Tepki ve Giant Ancestry kullanımı harcanır (`stone_endurance` etkisi).
+  ⚠ Azaltma direnç/bağışıklık sonrası tutara (isabet yolundaki eski sırayla aynı).
+- **5d. Kalkan tak/çıkar** (s. 92 "Shield … (Utilize Action to Don or Doff)"): yeni komut `shield_toggle` (Utilize = eylem), olay
+  `shield_changed`; AC kalkan katkısı kadar (`shieldAc`: kalkan + eşyaların `shieldAcBonus`'u; `rules/stats.ts`), Two-Handed seçenekleri
+  açılır/kapanır (TE99 `shieldBlocked`), boş el sayımı (`freeHands`) `shieldHeld` ile. Takmak için boş el gerekir (yan el silahı ya da
+  tutulan yakalama varken olmaz). Savaş sonunda karakterin donanımı değişmez (kalkan karakterde). ⚠ Kalkana bağlı sınıf özellikleri
+  (Monk Unarmored Defense/Martial Arts, Barbarian Unarmored Defense) savaş içinde yeniden türetilmez. Yapay zekâ kullanmaz.
+- **5e. Eşyayı silaha bağlama — ertelendi, karar gerekli:** SRD tanımlı (s. 253 Weapon +1/+2/+3 "You have a bonus to attack and
+  damage rolls made with this magic weapon"), ama karakter kaydında hangi silahın büyülü olduğu yok (`weapons[].itemId` şeması ve
+  oluşturucuda seçim alanı gerekir; TE99 K-D2). Önerilen: sihirbazın donanım adımında eşyaya silah seçimi, varsayılan ilk uygun silah.
+- **6. Nick ve "başkasının altıgeninde tur sonu Prone":** SRD metni belirsiz (KALAN100 kaydı); dokunulmadı.
+- **7. CLAUDE.md paket sınırı:** `birlesik`'te satır zaten "Ana parça 500 kB altında" (veriyle aynı); değişiklik gerekmedi.
+- **8. Hazırla (Ready) doğrulaması** (s. 186–187): komut, tetik, tepki harcama, büyüde slotun hazırlarken harcanması, eylem döküm
+  süresi şartı, konsantrasyon ve sonraki tur başında bitiş SRD ile uyumlu (`ready.ts`, kural sürümü 90). Kısmi kalan: yanıt listesi
+  tek saldırı / hareket / büyü (SRD "the action you will take": Utilize, Help, Dash … yanıtları yok), yapay zekâ Ready kullanmaz.
+  Kod değişmedi.
+- **Hızlı regresyon (ortak motor değişti; 100 tohum, 5. seviye standart parti):** `KURAL_SURUMU=100|101 npm run sim -- 100 col kale
+  magara orman`: Çöl %81 → %81, Kale %36 → %36, Mağara %85 → %85, Orman %64 → %64 (ortalama tur, ölüm, düşen aynı). Gece
+  senaryoları ölçülmedi (`DENGE.md` "ölçülecek"). Paket 450,06 / 500 kB; `check:harita` 92/92, `check:ses` 15/0.
+- **9. Dropping Prone** (s. 14 "On your turn, you can give yourself the Prone condition … without using an action or any of your Speed,
+  but you can't do so if your Speed is 0."): yeni komut `drop_prone` (olay `condition_changed` `drop_prone`), Hareket menüsünde
+  "Yere yat"; yapay zekâ kullanmaz.
+## Yaşam Manastırı (life-domain) kaldırıldı; yerini Birlik Manastırı alır (2026-11-21, kullanıcı kararı)
+
+- `icerik/ek-cleric.json`'dan `life-domain` ve bütün özellikleri (Yaşam Manastırı Büyüleri dahil) silinir (yerel paket; depoya girmez).
+  Sayılar: paket 109 → 108 (Barış Alanı gizli), görünen 120 → 119 (107 paket + 12 bizim); Cleric paket 7 → 6 (+ Birlik).
+- Barış Alanı emsali (`data/alt-sinif-gorunum.json` `kaldirilan` + yönlendirme), bir farkla: Barış Alanı pakette durduğu için `eskiKimlik`
+  her zaman yönlenir; `life-domain` için yeni `yedekKimlik` (`life-domain` → `imza_birlik`) yalnız kimlik kayıtta yoksa yönlenir
+  (`effectiveSubclassId`; uygulamada paket olmadığından hep). Böylece test fikstüründeki Yaşam mekanik testleri (cleric, b93cleric)
+  değişmeden çalışır. `findSubclass` ve savaş kurulumu (`create.ts` `imzaSheet`: imza bayrağı ve imza özellikleri) bununla.
+- Kayıtlı karakter: `migrateSubclasses` `yedekKimlik`teki kimliği açılışta bir kez yeni kimliğe yazar ve bildirir (`common.subclassRenamed`;
+  Barış Alanı kayıtları eskisi gibi yazılmadan açılır). Savaş kayıtları ve replay etkilenmez: savaşçının özellik/iz/kaynakları
+  `battle_started` durumunda; kural sürümü ve kayıt sürümü değişmedi.
+- Simülasyon değişmedi: `data/sim-partiler.json` Cleric üyesi `life-domain` kalır; `loadSimContent` fikstür kaydını doğrudan varlığa bakarak
+  ekler (yerel `icerik/`te de), altın imzalı regresyonlar aynı. Sim partisinin Birlik'e geçmesi denge görevine kalır.
+- Varsayılan Cleric alt sınıfı (eski kayıt ataması, sihirbaz önerisi) `imza_birlik`. Atama bildirimi "SRD alt sınıfı" yerine "varsayılan alt sınıf".
+- Mekanik değişmedi: `cleric.ts` Disciple of Life / Blessed Healer / Supreme Healing / Preserve Life kodu ve fikstürdeki `life-domain`
+  kaydı test için kalır (`src/rules/fixtures/srd-alt-siniflar.json`; testler `kaldirilan` ile pakette olmadığını bilir). `scripts/srd12-paket-ekle.ts`
+  kaldırılanı pakete geri eklemez.
+- Kullanılmayan (silinmedi): `data/cleric-jeton.json` `life-domain` → ID1, `cleric-*-ID1.webp` jetonları, `data/hizalanma-baslangic.json`
+  `life-domain`, `strings*.ts` `cleric/life-domain:preserve-life` etiketi. `dd-gorsel` `kaldirilan`ı atladığından eşlemeden düştü.
+- Bilinen yan etki: `src/sim/imzaRun.ts` ve `k59Denge.ts` "SRD karşılığı"nı varsayılan alt sınıftan alır; Cleric'te artık Birlik ↔ Birlik.
+
+## Görev KALAN100: genel savaş denetiminden ertelenen kalanlar (2026-11-21; kural sürümü 100 `KALAN100_VERSION`)
+
+Kaynak `harita/belgeler/GENEL-SAVAS-DENETIM.md` ("Düzeltme durumu"), GENEL96/B98/TE99 ertelenenleri, `TUR-FEAT-ESYA-DENETIM.md`.
+Tek sabit `src/battle/kalan100Surum.ts` (`KALAN100_VERSION` 100, `kalan100On`); 99 ve altı (eski kayıt, replay) eski davranışta.
+Kayıt sürümü değişmedi (yeni olay türü yok; yalnız isteğe bağlı `action_used.interaction`). Ölçüt SRD 5.2.1 (`docs/SRD_CC_v5.2.1.pdf`,
+PDF sayfası); metni belirsiz madde uygulanmadı ("doğrulanmadı"), çekirdeği bozan ya da yeni sistem isteyen madde ertelendi.
+Testler `src/battle/kalan100.test.ts` (15; her sürümlü madde 99 ↔ 100, replay).
+
+- **Yapıldı (sürümlü):**
+  - **B20 sürükleme** (s. 182 Grappled "Movable. The grappler can drag or carry you when it moves, but every foot of movement costs it 1
+    extra foot unless you are Tiny or two or more sizes smaller than it."): Tiny ya da iki+ boy küçük yakalanan ek maliyet istemez
+    (`movement.ts` `hexCostFn`).
+  - **B9 rider Charmed** (s. 178 "Can't Harm the Charmer. You can't attack the charmer or target the charmer with damaging abilities or
+    magical effects."): süreli durum sayacından (saldırı eki: pirate, sprite, lamia) gelen Charmed da kaynağına (`sourceId`) saldırıyı ve
+    zararlı hedeflemeyi engeller (`range.ts` `charmedAgainst`; Aura of Devotion ve Calm Emotions istisnaları aynı).
+  - **C17 Grapple boş el** (s. 190 Unarmed Strike "This grapple is possible only if … you have a hand free to grab it"; s. 182
+    Grappling "One Grapple per Hand. A creature must have a hand free to grapple another creature."): boş el = 2 − kalkan − tutulan
+    yakalamalar (`forced.ts` `freeHands`). Silahlar sayılmaz: s. 177 Attack "You can either equip or unequip one weapon when you make an
+    attack as part of this action" (Grapple bir Unarmed Strike saldırısı). **Kısmi:** yakalama tutarken Two-Handed silahla saldırı ve
+    Versatile iki el engellenmez: oyunda yakalamayı bırakma komutu yok (SRD "release … at any time (no action required)"); engel
+    eklenirse oyuncu kilitlenirdi.
+  - **A32 tek etkileşim bütçesi** (s. 13 "You can interact with one object or feature of the environment for free … If you want to
+    interact with a second object, you need to take the Utilize action."): kapı aç/kapa, `take`, `put` ve `pick_up` turda tek serbest
+    etkileşimi paylaşır (`economy.interacted`, olay `action_used` `kind: 'attack'` + `interaction`, saldırı sayısı değişmez); ikincisi
+    Utilize maliyet yolundan (Fast Hands bonus eylemle). Yapay zekâ kapı akışı `tryCmd` ile denetlediği için kırılmaz; ikinci kapıyı
+    eylemiyle açabilir (davranış değişikliği, ölçülmedi).
+  - **E13/F15 High Jump** (s. 183 "you leap into the air a number of feet equal to 3 plus your Strength modifier (minimum of 0 feet) if
+    you move at least 10 feet on foot immediately before the jump. When you make a standing High Jump, you can jump only half that
+    distance. Either way, each foot of the jump costs a foot of movement."): yerinde zıplama (K68b) büyüsüz de; yükseklik bu tur
+    yakın dövüş dikey erişimine (Jump büyüsü ve Standing Leap'le en yükseği; `srdHighJumpFt`, `highJumpFt`), maliyet ft başına (5 ft
+    altıgene yukarı), turda bir. ⚠ Koşu: bu tur ≥ 10 ft (2 altıgen) yürümüş ve son hareketi yürüyüş; "immediately before" arası
+    izlenmez. Katmanlı haritada değişmedi (yüksek altıgene tırmanma). Yapay zekâ kullanmaz (yalnız oyuncu düğmesi; metin aynı).
+- **Yapıldı (davranış, yapay zekâ; sürümlü):** **A45 Dash** (s. 180 Dash "you gain extra movement for the current turn. The increase
+  equals your Speed after applying any modifiers"): turu bitirecekken bu tur yürümüş ve bütün hareketini harcamış, eylemi boş, Dash
+  yapmamış ve bitişiğinde düşman olmayan yaratık Dash yapar (`ai.ts` `dashCommand`); ek hareketi sonraki adım kendi kuralıyla kullanır.
+  Eksiklik açıktı (hiçbir savaşçı Dash seçmiyordu, probe PA12). Denge ölçülmedi (kullanıcı: simülasyon yok); `DENGE.md`'ye not.
+- **Bilinçli sapma (kod değişmedi):** **G6/D21 0 HP'de uzun dinlenme** (s. 185 "To start a Long Rest, you must have at least 1 Hit
+  Point"): Serüven bozgunda yeniden deneme (`bozgundaYenidenDene`: bütün parti 0 HP → uzun dinlenme) ve Hapishane `dragBack` akışı 0 HP
+  karakteri uzun dinlenmeyle kaldırır; SRD'nin kendi çıkışı ("A Stable creature that isn't healed regains 1 Hit Point after 1d4 hours",
+  s. 18) savaş dışı zaman modeli ve ölmekte/stabil kaydı ister. Kayıtlı sapma.
+- **Ertelendi (belge):** **B40 Unconscious eşya düşürme** (s. 191 "you drop whatever you're holding"): yapay zekâ yerden silah almıyor
+  (`pick_up` adayı yok); uyanan YZ yaratığı savaş boyu silahsız kalırdı. Sim partisi değişmedi.
+- **Doğrulanmadı (uygulanmadı):** **E8 sürünme + zorlu arazi** (s. 179 Crawling (denetimde s. 180): "While you're crawling, each foot of movement costs
+  1 extra foot (2 extra feet in Difficult Terrain)."; s. 181 Difficult Terrain "every foot of movement in that space costs 1 extra
+  foot … Difficult Terrain isn't cumulative"). Metin, parantezdeki 2 ek ft'in zorlu arazinin kendi 1 ek ft'ini içerip içermediğini
+  söylemiyor (toplam 3 ya da 4; "isn't cumulative" yalnız zorlu arazi kaynaklarını anar). Oyun ×2 × 2 = 4 kalır. **E26 başkasının
+  alanında tur sonu Prone** (s. 14 "If you somehow end a turn in a space with another creature, you have the Prone condition unless you
+  are Tiny or are of a larger size than the other creature."): oyunda paylaşım yalnız kuralın izin verdiği yollarda (Swarm "can occupy
+  another creature's space", binici, Gaseous Form); bunlar "somehow" mu, özel kural mı metinden çıkmıyor; zorla dönüş (Banishment) en
+  yakın boş altıgene. Uygulanmadı. **Nick** (s. 90 "When you make the extra attack of the Light property, you can make it as part of
+  the Attack action instead of as a Bonus Action."): ustalığın ana silahta mı ek saldırı silahında mı olacağı yazmıyor (TE99 K-S2).
+- **Ertelendi, karar gerekli:**
+  - **A7/E3 Dash ve hız ayrımı** (s. 180 Dash "If you have a special speed, such as a Fly Speed … you can use that speed instead";
+    s. 188 Speed): oyunda uçuş hızlı yaratık hep uçar (`isAirborne`), yerde yürüme kipi yok; tek bütçe (`speedHexes`) yürüme/uçuş
+    ayrımı hareket modelinin değişmesini ister.
+  - **`nightVision` varsayılanı ve `darkness` haritaları** (H3, H4, H12; s. 10, 15): kayıtlı kullanıcı kararı (Kale Gece %73 → %90)
+    denge gerekçeli; değiştirmek ölçüm ister (bu görevde simülasyon yok).
+  - **D10 Knocking Out** (s. 17 "When you would reduce a creature to 0 Hit Points with a melee attack, you can instead reduce the
+    creature to 1 Hit Point and give it the Unconscious condition. It then starts a Short Rest …"): savaş sonu kuralı (`winnerOf` 0 HP
+    sayar; 1 HP baygın düşman savaşı bitirmez), Serüven'de esir/yenilgi anlamı ve saldırı anında yeni oyuncu seçimi gerekir. Karar:
+    bayıltılan yenilmiş sayılsın mı, esir alma olacak mı?
+  - **Stone's Endurance** (s. 85 "When you take damage, you can take a Reaction to roll 1d12 … reduce the damage by that total."):
+    hasar 26 dosyada 47 `damageEffects` çağrısından olaya dönüşüyor; tepkili ön-hasar kancası yeni ortak sistem ister (şimdi yalnız
+    saldırı isabetinde).
+  - **Kalkan tak/çıkar** (s. 92 "Shield (Utilize Action to Don or Doff)"): yeni komut ve olay türü (kayıt sürümü 23), TE99'un savaş
+    başında süzdüğü saldırı listesinin dinamik olması, savaş sonu karaktere yazımı ve yapay zekâ kararı ister.
+  - **Eşyayı belirli silaha bağlama** (Weapon +N, Javelin of Lightning'in Lightning Bolt çizgisi, Ammunition of Slaying tür seçimi):
+    eşya ↔ silah bağı yeni şema ister (TE99 K-D2).
+- **Sim partisi (veri):** TE99'dan beri kalkanla Two-Handed saldırı yok; Bor (Light crossbow) ve Rook (Longbow) menzilli seçeneksiz
+  kalıyordu (Orman %63 → %59, TE99 notu). İkisi de kalkan + Longsword yakın dövüşçü (Defense stili) olduğundan menzilli silah tek elli
+  Javelin (Thrown 30/120) oldu; ustalık listesinde aynı yer (`light-crossbow`/`longbow` → `javelin`). Sheet ve `levels` aynı; parti testi
+  yeşil. Denge **ölçülmedi** (`DENGE.md`'ye not). Demo Bor (`src/demo.ts`, yalnız test/sim) aynı değişiklik.
+- **Hızlı regresyon (ortak motor değişti; 100 tohum, 5. seviye standart parti, iki parti de Javelin'li):** `KURAL_SURUMU=99|100 npm run
+  sim -- 100 col kale magara orman`: Çöl %80 → %81, Kale %36 → %36, Mağara %85 → %85, Orman %64 → %64 (ortalama tur, ölüm ve düşen
+  sayıları aynı ya da ±0,03). Dash nadiren tetikleniyor; denge kararı değil. Kale %36 bant dışı (99'da da): `DENGE.md`'ye not.
+- **Paket sınırı (yalnız rapor):** `data/paket-siniri.json` `anaParcaKb` 500 (kullanıcı kararları: K57 420 → KQ4 PB1 450 → 2026-11-19
+  500). CLAUDE.md'deki "420 kB" satırı eski; build bu yüzden geçiyor (TE99: 449,90 / 500 kB). Sınır değiştirilmedi.
+- **Değişen eski testler:** `ruleVersion.test.ts`, `g6.test.ts` (güncel sürüm 99 → 100); TE99'da 98'e sabitlenen `ui.test.ts`,
+  `hud.test.ts`, `mapView.test.ts` güncel sürüme döndü (Bor'un menzilli silahı Javelin; `ui.test` Javelin yakın + fırlatma iki
+  seçenek: 3 → 4), `features.test.ts` "kılıca ulaşabiliyorsa yürür" testi kalkansız Light crossbow'lu Bor kopyasıyla güncel sürümde
+  (konusu yakın ↔ menzilli seçimi; Javelin'li Bor 4 altıgende kılıç yerine fırlatıyor).
+- **Altın imzalı regresyon testleri (veri değişikliği, kural değil):** 20 `src/sim/*Regresyon.test.ts` dosyasının eski sürüm altın
+  imzaları sim partisinin Light crossbow/Longbow'lu hâliyle kayıtlıydı. Yeni altınlar **KALAN100 öncesi ağaçta** (9e8e2ce4, geçici
+  worktree) yeni parti verisiyle üretildi; ana ağaçla aynı 79 eski → yeni çift çıktı (KALAN100 kodu eski sürümleri değiştirmiyor).
+  Varsayılan tohum sayısının altınları (79) ve ucuz ek altınlar (tohum 1: shape91, srdD1, srdD2, srdD3, ws87; matris 3; 23) yenilendi.
+  **Eski kaldı:** yalnız ortam değişkeniyle koşan 10/30 tohumlu ölçüm altınları (`ALTIN_30`, matris 10); tam test turunda yeni
+  partiyle yeniden ölçülmeli. `k73a.test.ts` kilitlenme testi tohum 1 → 5 (Javelin'li partiyle tohum 1'de 61 artık kilitlenmiyor;
+  tohum 5: 61 zaman aşımı, 62 ve güncel parti kazanır).
+- **Önceden var olan hata (dokunulmadı):** `src/dungeondex/dungeondex.test.tsx` "kategori listesi ve Lisanslar ve atıf" `birlesik`
+  HEAD'inde (9e8e2ce4) de düşüyor (kitap kabuğunda `dex-tab-lisans` yok); başka oturumun işi, bu görevin kapsamı dışında.
 
 ## Görev TE99: tür, feat ve eşya denetimi düzeltmeleri (2026-11-21; kural sürümü 99 `TE99_VERSION`)
 

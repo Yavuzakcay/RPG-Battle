@@ -24,8 +24,8 @@ const CASES = [
 ] as const;
 /** Sürüm 89 imzaları, WS91'den önceki ağaçta (f458a3fc) ölçüldü. */
 const ALTIN: Record<number, Record<string, string>> = {
-  1: { orman: 'dc6f732a4c9d', magara: '62a77d9e3fb7', kale: '5ec20c096d0d', col: '0acbddd935fd' },
-  3: { orman: '12a784a78146', magara: '367aa8a15223', kale: '03666ff49530', col: '973bd55f935b' },
+  1: { orman: 'c939e6446845', magara: '91f8b97c2d81', kale: '1755a8be6361', col: '209b00b9a709' },
+  3: { orman: 'd68513a8a10b', magara: '2510cb68fd8f', kale: 'b14a3c4b7782', col: '4d62451aa7de' },
 };
 
 afterEach(() => { setDefaultRuleVersion(CURRENT_RULES); setPartyKind('standart'); });

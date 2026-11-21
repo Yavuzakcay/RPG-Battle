@@ -46,6 +46,7 @@ import { combineModes, environmentSources, invertMode, underwaterSources } from 
 import { fail, finish, isTargetable, upcastDiceCount, withinFiveFt, type CommandResult, type Failure, damageProfile } from './common';
 import { attackHeights, heightOf } from './cover';
 import { damageEffects } from './damage-effects';
+import { grappleHands, knockOutFx } from './karar101';
 import { turnKey } from './economy';
 import { celestialStrikeOf } from './celestial';
 import { gazeBreakEvents, karadulHit, karadulOn, kissReady, snareReady } from './karadul';
@@ -210,6 +211,10 @@ export function weaponAttackEvents(
 ): { ok: true; events: BattleEvent[] } | Failure {
   // Rage: STR saldırısının hasarına Rage hasarı eklenir (isabette). Güçlendirmeler (Sacred Weapon, Magic Weapon):
   // saldırı/hasar bonusu; Radiant seçeneğinde hedefe göre en iyi hasar türü.
+  // KARAR101 (101+): yakalama tutarken Two-Handed yok, Versatile tek elle (fırsat saldırısı ve Hazırla da bu yoldan).
+  const hands = grappleHands(state, actor, base);
+  if ('problem' in hands) return fail(hands.problem);
+  base = hands.ok;
   const buffed = withBuffs(state, actor, withRageDamage(actor, base));
   const pactTypes = !!buffed.altDamageTypes?.length && !!globalRule(state, 'pactBladeTypes');
   const option = buffed.radiantOption || buffed.altDamageType || pactTypes ? { ...buffed, damageType: bestDamageType(buffed, target, pactTypes) } : buffed;
@@ -362,7 +367,8 @@ export function weaponAttackEvents(
   const hit = hr ? hr.hit : result.hit;
   if (!hit) bonus = { extras: [] };
   const total = hit ? hr?.damage ?? 0 : 0;
-  const fx = damageEffects(target, total, dmgType ?? '', result.critical, rng);
+  // KARAR101 (101+, SRD 5.2.1 s. 17 Knocking Out): yakın dövüşle 0 HP'ye düşüren saldıran bayıltmayı seçebilir.
+  const fx = knockOutFx(state, actor, target, !option.ranged, damageEffects(target, total, dmgType ?? '', result.critical, rng), rng);
   const attackEvent: BattleEvent = {
     type: 'attack_resolved', actorId: actor.id, targetId: target.id, label: option.label, mode,
     reasons: sources.map((s) => s.reason), d20: result.d20.rolls, natural: result.d20.kept, total: result.total,

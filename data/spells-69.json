@@ -1236,6 +1236,7 @@
   "rangeFt": 0,
   "text": "Eterik Sınır'a geçer: yalnızca eterik olanlarla etkileşir, dikey hareket iki kat (8 saate dek); her üst slot +3 istekli yaratık",
   "mechanics": {
+    "b102": {"effect": {"targets": 1, "side": "ally", "rounds": 4800, "ethereal": true, "icon": "👻", "includeSelf": true}, "upcast": {"targets": 3}, "castRangeFt": 10},
    "kind": "effect",
    "effect": {
     "targets": 1,
@@ -1866,6 +1867,7 @@
   "text": "500 ft içinde 100 ft yarıçaplı sarsıntı: zorlu arazi; dökümde ve tur sonlarında yerdeki yaratıklar DEX save, başarısızsa Prone ve konsantrasyon kırılır; yarıklar, yapılara 50 ezme (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
+    "b102": {"zone": {"rounds": 10, "difficult": 2, "on": ["cast"], "save": "dex", "conditions": ["Prone"], "color": "#8a6b3d", "icon": "🌋", "casterEnd": true, "fissures": {"count": "1d6", "depthDie": "1d10", "depthStepFt": 10, "widthHexes": 2, "structureKinds": ["door", "gate", "tent", "crackedWall"]}, "structures": {"damage": 50, "damageType": "bludgeoning", "heightsFt": {"door": 10, "gate": 15, "tent": 10, "crackedWall": 10, "panel": 10}, "collapse": {"save": "dex", "dice": "12d6", "type": "bludgeoning", "escapeDc": 20, "rubble": "t"}}, "dropConcentration": true}},
    "kind": "save",
    "save": "dex",
    "conditions": [

@@ -16,17 +16,22 @@ export const SKIP_ALL: OnceSkip = { ee: true, aff: true };
 export const affinityBonus = (actor: Combatant, type: string | undefined): number =>
   type && actor.traits?.includes(`affinity-${type}`) ? Math.max(0, actor.modifiers.cha) : 0;
 
-/** Empowered Evocation: Evocation büyüsünde INT. */
-export const evocationBonus = (actor: Combatant, m: Pick<SpellMechanics, 'kind'>, school: string | undefined): number =>
-  school === 'Evocation' && m.kind !== 'heal' && !!actor.traits?.includes('empowered-evocation') ? Math.max(0, actor.spellMod) : 0;
+/**
+ * Empowered Evocation: Evocation büyüsünde INT. KAPSAM103 (103+, `k103` işareti; SRD 5.2.1 s. 82 "Whenever you cast a Wizard spell
+ * from the Evocation school, you can add your Intelligence modifier"): yalnız Wizard listesindeki büyüde (`wizard`) ve INT
+ * değiştiricisiyle; 102 ve altı her Evocation büyüsü ve büyü değiştiricisi.
+ */
+export const evocationBonus = (actor: Combatant, m: Pick<SpellMechanics, 'kind'>, school: string | undefined, wizard = true): number =>
+  school === 'Evocation' && m.kind !== 'heal' && !!actor.traits?.includes('empowered-evocation') && (!actor.k103 || wizard)
+    ? Math.max(0, actor.k103 ? actor.modifiers.int : actor.spellMod) : 0;
 
 /** Bu zara eklenecek tek-zar ekleri (atlananlar hariç). */
-export function oneDieBonus(actor: Combatant, m: Pick<SpellMechanics, 'kind' | 'damageType'>, school: string | undefined, skip?: OnceSkip): number {
+export function oneDieBonus(actor: Combatant, m: Pick<SpellMechanics, 'kind' | 'damageType'>, school: string | undefined, skip?: OnceSkip, wizard = true): number {
   if (m.kind === 'heal') return 0;
-  return (skip?.ee ? 0 : evocationBonus(actor, m, school)) + (skip?.aff ? 0 : affinityBonus(actor, m.damageType));
+  return (skip?.ee ? 0 : evocationBonus(actor, m, school, wizard)) + (skip?.aff ? 0 : affinityBonus(actor, m.damageType));
 }
 
 /** Bu zarda hangi ekler kullanıldı (sonraki zarlarda atlanacaklar). */
-export function usedOnce(actor: Combatant, m: Pick<SpellMechanics, 'kind' | 'damageType'>, school: string | undefined, skip?: OnceSkip): OnceSkip {
-  return { ee: !!skip?.ee || evocationBonus(actor, m, school) > 0, aff: !!skip?.aff || (m.kind !== 'heal' && affinityBonus(actor, m.damageType) > 0) };
+export function usedOnce(actor: Combatant, m: Pick<SpellMechanics, 'kind' | 'damageType'>, school: string | undefined, skip?: OnceSkip, wizard = true): OnceSkip {
+  return { ee: !!skip?.ee || evocationBonus(actor, m, school, wizard) > 0, aff: !!skip?.aff || (m.kind !== 'heal' && affinityBonus(actor, m.damageType) > 0) };
 }

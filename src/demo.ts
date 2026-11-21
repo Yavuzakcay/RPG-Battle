@@ -27,7 +27,8 @@ const BOR: CharacterSheet = {
   baseScores: { str: 16, dex: 12, con: 15, int: 8, wis: 10, cha: 8 },
   backgroundBonuses: { con: 2, wis: 1 },
   armorName: 'Chain Mail', shield: true, itemNames: [],
-  weapons: [{ name: 'Longsword', enchant: 1 }, { name: 'Light crossbow' }],
+  // Görev KALAN100: kalkanla Two-Handed silah TE99'dan beri kullanılamaz; menzilli silah tek elli Javelin (Thrown).
+  weapons: [{ name: 'Longsword', enchant: 1 }, { name: 'Javelin' }],
   // Fighter: Athletics, Perception; Soldier: Intimidation (+ Athletics yerine Survival).
   skills: ['athletics', 'perception', 'intimidation', 'survival'],
 };

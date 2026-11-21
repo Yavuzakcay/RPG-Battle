@@ -22,7 +22,7 @@ const PIN: Record<string, Record<string, number>> = {
 };
 /** Sürüm 89 imzaları, Ready'den önceki ağaçta (61610a31, D3 dahil) ölçüldü. */
 const ALTIN: Record<number, Record<string, string>> = {
-  3: { col: 'f58c92da8e79', kale: '4a3018937d08', magara: '93f6fb84f80e', orman: '775b0aa5b151' },
+  3: { col: '1a4b008fc060', kale: '3a9715fbac19', magara: '48de8c404fb2', orman: '34539a82060c' },
 };
 
 afterEach(() => setDefaultRuleVersion(CURRENT_RULES));

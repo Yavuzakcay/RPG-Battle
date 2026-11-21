@@ -92,7 +92,9 @@ export const entryOf = (c: Combatant, s?: Pick<BattleState, 'kuralSurumu'>): Ent
   ((id) => (id ? srdKayit('data/canavar-yetenekleri.json', id, DATA[id], s ? s.kuralSurumu ?? 1 : undefined) : undefined))(formMonsterId(c));
 export const passiveOf = (s: BattleState, c: Combatant): MonsterPassive | undefined => (on(s) ? entryOf(c, s)?.passive : undefined);
 // Yetenekle çağrılan yaratığın (Animate Trees ağacı) özel yeteneği yok (SRD: yalnızca Slam); zincirleme çağırma olmaz.
-export const abilitiesOf = (s: BattleState, c: Combatant): MonsterAbility[] => (on(s) && !c.summon?.spellId.startsWith('mab:') ? entryOf(c, s)?.abilities ?? [] : []);
+// KAPSAM103: sürümlü yetenekler (`surum`: Cloud Giant Misty Step, Gold Dragon Weakening Breath 103+) eski savaşta yok.
+export const abilitiesOf = (s: BattleState, c: Combatant): MonsterAbility[] => (on(s) && !c.summon?.spellId.startsWith('mab:')
+  ? (entryOf(c, s)?.abilities ?? []).filter((a) => !a.surum || ruleVersion(s) >= a.surum) : []);
 
 /** Kullanılabilir mi (kullanım hakkı, şarj). */
 export function abilityReady(c: Combatant, a: MonsterAbility): boolean {

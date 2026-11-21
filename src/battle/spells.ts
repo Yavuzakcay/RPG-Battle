@@ -73,6 +73,7 @@ import { effectiveAc, smiteEvents, smiteProblem, wardSources } from './divine';
 import { pushAwayEvents } from './forced';
 import { applyEvents } from './reduce';
 import { areaOfMechanics, autoSucceedsType, heldFollow, mechanicsAt } from './spellVersion';
+import { buyuTamOn } from './buyuTamSurum';
 import srdSpells from '../../data/srd/spells.json';
 import { executeZoneCast, movableZoneOf, shiftZoneEvents, silencedAt, zoneHexes } from './zones';
 import { executeFireHex, freeHexAnyOn, freeHexSpell, hexCastable } from './ignite';
@@ -116,6 +117,9 @@ function spellDamageRoll(expr: string, actor: Combatant, rng: Rng): { rolls: num
 /** Kuyruk P12 (paket `buyuDegisimi.ikizOkul`; savaşçıda `pkTwinSchool`, sürüm 43+): bu okulun alansız, menzilli büyüsü bir hedef fazla. */
 const schoolTwin = (actor: Combatant, spell: Spell): boolean => !!actor.pkTwinSchool && spell.school === actor.pkTwinSchool && !spell.area && spell.rangeFt > 0;
 
+/** KAPSAM103: büyü Wizard listesinde mi (Empowered Evocation "a Wizard spell"; adı bilinmeyende evet). */
+const wizardSpell = (name?: string): boolean => !name || !!spells.find((s) => s.name === name)?.classes.includes('Wiz');
+
 /** Görev WIZARD: Potent Cantrip (Evoker): save'li cantrip'te başarıda da yarı hasar. */
 const potentCantrip = (actor: Combatant, spell: Spell) => spell.level === 0 && !!actor.traits?.includes('potent-cantrip');
 
@@ -128,7 +132,7 @@ function damageExpr(m: SpellMechanics, actor: Combatant, tier: number, upcast = 
   const bonus = spec.bonus + upFlat + (m.addCastingMod ? actor.spellMod : 0) + (m.scalesWithLevel && !m.addCastingMod && m.kind !== 'heal' ? cantripBonus(actor) : 0)
     // Görev WIZARD: Empowered Evocation (Evoker 10, +INT) ve Görev SORCERER: Elemental Affinity (Draconic, +CHA): bir hasar
     // zarına. Görev B93 (sürüm 93+): çok zarlı/ışınlı büyüde çağıran `skip` ile yalnız bir zara bırakır (`oneDieBonus.ts`).
-    + oneDieBonus(actor, m, school, skip)
+    + oneDieBonus(actor, m, school, skip, wizardSpell(name))
     // Görev P0: ek paket buyuDegisimi (hasar eklentisi).
     + (m.kind !== 'heal' && actor.paket ? paketSpellBonus(actor, m.damageType, school, name ? spells.find((s) => s.name === name)?.rangeFt : undefined, !!actor.paket.v42) : 0)
     // Görev WARLOCK: Agonizing Blast: seçilen cantrip'in hasar zarına (her ışına) büyü yeteneği.
@@ -184,7 +188,10 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const m = spell.mechanics;
   // Mekanik matris B14/B15 (sürüm 83, `m83` `areaTargets`/`area83`): Weird yalnız düşmanlara; Compulsion büyücü merkezli
   // 30 ft yayılım ("Range: 30 feet … Each creature of your choice that you can see within range").
-  const area = areaOfMechanics(m, spell.area);
+  const area0 = areaOfMechanics(m, spell.area);
+  // BUYU-TAM (sürüm 102): yukarı slotta alan yarıçapı (`upcast.radiusFt`, Confusion "radius increases by 5 feet").
+  const area = area0 && buyuTamOn(state) && m.upcast?.applied && m.upcast.radiusFt && (cmd.slotLevel ?? spell.level) > spell.level
+    ? { ...area0, sizeFt: area0.sizeFt + m.upcast.radiusFt * ((cmd.slotLevel ?? spell.level) - spell.level) } : area0;
   if (!area || !state.map || !actor.pos) return fail('Alan büyüsü yalnızca haritalı savaşta.');
   const named = cmd.targetId ? state.combatants[cmd.targetId] : undefined;
   if (cmd.targetId && !named) return fail('Hedef bulunamadı.');
@@ -258,7 +265,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const hit = auraQuiet ? [] : reached;
   const splitParts = matrisOn(state) && m.split && m.split.length === 2 && globalRule(state, 'spellsK19')
     ? m.split.map((p, i) => ({ damageType: p.type, dice: damageExpr({ ...m, damage: p.dice, damageType: p.type, upcast: p.upcast ? { dice: p.upcast, applied: true } : undefined }, actor, tierOf(actor), (slot.slotLevel ?? spell.level) - spell.level, spell.school, spell.name,
-      i > 0 && buyucu93On(state) ? usedOnce(actor, { kind: m.kind, damageType: m.split![0]!.type }, spell.school) : undefined) }))
+      i > 0 && buyucu93On(state) ? usedOnce(actor, { kind: m.kind, damageType: m.split![0]!.type }, spell.school, undefined, wizardSpell(spell.name)) : undefined) }))
     : null;
   events.push({
     type: 'spell_cast', actorId: actor.id, targetId: null, label: label ?? (repeat ? `${spell.name} (tekrar)` : spell.name), slotLevel: slot.slotLevel,
@@ -309,7 +316,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const split = m.split && m.split.length === 2 && globalRule(state, 'spellsK19') ? m.split : null;
   // Görev B93 (sürüm 93+): ikinci parçada, birinci parçaya eklenmiş tek-zar ekleri (Empowered Evocation, Elemental Affinity) atlanır.
   const partExpr = (p: { dice: string; type: string; upcast?: string }, second = false) => damageExpr({ ...m, damage: p.dice, damageType: p.type, upcast: p.upcast ? { dice: p.upcast, applied: true } : undefined }, actor, tierOf(actor), upcast, spell.school, spell.name,
-    second && split && buyucu93On(state) ? usedOnce(actor, { kind: m.kind, damageType: split[0]!.type }, spell.school) : undefined);
+    second && split && buyucu93On(state) ? usedOnce(actor, { kind: m.kind, damageType: split[0]!.type }, spell.school, undefined, wizardSpell(spell.name)) : undefined);
   const damageType = split ? split[0]!.type : m.damageType;
   const damage0 = split ? spellDamageRoll(partExpr(split[0]!), actor, rng)
     : m.damage ? spellDamageRoll(damageExpr(m, actor, tierOf(actor), upcast, spell.school, spell.name), actor, rng) : { rolls: [] as number[], total: 0 };
@@ -682,7 +689,7 @@ function stormBonusOn(state: BattleState, actor: Combatant, spell: Spell, repeat
 }
 
 /** Sonraki tamamlama blokları ve kural sürümleri (sırayla birleşir). */
-const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46], ['k63', 47], ['k64', 48], ['k65', 49], ['k66', 50], ['k67', 51], ['k68', 52], ['k70', 54], ['y1', 55], ['k73c', 64], ['mb7', 70], ['m83', 83]] as const;
+const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46], ['k63', 47], ['k64', 48], ['k65', 49], ['k66', 50], ['k67', 51], ['k68', 52], ['k70', 54], ['y1', 55], ['k73c', 64], ['mb7', 70], ['m83', 83], ['b102', 102]] as const;
 
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng: Rng, repeat = false): CommandResult {
   // Control Water girdabı (kural sürümü 84, anahtar `controlWaterWhirlpool`): hedef yaratığın altıgeninde girdap alanı
@@ -714,6 +721,11 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     const note = merged.mechanics.sigmayan ?? (merged.mechanics.gmNoted && !merged.mechanics.offCombat ? merged.mechanics.gmNote : undefined);
     if (done && note && !repeat) extra.push({ type: 'map_note', text: `Game Master notu — ${spell.name}: ${note}` });
     return extra.length ? finish(state, [...r.events, ...extra]) : r;
+  }
+  // BUYU-TAM (sürüm 102): bloğun menzili (Etherealness yukarı slot hedefleri "within 10 feet").
+  {
+    const want = spell.mechanics.castRangeFt;
+    if (want !== undefined && want !== spell.rangeFt) return castSpell(state, actor, cmd, { ...spell, rangeFt: want }, rng, repeat);
   }
   // Kuyruk A8 (sürüm 37, Slow): yavaşlatılmış büyücünün somatik (S) bileşenli büyüsü %25 (d4 = 1) başarısız; slot harcanır.
   if (!repeat && ruleVersion(state) >= 37 && actor.effects?.some((e) => e.slowed) && somaticOf(spell)) {
@@ -988,7 +1000,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   // Görev B93 (sürüm 93+): Empowered Evocation / Elemental Affinity tek zara (ilk hasar veren ışına/darta); Empowered Spell
   // büyü başına en çok CHA zar (ışınlar arasında ortak), otomatik isabetli dartlarda da (SRD 5.2.1 s. 66, 70, 82).
   const v93 = buyucu93On(state);
-  let onceLeft = v93 ? oneDieBonus(actor, m, spell.school) : 0;
+  let onceLeft = v93 ? oneDieBonus(actor, m, spell.school, undefined, wizardSpell(spell.name)) : 0;
   let empowerLeft = v93 && actor.traits?.includes('mm-empowered') ? Math.max(1, actor.modifiers.cha) : undefined;
   const empower = (rolls: number[], sides: number): number[] => {
     if (empowerLeft === undefined) return empowerRolls(actor, rolls, sides, rng);
@@ -1342,6 +1354,21 @@ export function rawEffect(raw: Record<string, unknown>, actor: Combatant, dc: nu
   return sub(raw) as Partial<ActiveEffect>;
 }
 
+/** BUYU-TAM (102): menzil içinde, bütün hedeflerin yarıçap içinde kaldığı bir merkez altıgeni var mı (konumsuz hedef engel değil). */
+export function healSphereFits(state: BattleState, from: Offset, rangeFt: number, radiusFt: number, targets: Combatant[]): boolean {
+  const pos = targets.map((t) => t.pos).filter((p): p is Offset => !!p);
+  if (!pos.length || !state.map) return true;
+  const rows = state.map.tiles.length;
+  const cols = state.map.tiles[0]?.length ?? 0;
+  const R = Math.floor(rangeFt / 5);
+  const r = Math.floor(radiusFt / 5);
+  for (let row = 0; row < rows; row++) for (let col = 0; col < cols; col++) {
+    const c = { col, row };
+    if (distance(from, c) <= R && pos.every((p) => distance(c, p) <= r)) return true;
+  }
+  return false;
+}
+
 /** Görev B1: çok hedefli iyileştirme (Mass Healing Word: en çok `healTargets` yaratık, her biri ayrı zar). */
 function executeHealMany(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
   const m = spell.mechanics;
@@ -1358,6 +1385,11 @@ function executeHealMany(state: BattleState, actor: Combatant, cmd: CastCommand,
       if (!r.ok) return fail(`${t.name}: ${r.error}`);
     }
     targets.push(t);
+  }
+  // BUYU-TAM (102; SRD 5.2.1 Mass Cure Wounds "up to six creatures in a 30-foot-radius Sphere centered on a point within range"):
+  // hedeflerin hepsini kapsayan, menzil içinde merkezli bir küre olmalı.
+  if (m.healSphereFt && state.map && actor.pos && !healSphereFits(state, actor.pos, spell.rangeFt, m.healSphereFt, targets)) {
+    return fail(`${spell.name}: hedefler menzil içinde merkezli ${m.healSphereFt} ft yarıçaplı bir kürede olmalı.`);
   }
   const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
@@ -1854,6 +1886,8 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
   const ids = [...new Set(cmd.targetIds ?? (cmd.targetId ? [cmd.targetId] : base.side === 'ally' || base.self ? [actor.id] : []))];
   if (ids.length === 0) return fail('Hedef seçmelisin.');
   if (base.self && ids.some((id) => id !== actor.id)) return fail(`${spell.name} yalnızca büyücünün kendisine.`);
+  // BUYU-TAM (102, Etherealness yukarı slot): büyücü hedeflerden biri olmalı.
+  if (base.includeSelf && !ids.includes(actor.id)) return fail(`${spell.name}: büyücü de hedeflerden biri olmalı.`);
   // Görev B1: seçenekli biçim (Enlarge/Reduce): seçilmezse dosta ilki, düşmana ikincisi.
   const variantKeys = base.variants ? Object.keys(base.variants) : [];
   const firstSide = state.combatants[ids[0] as string]?.side;
@@ -1962,6 +1996,8 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.deathSaveAdv ? { deathSaveAdv: true } : {}), ...(spec.maxHeal ? { maxHeal: true } : {}),
     ...(spec.size ? { size: spec.size } : {}), ...(spec.lethargy ? { lethargy: true } : {}), ...(spec.dropAtZero ? { dropAtZero: true } : {}), ...(spec.deathWard ? { deathWard: true } : {}),
     // K17 G1: Banishment (Ethereal gibi hedef alınamaz), Resilient Sphere (hasar bağışıklığı).
+    // BUYU-TAM (102): Etherealness'in `ethereal`'ı etkiye yazılır (101 ve altında veri alanı okunmuyordu: büyü etkisizdi).
+    ...(spec.ethereal && buyuTamOn(state) ? { ethereal: true } : {}),
     ...(spec.banished ? { banished: true, ethereal: true } : {}), ...(spec.dominate ? { dominate: true, ...(spec.reactionLink ? { reactionLink: true } : {}) } : {}), ...(spec.polymorph ? { polymorph: true } : {}), ...(spec.sealed ? { sealed: true } : {}),
     // Görev B3: büyüleme, hasarla bitme, hasarla yeniden save, süren zorlama, kaçış, koyanın turunda hasar, kopyalar.
     ...(spec.charm ? { charm: true } : {}), ...(spec.breakOnDamage ? { breakOnDamage: spec.breakOnDamage } : {}), ...(spec.breakOnSpell ? { breakOnSpell: true } : {}),

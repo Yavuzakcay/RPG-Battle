@@ -180,7 +180,9 @@ export const en: Strings = {
     descTrOnly: 'Description available in Turkish only.',
     home: 'Home', cancel: 'Cancel', save: 'Save', edit: 'Edit', delete: 'Delete', confirmDelete: 'Delete? Yes',
     close: 'Close', all: 'All', loading: 'Loading…', loadingMonsters: 'Loading monsters…', monsterLoadError: 'Monster data could not be loaded; reload the page.', classLoadError: 'Class data could not be loaded; reload the page.',
-    subclassAssigned: (list: string) => `Characters without a subclass were given the SRD subclass (${list}). You can change it in the builder.`,
+    subclassAssigned: (list: string) => `Characters without a subclass were given the default subclass (${list}). You can change it in the builder.`,
+    // 2026-11-21: a removed subclass (Life Domain) id now points to its replacement; one-time notice.
+    subclassRenamed: (list: string) => `A subclass no longer in the game was replaced (${list}). You can change it in the builder.`,
     lineageAssigned: (list: string) => `Characters without a lineage were given the first lineage (${list}). You can change it in the builder.`,
     // Kuyruk AS1a: species with an optional lineage (Dwarf, Halfling, Orc, Human) keep old saves lineage-less; one-time notice.
     lineagePick: (list: string) => `Pick a sub-lineage: ${list}. Until you do, no sub-lineage effect applies. You can pick it in the builder.`,
@@ -656,6 +658,7 @@ export const en: Strings = {
     altCantripCap: (max: number, n: number) => `At most ${max} cantrips from an option like Blessed Warrior (${n} chosen).`,
     cantripsOver: (n: number, lim: number) => `Too many cantrips (${n} / ${lim}).`, preparedOver: (n: number, lim: number) => `Too many prepared spells (${n} / ${lim}).`,
     bookSchool: (school: string, n: number) => `The ${n} extra spellbook spells must be from the ${school} school (Evocation Savant).`,
+    bookSchoolLow: (school: string, n: number, lv: number) => `Evocation Savant's first ${n} free spells must be ${school} spells of level ${lv} or lower.`,
     bookOver: (n: number, lim: number) => `Spellbook too big (${n} / ${lim}).`, notInBook: (sp: string) => `${sp} is not in the spellbook.`,
     subclassNeeded: (lvl: number) => `Pick a subclass (at level ${lvl}).`,
     metamagicCount: (count: number, n: number) => `Metamagic: pick ${count} options (${n} chosen).`, metamagicUnknown: 'Metamagic: unknown option.',
@@ -1105,6 +1108,11 @@ export const en: Strings = {
     stoodUp: (a: string, cost: number) => `${a} stood up (${cost} hexes of movement).`,
     grappled: (a: string, by: string, label: string, dc: number, restrained: boolean) => `${a} is grappled: ${by}, ${label} (escape DC ${dc}${restrained ? ', Restrained' : ''}).`,
     grappleEnded: (a: string, reason: string) => `${a}: grapple ended (${reason}).`,
+    // KARAR101 (rules version 101+): release grapple, don/doff shield, Knocking Out, Stone's Endurance (any damage).
+    grappleReleased: (a: string) => `${a}: grapple released.`,
+    shieldChanged: (a: string, on: boolean) => (on ? `${a} dons a shield (Utilize).` : `${a} doffs the shield (Utilize).`),
+    knockedOutFx: () => `knocked out: 1 HP, Unconscious (Knocking Out)`,
+    stoneEnduranceFx: (name: string, roll: number, amount: number) => `${name}: ${roll} → damage −${amount}`,
     // Görev WS92: swallow lines.
     swallow: {
       swallowed: (a: string, by: string) => `${a} is swallowed${by ? ` by ${by}` : ''}: Blinded, Restrained, Total Cover from outside.`,
@@ -1264,7 +1272,7 @@ export const en: Strings = {
     why: whyTable('en'),
     label: {
       move: 'Move', walk: 'Walk', dash: 'Dash', disengage: 'Disengage', back: '‹ Back', jump: 'Jump', attack: 'Attack', spell: 'Spell',
-      hide: 'Hide', shove: 'Shove', dodge: 'Dodge', help: 'Help', stabilize: 'Stabilize', distract: 'Distract', item: (name: string, n: number) => `${name} (${n})`, search: 'Search', object: 'Object', throwObject: 'Throw object', stand: 'Stand up', escapeGrapple: 'Try to escape',
+      hide: 'Hide', shove: 'Shove', dodge: 'Dodge', help: 'Help', stabilize: 'Stabilize', distract: 'Distract', item: (name: string, n: number) => `${name} (${n})`, search: 'Search', object: 'Object', throwObject: 'Throw object', stand: 'Stand up', escapeGrapple: 'Try to escape', dropProne: 'Drop prone', releaseGrapple: (name: string) => `Release grapple: ${name}`, shieldOff: 'Doff shield', shieldOn: 'Don shield',
       escape: 'Climb out', escapeSpell: 'Break free', extinguish: 'Put out the fire (Prone)', pull: 'Pull', surge: 'Action Surge', haste: 'Haste action', steer: 'Move summon', wind: 'Second Wind', mark: 'Mark', weapon: 'Weapon', repeat: 'Continue spell', moveHex: 'Move by spell', commandSummons: 'Command creatures', famStrike: 'Familiar strikes', superiorDefense: 'Superior Defense', brutalPick: 'Brutal Strike', brutalName: { forceful: 'Forceful', hamstring: 'Hamstring', staggering: 'Staggering', sundering: 'Sundering' } as Record<string, string>, water: { whirlpool: 'Whirlpool', flood: 'Flood', part: 'Part Water', box: 'Box (10 ft, solid)', cage: 'Cage (20 ft, bars)' } as Record<string, string>, steed: { 'fell-glare': 'Fell Glare', 'fey-step': 'Fey Step', 'healing-touch': 'Healing Touch' } as Record<string, string>, iswap: 'Swap turn order', shift: (ft: number) => `Free shift (${ft} ft)`, famOrder: 'Order familiar to attack', gaze: 'Gaze of Two Minds', sphereRoll: 'Roll the sphere', sphereCarry: 'Pick up sphere', sphereDrop: 'Put down sphere', end: 'End turn',
       rage: 'Rage', rageExtend: 'Keep raging', reckless: 'Reckless Attack', offhand: 'Off hand', offhandNick: 'Off hand',
       // SD2: every feature that can appear in the menu has a short plain name here (same keys as TR).
@@ -1475,6 +1483,9 @@ export const en: Strings = {
     stand: 'You are Prone: stand up. Costs half your speed; you also stand up automatically when you walk. While prone, melee attacks against you have advantage and ranged attacks disadvantage.',
     escape_grapple: 'You are Grappled: beat the escape DC with Athletics or Acrobatics (the higher). Uses your action. You also break free if the grappler falls or is incapacitated.',
     pull: 'Try to pull an adjacent ally out of the bog. Uses your action.',
+    drop_prone: 'Drop prone: costs no action or movement (SRD Dropping Prone). Ranged attacks against you have disadvantage; standing costs half your speed.',
+    release_grapple: 'Release the creature you are grappling (no action; SRD Grappling). Frees a hand: two-handed weapons work again.',
+    shield_toggle: 'Doff or don your shield (Utilize action; SRD Shield). Without it your AC drops and you can attack with two-handed weapons.',
     surge: 'Action Surge: gain one more action this turn. Fighter, once per rest.',
     steer: 'Move summon: with a bonus action move the Flaming Sphere or spirit pack 30 ft; the sphere rams an adjacent enemy.',
     famStrike: 'Pact of the Chain: forgo one attack of your Attack action so your familiar attacks with its reaction.',

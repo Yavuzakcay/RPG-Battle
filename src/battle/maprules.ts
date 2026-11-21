@@ -58,7 +58,7 @@ export function activeRules(state: BattleState): MapRuleData[] {
   // Kuyruk 24: kural sürümü (`surum`), Game Master anahtarı ve parametreleri (`ruleControl.ts`).
   return (variant?.rules ?? []).filter(
     (r) => (r.optional !== true || (TRIGGERED as readonly string[]).includes(r.id) || options.includes(r.id))
-      && (typeof r.surum !== 'number' || v >= r.surum) && ruleEnabled(m, r.id),
+      && (typeof r.surum !== 'number' || v >= r.surum) && ruleEnabled(m, r.id, v),
   ).map((r) => withParams(r, m.ruleParams));
 }
 

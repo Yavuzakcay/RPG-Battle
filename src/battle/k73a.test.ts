@@ -152,15 +152,17 @@ describe('K73a sur ve yüksek zemin (Görev 2, 3)', () => {
 });
 
 describe('K73a kilitlenme ve replay', () => {
-  it('Buzul — Kamp tohum 1 (K26 kuralları açık) 62\'de 20 turda biter; 61\'de zaman aşımı', () => {
+  // Görev KALAN100: sim partisinde Bor'un menzilli silahı Javelin oldu (TE99 kalkan + Two-Handed kuralı); tohum 1'de 61 artık
+  // kilitlenmiyor. Kilitlenmeyi gösteren tohum 5 (61: zaman aşımı; 62 ve güncel: parti kazanır).
+  it('Buzul — Kamp tohum 5 (K26 kuralları açık) 62\'de 20 turda biter; 61\'de zaman aşımı', () => {
     setDefaultRuleToggles(Object.fromEntries(K26_RULES.map((id) => [id, true])));
     const sc = SCENARIOS.find((x) => x.id === 'k29-buzul-kamp');
     expect(sc).toBeTruthy();
-    const now = simulate(sc!, 1, 20, 3);
+    const now = simulate(sc!, 5, 20, 3);
     expect(now.winner).not.toBe('timeout');
     expect(now.rounds).toBeLessThanOrEqual(20);
     setDefaultRuleVersion(61);
-    expect(simulate(sc!, 1, 20, 3).winner).toBe('timeout');
+    expect(simulate(sc!, 5, 20, 3).winner).toBe('timeout');
   }, 120_000);
   it('YZ ile oynanan dikey savaş baştan oynatılınca aynı durum', () => {
     let s = field([A({ effects: [FLY], hp: 30, maxHp: 30 }), G('G'), G('H')], { A: [H(3)], G: [H(8)], H: [H(9, 5)] });

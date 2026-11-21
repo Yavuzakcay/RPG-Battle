@@ -2,6 +2,59 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Not: KAPSAM103 (2026-11-21, kural sürümü 103) — ölçülmedi, ölçülecek
+
+Kural sürümü 103 (gece kuyruğu Aşama 4): canavar inisiyatifi SRD stat bloğundan (330 canavarın 110'unda DEX'ten yüksek/farklı;
+ejderhalar, devler, iblisler çoğunlukla daha önce davranır). **Kural kaynaklı** fark (veri hatası değil): sim partisi ve düşman listeleri
+aynı. Denge **ölçülmedi** (kullanıcı: simülasyon yok); yalnız hızlı regresyon:
+
+| Senaryo | 102 | 103 |
+|---|---:|---:|
+| Çöl — Gündüz | %81 | %81 |
+| Kale — Gündüz (Kale ve avlu) | %36 | %32 |
+| Mağara — karanlık | %85 | %78 (berabere %4) |
+| Orman | %64 | %68 |
+
+Aralık dışı (hedef %60–80): Kale %32 (bant altı, 102'de de %36), Çöl %81. Düzeltme yapılmadı; tam turda düşman listeleri yeniden
+ölçülmeli (inisiyatif yeni girdisiyle).
+
+## Not: KARAR101 (2026-11-21, kural sürümü 101) — ölçülmedi, ölçülecek
+
+Kural sürümü 101 (gece kuyruğu Aşama 2): `nightVision` yeni savaşta **varsayılan açık** (gece varyantlarında SRD görüşü: görmeyen
+saldıran/hedef avantaj/dezavantaj; Kale Gece için kayıtlı kullanıcı kararı %73 → %90 idi) — **ölçülecek** (gece senaryoları: Kale
+gece, Orman gece, Buzul/Dağ/Bataklık/Çöl gece varyantları). Diğer 101 maddeleri (sürünme, Knocking Out yalnız oyuncu, Dash eki
+Dash anındaki hızdan, yakalama/kalkan/Dropping Prone yalnız oyuncu komutu, High Jump yalnız oyuncu) yapay zekâ kararını değiştirmez.
+
+Hızlı regresyon (yalnız 100 ↔ 101, 100 tohum, 5. seviye standart parti; gündüz/karanlık senaryolar):
+
+| Senaryo | 100 | 101 |
+|---|---:|---:|
+| Çöl — Gündüz | %81 | %81 |
+| Kale — Gündüz (Kale ve avlu) | %36 | %36 |
+| Mağara — karanlık | %85 | %85 |
+| Orman | %64 | %64 |
+
+Ortalama tur, ölüm ve düşen sayıları dört senaryoda da aynı. Aralık dışı (Kale %36, Mağara %85, Çöl %81) 100'de de vardı.
+
+## Not: KALAN100 (2026-11-21, kural sürümü 100) — ölçülmedi
+
+Sim partisinde Bor ve Rook kalkan + Longsword yakın dövüşçü kaldı; TE99'dan beri kalkanla kullanılamayan Two-Handed menzilli silahları
+(Light crossbow, Longbow) tek elli Javelin (Thrown 30/120) ile değişti. Kural sürümü 100'de yapay zekâ yetişemeyince Dash yapar,
+nesne etkileşimleri tek serbest bütçe, Grapple boş el ister, Tiny/iki boy küçük sürükleme ek maliyetsiz. Denge **ölçülmedi** (kullanıcı:
+denge simülasyonu yok); yalnız hızlı regresyon (99 ↔ 100, DECISIONS.md KALAN100). TE99 notu: Orman %63 → %59 (Bor/Rook yaysız) bu
+değişiklikle yeniden ölçülmeli.
+
+Hızlı regresyon (yalnız 99 ↔ 100 karşılaştırması, 100 tohum, 5. seviye standart parti Javelin'li Bor ile):
+
+| Senaryo | 99 | 100 |
+|---|---:|---:|
+| Çöl — Gündüz | %80 | %81 |
+| Kale — Gündüz (Kale ve avlu) | %36 | %36 |
+| Mağara — karanlık | %85 | %85 |
+| Orman | %64 | %64 |
+
+Aralık dışı (hedef %60–80): Kale %36 ve Mağara %85, Çöl %81 (100); düzeltme yapılmadı.
+
 ## ÖN-DÜZELTME TABANI — Dungeondex öncesi denge turu (2026-11-18)
 
 > **Durum (kullanıcı kararı, 2026-11-18): düzeltme turları (liste/çarpan ayarı) mekanik matris düzeltmelerinden (Restrained DEX save, görünmezlik hedefleme, Counterspell, alan büyüleri) sonraya ertelendi.** Bu düzeltmeler savaş sonuçlarını değiştireceğinden şimdi ayarlanan listeler boşa giderdi. Bu bölüm yalnız **ölçüm tabanıdır**: aşağıdaki taban tabloları **orijinal listelerle** (commit 085e318, hiçbir düzeltme uygulanmadan) ölçüldü; aralık dışı satırlar ve bant dışı haritalar listelenir, liste/çarpan düzeltmesi yapılmaz. Görev sırasında denenmiş tur 1–3 düzeltmeleri (commit 5705637, d9fa4c6, 811278d, 8011702) **geri alındı** (taban yeniden üretilebilsin diye); ne denendiği ve ne sonuç verdiği "Geri alınan düzeltme denemeleri" altında saklıdır. Mekanik matris düzeltmelerinden sonra aynı komutlarla yeniden ölçüp bu tabanla karşılaştırın, ardından düzeltme turlarını yapın.

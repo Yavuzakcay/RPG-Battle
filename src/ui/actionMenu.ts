@@ -34,11 +34,11 @@ export type MenuArea = 'top' | 'move' | 'items' | 'special' | 'hidden';
 export interface Place { area: MenuArea; group?: SpecialGroup }
 
 /** Hareket alt menüsüne giden öğeler (yürü, koş… ve ayağa kalkma / kurtulma / kat, binek, düşme). */
-const MOVE_KEYS = new Set(['walk', 'dash', 'disengage', 'jump', 'stand', 'escape_grapple', 'escape', 'escapeSpell', 'floor', 'mount', 'dismount', 'drop', 'fissureClimb', 'shift',
+const MOVE_KEYS = new Set(['walk', 'dash', 'disengage', 'jump', 'stand', 'escape_grapple', 'release_grapple', 'drop_prone', 'escape', 'escapeSpell', 'floor', 'mount', 'dismount', 'drop', 'fissureClimb', 'shift',
   // Görev MB6b: kontrollü bineğin eylemleri (binicinin Hareket alt menüsünde "Binek: …").
   'mountDash', 'mountDisengage', 'mountDodge']);
 /** Eşya alt menüsü: iksirler (`item-<kimlik>`), nesne ve fırlatma. */
-const ITEM_KEYS = new Set(['object', 'throwObject']);
+const ITEM_KEYS = new Set(['object', 'throwObject', 'shield_toggle']);
 /** "Diğer" grubu: her zaman yapılabilen temel eylemler. */
 const OTHER_KEYS = new Set(['ready', 'dodge', 'help', 'hide', 'shove', 'search', 'distract', 'pull', 'srd19:stonecunning']);
 /** Şifa ve koruma özellikleri (anahtar parçası). */

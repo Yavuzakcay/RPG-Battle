@@ -30,6 +30,8 @@ function effectText(e: DamageEffect): string {
     case 'death_ward': return L.deathWard(e.name);
     case 'relentless_rage': return L.relentlessRage(e.natural, e.total, e.dc, e.success, e.hp);
     case 'relentless_endurance': return L.relentlessEndurance;
+    case 'knocked_out': return L.knockedOutFx();
+    case 'stone_endurance': return L.stoneEnduranceFx(e.name, e.roll, e.amount);
     case 'absorbed': return L.absorbedFx(e.amount);
     case 'trait_fx': return L.traitFx(e.name);
     case 'dying': return L.dying;
@@ -472,7 +474,9 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'grappled':
       return L.grappled(n(event.targetId), n(event.by), event.label, event.escapeDc, event.restrained);
     case 'grapple_ended':
-      return L.grappleEnded(n(event.targetId), event.reason);
+      return event.reason === 'released' ? L.grappleReleased(n(event.targetId)) : L.grappleEnded(n(event.targetId), event.reason);
+    case 'shield_changed':
+      return L.shieldChanged(n(event.actorId), event.on);
     case 'grapple_escape':
       return L.grappleEscape(n(event.actorId), skillLabel(event.skill), event.d20.join(' / '), event.total, event.dc, event.success);
   }

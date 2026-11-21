@@ -40,6 +40,7 @@ import { climbingAloft, fissureDepthAt } from './altitude';
 import { katlarOf, landingFt, slabBetween, standHeights, standingOn } from './stand';
 import { collisionDice, collisionOn, forcedMove, MOTION } from './motion';
 import { sinif97On } from './sinif97Surum';
+import { kalan100On } from './kalan100Surum';
 
 /** Bir yükseklik seviyesi kaç ft (tırmanma 2 altıgen = 10 ft). */
 export const LEVEL_FEET = 10;
@@ -265,6 +266,9 @@ export function executeGrapple(state: BattleState, actor: Combatant, targetId: s
   if (target.hidden && target.side !== actor.side && !knowsWhere(state, actor, target)) return fail(`${target.name} gizlenmiş: hedef alınamaz.`);
   if (target.conditions.includes('Grappled') && target.grapple?.by === actor.id) return fail(`${target.name} zaten yakalı.`);
   if (sizeRank(target.size) > sizeRank(actor.size) + 1) return fail(`${target.name} yakalanamayacak kadar büyük (en çok bir boyut büyük olabilir).`);
+  // Görev KALAN100 (100+; SRD 5.2.1 s. 190 "if you have a hand free to grab it", s. 182 "One Grapple per Hand"): kalkan ve tutulan
+  // her yakalama bir el kaplar. Silah saldırının içinde bırakılabildiği için (s. 177 "Equipping and Unequipping Weapons") sayılmaz.
+  if (kalan100On(state) && freeHands(state, actor) <= 0) return fail('Yakalamak için boş el gerekir (kalkan ve tutulan yakalamalar elleri dolduruyor).');
   // Kuyruk K73b (sürüm 63+): 3B bitişiklik (dikey ≤ 5 ft; döşeme ve Forcecage kutusu keser). K72'nin geçici döşeme kapatması
   // (`acrossSlab`) bu işleve taşındı; 60–62 aynen.
   if (state.map && k73bOn(state)) {
@@ -280,6 +284,15 @@ export function executeGrapple(state: BattleState, actor: Combatant, targetId: s
     ...(save.extra ? { bonusDice: save.extra } : {}), ...(sinif97On(state) ? { by: actor.id } : {}) }];
   if (!save.success) events.push({ type: 'grappled', targetId, by: actor.id, escapeDc: dc, restrained: false, label: 'Grapple' });
   return finish(state, events);
+}
+
+/**
+ * Görev KALAN100: yakalama için boş el sayısı (iki el − kalkan − bu yaratığın tuttuğu yakalamalar). Silahlar sayılmaz: Attack
+ * eyleminde saldırıyla birlikte bir silah bırakılabilir (SRD 5.2.1 s. 177).
+ */
+export function freeHands(state: BattleState, actor: Combatant): number {
+  const held = Object.values(state.combatants).filter((c) => c.id !== actor.id && c.grapple?.by === actor.id && c.conditions.includes('Grappled')).length;
+  return 2 - (actor.shieldHeld ? 1 : 0) - held;
 }
 
 /** Kuyruk 19: Grappler (Punch and Grab) bu saldırıda kullanılabilir mi: Unarmed Strike, Attack eylemi, turda bir kez. */

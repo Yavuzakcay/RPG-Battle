@@ -54,7 +54,7 @@ describe('Hazırla: veri ve sürüm', () => {
   it('sürüm 89 ve altında komut reddedilir; kayıt sürümü 24 ve 23 yüklenir', () => {
     const s = { ...field({ A: o(3, 3), B: o(8, 3), C: o(2, 5) }), kuralSurumu: 89 };
     expect(err(ready(s, { trigger: 'saldirir', response: { kind: 'attack', option: sword } }))).toMatch(/90/);
-    expect(SAVE_VERSION).toBe(24);
+    expect(SAVE_VERSION).toBeGreaterThanOrEqual(24); // 25: KARAR101
     expect(LOADABLE_VERSIONS).toContain(23);
     expect(LOADABLE_VERSIONS).toContain(24);
   });
