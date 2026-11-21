@@ -61,15 +61,15 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | Kimlik | Sv | Durum | Mekanik anahtarı | İşleyen dosyalar |
 |---|---|---|---|---|
 | power-word-kill | 9 | çalışır | `powerWord` | src/battle/spells69.ts |
-| time-stop | 9 | çalışır | `timeStop` | src/battle/commands.ts, src/battle/common.ts, src/battle/reduce.ts, src/battle/spells69.ts, src/battle/types.ts |
+| time-stop | 9 | çalışır | `timeStop` | src/battle/commands.ts, src/battle/common.ts, src/battle/ready.ts, src/battle/reduce.ts, src/battle/spells69.ts, src/battle/types.ts |
 | mass-heal | 9 | çalışır | `massHeal` | src/battle/spells69.ts |
 | prismatic-spray | 7 | çalışır | `prismatic` | src/battle/spells69.ts |
 | reverse-gravity | 7 | çalışır | `reverseGravity` | src/battle/spells69.ts |
 | divine-word | 7 | çalışır | `hpTiers` | src/battle/spells69.ts |
-| control-water | 4 | savaş dışı (Game Master anahtarı `spellsK19` açıkken savaşta) | `terraform` | src/battle/spells.ts, src/battle/terraform.ts |
-| stone-shape | 4 | savaş dışı (Game Master anahtarı `spellsK19` açıkken savaşta) | `terraform` | src/battle/spells.ts, src/battle/terraform.ts |
+| control-water | 4 | savaş dışı (Game Master anahtarı `spellsK19` açıkken savaşta) | `terraform` | src/battle/girdap.ts, src/battle/spells.ts, src/battle/terraform.ts |
+| stone-shape | 4 | savaş dışı (Game Master anahtarı `spellsK19` açıkken savaşta) | `terraform` | src/battle/girdap.ts, src/battle/spells.ts, src/battle/terraform.ts |
 | modify-memory | 5 | savaş dışı (Game Master anahtarı `spellsK19` açıkken savaşta) | `upgrade` | src/battle/spells.ts, src/battle/zones.ts |
-| passwall | 5 | savaş dışı (Game Master anahtarı `spellsK19` açıkken savaşta) | `terraform` | src/battle/spells.ts, src/battle/terraform.ts |
+| passwall | 5 | savaş dışı (Game Master anahtarı `spellsK19` açıkken savaşta) | `terraform` | src/battle/girdap.ts, src/battle/spells.ts, src/battle/terraform.ts |
 
 ## Liste
 

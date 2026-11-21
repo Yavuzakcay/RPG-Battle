@@ -2,6 +2,45 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Alt sınıf İngilizce adları ve SRD-12 açıklamaları: yerelleştirme kuralı (2026-11-21; kural/kayıt sürümü ve mekanik değişmedi)
+
+- **Kural (kullanıcı kararı).** (1) Bizim yerelleştirdiğimiz her şeyin İngilizcesi Türkçe adın **birebir çevirisidir**: 108
+  paketin bütün alt sınıf ve alt sınıf özellik adları, SRD'nin 12 alt sınıfı dahil. Bu 12'de SRD adına dönülmez ("Yaşam
+  Manastırı" → "Monastery of Life", "Life Domain" değil); çeviri SRD adıyla aynı düşerse (Path of the Berserker, Circle of the
+  Land, Hunter, Thief; Gladyatör → Gladiator) o ad kalır. Kimlikler değişmez. (2) Temel sınıf özellikleri, büyüler, eşyalar, türler
+  ve feat'ler SRD İngilizce adında kalır (SD4). (3) SRD'nin 12 alt sınıfının özellik açıklamaları ve mekaniği SRD'den gelir;
+  Türkçe açıklama SRD 5.2.1 metninin sadık çevirisidir; mekanik SRD'ye uymuyorsa değiştirilmez, "mekanik sapma" olarak yazılır.
+  (4) SRD dışı 96 alt sınıfın açıklamalarına dokunulmaz (Türkçe kalır; EN arayüzde "Description available in Turkish only").
+  Çeviri ölçütü: anlam kaymasın, Türkçe addaki imge/oyun korunsun, resmî D&D adlarına benzemesin.
+- **Değişen (yerel `icerik/`, yalnız `name.en` ve SRD-12 `description.tr`):** 108 alt sınıftan 100'ünün, 448 özellikten
+  397'sinin İngilizce adı (SRD-12'de 7 alt sınıf + 8 özellik: College of Ancient Lore, Monastery of Life, Discipline of
+  Simplicity, Code of Loyalty, Scalewing, Hellkeeper, Torment Doctrine; Protective Strike, Blessing/Luck of the Dark, Torment
+  Savant, Potent Trick, Spell Sculpting, Empowered Torment, Overload). Kimlik, seviye, Türkçe ad, özellik sayısı, mekanik
+  birebir aynı (betikle doğrulandı); `check:icerik` 0 hata. Liste yerelde `icerik/_en-adlar-onay.md`.
+- **Şüpheli çeviriler (52; tam liste dosyada):** deyimler ("Kelle Koltukta Asker", "Dillere Destan", "Dile Benden Ne Dilersen"),
+  kelime oyunları ("Ulu'sal", "Azap" ↔ Evocation, "Güçlü Hile" ↔ cantrip, "Promosyon Saldırı"), kültürel terimler (Pehlivan,
+  Hissi Kablel, Fedai, Zebani, Ruhsar, Yakamoz) ve birebir çevirisi resmî ada denk düşüp yakın karşılık seçilenler (Gölge İrfanı
+  → Shadow Gnosis, Kara Sayıklama → Black Raving, Pus Firarı → Haze Getaway, Gecenin Gözleri → Night's Eyes, Alaca Barınak →
+  Dusk Shelter…). Ayrıca iki Türkçe özellik adı alt sınıf adıyla uyumsuz kaldı (Yaşam **Etki Alanı** Büyüleri, **Bağlılık
+  Yemini** Büyüleri); Türkçe adlara dokunulmadı.
+- **SRD-12 açıklama farkları:** 58 özellikten 46'sının Türkçe açıklaması SRD'den farklıydı (anlam 6, sayı/zar/süre 17, eksik
+  ayrıntı 23) ve SRD çevirisiyle değiştirildi; 12'si zaten sadıktı (Champion'ın 6'sı dahil). Anlam farkları: Disciple of Life ve
+  Blessed Healer "büyü seviyesi" (SRD: slot seviyesi), Fast Hands "Cunning Action ile" (SRD: bonus eylem), Fiendish Resilience
+  yalnız kısa dinlenme (SRD: kısa ya da uzun), Evocation Savant "her seviyede" (SRD: yeni slot seviyesinde), Cutting Words menzil
+  ve "yalnız başarılı zar". Paketteki İngilizce açıklamalar zaten SRD metni. Liste yerelde `icerik/_aciklama-farklari.md`.
+- **Mekanik sapmalar (değiştirilmedi, 14):** Cutting Words yalnız isabet eden saldırıda; Preserve Life, Land's Aid, Sculpt Spells,
+  Superior Hunter's Prey ve Intimidating Presence'ta oyuncu seçimi yerine otomatik seçim; Quivering Palm'da "bir saldırıdan
+  vazgeçerek bitirme" yok; Holy Nimbus (5. seviye slot) ve Hurl Through Hell (Pact slotu) yenilemesi yok; Supreme Sneak siperi
+  saldırı anında; Dark One's Own Luck yalnız başarısız zarda/tutarsa harcanır; Fast Hands ve Use Magic Device'ın savaş dışı
+  parçaları; Thief's Reflexes motor notundaki "Surprised değilken" koşulu SRD 5.2.1 metninde yok (doğrulanmalı).
+- **Depo:** SRD fikstürü (`src/rules/fixtures/srd-alt-siniflar.json`) adları ve Türkçe açıklamaları paketteki hâliyle (mekanik,
+  rol, EN açıklama aynı); `as2.test` artık SRD EN adına bağlı değil, paketle eşitlik arar ve geçer. Fikstür adına bağlı testler
+  gerekçesiyle güncellendi: `srd12Paket.test` (Zebani → Hellkeeper), `classFeatures.test` (Gladyatör özellikleri Keen Strike /
+  Arena Agility; kimlikler de denetlenir), `k4.test` ("Azap Öğretisi (Torment Doctrine)"). `AD_TR` ve `icerik-liste.txt` Türkçe
+  adlarla zaten eşitti (Türkçe adlar değişmedi); `dd-gorsel` yeniden üretildi, sorun 0, dosya değişmedi (İngilizce ad eşlemeye girmez).
+- **Ayrı iş (yapılmadı):** `docs/ek-yama/p8.yama.json` (özelliği Türkçe adla eşler) ve `scripts/lib/ucus-envanter.mjs` `HEDEFLER`
+  (alt sınıfı Türkçe adla arar) ad yerine kimliğe geçirilecek; şu an eski adlar yüzünden yeniden çalıştırılırlarsa eşleşmezler.
+
 ## Alt sınıf ad temizliği (telif) ve Dungeondex lisans girişi (2026-11-21; kural sürümü değişmedi)
 
 - **Adlar değişti, kimlik/seviye/mekanik aynı.** Yerel 108 paket alt sınıfında (`icerik/ek-*.json`) 26 alt sınıf ve 224 özellik
