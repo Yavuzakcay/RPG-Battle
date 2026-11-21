@@ -106,5 +106,12 @@
     "weight": 65,
     "srd": "armor:plate-armor",
     "metal": true
+  },
+  {
+    "name": "Shield",
+    "baseAc": 2,
+    "type": "shield",
+    "weight": 6,
+    "srd": "armor:shield"
   }
 ]

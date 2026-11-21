@@ -44,7 +44,8 @@ describe('Paladin: sınıf kiti (SRD 5.2.1 tablosundan)', () => {
   it('slotlar, Lay On Hands (5 × seviye), Paladin\'s Smite, Channel Divinity 2, Extra Attack 5. seviyede', () => {
     const at = (l: number) => combatantFromSheet(sheet(l), { id: 'a', ownerId: 'p' });
     expect(at(1).spellSlots.slice(0, 2)).toEqual([2, 0]);
-    expect(at(1).resources).toEqual({ layOnHands: 5 });
+    // Görev TE99: Human Resourceful'ün Heroic Inspiration'ı tür kaynağı olarak sınıf kaynaklarında (uzun dinlenmede dolar).
+    expect(at(1).resources).toEqual({ layOnHands: 5, heroicInspiration: 1 });
     expect(at(2).resources).toMatchObject({ layOnHands: 10, paladinsSmite: 1 });
     expect(at(3).resources).toMatchObject({ layOnHands: 15, channelDivinity: 2 });
     expect(at(5).spellSlots.slice(0, 3)).toEqual([4, 2, 0]);

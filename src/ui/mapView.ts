@@ -179,6 +179,8 @@ export function attackChoices(state: BattleState, actorId: string, targetId: str
   };
   actor.weaponOptions.forEach((o, i) =>
     add(`w${i}`, o.label, optionReach(o), { type: 'attack', actorId, targetId, option: o }));
+  // Görev TE99 (99+): kalkanla kullanılamayan iki elli silah kapalı, nedeniyle.
+  (actor.shieldBlocked ?? []).forEach((o, i) => out.push({ id: `wb${i}`, label: o.label, command: null, detail: t().view.shieldTwoHanded }));
   actor.attacks.forEach((a, i) => {
     // Haritalı savaşta alanlı saldırı (nefes, koni, çizgi) hedefle değil "Nefes / alan" menüsünden, önizlemeyle (Görev R4).
     if (state.map && a.area) return;

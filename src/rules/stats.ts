@@ -2,7 +2,7 @@
  * Karakter formundan türetilen değerler: skorlar, AC, HP, hız, save'ler, büyü DC'si ve slotlar.
  * Saf fonksiyonlar: ekran veya depolama bilmez, aynı girdiye hep aynı sonucu verir.
  */
-import { armor as armorList, getClass, getRace, items as itemList, spellSlots } from '../data';
+import { SHIELD, armor as armorList, getClass, getRace, items as itemList, spellSlots } from '../data';
 import { ABILITIES, abilityModifier, proficiencyBonus, type Ability } from './abilities';
 import { isSkill, SKILLS, skillTable, type Skill } from './skills';
 import { classKit, gainedFeatures, optionTraining, packTraining, speedBonus } from './classFeatures';
@@ -79,6 +79,10 @@ export interface CharacterSheet {
   metamagic?: string[];
   /** Köken (Origin) feat'i, SRD kimliği (Alert, Magic Initiate, Savage Attacker, Skilled). Geçmiş seçiliyse geçmişinki geçerli (`originFeatOf`). */
   originFeat?: string;
+  /** Görev TE99 (SRD 5.2.1 s. 86 Versatile): Human'ın ek Origin feat'i (`kimlik[@liste]`). */
+  speciesFeat?: string;
+  /** Görev TE99 (SRD 5.2.1 s. 85–86): soy büyülerinin yeteneği (INT, WIS ya da CHA; soy seçilirken). Yoksa eski kural. */
+  lineageAbility?: 'int' | 'wis' | 'cha';
   /** Seviye yuvalarındaki seçimler: ASI ya da feat, Fighting Style, Epic Boon (bkz. `rules/advancement.ts`). */
   advancements?: Advancement[];
 }
@@ -292,7 +296,7 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     if (ar.type !== 'heavy') acParts.push({ kind: 'dex', value: dexPart });
   }
   // Görev K9d: kalkanın AC'si yalnızca eğitimle (SRD 5.2.1 Armor Training: Shield).
-  if (sheet.shield && armorProficient(cls.id, 'shield', sheet.featureChoices, sheet)) acParts.push({ kind: 'shield', value: 2 });
+  if (sheet.shield && armorProficient(cls.id, 'shield', sheet.featureChoices, sheet)) acParts.push({ kind: 'shield', value: SHIELD.baseAc });
   const feats = featEffects(sheetFeats(sheet));
   // Defense (Fighting Style): zırh giyerken +1.
   if (feats.armoredAcBonus && ar.type !== 'none') acParts.push({ kind: 'feat', value: feats.armoredAcBonus, name: 'Defense' });

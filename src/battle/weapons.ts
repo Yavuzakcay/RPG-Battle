@@ -82,6 +82,9 @@ function optionFor(sheet: CharacterSheet, weaponName: string, enchant: number, u
     ...(weapon.heavy && (weapon.ranged ? d.scores.dex < 13 : d.scores.str < 13) ? { heavyDis: true } : {}),
     // Kuyruk MB1 (SRD Lance "Two-Handed (unless mounted)"): motor 68+ binekte değilken diğer el doluysa reddeder.
     ...(weapon.twoHandedUnlessMounted ? { unlessMounted: true, ...(!otherHandFree(sheet) ? { handBusy: true } : {}) } : {}),
+    // Görev TE99 (99+, SRD 5.2.1 s. 90 Two-Handed "requires two hands when you attack with it"): kalkan takılıyken saldırı yok
+    // (Lance binekte serbest: yukarıdaki kural). Fırlatılan değil; yan el zaten `offHandProblem` ile engelli.
+    ...(weapon.twoHanded && !weapon.twoHandedUnlessMounted && sheet.shield && use !== 'thrown' ? { shieldBusy: true } : {}),
     ...(weapon.loading && use !== 'thrown' ? { loading: true } : {}),
     ...(weapon.ammunition && use !== 'thrown' && weapon.ammo ? { ammo: weapon.ammo } : {}),
   };

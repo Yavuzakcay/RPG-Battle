@@ -29,6 +29,7 @@ import { saveDice } from './effectDice';
 import { globalRule } from './ruleControl';
 import { b94On } from './b94Surum';
 import { resourceLeft, type ActiveEffect, type BattleEvent, type BattleState, type Combatant, type UsableFeature } from './types';
+import { te99On } from './te99Surum';
 
 type Use = { feature: string; targetId?: string; to?: Offset };
 export const APEX_KINDS = ['fearAura', 'nimbus', 'wings', 'quiveringPalm', 'sanctuary', 'blinkStep', 'shadowMerge', 'selfEffect'] as const;
@@ -95,6 +96,8 @@ export function apexProblem(state: BattleState, actor: Combatant, f: UsableFeatu
     if (!state.map || !actor.pos) return 'Yalnızca haritalı savaşta.';
     if (resourceLeft(actor, f.resource ?? '') <= 0) return 'Blink Steps bu tur kullanıldı.';
     if (!actor.economy.action) return 'Önce Attack ya da Magic eylemini kullan.';
+    // Görev TE99 (99+, SRD 5.2.1 s. 88 "Immediately after you take the Attack action or the Magic action"): Dash, Dodge… sonrası değil.
+    if (te99On(state) && !actor.economy.attackOrMagic) return 'Blink Steps yalnız Attack ya da Magic eyleminden sonra.';
     if (cmd.to) return teleportProblem(state, actor, cmd.to, { rangeFt: e.rangeFt, sight: true });
     return teleportHexes(state, actor, { rangeFt: e.rangeFt, sight: true }).length ? null : 'Işınlanılacak boş altıgen yok.';
   }

@@ -36,9 +36,10 @@ import { riderConditionEvents } from './grapple';
 import { hexLabel, terrainAt } from './movement';
 import { cuttingWordsDamage, damagedReactions, hunterDefenseEvents } from './reactions';
 import { applyEvents } from './reduce';
-import { riderOf } from './riders';
+import { attackConditions, riderOf } from './riders';
 import type { BattleEvent, BattleState, Combatant } from './types';
 import { formMonsterId } from './shapeMonsterCore';
+import { saveVs } from './te99Surum';
 
 export type AreaTargetSpec = AreaSpec & { targets: 'all' | 'enemies' };
 
@@ -131,12 +132,14 @@ export function areaSaveEvents(state: BattleState, actor: Combatant, pick0: Area
     if (!t || !isTargetable(t)) continue;
     const autoFail = (save.ability === 'str' || save.ability === 'dex') && autoFailsStrDexSave(t.conditions);
     const dexCover = save.ability === 'dex' ? cover : 0;
-    const r = resolveSave({ extra: saveDice(t, save.ability), modifier: t.saves[save.ability] + dexCover, dc: save.dc, mode: saveMode(mode, t, save.ability, actor, { damage: save.damageType }), autoFail },
+    const r = resolveSave({ extra: saveDice(t, save.ability), modifier: t.saves[save.ability] + dexCover, dc: save.dc, mode: saveMode(mode, t, save.ability, actor, { damage: save.damageType }), autoFail,
+      // Görev TE99 (99+): canavar alan saldırısının durumlarına tür save avantajı.
+      ...(save.monster ? saveVs(t, attackConditions(formMonsterId(actor), save.monster.attackName, attackEffect(formMonsterId(actor), save.monster.attackName))) : {}) },
       rollTag(rng, { by: t.id }));
     const amount = saveDamage(t, save.ability, r.success, damage.total, !!save.halfOnSave);
     // Kuyruk 19 (11–20): Superior Hunter's Defense alan hasarında da (SRD "hasar aldığında"): tepkiyle o türe direnç.
     const shd = amount > 0 ? hunterDefenseEvents(current, t, actor.id, save.damageType) : [];
-    const prof0 = profileIn(state, t, !!save.fromSpell);
+    const prof0 = profileIn(state, t, !!save.fromSpell, actor);
     const prof = shd.length && save.damageType ? { ...prof0, resistances: [...prof0.resistances, save.damageType] } : prof0;
     const adj = amount > 0 ? adjustDamage(amount, save.damageType, prof) : { amount: 0, note: null };
     const fx = damageEffects(t, adj.amount, save.damageType ?? '', false, rng);

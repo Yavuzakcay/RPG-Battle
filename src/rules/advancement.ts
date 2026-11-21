@@ -7,10 +7,10 @@
  * Boş yuva sorun sayılmaz (seçilmemiş artış: skorlar 1. seviyedeki gibi kalır); yalnızca kurala aykırı seçim sorundur.
  */
 import { lessonsFeats } from './backgrounds';
-import { classData, getProgression, type FeatMechanic, type SrdFeat } from '../data';
+import { classData, getClass, getProgression, type FeatMechanic, type SrdFeat } from '../data';
 import { ABILITIES, type Ability } from './abilities';
 import { classKit } from './classFeatures';
-import { originFeatOf } from './backgrounds';
+import { originFeatOf, speciesFeatOf } from './backgrounds';
 import { I } from './issueText';
 
 export type Scores = Record<Ability, number>;
@@ -63,12 +63,14 @@ function prereqLevel(f: SrdFeat): number {
 }
 
 /** Feat bu yuvaya ve karaktere uygun mu; uygunsa null, değilse nedeni. */
-export function featProblem(f: SrdFeat, slot: AdvancementSlot, ctx: { scores: Scores; casterClass: boolean }): string | null {
+export function featProblem(f: SrdFeat, slot: AdvancementSlot, ctx: FeatCtx): string | null {
   if (slot.kind === 'style' && f.category !== 'Fighting Style') return I().featNotStyle(f.name);
   // F1: SRD 5.2.1 "Ability Score Improvement… or another feat of your choice for which you qualify": ön koşulsuz köken
-  // feat'leri de (Magic Initiate, Skilled…) seviye yuvasına alınabilir.
-  if (slot.kind === 'asi' && !['General', 'Origin'].includes(f.category)) return I().featNotAsi(f.name);
-  if (slot.kind === 'epic' && !['Epic Boon', 'General', 'Origin'].includes(f.category)) return I().featNotEpic(f.name);
+  // feat'leri de (Magic Initiate, Skilled…) seviye yuvasına alınabilir. Görev TE99 (SRD 5.2.1 s. 87 "Fighting Style Feat
+  // (Prerequisite: Fighting Style Feature)"): Fighting Style özelliği olan sınıf ASI/Epic yuvasında da alır.
+  const style = f.category === 'Fighting Style' && !!ctx.hasStyle;
+  if (slot.kind === 'asi' && !['General', 'Origin'].includes(f.category) && !style) return I().featNotAsi(f.name);
+  if (slot.kind === 'epic' && !['Epic Boon', 'General', 'Origin'].includes(f.category) && !style) return I().featNotEpic(f.name);
   if (prereqLevel(f) > slot.level) return I().featLevel(f.name, prereqLevel(f));
   const pre = f.prerequisite ?? '';
   const ab = /(Strength|Dexterity) or (Strength|Dexterity) (\d+)\+/.exec(pre);
@@ -78,7 +80,17 @@ export function featProblem(f: SrdFeat, slot: AdvancementSlot, ctx: { scores: Sc
 }
 
 /** Yuvaya seçilebilen feat'ler (ön koşulu tutanlar). */
-export function featOptions(slot: AdvancementSlot, ctx: { scores: Scores; casterClass: boolean }): SrdFeat[] {
+/**
+ * Feat ön koşul bağlamı. `casterClass`: Spellcasting özelliği (Görev TE99: SRD 5.2.1 s. 24 çoklu sınıf "the Pact Magic feature
+ * … and the Spellcasting feature": Pact Magic Spellcasting sayılmaz; `casterCtx`). `hasStyle`: Fighting Style özelliği.
+ */
+export interface FeatCtx { scores: Scores; casterClass: boolean; hasStyle?: boolean }
+/** Görev TE99: sınıfın Spellcasting (Pact Magic değil) ve Fighting Style özellikleri. */
+export function casterCtx(classId: string, level: number, subclassId?: string): Pick<FeatCtx, 'casterClass' | 'hasStyle'> {
+  const casting = getClass(classId).casting;
+  return { casterClass: !!casting && casting.type !== 'pact', hasStyle: advancementSlots(classId, level, subclassId).some((s) => s.kind === 'style') };
+}
+export function featOptions(slot: AdvancementSlot, ctx: FeatCtx): SrdFeat[] {
   return allFeats().filter((f) => featProblem(f, slot, ctx) === null);
 }
 
@@ -101,11 +113,13 @@ export function increaseProblem(a: Advancement): string | null {
 }
 
 /** Karakterin bütün feat'leri: köken feat'i ve yuvalarda seçilenler. */
-export function sheetFeats(sheet: { originFeat?: string; backgroundId?: string; advancements?: Advancement[]; invocations?: string[] }): string[] {
+export function sheetFeats(sheet: { originFeat?: string; backgroundId?: string; advancements?: Advancement[]; invocations?: string[]; raceId?: string; speciesFeat?: string }): string[] {
   // Görev G1: köken feat'i geçmişten (geçmiş yoksa eski serbest seçim).
   const origin = originFeatOf(sheet);
+  // Görev TE99 (SRD 5.2.1 s. 86): Human Versatile ek köken feat'i.
+  const species = speciesFeatOf(sheet);
   // Kuyruk 19: Lessons of the First Ones (Warlock) köken feat'leri.
-  return [...(origin ? [origin] : []), ...(sheet.advancements ?? []).map((a) => a.featId), ...lessonsFeats(sheet.invocations).map((x) => x.split('@')[0] as string)];
+  return [...(origin ? [origin] : []), ...(species ? [species] : []), ...(sheet.advancements ?? []).map((a) => a.featId), ...lessonsFeats(sheet.invocations).map((x) => x.split('@')[0] as string)];
 }
 
 /** Yetenek artışlarını sırayla uygular (her feat'in kendi tavanı: ASI 20, Epic Boon 30). */
@@ -226,8 +240,8 @@ export function featEffects(featIds: string[]): {
 
 /** Seçimlerin kurala uygunluğu (oluşturucu): sorun listesi. Boş yuva sorun değildir. */
 export function advancementProblems(
-  sheet: { classId: string; level: number; subclassId?: string; originFeat?: string; backgroundId?: string; advancements?: Advancement[] },
-  ctx: { scores: Scores; casterClass: boolean },
+  sheet: { classId: string; level: number; subclassId?: string; originFeat?: string; backgroundId?: string; advancements?: Advancement[]; raceId?: string; speciesFeat?: string },
+  ctx: FeatCtx,
 ): string[] {
   const out: string[] = [];
   const origin = originFeatOf(sheet);
@@ -236,9 +250,17 @@ export function advancementProblems(
     if (!f) out.push(I().originUnknown(origin));
     else if (f.category !== 'Origin') out.push(I().originNot(f.name));
   }
+  // Görev TE99 (SRD 5.2.1 s. 86 Versatile "an Origin feat of your choice"): Human'ın ek köken feat'i.
+  const species = speciesFeatOf(sheet);
+  if (species) {
+    const f = featById(species);
+    if (!f) out.push(I().originUnknown(species));
+    else if (f.category !== 'Origin') out.push(I().originNot(f.name));
+    else if (species === origin && !f.repeatable) out.push(I().featOnce(f.name));
+  }
   const slots = advancementSlots(sheet.classId, sheet.level, sheet.subclassId);
   const used = new Set<string>();
-  const taken: string[] = [...(origin ? [origin] : [])];
+  const taken: string[] = [...(origin ? [origin] : []), ...(species ? [species] : [])];
   for (const a of sheet.advancements ?? []) {
     const slot = slots.find((s) => s.level === a.level && !used.has(`${s.level}:${s.kind}`)
       && (s.kind === 'style' ? isStyleChoice(a.featId) : true));

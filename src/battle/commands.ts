@@ -120,6 +120,7 @@ import { executeReady, registerReadyCast } from './ready';
 import { finishCheck } from './effectDice';
 import { checkMode } from '../rules/skills';
 import { genel96On } from './genel96Surum';
+import { te99On } from './te99Surum';
 
 export type { CommandResult } from './common';
 export { canControl, currentActorId } from './common';
@@ -590,6 +591,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (dropped && (((cmd.type === 'attack' || cmd.type === 'offhand_attack') && !('option' in cmd && cmd.option?.weaponId === 'unarmed-strike')) || cmd.type === 'monster_attack' || cmd.type === 'multiattack')) return fail(`${dropped.name}: silahını bıraktı, silahla saldıramaz.`);
   // Kuyruk MB1 (68+, B23; SRD Lance "Two-Handed (unless mounted)"): binekte değilken diğer el doluysa (kalkan, yan el) kullanılamaz.
   if (cmd.type === 'attack' && cmd.option?.unlessMounted && cmd.option.handBusy && !actor.riding && binekOn(state)) return fail(`${cmd.option.label}: binekte değilken iki el ister (kalkan ya da yan el silahıyla kullanılamaz).`);
+  // Görev TE99 (99+, SRD 5.2.1 s. 90 Two-Handed): kalkan takılıyken iki elli silahla saldırı yok (kalkan tak/çıkar komutu ertelendi).
+  if ((cmd.type === 'attack' || cmd.type === 'horde_breaker' || cmd.type === 'attack_object' || cmd.type === 'attack_gate') && 'option' in cmd && cmd.option?.shieldBusy && te99On(state)) return fail(`${cmd.option.label}: kalkan takılıyken iki elli silah kullanılamaz.`);
   // Görev WS92 (92+): yutan midesinde yaratık varken Bite'ı kullanamaz (Giant Frog/Toad; biçimde de).
   const swBlock = cmd.type === 'attack' ? swallowBlockedAttack(state, actor, cmd.option?.beast?.attack ?? cmd.option?.label)
     : cmd.type === 'monster_attack' ? swallowBlockedAttack(state, actor, actor.attacks[cmd.attackIndex]?.name) : null;

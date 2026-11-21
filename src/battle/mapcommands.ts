@@ -36,6 +36,15 @@ export function executeEscape(state: BattleState, actor: Combatant, rng: Rng): C
     const events: BattleEvent[] = [{ type: 'moved', actorId: actor.id, path: [actor.pos], cost: 1 }, { type: 'effect_ended', targetId: actor.id, effectId: held.id, name: held.name, reason: 'save' }];
     return { ok: true, state: applyEvents(state, events), events };
   }
+  // Görev TE99 (99+, SRD 5.2.1 s. 178 Burning): yanan yaratık eylemle Prone olup ateşi söndürür (zar yok).
+  const burning = !held?.escapeCheck ? actor.effects?.find((e) => e.ongoing?.extinguish) : undefined;
+  if (burning) {
+    const events: BattleEvent[] = [
+      ...(actor.conditions.includes('Prone') ? [] : [{ type: 'condition_changed', targetId: actor.id, condition: 'Prone', present: true, reason: `${burning.name}: söndürme` } as BattleEvent]),
+      { type: 'effect_ended', targetId: actor.id, effectId: burning.id, name: burning.name, reason: 'save' },
+    ];
+    return { ok: true, state: applyEvents(state, events), events };
+  }
   if (held?.escapeCheck) {
     const dc = held.escapeCheck.dc;
     // Kuyruk A6: Phantasmal Force'ta Study eylemi INT (Investigation).

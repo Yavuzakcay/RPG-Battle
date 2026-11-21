@@ -122,7 +122,9 @@ export interface ActiveEffect {
   pkVertigo?: { key: string; i: number; face: number; free?: boolean };
   illusionZone?: string;
   suppressed?: Array<{ condition: string; timer?: ConditionTimer; round?: number; by?: string }>;
-  ongoing?: { dice: string; type: string; save: Ability; dc: number; noSave?: boolean };
+  ongoing?: { dice: string; type: string; save: Ability; dc: number; noSave?: boolean;
+    /** Görev TE99 (99+, SRD 5.2.1 s. 178 Burning): tur başı save yok; eylemle Prone olup söndürülür (`escape` komutu). */
+    extinguish?: boolean };
   command?: CommandWord;
   /** Görev B3: her tur süren zorlama (Suggestion, Fear: kaçış, Calm Emotions: duraksama); `fleeDash` kaçarken Dash. */
   commandPersist?: boolean;
@@ -296,6 +298,8 @@ export interface ActiveEffect {
   /** Görev S1: AC eklentisi (Haste +2, Slow −2), AC tabanı (Barkskin 17, Mage Armor 13 + DEX), hız çarpanı (Haste 2, Slow 0,5). */
   ac?: number;
   acMin?: number;
+  /** Görev TE99 (99+): taban AC (Mage Armor, Armor of Shadows): zırhsız taban hesabının yerine; kalkan/eşya/feat (`acExtra`) üstüne eklenir. */
+  acBase?: number;
   speedMult?: number;
   /** Saldırınca, büyü yapınca ya da hasar verince biter (Invisibility). */
   breakOnAct?: boolean;
@@ -317,7 +321,7 @@ export interface ActiveEffect {
   /** Görev B1: bu yaratığa saldırılar dezavantajlı (Blur). */
   attackedDis?: boolean;
   /** Görev B1: bu yaratığın saldırıları dezavantajlı (`melee`: yalnızca yakın dövüş; `single`: ilk saldırıdan sonra biter). */
-  attackDis?: { melee?: boolean; single?: boolean; str?: boolean };
+  attackDis?: { melee?: boolean; single?: boolean; str?: boolean; /** Görev TE99 (99+): yalnız STR/DEX'li saldırı (eğitimsiz zırh; SRD 5.2.1 s. 92). */ strDex?: boolean };
   /** Görev K9d: büyü yapılamaz (eğitimsiz zırh; SRD 5.2.1 Armor Training). */
   noCast?: boolean;
   /** Görev CLERIC: Sanctuary (hedef alan düşman WIS save; başarısızsa saldırı/büyü boşa), Warding Bond (alınan hasar `bondTo`'ya da). */
@@ -534,6 +538,10 @@ export interface Economy {
   slotTurn: string | null;
   /** Görev B93 (Quickened Spell): bu tur 1+ seviye büyü yapıldı / Quickened Spell kullanıldı. */
   leveledCast?: boolean;
+  /** Görev TE99: bu turun eylemi Attack ya da Magic eylemiydi (Blink Steps). */
+  attackOrMagic?: boolean;
+  /** Görev TE99 (99+): bu eylemde ateşlenen Loading silahları (silah kimliği). */
+  loadingIds?: string[];
   quickened?: boolean;
   /** Bu tur Attack eylemiyle (yan el silahından farklı) bir Light silahla saldırdı: yan el ek saldırısı açılır (Görev P1). */
   lightAttack?: boolean;
@@ -862,12 +870,20 @@ export interface Combatant {
   /** Mekanik matris (kural sürümü 83+): durum bilmeyen yollar (`saveMode`) için sürüm işareti; `syncAuras` yazar. */
   /** GENEL96 (sürüm 96+): hasar profili ve durum bilmeyen yollar için sürüm işareti (`syncAuras`). */
   srd96?: true;
+  /** Görev TE99 (sürüm 99+): savaş başında ve `syncAuras` ile yazılır; durum bilmeyen yollar için sürüm işareti. */
+  te99?: true;
+  /** Görev TE99: alet yetkinlikleri (`data/srd/tools.json` kimliği; yalnız Thieves' Tools kilit açmada kullanılır). */
+  toolProfs?: string[];
+  /** Görev TE99: AC'nin taban dışı parçalarının toplamı (kalkan, feat, eşya; `deriveStats` `acParts`). */
+  acExtra?: number;
+  /** Görev TE99 (99+): kalkan takılıyken kullanılamayan Two-Handed silah seçenekleri (yalnız arayüz nedeni için). */
+  shieldBlocked?: AttackOption[];
   srd83?: true;
   /** Kuyruk 19 (Epic Boon): Improve Fate sahibi (60 ft; dost için ve düşman için), `syncAuras` yazar. */
   fateBy?: string;
   fateFoe?: string;
   /** Kuyruk 19 (SRD denetimi): eşya isabet ekleri, yüklü büyülerin DC/saldırısı (kaynak → değer), yalnızca eşyadan bilinen büyüler. */
-  itemHits?: Array<{ label: string; dice: string; type: string; vs?: string[]; ranged?: boolean; melee?: boolean; critOnly?: boolean }>;
+  itemHits?: Array<{ label: string; dice: string; type: string; vs?: string[]; ranged?: boolean; melee?: boolean; critOnly?: boolean; /** Görev TE99 */ ammo?: boolean; weaponId?: string; replaceType?: boolean }>;
   itemCasts?: Record<string, { dc?: number; attack?: number }>;
   itemOnlySpells?: string[];
   itemTraits?: string[];
@@ -1577,6 +1593,8 @@ export interface AttackOption {
    * dövüşte eylemin son saldırısında). Kural sürümü 16 + Game Master anahtarı `pushChoice`.
    */
   pushChoice?: 'push' | 'skip';
+  /** Görev TE99 (99+, SRD 5.2.1 s. 90 Push "up to 10 feet"): seçilen itme mesafesi (yoksa 10 ft). */
+  pushFeet?: 5 | 10;
   /** Silahın hasar zarlarında en düşük sayılan değer (Great Weapon Fighting: 3). */
   minDie?: number;
   /** Light silah (Light özelliğinin ek saldırısı; Görev P1). */
@@ -1600,6 +1618,10 @@ export interface AttackOption {
   /** Kuyruk MB1 (68+, SRD Lance): binek dışında iki elli (`unlessMounted`); karakterin diğer eli dolu (kalkan ya da yan el; `handBusy`). */
   unlessMounted?: boolean;
   handBusy?: boolean;
+  /** Görev TE99 (99+, SRD 5.2.1 Two-Handed): Two-Handed silah, karakter kalkan taşıyor: saldırı yok (savaş başında seçenekten çıkar). */
+  shieldBusy?: boolean;
+  /** Görev TE99: kural sürümü 99+ savaşta bu seçeneğin yerine geçen seçenek (eşya bonusu bağı; savaş başında çözülür). */
+  te99Alt?: AttackOption;
   loading?: boolean;
   ammo?: string;
   /** K13: Wild Shape biçiminin saldırısı (canavar kimliği ve saldırı adı): ek etkileri (rider, süreli etki) canavardaki gibi. */
@@ -2101,6 +2123,10 @@ export type BattleEvent =
    */
   | {
       type: 'action_used'; actorId: string; kind: 'action' | 'bonus' | 'reaction' | 'attack'; what: string;
+      /** Görev TE99: Magic eylemi (eylemle büyü yapımı; Blink Steps). */
+      magic?: true;
+      /** Görev TE99 (99+): ateşlenen Loading silahının kimliği. */
+      loadingId?: string;
       attacksLeft?: number; slotTurn?: string;
       /** Görev B93: bu yapım 1+ seviye büyü / Quickened Spell (bu tur kısıtı). */
       leveled?: boolean; quickened?: boolean;

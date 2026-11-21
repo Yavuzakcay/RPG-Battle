@@ -19,6 +19,7 @@ import { gap } from './body';
 import { globalRule } from './ruleControl';
 import { b94On } from './b94Surum';
 import { b98On } from './b98Surum';
+import { te99On } from './te99Surum';
 import { sourceDown } from './sourceDown';
 import { ruleVersion } from './ruleVersion';
 import { matrisOn } from './matrisSurum';
@@ -162,6 +163,7 @@ export function syncAuras(state: BattleState): BattleState {
   // Mekanik matris B13 (sürüm 83+): Holy Aura dost yayılımı.
   const anyAllyAura = m83 && Object.values(state.combatants).some((c) => c.effects?.some((e) => e.allyAura));
   const v98 = b98On(state);
+  const t99 = te99On(state);
   for (const c of Object.values(state.combatants)) {
     const aa = anyAllyAura ? allyAuraOf(state, c) : undefined;
     const pkSans = anyPk ? paketSansOf(state, c) : [];
@@ -190,10 +192,10 @@ export function syncAuras(state: BattleState): BattleState {
     if (JSON.stringify(c.burstBy) === JSON.stringify(burst) && (c.auraSave ?? 0) === want && c.countercharmBy === by && !!c.inspireFix === fix && !!c.inspireChain === chain && !!c.inspireAsk === ask && (c.auraResist ?? []).join() === life.join() && !!c.k19Traits === k19
       && c.fateBy === fateBy && c.fateFoe === fateFoe && (c.imzaWisSave ?? 0) === throne && (c.wardSave ?? 0) === ward && JSON.stringify(c.shoulderBy) === JSON.stringify(shoulder)
       && (c.auraImmune ?? []).join() === (core?.immune ?? []).join() && !!c.auraNoHeal === !!core?.noHeal && !!c.auraDeathDis === !!core?.deathDis && !!c.auraDeathAdv === !!core?.deathAdv
-      && JSON.stringify(c.pkSans ?? []) === JSON.stringify(pkSans) && !!c.auraSaveDis === sdis && !!c.silenced === hush && !!c.packStrAdv === pack && !!c.srd83 === m83 && !!c.srd96 === g96
+      && JSON.stringify(c.pkSans ?? []) === JSON.stringify(pkSans) && !!c.auraSaveDis === sdis && !!c.silenced === hush && !!c.packStrAdv === pack && !!c.srd83 === m83 && !!c.srd96 === g96 && !!c.te99 === t99
       && JSON.stringify(c.allyAura) === JSON.stringify(aa)) continue;
-    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, inspireChain: _i, inspireAsk: _ia, auraResist: _d, k19Traits: _e, fateBy: _f, fateFoe: _g, burstBy: _h, imzaWisSave: _j, auraImmune: _k, auraNoHeal: _l, auraDeathDis: _m, auraDeathAdv: _n, wardSave: _w, shoulderBy: _s, pkSans: _pk, auraSaveDis: _sd, silenced: _hu, packStrAdv: _pa, srd83: _m83, srd96: _g96, allyAura: _aa, ...rest } = next.combatants[c.id] as Combatant;
-    next = { ...next, combatants: { ...next.combatants, [c.id]: { ...rest, ...(m83 ? { srd83: true } : {}), ...(g96 ? { srd96: true } : {}), ...(aa ? { allyAura: aa } : {}), ...(want > 0 ? { auraSave: want } : {}), ...(by ? { countercharmBy: by } : {}),
+    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, inspireChain: _i, inspireAsk: _ia, auraResist: _d, k19Traits: _e, fateBy: _f, fateFoe: _g, burstBy: _h, imzaWisSave: _j, auraImmune: _k, auraNoHeal: _l, auraDeathDis: _m, auraDeathAdv: _n, wardSave: _w, shoulderBy: _s, pkSans: _pk, auraSaveDis: _sd, silenced: _hu, packStrAdv: _pa, srd83: _m83, srd96: _g96, te99: _t99, allyAura: _aa, ...rest } = next.combatants[c.id] as Combatant;
+    next = { ...next, combatants: { ...next.combatants, [c.id]: { ...rest, ...(m83 ? { srd83: true } : {}), ...(g96 ? { srd96: true } : {}), ...(t99 ? { te99: true } : {}), ...(aa ? { allyAura: aa } : {}), ...(want > 0 ? { auraSave: want } : {}), ...(by ? { countercharmBy: by } : {}),
       ...(fix ? { inspireFix: true } : {}), ...(chain ? { inspireChain: true } : {}), ...(ask ? { inspireAsk: true } : {}), ...(life.length ? { auraResist: life } : {}), ...(k19 ? { k19Traits: true } : {}),
       ...(fateBy ? { fateBy } : {}), ...(fateFoe ? { fateFoe } : {}), ...(burst ? { burstBy: burst } : {}), ...(throne > 0 ? { imzaWisSave: throne } : {}), ...(ward > 0 ? { wardSave: ward } : {}), ...(shoulder ? { shoulderBy: shoulder } : {}), ...(pkSans.length ? { pkSans } : {}),
       ...(core?.immune.length ? { auraImmune: core.immune } : {}), ...(sdis ? { auraSaveDis: true } : {}), ...(hush ? { silenced: true } : {}), ...(pack ? { packStrAdv: true } : {}), ...(core?.noHeal ? { auraNoHeal: true } : {}), ...(core?.deathDis ? { auraDeathDis: true } : {}), ...(core?.deathAdv ? { auraDeathAdv: true } : {}) } as Combatant } };

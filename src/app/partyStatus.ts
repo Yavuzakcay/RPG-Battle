@@ -6,12 +6,19 @@
 import type { BattleState, Combatant } from '../battle';
 import type { SavedCharacter } from '../rules/builder';
 import { currentStatus, type CharacterStatus } from '../rules/characterRest';
+import { resourceDef } from '../rules/classFeatures';
+import { isItemResource } from '../rules/itemCharges';
+
+/** Görev TE99: savaşçıda bulunmayınca sıfırlanmayan kaynaklar (eşya yükü, tür kaynağı). */
+const keepWhenAbsent = (id: string): boolean => isItemResource(id) || !!resourceDef(id)?.race;
 
 /** Savaşçıyı kayıtlı durumla başlatır (HP, kaynaklar, slotlar); durum yoksa olduğu gibi (dinlenmiş). */
 export function withStatus(c: Combatant, ch: Pick<SavedCharacter, 'sheet' | 'status'>): Combatant {
   if (!ch.status) return c;
   const s = currentStatus(ch.sheet, ch.status);
-  return { ...c, hp: Math.max(1, s.hp), resources: { ...s.resources }, spellSlots: [...s.slots], ...(s.exhaustion ? { exhaustion: s.exhaustion } : {}),
+  // Görev TE99: durumda olmayan savaşçı kaynakları (yeni eşya, kayıt öncesi kaynak) korunur; eskiden hepsi siliniyordu
+  // (yüklü eşya ikinci savaşta yüksüz kalıyordu: TUR-FEAT-ESYA-DENETIM D33).
+  return { ...c, hp: Math.max(1, s.hp), resources: { ...c.resources, ...s.resources }, spellSlots: [...s.slots], ...(s.exhaustion ? { exhaustion: s.exhaustion } : {}),
     // Kuyruk K48: kayıtlı Moral (savaş başında kural kapalıysa `withMorale` siler).
     ...(s.moral !== undefined ? { moral: s.moral } : {}),
     // Kuyruk 19: savaşta harcanan HP zarı (Lifedrinker) kayıtlı durumdan.
@@ -46,7 +53,8 @@ export function applyBattleResult(characters: SavedCharacter[], state: BattleSta
     const next: CharacterStatus = {
       hp: Math.max(0, c.hp),
       hitDiceSpent: c.hitDice ? Math.max(prev.hitDiceSpent, ch.sheet.level - c.hitDice.left) : prev.hitDiceSpent,
-      resources: Object.fromEntries(Object.keys(prev.resources).map((id) => [id, c.resources[id] ?? 0])),
+      // Görev TE99: savaşta olmayan eşya/tür kaynağı (ör. anahtar kapalı) kayıtlı değerinde kalır.
+      resources: Object.fromEntries(Object.keys(prev.resources).map((id) => [id, c.resources[id] ?? (keepWhenAbsent(id) ? prev.resources[id] ?? 0 : 0)])),
       // Görev WS92: savaşta kazanılan slot (Wild Resurgence, Nature Magician, Font of Magic) karaktere yazılır; üst sınır
       // tablonun en çoğu (`slotMax`). Eskiden savaş başındaki kalan slot üst sınırdı (kazanılan slot savaş sonunda kayboluyordu).
       // Görev B93: Font of Magic ile yaratılan slot (önceden kalan fazla dahil) tablonun üstüne çıkabilir; uzun dinlenmede kaybolur.

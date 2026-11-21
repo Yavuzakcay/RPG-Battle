@@ -98,6 +98,10 @@ export interface Race {
    */
   lineageOptional?: boolean;
   traits: string;
+  /** Görev TE99 (SRD 5.2.1 s. 85–86 Skillful, Keen Senses): türden beceri yetkinliği (sayı, isteğe bağlı liste). */
+  skillChoice?: { count: number; from?: string[] };
+  /** Görev TE99 (SRD 5.2.1 s. 86 Versatile): türden ek bir Origin feat'i. */
+  originFeat?: boolean;
   /** Kuyruk K20: ev kuralı türü (Celestial): bu ev kuralı açık değilse oluşturucuda seçilemez (`data/ev-kurallari.json`). */
   evKurali?: string;
   /** Kuyruk K20: hikâye yurdu ve oyuna başladığı bölge (kefaret yolu henüz yok). */
@@ -130,6 +134,8 @@ export interface CharacterClass {
   /** Büyü listesi kodu (spells.json içindeki "classes" alanıyla eşleşir). */
   spellCode: string | null;
   weaponProficiency: 'simple' | 'martial';
+  /** Görev TE99 (SRD 5.2.1 sınıf tablosu "Tool Proficiencies"): savaşta kullanılan alet yetkinliği (Rogue: Thieves' Tools). */
+  tools?: string[];
   /** Simple sınıfların proficient olduğu martial silah özellikleri (Rogue: finesse/light, Monk: light). */
   martialWeaponProperties: Array<'finesse' | 'light'>;
   /** Görev K6: büyü kitabı (Wizard): 1. seviyede `initial`, sonraki her seviyede `perLevel` büyü. */
@@ -991,12 +997,20 @@ export interface Item {
   /** Kuyruk 19 (SRD denetimi): taşınırken/giyilirken savaşta kalıcı etki (savaşçıda `item:<id>` süren etkisi; ActiveEffect alanları). */
   passive?: Record<string, unknown>;
   /** Kuyruk 19: büyülü bonus: zırh AC'si, kalkan AC'si, silah saldırı ve hasarı, büyü saldırısı ve DC'si. */
-  bonus?: { armor?: number; shield?: number; weapon?: number; spell?: number };
+  bonus?: { armor?: number; shield?: number; weapon?: number; spell?: number; /** Görev TE99 (99+): `weapon` bonusu yalnız cephaneli silaha (Ammunition, +N). */ ammoOnly?: boolean };
   /** Kuyruk 19: silah isabetinde ek hasar (Flame Tongue, Dragon Slayer…); `vs` yaratık türleri; `ranged`/`melee` silah türü. */
-  onHit?: { dice: string; type: string; vs?: string[]; ranged?: boolean; melee?: boolean; label?: string; /** yalnızca doğal 20 */ critOnly?: boolean };
+  onHit?: { dice: string; type: string; vs?: string[]; ranged?: boolean; melee?: boolean; label?: string; /** yalnızca doğal 20 */ critOnly?: boolean;
+    /** Görev TE99 (99+): yalnız cephaneli silahın isabetinde (Ammunition of Slaying). */ ammo?: boolean;
+    /** Görev TE99 (99+): eşyanın kendisi bu silah (Javelin of Lightning: `javelin`). */ weaponId?: string;
+    /** Görev TE99 (99+): ek hasar değil, o silahın hasar türü `type` olabilir (Javelin of Lightning "Lightning damage instead of Piercing"). */ replaceType?: boolean };
   /** Kuyruk 19: yüklü büyüler (değnek, asa, yüzük): her yapım `cost` yük harcar; DC/saldırı eşyanınki (yoksa büyücününki). */
   spells?: Array<{ name: string; cost?: number; level?: number }>;
   charges?: number;
+  /**
+   * Görev TE99: yükün şafakta yenilenmesi (SRD 5.2.1 "regains … daily at dawn"; oyunda uzun dinlenme): zar ("1d6+1"),
+   * sabit sayı ("1") ya da "all". Yoksa yenilenmez (tek kullanımlık: Bead of Force, Necklace of Fireballs…).
+   */
+  recharge?: string;
   dc?: number;
   attack?: number;
   /** Kuyruk 19: savaşta etkisi yok (gerekçe; envanterde "savaş dışı" etiketi). */

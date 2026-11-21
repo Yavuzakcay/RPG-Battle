@@ -46,6 +46,7 @@ import { executePaket, paketProblem } from './paket';
 import { needHealMoral } from './imza54';
 import { senseSees } from './sight';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Buff, type Combatant, type UsableFeature } from './types';
+import { te99On } from './te99Surum';
 
 type UseFeature = { feature: string; targetId?: string; amount?: number; cure?: boolean; to?: Offset; choice?: string };
 
@@ -312,12 +313,17 @@ export function effectiveAc(state: BattleState, target: Combatant, attacker?: Co
   // Görev B95-B (97+, SRD 5.2.1 s. 30 Sundering Blow "another creature"): tek kullanımlık eklenti, kaynağının kendi saldırısına işlemez.
   const own97 = !!attacker && sinif97On(state);
   const fx = (target.effects ?? []).filter((e) => !(own97 && e.consumeOnAttacked && e.sourceId === attacker!.id));
-  const base = Math.max(target.ac, ...fx.map((e) => e.acMin ?? 0));
+  // Görev TE99 (99+, SRD 5.2.1 s. 145, s. 177): Mage Armor tabanı (`acBase`) zırhsız taban hesabıyla karşılaştırılır,
+  // kalkan/eşya/feat (`acExtra`) üstüne eklenir; Barkskin gibi `acMin` toplam AC'nin tabanı. 98 ve altı: hepsi `acMin`.
+  const t99 = te99On(state);
+  const extra = t99 && !target.shape ? target.acExtra ?? 0 : 0;
+  const withBase = t99 ? Math.max(target.ac - extra, ...fx.map((e) => e.acBase ?? 0)) + extra : target.ac;
+  const base = Math.max(withBase, ...fx.map((e) => (t99 && e.acBase !== undefined ? 0 : e.acMin ?? 0)));
   return base + shield + fx.reduce((n, e) => n + (e.ac ?? 0), 0) + wardsOn(state, target).reduce((n, w) => n + (w.ward?.ac ?? 0), 0);
 }
 
 /** Hedefe yapılan saldırıya koruma etkilerinden gelen avantaj/dezavantaj. */
-export function wardSources(state: BattleState, attacker: Combatant, target: Combatant, opts: { melee?: boolean; str?: boolean } = {}): ModeSource[] {
+export function wardSources(state: BattleState, attacker: Combatant, target: Combatant, opts: { melee?: boolean; str?: boolean; /** Görev TE99: saldırı STR/DEX'li değil (Pact of the Blade CHA, büyü saldırısı). */ notStrDex?: boolean } = {}): ModeSource[] {
   const out: ModeSource[] = [];
   // Görev B1: süren etkiler. Hedefe saldırı dezavantajlı (Blur); saldıranın saldırısı dezavantajlı (Heat Metal,
   // Ray of Enfeeblement: başarısız save'de yalnızca STR tabanlı = yakın dövüş, başarılı save'de bir sonraki saldırı).
@@ -332,7 +338,9 @@ export function wardSources(state: BattleState, attacker: Combatant, target: Com
   // Kuyruk 19: Grappler feat'i (Attack Advantage): yakaladığı yaratığa saldırı avantajlı.
   if (attacker.traits?.includes('grappler') && target.grapple?.by === attacker.id && globalRule(state, 'featuresK19')) out.push({ effect: 'advantage', reason: 'Grappler' });
   // Kuyruk A6 (sürüm 35, `str`): yalnızca STR tabanlı saldırı (Ray of Enfeeblement: Finesse'te DEX seçilmişse ve büyüde değil).
-  for (const e of attacker.effects ?? []) if (e.attackDis && (e.attackDis.str ? (opts.str ?? opts.melee) : (!e.attackDis.melee || opts.melee))) out.push({ effect: 'disadvantage', reason: e.name });
+  // Görev TE99 (99+, SRD 5.2.1 s. 92 "any D20 Test that involves Strength or Dexterity"): eğitimsiz zırh yalnız STR/DEX'li saldırıda.
+  const t99s = te99On(state) && !!opts.notStrDex;
+  for (const e of attacker.effects ?? []) if (e.attackDis && !(t99s && e.attackDis.strDex) && (e.attackDis.str ? (opts.str ?? opts.melee) : (!e.attackDis.melee || opts.melee))) out.push({ effect: 'disadvantage', reason: e.name });
   // Kuyruk A7 (sürüm 36): güneş ışığına duyarlı yaratık güneş ışığı alanında (Daylight) saldırıda dezavantajlı.
   if (attacker.traits?.includes('sunlight-sensitive') && ruleVersion(state) >= 36 && zonesAt(state, attacker.pos).some((z) => (z.spec ?? zoneSpecOf(z))?.sunlight)) out.push({ effect: 'disadvantage', reason: 'Sunlight Sensitivity' });
   // Kuyruk K64b: Magic Circle: seçilen türün silindirdeki hedefe (ters yönde dışarıdakine) saldırısı dezavantajlı.

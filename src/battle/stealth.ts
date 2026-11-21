@@ -33,6 +33,7 @@ import { combineModes } from '../rules/modes';
 import { terrainAt } from './movement';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
+import { te99On } from './te99Surum';
 
 /** SRD 5.2.1 Hide eyleminin zorluğu (data/stealth.json). */
 export const HIDE_DC: number = stealthJson.dc;
@@ -159,6 +160,9 @@ export function executeHide(state: BattleState, actor: Combatant, rng: Rng): Com
   const mode = combineModes([
     ...(checkMode(actor, 'stealth') === 'advantage' && !strCheckAdvantage(actor, 'stealth') ? [{ effect: 'advantage' as const, reason: 'Enhance Ability' }] : []),
     ...(actor.stealthDisadvantage ? [{ effect: 'disadvantage' as const, reason: 'Zırh' }] : []),
+    // Görev TE99 (99+, SRD 5.2.1 s. 92): DEX kontrol dezavantajı (eğitimsiz zırh, ağır yük) Gizlen'de de.
+    ...(te99On(state) && checkMode(actor, 'stealth') === 'disadvantage'
+      ? [{ effect: 'disadvantage' as const, reason: (actor.effects ?? []).find((e) => e.checkDis?.includes('dex'))?.name ?? 'Dezavantaj' }] : []),
     // Kuyruk 16 K16E (kural sürümü 2): korkan yaratık (kaynak görüş hattında) yetenek kontrolünde dezavantajlı.
     ...(checkBase(state, actor) === 'disadvantage' ? [{ effect: 'disadvantage' as const, reason: 'Frightened' }] : []),
     // Kuyruk AS1b (sürüm 71+ alt soy etkisi): Gizlen kontrolü dezavantajı (Blue, Storm; karanlıkta Parlayan Ruh).

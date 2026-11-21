@@ -73,7 +73,8 @@ describe('köken feat\'i ve beceriler', () => {
     expect(deriveStats(c.sheet).initiative).toBe(deriveStats(char({ originFeat: 'alert' }).sheet).initiative);
     const m = html(c, 'progress');
     expect(m).toContain('Geçmişinden gelen başlangıç yeteneği: Alert');
-    expect(m).not.toContain('<option value="skilled"');
+    // Görev TE99: Human Versatile seçicisi aynı kutuda (ek köken feat'i); geçmişin feat'i için serbest seçim yine yok.
+    expect(m.split('form-row versatile')[0]).not.toContain('<option value="skilled"');
   });
   it('iki beceri kilitli ve becerilere eklenir; serbest hak 3 − 2', () => {
     const c = char({ backgroundId: 'soldier' }, { classSkills: ['perception', 'survival'], otherSkills: ['insight', 'athletics', 'history'] });

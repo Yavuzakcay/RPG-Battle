@@ -57,6 +57,7 @@ import { airCenterProblem, airSpanFt, cylinderHeightFt, inZoneAir } from './airA
 import { k73cOn } from './k73cSurum';
 // Tur başı çekme kancaları (Control Water girdabı `girdap.ts` kaydeder) yaprak modülde: döngüsel ilklendirme sırası sorun olmasın.
 import { START_PULL } from './zoneHooks';
+import { te99On } from './te99Surum';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 
@@ -185,7 +186,7 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
   if (!spec.save) {
     if (!expr) return events;
     const d = opts?.rolled ?? rollDice(expr, rollTag(rng, { kind: 'damage', by: z.casterId }));
-    const adj = adjustDamage(d.total, dtype, profileIn(state, victim, spells.some((x) => x.id === z.spellId)));
+    const adj = adjustDamage(d.total, dtype, profileIn(state, victim, spells.some((x) => x.id === z.spellId), state.combatants[z.casterId]));
     const fx = damageEffects(victim, adj.amount, dtype ?? '', false, rng);
     events.push({ type: 'effect_tick', targetId: victim.id, effectId: z.spellId, name: z.name, damageRolls: d.rolls, appliedDamage: adj.amount,
       damageType: dtype ?? '', targetHpAfter: fx.hpAfter, effects: fx.effects, ...(matrisOn(state) ? { zoneId: z.id } : {}) });
@@ -200,7 +201,7 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
     rollTag(rng, { by: victim.id }));
   const d = expr ? opts?.rolled ?? rollDice(expr, rollTag(rng, { kind: 'damage', by: z.casterId })) : { rolls: [] as number[], total: 0 };
   const amount = expr ? saveDamage(victim, ability, save.success, d.total, !!spec.half) : 0;
-  const adj = amount > 0 ? adjustDamage(amount, dtype, profileIn(state, victim, spells.some((x) => x.id === z.spellId))) : { amount: 0, note: null };
+  const adj = amount > 0 ? adjustDamage(amount, dtype, profileIn(state, victim, spells.some((x) => x.id === z.spellId), state.combatants[z.casterId])) : { amount: 0, note: null };
   const fx = damageEffects(victim, adj.amount, dtype ?? '', false, rng);
   const failed = !save.success;
   const plain = failed && !spec.hold ? (spec.conditions ?? []).filter((x) => !victim.conditions.includes(x)) : [];
@@ -476,14 +477,19 @@ export const heavilyObscured = (state: BattleState, at: Offset | null): boolean 
 
 const SPELL_RESIST_ALL = ['acid', 'bludgeoning', 'cold', 'fire', 'force', 'lightning', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder'];
 /** CILA: hasar profili konumla: Silence alanındaki yaratık Thunder hasarına bağışık (SRD 5.2.1). */
-export function profileIn(state: BattleState, c: Combatant, spell = false): ReturnType<typeof damageProfile> {
-  const p0 = damageProfile(c);
+export function profileIn(state: BattleState, c: Combatant, spell = false,
+  /** Görev TE99 (99+): hasarı veren (Irresistible Offense, Overcome Defenses: B/P/S direnci yok sayılır; SRD 5.2.1 s. 88). */ source?: Combatant): ReturnType<typeof damageProfile> {
+  const pr = damageProfile(c);
+  const p0 = source && overcomesDefenses(state, source) ? { ...pr, resistances: pr.resistances.filter((x) => !BPS.includes(x)) } : pr;
   // Kuyruk P11 (sözde tür `buyu`: paket `direnc.hasarKaynagi: buyu`): büyü hasarının her türüne direnç.
   const p = spell && ruleVersion(state) >= 42 && p0.resistances.includes('buyu') ? { ...p0, resistances: [...new Set([...p0.resistances, ...SPELL_RESIST_ALL])] } : p0;
   return c.pos && silencedAt(state, c.pos) && !p.immunities.includes('thunder') ? { ...p, immunities: [...p.immunities, 'thunder'] } : p;
 }
 
 /** Altıgen sessiz mi (Silence): sözlü bileşenli büyü yapılamaz. */
+const BPS = ['bludgeoning', 'piercing', 'slashing'];
+/** Görev TE99 (99+, SRD 5.2.1 s. 88 "The Bludgeoning, Piercing, and Slashing damage you deal always ignores Resistance"): yalnız silah değil, verdiği bütün hasar. */
+export const overcomesDefenses = (state: BattleState, c: Combatant): boolean => te99On(state) && !!c.k19Traits && !!c.traits?.includes('overcome-defenses');
 export const silencedAt = (state: BattleState, at: Offset | null): SpellZone | undefined =>
   zonesAt(state, at).find((z) => zoneSpecOf(z)?.silence);
 

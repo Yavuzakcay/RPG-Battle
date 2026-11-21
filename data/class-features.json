@@ -284,6 +284,12 @@
         "long": "all"
       }
     },
+    "relentlessEndurance": { "name": "Relentless Endurance", "feature": "species:orc/relentless-endurance", "race": "orc", "uses": { "fixed": 1 }, "recharge": { "long": "all" } },
+    "adrenalineRush": { "name": "Adrenaline Rush", "feature": "species:orc/adrenaline-rush", "race": "orc", "uses": { "proficiency": true }, "recharge": { "short": "all", "long": "all" } },
+    "heroicInspiration": { "name": "Heroic Inspiration", "feature": "species:human/resourceful", "race": "human", "uses": { "fixed": 1 }, "recharge": { "long": "all" } },
+    "stonecunning": { "name": "Stonecunning", "feature": "species:dwarf/stonecunning", "race": "dwarf", "uses": { "proficiency": true }, "recharge": { "long": "all" } },
+    "draconicFlight": { "name": "Draconic Flight", "feature": "species:dragonborn/draconic-flight", "race": "dragonborn", "minLevel": 5, "uses": { "fixed": 1 }, "recharge": { "long": "all" } },
+    "largeForm": { "name": "Large Form", "feature": "species:goliath/large-form", "race": "goliath", "minLevel": 5, "uses": { "fixed": 1 }, "recharge": { "long": "all" } },
     "breathWeapon": {
       "name": "Breath Weapon",
       "feature": "species:dragonborn/breath-weapon",

@@ -25,6 +25,7 @@ import { fail, type Failure } from './common';
 import { stunningProblem } from './stunning';
 import { resourceLeft, type BattleEvent, type BattleState, type BonusOption, type Combatant, type Command, type Resources } from './types';
 import { ruleVersion } from './ruleVersion';
+import { te99On } from './te99Surum';
 const hasTrait = (c: Pick<Combatant, 'traits'>, t: string): boolean => !!c.traits?.includes(t);
 
 const ACTION_NAMES: Partial<Record<Command['type'], string>> = {
@@ -215,10 +216,12 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       if (e.attacksLeft > 0 && e.pactOnly && !pact) return fail('Thirsting Blade: ek saldırı yalnızca pact silahıyla yapılır.');
       // Kuyruk 19 (SRD Loading, Ammunition): Loading silahla eylem başına tek atış; cephane biterse atılamaz.
       if (cmd.type === 'attack' && globalRule(state, 'srdK19')) {
-        if (cmd.option.loading && e.loadingFired && e.attacksLeft > 0) return fail('Loading: bu silahla eylem başına tek atış.');
+        // Görev TE99 (99+, SRD 5.2.1 s. 90 "only one piece of ammunition from a Loading weapon"): silah başına (iki ayrı Loading silahı olur).
+        const fired = te99On(state) ? (e.loadingIds ?? []).includes(cmd.option.weaponId ?? cmd.option.label) : e.loadingFired;
+        if (cmd.option.loading && fired && e.attacksLeft > 0) return fail('Loading: bu silahla eylem başına tek atış.');
         if (cmd.option.ammo && actor.ammo && (actor.ammo[cmd.option.ammo] ?? 0) <= 0) return fail(`Cephane bitti (${cmd.option.ammo}).`);
       }
-      const loading = cmd.type === 'attack' && cmd.option.loading && globalRule(state, 'srdK19') ? { loadingFired: true } : {};
+      const loading = cmd.type === 'attack' && cmd.option.loading && globalRule(state, 'srdK19') ? { loadingFired: true, ...(te99On(state) ? { loadingId: cmd.option.weaponId ?? cmd.option.label } : {}) } : {};
       // Görev WS92 (92+; SRD Multiattack): biçimin bileşimi (Brown Bear: bir Bite, bir Claw); sayaç `economy.beastUsed`.
       const comp = cmd.type === 'attack' ? beastComposition(state, actor, cmd.option.beast?.attack) : null;
       if (comp?.problem && e.attacksLeft > 0) return fail(comp.problem);
@@ -415,7 +418,7 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       if (spell.castingTime === 'ritual' && !companion) return fail(`${spell.name} ritüeldir: savaştan önce (kurulumda) yapılır.`);
       if (companion) {
         if (cmd.free && !freeCastResource(actor, spell.name, undefined, true)) return fail('Wild Shape kullanımı kalmadı.');
-        return spend(actor, 'action', spell.name, { ...(!cmd.free ? { slotTurn: turnKey(state) } : {}), ...(buyucu93On(state) && spell.level > 0 ? { leveled: true } : {}) });
+        return spend(actor, 'action', spell.name, { ...(!cmd.free ? { slotTurn: turnKey(state) } : {}), ...(buyucu93On(state) && spell.level > 0 ? { leveled: true } : {}), magic: true });
       }
       // Action Surge'ün verdiği eylem Magic eylemi olamaz (SRD 5.2.1).
       if (e.surged && spell.castingTime === 'action') return fail('Action Surge\'ün ek eylemiyle büyü yapılamaz.');
@@ -436,7 +439,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       if (v93 && quick && e.leveledCast) return fail('Quickened Spell: bu tur zaten 1. seviye ya da üstü büyü yapıldı.');
       if (v93 && !quick && spell.level > 0 && e.quickened) return fail('Quickened Spell kullanıldı: bu tur 1. seviye ya da üstü büyü yapılamaz.');
       const marks = { ...(v93 && spell.level > 0 ? { leveled: true } : {}), ...(v93 && quick ? { quickened: true } : {}) };
-      const cost = spend(actor, time as 'action' | 'bonus' | 'reaction', spell.name, { ...(usesSlot ? { slotTurn: key } : {}), ...marks });
+      // Görev TE99: Magic eylemi işareti (Blink Steps: "Immediately after you take the Attack action or the Magic action").
+      const cost = spend(actor, time as 'action' | 'bonus' | 'reaction', spell.name, { ...(usesSlot ? { slotTurn: key } : {}), ...marks, ...(time === 'action' ? { magic: true } : {}) });
       if (cost.ok && usesSlot && e.slotTurn === key) return fail('Bu tur zaten büyü slotu harcandı (turda bir slotlu büyü).');
       return cost;
     }

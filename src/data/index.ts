@@ -15,7 +15,10 @@ export * from './types';
 
 export const races = racesJson as Race[];
 export const classes = classesJson as CharacterClass[];
-export const armor = armorJson as Armor[];
+/** Zırhlar (kalkan kaydı hariç; Görev TE99: kalkan `data/armor.json`'da `type: shield`, `SHIELD`). */
+export const armor = (armorJson as Array<Omit<Armor, 'type'> & { type: string }>).filter((a) => a.type !== 'shield') as Armor[];
+/** Görev TE99 (K-Z3): kalkanın verisi (SRD 5.2.1 s. 92 Shield: +2 AC, 6 lb); davranış eskisiyle aynı. */
+export const SHIELD = (armorJson as Array<{ type: string; baseAc: number; weight?: number }>).find((a) => a.type === 'shield') ?? { type: 'shield', baseAc: 2, weight: 6 };
 export const weapons = weaponsJson as Weapon[];
 /**
  * Büyüler: Kuyruk K57'den beri 0–3. seviye de (`data/spells.json`, ~120 kB) `loadClassData()` ile gelir (ana parça

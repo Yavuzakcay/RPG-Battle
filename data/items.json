@@ -314,7 +314,8 @@
         "name": "Mass Cure Wounds"
       }
     ],
-    "charges": 10
+    "charges": 10,
+    "recharge": "1d6+4"
   },
   {
     "id": "wand-of-fireballs",
@@ -331,6 +332,7 @@
       }
     ],
     "charges": 7,
+    "recharge": "1d6+1",
     "dc": 15
   },
   {
@@ -347,6 +349,7 @@
         "name": "Magic Missile"
       }
     ],
-    "charges": 7
+    "charges": 7,
+    "recharge": "1d6+1"
   }
 ]
