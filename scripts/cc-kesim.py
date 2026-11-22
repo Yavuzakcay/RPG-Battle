@@ -20,6 +20,12 @@ OUT = f'{KURU}/characters' if KURU else 'public/characters'
 DOC = f'{KURU}/doc' if KURU else 'docs/sabah/cc-kesim'
 LEDGER = f'{KURU}/kaynak.json' if KURU else 'data/cc-kesim-kaynak.json'
 ONCELIK = {'taban': 1, 'yeni': 2, 'diger': 2, 'duzeltme': 3}
+# Seçim ayarları (CELESTIAL-KESIM, scripts/celestial-kesim.py bunları değiştirir; varsayılanlar 2026-11-19 davranışı):
+SECIM = None                                     # None ya da ad → bool: yalnız seçilen jetonlar yazılır (diğerleri hesaplanır, yazılmaz)
+TABAN_DURUM = ('haleli', 'halesiz-supheli')      # taban adımında işlenen eşleşme durumları
+TABAN_DOGRULANDI_ATLA = True                     # düzeltme eşleşmesinde 'halesiz-doğrulandı' olanlar tabandan atlanır
+TABAN_SAYFA_ATLA = set()                         # tabanda atlanan sayfalar (ör. {'06'}: yerine yeniden yapılmış sayfa)
+CLERIC_CELESTIAL_HUCRE = [7, 9]                  # clerik-male-celestial.jpg (sayfa 06 yenisi) hücreleri
 SIZE = 256
 GREEN, MAGENTA = np.array([0, 255, 0], float), np.array([255, 0, 255], float)
 
@@ -30,6 +36,7 @@ def ledger():
 
 def write_token(L, name, img, kaynak, dosya, hucre, rep):
     """Öncelik kuralı: kayıtlı kaynağın önceliği bu adımınkinden yüksekse yazmaz (çakışma raporlanır)."""
+    if SECIM is not None and not SECIM(name): return False
     j = L['jetonlar'].setdefault(name, {'gecmis': []})
     cur = j.get('kazanan')
     if cur and ONCELIK[cur['kaynak']] > ONCELIK[kaynak]:
@@ -203,10 +210,10 @@ def taban():
     L = ledger(); rep = {'adim': 'taban', 'yazilan': [], 'ezilmedi': [], 'atlanan': [], 'eksik_sayfa': [], 'hale_kaldi': [], 'uyum_dusuk': [], 'kurtarilan_px': {}}
     items = []; pages = {}
     for r in rows:
-        if r['durum'] not in ('haleli', 'halesiz-supheli'): continue
+        if r['durum'] not in TABAN_DURUM or r['sayfa'] in TABAN_SAYFA_ATLA: continue
         name = r['dosya'][:-5]
         if (r['sayfa'], r['hucre']) in ERKEK_WL: rep['atlanan'].append((name, 'erkek Celestial Warlock: yeni sayfadan (adım 2)')); continue
-        if name in dogru: rep['atlanan'].append((name, 'halesiz-doğrulandı (düzeltme eşleşmesi): dokunulmadı')); continue
+        if TABAN_DOGRULANDI_ATLA and name in dogru: rep['atlanan'].append((name, 'halesiz-doğrulandı (düzeltme eşleşmesi): dokunulmadı')); continue
         pages.setdefault(r['sayfa'], []).append(r)
     for p, lst in sorted(pages.items()):
         path = f'assets-ham/karakter/hale-gemini-sayfa-{p}.png'
@@ -606,7 +613,7 @@ def diger():
     # 3) tam sınıf sayfasından tek hücre (özgün hat ve sayfa ölçeği): Druid Tiefling hücre 4, Cleric erkek Tiefling hücre 9,
     #    Celestial erkek Cleric (hale-gemini sayfa 06'nın yeniden yapılmışı; yalnız haleli hücreler 7 ve 9, halesiz-temiz dokunulmaz)
     for f, cls, cells, race, g in [('druid-female-tiefling.jpg', 'druid', [4], 'tiefling', 'kadin'), ('druid-male-tiefling.jpg', 'druid', [4], 'tiefling', 'erkek'),
-                                   ('cleric-male-tiefling.jpg', 'cleric', [9], 'tiefling', 'erkek'), ('clerik-male-celestial.jpg', 'cleric', [7, 9], 'celestial', 'erkek'),
+                                   ('cleric-male-tiefling.jpg', 'cleric', [9], 'tiefling', 'erkek'), ('clerik-male-celestial.jpg', 'cleric', CLERIC_CELESTIAL_HUCRE, 'celestial', 'erkek'),
                                    ('fighter-male-human.jpg', 'fighter', list(range(1, 12)), 'human', 'erkek'), ('fighter-female-human.jpg', 'fighter', list(range(1, 11)), 'human', 'kadin')]:
         comps = tk.components_of_sheet(f'{RAW}/{f}', cls)
         scale, ok = sheet_scale(comps, cls)
