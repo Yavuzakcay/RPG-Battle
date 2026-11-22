@@ -1,13 +1,18 @@
 # Serüven ayrımı: inceleme ve plan (SERUVEN-AYRIM-INCELEME)
 
-Salt okuma incelemesi, 2026-11-22, `birlesik` @ `c8555710` (S1 notu `59f8998b` sonrası). Kod, veri ve test değişmedi; bu belge tek çıktı.
+Salt okuma incelemesi, 2026-11-22, `birlesik` @ `c8555710` (S1 notu `59f8998b` sonrası); **yeniden doğrulama**
+`b159635e` (S1 birleştikten sonra; bu sürümde §4'e fork seçeneği (c), §6'ya fork hazırlığı eklendi, eskimiş satır
+numaraları ve harita sayıları düzeltildi). Kod, veri ve test değişmedi; bu belge tek çıktı.
 Kullanıcı kararları (2026-11-22): Serüven ayrı oyun (aynı motor, kıta ve haritalar; açık dünya), Dice & Hex menüsünden
 gizlenir, slot modeli (slot = bir sefer), slot başında yalnız 1 karakter (seviye 1), parti oyun içi yoldaşlardan, aktif
 parti en çok 4, bölünmüş parti ileride, üs (kamp) seçimli tema.
 
-**Yöntem.** İçe aktarma grafiği betikle tarandı (`src/**/*.ts(x)`, 1125 dosya; statik, `import type` ve `import()`
-ayrı; göreli yollar çözüldü). Dosya/satır iddiaları `grep` ile doğrulandı. Ölçümler bu makinede, tek süreç
-(`sim:yz-sure`, `sim:tek`; sonuçlar `DENGE.md`'ye yazılmadı). "Doğrulanmadı" yazan yer kanıtsızdır.
+**Yöntem.** İçe aktarma grafiği betikle tarandı (`src/**/*.ts(x)`; ilk tarama 1125, yeniden doğrulamada 1129 dosya,
+9141 kenar; statik, `import type` ve `import()` ayrı; göreli yollar çözüldü; betik depo dışında, oturum geçici
+klasöründe). Dosya/satır iddiaları `grep` ile doğrulandı. Ölçümler ilk incelemede, tek süreç (`sim:yz-sure`, `sim:tek`;
+sonuçlar `DENGE.md`'ye yazılmadı). Yeniden doğrulamada yeniden koşulmadı (konteynerde `node_modules` yok); geçerli
+sayılır çünkü `c8555710..b159635e` arasında `src/battle`, `src/rules`, `src/sim` ve `data/` hiç değişmedi (`git diff
+--stat` boş) ve sim tohumlu. "Doğrulanmadı" yazan yer kanıtsızdır.
 
 **Belgedeki güncel sayılar** (CLAUDE.md'den yeni): kural sürümü **103** (`data/kural-surumu.json`), savaş kaydı
 `SAVE_VERSION` **25**, yolculuk kaydı `JOURNEY_VERSION` **2**, ana parça sınırı **500 kB**
@@ -16,9 +21,11 @@ ayrı; göreli yollar çözüldü). Dosya/satır iddiaları `grep` ile doğrulan
 **Kısa sonuç.** Önerilen mimari (aynı depo, ortak motor, iki giriş) **doğrulandı**: Serüven kodu zaten neredeyse tek
 yönlü bağımlı. Ortak koddan Serüven'e giden yalnız 3 uygulama bağı (`App.tsx`, `diceUnlock.ts` tip, `GmScreen.tsx`)
 ve 4 sim betiği var (§1.2); savaş motorunda Serüven için eklenmiş yalnız `explore` / `explore_move` / `explore_step`
-(ve genel sonuç bayrağı `flags`) var. Ana parçanın statik kapanışında (104 modül) hiçbir
-Serüven modülü yok. Ayrımın asıl işi kod taşımak değil: **kayıt modeli** (tek parti, tek kayıt, savaş otomatik kaydının
-paylaşılması) ve **yeni katmanlar** (yoldaş, havuz, üs).
+(ve genel sonuç bayrağı `flags`) var. Ana parçanın statik kapanışında (`main.tsx`'ten 106 modül: 67 TS/TSX + 39
+JSON/CSS) hiçbir Serüven modülü yok. Ayrımın asıl işi kod taşımak değil: **kayıt modeli** (tek parti, tek kayıt, savaş otomatik kaydının
+paylaşılması) ve **yeni katmanlar** (yoldaş, havuz, üs). Ayrı depoya çatallamak (fork, §4 c) bugün pahalı: son 16 günde
+commit'lerin %37'si motora dokundu, kural sürümü 69 kez arttı; fork motor yavaşladıktan sonra, sınır testi ve
+`src/seruven/` klasörü (S2) hazırken yapılmalı (kullanıcının planıyla uyumlu).
 
 ---
 
@@ -33,7 +40,7 @@ Sınıf: **Ö** = Serüven-özel, **O** = ortak, **K** = karışık. "İçeri" =
 | `journey/types.ts` | 105 | Ö (paylaşılan tip) | `rules/stats`, `rules/characterRest` (tip) | 12/3 | `JourneyMember`, `JourneyState.party: JourneyMember[]` |
 | `journey/engine.ts` | 220 | Ö | `rules/dice`, `data/index`, `rules/characterRest`; veri `yolculuk/ayarlar.json` | 6/4 | Yolculuk/sefer motoru (komut → olay → reducer) |
 | `journey/sefer.ts` | 53 | **K** | veri `seferler.json` | 6/1 | `GmScreen.tsx` "Sefer" paneli içe aktarır |
-| `journey/seruven.ts` | 815 | Ö | `battle/create`, `battle/druid`, `rules/{characterRest,classFeatures,skills,moral,levelChoices,builder,stats}`, `app/limits`, `data/index`; veri `seruven.json` | 12/23 | Serüven motoru; durum, komut, olay, reducer. Tek parti varsayımının merkezi |
+| `journey/seruven.ts` | 816 | Ö | `battle/create`, `battle/druid`, `rules/{characterRest,classFeatures,skills,moral,levelChoices,builder,stats}`, `app/limits`, `data/index`; veri `seruven.json` | 12/23 | Serüven motoru; durum, komut, olay, reducer. Tek parti varsayımının merkezi |
 | `journey/hapishane.ts` | 53 | Ö | `rules/characterRest`, `rules/stats`; veri `hapishane.json` | 4/2 | `preview/gorselDokum.tsx` veriyi okur (geliştirme önizlemesi) |
 | `journey/moral.ts` | 112 | Ö | `rules/stats`, `rules/moral`, `rules/characterRest` | 2/1 | Serüven Moral'ı (hafif mod); savaş içi Moral `battle/morale.ts` ortak |
 | `journey/encounter.ts` | 91 | Ö | `data/monsterEnv`, `rules/budget`, `data/index`; veri `bolge-karsilasma.json`, `butce.json` | 3/1 | `sim/bolgeRun.ts` (dinamik) |
@@ -53,7 +60,9 @@ Sınıf: **Ö** = Serüven-özel, **O** = ortak, **K** = karışık. "İçeri" =
 | `screens/SehirGorunum.tsx` | 87 | Ö | `i18n` | 1/2 | |
 | `ui/world/*` (3 dosya + css) | 623 | Ö | `i18n` | — | `WorldMapViewer` (tembel), `RegionLoading`, `markers` |
 
-Serüven'e ait 22 test dosyası `src/journey`, `src/world`, `src/yerlesim`, `src/ui/world` ve `screens/seruven-ui.test.tsx`'te.
+Satır sayıları ve "İçeri" yeniden doğrulamada aynı çıktı (±1 satır). Serüven klasörlerinde 21 test dosyası
+(`src/journey`, `src/world`, `src/yerlesim`, `src/ui/world`) + `screens/seruven-ui.test.tsx`; ayrıca Serüven'i içe
+aktaran 8 ortak test (§1.2 son satır + `sim/seruvenYuksekDuman.test.ts`).
 
 ### 1.2 Ortak koddan Serüven'e giden bağlar (sızıntı)
 
@@ -63,7 +72,7 @@ Serüven'e ait 22 test dosyası `src/journey`, `src/world`, `src/yerlesim`, `src
 | `src/app/diceUnlock.ts` | `journey/seruven.ts` | `import type` (`SeruvenEvent`) | Zar açılımı Serüven olaylarından (`unlocksFromSeruven`). Ortak profil kalır; tip, Serüven tarafındaki küçük bir arayüze (`{type,key,...}`) indirgenir ya da fonksiyon Serüven'e taşınır |
 | `src/screens/GmScreen.tsx` | `journey/sefer.ts` (`SEFERLER`) | statik | "Sefer" paneli Dice & Hex'te kalacaksa `sefer.ts` ortak kalır (veri okuyucu); kalmayacaksa panel bayrakla kalkar. **Tasarım kararı** (§7) |
 | `src/sim/chain.ts`, `chainRun.ts`, `hapishaneRun.ts`, `bolgeRun.ts` | `journey/*`, `app/journeyBattle`, `app/seruvenBattle` | statik/dinamik | Sim betikleri iki oyunu ölçer; taşınmaz, yalnız içe aktarma yolu güncellenir (klasör taşınırsa) |
-| Testler: `app/dragonbornEskiJeton`, `modulBaslatma`, `battle/ws92d`, `map/maps`, `rules/k38`, `rules/levelChoices`, `screens/seviyeSiniri` | `journey/*`, `app/seruven*` | test | Yerinde kalır; klasör taşınırsa yol güncellenir |
+| Testler: `app/dragonbornEskiJeton`, `modulBaslatma`, `battle/ws92d`, `map/maps`, `rules/k38`, `rules/levelChoices`, `screens/seviyeSiniri`, `sim/seruvenYuksekDuman` | `journey/*`, `app/seruven*` | test | Yerinde kalır; klasör taşınırsa yol güncellenir. Fork'ta (§4 c) Dice & Hex deposunda kalanlar Serüven'i test etmeye devam eder: hangi depoda kalacakları kararı |
 
 Ters yönde Serüven, ortak motoru serbestçe kullanıyor (`battle/create`, `battle/druid`, `rules/*`, `map/maps`,
 `app/setup`, `app/partyStatus`, `ui/session`); bu doğru yön.
@@ -74,10 +83,11 @@ Ters yönde Serüven, ortak motoru serbestçe kullanıyor (`battle/create`, `bat
    `SCENARIOS`/`enemiesAt`/`scenarioXp`'yi `sim/balance.ts`'ten alır; Serüven düğümlerinin `senaryo` alanı
    `data/sim-senaryolar.json` kimlikleridir. Denge ölçümü için yapılan düşman listesi ayarı Serüven'i de değiştirir.
    Ayrım: `SCENARIOS` okuyucusunu `sim/` dışına (ör. `data/senaryolar.ts`) çıkarmak; veri dosyası yerinde kalır.
-2. **Savaş otomatik kaydı ortak tek yuva.** `MapBattle.tsx:557-560` her tur sonunda `saveBattle(session)` →
-   `rpg-battle-save`. Serüven savaşı da buraya yazar; ana menüdeki "Devam et" (`App.tsx:227-229`) kaydı **düz savaş**
-   olarak açar (`seruven` düğüm bağı yok), sonuç Serüven'e işlenmez ve Dice & Hex'in kayıtlı savaşı ezilir. Ayrımda
-   Serüven savaşının kaydı slot dosyasına girmeli (§3).
+2. **Savaş otomatik kaydı ortak tek yuva.** `MapBattle.tsx:559` her tur sonunda `saveBattle(session)` →
+   `rpg-battle-save`. Serüven savaşı da buraya yazar; ana menüdeki "Devam et" (`App.tsx:225`) ve S1 ile gelen Oda
+   kur'daki odasız devam (`App.tsx:264` `onResumeUnbound`) kaydı **düz savaş** olarak açar (`seruven` düğüm bağı yok),
+   sonuç Serüven'e işlenmez ve Dice & Hex'in kayıtlı savaşı ezilir. Ayrımda Serüven savaşının kaydı slot dosyasına
+   girmeli (§3).
 
 ### 1.3 Savaş motoru içindeki Serüven parçaları
 
@@ -87,7 +97,7 @@ Ters yönde Serüven, ortak motoru serbestçe kullanıyor (`battle/create`, `bat
 | `BattleState.flags` (harita `map_note.flag`) | `battle/types.ts:1544`, orman mekanikleri | O | Sonuç bayrağı; Serüven okur |
 | `Avatar.outfit: 'mahkum'` | `battle/types.ts:775` | O (yalnız görünüm) | Hapishane oturumu kurar |
 | `link_check`, `link_cross`, `hapse_at`, `hapis_kapi`, `suc_*`, `teslim_ol`, `level_up`, `moral_dirilt`, `world_walk`, `fast_travel`, `world_check`, `seruven_*` | yalnız `journey/seruven.ts`, `world/roam.ts`, `journey/moral.ts`, `screens/SeruvenScreen.tsx`, `YerlesimHub.tsx`, `app/seruvenBattle.ts`, `app/diceUnlock.ts` | Ö | **Savaş motorunda değil**: Serüven'in kendi komut/olay döngüsü. Doğrulandı (`grep`, `src/battle` içinde yok) |
-| Düğüm önekleri `link:`, `yer:`, `hapis:`, `suc:` | `App.tsx:271-274`, `SeruvenScreen.tsx:98-155` | K | Savaştan dönüşte Serüven sonucu nasıl işleyeceğini öneke göre seçer; `SeruvenApp`'e taşınır |
+| Düğüm önekleri `link:`, `yer:`, `hapis:`, `suc:` | `App.tsx:278-281`, `SeruvenScreen.tsx:98-155` | K | Savaştan dönüşte Serüven sonucu nasıl işleyeceğini öneke göre seçer; `SeruvenApp`'e taşınır |
 | Moral savaş içi (`battle/morale.ts`, ev kuralı `moralSistemi`) | `battle/` | O | Serüven anahtarı `moralTam` savaşa `houseRules` ile geçer (`seruvenBattle.ts` `moralHouse`) |
 | Hizalanma | `rules/alignment*.ts`, `ui/gm/AlignmentPanel.tsx`, `GmScreen.tsx` | O (Dice & Hex) | **Serüven'e bağlı değil**: `src/journey`, `src/world`, `src/yerlesim`, Serüven ekranlarında hiç geçmiyor (doğrulandı) |
 
@@ -112,9 +122,11 @@ Ters yönde Serüven, ortak motoru serbestçe kullanıyor (`battle/create`, `bat
 | `public/maps/<bolge>/` (15 MB), `harita/<bolge>/*.json` (57 harita) | O | iki oyun | Taşınmaz |
 | `public/characters/` (99 MB), `monsters/`, `efekt*`, `sprites/`, `ses/` (17 MB), `zarlar/`, `son/`, `acilis/`, `logo/` | O | iki oyun | Taşınmaz; aynı kökten (`public/`) servis |
 
-**Harita JSON'larındaki Serüven bağları** (57 harita): `gizli: true` 13 harita (Hapishane 4, Heykel Gölü/Mağarası,
-Yeraltı Nehri, geniş haritalar, klasik Çöl, `kale-baskini`, `dag-nobetci`, `yeralti-magara-genis`); `sefer` 8 harita
-(`volkan` 4, `derinlikler` 4); `seferKurallari` 5; `goals` 14; `groups` 6; `floorLink` 2. Bunlar haritanın verisi:
+**Harita JSON'larındaki Serüven bağları** (57 harita): harita düzeyinde `gizli: true` **11** harita (Hapishane 4,
+Heykel Mağarası, Yeraltı Nehri, klasik Çöl `col`, `kale-baskini`, geniş haritalar `kale-avlu`/`orman-yolu`/`magara-genis`);
+ilk sürümdeki "13" yanlıştı: `dag-nobetci` ve Heykel Gölü'nde `gizli` yalnız **nesnelerde** (gizli keşif nesnesi, Kuyruk
+30), harita gizli değil. `sefer` 8 harita (`volkan` 4, `derinlikler` 4); `seferKurallari` 5; `goals` 14; `groups` 6
+(5 harita düzeyinde, Ork Kampı varyantta); `floorLink` 2. Bunlar haritanın verisi:
 `gizli` yalnız Dice & Hex seçicisini süzer, `sefer` seçici grubu ve ev kuralı varsayılanı. **Taşınmaz**; Serüven
 haritaları kimlikle çağırır. Yeni dünya haritası eklemek bugünkü kalıpla (harita JSON + `seruven.json` düğümü) yalnız
 veri.
@@ -179,7 +191,7 @@ SeruvenState (slot) = {
 | Konu | Durum | Öneri |
 |---|---|---|
 | Eski `rpg-battle-yolculuk` Serüven kaydı (çok karakterli, Karakterlerim kopyası, parti seviyesi) | Yeni modele uymaz (tek kahraman + yoldaş yok) | **Kullanıcı kararı.** Önerim: göç etme; eski kaydı "Eski Serüven (salt okunur/eski kurallar)" olarak bırak ya da yalnız slot 1'e "eski" etiketiyle yükle. Göç edilecekse: ilk üye kahraman, diğerleri `roster`'a "yoldaş" olarak |
-| Anahtar çakışması | Tüm anahtarlar `rpg-battle-*` (34 anahtar) | Yeni anahtarlar `seruven-*` ön ekiyle; Dice & Hex anahtarlarına dokunulmaz |
+| Anahtar çakışması | Tüm anahtarlar `rpg-battle-*` (kaynakta 33 sabit anahtar adı; `-oda` dahil, bazıları kalıpla kuruluyor olabilir, doğrulanmadı) | Yeni anahtarlar `seruven-*` ön ekiyle; Dice & Hex anahtarlarına dokunulmaz |
 | Ortak ayarlar | `rpg-battle-lang`, `-theme`, `-ses`, `-dice-anim`, `-effects`, `-reactions` | Aynı köken: iki giriş de okur. Ayrı ayar isteniyorsa ön ek ayrılır (karar §7) |
 | Savaş kaydı | `rpg-battle-save` paylaşılıyor | Serüven savaşı `MapBattle`'a `saveKey`/`onAutosave` ile slotuna yazdırılır (S3) |
 
@@ -199,9 +211,30 @@ karakter (dosya 84,8 k).
 | **a2. Vite çok sayfalı** (`index.html` + `seruven.html`) | `rollupOptions.input`; ortak parçalar otomatik bölünür | Gerçek ayrı giriş; her oyunun kendi ana parçası ve açılışı; ayrı yayınlanabilir | `paket-siniri.mjs` ikinci girişi bilmez (desen genişletilmeli); ortak parça adlandırması `index-*.js` desenine çakışabilir (doğrulanmadı, build ile görülür); `appShell` eklentisi `index.html`'e özel; `check:harita`/Playwright başlangıç yolu | Orta |
 | **b. Workspaces** (`packages/motor`, `apps/dice-hex`, `apps/seruven`) | Motor ayrı paket | Sınır derleyiciyle zorlanır | `src/battle` ↔ `src/rules` ↔ `src/data` ↔ `src/map` ↔ `src/ui/session` iç içe; 1125 dosyada yol değişimi, `import.meta.glob` (`harita/*/*.json`, `icerik/`), `data/` ve `public/` kök yolları, `vite-node` sim betikleri, tsconfig/vitest kurulumu. Kural sürümü zinciri ve sim betikleri kırılma riski yüksek | Büyük |
 
-**Öneri:** a1 ile başla (S1–S2), ürün ayrı yayın istediğinde a2'ye geç (S8). b yapılmaz; yerine **sınır testi**:
+| **c. Fork / klon** (Serüven ayrı depoda, Dice & Hex `upstream`; motor değişiklikleri `git merge upstream/birlesik` ile çekilir) | Yeni depo; Serüven'e özgü klasörler yalnız orada gelişir | Ayrı yayın, ayrı köken (localStorage çakışması kendiliğinden biter), ayrı CLAUDE.md/DECISIONS; Dice & Hex'ten Serüven tamamen kalkabilir | Motor bugün çok hızlı değişiyor (aşağıdaki ölçüm): her birleştirmede kural sürümü, `strings.ts`, `MapBattle.tsx`, `DECISIONS.md`/`CLAUDE.md` tepe girişleri çakışır; iki depoda motor düzeltmesi yapılırsa ayrışır; `.git` 959 MB (sığ klonda bile), `public/` varlıkları iki kez | Kurulum küçük, **sürdürme büyük** (motor hızına bağlı) |
+
+**Fork (c) için ölçüm** (sığ klon, görünen geçmiş 2026-11-06 – 11-22, 16 gün, 596 commit):
+
+| Yol | Commit | Fork'a etkisi |
+|---|---:|---|
+| `src/battle`, `src/rules` | 222 (%37) | Motor her gün değişiyor; fork bunları birleştirmeden alamaz |
+| `data/kural-surumu.json` | 69 | Günde ≈4 kural sürümü; Serüven deposunda motora dokunulursa sürüm numarası çakışır (iki depo aynı numarayı farklı kurala verir) |
+| `DECISIONS.md` / `CLAUDE.md` | 353 / 119 | Tepeye yazılan belgeler: her birleştirmede metin çakışması (fork'ta ayrı dosya adı ya da `merge=union` gerekir) |
+| `src/MapBattle.tsx` / `src/i18n/strings.ts` | 76 / 45 | Ortak arayüz; Serüven'in savaş kaydı kancası (S3) ve metinleri bu dosyalara dokunur |
+| `harita/` | 236 | Ortak; Serüven haritaları kimlikle çağırır, ayrı yerde geliştirilirse kimlik çakışması riski |
+| Serüven klasörleri + `seruven.json` + `yerlesim.json` | 12 | Serüven tarafı bugün yavaş; fork'un kazandırdığı bağımsızlık şimdilik küçük |
+
+Okuma: kullanıcının planı (fork'u görsel tur ve mekanikler bittikten sonra yapmak) bu ölçümle **doğru**: motor
+yavaşlamadan fork, iş yükünü birleştirme çakışmasına çevirir. Fork'tan önce a1 + sınır testi + `src/seruven/` klasörü
+(S2) kurulursa fork günü Serüven kodu temiz bir alt ağaç olur ve iki depo arasındaki fark yalnız giriş ve Serüven
+klasörleri kalır. Fork sonrası kural: **motor değişikliği yalnız Dice & Hex deposunda** (Serüven deposu motoru salt
+okur, `upstream`'den birleştirir); Serüven'e motor değişikliği gerekirse önce Dice & Hex'e yapılır. APK yapılandırması
+depoda yok (Capacitor/Android dosyası bulunmadı; doğrulandı): ayrı uygulama kimliği depo dışında kurulur.
+
+**Öneri:** a1 ile başla (S1–S2), ürün ayrı yayın istediğinde a2'ye geç (S8); c, motor yavaşladıktan sonra (S10,
+kullanıcının zamanlaması). b yapılmaz; yerine **sınır testi**:
 `src/` dışındaki ortak koddan Serüven klasörlerine giden bağları izin listesiyle sabitleyen bir vitest (bu belgedeki
-tarayıcının küçük hâli). Böylece workspaces'in faydası (sınır) maliyetsiz alınır.
+tarayıcının küçük hâli). Böylece workspaces'in faydası (sınır) maliyetsiz alınır ve fork (c) hazırlığı olur.
 
 **Paylaşım** (iki girişte ortak, yeri değişmez): `src/i18n` (Serüven metinleri tembel `strings.seruven.ts`'e
 taşınabilir; ana parçadan ≈10 k karakter iner), `ui/theme`, `ui/audio`, `ui/Splash` (açılış; Serüven'in kendi
@@ -330,7 +363,7 @@ Her adım: typecheck + ilgili testler + build yeşil. Boyut: K küçük (≤ 1 g
 | Adım | İçerik | Boyut | Bağımlılık | Kural sürümü | Kayıt sürümü | Regresyon riski |
 |---|---|---|---|---|---|---|
 | **S1** Bayrakla gizleme | **Yapıldı** (`c77fb4c9` ANA-MENU-SADELESTIR, bu incelemeden sonra birleşti): `features.ts` `seruvenMenuEnabled` (varsayılan kapalı, Ayarlar ▸ Gelişmiş ▸ Geliştirici); `seruven-ui.test` bayrakla, yeni `anaMenu.test.tsx`. Kalan: `#seruven` ile doğrudan açılış (S2'ye) | — | — | yok | yok | — |
-| **S2** Giriş noktası | `src/seruven/SeruvenApp.tsx` (kök; savaş dönüşü önek işleme `App.tsx:271-274`'ten taşınır); `main.tsx` kök seçici (a1); Serüven metinleri tembel `strings.seruven.ts`; sınır testi (izin listesi: §1.2) | O | S1 | yok | yok | Orta (App ekran akışı) |
+| **S2** Giriş noktası | `src/seruven/SeruvenApp.tsx` (kök; savaş dönüşü önek işleme `App.tsx:278-281`'ten taşınır); `main.tsx` kök seçici (a1); Serüven metinleri tembel `strings.seruven.ts`; sınır testi (izin listesi: §1.2; fork (S10) hazırlığı da budur) | O | S1 | yok | yok | Orta (App ekran akışı) |
 | **S2b** Karışıkların çözümü | `SCENARIOS` okuyucusu `sim/` dışına; `diceUnlock` tip bağı; Sefer paneli kararı | K | S2 | yok | yok | Düşük |
 | **S3** Slot kaydı | `seruven-index`, `seruven-slot-<n>-*`; `SeruvenState.roster` + `parties[]` (dizi, uzunluk 1) + `activeParty`; `MapBattle` otomatik kaydı enjekte (`saveKey`); `activeBattle` slotta; depolama boyutu ölçümü | O | S2 | yok (savaş olayı değişmez) | **yeni** `SLOT_VERSION` 1; `JOURNEY_VERSION` 2 eski kayıt için kalır | Orta (eski kayıt) |
 | **S4** Tek karakter yaratma | Slot başında `Builder` `suggest` + `lockLevel: 1`; `StartForm` kalkar; kahraman `roster`'da `hero` | K–O | S3 | yok | S3 içinde | Düşük |
@@ -339,6 +372,7 @@ Her adım: typecheck + ilgili testler + build yeşil. Boyut: K küçük (≤ 1 g
 | **S7** Üs | `data/us.json`, tema seçimi, hub bölümlerinin yeniden kullanımı, yoldaş/parti ekranı | O–B | S5 | yok | olay eklenir | Düşük |
 | **S8** Ayrı yayın (isteğe bağlı) | a2: `seruven.html`, `rollupOptions.input`, `paket-siniri.mjs` iki giriş | O | S2 | yok | yok | Orta (build) |
 | **S9** Bölünmüş parti (sıralı) | `parties.length > 1`, düğümde `cepheler`, Hapishane/hapis parti başına | B | S5, S7 | yok (sıralı modelde) | olay eklenir | Orta–yüksek |
+| **S10** Fork (isteğe bağlı, §4 c) | Motor yavaşladıktan sonra: yeni depo, `upstream` = Dice & Hex; Serüven deposunda Dice & Hex girişi ve `#seruven` dışı ekranlar kapatılır (silinmez, birleştirme kolay kalsın); Dice & Hex'te `seruvenMenu` ve Serüven klasörleri kalır ya da kaldırılır (karar); `DECISIONS.md`/`CLAUDE.md` Serüven deposunda ayrı ad (çakışmasız birleştirme) | O (kurulum) + sürekli birleştirme | S2 (sınır testi şart), S3 | **motor yalnız upstream'de** | Serüven deposu kendi `SLOT_VERSION`'ı | Yüksek (birleştirme çakışması) |
 
 **Taşınmayacaklar / dokunulmayacaklar**
 
@@ -368,3 +402,6 @@ Her adım: typecheck + ilgili testler + build yeşil. Boyut: K küçük (≤ 1 g
 12. **Yayın biçimi:** ilk aşamada aynı uygulamada rota (a1) yeterli mi, ayrı uygulama (a2, ayrı APK) ne zaman?
 13. **Hizalanma Serüven'de:** yoldaşlarda ve kahramanda açılacak mı (bugün Serüven'e bağlı değil)?
 14. **Aktif parti 4 ile denge:** 5. seviye senaryo listeleri 4 kişiye ağır (§5.3: %7–43). Serüven listeleri parti büyüklüğüyle ölçeklensin mi (önerim: evet, 1–5. seviyede de), yoksa aktif parti 5 mi olsun?
+15. **Fork zamanı ve kuralı (§4 c):** fork ne zaman (öneri: kural sürümü değişimi haftada birkaç kereye inince)? Fork
+    sonrası motor yalnız Dice & Hex deposunda mı değişsin (öneri: evet)? Dice & Hex deposundan Serüven klasörleri
+    fork'tan sonra silinsin mi, kalsın mı?
