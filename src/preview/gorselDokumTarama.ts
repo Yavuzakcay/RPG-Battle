@@ -196,7 +196,8 @@ export async function scanAvatar(av: Avatar, ctx: ScanCtx, out: Kusur[]): Promis
     let maskOk = true, maskName = '';
     if (masked) {
       const m = maskUrlFor(url, av.tint);
-      if (m && !(await probe(m))) { maskOk = false; maskName = m; }
+      // Otomatik maskesi ırkta kapalı (`otoMaske: false`) jeton: maske adresi yok, oyunda yedek filtre.
+      if (!m || !(await probe(m))) { maskOk = false; maskName = m ?? `${url} (otomatik maske kapalı)`; }
       const bas = !('pul' in av.tint.to) ? basUrlFor(url) : null;
       if (bas && !(await probe(bas))) add('bas-404', bas, `kafa kaplaması görseli yok: ${bas}`);
     }

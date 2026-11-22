@@ -19,8 +19,16 @@ import { applyHeadOverlay, type Box } from './headOverlay';
 import { tintFallbackFilter, type LookSheet } from './lineageLook';
 import type { SkinFixCfg } from './maskClose';
 
-/** Görev K22: jetonun kafa kaplaması (data/soy-bas.json; yoksa undefined). */
-export const headEntry = (name: string): { box: Box; govdeBoya?: false } | undefined => (basData as unknown as { sprites: Record<string, { box: Box; govdeBoya?: false }> }).sprites[name];
+type RaceCfg = { otoMaske?: false };
+/** Irk kaydı (`data/soy-renkleri.json` `races.<ırk>`): jeton adının ilk parçası. */
+const raceCfg = (name: string): RaceCfg | undefined => (soyRenkleri.races as unknown as Record<string, RaceCfg>)[name.split('-')[0] ?? ''];
+/** Kafa kaplaması ırkta kapalı mı (`basKaplama.<ırk>.kapali`; veri ve dosyalar durur, çizimde kullanılmaz). */
+const headOff = (name: string): boolean =>
+  (soyRenkleri as unknown as { basKaplama?: Record<string, { kapali?: boolean }> }).basKaplama?.[name.split('-')[0] ?? '']?.kapali === true;
+
+/** Görev K22: jetonun kafa kaplaması (data/soy-bas.json; yoksa ya da ırkta kapalıysa undefined). */
+export const headEntry = (name: string): { box: Box; govdeBoya?: false } | undefined =>
+  headOff(name) ? undefined : (basData as unknown as { sprites: Record<string, { box: Box; govdeBoya?: false }> }).sprites[name];
 const spriteName = (url: string) => url.match(/characters\/(?:kucuk\/)?([^/]+)\.webp$/)?.[1];
 export const basUrlFor = (url: string): string | null => {
   const m = url.match(/^(.*\/)?characters\/(?:kucuk\/)?([^/]+)\.webp$/);
@@ -204,7 +212,11 @@ export const maskUrlFor = (url: string, tint?: TintSpec): string | null => {
   if (!m) return null;
   // Dragonborn pul deseni v2: kendi pul maskesi (yoksa yükleme başarısız, jeton boyanmaz).
   if (tint && scaleTinted(tint)) return `${m[1] ?? ''}characters/maske-pul/${m[2]}.png`;
-  return `${m[1] ?? ''}characters/${handMasked(m[2] as string) ? 'maske-el' : 'maske'}/${m[2]}.png`;
+  if (handMasked(m[2] as string)) return `${m[1] ?? ''}characters/maske-el/${m[2]}.png`;
+  // Otomatik maske ırkta kapalıysa (`otoMaske: false`, Goliath: baş bölgesiyle sınırlı kalıyordu) maske yok: boyama başarısız sayılır,
+  // jetona soyun yedek filtresi bütünüyle uygulanır (`fallbackFilterFor`); elle maske eklenince yine önce o.
+  if (raceCfg(m[2] as string)?.otoMaske === false) return null;
+  return `${m[1] ?? ''}characters/maske/${m[2]}.png`;
 };
 
 const loadImage = (src: string) => new Promise<HTMLImageElement | null>((resolve) => {

@@ -875,6 +875,98 @@
     }
    ]
   },
+  "goliath/hill": {
+   "hedef": "#a17a51",
+   "kaynak": "soy-renkleri.json goliath.lineages.hill.lch",
+   "adaylar": [
+    {
+     "id": 1,
+     "ad": "Hafif ton",
+     "filter": "sepia(0.35) hue-rotate(-7deg) saturate(1.31)"
+    },
+    {
+     "id": 2,
+     "ad": "Orta ton",
+     "filter": "sepia(0.55) hue-rotate(-7deg) saturate(1.68)"
+    },
+    {
+     "id": 3,
+     "ad": "Güçlü ton",
+     "filter": "sepia(0.85) hue-rotate(-7deg) saturate(2.35) contrast(1.05)"
+    },
+    {
+     "id": 4,
+     "ad": "Soluk + boya",
+     "filter": "grayscale(0.5) sepia(0.6) hue-rotate(-7deg) saturate(1.98)"
+    },
+    {
+     "id": 5,
+     "ad": "Koyu ton",
+     "filter": "sepia(0.6) hue-rotate(-7deg) saturate(2.1) brightness(0.92) contrast(1.1)"
+    },
+    {
+     "id": 6,
+     "ad": "Açık ton",
+     "filter": "sepia(0.5) hue-rotate(-7deg) saturate(1.61) brightness(1.13)"
+    },
+    {
+     "id": 7,
+     "ad": "Doğrudan döndürme",
+     "filter": "hue-rotate(6deg) saturate(1.47)"
+    },
+    {
+     "id": 8,
+     "ad": "Ton + hedef parlaklık",
+     "filter": "sepia(0.7) hue-rotate(-7deg) saturate(2.03) brightness(1.03)"
+    }
+   ]
+  },
+  "goliath/stone": {
+   "hedef": "#68747b",
+   "kaynak": "soy-renkleri.json goliath.lineages.stone.lch",
+   "adaylar": [
+    {
+     "id": 1,
+     "ad": "Hafif ton",
+     "filter": "sepia(0.35) hue-rotate(164deg) saturate(1.14)"
+    },
+    {
+     "id": 2,
+     "ad": "Orta ton",
+     "filter": "sepia(0.55) hue-rotate(164deg) saturate(1.3)"
+    },
+    {
+     "id": 3,
+     "ad": "Güçlü ton",
+     "filter": "sepia(0.85) hue-rotate(164deg) saturate(1.61) contrast(1.05)"
+    },
+    {
+     "id": 4,
+     "ad": "Soluk + boya",
+     "filter": "grayscale(0.5) sepia(0.6) hue-rotate(164deg) saturate(1.44)"
+    },
+    {
+     "id": 5,
+     "ad": "Koyu ton",
+     "filter": "sepia(0.6) hue-rotate(164deg) saturate(1.5) brightness(0.9) contrast(1.1)"
+    },
+    {
+     "id": 6,
+     "ad": "Açık ton",
+     "filter": "sepia(0.5) hue-rotate(164deg) saturate(1.27) brightness(1.1)"
+    },
+    {
+     "id": 7,
+     "ad": "Doğrudan döndürme",
+     "filter": "hue-rotate(177deg) saturate(0.6)"
+    },
+    {
+     "id": 8,
+     "ad": "Ton + hedef parlaklık",
+     "filter": "grayscale(0.75) sepia(0.25) hue-rotate(164deg) brightness(1) contrast(1.05)"
+    }
+   ]
+  },
   "goliath/storm": {
    "hedef": "#5a6283",
    "kaynak": "soy-renkleri.json goliath.lineages.storm.lch",

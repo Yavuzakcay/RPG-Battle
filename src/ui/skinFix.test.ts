@@ -251,9 +251,9 @@ describe('TG1: Goliath (dar renk kutusu, vurgu ve gölge yok)', () => {
     expect(skinFixParams(t, 256)).toEqual({ kapama: 1, enCok: 12, ekleOrani: 0.5, golge: undefined, vurgu: undefined });
     expect(skinFixParams(t, 96)).toEqual({ kapama: 1, enCok: 2, ekleOrani: 0.5, golge: undefined, vurgu: undefined });
   });
-  it('gövde boyası kapalı kafa kaplaması (govdeBoya: false) yüklüyse onarım atlanır; diğer jetonlarda atlanmaz', () => {
+  it('Goliath kafa kaplaması kapalı (2026-11-22, `basKaplama.goliath.kapali`): gövde boyası hiçbir jetonda kapatılmaz, onarım atlanmaz', () => {
     for (const n of ['goliath-male-paladin', 'goliath-female-paladin', 'goliath-male-fighter', 'goliath-female-fighter', 'goliath-male-cleric', 'goliath-female-cleric']) {
-      expect(bodyPaintOff(n, true), n).toBe(true);
+      expect(bodyPaintOff(n, true), n).toBe(false);
       expect(bodyPaintOff(n, false), `${n} kaplama görseli yok`).toBe(false);
     }
     for (const n of ['goliath-erkek-paladin-ID2', 'goliath-male-barbarian', 'tiefling-erkek-fighter-GR', 'human-male-bard']) expect(bodyPaintOff(n, true), n).toBe(false);

@@ -45,11 +45,15 @@ describe('soy → renk', () => {
       for (const k of classes) for (const gender of ['erkek', 'kadin'] as const) {
         const a = sheetAvatar({ ...blankCharacter('t').sheet, raceId: r.id, classId: k.id, gender, ...(lineageId ? { lineageId } : {}) });
         expect(files.has(a.src), a.src).toBe(true);
-        // Oyunun gerçekte isteyeceği maske: boyama türüne göre (`pul` → `maske-pul/`, diğerleri `maske/`).
-        if (lineageId && !gorunum.maskesizIrklar.includes(r.id)) expect(masks.has(maskUrlFor(a.src, a.tint) ?? ''), `${a.src} maske`).toBe(true);
+        // Oyunun gerçekte isteyeceği maske: boyama türüne göre (`pul` → `maske-pul/`, diğerleri `maske/`). 2026-11-22: otomatik maskesi ırkta
+        // kapalı (`otoMaske: false`, Goliath) jetonda maske adresi yok (bütün jetona soyun yedek filtresi; elle maske eklenirse o).
+        const otoKapali = (soyRenkleri.races as unknown as Record<string, { otoMaske?: false }>)[r.id]?.otoMaske === false;
+        if (lineageId && otoKapali) expect(maskUrlFor(a.src, a.tint), `${a.src} otomatik maske kapalı`).toBeNull();
+        else if (lineageId && !gorunum.maskesizIrklar.includes(r.id)) expect(masks.has(maskUrlFor(a.src, a.tint) ?? ''), `${a.src} maske`).toBe(true);
       }
     }
-    expect(maskUrlFor('/base/characters/kucuk/goliath-male-fighter.webp')).toBe('/base/characters/maske/goliath-male-fighter.png');
+    expect(maskUrlFor('/base/characters/kucuk/tiefling-male-fighter.webp')).toBe('/base/characters/maske/tiefling-male-fighter.png');
+    expect(maskUrlFor('/base/characters/kucuk/goliath-male-fighter.webp')).toBeNull();
   });
   it('maskeli dönüşüm: yalnızca maskedeki pikseller, açıklık sırası korunur; Goliath erkek gri teni de boyanır', () => {
     // Goliath gri-mavi ten (kroma ≈5; K8b'de doygunluk eşiğinin altında kaldığı için erkek jetonlar boyanmıyordu) ve aynı tonda metal.
@@ -87,6 +91,8 @@ describe('soy → renk', () => {
     const R = olcum.races as Record<string, Record<string, Record<string, number[]>>>;
     const low: string[] = [];
     for (const [race, rows] of Object.entries(R)) {
+      // 2026-11-22: otomatik maskesi kapalı ırk (Goliath) ten boyası kullanmaz (bütün jetona yedek filtre, seçim /onizleme-filtre.html): ölçüm dışı.
+      if ((soyRenkleri.races as unknown as Record<string, { otoMaske?: false }>)[race]?.otoMaske === false) continue;
       expect(Object.keys(rows).length, race).toBe(24);
       for (const [name, lins] of Object.entries(rows)) {
         const ids = Object.keys(lins);

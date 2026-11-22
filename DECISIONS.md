@@ -2,6 +2,18 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Goliath: bütün jetona soy filtresi, kafa kaplaması kapalı (2026-11-22; kullanıcı kararı, yalnız görünüm)
+
+- Otomatik ten maskesi Goliath'ta yalnız başı kapsıyordu (`maskAlt.headOnly`): ırk kaydında `otoMaske: false` (`data/soy-renkleri.json`);
+  `tint.ts` `maskUrlFor` otomatik maske adresi vermez, boyama başarısız sayılır ve jetona bütünüyle soyun yedek CSS filtresi uygulanır
+  (`fallbackFilterFor`, Orc gibi). Elle maske (`assets/soy-maske-el/`) eklenen jetonda önce o. Maske dosyaları ve ayarlar durur.
+- Kafa kaplaması kapalı (`basKaplama.goliath.kapali`; `headEntry` undefined). Veri ve `bas/` görselleri durur.
+- Hill ve Stone artık orijinal değil: 6 soyun hepsi filtreli. Hedef renkler yalnız aday üretimi için (Hill toprak/okra lch 70/30, Stone
+  arduvaz lch 245/6); `node scripts/soy-filtre-adaylari.mjs` → soy başına 8 aday, seçim yapılana dek 1. aday (`bekliyor`);
+  seçim `npm run dev` → `/onizleme-filtre.html`. AS1a-2'nin "her ırkta en az bir orijinal alt soy" kuralına Goliath da istisna (Dragonborn gibi).
+- Testler bu kararla güncellendi: `altSoy41` (13 orijinal), `tint` (Goliath maske adresi yok, ten ΔE ölçümü dışı), `handMask`,
+  `headOverlay`, `skinFix`.
+
 ## Celestial erkek Cleric yeniden kesimi ve "yeniden çizilmiş sayfa" kuralı (2026-11-22; yalnız görünüm, kural/kayıt sürümü değişmedi)
 
 - **Bulgu** (`harita/belgeler/CELESTIAL-KAYNAK-DENETIM.md`, `python scripts/celestial-kaynak-denetim.py`): 290 Celestial jetonun 7'si eski

@@ -96,6 +96,16 @@
    "filter": "sepia(0.35) hue-rotate(160deg) saturate(1.36)",
    "bekliyor": true
   },
+  "goliath/hill": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(-7deg) saturate(1.31)",
+   "bekliyor": true
+  },
+  "goliath/stone": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(164deg) saturate(1.14)",
+   "bekliyor": true
+  },
   "goliath/storm": {
    "aday": 1,
    "filter": "sepia(0.35) hue-rotate(-170deg) saturate(1.23)",

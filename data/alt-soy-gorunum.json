@@ -67,12 +67,6 @@
   "gnome/rock-gnome": {
    "orijinal": true
   },
-  "goliath/hill": {
-   "orijinal": true
-  },
-  "goliath/stone": {
-   "orijinal": true
-  },
   "gnome/forest-gnome": {
    "orijinal": true
   }
@@ -182,8 +176,6 @@
   "human/outwall",
   "tiefling/infernal",
   "gnome/rock-gnome",
-  "goliath/hill",
-  "goliath/stone",
   "gnome/forest-gnome"
  ],
  "ayak": {

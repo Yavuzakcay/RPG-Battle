@@ -17,7 +17,10 @@ const sprite = () => { const d = new Uint8ClampedArray(W * H * 4); for (let p = 
 describe('kafa kaplaması', () => {
   it('kapsam veride: yalnızca Goliath Paladin, Fighter, Cleric; üretilen kayıt ve görseller bunlarla sınırlı', () => {
     // Görev K23: kapsam kaydı { siniflar, govdeBoya } biçimine geçti (gövde boyası bayrağı); kapsam aynı.
-    expect((soy as unknown as { basKaplama: unknown }).basKaplama).toEqual({ goliath: { siniflar: ['paladin', 'fighter', 'cleric'], govdeBoya: false } });
+    // 2026-11-22 (kullanıcı): Goliath kafa kaplaması kapalı (`kapali: true`; bütün jetona soy filtresi). Kayıt ve görseller durur, çizimde kullanılmaz.
+    expect((soy as unknown as { basKaplama: unknown }).basKaplama).toMatchObject({ goliath: { siniflar: ['paladin', 'fighter', 'cleric'], govdeBoya: false, kapali: true } });
+    expect(headEntry('goliath-male-fighter')).toBeUndefined();
+    expect(basUrlFor('characters/kucuk/goliath-male-fighter.webp')).toBeNull();
     const names = Object.keys((bas as { sprites: Record<string, unknown> }).sprites).sort();
     expect(names.every((n) => /^goliath-(female|male)-(paladin|fighter|cleric)$/.test(n))).toBe(true);
     for (const n of names) expect(files.has(`characters/bas/${n}.png`)).toBe(true);

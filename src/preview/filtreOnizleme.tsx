@@ -42,7 +42,8 @@ async function rowOf(key: string): Promise<Row> {
     const url = `/characters/${name}.webp`;
     if (maskedTint(tint)) {
       const m = maskUrlFor(url, tint);
-      if (m && !(await probe(m))) hits.push(name);
+      // Otomatik maske ırkta kapalıysa (`otoMaske: false`, Goliath) maske adresi yok: oyunda yedek filtre.
+      if (!m || !(await probe(m))) hits.push(name);
     } else {
       await tintedUrl(url, tint);
       if (fallbackFilterFor(url, tint as TintSpec, { raceId: race, lineageId: lineage })) hits.push(name);

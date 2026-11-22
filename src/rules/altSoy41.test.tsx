@@ -252,15 +252,16 @@ describe('görünüm verisi', () => {
 
 describe('boyasız orijinal alt soylar (AS1a-2 İş 3)', () => {
   const ORIG = ['elf/wood-elf', 'dwarf/knoll', 'halfling/slender', 'halfling/sturdy', 'orc/wildwood', 'celestial/parlayan-ruh', 'human/tenhausser', 'human/khadyrga', 'human/pure-city', 'human/outwall',
-    'tiefling/infernal', 'gnome/rock-gnome', 'goliath/hill', 'goliath/stone', 'gnome/forest-gnome'];
-  const PAINTED = ['dragonborn/black', 'goliath/cloud', 'goliath/fire', 'goliath/frost', 'goliath/storm', 'elf/drow', 'elf/high-elf', 'tiefling/abyssal', 'tiefling/chthonic', 'gnome/subterranean',
+    'tiefling/infernal', 'gnome/rock-gnome', 'gnome/forest-gnome'];
+  // 2026-11-22 (kullanıcı): Goliath'ın 6 soyu da bütün jetona soy filtresiyle (Hill/Stone artık orijinal değil).
+  const PAINTED = ['dragonborn/black', 'goliath/cloud', 'goliath/fire', 'goliath/frost', 'goliath/storm', 'goliath/hill', 'goliath/stone', 'elf/drow', 'elf/high-elf', 'tiefling/abyssal', 'tiefling/chthonic', 'gnome/subterranean',
     'celestial/gece-gozyasi', 'dwarf/crag', 'dwarf/undervault', 'orc/glacier', 'orc/fen'];
   const table = soyRenkleri.races as Record<string, { lineages: Record<string, unknown> }>;
-  it('liste tam: 15 orijinal; her ırkta (Dragonborn hariç) en az bir orijinal, Dragonborn\'da hiç yok', () => {
+  it('liste tam: 13 orijinal; her ırkta (Dragonborn ve Goliath hariç) en az bir orijinal, Dragonborn ve Goliath\'ta hiç yok', () => {
     expect([...ORIGINAL_LINEAGES].sort()).toEqual([...ORIG].sort());
     for (const r of races) {
       const n = ids().filter((k) => k.startsWith(`${r.id}/`) && isOriginalLineage(k)).length;
-      if (r.id === 'dragonborn') expect(n).toBe(0); else expect(n, r.id).toBeGreaterThanOrEqual(1);
+      if (r.id === 'dragonborn' || r.id === 'goliath') expect(n, r.id).toBe(0); else expect(n, r.id).toBeGreaterThanOrEqual(1);
     }
   });
   it('tint tablosu: orijinal alt soy null (boyama yok), boyalı kalacaklar tintli; Dragonborn 10 renk aynen', () => {
