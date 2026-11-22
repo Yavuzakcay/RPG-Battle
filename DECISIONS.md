@@ -2,6 +2,21 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## TEMIZLIK-A: eskimiş belge ve not düzeltmeleri (2026-11-22; yalnız metin, kod davranışı/veri/görsel/kural ve kayıt sürümü değişmedi)
+
+- **CLAUDE.md paket sınırı:** başlık ve sınır `data/paket-siniri.json` `anaParcaKb` 500 ile zaten uyumluydu (420 ve ≈370 kalıntısı
+  yalnız tarih zincirinde "K57: 500 → 420" olarak kaldı); güncel boyut ≈436 kB yazıyordu. `npm run build` denetimi
+  (`scripts/paket-siniri.mjs`) bugün 457,51 kB / 500 kB ölçtü: metin "şu an ≈457 kB" oldu, 2026-11-20 ölçümü geçmiş olarak kaldı.
+- **CLAUDE.md seviye sınırı:** `birlesik`te zaten düzeltilmişti ("Seviye sınırı 20, anahtar yok", `LEVEL_CAP` 20,
+  `src/app/limits.ts`). Kodda denetlendi: `upperLevelsEnabled` hiç yok; `ustSeviye` yalnız eski Serüven kaydından düşürülüyor
+  (`src/app/features.ts`, `src/journey/seruven.ts` yorumu). `src/sim/balance.ts`'teki `ustSeviye`/`ustSeviyeAlt` ayrı bir sim
+  eşik alanı, anahtarla ilgisi yok. Değişiklik gerekmedi.
+- **"ID1 / life-domain kullanılmıyor" notları:** Yaşam Manastırı 98504837 ile geri alındı, ID1 onun hücresi. Kalan iki not
+  düzeltildi: `scripts/celestial-kaynak-denetim.py` (rapor metnindeki dize, betik mantığı aynı) ve onun ürettiği
+  `harita/belgeler/CELESTIAL-KAYNAK-DENETIM.md` ("1 Yaşam Manastırı (life-domain)"). Tarama (`docs/sabah/`, `public/Subclass/`,
+  `icerik/` hariç) başka not bulmadı; `src/battle/clericJeton.test.ts` ve bu dosyadaki eski karar metni notun olmadığını
+  anlatıyor, dokunulmadı.
+
 ## KESIM-DUZELT: şerit silme yalnız gerçek ızgara artığını siler; listeli jetonlar ham sayfadan yeniden kesildi (2026-11-22; yalnız görünüm, kural/kayıt sürümü değişmedi)
 
 - **Kök neden (ölçüldü):** kesim hattında dört şerit silme yolu figür parçası siliyordu. (1) `trim_lines`: kutu bandındaki koyu şerit;
