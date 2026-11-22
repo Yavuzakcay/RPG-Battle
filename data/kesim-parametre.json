@@ -31,5 +31,18 @@
  "inceSerit": 14,
  "ikinciOran": 0.6,
  "cepMinAlan": 80,
- "cepEsik": 40
+ "cepEsik": 40,
+ "izgara": {
+  "_not": "KESIM-DUZELT (2026-11-22): şerit silme (drop_lines, trim_lines) yalnız sayfanın gerçek ızgara çizgisi üstündeki koyu şeridi siler. Izgara çizgisi: koyu (< koyu) düz koşu en az uzunluk px, kalınlığı en çok kalinlik px; düzen (sütun × satır) biliniyorsa hücre sınırına hücre boyunun konumPayi oranı kadar yakın ve satırı/sütunu sayfanın en az kapsamDuzen oranına yayılır, bilinmiyorsa en az kapsam oranına. Şerit: piksellerinin en az seritOrani'ı çizginin pay px yakınında; drop_lines'ta ayrıca en az koyuOrani'ı koyu. Uzun koyu koşu silmesi (iki yanı zemin) yalnız çizginin pay px yakınında. İnce küçük kırıntı yalnız en az koyuOrani'ı koyuysa, piksellerinin en az seritOrani'ı çizginin kirintiPay px yakınındaysa ya da sayfa kenarına değiyorsa silinir.",
+  "koyu": 90,
+  "uzunluk": 300,
+  "kalinlik": 30,
+  "kapsam": 0.6,
+  "kapsamDuzen": 0.2,
+  "konumPayi": 0.25,
+  "pay": 3,
+  "kirintiPay": 8,
+  "seritOrani": 0.5,
+  "koyuOrani": 0.6
+ }
 }

@@ -341,7 +341,7 @@ def check_images(cls, results):
 
 # ---------------------------------------------------------------------------------------------------------------------
 # İŞ 1: bağlı bileşen tabanlı kesim (`--yeni`); eski ızgara yöntemi (`process`) yedekte. Parametreler data/kesim-parametre.json.
-KP = json.load(open('data/kesim-parametre.json'))
+KP = json.load(open('data/kesim-parametre.json', encoding='utf-8'))   # Windows varsayılanı cp1254; dosya UTF-8
 
 def detect_grid(img, cols, rows):
     """Sayfadaki gerçek ızgara çizgileri (koyu sütun/satırlar) → (x sınırları, y sınırları); bulunamazsa None (orantılı bölme)."""
@@ -408,22 +408,83 @@ def key_sheet(a, ref=None):
             bg |= np.isin(l2, [i for i, s_ in enumerate(s2, 1) if s_ >= KP['cepMinAlan']])
     return ~bg
 
-def drop_lines(fg):
+def long_runs(mask, L, axis):
+    """`mask`ın `axis` boyunca en az L ardışık piksellik koşuları (1×L / L×1 çizgiyle `binary_opening` ile aynı sonuç; koşu uzunluğuyla hızlı)."""
+    mask = np.asarray(mask, bool)
+    if L <= 1: return mask.copy()
+    m = np.moveaxis(mask, axis, -1); n = m.shape[-1]
+    if n < L: return np.zeros_like(mask)
+    z = np.zeros(m.shape[:-1] + (1,), np.int32)
+    c = np.concatenate([z, np.cumsum(m, axis=-1, dtype=np.int32)], axis=-1)    # c[k] = m[:k] toplamı
+    ok = (c[..., L:] - c[..., :-L]) == L                                         # j..j+L-1 penceresi dolu (j = 0..n-L)
+    d = np.concatenate([z, np.cumsum(ok, axis=-1, dtype=np.int32)], axis=-1)    # d[k] = ok[:k] toplamı
+    i = np.arange(n); lo = np.maximum(i - L + 1, 0); hi = np.minimum(i, n - L)
+    out = ((d[..., hi + 1] - d[..., lo]) > 0) & (lo <= hi)                      # i'yi içeren dolu pencere var
+    return np.moveaxis(out, -1, axis)
+
+def grid_lines(img, layout=None):
+    """Sayfanın GERÇEK ızgara/çerçeve çizgileri (KESIM-DUZELT 2026-11-22): koyu (< `izgara.koyu`) düz koşu en az `izgara.uzunluk` px,
+    kalınlığı en çok `izgara.kalinlik` px (geniş koyu figür bölgesi — siyah pelerin, gölge — çizgi değildir); çizginin satırı/sütunu sayfaya
+    yayılır (ızgara çizgisi sayfayı boydan boya keser, figürün değdiği yerde kesintili). `layout` = (sütun, satır) verilirse çizgi ayrıca
+    hücre sınırına (sayfa kenarı dahil) hücre boyunun `izgara.konumPayi` oranı kadar yakın ve kapsamı en az `izgara.kapsamDuzen`; verilmezse
+    kapsamı en az `izgara.kapsam`. Ölçü (346 ham sayfa): gerçek çizgiler sınırdan en çok 0,21 hücre sapar, kapsamı 0,31–1; aynı sütundaki
+    figürlerin zincir/asa gibi düz koyu parçaları sınırdan en az 0,34 hücre uzakta, kapsamı 0,21–0,54. → bool maske (görüntü boyutu)."""
+    p = KP['izgara']
+    dk = img.max(axis=2) < p['koyu']
+    H, W = dk.shape
+    h = long_runs(dk, p['uzunluk'], 1); v = long_runs(dk, p['uzunluk'], 0)
+    h &= ~long_runs(h, p['kalinlik'] + 1, 0); v &= ~long_runs(v, p['kalinlik'] + 1, 1)
+    ry = np.ones(H, bool); cx = np.ones(W, bool); k = p['kapsam']
+    if layout:
+        cols, rows = layout; k = p['kapsamDuzen']; ry[:] = False; cx[:] = False
+        for j in range(rows + 1):
+            c, t = j * H / rows, p['konumPayi'] * H / rows; ry[max(0, int(c - t)):int(c + t) + 1] = True
+        for i in range(cols + 1):
+            c, t = i * W / cols, p['konumPayi'] * W / cols; cx[max(0, int(c - t)):int(c + t) + 1] = True
+    rows_ok = ndi.binary_dilation((h.sum(axis=1) >= k * W) & ry, iterations=2)
+    cols_ok = ndi.binary_dilation((v.sum(axis=0) >= k * H) & cx, iterations=2)
+    return (h & rows_ok[:, None]) | (v & cols_ok[None, :])
+
+def _on_grid(lab, n, mask):
+    """Her bileşenin (etiket 1..n) piksellerinin `mask` içinde kalan oranı (dizi, 0. eleman boş)."""
+    cnt = np.bincount(lab.ravel(), minlength=n + 1).astype(float)
+    hit = np.bincount(lab.ravel(), weights=mask.ravel().astype(float), minlength=n + 1)
+    return hit / np.maximum(cnt, 1)
+
+def drop_lines(fg, img, grid=None):
+    """Sayfa düzeyinde ince uzun şeritler (≥ `ciziOpenUzunluk` px, 16×16 dolu bölgeye 3 px'ten uzak): ızgara çizgisi parçaları. Figürlerin
+    ızgara üzerinden birleşmemesi için kesimden önce silinir. KESIM-DUZELT (2026-11-22): eskiden renkten bağımsızdı (yorum "yalnız koyu
+    çizgi" diyordu ama kod rengi denetlemiyordu): saç teli, asa, yay kirişi, duman, ışık hüzmesi gibi figürün ince uzun parçaları da
+    siliniyordu. Artık bir şerit bileşeni yalnız ÇİZGİ RENGİNDEyse (piksellerinin en az `izgara.koyuOrani`'ı koyu) ve sayfanın gerçek
+    ızgara çizgisi üstündeyse (`grid_lines`, `izgara.pay` px pay; piksellerinin en az `izgara.seritOrani`'ı) silinir."""
     L = KP['ciziOpenUzunluk']
     ln = ndi.binary_opening(fg, structure=np.ones((1, L), bool)) | ndi.binary_opening(fg, structure=np.ones((L, 1), bool))
     ln &= ~ndi.binary_dilation(ndi.binary_opening(fg, structure=np.ones((16, 16), bool)), iterations=3)
-    # yalnız koyu ince çizgiler (çizgi rengi): figür kılıç/asa gibi uzun ince parçaları renkli olduğundan kalır
-    return ln
+    if not ln.any(): return ln
+    p = KP['izgara']
+    if grid is None: grid = grid_lines(img)
+    lab, n = ndi.label(ln, structure=np.ones((3, 3)))
+    dark = _on_grid(lab, n, img.max(axis=2) < p['koyu'])
+    near = _on_grid(lab, n, ndi.binary_dilation(grid, iterations=p['pay']) if grid.any() else grid)
+    keep = np.flatnonzero((dark >= p['koyuOrani']) & (near >= p['seritOrani']))
+    keep = keep[keep > 0]
+    return np.isin(lab, keep) if len(keep) else np.zeros_like(ln)
 
-def trim_lines(rgba):
-    """Kutunun dış bandında (16 px) kutu kenarı boyunca uzanan koyu ince uzun şeritler (ızgara çizgisi artığı) silinir: YATAY şerit yalnız
-    üst/alt bantta, DİKEY şerit yalnız sol/sağ bantta. 2026-11-22: eskiden her yöndeki şerit herhangi bir banda değince siliniyordu; kutu
-    figürün kendi sınırı olduğundan kenara değen koyu yatay figür parçası (kabza, bilek, manşet, zincir) yarık bırakıyordu
-    (human-erkek-fighter-GR; tarama `python scripts/kesim-yarik-tara.py`)."""
+def trim_lines(rgba, grid=None):
+    """Kutunun dış bandında (16 px) kutu kenarı boyunca uzanan koyu ince uzun şerit (ızgara çizgisi artığı) silinir: YATAY şerit yalnız
+    üst/alt bantta, DİKEY şerit yalnız sol/sağ bantta (2026-11-22, human-erkek-fighter-GR). KESIM-DUZELT (2026-11-22): kutu figürün kendi
+    sınırı olduğundan banttaki koyu şerit çoğunlukla figürün konturudur (saç/şapka tepesi, ayak tabanı, kalkan ve kanat kenarı, asa,
+    kabza, bilek): 10 sayfadaki 562 adayın yalnız 1'i gerçek ızgara artığıydı. Artık şerit yalnız sayfanın gerçek ızgara çizgisi üstündeyse
+    silinir (piksellerinin en az `izgara.seritOrani`'ı `grid`'in `izgara.pay` px yakınında). `grid`: sayfanın `grid_lines` maskesinin bu
+    kutuya düşen parçası; verilmezse kutunun kendisinden (`grid_lines`, saydam pikseller çizgi sayılmaz)."""
     a = rgba.copy(); al = a[..., 3] > 0; dk = al & (a[..., :3].max(axis=2) < 80)
     solid = ndi.binary_dilation(ndi.binary_opening(dk, structure=np.ones((14, 14), bool)), iterations=3)
     lh = ndi.binary_opening(dk, structure=np.ones((1, 40), bool)) & ~solid
     lv = ndi.binary_opening(dk, structure=np.ones((40, 1), bool)) & ~solid
+    if not (lh.any() or lv.any()): return a
+    p = KP['izgara']
+    if grid is None: grid = grid_lines(np.where(al[..., None], a[..., :3], 255).astype(np.uint8))
+    near = ndi.binary_dilation(grid, iterations=p['pay']) if grid.any() else grid
     tb = np.zeros_like(dk); tb[:16] = tb[-16:] = True
     lr = np.zeros_like(dk); lr[:, :16] = lr[:, -16:] = True
     kill = np.zeros_like(dk)
@@ -431,7 +492,10 @@ def trim_lines(rgba):
         if not ln.any(): continue
         lab, n = ndi.label(ln, structure=np.ones((3, 3)))
         hit = set(np.unique(lab[band & (lab > 0)])) - {0}
-        if hit: kill |= np.isin(lab, list(hit))
+        if not hit: continue
+        frac = _on_grid(lab, n, near)
+        hit = [i for i in hit if frac[i] >= p['seritOrani']]
+        if hit: kill |= np.isin(lab, hit)
     if kill.any(): a[ndi.binary_dilation(kill, iterations=2), 3] = 0
     return a
 
@@ -482,12 +546,16 @@ def components_of_sheet(path, cls, force_cells=(), protect=()):
     img = np.asarray(Image.open(path).convert('RGB')); H, W = img.shape[:2]
     grid = detect_grid(img, CLASSES[cls][0], CLASSES[cls][1]) if cls not in TALL else None
     fg = key_sheet(img, sheet_bg(img))
-    lines = drop_lines(fg)
+    glines = grid_lines(img, CLASSES[cls][:2])   # KESIM-DUZELT: sayfanın gerçek ızgara çizgileri; drop/trim yalnız bunların üstündeki şeridi siler
+    lines = drop_lines(fg, img, glines)
     fg &= ~lines
     # ızgara çerçeve çizgileri: çok uzun (≥ 300 px) koyu düz şeritler; yalnız İKİ YANI da zemin olanlar (iki hücre zemini arasındaki çizgi;
-    # siyah pelerin gibi figür içi koyu şeritlerin yanında figür vardır, silinmez)
+    # siyah pelerin gibi figür içi koyu şeritlerin yanında figür vardır, silinmez). KESIM-DUZELT (2026-11-22): yalnız gerçek ızgara çizgisi
+    # üstünde (`glines`): ızgarasız sayfada kolları açık siyah gövde, yatay bo sopası/yay, dikey asa, pelerin eteği de "iki yanı zemin"
+    # koşuluna uyuyordu (dragonborn-kadin-monk-ID8, Dragonborn Rogue ID7, dragonborn-erkek-sorcerer-SC-5, Warlock WL-6 yarıkları).
     dk_ = img.max(axis=2) < 90
-    llh = ndi.binary_opening(dk_, structure=np.ones((1, 300), bool)); llv = ndi.binary_opening(dk_, structure=np.ones((300, 1), bool))
+    llh = long_runs(dk_, 300, 1) & ndi.binary_dilation(glines, iterations=KP['izgara']['pay'])
+    llv = long_runs(dk_, 300, 0) & ndi.binary_dilation(glines, iterations=KP['izgara']['pay'])
     if llh.any() or llv.any():
         bgm = np.pad(~fg, 60, constant_values=True); Hh, Ww = fg.shape
         up = bgm[0:Hh, 10:10 + Ww] if False else None
@@ -498,12 +566,18 @@ def components_of_sheet(path, cls, force_cells=(), protect=()):
         for (px0, py0, px1, py1) in protect: kill[py0:py1, px0:px1] = False    # KQ6-20: kollar açık figür (siyah gövde bandı) çizgi sanılmasın: hücre içi korunur
         if kill.any(): fg &= ~ndi.binary_dilation(kill, iterations=3)
     fg = ndi.binary_opening(fg, iterations=1)
-    # ızgara çizgisi kırıntıları (kesik kesik ince şeritler): ince uzun küçük bileşenler atılır
+    # ızgara çizgisi kırıntıları (kesik kesik ince şeritler): ince uzun küçük bileşenler atılır. KESIM-DUZELT (2026-11-22): yalnız çizgi
+    # rengindeyse (koyu), gerçek ızgara çizgisine `izgara.kirintiPay` px yakınsa ya da sayfa kenarına değiyorsa; figürden kopuk renkli ince
+    # parçalar (alev pulu, kıvılcım, duman teli, enkaz) kalır.
     l0, n0 = ndi.label(fg, structure=np.ones((3, 3)))
     objs = ndi.find_objects(l0)
+    if n0:
+        darkf = _on_grid(l0, n0, dk_); nearf = _on_grid(l0, n0, ndi.binary_dilation(glines, iterations=KP['izgara']['kirintiPay']) if glines.any() else glines)
     for i, sl in enumerate(objs, 1):
         h_, w_ = sl[0].stop - sl[0].start, sl[1].stop - sl[1].start
-        if min(h_, w_) <= KP['inceSerit'] and max(h_, w_) >= 20 and int((l0[sl] == i).sum()) < 3500: fg[sl] &= ~(l0[sl] == i)
+        if min(h_, w_) <= KP['inceSerit'] and max(h_, w_) >= 20 and int((l0[sl] == i).sum()) < 3500:
+            border = sl[0].start <= 2 or sl[1].start <= 2 or sl[0].stop >= H - 2 or sl[1].stop >= W - 2
+            if darkf[i] >= KP['izgara']['koyuOrani'] or nearf[i] >= KP['izgara']['seritOrani'] or border: fg[sl] &= ~(l0[sl] == i)
     # Büyük bileşenler (figürler) birbirine ASLA birleşmez; küçük parçalar (aksesuar, efekt, kılıç ucu) aynı hücredeki en yakın büyük
     # figüre, aralarındaki uzaklık `birlestirPx` içindeyse eklenir (komşu hücrenin figürüne asla).
     l0, n0 = ndi.label(fg, structure=np.ones((3, 3)))
@@ -570,7 +644,7 @@ def components_of_sheet(path, cls, force_cells=(), protect=()):
         ysx, xsx = np.where(rgba[..., 3] > 0)
         other = np.mean([nominal_cell(xsx[j] + x0, ysx[j] + y0, W, H, cls, grid) != n_ for j in range(0, len(xsx), 7)]) if len(xsx) else 0
         if other > KP['elleKontrol']['ikiHucreOran']: warn.append(f'ELLE: figür kütlesinin %{other * 100:.0f}\'i başka hücrede (iki figür temas ediyor)')
-        out[n_] = (despill(trim_lines(rgba), sheet_kind(img, (x0, y0, x1, y1), fg)), (x0, y0, x1, y1), warn)
+        out[n_] = (despill(trim_lines(rgba, glines[y0:y1, x0:x1]), sheet_kind(img, (x0, y0, x1, y1), fg)), (x0, y0, x1, y1), warn)
     return out
 
 def process_cc(job):

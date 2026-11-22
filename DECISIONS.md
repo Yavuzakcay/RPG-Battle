@@ -2,6 +2,54 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## KESIM-DUZELT: şerit silme yalnız gerçek ızgara artığını siler; listeli jetonlar ham sayfadan yeniden kesildi (2026-11-22; yalnız görünüm, kural/kayıt sürümü değişmedi)
+
+- **Kök neden (ölçüldü):** kesim hattında dört şerit silme yolu figür parçası siliyordu. (1) `trim_lines`: kutu bandındaki koyu şerit;
+  10 sayfadaki 562 adayın yalnız 1'i gerçek ızgara artığı, geri kalanı saç/şapka tepesi, ayak tabanı, kalkan/kanat kenarı, kabza, bilek,
+  asa, zincir (2026-11-22 düzeltmesi de yataylarını üst/alt bantta, dikeylerini yan bantta silmeyi sürdürüyordu). (2) `drop_lines`:
+  yorumu "yalnız koyu çizgi" diyordu, kod renkten bağımsızdı (saç teli, asa, duman, kıvılcım). (3) 300 px "iki yanı zemin" koyu koşu
+  silmesi: ızgarasız sayfada kolları açık siyah gövde, yatay bo sopası, yay, dikey asa, pelerin eteği (dragonborn-kadin-monk-ID8 89 px,
+  Dragonborn Rogue ID7 121–126 px, dragonborn-erkek-sorcerer-SC-5 84 px, Warlock WL-6 dikey yarıkları). (4) ince küçük bileşen süzgeci
+  (alev pulu, kıvılcım, duman teli, enkaz). 346 ham sayfanın 91'inde koyu ızgara çizgisi hiç yok (Bard, Barbarian, hale-gemini, Hızır…):
+  oralarda bu yolların sildiği her şey figürdü.
+- **Kural:** `scripts/toplu-kesim.py` `grid_lines`: sayfanın gerçek ızgara çizgisi = koyu (< 90) düz koşu ≥ 300 px, kalınlığı ≤ 30 px;
+  düzen biliniyorsa hücre sınırına ≤ 0,25 hücre yakın ve sayfanın ≥ %20'sine yayılır (bilinmiyorsa ≥ %60). Ölçü: gerçek çizgiler
+  sınırdan en çok 0,21 hücre sapar (kapsam 0,31–1), aynı sütundaki figürlerin zincir/asa gibi düz koyu parçaları en az 0,34 (kapsam
+  0,21–0,54). Dört yol da yalnız bu çizginin üstündeki (3 px pay, şeridin ≥ %50'si) koyu şeridi siler; `drop_lines` ayrıca şeridin
+  ≥ %60'ı koyu; kırıntı süzgeci koyu, çizgiye 8 px yakın ya da sayfa kenarına değen parçayı siler. Parametreler `data/kesim-parametre.json`
+  `izgara`. `cc-kesim.py` `keyed_rgba` sayfanın ızgara maskesini alır (taban, düzeltme, gövde, ızgara, figür, tek kesicileri).
+  `long_runs` (koşu uzunluğu) `binary_opening`'in birebir eşi, 11 kat hızlı. `KP` UTF-8 okunur (Windows cp1254'te betik açılmıyordu).
+- **Eski ↔ yeni hat (68 sayfa: Gariban 20, Warlock 20, Dragonborn sınıf 22, Wizard Dragonborn 4, Hızır 2):** hücre kümeleri ve ELLE
+  uyarıları aynı (tek fark: Bard Dragonborn hücre 3'ün ELLE'si kalktı; kolları açık siyah gövde artık bölünmüyor); figür pikseli kaybı 0;
+  kazanç sayfa başına 6,7–88 bin px (geri gelen kontur), hiçbiri ızgara çizgisinde değil. Tek "kayıp" gerçek ızgara artığının silinmesi
+  (`dragonborn-erkek-cleric-ID1` kanat ucunda ince dikey çizgi parçası; o jeton kapsam dışı olduğundan değişmedi).
+- **Regresyon (yalnız ölçü):** defterden JETON-DENETIM'de adı geçmeyen 271 jetondan rastgele 200'ü (tohum 20261122) yeni hatla ham
+  sayfadan kesilip mevcut jetona alt piksel kaydedildi: eski hatta göre figür kaybı 0, 74 jetonda kazanç; mevcut jetona göre 23 Celestial
+  taban/düzeltme jetonunda 5–155 px fark eski hatta da aynı (taban adımının `rescue`'su ölçüye girmez). Hiçbir sağlam jeton yazılmadı.
+- **Yeniden kesim:** `scripts/kesim-yenile.py` (iş listesi `data/kesim-duzelt.json`). Yerleşim `eski`: yeni kesim eski jetona kaydedilir
+  (sınırlı Nelder–Mead; eski hattı birebir üretilebilen jetonda kesin dönüşümden sapma ≤ 0,02 px) ve yalnız geri gelen pikseller eklenir
+  (en az bir 2×2 blok ya da siluete yapışık olmayan çıkıntı; siluet kenarındaki 1 px anahtarlama farkı eklenmez); eski pikseller ve maske
+  hizası aynen. `sayfa`: sayfa ölçeği (b grubunda sayfanın ortanca figürü ırk/cinsiyet ortancasına), `kardes`: kardeşlerin ortanca boyu,
+  `sigdir`: eski boy, tuvale sığmazsa küçülür. Eski dosyalar `public/characters/_yedek-kesim-2026-11-22/` (git dışı); defterde kaynak
+  `duzeltme`, not `KESIM-DUZELT`. Sonuç ve jeton tablosu `harita/belgeler/KESIM-DUZELT.md`.
+- **Yazılan 126 jeton:** (a) kesim yarığı 96 (Gariban, Warlock WL-1/2/4/6/7, Dragonborn sınıf, 987fc6de ızgara kesimi, Celestial taban;
+  ölçülen yarık 96 → 24, kalanlar ya başka yerde doğal boşluk ya da aynı yerde ve kaynağı ham çizim/renk anahtarı: 6 Celestial taban
+  jetonunda yeni kesim hiç piksel eklemiyor, `celestial-female-wizard` kuşağı ham çizimde macenta); (b) Gnome kadın ve Halfling erkek
+  Barbarian ID1–9 ırk ortancası boyunda (228/230 px; ID8 aurasız sayfadan kardeş boyunda); (c) `celestial-kadin-sorcerer-SC-9` şapkası
+  tam; (d) `tiefling-kadin-warlock-WL-7` kanat konturu geri geldi, `gnome-kadin-cleric-ID1` ve `celestial-kadin-cleric-ID7` tuvale sığdı
+  (Gnome Cleric'in sağ kanadı ham çizimde ızgara çizgisinde bitiyor: kaynak sınırı); (e) Tiefling Druid kadın ID1–3, ID5–8, erkek ID7 kabul
+  edilen yeni sayfadan (ID4 ile aynı sayfa ölçeği). Bütün jetonlarda yarık taraması (eşik 14 px) 275 → 192, kopuk parçalı 106 → 61.
+  Eklenmeyen piksellerde fark yalnız WEBP q92 yeniden kodlama gürültüsü (ortanca 1,66/255). Küçük kopyalar yalnız bu 126 jeton için
+  `npm run karakter-kucuk -- <ad…>`. ROZET-CERCEVE fikstürü (`src/ui/fixtures/rozet-kirpma.json`) yeniden üretildi: zarfı değişen 2 jeton
+  (SC-9, `tiefling-kadin-druid-ID5`), `badgeFit.test.ts` geçer.
+- **Kapsam dışı / değişmeyen:** 13 sınıf-genel eski jeton (2026-10-16, ham sayfası yok); WZ-B2 altıgen kalkan (20 ırk): kalkanın sağ
+  kenarı çizimde dikey, yeni kesimle eklenecek piksel 0 (kusur değil); belirsiz 113 yarık adayı yalnız ölçüldü: yeni kesimle 53'ünde
+  yarık kapanır, 11'inde kısalır, 21'inde piksel eklenir ama yarık aynı kalır, 18'i değişmez, 10'u kapsam dışı. 3 Celestial aday
+  (`celestial-kadin-cleric-ID3`, `-fighter-GR`, `-rogue-ID9`) bilerek silinmiş haleyi geri getirdiği için iyileşme sayılmaz.
+- **Maskeler yeniden üretilmedi** (`npm run soy-maske` tam çalıştırılmadı): `harita/belgeler/KESIM-DUZELT-MASKE-LISTESI.md`.
+- **Test:** `scripts/test_kesim_serit.py` (sentetik sayfalar; ham sayfa varken bilinen vakalar: eski hatla yarık 15–89 px, yeni hatla
+  ≤ 3 px) + vitest sarmalayıcı `src/data/kesimSerit.test.ts`.
+
 ## ANA-MENU-SADELESTIR: ana menü sadeleşti (2026-11-22, kullanıcı kararı; yalnız arayüz, kural/kayıt sürümü değişmedi)
 
 - **Hızlı savaş kartı kalktı.** İnceleme (kod değişmeden önce):

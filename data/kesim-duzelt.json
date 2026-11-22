@@ -1,0 +1,2204 @@
+{
+ "_not": "KESIM-DUZELT (2026-11-22): scripts/kesim-yenile.py uygula bu işleri yapar (gruplar: a kesim yarığı, b yanlış oran, c kesik şapka, d düz kesik kanat/kalkan, e eski Tiefling Druid kesimi). yerlesim: eski = eski jetona kayıt + yalnız geri gelen pikseller; sayfa = sayfa ölçeği (olcekHedef irk: sayfanın ortanca figürü ırk/cinsiyet ortancası); kardes = kardeş ortanca boyu; sigdir = eski boy, tuvale sığmazsa küçülür. Kaynak JETON-DENETIM.md (1a, 1b, 2a) ve kullanıcı listesi.",
+ "isler": [
+  {
+   "jeton": "celestial-erkek-barbarian-GR",
+   "grup": "a",
+   "kesici": "ucte-bir",
+   "sayfa": "hale-gemini-sayfa-02.png",
+   "hucre": 2,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 13 px (satır/sütun 233); defter: taban hale-gemini-sayfa-02.png h2"
+  },
+  {
+   "jeton": "celestial-erkek-barbarian-ID8",
+   "grup": "a",
+   "kesici": "duzeltme",
+   "sayfa": "hale-gemini-duzeltme-sayfa-02.jpg",
+   "hucre": 1,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 33 px (satır/sütun 19); defter: duzeltme hale-gemini-duzeltme-sayfa-02.jpg h1"
+  },
+  {
+   "jeton": "celestial-erkek-cleric-ID8",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "clerik-male-celestial.jpg",
+   "hucre": 8,
+   "duzen": "cleric",
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 14 px (satır/sütun 170); defter: diger clerik-male-celestial.jpg h8"
+  },
+  {
+   "jeton": "celestial-erkek-warlock-WL-1",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-celestial.jpg",
+   "hucre": 1,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 19 px (satır/sütun 236); defter: yeni warlock-male-celestial.jpg h1"
+  },
+  {
+   "jeton": "celestial-erkek-warlock-WL-2",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-celestial.jpg",
+   "hucre": 2,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 20 px (satır/sütun 230); defter: yeni warlock-male-celestial.jpg h2"
+  },
+  {
+   "jeton": "celestial-erkek-warlock-WL-4",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-celestial.jpg",
+   "hucre": 4,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 17 px (satır/sütun 241); defter: yeni warlock-male-celestial.jpg h4"
+  },
+  {
+   "jeton": "celestial-erkek-warlock-WL-6",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-celestial.jpg",
+   "hucre": 6,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı dikey 16 px (satır/sütun 151); defter: yeni warlock-male-celestial.jpg h6"
+  },
+  {
+   "jeton": "celestial-female-wizard",
+   "grup": "a",
+   "kesici": "ucte-bir",
+   "sayfa": "hale-gemini-sayfa-31.png",
+   "hucre": 2,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 26 px (satır/sütun 165); defter: taban hale-gemini-sayfa-31.png h2"
+  },
+  {
+   "jeton": "celestial-kadin-barbarian-ID1",
+   "grup": "a",
+   "kesici": "ucte-bir",
+   "sayfa": "hale-gemini-sayfa-02.png",
+   "hucre": 4,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 15 px (satır/sütun 225); defter: taban hale-gemini-sayfa-02.png h4"
+  },
+  {
+   "jeton": "celestial-male-warlock",
+   "grup": "a",
+   "kesici": "ucte-bir",
+   "sayfa": "hale-gemini-sayfa-26.png",
+   "hucre": 4,
+   "yerlesim": "eski",
+   "not": "kesim yarığı dikey 23 px (satır/sütun 59); defter: taban hale-gemini-sayfa-26.png h4"
+  },
+  {
+   "jeton": "celestial-male-wizard",
+   "grup": "a",
+   "kesici": "ucte-bir",
+   "sayfa": "hale-gemini-sayfa-29.png",
+   "hucre": 3,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 26 px (satır/sütun 164); defter: taban hale-gemini-sayfa-29.png h3"
+  },
+  {
+   "jeton": "dragonborn-erkek-fighter-ID8",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "fighter-male-dragonborn.jpg",
+   "duzen": "fighter",
+   "hucre": 8,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 14 px (satır/sütun 209); Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-erkek-monk-ID9",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "monk-male-dragonborn.jpeg",
+   "duzen": "monk",
+   "hucre": 9,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 24 px (satır/sütun 240); Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-erkek-rogue-ID7",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "rogue-male-dragonborn.jpg",
+   "duzen": "rogue",
+   "hucre": 7,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 121 px (satır/sütun 60); Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-erkek-sorcerer-SC-5",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "sorcerer-male-dragonborn.jpg",
+   "duzen": "sorcerer",
+   "hucre": 5,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 84 px (satır/sütun 120); Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-erkek-warlock-WL-1",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-dragonborn.jpg",
+   "duzen": "warlock",
+   "hucre": 1,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 19 px (satır/sütun 233); Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-erkek-warlock-WL-2",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-dragonborn.jpg",
+   "duzen": "warlock",
+   "hucre": 2,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 20 px (satır/sütun 230); Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-erkek-warlock-WL-4",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-dragonborn.jpg",
+   "duzen": "warlock",
+   "hucre": 4,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 18 px (satır/sütun 240); Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-erkek-warlock-WL-6",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-dragonborn.jpg",
+   "duzen": "warlock",
+   "hucre": 6,
+   "yerlesim": "eski",
+   "not": "kesim yarığı dikey 17 px (satır/sütun 151); Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-bard-ID5",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "bard-female-dragonborn.jpg",
+   "duzen": "bard",
+   "hucre": 5,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 18 px (satır/sütun 142); Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-bard-ID9",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "bard-female-dragonborn.jpg",
+   "duzen": "bard",
+   "hucre": 9,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 26 px (satır/sütun 122); Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-druid-ID2",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "druid-female-dragonborn.jpg",
+   "duzen": "druid",
+   "hucre": 2,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 25 px (satır/sütun 145); Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-fighter-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-dragonborn.jpg",
+   "duzen": "gariban",
+   "hucre": 5,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 12 px (satır/sütun 236); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-monk-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-dragonborn.jpg",
+   "duzen": "gariban",
+   "hucre": 6,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 16 px (satır/sütun 219); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-monk-ID8",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "monk-female-dragonborn.jpg",
+   "duzen": "monk",
+   "hucre": 8,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 89 px (satır/sütun 93); Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-monk-ID9",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "monk-female-dragonborn.jpg",
+   "duzen": "monk",
+   "hucre": 9,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 21 px (satır/sütun 241); Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-rogue-ID7",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "rogue-female-dragonborn.jpg",
+   "duzen": "rogue",
+   "hucre": 7,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 126 px (satır/sütun 56); Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-warlock-WL-1",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-dragonborn.jpg",
+   "duzen": "warlock",
+   "hucre": 1,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 19 px (satır/sütun 240); Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-warlock-WL-2",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-dragonborn.jpg",
+   "duzen": "warlock",
+   "hucre": 2,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 22 px (satır/sütun 230); Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-warlock-WL-4",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-dragonborn.jpg",
+   "duzen": "warlock",
+   "hucre": 4,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 16 px (satır/sütun 240); Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dwarf-erkek-barbarian-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-dwarf.jpg",
+   "duzen": "gariban",
+   "hucre": 1,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 33 px (satır/sütun 225); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dwarf-erkek-druid-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-dwarf.jpg",
+   "duzen": "gariban",
+   "hucre": 4,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 19 px (satır/sütun 154); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dwarf-erkek-monk-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-dwarf.jpg",
+   "duzen": "gariban",
+   "hucre": 6,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 16 px (satır/sütun 227); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dwarf-erkek-sorcerer-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-dwarf.jpg",
+   "duzen": "gariban",
+   "hucre": 10,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 22 px (satır/sütun 228); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dwarf-erkek-warlock-WL-4",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-dwarf.jpg",
+   "hucre": 4,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 16 px (satır/sütun 235); defter: yeni warlock-male-dwarf.jpg h4"
+  },
+  {
+   "jeton": "dwarf-kadin-barbarian-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-dwarf.jpg",
+   "duzen": "gariban",
+   "hucre": 1,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 15 px (satır/sütun 166); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dwarf-kadin-barbarian-ID7",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-female-dwarf.jpg",
+   "duzen": "barbarian",
+   "hucre": 7,
+   "yerlesim": "eski",
+   "not": "kesim yarığı dikey 22 px (satır/sütun 163); sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "dwarf-kadin-bard-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-dwarf.jpg",
+   "duzen": "gariban",
+   "hucre": 2,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 19 px (satır/sütun 128); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dwarf-kadin-fighter-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-dwarf.jpg",
+   "duzen": "gariban",
+   "hucre": 5,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 14 px (satır/sütun 235); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dwarf-kadin-monk-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-dwarf.jpg",
+   "duzen": "gariban",
+   "hucre": 6,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 17 px (satır/sütun 227); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dwarf-kadin-warlock-WL-2",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-dwarf.jpg",
+   "hucre": 2,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 21 px (satır/sütun 232); defter: yeni warlock-female-dwarf.jpg h2"
+  },
+  {
+   "jeton": "dwarf-kadin-warlock-WL-6",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-dwarf.jpg",
+   "hucre": 6,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı dikey 15 px (satır/sütun 150); defter: yeni warlock-female-dwarf.jpg h6"
+  },
+  {
+   "jeton": "elf-erkek-barbarian-ID3",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-male-elf.jpg",
+   "duzen": "barbarian",
+   "hucre": 3,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 16 px (satır/sütun 242); sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "elf-erkek-fighter-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-elf.jpg",
+   "duzen": "gariban",
+   "hucre": 5,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 14 px (satır/sütun 172); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "elf-erkek-monk-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-elf.jpg",
+   "duzen": "gariban",
+   "hucre": 6,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 18 px (satır/sütun 226); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "elf-erkek-paladin-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-elf.jpg",
+   "duzen": "gariban",
+   "hucre": 7,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 15 px (satır/sütun 231); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "elf-erkek-warlock-WL-1",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-elf.jpg",
+   "hucre": 1,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 19 px (satır/sütun 233); defter: yeni warlock-male-elf.jpg h1"
+  },
+  {
+   "jeton": "elf-erkek-warlock-WL-2",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-elf.jpg",
+   "hucre": 2,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 23 px (satır/sütun 165); defter: yeni warlock-male-elf.jpg h2"
+  },
+  {
+   "jeton": "elf-erkek-warlock-WL-6",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-elf.jpg",
+   "hucre": 6,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı dikey 14 px (satır/sütun 150); defter: yeni warlock-male-elf.jpg h6"
+  },
+  {
+   "jeton": "elf-kadin-druid-ID7",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "druid-female-elf.jpg",
+   "duzen": "druid",
+   "hucre": 7,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 24 px (satır/sütun 243); sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "elf-kadin-fighter-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-elf.jpg",
+   "duzen": "gariban",
+   "hucre": 5,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 14 px (satır/sütun 149); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "elf-kadin-warlock-WL-2",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-elf.jpg",
+   "hucre": 2,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 21 px (satır/sütun 231); defter: yeni warlock-female-elf.jpg h2"
+  },
+  {
+   "jeton": "elf-kadin-warlock-WL-4",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-elf.jpg",
+   "hucre": 4,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 14 px (satır/sütun 242); defter: yeni warlock-female-elf.jpg h4"
+  },
+  {
+   "jeton": "elf-kadin-warlock-WL-6",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-elf.jpg",
+   "hucre": 6,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı dikey 18 px (satır/sütun 152); defter: yeni warlock-female-elf.jpg h6"
+  },
+  {
+   "jeton": "gnome-erkek-druid-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-gnome.jpg",
+   "duzen": "gariban",
+   "hucre": 4,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 21 px (satır/sütun 167); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "gnome-erkek-fighter-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-gnome.jpg",
+   "duzen": "gariban",
+   "hucre": 5,
+   "yerlesim": "eski",
+   "not": "kesim yarığı dikey 43 px (satır/sütun 229); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "gnome-erkek-warlock-WL-2",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-gnome.jpg",
+   "hucre": 2,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 22 px (satır/sütun 230); defter: yeni warlock-male-gnome.jpg h2"
+  },
+  {
+   "jeton": "gnome-erkek-warlock-WL-6",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-gnome.jpg",
+   "hucre": 6,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı dikey 16 px (satır/sütun 152); defter: yeni warlock-male-gnome.jpg h6"
+  },
+  {
+   "jeton": "gnome-erkek-warlock-WL-7",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-gnome.jpg",
+   "hucre": 7,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı dikey 15 px (satır/sütun 144); defter: yeni warlock-male-gnome.jpg h7"
+  },
+  {
+   "jeton": "gnome-kadin-druid-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-gnome.jpg",
+   "duzen": "gariban",
+   "hucre": 4,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 14 px (satır/sütun 234); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "gnome-kadin-monk-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-gnome.jpg",
+   "duzen": "gariban",
+   "hucre": 6,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 16 px (satır/sütun 227); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "goliath-erkek-monk-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-goliath.jpg",
+   "duzen": "gariban",
+   "hucre": 6,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 24 px (satır/sütun 170); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "goliath-erkek-rogue-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-goliath.jpg",
+   "duzen": "gariban",
+   "hucre": 9,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 22 px (satır/sütun 132); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "goliath-kadin-bard-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-goliath.jpg",
+   "duzen": "gariban",
+   "hucre": 2,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 18 px (satır/sütun 108); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "goliath-kadin-druid-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-goliath.jpg",
+   "duzen": "gariban",
+   "hucre": 4,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 16 px (satır/sütun 217); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "goliath-kadin-monk-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-goliath.jpg",
+   "duzen": "gariban",
+   "hucre": 6,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 17 px (satır/sütun 228); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "halfling-erkek-barbarian-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-halfling.jpg",
+   "duzen": "gariban",
+   "hucre": 1,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 16 px (satır/sütun 152); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "halfling-erkek-bard-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-halfling.jpg",
+   "duzen": "gariban",
+   "hucre": 2,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 19 px (satır/sütun 133); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "halfling-erkek-druid-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-halfling.jpg",
+   "duzen": "gariban",
+   "hucre": 4,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 13 px (satır/sütun 156); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "halfling-erkek-fighter-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-halfling.jpg",
+   "duzen": "gariban",
+   "hucre": 5,
+   "yerlesim": "eski",
+   "not": "kesim yarığı dikey 29 px (satır/sütun 213); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "halfling-kadin-barbarian-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-halfling.jpg",
+   "duzen": "gariban",
+   "hucre": 1,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 22 px (satır/sütun 155); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "halfling-kadin-druid-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-halfling.jpg",
+   "duzen": "gariban",
+   "hucre": 4,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 15 px (satır/sütun 164); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "halfling-kadin-fighter-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-halfling.jpg",
+   "duzen": "gariban",
+   "hucre": 5,
+   "yerlesim": "eski",
+   "not": "kesim yarığı dikey 22 px (satır/sütun 213); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "halfling-kadin-monk-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-halfling.jpg",
+   "duzen": "gariban",
+   "hucre": 6,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 22 px (satır/sütun 187); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "human-erkek-barbarian-ID8",
+   "grup": "a",
+   "kesici": "govde",
+   "sayfa": "barbarian-male-aurasiz.jpg",
+   "hucre": 1,
+   "adet": 8,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 15 px (satır/sütun 146); defter: diger barbarian-male-aurasiz.jpg h1"
+  },
+  {
+   "jeton": "human-erkek-druid-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-human.jpg",
+   "duzen": "gariban",
+   "hucre": 4,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 23 px (satır/sütun 161); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "human-erkek-sorcerer-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-human.jpg",
+   "duzen": "gariban",
+   "hucre": 10,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 19 px (satır/sütun 231); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "human-erkek-warlock-WL-1",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-human.jpg",
+   "hucre": 1,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 14 px (satır/sütun 236); defter: yeni warlock-male-human.jpg h1"
+  },
+  {
+   "jeton": "human-erkek-warlock-WL-2",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-human.jpg",
+   "hucre": 2,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 21 px (satır/sütun 230); defter: yeni warlock-male-human.jpg h2"
+  },
+  {
+   "jeton": "human-erkek-warlock-WL-6",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-human.jpg",
+   "hucre": 6,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı dikey 15 px (satır/sütun 151); defter: yeni warlock-male-human.jpg h6"
+  },
+  {
+   "jeton": "human-kadin-bard-ID5",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "bard-female-human.jpg",
+   "duzen": "bard",
+   "hucre": 5,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 17 px (satır/sütun 139); sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "human-kadin-monk-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-human.jpg",
+   "duzen": "gariban",
+   "hucre": 6,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 14 px (satır/sütun 233); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "human-kadin-paladin-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-human.jpg",
+   "duzen": "gariban",
+   "hucre": 7,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 13 px (satır/sütun 226); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "human-kadin-warlock-WL-1",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-human.jpg",
+   "hucre": 1,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 15 px (satır/sütun 236); defter: yeni warlock-female-human.jpg h1"
+  },
+  {
+   "jeton": "human-kadin-warlock-WL-2",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-human.jpg",
+   "hucre": 2,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 21 px (satır/sütun 232); defter: yeni warlock-female-human.jpg h2"
+  },
+  {
+   "jeton": "human-kadin-warlock-WL-6",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-human.jpg",
+   "hucre": 6,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı dikey 14 px (satır/sütun 149); defter: yeni warlock-female-human.jpg h6"
+  },
+  {
+   "jeton": "orc-erkek-bard-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-orc.jpg",
+   "duzen": "gariban",
+   "hucre": 2,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 22 px (satır/sütun 127); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "orc-erkek-monk-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-orc.jpg",
+   "duzen": "gariban",
+   "hucre": 6,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 16 px (satır/sütun 229); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "orc-erkek-sorcerer-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-orc.jpg",
+   "duzen": "gariban",
+   "hucre": 10,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 19 px (satır/sütun 158); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "orc-kadin-barbarian-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-orc.jpg",
+   "duzen": "gariban",
+   "hucre": 1,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 18 px (satır/sütun 151); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "orc-kadin-druid-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-orc.jpg",
+   "duzen": "gariban",
+   "hucre": 4,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 16 px (satır/sütun 166); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "tiefling-erkek-warlock-WL-1",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-tiefling.jpg",
+   "hucre": 1,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 21 px (satır/sütun 237); defter: yeni warlock-male-tiefling.jpg h1"
+  },
+  {
+   "jeton": "tiefling-erkek-warlock-WL-4",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-tiefling.jpg",
+   "hucre": 4,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 21 px (satır/sütun 236); defter: yeni warlock-male-tiefling.jpg h4"
+  },
+  {
+   "jeton": "tiefling-kadin-monk-GR",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-tiefling.jpg",
+   "duzen": "gariban",
+   "hucre": 6,
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 15 px (satır/sütun 233); Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "tiefling-kadin-warlock-WL-2",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-tiefling.jpg",
+   "hucre": 2,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı yatay 14 px (satır/sütun 224); defter: yeni warlock-female-tiefling.jpg h2"
+  },
+  {
+   "jeton": "tiefling-kadin-warlock-WL-6",
+   "grup": "a",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-tiefling.jpg",
+   "hucre": 6,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "kesim yarığı dikey 14 px (satır/sütun 175); defter: yeni warlock-female-tiefling.jpg h6"
+  },
+  {
+   "jeton": "gnome-kadin-barbarian-ID1",
+   "grup": "b",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-female-gnome.jpg",
+   "duzen": "barbarian",
+   "hucre": 1,
+   "yerlesim": "sayfa",
+   "olcekHedef": "irk",
+   "not": "yanlış oran (figür ırk ortancasının yarısı)"
+  },
+  {
+   "jeton": "gnome-kadin-barbarian-ID2",
+   "grup": "b",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-female-gnome.jpg",
+   "duzen": "barbarian",
+   "hucre": 2,
+   "yerlesim": "sayfa",
+   "olcekHedef": "irk",
+   "not": "yanlış oran (figür ırk ortancasının yarısı)"
+  },
+  {
+   "jeton": "gnome-kadin-barbarian-ID3",
+   "grup": "b",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-female-gnome.jpg",
+   "duzen": "barbarian",
+   "hucre": 3,
+   "yerlesim": "sayfa",
+   "olcekHedef": "irk",
+   "not": "yanlış oran (figür ırk ortancasının yarısı)"
+  },
+  {
+   "jeton": "gnome-kadin-barbarian-ID4",
+   "grup": "b",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-female-gnome.jpg",
+   "duzen": "barbarian",
+   "hucre": 4,
+   "yerlesim": "sayfa",
+   "olcekHedef": "irk",
+   "not": "yanlış oran (figür ırk ortancasının yarısı)"
+  },
+  {
+   "jeton": "gnome-kadin-barbarian-ID5",
+   "grup": "b",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-female-gnome.jpg",
+   "duzen": "barbarian",
+   "hucre": 5,
+   "yerlesim": "sayfa",
+   "olcekHedef": "irk",
+   "not": "yanlış oran (figür ırk ortancasının yarısı)"
+  },
+  {
+   "jeton": "gnome-kadin-barbarian-ID6",
+   "grup": "b",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-female-gnome.jpg",
+   "duzen": "barbarian",
+   "hucre": 6,
+   "yerlesim": "sayfa",
+   "olcekHedef": "irk",
+   "not": "yanlış oran (figür ırk ortancasının yarısı)"
+  },
+  {
+   "jeton": "gnome-kadin-barbarian-ID7",
+   "grup": "b",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-female-gnome.jpg",
+   "duzen": "barbarian",
+   "hucre": 7,
+   "yerlesim": "sayfa",
+   "olcekHedef": "irk",
+   "not": "yanlış oran (figür ırk ortancasının yarısı)"
+  },
+  {
+   "jeton": "gnome-kadin-barbarian-ID9",
+   "grup": "b",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-female-gnome.jpg",
+   "duzen": "barbarian",
+   "hucre": 9,
+   "yerlesim": "sayfa",
+   "olcekHedef": "irk",
+   "not": "yanlış oran (figür ırk ortancasının yarısı)"
+  },
+  {
+   "jeton": "gnome-kadin-barbarian-ID8",
+   "grup": "b",
+   "kesici": "govde",
+   "sayfa": "barbarian-female-aurasiz.jpg",
+   "adet": 8,
+   "hucre": 5,
+   "yerlesim": "kardes",
+   "not": "yanlış oran; aurasız sayfa, kardeş ortanca boyu"
+  },
+  {
+   "jeton": "halfling-erkek-barbarian-ID1",
+   "grup": "b",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-male-halfling.jpg",
+   "duzen": "barbarian",
+   "hucre": 1,
+   "yerlesim": "sayfa",
+   "olcekHedef": "irk",
+   "not": "yanlış oran (figür ırk ortancasının yarısı)"
+  },
+  {
+   "jeton": "halfling-erkek-barbarian-ID2",
+   "grup": "b",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-male-halfling.jpg",
+   "duzen": "barbarian",
+   "hucre": 2,
+   "yerlesim": "sayfa",
+   "olcekHedef": "irk",
+   "not": "yanlış oran (figür ırk ortancasının yarısı)"
+  },
+  {
+   "jeton": "halfling-erkek-barbarian-ID3",
+   "grup": "b",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-male-halfling.jpg",
+   "duzen": "barbarian",
+   "hucre": 3,
+   "yerlesim": "sayfa",
+   "olcekHedef": "irk",
+   "not": "yanlış oran (figür ırk ortancasının yarısı)"
+  },
+  {
+   "jeton": "halfling-erkek-barbarian-ID4",
+   "grup": "b",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-male-halfling.jpg",
+   "duzen": "barbarian",
+   "hucre": 4,
+   "yerlesim": "sayfa",
+   "olcekHedef": "irk",
+   "not": "yanlış oran (figür ırk ortancasının yarısı)"
+  },
+  {
+   "jeton": "halfling-erkek-barbarian-ID5",
+   "grup": "b",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-male-halfling.jpg",
+   "duzen": "barbarian",
+   "hucre": 5,
+   "yerlesim": "sayfa",
+   "olcekHedef": "irk",
+   "not": "yanlış oran (figür ırk ortancasının yarısı)"
+  },
+  {
+   "jeton": "halfling-erkek-barbarian-ID6",
+   "grup": "b",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-male-halfling.jpg",
+   "duzen": "barbarian",
+   "hucre": 6,
+   "yerlesim": "sayfa",
+   "olcekHedef": "irk",
+   "not": "yanlış oran (figür ırk ortancasının yarısı)"
+  },
+  {
+   "jeton": "halfling-erkek-barbarian-ID7",
+   "grup": "b",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-male-halfling.jpg",
+   "duzen": "barbarian",
+   "hucre": 7,
+   "yerlesim": "sayfa",
+   "olcekHedef": "irk",
+   "not": "yanlış oran (figür ırk ortancasının yarısı)"
+  },
+  {
+   "jeton": "halfling-erkek-barbarian-ID9",
+   "grup": "b",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-male-halfling.jpg",
+   "duzen": "barbarian",
+   "hucre": 9,
+   "yerlesim": "sayfa",
+   "olcekHedef": "irk",
+   "not": "yanlış oran (figür ırk ortancasının yarısı)"
+  },
+  {
+   "jeton": "halfling-erkek-barbarian-ID8",
+   "grup": "b",
+   "kesici": "govde",
+   "sayfa": "barbarian-male-aurasiz.jpg",
+   "adet": 8,
+   "hucre": 4,
+   "yerlesim": "kardes",
+   "not": "yanlış oran; aurasız sayfa, kardeş ortanca boyu"
+  },
+  {
+   "jeton": "celestial-kadin-sorcerer-SC-9",
+   "grup": "c",
+   "kesici": "ucte-bir",
+   "sayfa": "hale-gemini-sayfa-26.png",
+   "hucre": 2,
+   "yerlesim": "sigdir",
+   "not": "silindir şapka tuvalin üstünde kesik; defter: taban hale-gemini-sayfa-26.png h2"
+  },
+  {
+   "jeton": "gnome-kadin-cleric-ID1",
+   "grup": "d",
+   "kesici": "sayfa",
+   "sayfa": "cleric-female-gnome.jpg",
+   "duzen": "cleric",
+   "hucre": 1,
+   "yerlesim": "sigdir",
+   "not": "kanatlar tuvalin iki yanında kesik; sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "tiefling-kadin-warlock-WL-7",
+   "grup": "d",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-tiefling.jpg",
+   "hucre": 7,
+   "duzen": "warlock",
+   "yerlesim": "eski",
+   "not": "sağ kanadın dış konturu silinmiş (eski trim_lines); defter: yeni warlock-female-tiefling.jpg h7"
+  },
+  {
+   "jeton": "celestial-kadin-cleric-ID7",
+   "grup": "d",
+   "kesici": "ucte-bir",
+   "sayfa": "hale-gemini-sayfa-07.png",
+   "hucre": 9,
+   "yerlesim": "sigdir",
+   "not": "kalkan tuvalin sol kenarında kesik; defter: taban hale-gemini-sayfa-07.png h9"
+  },
+  {
+   "jeton": "tiefling-kadin-druid-ID1",
+   "grup": "e",
+   "kesici": "sayfa",
+   "sayfa": "druid-female-tiefling.jpg",
+   "duzen": "druid",
+   "hucre": 1,
+   "yerlesim": "sayfa",
+   "not": "eski 2026-11-16 kesimi; kabul edilen yeni sayfadan (EKSIKLER-KAYNAK-DENETIM)"
+  },
+  {
+   "jeton": "tiefling-kadin-druid-ID2",
+   "grup": "e",
+   "kesici": "sayfa",
+   "sayfa": "druid-female-tiefling.jpg",
+   "duzen": "druid",
+   "hucre": 2,
+   "yerlesim": "sayfa",
+   "not": "eski 2026-11-16 kesimi; kabul edilen yeni sayfadan (EKSIKLER-KAYNAK-DENETIM)"
+  },
+  {
+   "jeton": "tiefling-kadin-druid-ID3",
+   "grup": "e",
+   "kesici": "sayfa",
+   "sayfa": "druid-female-tiefling.jpg",
+   "duzen": "druid",
+   "hucre": 3,
+   "yerlesim": "sayfa",
+   "not": "eski 2026-11-16 kesimi; kabul edilen yeni sayfadan (EKSIKLER-KAYNAK-DENETIM)"
+  },
+  {
+   "jeton": "tiefling-kadin-druid-ID5",
+   "grup": "e",
+   "kesici": "sayfa",
+   "sayfa": "druid-female-tiefling.jpg",
+   "duzen": "druid",
+   "hucre": 5,
+   "yerlesim": "sayfa",
+   "not": "eski 2026-11-16 kesimi; kabul edilen yeni sayfadan (EKSIKLER-KAYNAK-DENETIM)"
+  },
+  {
+   "jeton": "tiefling-kadin-druid-ID6",
+   "grup": "e",
+   "kesici": "sayfa",
+   "sayfa": "druid-female-tiefling.jpg",
+   "duzen": "druid",
+   "hucre": 6,
+   "yerlesim": "sayfa",
+   "not": "eski 2026-11-16 kesimi; kabul edilen yeni sayfadan (EKSIKLER-KAYNAK-DENETIM)"
+  },
+  {
+   "jeton": "tiefling-kadin-druid-ID7",
+   "grup": "e",
+   "kesici": "sayfa",
+   "sayfa": "druid-female-tiefling.jpg",
+   "duzen": "druid",
+   "hucre": 7,
+   "yerlesim": "sayfa",
+   "not": "eski 2026-11-16 kesimi; kabul edilen yeni sayfadan (EKSIKLER-KAYNAK-DENETIM)"
+  },
+  {
+   "jeton": "tiefling-kadin-druid-ID8",
+   "grup": "e",
+   "kesici": "sayfa",
+   "sayfa": "druid-female-tiefling.jpg",
+   "duzen": "druid",
+   "hucre": 8,
+   "yerlesim": "sayfa",
+   "not": "eski 2026-11-16 kesimi; kabul edilen yeni sayfadan (EKSIKLER-KAYNAK-DENETIM)"
+  },
+  {
+   "jeton": "tiefling-erkek-druid-ID7",
+   "grup": "e",
+   "kesici": "sayfa",
+   "sayfa": "druid-male-tiefling.jpg",
+   "duzen": "druid",
+   "hucre": 7,
+   "yerlesim": "sayfa",
+   "not": "eski 2026-11-16 kesimi; kabul edilen yeni sayfadan (EKSIKLER-KAYNAK-DENETIM)"
+  }
+ ],
+ "kapsamDisi": [
+  {
+   "jeton": "dragonborn-male-warlock",
+   "grup": "a",
+   "neden": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "dwarf-female-warlock",
+   "grup": "a",
+   "neden": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "dwarf-male-warlock",
+   "grup": "a",
+   "neden": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "dwarf-male-wizard",
+   "grup": "a",
+   "neden": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "elf-female-warlock",
+   "grup": "a",
+   "neden": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "elf-male-warlock",
+   "grup": "a",
+   "neden": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "gnome-male-warlock",
+   "grup": "a",
+   "neden": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "halfling-female-warlock",
+   "grup": "a",
+   "neden": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "halfling-male-warlock",
+   "grup": "a",
+   "neden": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "human-male-warlock",
+   "grup": "a",
+   "neden": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "orc-male-wizard",
+   "grup": "a",
+   "neden": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "tiefling-female-warlock",
+   "grup": "a",
+   "neden": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "tiefling-male-wizard",
+   "grup": "a",
+   "neden": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  }
+ ],
+ "belirsiz": [
+  {
+   "jeton": "celestial-erkek-bard-GR",
+   "kesici": "ucte-bir",
+   "sayfa": "hale-gemini-sayfa-04.png",
+   "hucre": 6,
+   "not": "defter: taban hale-gemini-sayfa-04.png h6"
+  },
+  {
+   "jeton": "celestial-erkek-cleric-ID4",
+   "kesici": "sayfa",
+   "sayfa": "clerik-male-celestial.jpg",
+   "hucre": 4,
+   "duzen": "cleric",
+   "not": "defter: diger clerik-male-celestial.jpg h4"
+  },
+  {
+   "jeton": "celestial-erkek-cleric-ID6",
+   "kesici": "sayfa",
+   "sayfa": "clerik-male-celestial.jpg",
+   "hucre": 6,
+   "duzen": "cleric",
+   "not": "defter: diger clerik-male-celestial.jpg h6"
+  },
+  {
+   "jeton": "celestial-erkek-cleric-ID7",
+   "kesici": "sayfa",
+   "sayfa": "clerik-male-celestial.jpg",
+   "hucre": 7,
+   "duzen": "cleric",
+   "not": "defter: diger clerik-male-celestial.jpg h7"
+  },
+  {
+   "jeton": "celestial-erkek-sorcerer-SC-9",
+   "kesici": "ucte-bir",
+   "sayfa": "hale-gemini-sayfa-24.png",
+   "hucre": 9,
+   "not": "defter: taban hale-gemini-sayfa-24.png h9"
+  },
+  {
+   "jeton": "celestial-kadin-cleric-ID3",
+   "kesici": "sayfa",
+   "sayfa": "cleric-female-celestial.jpg",
+   "duzen": "cleric",
+   "hucre": 3,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "celestial-kadin-fighter-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-celestial.jpg",
+   "duzen": "gariban",
+   "hucre": 5,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "celestial-kadin-ranger-GR",
+   "kesici": "ucte-bir",
+   "sayfa": "hale-gemini-sayfa-21.png",
+   "hucre": 2,
+   "not": "defter: taban hale-gemini-sayfa-21.png h2"
+  },
+  {
+   "jeton": "celestial-kadin-rogue-ID9",
+   "kesici": "sayfa",
+   "sayfa": "rogue-female-celestial.jpg",
+   "duzen": "rogue",
+   "hucre": 9,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "celestial-kadin-wizard-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-celestial.jpg",
+   "duzen": "gariban",
+   "hucre": 12,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "celestial-male-bard",
+   "kesici": "ucte-bir",
+   "sayfa": "hale-gemini-sayfa-03.png",
+   "hucre": 5,
+   "not": "defter: taban hale-gemini-sayfa-03.png h5"
+  },
+  {
+   "jeton": "dragonborn-erkek-barbarian-ID9",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-male-dragonborn.jpg",
+   "duzen": "barbarian",
+   "hucre": 9,
+   "not": "Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-erkek-bard-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-dragonborn.jpg",
+   "duzen": "gariban",
+   "hucre": 2,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-erkek-bard-ID7",
+   "kesici": "sayfa",
+   "sayfa": "bard-male-dragonborn.jpg",
+   "duzen": "bard",
+   "hucre": 7,
+   "not": "Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-erkek-fighter-ID2",
+   "kesici": "sayfa",
+   "sayfa": "fighter-male-dragonborn.jpg",
+   "duzen": "fighter",
+   "hucre": 2,
+   "not": "Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-erkek-fighter-ID3",
+   "kesici": "sayfa",
+   "sayfa": "fighter-male-dragonborn.jpg",
+   "duzen": "fighter",
+   "hucre": 3,
+   "not": "Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-erkek-paladin-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-dragonborn.jpg",
+   "duzen": "gariban",
+   "hucre": 7,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-erkek-paladin-ID10",
+   "kesici": "sayfa",
+   "sayfa": "paladin-male-dragonborn.png",
+   "duzen": "paladin",
+   "hucre": 10,
+   "not": "Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-erkek-paladin-ID6",
+   "kesici": "sayfa",
+   "sayfa": "paladin-male-dragonborn.png",
+   "duzen": "paladin",
+   "hucre": 6,
+   "not": "Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-erkek-paladin-ID9",
+   "kesici": "sayfa",
+   "sayfa": "paladin-male-dragonborn.png",
+   "duzen": "paladin",
+   "hucre": 9,
+   "not": "Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-bard-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-dragonborn.jpg",
+   "duzen": "gariban",
+   "hucre": 2,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-bard-ID6",
+   "kesici": "sayfa",
+   "sayfa": "bard-female-dragonborn.jpg",
+   "duzen": "bard",
+   "hucre": 6,
+   "not": "Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-cleric-ID6",
+   "kesici": "sayfa",
+   "sayfa": "cleric-female-dragonborn.jpg",
+   "duzen": "cleric",
+   "hucre": 6,
+   "not": "Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-druid-ID8",
+   "kesici": "sayfa",
+   "sayfa": "druid-female-dragonborn.jpg",
+   "duzen": "druid",
+   "hucre": 8,
+   "not": "Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-fighter-ID10",
+   "kesici": "sayfa",
+   "sayfa": "fighter-female-dragonborn.jpg",
+   "duzen": "fighter",
+   "hucre": 10,
+   "not": "Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-fighter-ID3",
+   "kesici": "sayfa",
+   "sayfa": "fighter-female-dragonborn.jpg",
+   "duzen": "fighter",
+   "hucre": 3,
+   "not": "Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-paladin-ID2",
+   "kesici": "sayfa",
+   "sayfa": "paladin-female-dragonborn.png",
+   "duzen": "paladin",
+   "hucre": 2,
+   "not": "Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-ranger-ID4",
+   "kesici": "sayfa",
+   "sayfa": "ranger-female-dragonborn.jpg",
+   "duzen": "ranger",
+   "hucre": 4,
+   "not": "Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-ranger-ID5",
+   "kesici": "sayfa",
+   "sayfa": "ranger-female-dragonborn.jpg",
+   "duzen": "ranger",
+   "hucre": 5,
+   "not": "Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-ranger-ID6",
+   "kesici": "sayfa",
+   "sayfa": "ranger-female-dragonborn.jpg",
+   "duzen": "ranger",
+   "hucre": 6,
+   "not": "Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-rogue-ID10",
+   "kesici": "sayfa",
+   "sayfa": "rogue-female-dragonborn.jpg",
+   "duzen": "rogue",
+   "hucre": 10,
+   "not": "Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dragonborn-kadin-sorcerer-SC-3",
+   "kesici": "sayfa",
+   "sayfa": "sorcerer-female-dragonborn.png",
+   "duzen": "sorcerer",
+   "hucre": 3,
+   "not": "Dragonborn sınıf sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dwarf-erkek-barbarian-ID4",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-male-dwarf.jpg",
+   "duzen": "barbarian",
+   "hucre": 4,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "dwarf-erkek-cleric-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-dwarf.jpg",
+   "duzen": "gariban",
+   "hucre": 3,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dwarf-female-bard",
+   "kapsamDisi": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "dwarf-kadin-barbarian-ID4",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-female-dwarf.jpg",
+   "duzen": "barbarian",
+   "hucre": 4,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "dwarf-kadin-cleric-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-dwarf.jpg",
+   "duzen": "gariban",
+   "hucre": 3,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dwarf-kadin-druid-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-dwarf.jpg",
+   "duzen": "gariban",
+   "hucre": 4,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dwarf-kadin-paladin-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-dwarf.jpg",
+   "duzen": "gariban",
+   "hucre": 7,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dwarf-kadin-warlock-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-dwarf.jpg",
+   "duzen": "gariban",
+   "hucre": 11,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "dwarf-kadin-warlock-WL-1",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-dwarf.jpg",
+   "hucre": 1,
+   "duzen": "warlock",
+   "not": "defter: yeni warlock-female-dwarf.jpg h1"
+  },
+  {
+   "jeton": "dwarf-kadin-warlock-WL-7",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-dwarf.jpg",
+   "hucre": 7,
+   "duzen": "warlock",
+   "not": "defter: yeni warlock-female-dwarf.jpg h7"
+  },
+  {
+   "jeton": "dwarf-kadin-wizard-WZ-B5",
+   "kesici": "sayfa",
+   "sayfa": "wizard-female-dwarf-b.jpg",
+   "duzen": "wizard_b",
+   "hucre": 5,
+   "not": "Wizard sayfası"
+  },
+  {
+   "jeton": "elf-erkek-bard-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-elf.jpg",
+   "duzen": "gariban",
+   "hucre": 2,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "elf-erkek-rogue-ID9",
+   "kesici": "sayfa",
+   "sayfa": "rogue-male-elf.jpg",
+   "duzen": "rogue",
+   "hucre": 9,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "elf-erkek-warlock-WL-4",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-elf.jpg",
+   "hucre": 4,
+   "duzen": "warlock",
+   "not": "defter: yeni warlock-male-elf.jpg h4"
+  },
+  {
+   "jeton": "elf-kadin-bard-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-elf.jpg",
+   "duzen": "gariban",
+   "hucre": 2,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "elf-kadin-monk-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-elf.jpg",
+   "duzen": "gariban",
+   "hucre": 6,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "elf-kadin-warlock-WL-3",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-elf.jpg",
+   "hucre": 3,
+   "duzen": "warlock",
+   "not": "defter: yeni warlock-female-elf.jpg h3"
+  },
+  {
+   "jeton": "gnome-erkek-ranger-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-gnome.jpg",
+   "duzen": "gariban",
+   "hucre": 8,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "gnome-female-bard",
+   "kapsamDisi": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "gnome-female-paladin",
+   "kapsamDisi": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "gnome-female-warlock",
+   "kapsamDisi": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "gnome-kadin-bard-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-gnome.jpg",
+   "duzen": "gariban",
+   "hucre": 2,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "gnome-kadin-fighter-ID9",
+   "kesici": "sayfa",
+   "sayfa": "fighter-female-gnome.jpg",
+   "duzen": "fighter",
+   "hucre": 9,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "gnome-kadin-paladin-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-gnome.jpg",
+   "duzen": "gariban",
+   "hucre": 7,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "gnome-kadin-sorcerer-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-gnome.jpg",
+   "duzen": "gariban",
+   "hucre": 10,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "gnome-kadin-warlock-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-gnome.jpg",
+   "duzen": "gariban",
+   "hucre": 11,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "gnome-kadin-wizard-WZ-B5",
+   "kesici": "sayfa",
+   "sayfa": "wizard-female-gnome-b.jpg",
+   "duzen": "wizard_b",
+   "hucre": 5,
+   "not": "Wizard sayfası"
+  },
+  {
+   "jeton": "goliath-erkek-cleric-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-goliath.jpg",
+   "duzen": "gariban",
+   "hucre": 3,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "goliath-erkek-cleric-ID1",
+   "kesici": "sayfa",
+   "sayfa": "cleric-male-goliath.jpg",
+   "duzen": "cleric",
+   "hucre": 1,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "goliath-erkek-cleric-ID3",
+   "kesici": "sayfa",
+   "sayfa": "cleric-male-goliath.jpg",
+   "duzen": "cleric",
+   "hucre": 3,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "goliath-erkek-sorcerer-SC-9",
+   "kesici": "sayfa",
+   "sayfa": "sorcerer-erkek-goliath.jpg",
+   "duzen": "sorcerer",
+   "hucre": 9,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "goliath-female-bard",
+   "kapsamDisi": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "goliath-kadin-cleric-ID7",
+   "kesici": "sayfa",
+   "sayfa": "cleric-female-goliath.jpg",
+   "duzen": "cleric",
+   "hucre": 7,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "goliath-kadin-fighter-ID12",
+   "kesici": "figur",
+   "sayfa": "gladiator-gnome-goliath-female.jpg",
+   "hucre": 2,
+   "adet": 2,
+   "not": "defter: yeni gladiator-gnome-goliath-female.jpg h2"
+  },
+  {
+   "jeton": "goliath-kadin-fighter-ID8",
+   "kesici": "sayfa",
+   "sayfa": "fighter-female-goliath.jpg",
+   "duzen": "fighter",
+   "hucre": 8,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "goliath-kadin-wizard-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-goliath.jpg",
+   "duzen": "gariban",
+   "hucre": 12,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "goliath-male-warlock",
+   "kapsamDisi": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "halfling-erkek-bard-ID6",
+   "kesici": "sayfa",
+   "sayfa": "bard-male-halfling.jpg",
+   "duzen": "bard",
+   "hucre": 6,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "halfling-erkek-druid-ID7",
+   "kesici": "sayfa",
+   "sayfa": "druid-male-halfling.jpg",
+   "duzen": "druid",
+   "hucre": 7,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "halfling-erkek-rogue-ID3",
+   "kesici": "sayfa",
+   "sayfa": "rogue-male-halfling.jpg",
+   "duzen": "rogue",
+   "hucre": 3,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "halfling-female-bard",
+   "kapsamDisi": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "halfling-kadin-bard-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-halfling.jpg",
+   "duzen": "gariban",
+   "hucre": 2,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "halfling-kadin-bard-ID7",
+   "kesici": "sayfa",
+   "sayfa": "bard-female-halfling.jpg",
+   "duzen": "bard",
+   "hucre": 7,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "halfling-kadin-cleric-ID8",
+   "kesici": "sayfa",
+   "sayfa": "cleric-female-halfling.jpg",
+   "duzen": "cleric",
+   "hucre": 8,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "halfling-kadin-sorcerer-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-halfling.jpg",
+   "duzen": "gariban",
+   "hucre": 10,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "halfling-kadin-warlock-WL-4",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-halfling.jpg",
+   "duzen": "warlock",
+   "hucre": 4,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "human-erkek-barbarian-ID6",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-male-human.jpg",
+   "duzen": "barbarian",
+   "hucre": 6,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "human-erkek-fighter-ID3",
+   "kesici": "sayfa",
+   "sayfa": "fighter-male-human.jpg",
+   "hucre": 3,
+   "duzen": "fighter",
+   "not": "defter: diger fighter-male-human.jpg h3"
+  },
+  {
+   "jeton": "human-erkek-fighter-ID8",
+   "kesici": "sayfa",
+   "sayfa": "fighter-male-human.jpg",
+   "hucre": 8,
+   "duzen": "fighter",
+   "not": "defter: diger fighter-male-human.jpg h8"
+  },
+  {
+   "jeton": "human-erkek-paladin-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-human.jpg",
+   "duzen": "gariban",
+   "hucre": 7,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "human-erkek-rogue-ID4",
+   "kesici": "sayfa",
+   "sayfa": "rogue-male-human.jpg",
+   "duzen": "rogue",
+   "hucre": 4,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "human-erkek-warlock-WL-11",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-human.jpg",
+   "hucre": 11,
+   "duzen": "warlock",
+   "not": "defter: yeni warlock-male-human.jpg h11"
+  },
+  {
+   "jeton": "human-erkek-warlock-WL-7",
+   "kesici": "sayfa",
+   "sayfa": "warlock-male-human.jpg",
+   "hucre": 7,
+   "duzen": "warlock",
+   "not": "defter: yeni warlock-male-human.jpg h7"
+  },
+  {
+   "jeton": "human-kadin-fighter-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-human.jpg",
+   "duzen": "gariban",
+   "hucre": 5,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "human-kadin-fighter-ID6",
+   "kesici": "sayfa",
+   "sayfa": "fighter-female-human.jpg",
+   "hucre": 6,
+   "duzen": "fighter",
+   "not": "defter: diger fighter-female-human.jpg h6"
+  },
+  {
+   "jeton": "human-kadin-fighter-ID7",
+   "kesici": "sayfa",
+   "sayfa": "fighter-female-human.jpg",
+   "hucre": 7,
+   "duzen": "fighter",
+   "not": "defter: diger fighter-female-human.jpg h7"
+  },
+  {
+   "jeton": "human-kadin-monk-ID10",
+   "kesici": "sayfa",
+   "sayfa": "monk-female-human.jpg",
+   "duzen": "monk",
+   "hucre": 10,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "human-kadin-sorcerer-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-human.jpg",
+   "duzen": "gariban",
+   "hucre": 10,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "human-kadin-warlock-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-human.jpg",
+   "duzen": "gariban",
+   "hucre": 11,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "human-male-barbarian",
+   "kapsamDisi": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "orc-erkek-barbarian-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-male-orc.jpg",
+   "duzen": "gariban",
+   "hucre": 1,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "orc-erkek-bard-ID5",
+   "kesici": "sayfa",
+   "sayfa": "bard-male-orc.jpg",
+   "duzen": "bard",
+   "hucre": 5,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "orc-erkek-fighter-ID10",
+   "kesici": "sayfa",
+   "sayfa": "fighter-male-orc.jpg",
+   "duzen": "fighter",
+   "hucre": 10,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "orc-erkek-fighter-ID2",
+   "kesici": "sayfa",
+   "sayfa": "fighter-male-orc.jpg",
+   "duzen": "fighter",
+   "hucre": 2,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "orc-erkek-monk-ID4",
+   "kesici": "sayfa",
+   "sayfa": "monk-male-orc.jpg",
+   "duzen": "monk",
+   "hucre": 4,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "orc-erkek-rogue-ID4",
+   "kesici": "sayfa",
+   "sayfa": "rogue-male-orc.jpg",
+   "duzen": "rogue",
+   "hucre": 4,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "orc-erkek-sorcerer-SC-9",
+   "kesici": "izgara",
+   "sayfa": "sorcerer-duzelt-C-sonuc.jpg",
+   "hucre": 4,
+   "satir": 3,
+   "sutun": 3,
+   "not": "defter: diger sorcerer-duzelt-C-sonuc.jpg h4"
+  },
+  {
+   "jeton": "orc-kadin-barbarian-ID4",
+   "kesici": "sayfa",
+   "sayfa": "barbarian-female-orc.jpg",
+   "duzen": "barbarian",
+   "hucre": 4,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "orc-kadin-cleric-ID4",
+   "kesici": "sayfa",
+   "sayfa": "cleric-female-orc.jpg",
+   "duzen": "cleric",
+   "hucre": 4,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "orc-kadin-fighter-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-orc.jpg",
+   "duzen": "gariban",
+   "hucre": 5,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "orc-kadin-paladin-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-orc.jpg",
+   "duzen": "gariban",
+   "hucre": 7,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "orc-kadin-warlock-GR",
+   "kesici": "sayfa",
+   "sayfa": "gariban-female-orc.jpg",
+   "duzen": "gariban",
+   "hucre": 11,
+   "not": "Gariban sayfası (e6b1fc3a)"
+  },
+  {
+   "jeton": "orc-kadin-warlock-WL-3",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-orc.jpg",
+   "duzen": "warlock",
+   "hucre": 3,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "orc-kadin-warlock-WL-6",
+   "kesici": "sayfa",
+   "sayfa": "warlock-female-orc.jpg",
+   "duzen": "warlock",
+   "hucre": 6,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "orc-male-warlock",
+   "kapsamDisi": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "tiefling-erkek-cleric-ID4",
+   "kesici": "sayfa",
+   "sayfa": "cleric-male-tiefling.jpg",
+   "duzen": "cleric",
+   "hucre": 4,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "tiefling-erkek-druid-ID7",
+   "kesici": "sayfa",
+   "sayfa": "druid-male-tiefling.jpg",
+   "duzen": "druid",
+   "hucre": 7,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "tiefling-erkek-sorcerer-SC-9",
+   "kesici": "izgara",
+   "sayfa": "sorcerer-duzelt-C-sonuc.jpg",
+   "hucre": 3,
+   "satir": 3,
+   "sutun": 3,
+   "not": "defter: diger sorcerer-duzelt-C-sonuc.jpg h3"
+  },
+  {
+   "jeton": "tiefling-female-bard",
+   "kapsamDisi": "sınıf-genel eski jeton (5f34ed3a, ham sayfası yok)"
+  },
+  {
+   "jeton": "tiefling-kadin-bard-ID1",
+   "kesici": "sayfa",
+   "sayfa": "bard-female-tiefling.jpg",
+   "duzen": "bard",
+   "hucre": 1,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  },
+  {
+   "jeton": "tiefling-kadin-ranger-ID5",
+   "kesici": "sayfa",
+   "sayfa": "ranger-female-tiefling.jpg",
+   "duzen": "ranger",
+   "hucre": 5,
+   "not": "sınıf sayfası (987fc6de toplu kesim)"
+  }
+ ]
+}

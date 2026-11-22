@@ -10,6 +10,9 @@
 Yeniden çizilmiş sayfa kuralı (2026-11-22): defterde `yenidenCizilmis` altında işaretli sayfa yalnız hale düzeltmesi değil, kabul edilen
 güncel çizimdir; BÜTÜN hücreleri kesilir ("halesiz-temiz dokunulmaz" bu sayfalara uygulanmaz; `tum_hucreler` kısmi listeyi uyarıyla
 tamamlar; test src/data/ccKesimYenidenCizilmis.test.ts). Ham klasör `CC_HAM` ortam değişkeniyle değiştirilebilir.
+Şerit silme (KESIM-DUZELT 2026-11-22): `keyed_rgba` sayfanın gerçek ızgara çizgilerini (`tk.grid_lines`) alır; `trim_lines` yalnız
+onların üstündeki koyu şeridi siler (figür konturu, ayak tabanı, kalkan/kanat kenarı, kabza kalır). Listeli jetonların yeniden kesimi ve
+regresyon ölçüsü `scripts/kesim-yenile.py` (iş listesi data/kesim-duzelt.json; defterde kaynak `duzeltme`, not KESIM-DUZELT).
 Öncelik kuralı (aynı jeton kimliği): düzeltme > yeni sayfa > taban (`ONCELIK`). Defter data/cc-kesim-kaynak.json her yazımı kaydeder;
 daha düşük öncelikli bir adım, daha yüksek öncelikli kaynağın yazdığı jetonu ezmez (adımlar hangi sırayla çalışırsa çalışsın).
 Çıktı: public/characters/<ad>.webp (+ kucuk/ 96 px), kontak sayfaları docs/sabah/cc-kesim/, rapor docs/sabah/cc-kesim/<adım>.json."""
@@ -84,9 +87,11 @@ def cell_kind(a, fg):
     med = np.median(bg, axis=0)
     return 'green' if np.linalg.norm(med - GREEN) < np.linalg.norm(med - MAGENTA) else 'magenta'
 
-def keyed_rgba(a, fg):
+def keyed_rgba(a, fg, grid=None):
+    """`grid`: sayfanın gerçek ızgara çizgilerinin (`tk.grid_lines`) bu kutuya düşen parçası; `trim_lines` yalnız onun üstündeki şeridi siler
+    (KESIM-DUZELT 2026-11-22). Verilmezse kutunun kendisinden bulunur."""
     rgba = np.dstack([a, (fg * 255).astype(np.uint8)])
-    return tk.despill(tk.trim_lines(rgba), cell_kind(a, fg))
+    return tk.despill(tk.trim_lines(rgba, grid), cell_kind(a, fg))
 
 def figures(fg, min_frac=0.004, join=14):
     """Sayfadaki figür kümeleri (yakın parçalar `join` px genişletmeyle birleşir) → [(maske, kutu, merkez)] büyükten küçüğe."""
@@ -202,6 +207,20 @@ def halo_removed(ref_alpha, tok_alpha):
     gone = ref_alpha & ~tok_alpha; gone[top:] = False
     return int(gone.sum())
 
+def taban_cell(a, fg, G, hucre):
+    """Hale tabanı hücresi (3×3, eşit üçte bir): komşudan taşan parça yok sayılır (en büyük küme + ona yakın, hücre kenarına değmeyen
+    parçalar). `G`: sayfanın `tk.grid_lines` maskesi (ya da None). → (anahtarlı RGBA, hücre boyutunda; hücre kutusu)."""
+    H, W = a.shape[:2]; c = hucre - 1
+    x0, y0, x1, y1 = round((c % 3) * W / 3), round((c // 3) * H / 3), round((c % 3 + 1) * W / 3), round((c // 3 + 1) * H / 3)
+    cf = fg[y0:y1, x0:x1].copy()
+    lab, n = ndi.label(ndi.binary_dilation(cf, iterations=10))
+    if n:
+        sz = ndi.sum(cf, lab, range(1, n + 1)); keep = [i + 1 for i, v in enumerate(sz) if v >= 0.08 * sz.max()]
+        edge = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}
+        keep = [i for i in keep if i == int(np.argmax(sz)) + 1 or i not in edge]
+        cf &= np.isin(lab, keep)
+    return keyed_rgba(a[y0:y1, x0:x1], cf, None if G is None else G[y0:y1, x0:x1]), (x0, y0, x1, y1)
+
 def taban():
     rows = list(csv.DictReader(open('docs/sabah/hale-gemini-eslesme.csv')))
     duz = list(csv.DictReader(open('assets-ham/eksikler/hale-gemini-duzeltme-eslesme.csv', encoding='utf-8-sig')))
@@ -215,23 +234,14 @@ def taban():
         if name in dogru: rep['atlanan'].append((name, 'halesiz-doğrulandı (düzeltme eşleşmesi): dokunulmadı')); continue
         pages.setdefault(r['sayfa'], []).append(r)
     for p, lst in sorted(pages.items()):
-        path = f'assets-ham/karakter/hale-gemini-sayfa-{p}.png'
+        path = f'{RAW}/hale-gemini-sayfa-{p}.png'
         if not os.path.exists(path):
             for r in lst: rep['eksik_sayfa'].append((r['dosya'][:-5], f'sayfa {p} hücre {r["hucre"]}'))
             continue
-        a = np.asarray(Image.open(path).convert('RGB')); H, W = a.shape[:2]; fg = key_page(a)
+        a = np.asarray(Image.open(path).convert('RGB')); fg = key_page(a); G = tk.grid_lines(a, (3, 3))
         for r in lst:
-            name = r['dosya'][:-5]; c = int(r['hucre']) - 1
-            x0, y0, x1, y1 = round((c % 3) * W / 3), round((c // 3) * H / 3), round((c % 3 + 1) * W / 3), round((c // 3 + 1) * H / 3)
-            cf = fg[y0:y1, x0:x1].copy()
-            # hücreye komşudan taşan parça yok sayılır: en büyük küme + ona yakın parçalar
-            lab, n = ndi.label(ndi.binary_dilation(cf, iterations=10))
-            if n:
-                sz = ndi.sum(cf, lab, range(1, n + 1)); keep = [i + 1 for i, v in enumerate(sz) if v >= 0.08 * sz.max()]
-                edge = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}
-                keep = [i for i in keep if i == int(np.argmax(sz)) + 1 or i not in edge]
-                cf &= np.isin(lab, keep)
-            cell = keyed_rgba(a[y0:y1, x0:x1], cf)
+            name = r['dosya'][:-5]
+            cell, _ = taban_cell(a, fg, G, int(r['hucre']))
             src = git_token(r['kaynak'].split(':')[1], name)
             ref_a = src[..., 3] > 127
             f = fit(cell, ref_a)
@@ -268,7 +278,7 @@ def body_height(race, gen, cls='fighter', codes=('ID1', 'ID2', 'ID3', 'ID4', 'ID
 
 def cut_figures(path, want):
     """Hücreleri otomatik bulur (elle ızgara yok): zemin anahtarı + figür kümeleri, okuma sırası. → [(rgba, kutu)], uyarılar."""
-    a = np.asarray(Image.open(path).convert('RGB')); H, W = a.shape[:2]; fg = key_page(a)
+    a = np.asarray(Image.open(path).convert('RGB')); H, W = a.shape[:2]; fg = key_page(a); G = tk.grid_lines(a)
     figs, lab = figures(fg, min_frac=0.02, join=18)
     warn = []
     if len(figs) != want: warn.append(f'{len(figs)} figür bulundu, beklenen {want}')
@@ -285,7 +295,7 @@ def cut_figures(path, want):
             m = np.isin(l2, keep)
         touch = x0 <= 1 or y0 <= 1 or x1 >= W - 1 or y1 >= H - 1
         if touch: warn.append(f'figür sayfa kenarına değiyor ({x0},{y0},{x1},{y1})')
-        out.append((keyed_rgba(a[y0:y1, x0:x1], m), (x0, y0, x1, y1), cell_kind(a[y0:y1, x0:x1], m)))
+        out.append((keyed_rgba(a[y0:y1, x0:x1], m, G[y0:y1, x0:x1]), (x0, y0, x1, y1), cell_kind(a[y0:y1, x0:x1], m)))
     return out, warn
 
 def place_token(rgba, target_h):
@@ -370,6 +380,12 @@ def aura_back(tok, src, hues):
     t[m] = src[m]
     return t, int(m.sum())
 
+def duzeltme_figures(path):
+    """Hale düzeltme sayfası: figür kümeleri okuma sırasında. → (sayfa, fg, ızgara çizgileri, etiketler, sıralı figürler)."""
+    a = np.asarray(Image.open(path).convert('RGB')); H, W = a.shape[:2]; fg = key_page(a); G = tk.grid_lines(a)
+    figs, lab = figures(fg, min_frac=0.008, join=16)
+    return a, fg, G, lab, reading_order(figs, H)
+
 def duzeltme():
     rows = list(csv.DictReader(open('assets-ham/eksikler/hale-gemini-duzeltme-eslesme.csv', encoding='utf-8-sig')))
     L = ledger(); rep = {'adim': 'duzeltme', 'yazilan': [], 'ezilmedi': [], 'dokunulmadi': [], 'eslesmeyen_hucre': [], 'hale_kaldi': [], 'uyum_dusuk': [], 'sayfalar': [], 'kurtarilan_px': {}}
@@ -381,16 +397,14 @@ def duzeltme():
     items = []
     for p in ('01', '02', '03'):
         path = f'{RAW}/hale-gemini-duzeltme-sayfa-{p}.jpg'
-        a = np.asarray(Image.open(path).convert('RGB')); H, W = a.shape[:2]; fg = key_page(a)
-        figs, lab = figures(fg, min_frac=0.008, join=16)
-        order = reading_order(figs, H)
+        a, fg, G, lab, order = duzeltme_figures(path)
         rep['sayfalar'].append({'sayfa': p, 'figur': len(order), 'eslesen': sum(1 for k in want if k[0] == p)})
         for n, f in enumerate(order, 1):
             i, (x0, y0, x1, y1), _, _ = f
             if (p, n) not in want: rep['eslesmeyen_hucre'].append(f'düzeltme sayfa {p} figür {n} (kutu {x0},{y0},{x1},{y1}): eşleşmede yok, uygulanmadı'); continue
             name, ref, note = want[(p, n)]
             m = (lab[y0:y1, x0:x1] == i) & fg[y0:y1, x0:x1]
-            cell = keyed_rgba(a[y0:y1, x0:x1], m)
+            cell = keyed_rgba(a[y0:y1, x0:x1], m, G[y0:y1, x0:x1])
             src = git_token(ref, name); ref_a = src[..., 3] > 127
             ft = fit(cell, ref_a)
             if ft is None or ft[3] < (0.65 if name in AURA_KORU else 0.75): rep['uyum_dusuk'].append((name, f'sayfa {p} figür {n}', round(ft[3], 3) if ft else None)); continue
@@ -486,7 +500,7 @@ def hucre(argv):
 def cut_bodies(path, want, near=0.55):
     """Gövde + kopuk parçalar (hokkabaz bıçağı, kitap, taş, ay): en büyük `want` bileşen gövde; ≥ 25 px diğer parçalar en yakın gövdeye
     (uzaklık ≤ near × gövde boyu) bağlanır, uzak/sahipsiz parçalar atılır. → okuma sırasında [(rgba, kutu, zemin)], uyarılar."""
-    a = np.asarray(Image.open(path).convert('RGB')); H, W = a.shape[:2]; fg = key_page(a)
+    a = np.asarray(Image.open(path).convert('RGB')); H, W = a.shape[:2]; fg = key_page(a); G = tk.grid_lines(a)
     lab, n = ndi.label(fg, structure=np.ones((3, 3)))
     sz = ndi.sum(fg, lab, range(1, n + 1))
     objs0 = ndi.find_objects(lab)
@@ -528,13 +542,13 @@ def cut_bodies(path, want, near=0.55):
         figs.append((b, (xs.min(), ys.min(), xs.max() + 1, ys.max() + 1), (np.mean(xs), np.mean(ys)), int(m.sum())))
     for b, (x0, y0, x1, y1), _, _ in reading_order(figs, H):
         m = np.isin(lab[y0:y1, x0:x1], members[b])
-        out.append((keyed_rgba(a[y0:y1, x0:x1], m), (x0, y0, x1, y1), cell_kind(a[y0:y1, x0:x1], m)))
+        out.append((keyed_rgba(a[y0:y1, x0:x1], m, G[y0:y1, x0:x1]), (x0, y0, x1, y1), cell_kind(a[y0:y1, x0:x1], m)))
     return out, warn
 
 def cut_grid(path, rows, cols):
     """Düzenli ızgaralı sayfa: bileşenler merkezlerinin düştüğü hücreye; hücrede en büyük bileşen gövde, aynı hücrenin ≥ 25 px parçaları onun;
     sayfa kenarına değen ve çizgi benzeri (ince, koyu-nötr) parçalar atılır. → okuma sırasında [(rgba, kutu, zemin)], uyarılar."""
-    a = np.asarray(Image.open(path).convert('RGB')); H, W = a.shape[:2]; fg = key_page(a)
+    a = np.asarray(Image.open(path).convert('RGB')); H, W = a.shape[:2]; fg = key_page(a); G = tk.grid_lines(a, (cols, rows))
     # ızgara ve çerçeve çizgileri (bilinen konum ± 14 px, koyu pikseller) önce silinir: figür çizgiye değse de çerçeveyle birleşmez
     dark = a.max(axis=2) < 100; band = np.zeros_like(fg)
     for c in range(cols + 1): x = round(c * W / cols); band[:, max(0, x - 14):x + 14] = True
@@ -558,7 +572,7 @@ def cut_grid(path, rows, cols):
             lst = cells.get((r, c))
             if not lst: warn.append(f'hücre {r * cols + c + 1} boş'); out.append(None); continue
             m = np.isin(lab, lst); ys, xs = np.where(m); x0, y0, x1, y1 = xs.min(), ys.min(), xs.max() + 1, ys.max() + 1
-            mm = m[y0:y1, x0:x1]; out.append((keyed_rgba(a[y0:y1, x0:x1], mm), (x0, y0, x1, y1), cell_kind(a[y0:y1, x0:x1], mm)))
+            mm = m[y0:y1, x0:x1]; out.append((keyed_rgba(a[y0:y1, x0:x1], mm, G[y0:y1, x0:x1]), (x0, y0, x1, y1), cell_kind(a[y0:y1, x0:x1], mm)))
     return out, warn
 
 def token_height(name):
@@ -706,17 +720,21 @@ def head_feet(rgba):
     cx = float(np.where(body[top:top + 12])[1].mean())
     return top, feet, cx
 
+def tek_figure(path):
+    """Tek figürlü düzeltme hücresi: sayfa kenarına değmeyen ≥ 30 px bütün parçalar. → (anahtarlı RGBA, kutu)."""
+    a = np.asarray(Image.open(path).convert('RGB')); fg = key_page(a); G = tk.grid_lines(a)
+    lab, n = ndi.label(fg, structure=np.ones((3, 3))); sz = ndi.sum(fg, lab, range(1, n + 1))
+    H, W = fg.shape; objs = ndi.find_objects(lab)
+    keep = [i for i in range(1, n + 1) if sz[i - 1] >= 30 and not (objs[i - 1][0].start <= 1 or objs[i - 1][1].start <= 1 or objs[i - 1][0].stop >= H - 1 or objs[i - 1][1].stop >= W - 1)]
+    m = np.isin(lab, keep); ys, xs = np.where(m)
+    y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+    return keyed_rgba(a[y0:y1, x0:x1], m[y0:y1, x0:x1], G[y0:y1, x0:x1]), (x0, y0, x1, y1)
+
 def tek():
     L = ledger(); rep = {'adim': 'tek', 'yazilan': [], 'ezilmedi': [], 'olcu': {}}
     items = []
     for name, f in TEK.items():
-        a = np.asarray(Image.open(f'{RAW}/{f}').convert('RGB')); fg = key_page(a)
-        lab, n = ndi.label(fg, structure=np.ones((3, 3))); sz = ndi.sum(fg, lab, range(1, n + 1))
-        H, W = fg.shape; objs = ndi.find_objects(lab)
-        keep = [i for i in range(1, n + 1) if sz[i - 1] >= 30 and not (objs[i - 1][0].start <= 1 or objs[i - 1][1].start <= 1 or objs[i - 1][0].stop >= H - 1 or objs[i - 1][1].stop >= W - 1)]
-        m = np.isin(lab, keep); ys, xs = np.where(m)
-        y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
-        cell = keyed_rgba(a[y0:y1, x0:x1], m[y0:y1, x0:x1])
+        cell, _ = tek_figure(f'{RAW}/{f}')
         old = np.array(Image.open(f'public/characters/{name}.webp').convert('RGBA'))
         ot, of, ocx = head_feet(old); nt, nf, ncx = head_feet(cell)
         sc = (of - ot) / (nf - nt)

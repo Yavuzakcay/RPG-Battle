@@ -135,6 +135,13 @@
      "dosya": "hale-gemini-duzeltme-sayfa-02.jpg",
      "hucre": 1,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-02.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
@@ -165,10 +172,17 @@
      "dosya": "hale-gemini-sayfa-02.png",
      "hucre": 2,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-sayfa-02.png",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
+    "kaynak": "duzeltme",
     "dosya": "hale-gemini-sayfa-02.png",
     "hucre": 2
    }
@@ -195,10 +209,17 @@
      "dosya": "hale-gemini-sayfa-02.png",
      "hucre": 4,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-sayfa-02.png",
+     "hucre": 4,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
+    "kaynak": "duzeltme",
     "dosya": "hale-gemini-sayfa-02.png",
     "hucre": 4
    }
@@ -549,10 +570,17 @@
      "dosya": "hale-gemini-sayfa-07.png",
      "hucre": 9,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-sayfa-07.png",
+     "hucre": 9,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (d, sigdir)"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
+    "kaynak": "duzeltme",
     "dosya": "hale-gemini-sayfa-07.png",
     "hucre": 9
    }
@@ -2046,10 +2074,17 @@
      "dosya": "hale-gemini-sayfa-26.png",
      "hucre": 2,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-sayfa-26.png",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (c, sigdir)"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
+    "kaynak": "duzeltme",
     "dosya": "hale-gemini-sayfa-26.png",
     "hucre": 2
    }
@@ -2076,10 +2111,17 @@
      "dosya": "hale-gemini-sayfa-26.png",
      "hucre": 4,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-sayfa-26.png",
+     "hucre": 4,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
+    "kaynak": "duzeltme",
     "dosya": "hale-gemini-sayfa-26.png",
     "hucre": 4
    }
@@ -2250,10 +2292,17 @@
      "dosya": "hale-gemini-sayfa-29.png",
      "hucre": 3,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-sayfa-29.png",
+     "hucre": 3,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
+    "kaynak": "duzeltme",
     "dosya": "hale-gemini-sayfa-29.png",
     "hucre": 3
    }
@@ -2310,10 +2359,17 @@
      "dosya": "hale-gemini-sayfa-31.png",
      "hucre": 2,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-sayfa-31.png",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
+    "kaynak": "duzeltme",
     "dosya": "hale-gemini-sayfa-31.png",
     "hucre": 2
    }
@@ -2655,10 +2711,17 @@
      "dosya": "warlock-female-dwarf.jpg",
      "hucre": 2,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-female-dwarf.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-female-dwarf.jpg",
     "hucre": 2
    }
@@ -2715,10 +2778,17 @@
      "dosya": "warlock-female-dwarf.jpg",
      "hucre": 6,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-female-dwarf.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-female-dwarf.jpg",
     "hucre": 6
    }
@@ -2820,10 +2890,17 @@
      "dosya": "warlock-female-elf.jpg",
      "hucre": 2,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-female-elf.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-female-elf.jpg",
     "hucre": 2
    }
@@ -2850,10 +2927,17 @@
      "dosya": "warlock-female-elf.jpg",
      "hucre": 4,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-female-elf.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-female-elf.jpg",
     "hucre": 4
    }
@@ -2880,10 +2964,17 @@
      "dosya": "warlock-female-elf.jpg",
      "hucre": 6,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-female-elf.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-female-elf.jpg",
     "hucre": 6
    }
@@ -2970,10 +3061,17 @@
      "dosya": "warlock-female-human.jpg",
      "hucre": 1,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-female-human.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-female-human.jpg",
     "hucre": 1
    }
@@ -2985,10 +3083,17 @@
      "dosya": "warlock-female-human.jpg",
      "hucre": 2,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-female-human.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-female-human.jpg",
     "hucre": 2
    }
@@ -3045,10 +3150,17 @@
      "dosya": "warlock-female-human.jpg",
      "hucre": 6,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-female-human.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-female-human.jpg",
     "hucre": 6
    }
@@ -3150,10 +3262,17 @@
      "dosya": "warlock-female-tiefling.jpg",
      "hucre": 2,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-female-tiefling.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-female-tiefling.jpg",
     "hucre": 2
    }
@@ -3210,10 +3329,17 @@
      "dosya": "warlock-female-tiefling.jpg",
      "hucre": 6,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-female-tiefling.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-female-tiefling.jpg",
     "hucre": 6
    }
@@ -3225,10 +3351,17 @@
      "dosya": "warlock-female-tiefling.jpg",
      "hucre": 7,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-female-tiefling.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (d, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-female-tiefling.jpg",
     "hucre": 7
    }
@@ -3300,10 +3433,17 @@
      "dosya": "warlock-male-celestial.jpg",
      "hucre": 1,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-celestial.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-male-celestial.jpg",
     "hucre": 1
    }
@@ -3315,10 +3455,17 @@
      "dosya": "warlock-male-celestial.jpg",
      "hucre": 2,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-celestial.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-male-celestial.jpg",
     "hucre": 2
    }
@@ -3345,10 +3492,17 @@
      "dosya": "warlock-male-celestial.jpg",
      "hucre": 4,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-celestial.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-male-celestial.jpg",
     "hucre": 4
    }
@@ -3375,10 +3529,17 @@
      "dosya": "warlock-male-celestial.jpg",
      "hucre": 6,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-celestial.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-male-celestial.jpg",
     "hucre": 6
    }
@@ -3510,10 +3671,17 @@
      "dosya": "warlock-male-dwarf.jpg",
      "hucre": 4,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-dwarf.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-male-dwarf.jpg",
     "hucre": 4
    }
@@ -3630,10 +3798,17 @@
      "dosya": "warlock-male-elf.jpg",
      "hucre": 1,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-elf.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-male-elf.jpg",
     "hucre": 1
    }
@@ -3645,10 +3820,17 @@
      "dosya": "warlock-male-elf.jpg",
      "hucre": 2,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-elf.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-male-elf.jpg",
     "hucre": 2
    }
@@ -3705,10 +3887,17 @@
      "dosya": "warlock-male-elf.jpg",
      "hucre": 6,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-elf.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-male-elf.jpg",
     "hucre": 6
    }
@@ -3810,10 +3999,17 @@
      "dosya": "warlock-male-gnome.jpg",
      "hucre": 2,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-gnome.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-male-gnome.jpg",
     "hucre": 2
    }
@@ -3870,10 +4066,17 @@
      "dosya": "warlock-male-gnome.jpg",
      "hucre": 6,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-gnome.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-male-gnome.jpg",
     "hucre": 6
    }
@@ -3885,10 +4088,17 @@
      "dosya": "warlock-male-gnome.jpg",
      "hucre": 7,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-gnome.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-male-gnome.jpg",
     "hucre": 7
    }
@@ -3960,10 +4170,17 @@
      "dosya": "warlock-male-human.jpg",
      "hucre": 1,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-human.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-male-human.jpg",
     "hucre": 1
    }
@@ -3975,10 +4192,17 @@
      "dosya": "warlock-male-human.jpg",
      "hucre": 2,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-human.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-male-human.jpg",
     "hucre": 2
    }
@@ -4035,10 +4259,17 @@
      "dosya": "warlock-male-human.jpg",
      "hucre": 6,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-human.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-male-human.jpg",
     "hucre": 6
    }
@@ -4125,10 +4356,17 @@
      "dosya": "warlock-male-tiefling.jpg",
      "hucre": 1,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-tiefling.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-male-tiefling.jpg",
     "hucre": 1
    }
@@ -4170,10 +4408,17 @@
      "dosya": "warlock-male-tiefling.jpg",
      "hucre": 4,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-tiefling.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "yeni",
+    "kaynak": "duzeltme",
     "dosya": "warlock-male-tiefling.jpg",
     "hucre": 4
    }
@@ -5247,10 +5492,17 @@
      "dosya": "barbarian-female-aurasiz.jpg",
      "hucre": 5,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-female-aurasiz.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (b, kardes)"
     }
    ],
    "kazanan": {
-    "kaynak": "diger",
+    "kaynak": "duzeltme",
     "dosya": "barbarian-female-aurasiz.jpg",
     "hucre": 5
    }
@@ -5307,10 +5559,17 @@
      "dosya": "barbarian-male-aurasiz.jpg",
      "hucre": 1,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-male-aurasiz.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "diger",
+    "kaynak": "duzeltme",
     "dosya": "barbarian-male-aurasiz.jpg",
     "hucre": 1
    }
@@ -5352,10 +5611,17 @@
      "dosya": "barbarian-male-aurasiz.jpg",
      "hucre": 4,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-male-aurasiz.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (b, kardes)"
     }
    ],
    "kazanan": {
-    "kaynak": "diger",
+    "kaynak": "duzeltme",
     "dosya": "barbarian-male-aurasiz.jpg",
     "hucre": 4
    }
@@ -5874,10 +6140,17 @@
      "dosya": "clerik-male-celestial.jpg",
      "hucre": 8,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "clerik-male-celestial.jpg",
+     "hucre": 8,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
     }
    ],
    "kazanan": {
-    "kaynak": "diger",
+    "kaynak": "duzeltme",
     "dosya": "clerik-male-celestial.jpg",
     "hucre": 8
    }
@@ -5895,6 +6168,1398 @@
     "kaynak": "duzeltme",
     "dosya": "gariban-male-human.jpg",
     "hucre": 5
+   }
+  },
+  "dragonborn-erkek-fighter-ID8": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "fighter-male-dragonborn.jpg",
+     "hucre": 8,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "fighter-male-dragonborn.jpg",
+    "hucre": 8
+   }
+  },
+  "dragonborn-erkek-monk-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "monk-male-dragonborn.jpeg",
+     "hucre": 9,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "monk-male-dragonborn.jpeg",
+    "hucre": 9
+   }
+  },
+  "dragonborn-erkek-rogue-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "rogue-male-dragonborn.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "rogue-male-dragonborn.jpg",
+    "hucre": 7
+   }
+  },
+  "dragonborn-erkek-sorcerer-SC-5": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "sorcerer-male-dragonborn.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "sorcerer-male-dragonborn.jpg",
+    "hucre": 5
+   }
+  },
+  "dragonborn-erkek-warlock-WL-1": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-dragonborn.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "warlock-male-dragonborn.jpg",
+    "hucre": 1
+   }
+  },
+  "dragonborn-erkek-warlock-WL-2": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-dragonborn.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "warlock-male-dragonborn.jpg",
+    "hucre": 2
+   }
+  },
+  "dragonborn-erkek-warlock-WL-4": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-dragonborn.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "warlock-male-dragonborn.jpg",
+    "hucre": 4
+   }
+  },
+  "dragonborn-erkek-warlock-WL-6": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-male-dragonborn.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "warlock-male-dragonborn.jpg",
+    "hucre": 6
+   }
+  },
+  "dragonborn-kadin-bard-ID5": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "bard-female-dragonborn.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "bard-female-dragonborn.jpg",
+    "hucre": 5
+   }
+  },
+  "dragonborn-kadin-bard-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "bard-female-dragonborn.jpg",
+     "hucre": 9,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "bard-female-dragonborn.jpg",
+    "hucre": 9
+   }
+  },
+  "dragonborn-kadin-druid-ID2": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "druid-female-dragonborn.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "druid-female-dragonborn.jpg",
+    "hucre": 2
+   }
+  },
+  "dragonborn-kadin-fighter-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-dragonborn.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-dragonborn.jpg",
+    "hucre": 5
+   }
+  },
+  "dragonborn-kadin-monk-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-dragonborn.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-dragonborn.jpg",
+    "hucre": 6
+   }
+  },
+  "dragonborn-kadin-monk-ID8": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "monk-female-dragonborn.jpg",
+     "hucre": 8,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "monk-female-dragonborn.jpg",
+    "hucre": 8
+   }
+  },
+  "dragonborn-kadin-monk-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "monk-female-dragonborn.jpg",
+     "hucre": 9,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "monk-female-dragonborn.jpg",
+    "hucre": 9
+   }
+  },
+  "dragonborn-kadin-rogue-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "rogue-female-dragonborn.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "rogue-female-dragonborn.jpg",
+    "hucre": 7
+   }
+  },
+  "dragonborn-kadin-warlock-WL-1": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-female-dragonborn.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "warlock-female-dragonborn.jpg",
+    "hucre": 1
+   }
+  },
+  "dragonborn-kadin-warlock-WL-2": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-female-dragonborn.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "warlock-female-dragonborn.jpg",
+    "hucre": 2
+   }
+  },
+  "dragonborn-kadin-warlock-WL-4": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "warlock-female-dragonborn.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "warlock-female-dragonborn.jpg",
+    "hucre": 4
+   }
+  },
+  "dwarf-erkek-barbarian-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-dwarf.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-dwarf.jpg",
+    "hucre": 1
+   }
+  },
+  "dwarf-erkek-druid-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-dwarf.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-dwarf.jpg",
+    "hucre": 4
+   }
+  },
+  "dwarf-erkek-monk-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-dwarf.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-dwarf.jpg",
+    "hucre": 6
+   }
+  },
+  "dwarf-erkek-sorcerer-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-dwarf.jpg",
+     "hucre": 10,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-dwarf.jpg",
+    "hucre": 10
+   }
+  },
+  "dwarf-kadin-barbarian-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-dwarf.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-dwarf.jpg",
+    "hucre": 1
+   }
+  },
+  "dwarf-kadin-barbarian-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-female-dwarf.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "barbarian-female-dwarf.jpg",
+    "hucre": 7
+   }
+  },
+  "dwarf-kadin-bard-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-dwarf.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-dwarf.jpg",
+    "hucre": 2
+   }
+  },
+  "dwarf-kadin-fighter-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-dwarf.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-dwarf.jpg",
+    "hucre": 5
+   }
+  },
+  "dwarf-kadin-monk-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-dwarf.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-dwarf.jpg",
+    "hucre": 6
+   }
+  },
+  "elf-erkek-barbarian-ID3": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-male-elf.jpg",
+     "hucre": 3,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "barbarian-male-elf.jpg",
+    "hucre": 3
+   }
+  },
+  "elf-erkek-fighter-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-elf.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-elf.jpg",
+    "hucre": 5
+   }
+  },
+  "elf-erkek-monk-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-elf.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-elf.jpg",
+    "hucre": 6
+   }
+  },
+  "elf-erkek-paladin-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-elf.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-elf.jpg",
+    "hucre": 7
+   }
+  },
+  "elf-kadin-druid-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "druid-female-elf.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "druid-female-elf.jpg",
+    "hucre": 7
+   }
+  },
+  "elf-kadin-fighter-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-elf.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-elf.jpg",
+    "hucre": 5
+   }
+  },
+  "gnome-erkek-druid-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-gnome.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-gnome.jpg",
+    "hucre": 4
+   }
+  },
+  "gnome-erkek-fighter-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-gnome.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-gnome.jpg",
+    "hucre": 5
+   }
+  },
+  "gnome-kadin-druid-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-gnome.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-gnome.jpg",
+    "hucre": 4
+   }
+  },
+  "gnome-kadin-monk-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-gnome.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-gnome.jpg",
+    "hucre": 6
+   }
+  },
+  "goliath-erkek-monk-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-goliath.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-goliath.jpg",
+    "hucre": 6
+   }
+  },
+  "goliath-erkek-rogue-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-goliath.jpg",
+     "hucre": 9,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-goliath.jpg",
+    "hucre": 9
+   }
+  },
+  "goliath-kadin-bard-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-goliath.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-goliath.jpg",
+    "hucre": 2
+   }
+  },
+  "goliath-kadin-druid-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-goliath.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-goliath.jpg",
+    "hucre": 4
+   }
+  },
+  "goliath-kadin-monk-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-goliath.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-goliath.jpg",
+    "hucre": 6
+   }
+  },
+  "halfling-erkek-barbarian-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-halfling.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-halfling.jpg",
+    "hucre": 1
+   }
+  },
+  "halfling-erkek-bard-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-halfling.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-halfling.jpg",
+    "hucre": 2
+   }
+  },
+  "halfling-erkek-druid-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-halfling.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-halfling.jpg",
+    "hucre": 4
+   }
+  },
+  "halfling-erkek-fighter-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-halfling.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-halfling.jpg",
+    "hucre": 5
+   }
+  },
+  "halfling-kadin-barbarian-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-halfling.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-halfling.jpg",
+    "hucre": 1
+   }
+  },
+  "halfling-kadin-druid-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-halfling.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-halfling.jpg",
+    "hucre": 4
+   }
+  },
+  "halfling-kadin-fighter-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-halfling.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-halfling.jpg",
+    "hucre": 5
+   }
+  },
+  "halfling-kadin-monk-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-halfling.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-halfling.jpg",
+    "hucre": 6
+   }
+  },
+  "human-erkek-druid-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-human.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-human.jpg",
+    "hucre": 4
+   }
+  },
+  "human-erkek-sorcerer-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-human.jpg",
+     "hucre": 10,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-human.jpg",
+    "hucre": 10
+   }
+  },
+  "human-kadin-bard-ID5": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "bard-female-human.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "bard-female-human.jpg",
+    "hucre": 5
+   }
+  },
+  "human-kadin-monk-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-human.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-human.jpg",
+    "hucre": 6
+   }
+  },
+  "human-kadin-paladin-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-human.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-human.jpg",
+    "hucre": 7
+   }
+  },
+  "orc-erkek-bard-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-orc.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-orc.jpg",
+    "hucre": 2
+   }
+  },
+  "orc-erkek-monk-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-orc.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-orc.jpg",
+    "hucre": 6
+   }
+  },
+  "orc-erkek-sorcerer-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-orc.jpg",
+     "hucre": 10,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-orc.jpg",
+    "hucre": 10
+   }
+  },
+  "orc-kadin-barbarian-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-orc.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-orc.jpg",
+    "hucre": 1
+   }
+  },
+  "orc-kadin-druid-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-orc.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-orc.jpg",
+    "hucre": 4
+   }
+  },
+  "tiefling-kadin-monk-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-female-tiefling.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (a, eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-female-tiefling.jpg",
+    "hucre": 6
+   }
+  },
+  "gnome-kadin-barbarian-ID1": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-female-gnome.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (b, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "barbarian-female-gnome.jpg",
+    "hucre": 1
+   }
+  },
+  "gnome-kadin-barbarian-ID2": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-female-gnome.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (b, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "barbarian-female-gnome.jpg",
+    "hucre": 2
+   }
+  },
+  "gnome-kadin-barbarian-ID3": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-female-gnome.jpg",
+     "hucre": 3,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (b, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "barbarian-female-gnome.jpg",
+    "hucre": 3
+   }
+  },
+  "gnome-kadin-barbarian-ID4": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-female-gnome.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (b, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "barbarian-female-gnome.jpg",
+    "hucre": 4
+   }
+  },
+  "gnome-kadin-barbarian-ID5": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-female-gnome.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (b, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "barbarian-female-gnome.jpg",
+    "hucre": 5
+   }
+  },
+  "gnome-kadin-barbarian-ID6": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-female-gnome.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (b, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "barbarian-female-gnome.jpg",
+    "hucre": 6
+   }
+  },
+  "gnome-kadin-barbarian-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-female-gnome.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (b, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "barbarian-female-gnome.jpg",
+    "hucre": 7
+   }
+  },
+  "gnome-kadin-barbarian-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-female-gnome.jpg",
+     "hucre": 9,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (b, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "barbarian-female-gnome.jpg",
+    "hucre": 9
+   }
+  },
+  "halfling-erkek-barbarian-ID1": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-male-halfling.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (b, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "barbarian-male-halfling.jpg",
+    "hucre": 1
+   }
+  },
+  "halfling-erkek-barbarian-ID2": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-male-halfling.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (b, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "barbarian-male-halfling.jpg",
+    "hucre": 2
+   }
+  },
+  "halfling-erkek-barbarian-ID3": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-male-halfling.jpg",
+     "hucre": 3,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (b, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "barbarian-male-halfling.jpg",
+    "hucre": 3
+   }
+  },
+  "halfling-erkek-barbarian-ID4": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-male-halfling.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (b, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "barbarian-male-halfling.jpg",
+    "hucre": 4
+   }
+  },
+  "halfling-erkek-barbarian-ID5": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-male-halfling.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (b, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "barbarian-male-halfling.jpg",
+    "hucre": 5
+   }
+  },
+  "halfling-erkek-barbarian-ID6": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-male-halfling.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (b, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "barbarian-male-halfling.jpg",
+    "hucre": 6
+   }
+  },
+  "halfling-erkek-barbarian-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-male-halfling.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (b, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "barbarian-male-halfling.jpg",
+    "hucre": 7
+   }
+  },
+  "halfling-erkek-barbarian-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "barbarian-male-halfling.jpg",
+     "hucre": 9,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (b, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "barbarian-male-halfling.jpg",
+    "hucre": 9
+   }
+  },
+  "gnome-kadin-cleric-ID1": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-female-gnome.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (d, sigdir)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "cleric-female-gnome.jpg",
+    "hucre": 1
+   }
+  },
+  "tiefling-kadin-druid-ID1": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "druid-female-tiefling.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (e, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "druid-female-tiefling.jpg",
+    "hucre": 1
+   }
+  },
+  "tiefling-kadin-druid-ID2": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "druid-female-tiefling.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (e, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "druid-female-tiefling.jpg",
+    "hucre": 2
+   }
+  },
+  "tiefling-kadin-druid-ID3": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "druid-female-tiefling.jpg",
+     "hucre": 3,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (e, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "druid-female-tiefling.jpg",
+    "hucre": 3
+   }
+  },
+  "tiefling-kadin-druid-ID5": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "druid-female-tiefling.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (e, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "druid-female-tiefling.jpg",
+    "hucre": 5
+   }
+  },
+  "tiefling-kadin-druid-ID6": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "druid-female-tiefling.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (e, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "druid-female-tiefling.jpg",
+    "hucre": 6
+   }
+  },
+  "tiefling-kadin-druid-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "druid-female-tiefling.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (e, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "druid-female-tiefling.jpg",
+    "hucre": 7
+   }
+  },
+  "tiefling-kadin-druid-ID8": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "druid-female-tiefling.jpg",
+     "hucre": 8,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (e, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "druid-female-tiefling.jpg",
+    "hucre": 8
+   }
+  },
+  "tiefling-erkek-druid-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "druid-male-tiefling.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı",
+     "not": "KESIM-DUZELT 2026-11-22 (e, sayfa)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "druid-male-tiefling.jpg",
+    "hucre": 7
    }
   }
  }
