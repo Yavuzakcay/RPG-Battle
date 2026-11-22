@@ -304,7 +304,7 @@ L = ['# Celestial jeton kaynak denetimi', '',
      (f'**Eski kesimde kalan: {len(eski)}**: ' + ', '.join(f"`{r['f']}`" for r in eski) + '.' if eski else '**Eski kesimde kalan: 0.**'), '']
 L += ['## Cleric erkek: clerik-male-celestial.jpg (kabul edilen son çizim, 3×3)', '',
       'Hücre → jeton: Cleric alt sınıf eşlemesinden (`data/cleric-jeton.json`, hücre adları `data/jeton-hucre-sirasi.json`): '
-      '1 Yaşam (life-domain, kullanılmıyor), 2 Aydın, 3 Birlik Manastırı 3–16, 4 Demirci, 5 Fırtına, 6 Mezar, 7 Savaş, 8 Yakamoz, 9 Birlik Manastırı 17+. '
+      '1 Yaşam Manastırı (life-domain), 2 Aydın, 3 Birlik Manastırı 3–16, 4 Demirci, 5 Fırtına, 6 Mezar, 7 Savaş, 8 Yakamoz, 9 Birlik Manastırı 17+. '
       'Ham sayfa: `eksikler/clerik-male-celestial.jpg` (2048×2048; dosya tarihi 2026-11-17 23:19; ham depoya b345279d "Eksikler ham sayfalari (2026-11-19)"). '
       'Eski çizim: `eksikler/hale-gemini-sayfa-06.png` (özgün `karakter/cleric-male-celestial.jpg` 2026-11-16 sayfasının halesi silinmiş hâli; kahverengi kısa saç, yıldız yok).', '',
       '| Hücre | Jeton | Sonuç | Kabul edilen sayfa skor (baş) | Eski sayfa skor (baş) | Kesim defteri (`data/cc-kesim-kaynak.json`) | Dosya tarihi | Git geçmişi (yeniden eskiye) |',
