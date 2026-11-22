@@ -883,7 +883,7 @@
      "level": 15,
      "name": {
       "tr": "Koruyucu Darbe",
-      "en": "Protective Strike"
+      "en": "Warding Strike"
      },
      "description": {
       "tr": "Büyülü darben artık koruyucu enerji yayar. Divine Smite yaptığında Aura of Protection'ın içindeyken sen ve dostların yarım siperden (Half Cover) yararlanırsınız. Aura bu yararı bir sonraki turunun başına dek sağlar.",
@@ -1360,7 +1360,7 @@
    "srd": "subclasses:fiend-patron",
    "name": {
     "tr": "Zebani",
-    "en": "Hellkeeper"
+    "en": "Hellwarden"
    },
    "role": {
     "tr": "Alt düzlemlerle anlaşma yapar",
@@ -1372,7 +1372,7 @@
      "level": 3,
      "name": {
       "tr": "Karanlığın Lütfu",
-      "en": "Blessing of the Dark"
+      "en": "Boon of the Dark"
      },
      "description": {
       "tr": "Bir düşmanı 0 HP'ye düşürdüğünde, CHA değiştiricin + Warlock seviyen kadar geçici HP kazanırsın (en az 1 geçici HP). Başka biri 10 ft içindeki bir düşmanı 0 HP'ye düşürdüğünde de bu yararı kazanırsın.",
@@ -1429,7 +1429,7 @@
      "level": 6,
      "name": {
       "tr": "Karanlığın Şansı",
-      "en": "Luck of the Dark"
+      "en": "Dark Fortune"
      },
      "description": {
       "tr": "İblis haminden kaderi lehine çevirmesini isteyebilirsin. Bir yetenek kontrolü ya da kurtarma zarı attığında bu özellikle zarına 1d10 ekleyebilirsin. Bunu zarı gördükten sonra, ama zarın sonuçları gerçekleşmeden önce yapabilirsin.\nBu özelliği CHA değiştiricin kadar kullanabilirsin (en az bir kez), ama bir zara en çok bir kez. Harcanan bütün kullanımları uzun dinlenmeyi bitirince geri kazanırsın.",

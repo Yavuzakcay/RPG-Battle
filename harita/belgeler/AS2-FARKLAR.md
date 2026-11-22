@@ -22,7 +22,7 @@ kayıtta ek kural + 9 yalnız kayıtta), 3 eklenen kitapçıktan. Fark kaydı: 5
 Alt sınıf adı farkı (kayıt → kitapçık; Türkçe ad kitapçıktan): `path-of-the-berserker` Çılgın Savaşçı Yolu → Berserker Yolu,
 `college-of-lore` Bilgi Koleji → Kadim Bilgi Koleji, `life-domain` Yaşam Etki Alanı → Yaşam Alanı (görünen ad K49 kuralıyla
 "Yaşam Manastırı"), `warrior-of-the-open-hand` Açık El Savaşçısı → Sadelik Disiplini, `oath-of-devotion` Bağlılık Yemini →
-Sadakat Yemini, `draconic-sorcery` Ejderha Büyücülüğü → Pulkanat, `fiend-patron` İblis Hamisi → Zebani, `evoker` Evokasyon
+Sadakat Töresi, `draconic-sorcery` Ejderha Büyücülüğü → Pulkanat, `fiend-patron` İblis Hamisi → Zebani, `evoker` Evokasyon
 Ustası → Azap Öğretisi. Toprak Çemberi, Avcı, Hırsız aynı; `champion` Şampiyon → Gladyatör (EN Champion → Gladiator, sonraki karar).
 
 Seviye notu: kitapçıkta Cleric (S1/S2), Sorcerer ve Warlock (S1), Wizard ve Druid (S2) alt sınıf özellikleri 2014 tarzı

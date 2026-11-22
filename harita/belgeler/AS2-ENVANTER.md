@@ -24,7 +24,7 @@ tamamlanmış hâlidir. Kararlar `DECISIONS.md` (Görev AS2), kitapçık ↔ kay
 | Druid | 7 | 1 | 8 | `circle-of-the-land` → Toprak Çemberi | `karadul-cemberi` (yalnız kadın) |
 | Fighter | 10 | 1 | 11 | `champion` → Gladyatör | `imza_imparator` (yalnız erkek) |
 | Monk | 10 | 1 | 11 | `warrior-of-the-open-hand` → Sadelik Disiplini | `imza_bilge` |
-| Paladin | 9 | 1 | 10 | `oath-of-devotion` → Sadakat Yemini | `imza_hizir` |
+| Paladin | 9 | 1 | 10 | `oath-of-devotion` → Sadakat Töresi | `imza_hizir` |
 | Ranger | 8 | 1 | 9 | `hunter` → Avcı | `imza_ciftci` |
 | Rogue | 9 | 1 | 10 | `thief` → Hırsız | `imza_infazci` |
 | Sorcerer | 8 | 1 | 9 | `draconic-sorcery` → Pulkanat | `imza_dunganga` |

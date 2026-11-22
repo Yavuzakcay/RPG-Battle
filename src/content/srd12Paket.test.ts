@@ -18,7 +18,7 @@ describe('SRD 12 → paket kaydı', () => {
     expect(AD_TR['fiend-patron']).toBe('Zebani');
     const r = toPackRecord(SRD.find((s) => s.id === 'fiend-patron')!, AD_TR['fiend-patron']!, ALT_AD['fiend-patron']) as unknown as SubclassDef;
     // 2026-11-21 kural: İngilizce ad Türkçe adın çevirisi (SRD 12 dahil); fikstür paketteki adı taşır.
-    expect(r.name).toEqual({ tr: 'Zebani', en: 'Hellkeeper' });
+    expect(r.name).toEqual({ tr: 'Zebani', en: 'Hellwarden' });
     expect(r.role.tr.startsWith('İblis Hamisi: ')).toBe(true);
     expect('srd' in r).toBe(false);
   });

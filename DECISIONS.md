@@ -2,6 +2,27 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## EN-AD: onaylı İngilizce alt sınıf ve özellik adları (2026-11-22, kullanıcı kararı; kural/kayıt sürümü ve mekanik değişmedi)
+
+- **Kural:** yerelleştirdiğimiz bütün alt sınıf ve alt sınıf özelliği adlarının İngilizcesi Türkçe adın birebir çevirisidir (SRD'nin
+  12'si dahil); taban sınıf özelliği, büyü, eşya, tür ve feat adları SRD İngilizcesinde kalır (SD4). Kesme işareti tipografik (’).
+- **Uygulama:** kullanıcının onayladığı 52 satırlık TR → EN listesi (ilk önerinin şüpheli satırları) yerel paketlere (`icerik/ek-*.json`,
+  yalnız `name.en`) yazıldı. Her satır pakette tam bir yerde bulundu, bulunamayan yok; 13'ü zaten aynıydı, 39'u değişti
+  (ör. Kelle Koltukta Asker → Dead Man Marching, Hokkabaz → Trickster, Silahşör → Duelist, Alevbaz → Pyromancer, Ruhsar → Soul Like,
+  Zebani → Hellwarden, Koruyucu Darbe → Warding Strike, Karanlığın Lütfu → Boon of the Dark, Karanlığın Şansı → Dark Fortune).
+  Türkçe ad, kimlik, seviye, açıklama, mekanik aynı (satır düzeyinde doğrulandı); `check:icerik` 0 hata. Aynı sınıf içinde iki alt
+  sınıf ya da özellik aynı İngilizce ada düşmüyor, sınıflar arası aynı alt sınıf adı da yok. Onaylı adlardan Superior Mobility ve
+  Dark Delirium yayımlanmış resmî özellik adlarıyla aynı (kullanıcının bilinçli seçimi; değiştirilmedi).
+- **Eski SRD karşılıkları doğrulandı:** pakette Smite of Protection, Fiend Patron, Dark One's Blessing / Own Luck, Evoker,
+  Potent Cantrip, Overchannel artık yoktu; bir önceki çeviri (Protective Strike, Hellkeeper, Blessing/Luck of the Dark, Torment
+  Doctrine, Potent Trick, Overload) duruyordu ve onaylı adlarla değiştirildi.
+- **Depo:** SRD fikstürü (`src/rules/fixtures/srd-alt-siniflar.json`) 4 adı paketle eşitlendi (Warding Strike, Hellwarden, Boon of
+  the Dark, Dark Fortune; paketten çıkarılan `life-domain` fikstürde olduğu gibi kaldı); `srd12Paket.test` Zebani'nin İngilizce adını
+  Hellwarden bekler. `scripts/lib/srd12-paket.ts` `AD_TR` Türkçe adlar değişmediği için aynı; `classFeatures.test` ve `k4.test`
+  beklenen adları (Keen Strike / Arena Agility, Torment Doctrine) değişmedi. `AS2-ENVANTER.md` ve `AS2-FARKLAR.md`'deki
+  "Sadakat Yemini" kalıntısı "Sadakat Töresi" yapıldı (bu dosyadaki eski kayıtlara dokunulmadı). `dd-gorsel` yeniden üretildi
+  (sorun 0; İngilizce ad eşlemeye girmez, fark yalnız Goliath hill/stone'un 68eace2f soy filtresinden "var" olması).
+
 ## Kesim yarığı: `trim_lines` düzeltmesi ve human-erkek-fighter-GR yeniden kesimi (2026-11-22; yalnız görünüm)
 
 - Kök neden: `scripts/toplu-kesim.py` `trim_lines` kutunun dış bandına değen HER koyu ince şeridi (yatay ya da dikey) ızgara artığı sayıp
