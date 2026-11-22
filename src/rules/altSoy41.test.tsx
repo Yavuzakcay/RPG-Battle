@@ -13,9 +13,9 @@ import { lineageNotes as notesOf } from '../ui/lineageNotes';
 import { races } from '../data';
 import { AWAKENING_OPTIONS, CELESTIAL } from './celestialData';
 import { newPendingLineages, LINEAGE_NOTICE_KEY } from '../app/lineageNotice';
-import { cultureSkinTone, skinTint, ORIGINAL_LINEAGES, isOriginalLineage, AWAKENING_DEFAULT, AWAKENING_FROM, CULTURE_SKIN, SKIN_TONES, WING_SLOTS, awakeningLookIds, lineageLook, lookEntries } from '../ui/lineageLook';
+import { cultureSkinTone, skinTint, tintFallbackFilter, LINEAGE_SKIN, ORIGINAL_LINEAGES, isOriginalLineage, AWAKENING_DEFAULT, AWAKENING_FROM, CULTURE_SKIN, SKIN_TONES, WING_SLOTS, awakeningLookIds, lineageLook, lookEntries } from '../ui/lineageLook';
 import { LookFrame } from '../ui/LookFrame';
-import { sheetAvatar } from '../battle/avatar';
+import { lineageTint, sheetAvatar } from '../battle/avatar';
 import hizalanma from '../../data/hizalanma-baslangic.json';
 import gorunum from '../../data/alt-soy-gorunum.json';
 import soyRenkleri from '../../data/soy-renkleri.json';
@@ -212,7 +212,9 @@ describe('görünüm verisi', () => {
     const t = lineageLook({ raceId: 'halfling', lineageId: 'sturdy' });
     expect([s.scaleX, s.scaleY]).toEqual([1, 1]); // KQ6-6: yüklenen jeton İnce soyun görünümü
     expect([t.scaleX, t.scaleY]).toEqual([1.07, 0.93]); // Kalın: boy ×0,90, en ×1,10 (ayak çizgisinden)
-    expect(lineageLook({ raceId: 'orc', lineageId: 'glacier' }).filter).toContain('hue-rotate');
+    // TEN-MASKE-4-IRK: Orc/Dwarf'ın bütün-jeton filtresi yalnız maske yüklenemezse yedek (`tintFallbackFilter`); görünümde filtre yok.
+    expect(lineageLook({ raceId: 'orc', lineageId: 'glacier' }).filter).toBe('');
+    expect(tintFallbackFilter({ raceId: 'orc', lineageId: 'glacier' })).toContain('hue-rotate');
   });
   it('kanat slotları (Tiefling Kanatlı, Celestial Kırık Kanat, Dragonborn, alt sınıfa bağlı Melek): sprite bağlı; Tiefling ve Dragonborn yalnız havadayken', () => {
     expect(WING_SLOTS.sort()).toEqual(['celestial-kirik-kanat', 'dragonborn', 'tiefling-kanatli']); // KQ6-3: Anka ve Melek bağlaması kaldırıldı
@@ -252,30 +254,42 @@ describe('görünüm verisi', () => {
 
 describe('boyasız orijinal alt soylar (AS1a-2 İş 3)', () => {
   const ORIG = ['elf/wood-elf', 'dwarf/knoll', 'halfling/slender', 'halfling/sturdy', 'orc/wildwood', 'celestial/parlayan-ruh', 'human/tenhausser', 'human/khadyrga', 'human/pure-city', 'human/outwall',
-    'tiefling/infernal', 'gnome/rock-gnome', 'gnome/forest-gnome'];
-  // 2026-11-22 (kullanıcı): Goliath'ın 6 soyu da bütün jetona soy filtresiyle (Hill/Stone artık orijinal değil).
-  const PAINTED = ['dragonborn/black', 'goliath/cloud', 'goliath/fire', 'goliath/frost', 'goliath/storm', 'goliath/hill', 'goliath/stone', 'elf/drow', 'elf/high-elf', 'tiefling/abyssal', 'tiefling/chthonic', 'gnome/subterranean',
-    'celestial/gece-gozyasi', 'dwarf/crag', 'dwarf/undervault', 'orc/glacier', 'orc/fen'];
+    'tiefling/infernal', 'goliath/stone', 'gnome/forest-gnome'];
+  // TEN-MASKE-4-IRK (2026-11-17 kararı, uygulandı 2026-11-23): boyasız Goliath Stone, Gnome Forest, Dwarf Knoll (Tepe), Orc Wildwood;
+  // Gnome Rock ve Goliath Hill boyalı. Goliath'ta "her ırkta en az bir orijinal soy" kuralı geri geldi (68eace2f istisnası kalktı).
+  const PAINTED = ['dragonborn/black', 'goliath/cloud', 'goliath/fire', 'goliath/frost', 'goliath/storm', 'goliath/hill', 'elf/drow', 'elf/high-elf', 'tiefling/abyssal', 'tiefling/chthonic', 'gnome/subterranean',
+    'gnome/rock-gnome', 'celestial/gece-gozyasi', 'dwarf/crag', 'dwarf/undervault', 'orc/glacier', 'orc/fen'];
   const table = soyRenkleri.races as Record<string, { lineages: Record<string, unknown> }>;
-  it('liste tam: 13 orijinal; her ırkta (Dragonborn ve Goliath hariç) en az bir orijinal, Dragonborn ve Goliath\'ta hiç yok', () => {
+  it('liste tam: 13 orijinal; her ırkta (Dragonborn hariç) en az bir orijinal, Dragonborn\'da hiç yok', () => {
     expect([...ORIGINAL_LINEAGES].sort()).toEqual([...ORIG].sort());
     for (const r of races) {
       const n = ids().filter((k) => k.startsWith(`${r.id}/`) && isOriginalLineage(k)).length;
-      if (r.id === 'dragonborn' || r.id === 'goliath') expect(n, r.id).toBe(0); else expect(n, r.id).toBeGreaterThanOrEqual(1);
+      if (r.id === 'dragonborn') expect(n).toBe(0); else expect(n, r.id).toBeGreaterThanOrEqual(1);
     }
   });
-  it('tint tablosu: orijinal alt soy null (boyama yok), boyalı kalacaklar tintli; Dragonborn 10 renk aynen', () => {
-    for (const k of ORIG) { const [r, l] = k.split('/') as [string, string]; if (table[r]) expect(table[r]!.lineages[l], k).toBeNull(); }
-    for (const k of PAINTED) { const [r, l] = k.split('/') as [string, string]; if (table[r]) expect(table[r]!.lineages[l], k).not.toBeNull(); }
+  it('tint tablosu: orijinal alt soy boyasız, boyalı kalacaklar tintli (Orc/Goliath/Dwarf/Gnome rengi soy-ten-renkleri.json); Dragonborn 10 renk aynen', () => {
+    for (const k of ORIG) { const [r, l] = k.split('/') as [string, string]; if (table[r]) expect(table[r]!.lineages[l], k).toBeNull(); expect(lineageTint(r, l), k).toBeUndefined(); }
+    for (const k of PAINTED) { const [r, l] = k.split('/') as [string, string]; if (table[r] || `${r}/${l}` in LINEAGE_SKIN) expect(lineageTint(r, l), k).toBeTruthy(); }
+    // Ten rengi dosyası: dört ırkın bütün soyları; boyasız (null) = orijinal listesi.
+    for (const r of ['orc', 'goliath', 'dwarf', 'gnome']) for (const l of races.find((x) => x.id === r)?.lineages ?? []) {
+      const k = `${r}/${l.id}`;
+      expect(k in LINEAGE_SKIN, k).toBe(true);
+      expect(LINEAGE_SKIN[k] === null, k).toBe(isOriginalLineage(k));
+    }
     expect(Object.values(table.dragonborn!.lineages).every((x) => x !== null)).toBe(true);
     expect(Object.keys(table.dragonborn!.lineages).length).toBe(10);
   });
-  it('orijinal alt soyda filtre yok (yalnız oran); boyalı Dwarf/Orc alt soylarında geçici filtre var, Dwarf üçü birbirinden ayrı', () => {
+  it('orijinal alt soyda filtre yok (yalnız oran); boyalı Dwarf/Orc alt soylarında filtre yalnız yedek (maske yüklenemezse), Dwarf ikisi ayrı', () => {
     const f = (raceId: string, lineageId: string) => lineageLook({ raceId, lineageId, level: 1 });
     for (const k of ORIG.filter((x) => !x.startsWith('celestial'))) { const [r, l] = k.split('/') as [string, string]; expect(f(r, l).filter, k).toBe(''); }
     expect(lineageLook({ raceId: 'celestial', celestialAwakening: 'parlayan-ruh', level: 3 })).toMatchObject({ filter: '', hideHalo: false, wing: null });
-    for (const k of ['dwarf/crag', 'dwarf/undervault', 'orc/glacier', 'orc/fen']) { const [r, l] = k.split('/') as [string, string]; expect(f(r, l).filter, k).not.toBe(''); }
-    expect(f('dwarf', 'crag').filter).not.toBe(f('dwarf', 'undervault').filter);
+    // TEN-MASKE-4-IRK: ten maskesi varken bütün-jeton filtresi kapalı; eski filtre maske yüklenemezse yedek (`soy-filtre-yedek.json` `eski`).
+    for (const k of ['dwarf/crag', 'dwarf/undervault', 'orc/glacier', 'orc/fen']) {
+      const [r, l] = k.split('/') as [string, string];
+      expect(f(r, l).filter, k).toBe('');
+      expect(tintFallbackFilter({ raceId: r, lineageId: l }), k).not.toBe('');
+    }
+    expect(tintFallbackFilter({ raceId: 'dwarf', lineageId: 'crag' })).not.toBe(tintFallbackFilter({ raceId: 'dwarf', lineageId: 'undervault' }));
     // Oranlar: Dwarf Tepe yalnız genişlik +%4; Halfling İnce en −%6 boy +%5, Kalın en +%10 boy −%3.
     expect([f('dwarf', 'knoll').scaleX, f('dwarf', 'knoll').scaleY]).toEqual([1.04, 1]);
     expect([f('orc', 'wildwood').scaleX, f('orc', 'wildwood').scaleY]).toEqual([1, 1]);

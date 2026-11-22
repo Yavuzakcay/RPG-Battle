@@ -509,8 +509,6 @@
         "lMin": 0.3,
         "lMax": 0.85
       },
-      "otoMaske": false,
-      "otoMaskeNot": "2026-11-22 (kullanıcı): otomatik ten maskesi yalnız başı kapsıyordu (maskAlt.headOnly); Goliath jetonu boyanmaz, bütün jetona soyun yedek CSS filtresi uygulanır (data/soy-filtre-yedek.json; seçim npm run dev → /onizleme-filtre.html). Elle maske (assets/soy-maske-el/) eklenen jetonda önce maske. Maske dosyaları, maskAlt ve temizlik ayarları durur. Hill/Stone hedefleri yalnız aday üretimi için (toprak, arduvaz).",
       "lineages": {
         "cloud": {
           "lch": {
@@ -541,13 +539,7 @@
             "dL": -6
           }
         },
-        "stone": {
-          "lch": {
-            "h": 245,
-            "c": 6,
-            "dL": -12
-          }
-        },
+        "stone": null,
         "storm": {
           "lch": {
             "h": 285,

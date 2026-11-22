@@ -19,7 +19,7 @@ import paladinJeton from '../../data/paladin-jeton.json';
 import rangerJeton from '../../data/ranger-jeton.json';
 import rogueJeton from '../../data/rogue-jeton.json';
 import genelJeton from '../../data/jeton-genel.json';
-import { cultureSkinTone, hasSubclassWing, skinTint } from '../ui/lineageLook';
+import { cultureSkinTone, hasSubclassWing, hexTint, lineageSkinHex, skinTint } from '../ui/lineageLook';
 
 /** DROW-PALET: `{ palet: "<anahtar>" }` soyun rengi ırk kaydındaki `paletler.<soy>`'dan, seçim `<anahtar>` alanından. */
 type PaletRef = { palet: string };
@@ -60,6 +60,16 @@ const genderKey = (g: Gender): 'male' | 'female' => (g === 'kadin' || g === 'fem
  * K19: cinsiyete özel kayıt (`byGender.<male|female>.lineages`) ırkın ortak kaydının önüne geçer (null: boyama yok).
  */
 export function lineageTint(raceId: string, lineageId: string | undefined, gender?: Gender, beyazTaban = false): TintSpec | undefined {
+  // TEN-MASKE-4-IRK: Orc, Goliath, Dwarf, Gnome soyları ten maskesiyle `data/soy-ten-renkleri.json` renginden (null: boyasız orijinal).
+  const ten = lineageSkinHex(raceId, lineageId);
+  if (ten !== undefined) {
+    if (!ten) return undefined;
+    // K19 cinsiyete özel `contrast` (Goliath kadın Cloud: dövme okunurluğu) ten renginde de korunur; diğer cinsiyet ayarları renk dosyasından.
+    const own = TINTS[raceId]?.byGender?.[genderKey(gender)]?.lineages?.[lineageId ?? ''];
+    const contrast = own && 'lch' in own ? own.lch.contrast : undefined;
+    const t = hexTint(ten);
+    return contrast && 'lch' in t.to ? { ...t, to: { lch: { ...t.to.lch, contrast } } } : t;
+  }
   const race = TINTS[raceId];
   if (!race || !lineageId) return undefined;
   // KQ6: beyaz taban jetonlar (Dragonborn alt sınıf/Gariban) kendi renk tablosundan (`lineagesAlt`: pul deseni v2, maske `maske-pul/`).

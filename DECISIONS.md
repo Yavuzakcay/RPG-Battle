@@ -2,6 +2,32 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## TEN-MASKE-4-IRK: Orc, Goliath, Dwarf, Gnome bütün-jeton filtresi yerine ten maskesi (2026-11-23; kullanıcı kararı, yalnız görünüm, kural/kayıt sürümü değişmedi)
+
+- **Karar:** dört ırkın soy rengi yalnız çıplak tene (yüz, boyun, kol, el, görünen bacak); kıyafet, zırh, silah, kalkan, saç, sakal aynen.
+  Renk kullanıcının: `data/soy-ten-renkleri.json` (`<ırk>/<soy>` → hex ya da null), seçim `npm run dev` → `/onizleme-ten.html` (canlı
+  önizleme, "Dışa aktar"). Başlangıç değerleri görevin önerisi. Boyama Human ten tonuyla aynı LCh yolu (`hexTint`): ortalama açıklık
+  hedefe, gölge/çizgi farkları korunur; Goliath kadın Cloud'un K19 kontrastı korunur.
+- **Boyasız soylar (2026-11-17 kararı):** Goliath Stone, Gnome Forest, Dwarf Knoll (Tepe), Orc Wildwood. Gnome Rock boyalı oldu. Goliath
+  Stone'un arduvaz hedefi (68eace2f) kalktı; AS1a-2'nin "her ırkta (Dragonborn hariç) en az bir orijinal soy" kuralı Goliath'ta geri geldi.
+- **68eace2f'nin güncellediği beş test:** `altSoy41` (Goliath istisnası kalktı; orijinal listesi Stone'lu, Rock'suz, yine 13) ve `handMask`
+  eski hâline döndü; `tint` maske adresi kısmı eski hâline döndü (Goliath yine `maske/`), ΔE ölçümü `soy-ten-renkleri.json` ırklarında
+  hex ayrışma testine taşındı (`soy-olcum.json` eski renk ve maskeyle ölçülmüştü; `npm run soy-maske` tam çalıştırılmadı). `headOverlay`
+  ve `skinFix` **eski hâline dönmedi**: görev Goliath kafa kaplamasının kapalı kalmasını istiyor (`basKaplama.goliath.kapali` durur).
+- **Maske:** MASKE-DUZELT'in `scripts/maske-duzelt.py`'si genişletildi (kopya yok; yeni ayarlar yoksa eski davranış): `--irk`, gri ten
+  (`griKroma`/`abTol`), sakal/saç kroma sınırı (`kromaUst`), gölge rampası (`buyume`), delik doldurma, çelik parlak kenarı, `basKutu`.
+  `data/maske-duzelt.json` `irkTum`: bu ırkların 1160 jetonunun hepsi bu betikle; `soy-maske` (`--alt` ve sınıf-genel döngü) yazmaz.
+  Çıplak teni olmayan 90 çizime bilerek boş maske (dosya kalır, boyanmaz, yedek filtre de yok).
+- **Filtreler:** Dwarf/Orc'un AS1a bütün-jeton filtreleri `alt-soy-gorunum.json`'dan `soy-filtre-yedek.json`'a (`eski: true`) taşındı:
+  yalnız maske yüklenemezse (eski davranış). Goliath `otoMaske: false` kalktı; `goliath/stone` yedek filtresi ve adayları silindi.
+  `maskesizIrklar` artık yalnız Halfling ve Human.
+- **Testler (gerekçe: davranış değişti):** `altSoy41` (Dwarf/Orc görünüm filtresi yok, yedekte var; renk kaynağı), `tint` (tablo dışı ırk
+  Orc/Dwarf, hex ayrışma, K19 Goliath Cloud artık `hexTint`; kontrast oranı 1,5 → 1,2 çünkü erkek Cloud'da eski açıklık sıkıştırması yok
+  ve açık uç L 100'e kırpılıyor), `soyFiltreYedek` (`eski` kayıtlar adaysız), `baglamaKq6` (bu ırklarda her jetonun maske dosyası var;
+  rapor piksel sayısı eski), `sheetPortrait` (Dwarf/Orc filtresiz).
+- **Kalan:** 28 jeton Gemini'ye (kamuflajlı Rogue ID4, maskeli Barbarian ID4, Goliath zırhlı sınıf-genel jetonların elleri vb.); ayrıntı,
+  envanter ve kanıt `harita/belgeler/TEN-MASKE-4-IRK.md`.
+
 ## MASKE-DUZELT: 107 jetonun ten maskesi yüz tonundan yeniden üretildi (2026-11-22; yalnız görünüm, kural/kayıt sürümü değişmedi)
 
 - **Kapsam:** KESIM-DUZELT maske listesinin Elf/Human/Tiefling jetonları (38) + JETON-DENETIM bölüm 4 Drow/Human/Tiefling bozuk ve

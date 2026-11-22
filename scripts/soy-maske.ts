@@ -218,10 +218,12 @@ if (args.includes('--alt')) {
   // MASKE-DUZELT: bu jetonların maskesi `python scripts/maske-duzelt.py` ile (yüz tonundan, jeton başına kutular); burada ezilmez.
   const duzeltFile = path.join(ROOT, 'data/maske-duzelt.json');
   const duzelt = new Set(fs.existsSync(duzeltFile) ? Object.keys(JSON.parse(fs.readFileSync(duzeltFile, 'utf8')).jetonlar ?? {}) : []);
+  // TEN-MASKE-4-IRK: `irkTum` ırklarının (Orc, Goliath, Dwarf, Gnome) bütün jetonları maske-duzelt.py ile; burada ezilmez.
+  const tumIrk = new Set<string>(fs.existsSync(duzeltFile) ? JSON.parse(fs.readFileSync(duzeltFile, 'utf8')).irkTum ?? [] : []);
   for (const m of names) {
     const name = m[0].replace(/\.webp$/, ''), race = m[1]!, g = m[2] === 'erkek' ? 'male' : 'female';
     if ((only && only !== race) || race === 'dragonborn') continue; // Dragonborn: yalnız pul hattı (scripts/dragonborn-pul-maske.py → maske-pul/); eski yedek maske (KJ2/KJ3) yok
-    if (duzelt.has(name)) continue;
+    if (duzelt.has(name) || tumIrk.has(race)) continue;
     const r = RACES[race]!;
     const base = (r as Race & { maskAlt?: MaskCfg }).maskAlt ?? r.mask;
     const { data, W, H } = await raw(path.join(CHAR, `${name}.webp`));
@@ -261,6 +263,7 @@ await buildHeads();
 const report: Record<string, unknown> = {};
 /** DROW-PALET: paletli soyların her paletinin ölçümü: `ırk/soy` → palet → jeton → Lab. */
 const paletRows: Record<string, Record<string, Record<string, number[]>>> = {};
+const TUM_IRK = new Set<string>(JSON.parse(fs.readFileSync(path.join(ROOT, 'data/maske-duzelt.json'), 'utf8')).irkTum ?? []);
 for (const [race, r] of Object.entries(RACES)) {
   if (only && only !== race) continue;
   if (!GENEL_IRKLAR.includes(race)) continue;
@@ -273,7 +276,8 @@ for (const [race, r] of Object.entries(RACES)) {
     const mask = skinMask(name, { ...r.mask, ...r.mask.byGender?.[g] }, data, W, H);
     const m = Buffer.alloc(W * H);
     for (let i = 0; i < W * H; i++) m[i] = mask[i] ? 255 : 0;
-    await sharp(m, { raw: { width: W, height: H, channels: 1 } }).png({ palette: true, colours: 2, compressionLevel: 9 }).toFile(path.join(OUT, `${name}.png`));
+    // TEN-MASKE-4-IRK: `irkTum` ırklarının sınıf-genel maskesi de maske-duzelt.py'den (yazılmaz; ölçüm bu otomatik maskeyle yapılır).
+    if (!TUM_IRK.has(race)) await sharp(m, { raw: { width: W, height: H, channels: 1 } }).png({ palette: true, colours: 2, compressionLevel: 9 }).toFile(path.join(OUT, `${name}.png`));
     // Ölçüm: her soyun boyaması sonrası ten ortalaması.
     rows[name] = {};
     // DROW-PALET: paletli soyda her palet ayrıca ölçülür (`paletler`; ΔE testi dördü için).

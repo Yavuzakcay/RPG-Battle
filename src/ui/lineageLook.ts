@@ -6,6 +6,7 @@
 import data from '../../data/alt-soy-gorunum.json';
 import soyRenkleri from '../../data/soy-renkleri.json';
 import filtreYedek from '../../data/soy-filtre-yedek.json';
+import tenRenkleri from '../../data/soy-ten-renkleri.json';
 import type { TintSpec } from '../battle/types';
 import { rgbToLab } from './color';
 import { findSubclass } from '../rules/subclasses';
@@ -253,13 +254,29 @@ export const skinToneOf = (id: string | undefined): SkinTone | undefined => SKIN
 export function skinTint(raceId: string, toneId: string | undefined): TintSpec | undefined {
   if (raceId !== 'human' || !D.ten.filtreUygula) return undefined;
   const hex = skinToneOf(toneId)?.renk;
-  if (!hex) return undefined;
+  return hex ? hexTint(hex) : undefined;
+}
+
+/**
+ * Hedef ten rengi (hex) → maskeli LCh boyaması (Human ten tonu ve TEN-MASKE-4-IRK soy tenleri ortak): ton ve kroma hedefe kayar, ortalama
+ * açıklık hedefe taşınır; gölge/çizgi/ten detayı (açıklık ve kroma farkları) korunur. `select` yalnız eski HSL yolunda kullanılır (burada değil).
+ */
+export function hexTint(hex: string): TintSpec {
   const n = parseInt(hex.slice(1), 16);
   const [L, a, b] = rgbToLab((n >> 16) & 255, (n >> 8) & 255, n & 255);
   const h = ((Math.atan2(b, a) * 180) / Math.PI + 360) % 360;
   const select = (soyRenkleri.races as unknown as Record<string, { select: TintSpec['select'] }>).human!.select;
   return { select, to: { lch: { h, c: Math.hypot(a, b), L, hueKeep: 0.3, chromaKeep: 0.5 } } };
 }
+
+/** TEN-MASKE-4-IRK: soy ten renkleri (`data/soy-ten-renkleri.json`, anahtar `<ırk>/<soy>`; null = boyasız orijinal). */
+export const LINEAGE_SKIN: Record<string, string | null> = (tenRenkleri as unknown as { soylar: Record<string, string | null> }).soylar;
+/** Soyun ten rengi: hex, null (boyasız) ya da undefined (bu soyun rengi bu dosyada değil: eski soy-renkleri yolu). */
+export const lineageSkinHex = (raceId: string, lineageId: string | undefined): string | null | undefined => {
+  const k = `${raceId}/${lineageId ?? ''}`;
+  return lineageId && k in LINEAGE_SKIN ? LINEAGE_SKIN[k] : undefined;
+};
+
 
 /** SD5: palet filtresinin kimliği (aynı palet = aynı kimlik; tanım birden çok kez bulunsa da özdeş). `esik` (KW1) kimliğe girer. */
 export const wingFilterId = (p: WingPalet): string => `wp-${p.golge.slice(1)}-${p.isik.slice(1)}${p.esik ? `-e${Math.round(p.esik * 1000)}` : ''}`;

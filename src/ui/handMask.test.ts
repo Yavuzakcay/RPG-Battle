@@ -45,9 +45,7 @@ describe('elle maske', () => {
       .toEqual({ ok: true, name: 'human-erkek-sorcerer-SC-9' });
     for (const [name, src] of Object.entries(sprites)) {
       expect(handMasked(name)).toBe(src === 'el');
-      // 2026-11-22: otomatik maskesi ırkta kapalıysa (`otoMaske: false`, Goliath) yalnız elle maske; yoksa adres yok (yedek filtre).
-      const oto = (soyRenkleri.races as unknown as Record<string, { otoMaske?: false }>)[name.split('-')[0] ?? '']?.otoMaske !== false;
-      expect(maskUrlFor(`characters/${name}.webp`)).toBe(src === 'el' ? `characters/maske-el/${name}.png` : oto ? `characters/maske/${name}.png` : null);
+      expect(maskUrlFor(`characters/${name}.webp`)).toBe(`characters/${src === 'el' ? 'maske-el' : 'maske'}/${name}.png`);
     }
   });
   it('kısmi ağırlık: 255 tam boya (ikili maskeyle bit bit aynı), 0 dokunulmaz, arası karışım', () => {

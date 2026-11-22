@@ -7,6 +7,7 @@ import { naturalLeft } from '../ui/tokenMirror';
 import { maskedTint, maskUrlFor, scaleTinted, tintPixels } from '../ui/tint';
 import { scaleLineages, scaleMaskless, scalePixels } from '../ui/scaleTint';
 import alt from '../../data/soy-maske-alt-rapor.json';
+import duzelt from '../../data/maske-duzelt.json';
 import fighter from '../../data/fighter-jeton.json';
 
 const MASKS = new Set(Object.keys(import.meta.glob('/public/characters/maske/*.png')).map((f) => f.split('/').pop()!.replace('.png', '')));
@@ -52,7 +53,10 @@ describe('KQ6 bağlama', () => {
     expect(Object.keys(rep).length).toBe(6 * 264 + 10); // + 10 Gladyatör (CC 2026-11-19, fighter ID12; boyalı 5 ırk × 2 cinsiyet, Celestial/Dragonborn hariç)
     // KJ2: Dragonborn beyaz taban jetonlarının ten maskesi pul maskesidir (`maske-pul/`, 266 jetonun hepsinde var; kapsam aşağıdaki testte);
     // oyunun hiç istemediği eski `maske/dragonborn-<erkek|kadin>-*` yedek maskeleri silindi. Diğer ırklar: `maske/` + rapor piksel sayısı.
-    for (const [name, n] of Object.entries(rep)) expect(name.startsWith('dragonborn-') ? PUL.has(name) : MASKS.has(name), name).toBe(name.startsWith('dragonborn-') ? true : n >= 30);
+    // TEN-MASKE-4-IRK: `irkTum` ırklarının (Gnome, Goliath; Orc/Dwarf raporda yok) maskesi maske-duzelt.py'den: her jetonda dosya var
+    // (çıplak teni olmayan çizimde bilerek boş maske, boyanmaz); rapordaki eski piksel sayısı bunlar için geçerli değil.
+    const tum = new Set<string>(duzelt.irkTum);
+    for (const [name, n] of Object.entries(rep)) expect(name.startsWith('dragonborn-') ? PUL.has(name) : MASKS.has(name), name).toBe(name.startsWith('dragonborn-') || tum.has(name.split('-')[0]!) ? true : n >= 30);
     expect(Object.values(rep).filter((n) => n < 30).length).toBeLessThan(60);
   });
   it('Dragonborn beyaz taban: 10 renk pul deseni v2 (pul maskesi; eski çarpma filtresi ve eski maske yedeği yok), birbirinden ayrı', () => {
