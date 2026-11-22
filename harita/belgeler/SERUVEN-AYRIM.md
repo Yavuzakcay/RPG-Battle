@@ -1,6 +1,6 @@
 # Serüven ayrımı: inceleme ve plan (SERUVEN-AYRIM-INCELEME)
 
-Salt okuma incelemesi, 2026-11-22, `birlesik` @ `c8555710`. Kod, veri ve test değişmedi; bu belge tek çıktı.
+Salt okuma incelemesi, 2026-11-22, `birlesik` @ `c8555710` (S1 notu `59f8998b` sonrası). Kod, veri ve test değişmedi; bu belge tek çıktı.
 Kullanıcı kararları (2026-11-22): Serüven ayrı oyun (aynı motor, kıta ve haritalar; açık dünya), Dice & Hex menüsünden
 gizlenir, slot modeli (slot = bir sefer), slot başında yalnız 1 karakter (seviye 1), parti oyun içi yoldaşlardan, aktif
 parti en çok 4, bölünmüş parti ileride, üs (kamp) seçimli tema.
@@ -329,7 +329,7 @@ Her adım: typecheck + ilgili testler + build yeşil. Boyut: K küçük (≤ 1 g
 
 | Adım | İçerik | Boyut | Bağımlılık | Kural sürümü | Kayıt sürümü | Regresyon riski |
 |---|---|---|---|---|---|---|
-| **S1** Bayrakla gizleme | `features.ts` `seruvenMenu` (varsayılan kapalı); `Home` `onSeruven` yalnız açıkken; `#seruven` ile doğrudan açılış. `seruven-ui.test`, `modulBaslatma` uyarlanır (`check:harita` = `scripts/kara-ekran.mjs` Serüven'e girmiyor, doğrulandı) | K | — | yok | yok | Düşük |
+| **S1** Bayrakla gizleme | **Yapıldı** (`c77fb4c9` ANA-MENU-SADELESTIR, bu incelemeden sonra birleşti): `features.ts` `seruvenMenuEnabled` (varsayılan kapalı, Ayarlar ▸ Gelişmiş ▸ Geliştirici); `seruven-ui.test` bayrakla, yeni `anaMenu.test.tsx`. Kalan: `#seruven` ile doğrudan açılış (S2'ye) | — | — | yok | yok | — |
 | **S2** Giriş noktası | `src/seruven/SeruvenApp.tsx` (kök; savaş dönüşü önek işleme `App.tsx:271-274`'ten taşınır); `main.tsx` kök seçici (a1); Serüven metinleri tembel `strings.seruven.ts`; sınır testi (izin listesi: §1.2) | O | S1 | yok | yok | Orta (App ekran akışı) |
 | **S2b** Karışıkların çözümü | `SCENARIOS` okuyucusu `sim/` dışına; `diceUnlock` tip bağı; Sefer paneli kararı | K | S2 | yok | yok | Düşük |
 | **S3** Slot kaydı | `seruven-index`, `seruven-slot-<n>-*`; `SeruvenState.roster` + `parties[]` (dizi, uzunluk 1) + `activeParty`; `MapBattle` otomatik kaydı enjekte (`saveKey`); `activeBattle` slotta; depolama boyutu ölçümü | O | S2 | yok (savaş olayı değişmez) | **yeni** `SLOT_VERSION` 1; `JOURNEY_VERSION` 2 eski kayıt için kalır | Orta (eski kayıt) |
