@@ -30,6 +30,16 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Sol açıklama kutusu kalktı** (`home.intro` TR/EN ve `.intro` CSS'i silindi); logo ve ad kalır, masaüstünde blok dikey ortada.
   Sürüm/SRD satırı kalır.
 - Ana parça ≈+0,2 kB (ikon ve bayrak); testler `src/screens/anaMenu.test.tsx`.
+## ROZET-CERCEVE-KIRPMA: rozet çerçevesi kemer biçiminde, jetona en küçük gereken sığdırma (2026-11-22; yalnız görünüm, kural/kayıt sürümü değişmedi)
+
+- Sorun (JETON-DENETIM 2b): rozet dairesi 69 jetonda baş/şapkayı kesiyordu; ölçünce kesiğin ≈ %83'ü alt köşelerde (ayak, etek, sap).
+  Bütün jetonları düz daireye sığdırmak 2876 jetonun 1375'ini küçültürdü (en az 0,74): boy tutarlılığı için reddedildi.
+- Karar: rozetin görünür alanı **kemer** (üst yarı daire, alt yarı dik kenar; figür çerçevenin alt kenarında durur, rozet kutusunun dışına
+  taşmaz). Görsel yüklenince alfa zarfı ölçülür; zarf kemere sığmıyorsa önce en kısa kaydırma, o da yetmezse en büyük sığan ölçek (ayak
+  çizgisinden). Sonuç: 2007 jeton dokunulmadan, 518 yalnız kaydırma, 351 küçültme (en az 0,836, %5 dilim 0,965). Alt soy oranı ve yön aynası
+  hesaba katılır; Celestial tacı ve rozet kanadı aynı dönüşümü izler. Savaş jetonu ve oluşturucu figürü kırpmıyordu, değişmedi.
+- Kod `src/ui/badgeFit.ts`, `src/ui/badgeHull.ts`, `AvatarBadge` (`.avatar.fit`, `--fit`, `--fit-clip`), `LookFrame` görünümü her zaman
+  bağlamla indirir. Ölçüm ve önce/sonra: `harita/belgeler/ROZET-CERCEVE.md`.
 
 ## Hafif doğrulama modu: görev sonunda tam `npm test` yok (2026-11-22, kullanıcı kararı)
 
