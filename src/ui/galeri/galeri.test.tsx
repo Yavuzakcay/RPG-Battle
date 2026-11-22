@@ -14,7 +14,7 @@ describe('görsel galerisi', () => {
     expect(tabRecords('buyu')).toHaveLength(339);
     expect(tabRecords('esya')).toHaveLength(449);
     expect(tabRecords('canavar')).toHaveLength(330);
-    expect(tabRecords('altsinif')).toHaveLength(119); // 2026-11-21: life-domain kaldırıldı (120 → 119)
+    expect(tabRecords('altsinif')).toHaveLength(120);
     expect(tabRecords('nesne').length).toBeGreaterThan(30);
   });
 

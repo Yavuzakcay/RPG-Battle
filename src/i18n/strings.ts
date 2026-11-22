@@ -20,9 +20,7 @@ const tr = {
     descTrOnly: 'Açıklama yalnız Türkçe.',
     home: 'Ana ekran', cancel: 'Vazgeç', save: 'Kaydet', edit: 'Düzenle', delete: 'Sil', confirmDelete: 'Silinsin mi? Evet',
     close: 'Kapat', all: 'Tümü', loading: 'Yükleniyor…', loadingMonsters: 'Canavarlar yükleniyor…', monsterLoadError: 'Canavar verisi yüklenemedi; sayfayı yenileyin.', classLoadError: 'Sınıf verisi yüklenemedi; sayfayı yenileyin.',
-    subclassAssigned: (list: string) => `Alt sınıfı seçilmemiş karakterlere varsayılan alt sınıf atandı (${list}). Oluşturucudan değiştirebilirsin.`,
-    // 2026-11-21: kaldırılan alt sınıfın (Yaşam Manastırı) eski kimliği yeni alt sınıfa yönlendi; bir kerelik bildirim.
-    subclassRenamed: (list: string) => `Artık oyunda olmayan alt sınıf yerine yeni alt sınıf yazıldı (${list}). Oluşturucudan değiştirebilirsin.`,
+    subclassAssigned: (list: string) => `Alt sınıfı seçilmemiş karakterlere SRD alt sınıfı atandı (${list}). Oluşturucudan değiştirebilirsin.`,
     lineageAssigned: (list: string) => `Soyu seçilmemiş karakterlere ilk soy atandı (${list}). Oluşturucudan değiştirebilirsin.`,
     // Kuyruk AS1a: soyu isteğe bağlı türlerde (Dwarf, Halfling, Orc, Human) eski kayıt soysuz kalır; bir kerelik bildirim.
     lineagePick: (list: string) => `Alt soy seç: ${list}. Seçilene dek alt soy etkisi yoktur. Oluşturucudan seçebilirsin.`,
