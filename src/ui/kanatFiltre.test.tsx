@@ -11,6 +11,8 @@ import { WingFilterHost } from './WingFilter';
 import { allWingPalettes, lineageLook, wingFilterId, type WingPalet } from './lineageLook';
 import kanat from '../../data/kanat-esleme.json';
 import appSrc from '../App.tsx?raw';
+import hostSrc from './WingFilter.tsx?raw';
+import { wingTable } from './wingData';
 
 const SLOTS = kanat.slotlar as unknown as Record<string, { palet?: WingPalet; renkPaletleri?: Record<string, unknown> }>;
 
@@ -53,5 +55,24 @@ describe('kanat filtre ev sahibi: uygulama kökünde en önce', () => {
     expect(i).toBeGreaterThan(-1);
     expect(i).toBeLessThan(appSrc.indexOf('<MenuBackground />'));
     expect(i).toBeLessThan(appSrc.indexOf('<Screens '));
+  });
+});
+
+describe('GORSEL-DUZELTME: kanat verisi geç yüklense de Dragonborn Blue kanadı renkli', () => {
+  it('ev sahibi kanat verisine abone (App onu veriden önce çizer; veri gelince yeniden çizilir)', () => {
+    const body = hostSrc.slice(hostSrc.indexOf('export const WingFilterHost'));
+    expect(body.slice(0, body.indexOf('return ('))).toContain('useWingData()');
+  });
+  it('veri yokken hiç palet yok (hatanın biçimi); veri gelince Blue taban, zar ve pençe paletleri tanımlı, taban mavi', () => {
+    const saved = wingTable.slotlar;
+    wingTable.slotlar = {};
+    try { expect(renderToStaticMarkup(<WingFilterHost />)).not.toContain('<filter'); } finally { wingTable.slotlar = saved; }
+    const html = renderToStaticMarkup(<WingFilterHost />);
+    const wing = lineageLook({ raceId: 'dragonborn', lineageId: 'blue', level: 13 }, { ability: true }).wing!;
+    for (const p of [wing.palet!, ...wing.katmanlar!.map((k) => k.palet)]) expect(html, wingFilterId(p)).toContain(`<filter id="${wingFilterId(p)}"`);
+    const hex = wing.palet!.isik;
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)) as [number, number, number];
+    expect(b).toBeGreaterThan(r);
+    expect(b).toBeGreaterThanOrEqual(g);
   });
 });

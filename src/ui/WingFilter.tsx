@@ -4,6 +4,7 @@
  */
 import { memo } from 'react';
 import { allWingPalettes, wingFilterId, wingFilterTables, wingLumaMatrix, type WingPalet } from './lineageLook';
+import { useWingData } from './wingData';
 
 export function WingFilterDefs({ palet }: { palet: WingPalet }) {
   const t = wingFilterTables(palet);
@@ -28,6 +29,9 @@ export function WingFilterDefs({ palet }: { palet: WingPalet }) {
  * bir SVG'de durur; Chromium ve Firefox ikisi de kullanır.
  */
 export const WingFilterHost = memo(function WingFilterHost() {
+  // GORSEL-DUZELTME: kanat verisi tembel (wingData.ts); App bu bileşeni veriden önce çizer. Abone olmazsa boş tabloyla bir kez çizilir ve
+  // hiçbir palet tanımlanmaz (ilk kopya gizli mobil önizlemede kalır, Firefox'ta kanat beyaz). Veri yüklenince yeniden çizilir.
+  useWingData();
   return (
     <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true" data-wing-filters="">
       {allWingPalettes().map((p) => <WingFilterDefs key={wingFilterId(p)} palet={p} />)}
