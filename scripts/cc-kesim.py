@@ -5,6 +5,11 @@
   python3 scripts/cc-kesim.py yeni       # 2) Gladyatör (champion, fighter ID12) + Warlock sayfaları
   python3 scripts/cc-kesim.py duzeltme   # 3) hale düzeltme sayfaları 01–03 (kesin yetkili)
   python3 scripts/cc-kesim.py diger      # C) Bard, Sorcerer, Druid, Barbarian aurasız, Cleric, Human Fighter
+  python3 scripts/cc-kesim.py yeniden <sayfa> [--hucre 1,2,...]   # yeniden çizilmiş (kabul edilen) tam sınıf sayfasından hücreler
+  python3 scripts/cc-kesim.py hucre <sayfa> <sınıf düzeni> <hücre> <jeton>   # tek hücre yeniden kesimi (eski jetonun yerleşimiyle)
+Yeniden çizilmiş sayfa kuralı (2026-11-22): defterde `yenidenCizilmis` altında işaretli sayfa yalnız hale düzeltmesi değil, kabul edilen
+güncel çizimdir; BÜTÜN hücreleri kesilir ("halesiz-temiz dokunulmaz" bu sayfalara uygulanmaz; `tum_hucreler` kısmi listeyi uyarıyla
+tamamlar; test src/data/ccKesimYenidenCizilmis.test.ts). Ham klasör `CC_HAM` ortam değişkeniyle değiştirilebilir.
 Öncelik kuralı (aynı jeton kimliği): düzeltme > yeni sayfa > taban (`ONCELIK`). Defter data/cc-kesim-kaynak.json her yazımı kaydeder;
 daha düşük öncelikli bir adım, daha yüksek öncelikli kaynağın yazdığı jetonu ezmez (adımlar hangi sırayla çalışırsa çalışsın).
 Çıktı: public/characters/<ad>.webp (+ kucuk/ 96 px), kontak sayfaları docs/sabah/cc-kesim/, rapor docs/sabah/cc-kesim/<adım>.json."""
@@ -14,7 +19,7 @@ from PIL import Image, ImageDraw
 from scipy import ndimage as ndi
 
 _s = importlib.util.spec_from_file_location('tk', 'scripts/toplu-kesim.py'); tk = importlib.util.module_from_spec(_s); _s.loader.exec_module(tk)
-RAW = 'assets-ham/karakter'
+RAW = os.environ.get('CC_HAM', 'assets-ham/karakter')
 KURU = os.environ.get('CC_KURU')   # deneme: çıktılar bu klasöre, defter ve belgeler de oraya
 OUT = f'{KURU}/characters' if KURU else 'public/characters'
 DOC = f'{KURU}/doc' if KURU else 'docs/sabah/cc-kesim'
@@ -26,7 +31,7 @@ GREEN, MAGENTA = np.array([0, 255, 0], float), np.array([255, 0, 255], float)
 
 # ---------------------------------------------------------------------------------------------------------------- defter ve yazım
 def ledger():
-    return json.load(open(LEDGER)) if os.path.exists(LEDGER) else {'_not': 'scripts/cc-kesim.py: jeton kimliği → yazan kaynak geçmişi; öncelik düzeltme > yeni sayfa > taban.', 'jetonlar': {}}
+    return json.load(open(LEDGER, encoding='utf-8')) if os.path.exists(LEDGER) else {'_not': 'scripts/cc-kesim.py: jeton kimliği → yazan kaynak geçmişi; öncelik düzeltme > yeni sayfa > taban.', 'jetonlar': {}}
 
 def write_token(L, name, img, kaynak, dosya, hucre, rep):
     """Öncelik kuralı: kayıtlı kaynağın önceliği bu adımınkinden yüksekse yazmaz (çakışma raporlanır)."""
@@ -42,7 +47,8 @@ def write_token(L, name, img, kaynak, dosya, hucre, rep):
     rep['yazilan'].append(name); return True
 
 def save_ledger(L):
-    json.dump(L, open(LEDGER, 'w'), ensure_ascii=False, indent=1); open(LEDGER, 'a').write('\n')
+    # Windows: varsayılan kodlama cp1254; defter UTF-8 okunup yazılır.
+    json.dump(L, open(LEDGER, 'w', encoding='utf-8', newline='\n'), ensure_ascii=False, indent=1); open(LEDGER, 'a', encoding='utf-8', newline='\n').write('\n')
 
 def git_token(ref, name):
     r = subprocess.run(['git', 'show', f'{ref}:public/characters/{name}.webp'], capture_output=True)
@@ -55,7 +61,7 @@ TAC_YOK = {'celestial-erkek-warlock-WL-8': 'Gulyabani: altın teller olduğu gib
 
 def hold_sync(L):
     if KURU: return
-    hh = json.load(open('data/hale-halesiz.json')); he = json.load(open('data/hale-elle.json'))
+    hh = json.load(open('data/hale-halesiz.json', encoding='utf-8')); he = json.load(open('data/hale-elle.json', encoding='utf-8'))
     free = {n for n, j in L['jetonlar'].items() if n.startswith('celestial-') and j.get('kazanan')}
     keep = [n for n in hh['bekleyen'] if n not in free or n in TAC_YOK]
     for n, why in TAC_YOK.items():
@@ -64,7 +70,7 @@ def hold_sync(L):
     hh['bekleyen'] = sorted(keep)
     he['bekleyen'] = {k: v for k, v in sorted(he['bekleyen'].items()) if k in keep}
     for f, d in (('data/hale-halesiz.json', hh), ('data/hale-elle.json', he)):
-        json.dump(d, open(f, 'w'), ensure_ascii=False, indent=1); open(f, 'a').write('\n')
+        json.dump(d, open(f, 'w', encoding='utf-8', newline='\n'), ensure_ascii=False, indent=1); open(f, 'a', encoding='utf-8', newline='\n').write('\n')
 
 # ---------------------------------------------------------------------------------------------------------------- anahtar
 def key_page(a):
@@ -422,6 +428,60 @@ def oncelik_rapor(L):
     lines += ['', f'Tek kaynaktan yazılan Celestial jeton: {tek}.']
     open('docs/sabah/celestial-oncelik.md', 'w').write('\n'.join(lines) + '\n')
 
+# ---------------------------------------------------------------------------------------------------------------- yeniden çizilmiş sayfalar
+def yeniden_cizilmis(L=None):
+    """Defterdeki `yenidenCizilmis`: ham sayfa → {sinif, irk, cinsiyet, kod, hucre (sayısı), not}."""
+    return (L or ledger()).get('yenidenCizilmis', {})
+
+def tum_hucreler(f, cells, n_cells, rep, L=None):
+    """Yeniden çizilmiş sayfada kısmi hücre listesi tuzaktır (2026-11-22: clerik-male-celestial yalnız 7 ve 9 kesildi, 7 hücre eski kaldı):
+    bütün hücreler döner, kısmi istek uyarı olarak raporlanır."""
+    if f not in yeniden_cizilmis(L): return list(cells)
+    full = list(range(1, n_cells + 1))
+    if sorted(cells) != full:
+        msg = f'UYARI {f}: yeniden çizilmiş (kabul edilen) sayfa; kısmi hücre listesi {sorted(cells)} yerine bütün hücreler {full}'
+        print(msg); rep.setdefault('uyari', []).append(msg)
+    return full
+
+def yeniden(argv):
+    """Yeniden çizilmiş tam sınıf sayfasından hücreler, `diger` ile aynı hat (sayfa ölçeği `sheet_scale`, `tk.render`). Yalnız istenen hücreler
+    (`--hucre`; verilmezse defterde bu sayfadan henüz yazılmamış hücrelerin hepsi). Belge/kontak sayfası yazmaz (docs/sabah'a dokunmaz);
+    defter ve taç bekleme listesi (`hold_sync`) güncellenir."""
+    if not argv: sys.exit('kullanım: cc-kesim.py yeniden <sayfa> [--hucre 1,2,...]')
+    f = argv[0]; L = ledger(); spec = yeniden_cizilmis(L).get(f)
+    if not spec: sys.exit(f'{f}: defterde yenidenCizilmis kaydı yok (data/cc-kesim-kaynak.json)')
+    cls, race, g, kod, n_cells = spec['sinif'], spec['irk'], spec['cinsiyet'], spec['kod'], spec['hucre']
+    name_of = lambda n: f'{race}-{g}-{cls}-{kod}{n}'
+    if '--hucre' in argv: cells = [int(x) for x in argv[argv.index('--hucre') + 1].split(',')]
+    else: cells = [n for n in range(1, n_cells + 1) if (L['jetonlar'].get(name_of(n), {}).get('kazanan') or {}).get('dosya') != f]
+    rep = {'adim': 'yeniden', 'sayfa': f, 'istenen': cells, 'yazilan': [], 'ezilmedi': [], 'uyari': []}
+    comps = tk.components_of_sheet(f'{RAW}/{f}', cls)
+    scale, ok = sheet_scale(comps, cls)
+    for n in cells:
+        if n not in ok: rep['uyari'].append(f'{f} hücre {n}: figür yok ya da ELLE, uygulanmadı'); continue
+        rgba = ok[n][0]; sc = scale if tk.TALL.get(cls) != n else min(tk.FIG_H / rgba.shape[0], (SIZE - 4) / rgba.shape[1])
+        tok, nh, shifted = tk.render(rgba, tk.bbox(rgba), sc, rgba.shape[1] / 2)
+        write_token(L, name_of(n), Image.fromarray(np.array(tok), 'RGBA'), 'diger', f, n, rep)
+    save_ledger(L); hold_sync(L)
+    return rep
+
+def hucre(argv):
+    """Tek hücre yeniden kesimi (kesim kusuru düzeltmesi): `hucre <sayfa> <sınıf düzeni> <hücre> <jeton>`. Hücre toplu kesimin kendi
+    ayıklamasıyla (`tk.components_of_sheet`), yerleşim ESKİ jetonla aynı (alt gövde hizası `align_or_height`: boy ve konum korunur).
+    Kaynak `duzeltme` (öncelikli); belge/kontak sayfası yazmaz. Örnek (2026-11-22, kabza/bilek yarığı, `trim_lines` düzeltmesi sonrası):
+    python scripts/cc-kesim.py hucre gariban-male-human.jpg gariban 5 human-erkek-fighter-GR"""
+    if len(argv) < 4: sys.exit('kullanım: cc-kesim.py hucre <sayfa> <sınıf düzeni> <hücre> <jeton>')
+    f, cls, n, name = argv[0], argv[1], int(argv[2]), argv[3]
+    L = ledger(); rep = {'adim': 'hucre', 'yazilan': [], 'ezilmedi': [], 'uyari': []}
+    comps = tk.components_of_sheet(f'{RAW}/{f}', cls)
+    if n not in comps: sys.exit(f'{f}: hücre {n} bulunamadı')
+    rgba, bb, warn = comps[n]
+    if any(x.startswith('ELLE') for x in warn): rep['uyari'] += warn
+    tok = align_or_height(rgba, name, rep)
+    write_token(L, name, Image.fromarray(np.array(tok), 'RGBA'), 'duzeltme', f, n, rep)
+    save_ledger(L)
+    return rep
+
 # ---------------------------------------------------------------------------------------------------------------- C) diğer düzeltme sayfaları
 def cut_bodies(path, want, near=0.55):
     """Gövde + kopuk parçalar (hokkabaz bıçağı, kitap, taş, ay): en büyük `want` bileşen gövde; ≥ 25 px diğer parçalar en yakın gövdeye
@@ -604,13 +664,15 @@ def diger():
                 if nm_: rep['uyari'].append(f'{name}: ay parıltısı kalıntısı {nm_} px silindi')
             put('sorcerer', name, align_or_height(rgba, name, rep), f, i)
     # 3) tam sınıf sayfasından tek hücre (özgün hat ve sayfa ölçeği): Druid Tiefling hücre 4, Cleric erkek Tiefling hücre 9,
-    #    Celestial erkek Cleric (hale-gemini sayfa 06'nın yeniden yapılmışı; yalnız haleli hücreler 7 ve 9, halesiz-temiz dokunulmaz)
+    #    Celestial erkek Cleric (hale-gemini sayfa 06'nın yeniden çizilmiş, kabul edilen hâli: BÜTÜN hücreler; 2026-11-19'da yalnız 7 ve 9
+    #    kesilmişti ("halesiz-temiz dokunulmaz"), kalan 7 hücre eski çizimde kalmıştı; kural `tum_hucreler`, defter `yenidenCizilmis`)
     for f, cls, cells, race, g in [('druid-female-tiefling.jpg', 'druid', [4], 'tiefling', 'kadin'), ('druid-male-tiefling.jpg', 'druid', [4], 'tiefling', 'erkek'),
                                    ('cleric-male-tiefling.jpg', 'cleric', [9], 'tiefling', 'erkek'), ('clerik-male-celestial.jpg', 'cleric', [7, 9], 'celestial', 'erkek'),
                                    ('fighter-male-human.jpg', 'fighter', list(range(1, 12)), 'human', 'erkek'), ('fighter-female-human.jpg', 'fighter', list(range(1, 11)), 'human', 'kadin')]:
         comps = tk.components_of_sheet(f'{RAW}/{f}', cls)
         scale, ok = sheet_scale(comps, cls)
         names = tk.CLASSES[cls][3]
+        cells = tum_hucreler(f, cells, len(names), rep, L)
         pr = {'dosya': f, 'beklenen_hucre': len(names), 'bulunan': sorted(comps), 'elle': [(n, v[2][0]) for n, v in comps.items() if any(x.startswith('ELLE') for x in v[2])], 'yazilan_hucre': []}
         for n in cells:
             if n not in ok: rep['uyari'].append(f'{f} hücre {n}: figür yok ya da ELLE, uygulanmadı'); continue
@@ -673,7 +735,8 @@ def tek():
 if __name__ == '__main__':
     os.makedirs(f'{OUT}/kucuk', exist_ok=True)
     step = sys.argv[1] if len(sys.argv) > 1 else ''
-    fn = {'taban': taban, 'yeni': yeni, 'duzeltme': duzeltme, 'diger': diger, 'tek': tek, 'gladyator-onizleme': lambda: (gladyator_onizleme(), {'tamam': 1})[1]}.get(step)
+    fn = {'taban': taban, 'yeni': yeni, 'duzeltme': duzeltme, 'diger': diger, 'tek': tek, 'yeniden': lambda: yeniden(sys.argv[2:]), 'hucre': lambda: hucre(sys.argv[2:]),
+          'gladyator-onizleme': lambda: (gladyator_onizleme(), {'tamam': 1})[1]}.get(step)
     if not fn: sys.exit(__doc__)
     r = fn()
     print({k: (len(v) if isinstance(v, (list, dict)) else v) for k, v in r.items()})

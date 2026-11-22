@@ -108,7 +108,9 @@ async function collect(): Promise<Ham> {
   if (!ONLY && !SCAN_ONLY && !RESUME && existsSync(OUT)) rmSync(OUT, { recursive: true, force: true });
   mkdirSync(`${OUT}/kucuk`, { recursive: true });
   mkdirSync(`${OUT}/ham`, { recursive: true });
-  writeFileSync(`${OUT}/ham/_meta.json`, JSON.stringify({ tarih: new Date().toISOString(), commit: git('git rev-parse --short HEAD'), meta, groups }));
+  // Kayıtta BÜTÜN gruplar (`--grup` ile tek grup yenilense de): `--yeniden` öteki grupların eski kayıtlarıyla tam raporu üretir.
+  const allGroups = [...new Set(meta.pages.map((p) => p.grup))];
+  writeFileSync(`${OUT}/ham/_meta.json`, JSON.stringify({ tarih: new Date().toISOString(), commit: git('git rev-parse --short HEAD'), meta, groups: allGroups }));
 
   type IsDurum = { ok?: unknown; hata?: string };
   /** Sayfa içi işi başlatır ve ilerlemeyi izler: `STALL_MS` boyunca ilerleme yoksa takıldı sayılır (grup yeniden denenir). */

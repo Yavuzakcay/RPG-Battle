@@ -28,3 +28,5 @@ harita/belgeler/ESYA-IKON-KONTAK-*.png
 
 # Görsel döküm (npm run gorsel-dokum): sayfa PNG'leri, index.html, veri; rapor harita/belgeler/GORSEL-DOKUM.md commit edilir.
 gorsel-dokum/
+# Yeniden kesim öncesi jeton yedekleri (yerel; commit edilmez).
+public/characters/_yedek-*/

@@ -2,6 +2,27 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Celestial erkek Cleric yeniden kesimi ve "yeniden çizilmiş sayfa" kuralı (2026-11-22; yalnız görünüm, kural/kayıt sürümü değişmedi)
+
+- **Bulgu** (`harita/belgeler/CELESTIAL-KAYNAK-DENETIM.md`, `python scripts/celestial-kaynak-denetim.py`): 290 Celestial jetonun 7'si eski
+  çizimde kalmıştı: erkek Cleric ID1–ID6, ID8 (kahverengi kısa saç, alında yıldız yok). Kabul edilen son çizim `clerik-male-celestial.jpg`
+  (hale-gemini sayfa 06'nın yeniden çizilmişi: kısa dikenli sarı saç, altın göz, alında yıldız); `scripts/cc-kesim.py` `diger` adımı
+  (456a7d6d) bu sayfadan yalnız 7 ve 9'u kesmişti ("halesiz-temiz dokunulmaz"). Kalan 283 jeton en yeni kaynağıyla aynı; kesim sırası
+  (taban → Gladyatör/Warlock → hale düzeltme 01–03 → C) doğru, git ile defter 290'ında tutarlı. Erkek Wizard WZ-A7…B7 karşılaştırılamadı
+  (ham `hale-gemini-sayfa-30.png` yok).
+- **Düzeltme (kullanıcı onayı):** `cc-kesim.py yeniden clerik-male-celestial.jpg` 7 hücreyi aynı hat ve sayfa ölçeğiyle kesti
+  (eski dosyalar `public/characters/_yedek-celestial-2026-11-22/`, gitignore). Rozetler `npm run karakter-kucuk -- <ad>…` (betik artık
+  ad listesi alır; tam çalıştırma bütün küçük kopyaları yeniden yazar). Taç konumu `python scripts/hale-konum.py` (yalnız erkek Cleric
+  kayıtları değişti). Celestial soy boyası yok: maske gerekmez.
+- **Kural:** defterde (`data/cc-kesim-kaynak.json`) `yenidenCizilmis` işaretli ham sayfa kabul edilen güncel çizimdir, bütün hücreleri
+  kesilir; `tum_hucreler` kısmi listeyi uyarıyla tamamlar. Test `src/data/ccKesimYenidenCizilmis.test.ts` (her işaretli sayfanın
+  bütün hücreleri oyunda o sayfadan).
+- **Taç kırpılması:** yüksek saçta taç jeton kutusunun üstüne taşıyor, karakter ekranı çerçevesi (`CharacterFigure`) onu kırpıyordu;
+  çerçeve artık taç kutusunu da kapsar (`haloCrown.ts` `crownBox`, `CROWN_REACH`). Test `src/ui/as1cGorunum.test.tsx`.
+- **Not:** `npm run soy-maske` tam çalıştırması bu makinede ilgisiz dosyaları değiştiriyor (Goliath `bas/` kaplamaları siliniyor,
+  14 Dragonborn ve 4 Goliath/Tiefling maskesi yeniden yazılıyor; yerelde ham girdiler eksik). Bu değişiklikler alınmadı.
+- Windows: `cc-kesim.py`/`toplu-kesim.py` `PYTHONUTF8=1` ile çalıştırılır (defter UTF-8, LF).
+
 ## Görev GORSEL-DUZELTME: portre, cinsiyet değişimi, Human maskeleri, maskesiz soylar için yedek filtre (2026-11-22; yalnız görünüm, kural/kayıt sürümü değişmedi)
 
 Girdi `harita/belgeler/GORSEL-DOKUM.md` (08f71831). Ölçüm yeniden `npm run gorsel-dokum` ile (rapor güncel).

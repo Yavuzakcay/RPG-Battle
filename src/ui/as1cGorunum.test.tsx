@@ -8,6 +8,7 @@ import sharp from 'sharp';
 import { AvatarCircle, CharacterFigure, TokenFigure } from './Avatar';
 import { hasSubclassWing, lineageLook, skinTint, wingBox, wingSlotOfSubclass } from './lineageLook';
 import { tintPixels } from './tint';
+import { crownBox, crownSpec } from './haloCrown';
 import { lineageTint, sheetAvatar } from '../battle/avatar';
 import { blankCharacter } from '../rules/builder';
 import { rgbToLab } from './color';
@@ -259,6 +260,20 @@ describe('KG1: karakter ekranı jetonu savaşla aynı çizim yolu, çerçevesiz'
     const vb = /viewBox="(-?[\d.]+) (-?[\d.]+) ([\d.]+) ([\d.]+)"/.exec(m)!.slice(1).map(Number) as [number, number, number, number];
     expect(vb[0]).toBeLessThanOrEqual(wb.x); expect(vb[1]).toBeLessThanOrEqual(wb.y);
     expect(vb[0] + vb[2]).toBeGreaterThanOrEqual(wb.x + wb.width); expect(vb[1] + vb[3]).toBeGreaterThanOrEqual(wb.y + wb.height);
+  });
+  it('Celestial yıldız tacı çerçeveden taşmaz (yüksek saçlı erkek Cleric ID3: taç jeton kutusunun üstünde, SVG kutusu kapsar)', () => {
+    const sh = sheet({ raceId: 'celestial', classId: 'cleric', subclassId: 'imza_birlik', level: 9, gender: 'erkek' });
+    const av = sheetAvatar(sh);
+    expect(av.src).toBe('characters/celestial-erkek-cleric-ID3.webp');
+    const c = crownSpec(av.src, av.look)!;
+    expect(c).toBeTruthy();
+    const b = crownBox(c), k = 48 / 256;
+    expect(b.y0).toBeLessThan(0);
+    const m = fig(sh);
+    expect(m).toContain('star-crown-g');
+    const vb = /viewBox="(-?[\d.]+) (-?[\d.]+) ([\d.]+) ([\d.]+)"/.exec(m)!.slice(1).map(Number) as [number, number, number, number];
+    expect(vb[1]).toBeLessThanOrEqual(b.y0 * k);
+    expect(vb[0]).toBeLessThanOrEqual(b.x0 * k); expect(vb[0] + vb[2]).toBeGreaterThanOrEqual(b.x1 * k);
   });
   it('kanatsız karakter de aynı çerçevesiz yol: kanat katmanı yok, jeton görseli var', () => {
     const m = fig(sheet({ raceId: 'human', classId: 'fighter' }));

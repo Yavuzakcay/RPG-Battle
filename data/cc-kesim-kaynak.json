@@ -1,5 +1,15 @@
 {
  "_not": "scripts/cc-kesim.py: jeton kimliği → yazan kaynak geçmişi; öncelik düzeltme > yeni sayfa > taban.",
+ "yenidenCizilmis": {
+  "clerik-male-celestial.jpg": {
+   "sinif": "cleric",
+   "irk": "celestial",
+   "cinsiyet": "erkek",
+   "kod": "ID",
+   "hucre": 9,
+   "not": "hale-gemini sayfa 06'nın yeniden çizilmiş, kabul edilen hâli (Celestial başı: kısa dikenli sarı saç, altın göz, alında yıldız); bütün hücreler bu sayfadan (2026-11-22, kullanıcı)"
+  }
+ },
  "jetonlar": {
   "celestial-male-barbarian": {
    "gecmis": [
@@ -5765,6 +5775,111 @@
     "kaynak": "duzeltme",
     "dosya": "cleric-id9-halka/aday + kalın halka",
     "hucre": 9
+   }
+  },
+  "celestial-erkek-cleric-ID1": {
+   "gecmis": [
+    {
+     "kaynak": "diger",
+     "dosya": "clerik-male-celestial.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "diger",
+    "dosya": "clerik-male-celestial.jpg",
+    "hucre": 1
+   }
+  },
+  "celestial-erkek-cleric-ID2": {
+   "gecmis": [
+    {
+     "kaynak": "diger",
+     "dosya": "clerik-male-celestial.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "diger",
+    "dosya": "clerik-male-celestial.jpg",
+    "hucre": 2
+   }
+  },
+  "celestial-erkek-cleric-ID3": {
+   "gecmis": [
+    {
+     "kaynak": "diger",
+     "dosya": "clerik-male-celestial.jpg",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "diger",
+    "dosya": "clerik-male-celestial.jpg",
+    "hucre": 3
+   }
+  },
+  "celestial-erkek-cleric-ID4": {
+   "gecmis": [
+    {
+     "kaynak": "diger",
+     "dosya": "clerik-male-celestial.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "diger",
+    "dosya": "clerik-male-celestial.jpg",
+    "hucre": 4
+   }
+  },
+  "celestial-erkek-cleric-ID5": {
+   "gecmis": [
+    {
+     "kaynak": "diger",
+     "dosya": "clerik-male-celestial.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "diger",
+    "dosya": "clerik-male-celestial.jpg",
+    "hucre": 5
+   }
+  },
+  "celestial-erkek-cleric-ID6": {
+   "gecmis": [
+    {
+     "kaynak": "diger",
+     "dosya": "clerik-male-celestial.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "diger",
+    "dosya": "clerik-male-celestial.jpg",
+    "hucre": 6
+   }
+  },
+  "celestial-erkek-cleric-ID8": {
+   "gecmis": [
+    {
+     "kaynak": "diger",
+     "dosya": "clerik-male-celestial.jpg",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "diger",
+    "dosya": "clerik-male-celestial.jpg",
+    "hucre": 8
    }
   }
  }

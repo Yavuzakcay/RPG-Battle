@@ -65,9 +65,9 @@
    "olcek": 1.22
   },
   "cleric-erkek": {
-   "x": 128,
-   "y": 38,
-   "olcek": 0.95
+   "x": 117,
+   "y": 26,
+   "olcek": 1.16
   },
   "cleric-erkek-genel": {
    "x": 122,
@@ -427,29 +427,29 @@
    "olcek": 1.0
   },
   "erkek-cleric-ID1": {
-   "x": 128,
-   "y": 43,
-   "olcek": 1.25
+   "x": 134,
+   "y": 28,
+   "olcek": 1.16
   },
   "erkek-cleric-ID4": {
-   "x": 129,
-   "y": 28,
-   "olcek": 1.09
+   "x": 112,
+   "y": 14,
+   "olcek": 1.2
   },
   "erkek-cleric-ID5": {
-   "x": 135,
-   "y": 29,
-   "olcek": 0.95
-  },
-  "erkek-cleric-ID6": {
-   "x": 141,
-   "y": 35,
-   "olcek": 1.25
+   "x": 112,
+   "y": 14,
+   "olcek": 1.19
   },
   "erkek-cleric-ID7": {
    "x": 147,
    "y": 10,
    "olcek": 0.8
+  },
+  "erkek-cleric-ID8": {
+   "x": 108,
+   "y": 29,
+   "olcek": 1.16
   },
   "erkek-cleric-ID9": {
    "x": 113,

@@ -1,6 +1,6 @@
 # Görsel döküm (seçilebilir bütün karakter görünüşleri)
 
-Üretim: `npm run gorsel-dokum` (2026-11-22, commit f29ac526 + çalışma ağacındaki GORSEL-DUZELTME değişiklikleri; duvar saati 22812 sn, makine kanat ile durum grubu arasında uykuya geçti, etkin süre ≈ 16 dk). Bu dosyadaki bütün sayılar o çalıştırmadan; elle yazılmaz, betik yeniden yazar.
+Üretim: `npm run gorsel-dokum` (2026-11-22, commit a8195c8f, süre (yeniden üretim)). Bu dosyadaki bütün sayılar o çalıştırmadan; elle yazılmaz, betik yeniden yazar.
 
 Araç: `scripts/gorsel-dokum.ts` (Playwright + Vite, `check:harita` altyapısı) → `/onizleme-dokum.html` (`src/preview/gorselDokum.tsx`; yalnız geliştirme sunucusu, build girdisi değil). Çizim oyunun kendi bileşenleriyle: `CharacterFigure` (karakter listesi kartı / sihirbaz önizlemesi), `LookFrame` + `AvatarBadge` (savaş çekmecesi 56 px, sıra şeridi 30 px: küçük kopya), `AvatarBadge` 84 (karakter sayfası portresi), `AvatarCircle` → `TokenFigure` (savaş jetonu; `tokenFilters`/`filterStyle`, `tokenScale`, `TOKEN_R`, `hexPoints`). Jeton, boya, maske, kafa kaplaması, kanat ve taç `sheetAvatar` → `lineageLook`/`tintedUrl`/`crownSpec` çözücülerinden; kopya çizici yok. Savaş jetonunun `.token` sarmalayıcısı `MapBattle.tsx`'teki jeton grubunun aynısıdır (dışa aktarılmış bileşen yok); öfke alevleri ve döngü efekt sprite'ları çizilmez.
 

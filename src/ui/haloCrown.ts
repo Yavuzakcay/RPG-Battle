@@ -27,6 +27,21 @@ export function crownKey(name: string): string | null {
   return `${m[2]}-${g}${m[3] === 'GR' ? '-gr' : m[3] ? '' : '-genel'}`;
 }
 
+/**
+ * Taç çiziminin (`StarCrownShape`) başın üst noktasından uzanımı, yerel birimde (× `CROWN_K` × `olcek` = jeton 256 uzayı): yukarı 18
+ * (merkez sparkle y −12, r 6), yana 21 (en dış küçük yıldız x ±19, r 2). Çizim değişirse burası da.
+ */
+export const CROWN_REACH = { up: 18, side: 21 } as const;
+
+/**
+ * Tacın jeton 256 uzayındaki kutusu (yansıtılmış jetonda x aynalanır: iki yön birden kapsanır). Karakter ekranı çerçevesi
+ * (`CharacterFigure`) tacı kırpmasın diye; savaş jetonunda taç zaten kutu dışına taşabilir.
+ */
+export function crownBox(c: CrownSpec): { x0: number; x1: number; y0: number } {
+  const up = CROWN_REACH.up * CROWN_K * c.olcek, side = CROWN_REACH.side * CROWN_K * c.olcek;
+  return { x0: Math.min(c.x, 256 - c.x) - side, x1: Math.max(c.x, 256 - c.x) + side, y0: c.y - up };
+}
+
 export function crownSpec(src: string | null | undefined, look: LookSheet | undefined | null): CrownSpec | null {
   if (!look || look.raceId !== 'celestial') return null;
   const name = nameOf(src);

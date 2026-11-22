@@ -1,6 +1,6 @@
 // Karakter jetonlarının küçük kopyaları: public/characters/*.webp (256×256) → public/characters/kucuk/*.webp (96×96).
 // Listelerde ve oluşturucuda rozet 44–48 px; 96 px yüksek yoğunluklu ekranda (2×) da keskin. Haritadaki jeton
-// büyük görseli kullanmaya devam eder. Çalıştırma: npm run karakter-kucuk (yeni karakter görseli eklenince).
+// büyük görseli kullanmaya devam eder. Çalıştırma: npm run karakter-kucuk (yeni karakter görseli eklenince; yalnız bazı jetonlar: -- <ad> ...).
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -14,7 +14,10 @@ const SIZE = 96;
 fs.mkdirSync(OUT, { recursive: true });
 let before = 0;
 let after = 0;
-const files = fs.readdirSync(SRC).filter((f) => f.endsWith('.webp')).sort();
+// İsteğe bağlı: yalnız verilen jetonlar (ad, uzantısız ya da .webp): npm run karakter-kucuk -- celestial-erkek-cleric-ID1 ...
+const only = new Set(process.argv.slice(2).map((a) => (a.endsWith('.webp') ? a : `${a}.webp`)));
+const files = fs.readdirSync(SRC).filter((f) => f.endsWith('.webp') && (only.size === 0 || only.has(f))).sort();
+if (only.size && files.length !== only.size) console.warn(`bulunamayan: ${[...only].filter((f) => !files.includes(f)).join(', ')}`);
 for (const f of files) {
   const out = path.join(OUT, f);
   await sharp(path.join(SRC, f)).resize(SIZE, SIZE, { kernel: 'lanczos3' }).webp({ quality: 82, alphaQuality: 90, effort: 6 }).toFile(out);

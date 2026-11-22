@@ -7,7 +7,7 @@ import { useContext, useEffect, useState, type CSSProperties } from 'react';
 import { FOOT_FRAC, TOKEN_SPACE, lineageLook, placementBounds, placementTransform, wingBox, wingPlacements, type WingLayerSpec, type WingPalet, type WingRoot } from './lineageLook';
 import { LookContext } from './lookContext';
 import { wingRoot } from './wingRoot';
-import { crownSpec, type CrownSpec } from './haloCrown';
+import { crownBox, crownSpec, type CrownSpec } from './haloCrown';
 import { StarCrownLayer, StarCrownShape } from './StarCrown';
 import { useWingAnim } from './wingAnim';
 import { WingFilterDefs } from './WingFilter';
@@ -292,9 +292,11 @@ export function CharacterFigure(props: { avatar: AvatarData; size: number; title
   useWingData();
   const lk = avatar.look ? lineageLook(avatar.look, { ability: true }) : null;
   const wb = lk?.wing && !ownWingToken(lk.wing, avatar.src) ? wingExtent(lk.wing, size) : null;
+  // Celestial yıldız tacı başın üstüne taşar (yüksek saç/şapkada jeton kutusunun dışına): çerçeve onu da kapsar, kırpılmaz.
+  const cs = crownSpec(avatar.src, avatar.look); const cb = cs ? crownBox(cs) : null; const k = size / 256;
   const pad = Math.max(2, size * 0.06);
-  const x0 = Math.min(0, wb?.x ?? 0) - pad, y0 = Math.min(0, wb?.y ?? 0) - pad;
-  const x1 = Math.max(size, wb ? wb.x + wb.width : 0) + pad, y1 = Math.max(size, wb ? wb.y + wb.height : 0) + pad;
+  const x0 = Math.min(0, wb?.x ?? 0, cb ? cb.x0 * k : 0) - pad, y0 = Math.min(0, wb?.y ?? 0, cb ? cb.y0 * k : 0) - pad;
+  const x1 = Math.max(size, wb ? wb.x + wb.width : 0, cb ? cb.x1 * k : 0) + pad, y1 = Math.max(size, wb ? wb.y + wb.height : 0) + pad;
   return (
     <svg className="char-figure" width={x1 - x0} height={y1 - y0} viewBox={`${x0} ${y0} ${x1 - x0} ${y1 - y0}`} role="img" aria-label={props.title ?? avatar.label}
       style={{ '--fig-w': `${x1 - x0}px` } as CSSProperties}>

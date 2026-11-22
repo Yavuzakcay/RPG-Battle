@@ -10,12 +10,11 @@ Yöntem: her jeton aday ham kaynak hücreleriyle karşılaştırılır (zemin ay
 
 | Sonuç | Jeton |
 |---|---:|
-| ESKİ KESİM | 7 |
-| güncel | 260 |
+| güncel | 267 |
 | güncel (göz denetimi) | 15 |
 | kaynak sayfası yok | 8 |
 
-**Eski kesimde kalan: 7**: `celestial-erkek-cleric-ID1.webp`, `celestial-erkek-cleric-ID2.webp`, `celestial-erkek-cleric-ID3.webp`, `celestial-erkek-cleric-ID4.webp`, `celestial-erkek-cleric-ID5.webp`, `celestial-erkek-cleric-ID6.webp`, `celestial-erkek-cleric-ID8.webp`.
+**Eski kesimde kalan: 0.**
 
 ## Cleric erkek: clerik-male-celestial.jpg (kabul edilen son çizim, 3×3)
 
@@ -23,26 +22,35 @@ Hücre → jeton: Cleric alt sınıf eşlemesinden (`data/cleric-jeton.json`, h�
 
 | Hücre | Jeton | Sonuç | Kabul edilen sayfa skor (baş) | Eski sayfa skor (baş) | Kesim defteri (`data/cc-kesim-kaynak.json`) | Dosya tarihi | Git geçmişi (yeniden eskiye) |
 |---:|---|---|---|---|---|---|---|
-| 1 | `celestial-erkek-cleric-ID1.webp` | ESKİ KESİM | 33.2 (43.4) | 3.8 (4.4) | kayıt yok (CC kesimi dokunmadı) | 2026-11-17 17:46 | d58f314f 2026-11-17 Celestial hale: yıldız tacı<br>987fc6de 2026-11-16 TOPLU-KESIM: 11 sınıfın alt sınıf jetonları kesildi (1890), Warlock/Sorcerer bağlandı |
-| 2 | `celestial-erkek-cleric-ID2.webp` | ESKİ KESİM | 49.4 (73.2) | 3.5 (4.1) | kayıt yok (CC kesimi dokunmadı) | 2026-11-17 17:46 | d58f314f 2026-11-17 Celestial hale: yıldız tacı<br>987fc6de 2026-11-16 TOPLU-KESIM: 11 sınıfın alt sınıf jetonları kesildi (1890), Warlock/Sorcerer bağlandı |
-| 3 | `celestial-erkek-cleric-ID3.webp` | ESKİ KESİM | 51.9 (72.6) | 4.4 (5.4) | kayıt yok (CC kesimi dokunmadı) | 2026-11-17 17:46 | d58f314f 2026-11-17 Celestial hale: yıldız tacı<br>987fc6de 2026-11-16 TOPLU-KESIM: 11 sınıfın alt sınıf jetonları kesildi (1890), Warlock/Sorcerer bağlandı |
-| 4 | `celestial-erkek-cleric-ID4.webp` | ESKİ KESİM | 49.2 (75.9) | 3.4 (3.6) | kayıt yok (CC kesimi dokunmadı) | 2026-11-17 17:46 | d58f314f 2026-11-17 Celestial hale: yıldız tacı<br>987fc6de 2026-11-16 TOPLU-KESIM: 11 sınıfın alt sınıf jetonları kesildi (1890), Warlock/Sorcerer bağlandı |
-| 5 | `celestial-erkek-cleric-ID5.webp` | ESKİ KESİM | 43.7 (66.2) | 2.2 (2.3) | kayıt yok (CC kesimi dokunmadı) | 2026-11-17 17:46 | d58f314f 2026-11-17 Celestial hale: yıldız tacı<br>987fc6de 2026-11-16 TOPLU-KESIM: 11 sınıfın alt sınıf jetonları kesildi (1890), Warlock/Sorcerer bağlandı |
-| 6 | `celestial-erkek-cleric-ID6.webp` | ESKİ KESİM | 24.3 (28.2) | 11.6 (9.4) | kayıt yok (CC kesimi dokunmadı) | 2026-11-17 17:46 | d58f314f 2026-11-17 Celestial hale: yıldız tacı<br>987fc6de 2026-11-16 TOPLU-KESIM: 11 sınıfın alt sınıf jetonları kesildi (1890), Warlock/Sorcerer bağlandı |
+| 1 | `celestial-erkek-cleric-ID1.webp` | güncel | 8.8 (8.5) | 27.4 (36.1) | clerik-male-celestial.jpg h1 | 2026-11-22 11:43 | d58f314f 2026-11-17 Celestial hale: yıldız tacı<br>987fc6de 2026-11-16 TOPLU-KESIM: 11 sınıfın alt sınıf jetonları kesildi (1890), Warlock/Sorcerer bağlandı |
+| 2 | `celestial-erkek-cleric-ID2.webp` | güncel | 9.7 (9.0) | 46.2 (68.6) | clerik-male-celestial.jpg h2 | 2026-11-22 11:43 | d58f314f 2026-11-17 Celestial hale: yıldız tacı<br>987fc6de 2026-11-16 TOPLU-KESIM: 11 sınıfın alt sınıf jetonları kesildi (1890), Warlock/Sorcerer bağlandı |
+| 3 | `celestial-erkek-cleric-ID3.webp` | güncel | 9.6 (10.3) | 47.7 (67.1) | clerik-male-celestial.jpg h3 | 2026-11-22 11:43 | d58f314f 2026-11-17 Celestial hale: yıldız tacı<br>987fc6de 2026-11-16 TOPLU-KESIM: 11 sınıfın alt sınıf jetonları kesildi (1890), Warlock/Sorcerer bağlandı |
+| 4 | `celestial-erkek-cleric-ID4.webp` | güncel | 8.0 (8.9) | 47.0 (73.4) | clerik-male-celestial.jpg h4 | 2026-11-22 11:43 | d58f314f 2026-11-17 Celestial hale: yıldız tacı<br>987fc6de 2026-11-16 TOPLU-KESIM: 11 sınıfın alt sınıf jetonları kesildi (1890), Warlock/Sorcerer bağlandı |
+| 5 | `celestial-erkek-cleric-ID5.webp` | güncel | 6.8 (7.9) | 41.3 (62.7) | clerik-male-celestial.jpg h5 | 2026-11-22 11:43 | d58f314f 2026-11-17 Celestial hale: yıldız tacı<br>987fc6de 2026-11-16 TOPLU-KESIM: 11 sınıfın alt sınıf jetonları kesildi (1890), Warlock/Sorcerer bağlandı |
+| 6 | `celestial-erkek-cleric-ID6.webp` | güncel | 14.9 (15.4) | 25.1 (29.4) | clerik-male-celestial.jpg h6 | 2026-11-22 11:43 | d58f314f 2026-11-17 Celestial hale: yıldız tacı<br>987fc6de 2026-11-16 TOPLU-KESIM: 11 sınıfın alt sınıf jetonları kesildi (1890), Warlock/Sorcerer bağlandı |
 | 7 | `celestial-erkek-cleric-ID7.webp` | güncel | 10.4 (11.4) | 40.2 (55.6) | clerik-male-celestial.jpg h7 | 2026-11-19 19:32 | 456a7d6d 2026-11-19 CC kesim C: Bard hokkabaz 20, Sorcerer 15, Barbarian aurasız 16, Human Fighter 21, Druid/Cleric Tiefling, Celestial Cleric 2<br>fd1fc974 2026-11-19 CC kesim adım 1: Gemini hale tabanı 146 Celestial jeton (sayfa 30 yok)<br>987fc6de 2026-11-16 TOPLU-KESIM: 11 sınıfın alt sınıf jetonları kesildi (1890), Warlock/Sorcerer bağlandı |
-| 8 | `celestial-erkek-cleric-ID8.webp` | ESKİ KESİM | 45.7 (60.8) | 3.3 (3.1) | kayıt yok (CC kesimi dokunmadı) | 2026-11-17 17:46 | d58f314f 2026-11-17 Celestial hale: yıldız tacı<br>987fc6de 2026-11-16 TOPLU-KESIM: 11 sınıfın alt sınıf jetonları kesildi (1890), Warlock/Sorcerer bağlandı |
+| 8 | `celestial-erkek-cleric-ID8.webp` | güncel | 8.8 (9.1) | 42.8 (56.2) | clerik-male-celestial.jpg h8 | 2026-11-22 11:43 | d58f314f 2026-11-17 Celestial hale: yıldız tacı<br>987fc6de 2026-11-16 TOPLU-KESIM: 11 sınıfın alt sınıf jetonları kesildi (1890), Warlock/Sorcerer bağlandı |
 | 9 | `celestial-erkek-cleric-ID9.webp` | güncel | 9.4 (9.7) | 41.4 (61.4) | clerik-male-celestial.jpg h9 | 2026-11-19 19:32 | 456a7d6d 2026-11-19 CC kesim C: Bard hokkabaz 20, Sorcerer 15, Barbarian aurasız 16, Human Fighter 21, Druid/Cleric Tiefling, Celestial Cleric 2<br>fd1fc974 2026-11-19 CC kesim adım 1: Gemini hale tabanı 146 Celestial jeton (sayfa 30 yok)<br>987fc6de 2026-11-16 TOPLU-KESIM: 11 sınıfın alt sınıf jetonları kesildi (1890), Warlock/Sorcerer bağlandı |
 
 Görsel: `gorsel-dokum/celestial-kaynak/cleric-erkek-9-hucre.png` (eski çizim | kabul edilen | oyunda).
 
-**Kök neden:** `scripts/cc-kesim.py` `diger` adımı (commit 456a7d6d "… Celestial Cleric 2") bu sayfadan yalnız hücre 7 ve 9'u kesti; koddaki gerekçe (satır 607): "hale-gemini sayfa 06'nın yeniden yapılmışı; yalnız haleli hücreler 7 ve 9, halesiz-temiz dokunulmaz". Sayfa yalnız hale için değil Celestial başı (kısa dikenli sarı saç, altın göz, alında yıldız) için yeniden çizilmişti; "halesiz-temiz" sayılan 7 hücre (ID1–ID6, ID8) hiç kesilmedi, oyunda 2026-11-17 d58f314f'teki eski kesim duruyor.
+**Kök neden:** `scripts/cc-kesim.py` `diger` adımı (commit 456a7d6d "… Celestial Cleric 2") bu sayfadan yalnız hücre 7 ve 9'u kesti; koddaki gerekçe (satır 607): "hale-gemini sayfa 06'nın yeniden yapılmışı; yalnız haleli hücreler 7 ve 9, halesiz-temiz dokunulmaz". Sayfa yalnız hale için değil Celestial başı (kısa dikenli sarı saç, altın göz, alında yıldız) için yeniden çizilmişti; "halesiz-temiz" sayılan 7 hücre (ID1–ID6, ID8) hiç kesilmedi, oyunda 2026-11-17 d58f314f'teki eski kesim kalmıştı.
+
+**Düzeltme (2026-11-22, kullanıcı onayı):** `PYTHONUTF8=1 CC_HAM=<ham klasör> python scripts/cc-kesim.py yeniden clerik-male-celestial.jpg` eksik 7 hücreyi aynı hat ve sayfa ölçeğiyle kesti; 9 hücrenin hepsi bu sayfadan. Eski dosyalar `public/characters/_yedek-celestial-2026-11-22/` (depo dışı). Kural: defterde `yenidenCizilmis` işaretli sayfanın bütün hücreleri kesilir (`cc-kesim.py` `tum_hucreler`, test `src/data/ccKesimYenidenCizilmis.test.ts`). Önceki hâlin görseli `gorsel-dokum/celestial-kaynak/cleric-erkek-9-hucre-once.png`.
 
 ## Kesim sırası denetimi
 
 Git sırası (`public/characters/celestial-*`, hepsi 2026-11-19): fd1fc974 adım 1 taban (hale sayfaları, 15:01) → bf3f183b adım 2 yeni (Gladyatör + Warlock, 15:11) → 09f2ec04 adım 3 hale düzeltme 01–03 (15:14) → 456a7d6d C diğer (5'li Bard, Sorcerer düzeltme, clerik-male-celestial, 15:30) → a7634e45 kadın Rogue ID3 tek hücre (17:03) → 3c1d443d erkek Wizard WZ-B halesiz (17:18). Hale düzeltme sayfaları Gladyatör ve Warlock'tan sonra geldi. C adımı düzeltmeden sonra çalıştı ama `ONCELIK` (düzeltme 3 > diğer 2) düzeltmenin yazdığı jetonu ezemez; Celestial'de C adımının yazdığı jetonların (Bard ID3 ×2, Cleric ID7/ID9, kadın SC-3) hiçbiri düzeltme sayfasında yok.
 
 - Defterde öncelik yüzünden reddedilen yazım (Celestial): 0.
-- Son commit'i defterdeki kazanan kaynağın adımı olmayan jeton (sonradan üstüne yazılmış ya da defter dışı kesim): 0.
+- Son commit'i defterdeki kazanan kaynağın adımı olmayan jeton (sonradan üstüne yazılmış ya da defter dışı kesim): 7.
+  - `celestial-erkek-cleric-ID1.webp`: son d58f314f 2026-11-17 Celestial hale: yıldız tacı; beklenen 456a7d6d
+  - `celestial-erkek-cleric-ID2.webp`: son d58f314f 2026-11-17 Celestial hale: yıldız tacı; beklenen 456a7d6d
+  - `celestial-erkek-cleric-ID3.webp`: son d58f314f 2026-11-17 Celestial hale: yıldız tacı; beklenen 456a7d6d
+  - `celestial-erkek-cleric-ID4.webp`: son d58f314f 2026-11-17 Celestial hale: yıldız tacı; beklenen 456a7d6d
+  - `celestial-erkek-cleric-ID5.webp`: son d58f314f 2026-11-17 Celestial hale: yıldız tacı; beklenen 456a7d6d
+  - `celestial-erkek-cleric-ID6.webp`: son d58f314f 2026-11-17 Celestial hale: yıldız tacı; beklenen 456a7d6d
+  - `celestial-erkek-cleric-ID8.webp`: son d58f314f 2026-11-17 Celestial hale: yıldız tacı; beklenen 456a7d6d
 
 ## Birden çok kaynağı olan diğer jetonlar
 

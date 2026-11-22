@@ -301,7 +301,7 @@ L = ['# Celestial jeton kaynak denetimi', '',
      'Oyundaki jeton en yeni kaynağa değil de eskisine daha yakınsa **ESKİ KESİM**. Ölçünün işaretleyip göz denetiminde aynı çizim çıkanlar '
      '"güncel (göz denetimi)" (gerekçe tabloda).', '',
      '## Özet', '', '| Sonuç | Jeton |', '|---|---:|'] + [f'| {k} | {v} |' for k, v in sorted(cnt.items())] + ['',
-     f'**Eski kesimde kalan: {len(eski)}**: ' + ', '.join(f"`{r['f']}`" for r in eski) + '.', '']
+     (f'**Eski kesimde kalan: {len(eski)}**: ' + ', '.join(f"`{r['f']}`" for r in eski) + '.' if eski else '**Eski kesimde kalan: 0.**'), '']
 L += ['## Cleric erkek: clerik-male-celestial.jpg (kabul edilen son çizim, 3×3)', '',
       'Hücre → jeton: Cleric alt sınıf eşlemesinden (`data/cleric-jeton.json`, hücre adları `data/jeton-hucre-sirasi.json`): '
       '1 Yaşam (life-domain, kullanılmıyor), 2 Aydın, 3 Birlik Manastırı 3–16, 4 Demirci, 5 Fırtına, 6 Mezar, 7 Savaş, 8 Yakamoz, 9 Birlik Manastırı 17+. '
@@ -320,7 +320,13 @@ L += ['', 'Görsel: `gorsel-dokum/celestial-kaynak/cleric-erkek-9-hucre.png` (es
       '**Kök neden:** `scripts/cc-kesim.py` `diger` adımı (commit 456a7d6d "… Celestial Cleric 2") bu sayfadan yalnız hücre 7 ve 9\'u kesti; '
       'koddaki gerekçe (satır 607): "hale-gemini sayfa 06\'nın yeniden yapılmışı; yalnız haleli hücreler 7 ve 9, halesiz-temiz dokunulmaz". '
       'Sayfa yalnız hale için değil Celestial başı (kısa dikenli sarı saç, altın göz, alında yıldız) için yeniden çizilmişti; "halesiz-temiz" '
-      'sayılan 7 hücre (ID1–ID6, ID8) hiç kesilmedi, oyunda 2026-11-17 d58f314f\'teki eski kesim duruyor.', '']
+      'sayılan 7 hücre (ID1–ID6, ID8) hiç kesilmedi, oyunda 2026-11-17 d58f314f\'teki eski kesim kalmıştı.', '']
+duz = [r for r in cl if (r['led'] or {}).get('dosya') == 'clerik-male-celestial.jpg']
+if len(duz) == len(cl):
+    L += ['**Düzeltme (2026-11-22, kullanıcı onayı):** `PYTHONUTF8=1 CC_HAM=<ham klasör> python scripts/cc-kesim.py yeniden clerik-male-celestial.jpg` '
+          'eksik 7 hücreyi aynı hat ve sayfa ölçeğiyle kesti; 9 hücrenin hepsi bu sayfadan. Eski dosyalar `public/characters/_yedek-celestial-2026-11-22/` '
+          '(depo dışı). Kural: defterde `yenidenCizilmis` işaretli sayfanın bütün hücreleri kesilir (`cc-kesim.py` `tum_hucreler`, '
+          'test `src/data/ccKesimYenidenCizilmis.test.ts`). Önceki hâlin görseli `gorsel-dokum/celestial-kaynak/cleric-erkek-9-hucre-once.png`.', '']
 L += ['## Kesim sırası denetimi', '',
       'Git sırası (`public/characters/celestial-*`, hepsi 2026-11-19): fd1fc974 adım 1 taban (hale sayfaları, 15:01) → bf3f183b adım 2 yeni '
       '(Gladyatör + Warlock, 15:11) → 09f2ec04 adım 3 hale düzeltme 01–03 (15:14) → 456a7d6d C diğer (5\'li Bard, Sorcerer düzeltme, '
