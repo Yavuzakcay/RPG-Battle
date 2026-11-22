@@ -5,6 +5,7 @@
  */
 import data from '../../data/alt-soy-gorunum.json';
 import soyRenkleri from '../../data/soy-renkleri.json';
+import filtreYedek from '../../data/soy-filtre-yedek.json';
 import type { TintSpec } from '../battle/types';
 import { rgbToLab } from './color';
 import { findSubclass } from '../rules/subclasses';
@@ -228,6 +229,16 @@ export function lineageLook(sheet: LookSheet, opts: { flying?: boolean; ability?
   if (!wingId && sheet.raceId === 'dragonborn') wingId = 'dragonborn';
   const wing = wingId ? wingLayer(wingId, level, !!(opts.flying || opts.ability), sheet.lineageId) : null;
   return { filter: filters.join(' '), scaleX, scaleY, wing, hideHalo };
+}
+
+/**
+ * GORSEL-DUZELTME: maskesi olmayan jetonda soy boyasının yerine bütün jetona uygulanan yedek CSS filtresi (`data/soy-filtre-yedek.json`,
+ * anahtar `<ırk>/<soy>`; kodda ırk adı yok). Yoksa ''. Ne zaman uygulanacağına `tint.ts` karar verir (`fallbackFilterFor`: maske
+ * yüklenemedi ya da maskesiz boya hiçbir pikseli değiştirmedi); maske gelince kendiliğinden devre dışı.
+ */
+export function tintFallbackFilter(look: Pick<LookSheet, 'raceId' | 'lineageId'> | undefined | null): string {
+  if (!look?.lineageId) return '';
+  return (filtreYedek as unknown as { soylar: Record<string, { filter: string }> }).soylar[`${look.raceId}/${look.lineageId}`]?.filter ?? '';
 }
 
 /** Ten tonu (Human) için kimlik denetimi. */

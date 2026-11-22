@@ -1,0 +1,105 @@
+{
+ "not": "GORSEL-DUZELTME: maskesi olmayan jetonda soy boyası yerine bütün jetona uygulanan CSS filtresi (anahtar <ırk>/<soy>; oyun okur: src/ui/lineageLook.ts tintFallbackFilter). Yalnız maske yokken (ya da maskesiz boya hiçbir pikseli değiştirmezken) devreye girer; maske gelince kendiliğinden devre dışı (bu dosyaya dokunmadan). bekliyor: true = kullanıcı seçimi bekleniyor (geçici olarak ilk aday). Seçim: npm run dev → /onizleme-filtre.html → Kaydet (JSON panoya). Adaylar data/soy-filtre-adaylari.json.",
+ "soylar": {
+  "dragonborn/black": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(-158deg) saturate(1.14)",
+   "bekliyor": true
+  },
+  "dragonborn/blue": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(171deg) saturate(1.38)",
+   "bekliyor": true
+  },
+  "dragonborn/brass": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(5deg) saturate(1.39)",
+   "bekliyor": true
+  },
+  "dragonborn/bronze": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(-9deg) saturate(1.42)",
+   "bekliyor": true
+  },
+  "dragonborn/copper": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(-18deg) saturate(1.48)",
+   "bekliyor": true
+  },
+  "dragonborn/gold": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(6deg) saturate(1.46)",
+   "bekliyor": true
+  },
+  "dragonborn/green": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(91deg) saturate(1.37)",
+   "bekliyor": true
+  },
+  "dragonborn/red": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(-32deg) saturate(1.55)",
+   "bekliyor": true
+  },
+  "dragonborn/silver": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(172deg) saturate(1.14)",
+   "bekliyor": true
+  },
+  "dragonborn/white": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(177deg) saturate(1.23)",
+   "bekliyor": true
+  },
+  "tiefling/abyssal": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(170deg) saturate(1.38)",
+   "bekliyor": true
+  },
+  "tiefling/chthonic": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(-144deg) saturate(1.14)",
+   "bekliyor": true
+  },
+  "tiefling/winged": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(-114deg) saturate(1.43)",
+   "bekliyor": true
+  },
+  "elf/drow": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(-147deg) saturate(1.27)",
+   "bekliyor": true
+  },
+  "elf/high-elf": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(-8deg) saturate(1.3)",
+   "bekliyor": true
+  },
+  "gnome/subterranean": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(167deg) saturate(1.24)",
+   "bekliyor": true
+  },
+  "goliath/cloud": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(166deg) saturate(1.14)",
+   "bekliyor": true
+  },
+  "goliath/fire": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(-26deg) saturate(1.37)",
+   "bekliyor": true
+  },
+  "goliath/frost": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(160deg) saturate(1.36)",
+   "bekliyor": true
+  },
+  "goliath/storm": {
+   "aday": 1,
+   "filter": "sepia(0.35) hue-rotate(-170deg) saturate(1.23)",
+   "bekliyor": true
+  }
+ }
+}

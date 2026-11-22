@@ -16,6 +16,7 @@ import maskRapor from '../../data/soy-maske-rapor.json';
 import basData from '../../data/soy-bas.json';
 import soyRenkleri from '../../data/soy-renkleri.json';
 import { applyHeadOverlay, type Box } from './headOverlay';
+import { tintFallbackFilter, type LookSheet } from './lineageLook';
 import type { SkinFixCfg } from './maskClose';
 
 /** Görev K22: jetonun kafa kaplaması (data/soy-bas.json; yoksa undefined). */
@@ -178,6 +179,18 @@ export const bodyPaintOff = (name: string, overlayLoaded: boolean): boolean => o
 const done = new Map<string, string | null>();
 const waiting = new Map<string, Promise<string | null>>();
 export const tintKey = (url: string, tint: TintSpec) => `${url}|${JSON.stringify(tint)}`;
+/**
+ * GORSEL-DUZELTME: boyanamayan jeton (anahtar `tintKey`): maskeli boyada maske yüklenemedi ya da maskesiz (HSL) boya hiçbir pikseli
+ * değiştirmedi. Bilerek boş maske (çıplak ten yok) "maske var" sayılır: yedek uygulanmaz.
+ */
+const failed = new Set<string>();
+/**
+ * GORSEL-DUZELTME tek karar: jeton (`url`, boyalı haliyle aynı adres) boyanamadıysa soyun yedek CSS filtresi (`tintFallbackFilter`),
+ * yoksa ''. Maske sonradan eklenince (assets/soy-maske-el/ → npm run soy-maske) boyama başarılır, yedek kendiliğinden kalkar.
+ */
+export function fallbackFilterFor(url: string, tint: TintSpec | undefined, look: Pick<LookSheet, 'raceId' | 'lineageId'> | undefined | null): string {
+  return tint && failed.has(tintKey(url, tint)) ? tintFallbackFilter(look) : '';
+}
 
 /** Görev K21: jetonun maskesi elle mi çizildi (data/soy-maske-rapor.json; `npm run soy-maske` / `soy-incele` yazar). */
 export const handMasked = (name: string): boolean => (maskRapor as { sprites: Record<string, string> }).sprites[name] === 'el';
@@ -218,7 +231,7 @@ export function tintedUrl(url: string, tint: TintSpec): Promise<string | null> {
       // Görev K22: kafa kaplaması (kapsamdaki Goliath jetonları; görsel yoksa eski yol, bit bit aynı).
       const basSrc = maskSrc && !scaleTinted(tint) ? basUrlFor(url) : null;
       const basImg = basSrc ? await loadImage(basSrc) : null;
-      if (maskedTint(tint) && !maskImg) return null;
+      if (maskedTint(tint) && !maskImg) { failed.add(key); return null; }
       try {
         const W = img.naturalWidth, H = img.naturalHeight;
         const canvas = document.createElement('canvas');
@@ -279,7 +292,9 @@ export function tintedUrl(url: string, tint: TintSpec): Promise<string | null> {
           else if (weights) { const [x0, y0, x1, y1] = entry.box; for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const p = y * W + x; weights[p] = r.mask[p] ? (weights[p] || 255) : 0; } }
           else mask = r.mask;
         }
-        tintPixels(px.data, tint, mask, weights);
+        const changed = tintPixels(px.data, tint, mask, weights);
+        // Maskesiz (HSL) boya hiçbir pikseli değiştirmediyse yedek filtre (maskeli yolda boş maske bilerek: yedek yok).
+        if (changed === 0 && !maskedTint(tint)) failed.add(key);
         ctx.putImageData(px, 0, 0);
         return await new Promise<string | null>((resolve) => canvas.toBlob((blob) => resolve(blob ? URL.createObjectURL(blob) : null), 'image/png'));
       } catch { return null; }

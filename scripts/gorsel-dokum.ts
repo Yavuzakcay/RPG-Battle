@@ -64,6 +64,8 @@ const KODLAR: Record<string, { sira: number; ad: string; bilgi?: true }> = {
   'ayni-jeton-farkli-alt-sinif': { sira: 16, ad: 'Farklı alt sınıf kimlikleri aynı jetona düşüyor', bilgi: true },
   'alt-sinif-jetonsuz': { sira: 17, ad: 'Alt sınıf jeton tablosunda yok (sınıf-genel/Gariban jeton)', bilgi: true },
   'ayirt-edilemez-soy': { sira: 18, ad: 'Farklı soy/uyanış seçimleri aynı görünüşü veriyor', bilgi: true },
+  'yedek-filtre': { sira: 19, ad: 'Maske yok: soy rengi yedek CSS filtresiyle (data/soy-filtre-yedek.json)', bilgi: true },
+  'tensiz-jeton': { sira: 20, ad: 'Maske bilerek boş: jetonda çıplak ten yok (ten tonu görünmez)', bilgi: true },
 };
 
 /* ---------- Toplama (tarayıcı) ya da önceki ham veri ---------- */
@@ -387,6 +389,14 @@ function reportMd(): string {
   L.push('| Kod | Açıklama | Kayıt | Neden |', '|---|---|---:|---:|');
   for (const c of codes) L.push(`| \`${c}\` | ${KODLAR[c]?.ad ?? c}${KODLAR[c]?.bilgi ? ' (bilgi)' : ''} | ${byCode.get(c)!.length} | ${causes(c).length} |`);
   L.push('');
+  // GORSEL-DUZELTME: maskesi olmayan jetonlar yedek filtreyle (ayrı sayım) ve seçim bekleyen soylar.
+  const yf = byCode.get('yedek-filtre') ?? [];
+  const yedekVeri = JSON.parse(readFileSync('data/soy-filtre-yedek.json', 'utf8')) as { soylar: Record<string, { aday: number; bekliyor?: true }> };
+  const bekleyen = Object.entries(yedekVeri.soylar).filter(([, v]) => v.bekliyor).map(([k]) => k);
+  L.push('### Yedek filtreyle çizilenler (maske yok)', '');
+  L.push(`- **${yf.length}** görünüş (${causes('yedek-filtre').length} jeton/neden) soy boyası yerine yedek CSS filtresiyle çiziliyor (\`data/soy-filtre-yedek.json\`; karar \`src/ui/tint.ts\` \`fallbackFilterFor\`). Maske eklenince yedek kendiliğinden kalkar.`);
+  L.push(`- Seçim bekleyen soy: **${bekleyen.length}**/${Object.keys(yedekVeri.soylar).length}${bekleyen.length ? ` (geçici olarak 1. aday): ${bekleyen.join(', ')}` : ''}. Seçim: \`npm run dev\` → \`/onizleme-filtre.html\` → Kaydet.`);
+  L.push(`- Bilerek boş maske (çıplak ten yok): ${(byCode.get('tensiz-jeton') ?? []).length} görünüş (${causes('tensiz-jeton').length} jeton).`, '');
   L.push('### İlk 15 kusur (önem sırasıyla, neden başına)', '');
   defectCauses.slice(0, 15).forEach((x, i) => L.push(`${i + 1}. \`${x.kod}\`: ${x.k.ayrinti}${x.n > 1 ? ` (${x.n} görünüşte)` : ''}`));
   if (!defectCauses.length) L.push('Kusur bulunmadı.');

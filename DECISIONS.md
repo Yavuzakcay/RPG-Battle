@@ -2,6 +2,49 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev GORSEL-DUZELTME: portre, cinsiyet değişimi, Human maskeleri, maskesiz soylar için yedek filtre (2026-11-22; yalnız görünüm, kural/kayıt sürümü değişmedi)
+
+Girdi `harita/belgeler/GORSEL-DOKUM.md` (08f71831). Ölçüm yeniden `npm run gorsel-dokum` ile (rapor güncel).
+
+- **Portre çerçevesi.** Karakter kâğıdı portresi tek bileşen `SheetPortrait` (`src/screens/sheet/SheetView.tsx`): görünümü olan
+  karakterde `LookFrame` (rozet ve jetonla aynı tek çözücü `lineageLook`; karakter ekranı olduğu için `ability`: uçabilen kanatlı).
+  Gece Gözyaşı gri filtresi, Dwarf/Orc filtreleri, Halfling oranı, kanatlar portrede de. Döküm portreyi bu bileşenin gerçek
+  çıktısından denetler. Test `src/screens/sheetPortrait.test.tsx`.
+- **Cinsiyet değişince alt sınıf.** Oluşturucuda cinsiyet DEĞİŞTİRİLİRKEN seçili alt sınıfın cinsiyet kuralı (Karadul kadın, İmparator
+  erkek) yeni cinsiyete uymuyorsa önerilene çevrilir (`subclassForGender`, `src/rules/subclasses.ts`: veride `varsayilan` uyuyorsa o,
+  yoksa uyan ilk) ve tek satır bildirim (TR/EN `builder.genderSubclass`). Kayıt açılışı etkilenmez ("mevcut seçim hep görünür",
+  `genderVisible` aynen); kısıtlı alt sınıf için yeni jeton üretilmedi. Döküm bu yolu (seç → cinsiyeti değiştir) artık ulaşılamaz
+  sayar. Test `src/rules/subclassGender.test.ts`.
+- **Human ten maskeleri (7 eksik).** Yapay zekâ ham maskesi yerine tekrarlanabilir elle çizim: `python scripts/soy-maske-ciz.py`
+  (tanım `data/soy-maske-ciz.json`: bölge + Lab kuralı + elle ekle/çıkar), ham maske `assets/soy-maske-ham/`, içe aktarma
+  `npm run soy-maske-ice` (temizlik, doğrulama → `assets/soy-maske-el/`), oyuna alma `npm run soy-maske -- --el` (gri ağırlık
+  `public/characters/maske-el/`, `data/soy-maske-rapor.json`). Kontrol görselleri `docs/sabah/maske-kontrol/` (jeton · maske · örtü ·
+  yalnız maske), 8× yakın inceleme ile doğrulandı. **SC-9 Sorcerer**: yüz, kulak, iki el (göz akı, diş, saç, palto dışarıda).
+  **ID10 Monk (kadın)**: yüz, kulak, eller, ayak parmakları (sargılar, saç, palto dışarıda). **Bilerek boş maske** (çıplak insan teni
+  yok; ten tonu bu jetonlarda görünmez): ID3 Paladin erkek/kadın (kapalı miğferli tam zırh), SC-5 Sorcerer (gölge varlığı), WL-10
+  Warlock erkek/kadın (hayalet: yüz, saç, cüppe aynı tayfsal renk; yüzü boyamak hayaleti bozardı). Elle maske hattı alt sınıf/Gariban
+  jeton adlarını (`<ırk>-<erkek|kadin>-<sınıf>-<kod>`) kabul eder (`checkHandMask`, `soy-maske-ice`); rapora yalnız elle maskeli olanlar
+  eklenir (ana parça). Üç ton (Koyu, Orijinal, Altın) ve Sur Dışı Sürgün yolları dökümün Human sayfasında.
+- **Dragonborn maskesi yapılmadı** (kullanıcı kararı): mahkûm kıyafetinin tabanı olan eski sınıf-genel `public/characters/dragonborn-*-monk.webp`
+  (güncel Dragonborn jetonları beyaz taban Gariban/alt sınıf tipleri) yedek filtre yolunda. ⚠ Mahkûm kıyafeti Dragonborn'da hâlâ bu eski
+  çizimi kullanıyor (`src/app/seruvenBattle.ts` `prisonerAvatar`); güncel tipe bağlamak ayrı karar.
+- **Maskesiz soylar için yedek filtre.** Maske yoksa (ya da maskesiz HSL boyası hiçbir pikseli değiştirmezse: High Elf) soy rengi bütün
+  jetona CSS filtresiyle (Orc soylarının filtre yolu gibi; kıyafet rengi de değişebilir, kabul). Karar tek yerde, çalışma anında:
+  `src/ui/tint.ts` `fallbackFilterFor` (boyama denemesinin sonucu: maske yüklenemedi / etkisiz), değer `src/ui/lineageLook.ts`
+  `tintFallbackFilter` (veriden, anahtar `<ırk>/<soy>`; kodda ırk adı yok). Bilerek boş el maskesi "maske var" sayılır (yedek yok).
+  **Maske sonradan eklenirse** (`assets/soy-maske-el/` → `npm run soy-maske`) boyama başarılır ve yedek kendiliğinden devre dışı kalır;
+  `data/soy-filtre-yedek.json`'a dokunmak gerekmez. Adaylar `data/soy-filtre-adaylari.json` (`node scripts/soy-filtre-adaylari.mjs`;
+  20 soy × 8: hedef renk oyunun verisinden: soy-renkleri `lch`, Drow seçili palet, High Elf HSL, Dragonborn pul `orta`), seçim
+  `data/soy-filtre-yedek.json` (**seçim bekliyor**: geçici olarak 1. aday). Seçim sayfası `onizleme-filtre.html` (yalnız geliştirme;
+  hücreye tıkla, Kaydet: JSON panoya). Çizim: `AvatarBadge` (görünüm filtresiyle birlikte satır içi) ve `TokenFigure` `extraFilter`.
+  Test `src/ui/soyFiltreYedek.test.ts`. Döküm `yedek-filtre` (bilgi, ayrı sayım) ve `tensiz-jeton` (bilgi) kodlarıyla sayar.
+- **Dungeondex "kategori listesi ve Lisanslar ve atıf" testi:** uzaktaki dalda eski sekme şeridindeki `dex-tab-lisans`'ı arıyordu; kitap
+  kabuğu parşömen gezinmesine geçince sekme şeridi kalkmıştı (gece kuyruğu raporunda "önceden var olan"). Ad işi (77fe3e69) görünür
+  "Lisans / Atıf" düğmesini (`dex-nav-lisans`) ekleyip testi bu yola çevirmişti; birleşimle (dd15fe23) geçiyor, ek değişiklik yok.
+- **İlgisiz, yerelde düşen test:** `src/dungeondex/esyaIkon.test.ts` (public/esya 449 ↔ hattın çıktısı 448): fazla dosya
+  `public/esya/dagger.webp`; hat yerel ham sayfalarla bu ikonu artık üretmiyor. Bulutta ham dosya olmadığından test atlanıyor. Eşya ikon
+  hattı ayrı iş; dokunulmadı.
+
 ## Ad işi ile gece kuyruğunun birleşimi: paket 107, görünen 119; "Sadakat Töresi" (2026-11-22, kullanıcı kararı; kural/kayıt sürümü değişmedi)
 
 - **Paket durumu (uzak taraf geçerli).** Yaşam Manastırı (`life-domain`) ve Barış Alanı (`baris-alani`) paket dosyalarında yok;

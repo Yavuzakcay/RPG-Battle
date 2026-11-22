@@ -8,7 +8,9 @@
  * - `cinsiyet-yedek`: cinsiyet kısıtlı alt sınıf seçildikten sonra cinsiyet değişti (seçim görünür kalır), jeton yedeğe düşer.
  * - `gariban-eksik`: seviye < 3'te Gariban jetonu yok (sınıf-genel jeton).
  * - `alt-sinif-jetonsuz` (bilgi): alt sınıf jeton tablosunda yok, sınıf-genel/Gariban jeton kullanılır.
- * - `maske-eksik`: maskeli soy boyası için maske yok (jeton boyasız çıkar). `boya-basarisiz`: boyama null döndü. `boya-etkisiz`: hiç piksel değişmedi.
+ * - `maske-eksik`: maskeli soy boyası için maske yok ve soyun yedek filtresi de yok (jeton boyasız çıkar). `boya-basarisiz`: boyama null döndü.
+ *   `boya-etkisiz`: hiç piksel değişmedi (yedek yok). GORSEL-DUZELTME bilgileri: `yedek-filtre` (maske yok / maskesiz boya etkisiz: soyun
+ *   yedek CSS filtresiyle çiziliyor), `tensiz-jeton` (maske bilerek boş: çıplak ten yok).
  * - `bas-404`: kafa kaplaması kaydı var, görseli yok.
  * - `kanat-dosya-null`: kanat slotu ve seviye uyuyor ama açık kanat görseli `dosya: null`. `kanat-404`: kanat (ya da katman) görseli yok.
  *   `kanat-slot-yok`: görünüm verisi bir slota bağlı ama `kanat-esleme.json`'da slot yok.
@@ -23,7 +25,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { SheetPortrait } from '../screens/sheet/SheetView';
 import type { CharacterSheet } from '../rules/stats';
-import { basUrlFor, maskUrlFor, maskedTint, tintedUrl } from '../ui/tint';
+import { basUrlFor, fallbackFilterFor, maskUrlFor, maskedTint, tintedUrl } from '../ui/tint';
 import { wingTable } from '../ui/wingData';
 import { findSubclass } from '../rules/subclasses';
 import type { Avatar } from '../battle/types';
@@ -191,19 +193,30 @@ export async function scanAvatar(av: Avatar, ctx: ScanCtx, out: Kusur[]): Promis
   if (src && av.tint && /(^|\/)characters\//.test(src)) {
     const url = u(src);
     const masked = maskedTint(av.tint);
-    let maskOk = true;
+    let maskOk = true, maskName = '';
     if (masked) {
       const m = maskUrlFor(url, av.tint);
-      if (m && !(await probe(m))) { maskOk = false; add('maske-eksik', m, `maske yok (${'pul' in av.tint.to ? 'pul' : 'ten'}): ${m}`); }
+      if (m && !(await probe(m))) { maskOk = false; maskName = m; }
       const bas = !('pul' in av.tint.to) ? basUrlFor(url) : null;
       if (bas && !(await probe(bas))) add('bas-404', bas, `kafa kaplaması görseli yok: ${bas}`);
     }
     const res = await withTimeout(tintedUrl(url, av.tint), 90_000, null);
+    // GORSEL-DUZELTME: boyanamayan jetonda oyunun kararı (`fallbackFilterFor`): yedek filtre varsa bilgi (ayrı sayılır), yoksa kusur.
+    const yedek = fallbackFilterFor(url, av.tint, av.look);
+    const soy = av.look ? `${av.look.raceId}/${av.look.lineageId ?? '—'}` : '—';
+    if (!maskOk) {
+      if (yedek) add('yedek-filtre', maskName, `maske yok (${'pul' in av.tint.to ? 'pul' : 'ten'}): ${maskName} → yedek filtre (${soy})`);
+      else add('maske-eksik', maskName, `maske yok (${'pul' in av.tint.to ? 'pul' : 'ten'}): ${maskName}`);
+    }
     if (!res) { if (maskOk) add('boya-basarisiz', src, `boyama başarısız: ${src}`); }
     else {
       tinted = true; shown = res;
       changed = await diffCount(url, res);
-      if (changed === 0) add('boya-etkisiz', `${src}|${JSON.stringify(av.tint.to).slice(0, 40)}`, `boya hiçbir pikseli değiştirmedi: ${src}`);
+      if (changed === 0) {
+        if (yedek) add('yedek-filtre', `${src}|${soy}`, `maskesiz boya hiçbir pikseli değiştirmedi: ${src} → yedek filtre (${soy})`);
+        else if (masked && maskOk) add('tensiz-jeton', src, `maske bilerek boş (çıplak ten yok): ${src}`);
+        else add('boya-etkisiz', `${src}|${JSON.stringify(av.tint.to).slice(0, 40)}`, `boya hiçbir pikseli değiştirmedi: ${src}`);
+      }
     }
   }
   const st = shown ? await imgStat(shown) : null;
