@@ -808,12 +808,12 @@
      "id": "oath-of-devotion-spells",
      "level": 3,
      "name": {
-      "tr": "Bağlılık Yemini Büyüleri",
-      "en": "Oath of Devotion Spells"
+      "tr": "Sadakat Töresi Büyüleri",
+      "en": "Code of Loyalty Spells"
      },
      "description": {
-      "tr": "Yemininin büyüsü bazı büyülerin her zaman hazır olmasını sağlar; Bağlılık Yemini Büyüleri tablosundaki bir Paladin seviyesine ulaştığında, o satırdaki büyüler bundan sonra hep hazırdır.",
-      "en": "The magic of your oath ensures you always have certain spells ready; when you reach a Paladin level specified in the Oath of Devotion Spells table, you thereafter always have the listed spells prepared."
+      "tr": "Yemininin büyüsü bazı büyülerin her zaman hazır olmasını sağlar; Sadakat Töresi Büyüleri tablosundaki bir Paladin seviyesine ulaştığında, o satırdaki büyüler bundan sonra hep hazırdır.",
+      "en": "The magic of your oath ensures you always have certain spells ready; when you reach a Paladin level specified in the Code of Loyalty Spells table, you thereafter always have the listed spells prepared."
      },
      "status": "calisir",
      "effect": {

@@ -2,6 +2,25 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Ad işi ile gece kuyruğunun birleşimi: paket 107, görünen 119; "Sadakat Töresi" (2026-11-22, kullanıcı kararı; kural/kayıt sürümü değişmedi)
+
+- **Paket durumu (uzak taraf geçerli).** Yaşam Manastırı (`life-domain`) ve Barış Alanı (`baris-alani`) paket dosyalarında yok;
+  ikisinin kimliği Birlik Manastırı'na (`imza_birlik`) yönlenir (`kaldirilan`, `eskiKimlik`, `yedekKimlik`). Doğru sayılar: paket
+  **107** alt sınıf, görünen **119** (107 paket + 12 bizim: 11 imza + Karadul). Ad işinin (77fe3e69) "108, Yaşam pakette"
+  beklentileri uygulanmadı: `as2.test.ts` paket sayımı 107 ve iki kimliğin de pakette olmadığını denetler; `srd12-paket.ts`
+  `AD_TR`'de `life-domain` yok. Yerel `icerik/ek-cleric.json`'dan `life-domain` kaydı çıkarıldı (depo dışı; eski dosya
+  `icerik/_yedek-20261122-life-domain/ek-cleric.json`); `check:icerik` 107. Bu, gece kuyruğu raporunun "Aşama 1'in kalanı"
+  maddesini kapatır.
+- **Paladin adı.** `oath-of-devotion` Türkçe adı "Sadakat Töresi" (ad işi; uzaktaki "Sadakat Yemini" değil). Özellik
+  `oath-of-devotion-spells` adı buna uyduruldu: "Bağlılık Yemini Büyüleri" → "Sadakat Töresi Büyüleri"; İngilizcesi
+  yerelleştirme kuralı (Türkçe adın birebir çevirisi, alt sınıfın EN adı "Code of Loyalty") gereği "Oath of Devotion Spells" →
+  "Code of Loyalty Spells"; açıklamalardaki tablo adı da aynı. Fikstür (`src/rules/fixtures/srd-alt-siniflar.json`) ve yerel
+  paket (`icerik/ek-paladin.json`) birebir aynı (as2 testi ikisini karşılaştırır). Mekanik aynı.
+- **Commit edilmemiş iş korundu.** Önceki oturumun commit edilmemiş İngilizce ad yerelleştirmesi kendi commit'ine alındı
+  (942426d3), sonra `origin/birlesik` birleştirildi; `DECISIONS.md` iki tarafın kayıtlarını korur. Üretilen
+  `dungeondex-gorsel-esleme.json` ve `GORSEL-ENVANTER.md` origin sürümünden alınıp `npm run dd-gorsel` ile yerel `icerik/` ile
+  yeniden üretildi; `node scripts/buyu-denetimi.mjs` `BUYU-DURUM.md`'yi değiştirmedi.
+
 ## Alt sınıf İngilizce adları ve SRD-12 açıklamaları: yerelleştirme kuralı (2026-11-21; kural/kayıt sürümü ve mekanik değişmedi)
 
 - **Kural (kullanıcı kararı).** (1) Bizim yerelleştirdiğimiz her şeyin İngilizcesi Türkçe adın **birebir çevirisidir**: 108
