@@ -1,0 +1,1875 @@
+{
+ "not": "MASKE-DUZELT (2026-11-22): python scripts/maske-duzelt.py bu jetonların otomatik ten maskesini (public/characters/maske/) yüzün ham ten rengine göre yeniden üretir. irklar: gevşek aday aralığı + ten modeli; jetonlar: neden (kesim: KESIM-DUZELT-MASKE-LISTESI, denetim: JETON-DENETIM bölüm 4), isteğe bağlı seed/include/exclude kutuları (256 px), bos (bilerek boş maske), parametre ezmesi. soy-maske --alt bu jetonları atlar.",
+ "irklar": {
+  "elf": {
+   "L": [
+    25,
+    96
+   ],
+   "C": [
+    8,
+    60
+   ],
+   "h": [
+    [
+     10,
+     90
+    ]
+   ],
+   "bas": 0.42,
+   "tohumKroma": 20,
+   "th": 12,
+   "ton": 14,
+   "kroma": 0.6,
+   "golge": 30,
+   "isik": 12,
+   "enAz": 6,
+   "bilesen": 18,
+   "onceli": [
+    77.5,
+    24.2,
+    27.2
+   ]
+  },
+  "human": {
+   "L": [
+    25,
+    96
+   ],
+   "C": [
+    8,
+    60
+   ],
+   "h": [
+    [
+     10,
+     90
+    ]
+   ],
+   "bas": 0.42,
+   "tohumKroma": 20,
+   "th": 12,
+   "ton": 14,
+   "kroma": 0.6,
+   "golge": 30,
+   "isik": 12,
+   "enAz": 6,
+   "bilesen": 18,
+   "onceli": [
+    77.8,
+    23.6,
+    26.6
+   ]
+  },
+  "tiefling": {
+   "L": [
+    12,
+    88
+   ],
+   "C": [
+    12,
+    75
+   ],
+   "h": [
+    [
+     270,
+     360
+    ],
+    [
+     0,
+     45
+    ]
+   ],
+   "bas": 0.42,
+   "tohumKroma": 25,
+   "th": 10,
+   "ton": 14,
+   "kroma": 0.6,
+   "golge": 30,
+   "isik": 14,
+   "enAz": 6,
+   "bilesen": 18,
+   "onceli": [
+    36.8,
+    47.0,
+    1.4
+   ]
+  }
+ },
+ "jetonlar": {
+  "elf-erkek-barbarian-ID3": {
+   "neden": "kesim:kismen"
+  },
+  "elf-erkek-barbarian-ID4": {
+   "neden": "denetim:supheli",
+   "exclude": [
+    [
+     110,
+     30,
+     184,
+     97
+    ]
+   ],
+   "not": "kemik maske dışarıda"
+  },
+  "elf-erkek-bard-ID7": {
+   "neden": "denetim:bozuk"
+  },
+  "elf-erkek-druid-ID4": {
+   "neden": "denetim:supheli",
+   "bos": true,
+   "not": "ağaç adam: kabuk yüz, çıplak ten yok"
+  },
+  "elf-erkek-fighter-GR": {
+   "neden": "kesim:kismen"
+  },
+  "elf-erkek-fighter-ID10": {
+   "neden": "denetim:bozuk"
+  },
+  "elf-erkek-monk-GR": {
+   "neden": "kesim:kismen"
+  },
+  "elf-erkek-paladin-GR": {
+   "neden": "kesim:kismen"
+  },
+  "elf-erkek-paladin-ID2": {
+   "neden": "denetim:supheli"
+  },
+  "elf-erkek-paladin-ID8": {
+   "neden": "denetim:supheli",
+   "seed": [
+    132,
+    98,
+    146,
+    118
+   ],
+   "yalniz": [
+    [
+     126,
+     92,
+     152,
+     121
+    ]
+   ],
+   "not": "altın zırh: zırh ten aralığında; yalnız miğfer aralığındaki yüz"
+  },
+  "elf-erkek-rogue-ID4": {
+   "neden": "denetim:bozuk",
+   "seed": [
+    100,
+    70,
+    178,
+    126
+   ],
+   "yalniz": [
+    [
+     100,
+     70,
+     178,
+     126
+    ]
+   ],
+   "h": [
+    [
+     10,
+     120
+    ]
+   ],
+   "C": [
+    6,
+    60
+   ],
+   "th": 14,
+   "not": "yaprak kamuflajı: yaprak/saç ten aralığında; yalnız yüz"
+  },
+  "elf-erkek-rogue-ID8": {
+   "neden": "denetim:bozuk"
+  },
+  "elf-erkek-warlock-WL-1": {
+   "neden": "kesim:kismen"
+  },
+  "elf-erkek-warlock-WL-2": {
+   "neden": "kesim:kismen"
+  },
+  "elf-erkek-warlock-WL-3": {
+   "neden": "denetim:bozuk"
+  },
+  "elf-erkek-warlock-WL-4": {
+   "neden": "denetim:supheli",
+   "bos": true,
+   "not": "zombi: gri ölü ten, saç boyanıyordu"
+  },
+  "elf-erkek-warlock-WL-6": {
+   "neden": "kesim:kismen"
+  },
+  "elf-kadin-barbarian-ID4": {
+   "neden": "denetim:bozuk",
+   "exclude": [
+    [
+     122,
+     44,
+     172,
+     112
+    ],
+    [
+     82,
+     92,
+     120,
+     126
+    ]
+   ],
+   "not": "kafatası maske ve omuz kafatası dışarıda"
+  },
+  "elf-kadin-bard-ID7": {
+   "neden": "denetim:bozuk"
+  },
+  "elf-kadin-cleric-ID1": {
+   "neden": "denetim:supheli",
+   "exclude": [
+    [
+     216,
+     0,
+     255,
+     255
+    ],
+    [
+     180,
+     0,
+     255,
+     126
+    ],
+    [
+     180,
+     156,
+     255,
+     255
+    ],
+    [
+     0,
+     0,
+     80,
+     255
+    ]
+   ],
+   "not": "kanatlar dışarıda"
+  },
+  "elf-kadin-druid-ID4": {
+   "neden": "denetim:supheli",
+   "bos": true,
+   "not": "ağaç adam: kabuk yüz, çıplak ten yok"
+  },
+  "elf-kadin-druid-ID7": {
+   "neden": "kesim:kismen"
+  },
+  "elf-kadin-druid-ID8": {
+   "neden": "denetim:supheli"
+  },
+  "elf-kadin-fighter-GR": {
+   "neden": "kesim:kismen"
+  },
+  "elf-kadin-paladin-ID2": {
+   "neden": "denetim:supheli"
+  },
+  "elf-kadin-paladin-ID8": {
+   "neden": "denetim:supheli",
+   "seed": [
+    100,
+    72,
+    156,
+    120
+   ],
+   "yalniz": [
+    [
+     100,
+     72,
+     156,
+     120
+    ]
+   ],
+   "not": "altın zırh: zırh ten aralığında; yalnız miğfer aralığındaki yüz"
+  },
+  "elf-kadin-rogue-ID4": {
+   "neden": "denetim:bozuk",
+   "seed": [
+    112,
+    76,
+    184,
+    124
+   ],
+   "yalniz": [
+    [
+     112,
+     76,
+     184,
+     124
+    ]
+   ],
+   "h": [
+    [
+     10,
+     120
+    ]
+   ],
+   "C": [
+    6,
+    60
+   ],
+   "th": 14,
+   "not": "yaprak kamuflajı: yaprak/saç ten aralığında; yalnız yüz"
+  },
+  "elf-kadin-rogue-ID8": {
+   "neden": "denetim:bozuk"
+  },
+  "elf-kadin-sorcerer-SC-3": {
+   "neden": "denetim:bozuk",
+   "bos": true,
+   "not": "hayalet: soluk mavi"
+  },
+  "elf-kadin-sorcerer-SC-9": {
+   "neden": "denetim:bozuk",
+   "not": "ghoul: soluk yeşil ölü yüz ve eller boyanır (human-erkek-sorcerer-SC-9 elle maskesiyle aynı karar); sepet, saç, ay dışarıda",
+   "seed": [
+    116,
+    76,
+    174,
+    128
+   ],
+   "yalniz": [
+    [
+     116,
+     76,
+     174,
+     128
+    ],
+    [
+     88,
+     70,
+     116,
+     102
+    ],
+    [
+     80,
+     176,
+     114,
+     214
+    ],
+    [
+     184,
+     126,
+     218,
+     152
+    ]
+   ],
+   "h": [
+    [
+     60,
+     240
+    ]
+   ],
+   "C": [
+    0,
+    30
+   ],
+   "L": [
+    40,
+    98
+   ],
+   "th": 16,
+   "ton": 40,
+   "kroma": 0
+  },
+  "elf-kadin-warlock-WL-2": {
+   "neden": "kesim:kismen"
+  },
+  "elf-kadin-warlock-WL-4": {
+   "neden": "kesim:kismen denetim:supheli",
+   "bos": true,
+   "not": "zombi: gri ölü ten, saç boyanıyordu"
+  },
+  "elf-kadin-warlock-WL-6": {
+   "neden": "kesim:kismen"
+  },
+  "elf-kadin-warlock-WL-8": {
+   "neden": "denetim:supheli",
+   "bos": true,
+   "not": "hortlak: soluk ölü ten, elbise boyanıyordu"
+  },
+  "human-erkek-barbarian-ID4": {
+   "neden": "denetim:bozuk",
+   "exclude": [
+    [
+     104,
+     26,
+     168,
+     88
+    ],
+    [
+     58,
+     74,
+     102,
+     116
+    ],
+    [
+     148,
+     94,
+     178,
+     120
+    ],
+    [
+     116,
+     148,
+     152,
+     182
+    ]
+   ],
+   "not": "kafatası başlık, omuz ve kemer kafatasları dışarıda"
+  },
+  "human-erkek-barbarian-ID8": {
+   "neden": "kesim:kismen"
+  },
+  "human-erkek-bard-ID7": {
+   "neden": "denetim:supheli"
+  },
+  "human-erkek-cleric-ID1": {
+   "neden": "denetim:supheli"
+  },
+  "human-erkek-druid-GR": {
+   "neden": "kesim:kismen"
+  },
+  "human-erkek-druid-ID4": {
+   "neden": "denetim:supheli",
+   "bos": true,
+   "not": "ağaç adam: kabuk yüz, çıplak ten yok"
+  },
+  "human-erkek-fighter-ID10": {
+   "neden": "denetim:supheli",
+   "seed": [
+    100,
+    85,
+    160,
+    122
+   ],
+   "not": "krem sancak yüz sanılıyordu"
+  },
+  "human-erkek-paladin-ID8": {
+   "neden": "denetim:supheli",
+   "seed": [
+    132,
+    98,
+    146,
+    118
+   ],
+   "yalniz": [
+    [
+     126,
+     92,
+     152,
+     121
+    ]
+   ],
+   "not": "altın zırh: zırh ten aralığında; yalnız miğfer aralığındaki yüz"
+  },
+  "human-erkek-rogue-ID4": {
+   "neden": "denetim:bozuk",
+   "seed": [
+    100,
+    74,
+    176,
+    128
+   ],
+   "yalniz": [
+    [
+     100,
+     74,
+     176,
+     128
+    ]
+   ],
+   "h": [
+    [
+     10,
+     120
+    ]
+   ],
+   "C": [
+    6,
+    60
+   ],
+   "th": 14,
+   "not": "yaprak kamuflajı: yaprak/saç ten aralığında; yalnız yüz"
+  },
+  "human-erkek-sorcerer-GR": {
+   "neden": "kesim:kismen"
+  },
+  "human-erkek-sorcerer-SC-3": {
+   "neden": "denetim:bozuk",
+   "bos": true,
+   "not": "zombi çocuk: gri ten, kitap boyanıyordu"
+  },
+  "human-erkek-warlock-WL-1": {
+   "neden": "kesim:kismen"
+  },
+  "human-erkek-warlock-WL-2": {
+   "neden": "kesim:kismen"
+  },
+  "human-erkek-warlock-WL-3": {
+   "neden": "denetim:bozuk"
+  },
+  "human-erkek-warlock-WL-4": {
+   "neden": "denetim:supheli",
+   "bos": true,
+   "not": "zombi: gri ölü ten, saç boyanıyordu"
+  },
+  "human-erkek-warlock-WL-6": {
+   "neden": "kesim:kismen"
+  },
+  "human-erkek-wizard-WZ-A3": {
+   "neden": "denetim:bozuk"
+  },
+  "human-kadin-barbarian-ID4": {
+   "neden": "denetim:supheli",
+   "exclude": [
+    [
+     118,
+     8,
+     172,
+     106
+    ],
+    [
+     128,
+     148,
+     156,
+     182
+    ]
+   ],
+   "not": "boyalı maske ve kemer kafatası dışarıda",
+   "seed": [
+    80,
+    140,
+    98,
+    170
+   ]
+  },
+  "human-kadin-bard-ID5": {
+   "neden": "kesim:kismen"
+  },
+  "human-kadin-cleric-ID1": {
+   "neden": "denetim:supheli",
+   "exclude": [
+    [
+     0,
+     40,
+     84,
+     255
+    ],
+    [
+     196,
+     40,
+     255,
+     255
+    ],
+    [
+     166,
+     50,
+     196,
+     146
+    ],
+    [
+     160,
+     170,
+     196,
+     255
+    ]
+   ],
+   "not": "kanatlar dışarıda"
+  },
+  "human-kadin-fighter-ID1": {
+   "neden": "denetim:bozuk"
+  },
+  "human-kadin-fighter-ID10": {
+   "neden": "denetim:bozuk",
+   "seed": [
+    122,
+    74,
+    164,
+    112
+   ],
+   "not": "krem sancak yüz sanılıyordu"
+  },
+  "human-kadin-fighter-ID3": {
+   "neden": "denetim:bozuk"
+  },
+  "human-kadin-monk-GR": {
+   "neden": "kesim:kismen"
+  },
+  "human-kadin-paladin-GR": {
+   "neden": "kesim:kismen",
+   "exclude": [
+    [
+     96,
+     150,
+     170,
+     200
+    ]
+   ],
+   "not": "tunikteki kırıntılar dışarıda"
+  },
+  "human-kadin-paladin-ID2": {
+   "neden": "denetim:supheli"
+  },
+  "human-kadin-paladin-ID8": {
+   "neden": "denetim:supheli",
+   "seed": [
+    132,
+    98,
+    146,
+    118
+   ],
+   "yalniz": [
+    [
+     126,
+     92,
+     152,
+     121
+    ]
+   ],
+   "not": "altın zırh: zırh ten aralığında; yalnız miğfer aralığındaki yüz"
+  },
+  "human-kadin-rogue-ID10": {
+   "neden": "denetim:supheli"
+  },
+  "human-kadin-rogue-ID4": {
+   "neden": "denetim:supheli",
+   "seed": [
+    112,
+    76,
+    184,
+    124
+   ],
+   "yalniz": [
+    [
+     112,
+     76,
+     184,
+     124
+    ]
+   ],
+   "h": [
+    [
+     10,
+     120
+    ]
+   ],
+   "C": [
+    6,
+    60
+   ],
+   "th": 14,
+   "not": "yaprak kamuflajı: yaprak/saç ten aralığında; yalnız yüz"
+  },
+  "human-kadin-rogue-ID8": {
+   "neden": "denetim:bozuk"
+  },
+  "human-kadin-sorcerer-SC-3": {
+   "neden": "denetim:supheli",
+   "bos": true,
+   "not": "hayalet: soluk mavi"
+  },
+  "human-kadin-sorcerer-SC-9": {
+   "neden": "denetim:bozuk",
+   "not": "ghoul: soluk yeşil ölü yüz ve eller boyanır (human-erkek-sorcerer-SC-9 elle maskesiyle aynı karar); sepet, saç, ay dışarıda",
+   "seed": [
+    117,
+    72,
+    178,
+    122
+   ],
+   "yalniz": [
+    [
+     117,
+     72,
+     178,
+     122
+    ],
+    [
+     98,
+     76,
+     110,
+     100
+    ],
+    [
+     77,
+     174,
+     108,
+     212
+    ],
+    [
+     188,
+     122,
+     220,
+     145
+    ]
+   ],
+   "h": [
+    [
+     60,
+     240
+    ]
+   ],
+   "C": [
+    0,
+    30
+   ],
+   "L": [
+    40,
+    98
+   ],
+   "th": 16,
+   "ton": 40,
+   "kroma": 0
+  },
+  "human-kadin-warlock-WL-1": {
+   "neden": "kesim:kismen"
+  },
+  "human-kadin-warlock-WL-2": {
+   "neden": "kesim:kismen"
+  },
+  "human-kadin-warlock-WL-3": {
+   "neden": "denetim:bozuk"
+  },
+  "human-kadin-warlock-WL-4": {
+   "neden": "denetim:supheli",
+   "bos": true,
+   "not": "zombi: gri ölü ten, saç boyanıyordu"
+  },
+  "human-kadin-warlock-WL-6": {
+   "neden": "kesim:kismen"
+  },
+  "tiefling-erkek-barbarian-ID8": {
+   "neden": "denetim:supheli"
+  },
+  "tiefling-erkek-cleric-ID9": {
+   "neden": "denetim:supheli"
+  },
+  "tiefling-erkek-druid-ID7": {
+   "neden": "kesim:tamamen"
+  },
+  "tiefling-erkek-fighter-ID2": {
+   "neden": "denetim:bozuk"
+  },
+  "tiefling-erkek-fighter-ID4": {
+   "neden": "denetim:supheli"
+  },
+  "tiefling-erkek-fighter-ID5": {
+   "neden": "denetim:supheli"
+  },
+  "tiefling-erkek-monk-ID11": {
+   "neden": "denetim:supheli"
+  },
+  "tiefling-erkek-rogue-ID3": {
+   "neden": "denetim:bozuk"
+  },
+  "tiefling-erkek-sorcerer-SC-2": {
+   "neden": "denetim:bozuk",
+   "ton": 14,
+   "th": 14,
+   "not": "alev pelerini yüzle aynı tonda: yalnız yüz, boynuz ve eller",
+   "seed": [
+    110,
+    80,
+    160,
+    112
+   ],
+   "h": [
+    [
+     300,
+     360
+    ],
+    [
+     0,
+     45
+    ]
+   ],
+   "yalniz": [
+    [
+     92,
+     30,
+     172,
+     116
+    ],
+    [
+     68,
+     150,
+     98,
+     190
+    ],
+    [
+     160,
+     148,
+     196,
+     180
+    ]
+   ],
+   "C": [
+    12,
+    90
+   ]
+  },
+  "tiefling-erkek-sorcerer-SC-3": {
+   "neden": "denetim:bozuk"
+  },
+  "tiefling-erkek-sorcerer-SC-9": {
+   "neden": "denetim:bozuk",
+   "seed": [
+    36,
+    138,
+    72,
+    236
+   ],
+   "not": "kafatası yüz boyası boyanmaz; tohum kuyrukta (el, kuyruk, boynuz)"
+  },
+  "tiefling-erkek-warlock-WL-1": {
+   "neden": "kesim:kismen"
+  },
+  "tiefling-erkek-warlock-WL-4": {
+   "neden": "kesim:kismen denetim:supheli",
+   "bos": true,
+   "not": "zombi: gri ölü ten, kontur boyanıyordu"
+  },
+  "tiefling-erkek-warlock-WL-7": {
+   "neden": "denetim:bozuk"
+  },
+  "tiefling-erkek-wizard-GR": {
+   "neden": "denetim:bozuk"
+  },
+  "tiefling-kadin-barbarian-ID8": {
+   "neden": "denetim:supheli"
+  },
+  "tiefling-kadin-bard-ID1": {
+   "neden": "denetim:supheli"
+  },
+  "tiefling-kadin-bard-ID7": {
+   "neden": "denetim:bozuk"
+  },
+  "tiefling-kadin-druid-ID1": {
+   "neden": "kesim:tamamen"
+  },
+  "tiefling-kadin-druid-ID2": {
+   "neden": "kesim:tamamen"
+  },
+  "tiefling-kadin-druid-ID3": {
+   "neden": "kesim:tamamen"
+  },
+  "tiefling-kadin-druid-ID5": {
+   "neden": "kesim:tamamen"
+  },
+  "tiefling-kadin-druid-ID6": {
+   "neden": "kesim:tamamen"
+  },
+  "tiefling-kadin-druid-ID7": {
+   "neden": "kesim:tamamen"
+  },
+  "tiefling-kadin-druid-ID8": {
+   "neden": "kesim:tamamen"
+  },
+  "tiefling-kadin-fighter-ID4": {
+   "neden": "denetim:supheli"
+  },
+  "tiefling-kadin-fighter-ID5": {
+   "neden": "denetim:supheli"
+  },
+  "tiefling-kadin-monk-GR": {
+   "neden": "kesim:kismen"
+  },
+  "tiefling-kadin-monk-ID10": {
+   "neden": "denetim:supheli",
+   "bos": true,
+   "not": "ölü: gri ten"
+  },
+  "tiefling-kadin-monk-ID9": {
+   "neden": "denetim:supheli"
+  },
+  "tiefling-kadin-rogue-ID3": {
+   "neden": "denetim:bozuk"
+  },
+  "tiefling-kadin-sorcerer-SC-9": {
+   "neden": "denetim:bozuk"
+  },
+  "tiefling-kadin-warlock-WL-2": {
+   "neden": "kesim:kismen"
+  },
+  "tiefling-kadin-warlock-WL-6": {
+   "neden": "kesim:kismen"
+  },
+  "tiefling-kadin-warlock-WL-7": {
+   "neden": "kesim:kismen denetim:bozuk"
+  },
+  "human-erkek-fighter-GR": {
+   "neden": "denetim:ten (eller maskesiz)",
+   "include": [
+    [
+     62,
+     171,
+     90,
+     196
+    ]
+   ],
+   "not": "sol el maskede (JETON-DENETIM 3); sağ yumruk kalkan ahşabıyla aynı renkte ve kalkana konturuyla bitişik: otomatik ayrılamadı (kutu boyası kalkanda dikdörtgen bıraktı), Gemini listesinde"
+  }
+ },
+ "ayri": [
+  "dragonborn-erkek-fighter-ID8",
+  "dragonborn-erkek-monk-ID9",
+  "dragonborn-erkek-rogue-ID7",
+  "dragonborn-erkek-sorcerer-SC-5",
+  "dragonborn-erkek-warlock-WL-1",
+  "dragonborn-erkek-warlock-WL-2",
+  "dragonborn-erkek-warlock-WL-4",
+  "dragonborn-erkek-warlock-WL-6",
+  "dragonborn-kadin-bard-ID5",
+  "dragonborn-kadin-bard-ID9",
+  "dragonborn-kadin-druid-ID2",
+  "dragonborn-kadin-fighter-GR",
+  "dragonborn-kadin-monk-GR",
+  "dragonborn-kadin-monk-ID8",
+  "dragonborn-kadin-monk-ID9",
+  "dragonborn-kadin-rogue-ID7",
+  "dragonborn-kadin-warlock-WL-1",
+  "dragonborn-kadin-warlock-WL-2",
+  "dragonborn-kadin-warlock-WL-4",
+  "gnome-erkek-druid-GR",
+  "gnome-erkek-fighter-GR",
+  "gnome-erkek-warlock-WL-2",
+  "gnome-erkek-warlock-WL-6",
+  "gnome-erkek-warlock-WL-7",
+  "gnome-kadin-druid-GR",
+  "gnome-kadin-monk-GR",
+  "goliath-erkek-monk-GR",
+  "goliath-erkek-rogue-GR",
+  "goliath-kadin-bard-GR",
+  "goliath-kadin-druid-GR",
+  "goliath-kadin-monk-GR",
+  "gnome-kadin-barbarian-ID1",
+  "gnome-kadin-barbarian-ID2",
+  "gnome-kadin-barbarian-ID3",
+  "gnome-kadin-barbarian-ID4",
+  "gnome-kadin-barbarian-ID5",
+  "gnome-kadin-barbarian-ID6",
+  "gnome-kadin-barbarian-ID7",
+  "gnome-kadin-barbarian-ID9",
+  "gnome-kadin-barbarian-ID8",
+  "gnome-kadin-cleric-ID1"
+ ],
+ "sonuc": {
+  "elf-erkek-barbarian-ID3": {
+   "ref": [
+    75.3,
+    30.0,
+    27.7
+   ],
+   "tohum": 2854,
+   "px": 2760
+  },
+  "elf-erkek-barbarian-ID4": {
+   "ref": [
+    77.8,
+    25.0,
+    23.6
+   ],
+   "tohum": 382,
+   "px": 2040
+  },
+  "elf-erkek-bard-ID7": {
+   "ref": [
+    76.8,
+    23.7,
+    28.5
+   ],
+   "tohum": 1559,
+   "px": 1455
+  },
+  "elf-erkek-druid-ID4": {
+   "bos": true,
+   "px": 0
+  },
+  "elf-erkek-fighter-GR": {
+   "ref": [
+    78.3,
+    23.7,
+    31.8
+   ],
+   "tohum": 2145,
+   "px": 1721
+  },
+  "elf-erkek-fighter-ID10": {
+   "ref": [
+    79.2,
+    22.8,
+    28.6
+   ],
+   "tohum": 1448,
+   "px": 1298
+  },
+  "elf-erkek-monk-GR": {
+   "ref": [
+    78.3,
+    24.6,
+    31.5
+   ],
+   "tohum": 2270,
+   "px": 2762
+  },
+  "elf-erkek-paladin-GR": {
+   "ref": [
+    78.4,
+    23.8,
+    30.6
+   ],
+   "tohum": 1193,
+   "px": 1771
+  },
+  "elf-erkek-paladin-ID2": {
+   "ref": [
+    78.6,
+    23.5,
+    29.5
+   ],
+   "tohum": 3211,
+   "px": 1425
+  },
+  "elf-erkek-paladin-ID8": {
+   "ref": [
+    70.1,
+    37.1,
+    29.8
+   ],
+   "tohum": 200,
+   "px": 148
+  },
+  "elf-erkek-rogue-ID4": {
+   "ref": [
+    40.9,
+    4.9,
+    22.8
+   ],
+   "tohum": 2133,
+   "px": 1483
+  },
+  "elf-erkek-rogue-ID8": {
+   "ref": [
+    76.5,
+    25.1,
+    28.8
+   ],
+   "tohum": 2456,
+   "px": 2234
+  },
+  "elf-erkek-warlock-WL-1": {
+   "ref": [
+    77.7,
+    23.1,
+    27.2
+   ],
+   "tohum": 2441,
+   "px": 2020
+  },
+  "elf-erkek-warlock-WL-2": {
+   "ref": [
+    77.6,
+    23.3,
+    26.8
+   ],
+   "tohum": 2384,
+   "px": 3181
+  },
+  "elf-erkek-warlock-WL-3": {
+   "ref": [
+    75.7,
+    14.0,
+    39.8
+   ],
+   "tohum": 1399,
+   "px": 1499
+  },
+  "elf-erkek-warlock-WL-4": {
+   "bos": true,
+   "px": 0
+  },
+  "elf-erkek-warlock-WL-6": {
+   "ref": [
+    76.1,
+    21.6,
+    25.9
+   ],
+   "tohum": 1698,
+   "px": 1530
+  },
+  "elf-kadin-barbarian-ID4": {
+   "ref": [
+    68.0,
+    24.2,
+    22.7
+   ],
+   "tohum": 387,
+   "px": 1935
+  },
+  "elf-kadin-bard-ID7": {
+   "ref": [
+    79.4,
+    20.4,
+    26.7
+   ],
+   "tohum": 1410,
+   "px": 1328
+  },
+  "elf-kadin-cleric-ID1": {
+   "ref": [
+    79.6,
+    22.2,
+    28.1
+   ],
+   "tohum": 2215,
+   "px": 2124
+  },
+  "elf-kadin-druid-ID4": {
+   "bos": true,
+   "px": 0
+  },
+  "elf-kadin-druid-ID7": {
+   "ref": [
+    73.4,
+    26.9,
+    30.2
+   ],
+   "tohum": 2382,
+   "px": 1467
+  },
+  "elf-kadin-druid-ID8": {
+   "ref": [
+    74.0,
+    23.9,
+    31.4
+   ],
+   "tohum": 1852,
+   "px": 2019
+  },
+  "elf-kadin-fighter-GR": {
+   "ref": [
+    80.3,
+    21.2,
+    28.0
+   ],
+   "tohum": 2134,
+   "px": 1674
+  },
+  "elf-kadin-paladin-ID2": {
+   "ref": [
+    76.4,
+    23.9,
+    27.1
+   ],
+   "tohum": 3042,
+   "px": 1603
+  },
+  "elf-kadin-paladin-ID8": {
+   "ref": [
+    71.6,
+    24.1,
+    28.9
+   ],
+   "tohum": 1138,
+   "px": 245
+  },
+  "elf-kadin-rogue-ID4": {
+   "ref": [
+    37.2,
+    -1.4,
+    22.0
+   ],
+   "tohum": 1544,
+   "px": 1341
+  },
+  "elf-kadin-rogue-ID8": {
+   "ref": [
+    76.9,
+    26.6,
+    31.0
+   ],
+   "tohum": 1895,
+   "px": 1591
+  },
+  "elf-kadin-sorcerer-SC-3": {
+   "bos": true,
+   "px": 0
+  },
+  "elf-kadin-sorcerer-SC-9": {
+   "ref": [
+    89.5,
+    -8.4,
+    10.7
+   ],
+   "tohum": 1093,
+   "px": 1391
+  },
+  "elf-kadin-warlock-WL-2": {
+   "ref": [
+    78.0,
+    22.5,
+    26.9
+   ],
+   "tohum": 3486,
+   "px": 2367
+  },
+  "elf-kadin-warlock-WL-4": {
+   "bos": true,
+   "px": 0
+  },
+  "elf-kadin-warlock-WL-6": {
+   "ref": [
+    72.8,
+    18.4,
+    22.6
+   ],
+   "tohum": 1194,
+   "px": 1391
+  },
+  "elf-kadin-warlock-WL-8": {
+   "bos": true,
+   "px": 0
+  },
+  "human-erkek-barbarian-ID4": {
+   "ref": [
+    77.3,
+    24.6,
+    31.6
+   ],
+   "tohum": 584,
+   "px": 1990
+  },
+  "human-erkek-barbarian-ID8": {
+   "ref": [
+    75.8,
+    26.6,
+    32.0
+   ],
+   "tohum": 1625,
+   "px": 2794
+  },
+  "human-erkek-bard-ID7": {
+   "ref": [
+    40.3,
+    17.2,
+    9.8
+   ],
+   "tohum": 25,
+   "px": 1308
+  },
+  "human-erkek-cleric-ID1": {
+   "ref": [
+    78.0,
+    24.6,
+    31.4
+   ],
+   "tohum": 2577,
+   "px": 2076
+  },
+  "human-erkek-druid-GR": {
+   "ref": [
+    80.1,
+    21.3,
+    29.1
+   ],
+   "tohum": 2065,
+   "px": 2223
+  },
+  "human-erkek-druid-ID4": {
+   "bos": true,
+   "px": 0
+  },
+  "human-erkek-fighter-GR": {
+   "ref": [
+    80.1,
+    21.9,
+    27.1
+   ],
+   "tohum": 1975,
+   "px": 1904
+  },
+  "human-erkek-fighter-ID10": {
+   "ref": [
+    72.7,
+    30.8,
+    40.1
+   ],
+   "tohum": 1319,
+   "px": 1022
+  },
+  "human-erkek-paladin-ID8": {
+   "ref": [
+    68.6,
+    32.1,
+    30.2
+   ],
+   "tohum": 211,
+   "px": 153
+  },
+  "human-erkek-rogue-ID4": {
+   "ref": [
+    41.1,
+    4.0,
+    21.5
+   ],
+   "tohum": 2142,
+   "px": 1526
+  },
+  "human-erkek-sorcerer-GR": {
+   "ref": [
+    80.1,
+    20.6,
+    28.1
+   ],
+   "tohum": 2019,
+   "px": 2755
+  },
+  "human-erkek-sorcerer-SC-3": {
+   "bos": true,
+   "px": 0
+  },
+  "human-erkek-warlock-WL-1": {
+   "ref": [
+    78.5,
+    23.8,
+    26.1
+   ],
+   "tohum": 1908,
+   "px": 1654
+  },
+  "human-erkek-warlock-WL-2": {
+   "ref": [
+    78.4,
+    24.0,
+    25.9
+   ],
+   "tohum": 1876,
+   "px": 3076
+  },
+  "human-erkek-warlock-WL-3": {
+   "ref": [
+    78.6,
+    13.1,
+    36.1
+   ],
+   "tohum": 1438,
+   "px": 1687
+  },
+  "human-erkek-warlock-WL-4": {
+   "bos": true,
+   "px": 0
+  },
+  "human-erkek-warlock-WL-6": {
+   "ref": [
+    75.0,
+    15.9,
+    18.2
+   ],
+   "tohum": 732,
+   "px": 1319
+  },
+  "human-erkek-wizard-WZ-A3": {
+   "ref": [
+    71.3,
+    37.0,
+    36.4
+   ],
+   "tohum": 1918,
+   "px": 2010
+  },
+  "human-kadin-barbarian-ID4": {
+   "ref": [
+    79.4,
+    21.6,
+    22.8
+   ],
+   "tohum": 324,
+   "px": 1264
+  },
+  "human-kadin-bard-ID5": {
+   "ref": [
+    80.1,
+    22.3,
+    25.7
+   ],
+   "tohum": 1438,
+   "px": 1821
+  },
+  "human-kadin-cleric-ID1": {
+   "ref": [
+    82.0,
+    18.3,
+    25.5
+   ],
+   "tohum": 2088,
+   "px": 1934
+  },
+  "human-kadin-fighter-ID1": {
+   "ref": [
+    77.0,
+    24.8,
+    35.7
+   ],
+   "tohum": 1329,
+   "px": 985
+  },
+  "human-kadin-fighter-ID10": {
+   "ref": [
+    75.3,
+    26.9,
+    39.1
+   ],
+   "tohum": 1101,
+   "px": 1045
+  },
+  "human-kadin-fighter-ID3": {
+   "ref": [
+    75.4,
+    27.9,
+    39.9
+   ],
+   "tohum": 1608,
+   "px": 1081
+  },
+  "human-kadin-monk-GR": {
+   "ref": [
+    82.5,
+    18.5,
+    23.3
+   ],
+   "tohum": 1979,
+   "px": 2855
+  },
+  "human-kadin-paladin-GR": {
+   "ref": [
+    82.2,
+    18.4,
+    22.9
+   ],
+   "tohum": 982,
+   "px": 1290
+  },
+  "human-kadin-paladin-ID2": {
+   "ref": [
+    79.7,
+    22.3,
+    26.7
+   ],
+   "tohum": 3714,
+   "px": 1401
+  },
+  "human-kadin-paladin-ID8": {
+   "ref": [
+    64.3,
+    42.8,
+    28.0
+   ],
+   "tohum": 187,
+   "px": 158
+  },
+  "human-kadin-rogue-ID10": {
+   "ref": [
+    75.0,
+    26.3,
+    27.3
+   ],
+   "tohum": 845,
+   "px": 1615
+  },
+  "human-kadin-rogue-ID4": {
+   "ref": [
+    36.4,
+    -1.4,
+    21.9
+   ],
+   "tohum": 1709,
+   "px": 1430
+  },
+  "human-kadin-rogue-ID8": {
+   "ref": [
+    77.2,
+    25.9,
+    29.5
+   ],
+   "tohum": 1803,
+   "px": 1535
+  },
+  "human-kadin-sorcerer-SC-3": {
+   "bos": true,
+   "px": 0
+  },
+  "human-kadin-sorcerer-SC-9": {
+   "ref": [
+    87.2,
+    -6.7,
+    0.8
+   ],
+   "tohum": 702,
+   "px": 1067
+  },
+  "human-kadin-warlock-WL-1": {
+   "ref": [
+    80.2,
+    22.7,
+    25.8
+   ],
+   "tohum": 2139,
+   "px": 1892
+  },
+  "human-kadin-warlock-WL-2": {
+   "ref": [
+    78.8,
+    23.3,
+    24.9
+   ],
+   "tohum": 3426,
+   "px": 1939
+  },
+  "human-kadin-warlock-WL-3": {
+   "ref": [
+    76.5,
+    13.4,
+    42.1
+   ],
+   "tohum": 1730,
+   "px": 2103
+  },
+  "human-kadin-warlock-WL-4": {
+   "bos": true,
+   "px": 0
+  },
+  "human-kadin-warlock-WL-6": {
+   "ref": [
+    71.9,
+    17.6,
+    22.0
+   ],
+   "tohum": 1228,
+   "px": 1255
+  },
+  "tiefling-erkek-barbarian-ID8": {
+   "ref": [
+    34.5,
+    45.5,
+    1.1
+   ],
+   "tohum": 4313,
+   "px": 4998
+  },
+  "tiefling-erkek-cleric-ID9": {
+   "ref": [
+    42.3,
+    52.9,
+    12.2
+   ],
+   "tohum": 4494,
+   "px": 3465
+  },
+  "tiefling-erkek-druid-ID7": {
+   "ref": [
+    32.0,
+    46.2,
+    0.7
+   ],
+   "tohum": 4044,
+   "px": 2668
+  },
+  "tiefling-erkek-fighter-ID2": {
+   "ref": [
+    40.8,
+    53.2,
+    3.6
+   ],
+   "tohum": 1356,
+   "px": 1437
+  },
+  "tiefling-erkek-fighter-ID4": {
+   "ref": [
+    44.0,
+    51.6,
+    10.1
+   ],
+   "tohum": 4705,
+   "px": 5309
+  },
+  "tiefling-erkek-fighter-ID5": {
+   "ref": [
+    44.1,
+    52.5,
+    26.2
+   ],
+   "tohum": 5052,
+   "px": 8681
+  },
+  "tiefling-erkek-monk-ID11": {
+   "ref": [
+    43.6,
+    44.9,
+    18.6
+   ],
+   "tohum": 3198,
+   "px": 2297
+  },
+  "tiefling-erkek-rogue-ID3": {
+   "ref": [
+    34.6,
+    49.3,
+    1.7
+   ],
+   "tohum": 1996,
+   "px": 3433
+  },
+  "tiefling-erkek-sorcerer-SC-2": {
+   "ref": [
+    51.5,
+    59.9,
+    56.0
+   ],
+   "tohum": 1267,
+   "px": 3831
+  },
+  "tiefling-erkek-sorcerer-SC-3": {
+   "ref": [
+    43.9,
+    47.2,
+    6.2
+   ],
+   "tohum": 3149,
+   "px": 3593
+  },
+  "tiefling-erkek-sorcerer-SC-9": {
+   "ref": [
+    25.1,
+    36.0,
+    -4.2
+   ],
+   "tohum": 743,
+   "px": 2803
+  },
+  "tiefling-erkek-warlock-WL-1": {
+   "ref": [
+    38.0,
+    55.2,
+    5.5
+   ],
+   "tohum": 4669,
+   "px": 4637
+  },
+  "tiefling-erkek-warlock-WL-4": {
+   "bos": true,
+   "px": 0
+  },
+  "tiefling-erkek-warlock-WL-7": {
+   "ref": [
+    37.8,
+    55.0,
+    7.5
+   ],
+   "tohum": 4684,
+   "px": 3955
+  },
+  "tiefling-erkek-wizard-GR": {
+   "ref": [
+    40.1,
+    43.8,
+    -0.2
+   ],
+   "tohum": 3180,
+   "px": 2564
+  },
+  "tiefling-kadin-barbarian-ID8": {
+   "ref": [
+    41.4,
+    54.8,
+    6.2
+   ],
+   "tohum": 1664,
+   "px": 4016
+  },
+  "tiefling-kadin-bard-ID1": {
+   "ref": [
+    40.9,
+    47.8,
+    3.0
+   ],
+   "tohum": 4413,
+   "px": 2773
+  },
+  "tiefling-kadin-bard-ID7": {
+   "ref": [
+    38.1,
+    42.2,
+    4.7
+   ],
+   "tohum": 730,
+   "px": 3274
+  },
+  "tiefling-kadin-druid-ID1": {
+   "ref": [
+    39.5,
+    48.5,
+    4.5
+   ],
+   "tohum": 2552,
+   "px": 1648
+  },
+  "tiefling-kadin-druid-ID2": {
+   "ref": [
+    34.2,
+    45.9,
+    0.0
+   ],
+   "tohum": 5075,
+   "px": 2075
+  },
+  "tiefling-kadin-druid-ID3": {
+   "ref": [
+    33.8,
+    45.6,
+    0.3
+   ],
+   "tohum": 5211,
+   "px": 2514
+  },
+  "tiefling-kadin-druid-ID5": {
+   "ref": [
+    33.7,
+    41.2,
+    0.8
+   ],
+   "tohum": 5288,
+   "px": 1741
+  },
+  "tiefling-kadin-druid-ID6": {
+   "ref": [
+    31.5,
+    38.9,
+    -1.2
+   ],
+   "tohum": 6218,
+   "px": 2265
+  },
+  "tiefling-kadin-druid-ID7": {
+   "ref": [
+    33.9,
+    41.4,
+    1.7
+   ],
+   "tohum": 4173,
+   "px": 2091
+  },
+  "tiefling-kadin-druid-ID8": {
+   "ref": [
+    37.6,
+    44.4,
+    5.4
+   ],
+   "tohum": 2892,
+   "px": 2762
+  },
+  "tiefling-kadin-fighter-ID4": {
+   "ref": [
+    42.8,
+    49.7,
+    2.4
+   ],
+   "tohum": 4856,
+   "px": 4214
+  },
+  "tiefling-kadin-fighter-ID5": {
+   "ref": [
+    44.2,
+    51.9,
+    3.0
+   ],
+   "tohum": 5213,
+   "px": 3403
+  },
+  "tiefling-kadin-monk-GR": {
+   "ref": [
+    42.1,
+    48.0,
+    5.0
+   ],
+   "tohum": 3289,
+   "px": 3592
+  },
+  "tiefling-kadin-monk-ID10": {
+   "bos": true,
+   "px": 0
+  },
+  "tiefling-kadin-monk-ID9": {
+   "ref": [
+    32.6,
+    42.4,
+    0.9
+   ],
+   "tohum": 5710,
+   "px": 3532
+  },
+  "tiefling-kadin-rogue-ID3": {
+   "ref": [
+    43.4,
+    58.6,
+    6.0
+   ],
+   "tohum": 1129,
+   "px": 1936
+  },
+  "tiefling-kadin-sorcerer-SC-9": {
+   "ref": [
+    33.3,
+    46.4,
+    6.2
+   ],
+   "tohum": 570,
+   "px": 1085
+  },
+  "tiefling-kadin-warlock-WL-2": {
+   "ref": [
+    38.5,
+    48.5,
+    -0.2
+   ],
+   "tohum": 3935,
+   "px": 3538
+  },
+  "tiefling-kadin-warlock-WL-6": {
+   "ref": [
+    41.4,
+    50.2,
+    5.7
+   ],
+   "tohum": 2499,
+   "px": 2031
+  },
+  "tiefling-kadin-warlock-WL-7": {
+   "ref": [
+    40.7,
+    53.9,
+    9.5
+   ],
+   "tohum": 2211,
+   "px": 2328
+  }
+ },
+ "gemini": {
+  "human-erkek-fighter-GR": "sol el otomatik eklendi; sağ yumruk kalkanın önünde, kalkan ahşabıyla aynı kahverengi: yüz, kulak ve iki el (yumruk dahil) beyaz; kalkan, kılıç kabzası, kollar siyah",
+  "tiefling-erkek-sorcerer-SC-2": "alev pelerini yüzle aynı tonda; yüz, boynuz, kulak, eller ve kuyruk beyaz; alev pelerini ve yaka siyah",
+  "elf-erkek-rogue-ID4": "yaprak kamuflajı; yalnız yüz (kamuflaj boyalı zeytin yeşili ten), kulak ve eller beyaz; yapraklar ve saç siyah",
+  "elf-kadin-rogue-ID4": "yaprak kamuflajı; yalnız yüz, kulak ve eller beyaz; yapraklar ve saç siyah (ham jetonda macenta kesim artığı var)",
+  "human-erkek-rogue-ID4": "yaprak kamuflajı; yalnız yüz ve eller beyaz; yapraklar ve saç siyah",
+  "human-kadin-rogue-ID4": "yaprak kamuflajı; yalnız yüz ve eller beyaz; yapraklar ve saç siyah (ham jetonda macenta kesim artığı var)",
+  "elf-erkek-barbarian-ID4": "kemik maske; çene, kulak, gövde, kollar, bacaklar beyaz; maske, tüyler, diş kolye siyah",
+  "elf-kadin-barbarian-ID4": "kafatası maske; kulak, kollar, karın, bacaklar beyaz; kafatası maske ve omuz kafatası siyah",
+  "human-erkek-barbarian-ID4": "kafatası başlık; yüzün alt yarısı, gövde, kollar, bacaklar beyaz; kafatasları, tüyler, kolye siyah",
+  "human-kadin-barbarian-ID4": "boyalı ahşap maske; kollar, karın, bacaklar beyaz; maske, tüyler, kemikler siyah"
+ }
+}

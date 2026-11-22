@@ -2,6 +2,22 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## MASKE-DUZELT: 107 jetonun ten maskesi yüz tonundan yeniden üretildi (2026-11-22; yalnız görünüm, kural/kayıt sürümü değişmedi)
+
+- **Kapsam:** KESIM-DUZELT maske listesinin Elf/Human/Tiefling jetonları (38) + JETON-DENETIM bölüm 4 Drow/Human/Tiefling bozuk ve
+  şüphelileri (72) + Human Fighter GR (eller); toplam 107. Dragonborn 19, Gnome 17, Goliath 5 ayrı listede (`data/maske-duzelt.json`
+  `ayri`), dokunulmadı; elle maske (`human-erkek-sorcerer-SC-9`) ve bilerek maskesiz Human 5 jeton korundu.
+- **Neden:** eski otomatik maskenin tohumu baş bandındaki en büyük geniş "ten aralığı" bileşeniydi: krem kapüşon, şapka, tunik, sancak,
+  altın zırh ve saç yüz sayılıyordu. Yeni üretici `scripts/maske-duzelt.py`: tohum doygunluk tabanı + ırkın iyi maskelerinin ten medyanına
+  yakınlık, ten = yüz referansına ΔE ya da aynı ton ailesinde gölge, belirsiz piksel alınmaz; gözle gerekenlerde jeton başına kutu.
+- **Boş maske kararı:** çıplak teni olmayan 13 çizim (ağaç adam, zombi, hortlak, hayalet) için dosya kalır, tümü 0 (boyanmaz, yedek filtre de
+  yok). Dosyayı silmek soyun yedek filtresini bütün jetona uygulardı. Kadın Sorcerer SC-9 ghoul'larında yüz + eller boyanır
+  (`human-erkek-sorcerer-SC-9` elle maskesiyle aynı karar).
+- **Ezilmesin:** `npm run soy-maske -- --alt` `data/maske-duzelt.json`'daki jetonları atlar. `scripts/jeton-denetim.py` öncel hesabı
+  maskesi olmayan ırkı (Dragonborn, KJ2'den beri) atlar (çöküyordu).
+- **Kanıt ve Gemini listesi:** `harita/belgeler/MASKE-DUZELT.md` (maske dışı değişiklik 0, liste dışı 4703 görünüş birebir aynı; 10 jeton
+  Gemini'ye, kullanıcı çalıştıracak).
+
 ## KESIM-DUZELT: şerit silme yalnız gerçek ızgara artığını siler; listeli jetonlar ham sayfadan yeniden kesildi (2026-11-22; yalnız görünüm, kural/kayıt sürümü değişmedi)
 
 - **Kök neden (ölçüldü):** kesim hattında dört şerit silme yolu figür parçası siliyordu. (1) `trim_lines`: kutu bandındaki koyu şerit;

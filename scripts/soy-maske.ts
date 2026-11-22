@@ -215,9 +215,13 @@ if (args.includes('--alt')) {
   const rep: Record<string, number> = fs.existsSync(repFile) ? JSON.parse(fs.readFileSync(repFile, 'utf8')).jetonlar : {};
   const re = new RegExp(`^(${Object.keys(RACES).join('|')})-(erkek|kadin)-(${CLASSES.join('|')})-(.+)\\.webp$`);
   const names = fs.readdirSync(CHAR).map((f) => re.exec(f)).filter((m): m is RegExpExecArray => !!m);
+  // MASKE-DUZELT: bu jetonların maskesi `python scripts/maske-duzelt.py` ile (yüz tonundan, jeton başına kutular); burada ezilmez.
+  const duzeltFile = path.join(ROOT, 'data/maske-duzelt.json');
+  const duzelt = new Set(fs.existsSync(duzeltFile) ? Object.keys(JSON.parse(fs.readFileSync(duzeltFile, 'utf8')).jetonlar ?? {}) : []);
   for (const m of names) {
     const name = m[0].replace(/\.webp$/, ''), race = m[1]!, g = m[2] === 'erkek' ? 'male' : 'female';
     if ((only && only !== race) || race === 'dragonborn') continue; // Dragonborn: yalnız pul hattı (scripts/dragonborn-pul-maske.py → maske-pul/); eski yedek maske (KJ2/KJ3) yok
+    if (duzelt.has(name)) continue;
     const r = RACES[race]!;
     const base = (r as Race & { maskAlt?: MaskCfg }).maskAlt ?? r.mask;
     const { data, W, H } = await raw(path.join(CHAR, `${name}.webp`));

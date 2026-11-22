@@ -249,6 +249,7 @@ def race_priors():
             nm = os.path.basename(f)[:-4]; m, _ = mask_of(nm); im = load(nm)
             sel = (m > 0.5) & (im[..., 3] > A_OP)
             if sel.any(): labs.append(srgb_to_lab(im[..., :3][sel]))
+        if not labs: continue  # KJ2: Dragonborn otomatik maskesi yok (pul maskesi ayrı); öncel Human'dan
         L = np.concatenate(labs); med = np.median(L, 0); d = np.linalg.norm(L - med, axis=1)
         pri[race] = dict(lab=med.tolist(), esik=float(max(28.0, np.percentile(d, 90))))
     return pri
