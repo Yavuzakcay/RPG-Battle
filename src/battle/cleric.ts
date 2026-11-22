@@ -1,4 +1,6 @@
 import { globalRule } from './ruleControl';
+import { b94On } from './b94Surum';
+import { buyucu93On } from './buyucu93Surum';
 import { possessorAt } from './possessionCore';
 import { ruleVersion } from './ruleVersion';
 import { healRoll } from './healMax';
@@ -75,6 +77,9 @@ export function clericFeatureProblem(state: BattleState, actor: Combatant, f: Us
     if (!t) return 'Hedef seçmelisin.';
     if (!isTargetable(t)) return `${t.name} ayakta değil.`;
     if (!within(state, actor, t, e.rangeFt)) return `${t.name} ${e.rangeFt} ft'ten uzakta.`;
+    // Görev B93 (sürüm 93+): SRD 5.2.1 s. 37 "another creature … that you can see".
+    if (buyucu93On(state) && t.id === actor.id) return 'Divine Spark başka bir yaratığa.';
+    if (buyucu93On(state) && state.map && !canSee(state, actor, t)) return `${t.name} görünmüyor.`;
     if (cmd.choice && cmd.choice !== 'heal' && !e.types.includes(cmd.choice)) return 'Geçersiz seçim.';
     if ((cmd.choice ?? (t.side === actor.side ? 'heal' : '')) === 'heal' && t.hp >= t.maxHp) return `${t.name} zaten tam sağlıklı.`;
     return null;
@@ -151,6 +156,9 @@ export function executeClericFeature(state: BattleState, actor: Combatant, f: Us
       if (!save.success && fx.hpAfter > 0) {
         events.push({ type: 'effect_added', targetId: t.id, effect: {
           id: `${f.key}`, name: f.name, sourceId: actor.id, until: state.round + e.rounds - 1, grants: e.conditions, breakOnDamage: true, icon: '✝',
+          // Görev B93 (sürüm 93+): SRD 5.2.1 s. 37 "it tries to move as far from you as it can on its turns" (tur başında
+          // Dash'siz kaçış; Incapacitated eylem yapamaz) ve "ends early … if you have the Incapacitated condition, or if you die".
+          ...(buyucu93On(state) ? { command: 'flee' as const, commandPersist: true, endsIfSourceDown: true } : {}),
         } });
       }
     }
@@ -170,6 +178,8 @@ export function executeClericFeature(state: BattleState, actor: Combatant, f: Us
       if (!save.success) {
         events.push({ type: 'effect_added', targetId: t.id, effect: {
           id: `${f.key}-${actor.id}`, name: f.name, sourceId: actor.id, until: state.round + e.rounds - 1, grants: e.conditions, breakOnDamage: true, icon: '🛡',
+          // Görev B94 (sürüm 94+, SRD 5.2.1 s. 55 "can do only one of the following on its turns: move, take an action, or take a Bonus Action").
+          ...(b94On(state) ? { oneEconomy: true } : {}),
         } });
       }
     }
@@ -236,6 +246,9 @@ export function divineStrikeHit(state: BattleState, actor: Combatant, target: Co
   // Görev DRUID: Primal Strike (Elemental Fury): aynı kalıp, Cold/Fire/Lightning/Thunder; silah ya da Beast biçimi saldırısı.
   const kind = has(actor, 'divine-strike') ? 'divine-strike' : has(actor, 'primal-strike') ? 'primal-strike' : null;
   if (!kind || option.spell || usedThisTurn(state, actor, kind)) return null;
+  // Görev B93 (sürüm 93+): SRD 5.2.1 "Once on each of your turns" (Divine Strike s. 38, Primal Strike s. 45): başkasının
+  // turundaki saldırıda (fırsat saldırısı, tepki) ek zar yok.
+  if (buyucu93On(state) && state.order[state.turnIndex] !== actor.id) return null;
   const divine = kind === 'divine-strike';
   const type = bestType(target, divine ? ['necrotic', 'radiant'] : ['cold', 'fire', 'lightning', 'thunder']);
   const twice = has(actor, divine ? 'improved-blessed-strikes' : 'improved-primal-strike');

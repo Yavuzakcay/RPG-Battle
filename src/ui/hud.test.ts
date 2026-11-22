@@ -73,6 +73,7 @@ describe('önizleme balonu', () => {
 describe('parlayan hedefler', () => {
   const started = () => dispatch(createMapSession('col', 'gunduz', false, scripted()), { type: 'start_battle' }, scripted());
   it('Bor uzaktaki düşmanlara Light crossbow ile vurabilir; Mira Fire Bolt ile', () => {
+    // Görev KALAN100: Bor'un menzilli silahı Javelin (TE99'dan beri kalkanla Two-Handed Light crossbow yok); güncel kural sürümüyle.
     const s = started().state;
     const bor = { ...s, turnIndex: s.order.indexOf('bor') };
     const targets = attackTargets(bor, 'bor');

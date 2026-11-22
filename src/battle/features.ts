@@ -9,6 +9,9 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { b98On } from './b98Surum';
+import { sinif97On } from './sinif97Surum';
+import { weapons as WEAPON_LIST } from '../data';
 import { binekOn } from './binekSurum';
 import { submerged } from './underwaterCore';
 import { hasSwimSpeed } from './deepWater';
@@ -26,6 +29,7 @@ import { knowsWhere } from './sight';
 import { featuresOn, shiftGrant } from './shift';
 import { gap } from './body';
 import { adjacent3D, k73bOn, separated } from './adjacency';
+import { matrisOn } from './matrisSurum';
 import { sightConditions } from './sight';
 import { attackDice, saveDice } from './effectDice';
 import { saveMode } from './durations';
@@ -42,6 +46,7 @@ import { combineModes, environmentSources, invertMode, underwaterSources } from 
 import { fail, finish, isTargetable, upcastDiceCount, withinFiveFt, type CommandResult, type Failure, damageProfile } from './common';
 import { attackHeights, heightOf } from './cover';
 import { damageEffects } from './damage-effects';
+import { grappleHands, knockOutFx } from './karar101';
 import { turnKey } from './economy';
 import { celestialStrikeOf } from './celestial';
 import { gazeBreakEvents, karadulHit, karadulOn, kissReady, snareReady } from './karadul';
@@ -67,7 +72,7 @@ const corrodedOf = (a: Combatant, o: AttackOption): number => Math.min(5, a.effe
 import { divineStrikeHit } from './cleric';
 import { canFrenzy, withRageDamage } from './rage';
 import { bestDamageType, buffExtraDice, effectiveAc, wardSources, withBuffs } from './divine';
-import { afterAttackMarks, hasTrait, saveDamage, colossusDice, cunningCost, cunningEvents, cunningProblem, elusiveFilter, markDie, superiorPreyEvents, traitSources, usedThisTurn } from './classTraits';
+import { afterAttackMarks, hasTrait, saveDamage, colossusDice, cunningCost, cunningEvents, cunningOptions, cunningProblem, elusiveFilter, markDie, superiorPreyEvents, traitSources, usedThisTurn } from './classTraits';
 import { monsterAttackEvents } from './monsters';
 import { checkReach, monsterAttackReach, optionReach, spellReach } from './range';
 import { ruleVersion } from './ruleVersion';
@@ -76,12 +81,15 @@ import { applyEvents } from './reduce';
 import { damagePenalty } from './effects';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Combatant, type CunningOption, type ExtraDamage } from './types';
 import { hiddenTo } from './k74Surum';
+import { attackCtx96 } from './genel96';
+import { te99On } from './te99Surum';
 
 const profileOf = (c: Combatant) => damageProfile(c);
 
 /** F1: Savage Attacker bu saldırıda kullanılabilir mi (silah saldırısı, işaret var, bu tur kullanılmadı). */
+// Görev TE99 (99+, SRD 5.2.1 s. 87 "when you hit a target with a weapon"; Unarmed Strike silah değil, s. 183): Unarmed Strike'ta yok.
 const savageReady = (state: BattleState, actor: Combatant, option: AttackOption): boolean =>
-  !option.spell && !option.beast && hasTrait(actor, 'savage-attacker') && !usedThisTurn(state, actor, 'savage-attacker');
+  !option.spell && !option.beast && !(te99On(state) && option.weaponId === 'unarmed-strike') && hasTrait(actor, 'savage-attacker') && !usedThisTurn(state, actor, 'savage-attacker');
 
 /** Zar ifadesinin ortalaması ("2d6+3" → 10). */
 function avg(dice: string | undefined): number {
@@ -123,7 +131,7 @@ function allyNextTo(state: BattleState, actor: Combatant, target: Combatant): bo
 
 /** Bu saldırıda Sneak Attack uygulanır mı (isabet ederse). */
 export function canSneak(state: BattleState, actor: Combatant, target: Combatant, weapon: AttackOption | undefined, mode: RollMode): boolean {
-  return !!weapon && !weapon.spell && (!!weapon.finesse || weapon.ranged) && actor.sneakAttackDice > 0
+  return !!weapon && !weapon.spell && (!!weapon.finesse || (weapon.ranged && !thrownMelee97(state, weapon))) && actor.sneakAttackDice > 0
     && actor.sneakTurn !== turnKey(state)
     && (mode === 'advantage' || (mode !== 'disadvantage' && (allyNextTo(state, actor, target)
       // Kuyruk P11 (paket `zarYarisi`): yarışı kazanılan hedefe avantajsız Sneak Attack.
@@ -177,7 +185,8 @@ export function hitExtras(
   // Kuyruk 19: `anyAttack` güçlendirme (Conjure Minor Elementals) büyü saldırısında da.
   for (const b of buffExtraDice(state, actor, w?.damageType ?? '', target)) if (b.anyAttack || (w && !w.spell)) add(b.label, b.expr, b.type);
   // Kuyruk 19: Radiant Strikes (Paladin 11): yakın dövüş silahı ya da Unarmed Strike isabetinde 1d8 Radiant.
-  if (w && !w.spell && !w.ranged && hasTrait(actor, 'radiant-strikes')) add('Radiant Strikes', '1d8', 'radiant');
+  // Görev B98 (sürüm 98+, SRD 5.2.1 s. 55 "attack roll using a Melee weapon"): fırlatılan Melee silahla da.
+  if (w && !w.spell && (!w.ranged || (b98On(state) && w.meleeWeapon)) && hasTrait(actor, 'radiant-strikes')) add('Radiant Strikes', '1d8', 'radiant');
   // Görev SORCERER: saldırının kendi ek zarı (True Strike).
   if (w?.hitExtra) add(w.hitExtra.label, w.hitExtra.expr, w.hitExtra.type);
   const c = actor.concentration;
@@ -202,6 +211,10 @@ export function weaponAttackEvents(
 ): { ok: true; events: BattleEvent[] } | Failure {
   // Rage: STR saldırısının hasarına Rage hasarı eklenir (isabette). Güçlendirmeler (Sacred Weapon, Magic Weapon):
   // saldırı/hasar bonusu; Radiant seçeneğinde hedefe göre en iyi hasar türü.
+  // KARAR101 (101+): yakalama tutarken Two-Handed yok, Versatile tek elle (fırsat saldırısı ve Hazırla da bu yoldan).
+  const hands = grappleHands(state, actor, base);
+  if ('problem' in hands) return fail(hands.problem);
+  base = hands.ok;
   const buffed = withBuffs(state, actor, withRageDamage(actor, base));
   const pactTypes = !!buffed.altDamageTypes?.length && !!globalRule(state, 'pactBladeTypes');
   const option = buffed.radiantOption || buffed.altDamageType || pactTypes ? { ...buffed, damageType: bestDamageType(buffed, target, pactTypes) } : buffed;
@@ -237,7 +250,7 @@ export function weaponAttackEvents(
   const sources = [
     ...environmentSources(env, option.tag, { weapon: true, ranged: option.ranged }),
     ...attackSources({
-      ...sightConditions(actor, target, state, !option.ranged), attackerSide: actor.side,
+      ...sightConditions(actor, target, state, !option.ranged), ...attackCtx96(state, actor, target),
       ...attackHeights(state, actor, target),
       ranged: option.ranged, spell: option.spell, packTactics: actor.packTactics && allyAlive, targetAsleep: target.asleep === true,
     }),
@@ -248,7 +261,7 @@ export function weaponAttackEvents(
   const marks = markSources(actor, target, option);
   sources.push(...marks.sources);
   // Hedefin korumaları (Shining Smite: avantaj; Protection from Evil and Good: belli türlere dezavantaj).
-  sources.push(...wardSources(state, actor, target, { melee: !option.ranged, str: option.spell ? false : option.ability ? option.ability === 'str' : !option.ranged }));
+  sources.push(...wardSources(state, actor, target, { melee: !option.ranged, str: option.spell ? false : option.ability ? option.ability === 'str' : !option.ranged, ...(option.spell || option.pact ? { notStrDex: true } : {}) }));
   // Kuyruk 19 (SRD Heavy): STR (yakın) ya da DEX (menzilli) 13'ten azsa Heavy silahla dezavantaj.
   if (option.heavyDis && globalRule(state, 'srdK19')) sources.push({ effect: 'disadvantage', reason: 'Heavy' });
   // Görev F: Steady Aim, Precise Hunter, Escape the Horde; Elusive avantajı düşürür.
@@ -269,7 +282,7 @@ export function weaponAttackEvents(
   const dmgType = swap?.type ?? option.damageType;
   // Kuyruk 19 (Arrow-Catching Shield): menzilli saldırıya ek AC; Adamantine Armor: kritik yok (`srdK19`).
   const k19i = !!globalRule(state, 'srdK19');
-  const targetAc = effectiveAc(state, target) + reach.cover + (option.ranged && k19i ? Math.max(0, ...(target.effects ?? []).map((e) => e.acRanged ?? 0)) : 0);
+  const targetAc = effectiveAc(state, target, actor) + reach.cover + (option.ranged && k19i ? Math.max(0, ...(target.effects ?? []).map((e) => e.acRanged ?? 0)) : 0);
   const sealed = sealAutoHit(state, actor, target, turnKey(state));
   const rolled = resolveAttack(
     {
@@ -354,7 +367,8 @@ export function weaponAttackEvents(
   const hit = hr ? hr.hit : result.hit;
   if (!hit) bonus = { extras: [] };
   const total = hit ? hr?.damage ?? 0 : 0;
-  const fx = damageEffects(target, total, dmgType ?? '', result.critical, rng);
+  // KARAR101 (101+, SRD 5.2.1 s. 17 Knocking Out): yakın dövüşle 0 HP'ye düşüren saldıran bayıltmayı seçebilir.
+  const fx = knockOutFx(state, actor, target, !option.ranged, damageEffects(target, total, dmgType ?? '', result.critical, rng), rng);
   const attackEvent: BattleEvent = {
     type: 'attack_resolved', actorId: actor.id, targetId: target.id, label: option.label, mode,
     reasons: sources.map((s) => s.reason), d20: result.d20.rolls, natural: result.d20.kept, total: result.total,
@@ -373,7 +387,10 @@ export function weaponAttackEvents(
     ...(bonus.cunning ? { cunning: { options: bonus.cunning, dice: cunningCost(bonus.cunning) } } : {}),
     ...(opportunity ? { opportunity: true } : {}),
     ...(!option.ranged && !option.spell ? { melee: true } : {}),
+    // Görev B98 (sürüm 98+): fırlatılan Melee silah isabeti de smite'ı açar (reducer `meleeHit`).
+    ...(b98On(state) && option.ranged && option.meleeWeapon && !option.spell ? { meleeWeapon: true } : {}),
     ...(option.martialArts ? { martialArts: true } : {}),
+    ...(sinif97On(state) && !option.ranged && !option.spell ? monkHitFlags(option) : {}),
     ...(option.pact ? { pact: true } : {}),
     // Kuyruk 19 (SRD Ammunition): bir cephane harcanır.
     ...(option.ammo && actor.ammo && globalRule(state, 'srdK19') ? { ammo: option.ammo } : {}),
@@ -508,12 +525,15 @@ export function opportunityAttacks(
     // (tek yer: `reactionUsed`).
     const atk = melee.option ? undefined : o.attacks[melee.attackIndex ?? 0];
     const reachable = checkReach(current, o, mover, melee.option ? optionReach(melee.option) : monsterAttackReach(atk as NonNullable<typeof atk>));
-    if (!reachable.ok || !canReact(o) || !askOpportunity(o, moverId, rng)) continue;
+    // Görev B95-B (97+): Sneak Attack verebilen silahlı fırsat saldırısında Cunning Strike seçenekleri.
+    const oaCunning = sinif97On(current) && melee.option && o.sneakAttackDice > 0 ? cunningOptions(o).options.filter((x) => !cunningProblem(o, [x])) : [];
+    const asked = reachable.ok && canReact(o) ? askOpportunity(o, moverId, rng, oaCunning) : false;
+    if (!asked) continue;
     const spent = reactionUsed(o, { id: OPPORTUNITY, name: 'Opportunity Attack' }, 'leave', moverId);
     const ready = applyEvents(current, [spent]);
     const attacker = ready.combatants[o.id] as Combatant;
     let r: { ok: true; events: BattleEvent[] } | Failure;
-    if (melee.option) r = weaponAttackEvents(ready, attacker, mover, melee.option, rng, true);
+    if (melee.option) r = weaponAttackEvents(ready, attacker, mover, melee.option, rng, true, false, asked.cunning ? { cunning: asked.cunning } : {});
     else {
       r = monsterAttackEvents(ready, attacker, mover, melee.attackIndex ?? 0, rng, true);
       if (r.ok) r = { ok: true, events: r.events.map((e) => (e.type === 'attack_resolved' ? { ...e, opportunity: true } : e)) };
@@ -715,10 +735,14 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
   }
   const m = spell.mechanics;
   const env = getEnvironment(state.environmentId);
+  // Mekanik matris K03 (kullanıcı kararı, sürüm 83): Prone'un "saldıran 5 ft içinde" ölçüsü gücün yeni yerinden (SRD
+  // "move the force up to 20 feet and repeat the attack against a creature within 5 feet of it").
+  const sc = sightConditions(actor, target, state, true);
+  const forceAt = matrisOn(state) && sc.proneWithin5 !== undefined ? weaponHexNear(state, target, conc.pos) : undefined;
   const sources = [
     ...environmentSources(env, `${actor.casterTag} ${spell.name} ${spell.text}`.toLowerCase()),
     ...attackSources({
-      ...sightConditions(actor, target, state, true), attackerSide: actor.side,
+      ...sc, ...(forceAt ? { proneWithin5: withinFiveFt(state, { ...actor, pos: forceAt, altitudeFt: target.altitudeFt } as Combatant, target, true) } : {}), ...attackCtx96(state, actor, target),
       attackerHeight: heightOf(state, target), targetHeight: heightOf(state, target), ranged: false, spell: true,
       targetAsleep: target.asleep === true,
     }),
@@ -802,3 +826,23 @@ registerStrikes({
 
 // Kuyruk K71c: dikey harekette (uçarak yükselip alçalma) fırsat saldırısı (döngüsüz kayıt).
 registerVerticalOpportunity(opportunityAttacks);
+
+/**
+ * Görev B95-B (97+, SRD 5.2.1 s. 50–51): Stunning Strike "a Monk weapon or an Unarmed Strike" (zırh şartı yok), Quivering Palm
+ * (bizim alt sınıf metni) yalnız Unarmed Strike. Monk silahı: basit yakın dövüş ya da Light özellikli martial yakın dövüş silahı.
+ */
+function monkHitFlags(option: AttackOption): { unarmed?: true; monkWeapon?: true } {
+  if (option.weaponId === 'unarmed-strike') return { unarmed: true };
+  const w = WEAPON_LIST.find((x) => x.id === option.weaponId);
+  return w && !w.ranged && (w.category === 'simple' || (w.category === 'martial' && w.light)) ? { monkWeapon: true } : {};
+}
+
+/**
+ * Görev B95-B (97+, SRD 5.2.1 s. 61–62 Sneak Attack "the attack uses a Finesse or a Ranged weapon"): fırlatılan yakın dövüş silahı
+ * (Javelin, Handaxe) menzilli saldırı olsa da Ranged silah değildir; Finesse değilse Sneak Attack almaz.
+ */
+function thrownMelee97(state: BattleState, weapon: AttackOption): boolean {
+  if (!sinif97On(state) || !weapon.weaponId) return false;
+  const w = WEAPON_LIST.find((x) => x.id === weapon.weaponId);
+  return !!w && !w.ranged;
+}

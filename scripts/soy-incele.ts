@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 import { tintPixels } from '../src/ui/tint';
-import { lineagePalette, lineageTint, paletteKeys, paletteTint } from '../src/battle/avatar';
+import { genericTokenRetired, lineagePalette, lineageTint, paletteKeys, paletteTint } from '../src/battle/avatar';
 import soy from '../data/soy-renkleri.json';
 import { CHAR, INCELE, OTO } from './soy-maske-yollar';
 import { applyHandMasks } from './soy-maske-el';
@@ -15,16 +15,16 @@ import { applyHeadOverlay } from '../src/ui/headOverlay';
 import { HAM_ONIZLEME, isYzMask, readYz } from './soy-maske-yz';
 
 const CLASSES = ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard'];
+// DRAGONBORN-ESKI-JETON-KALDIR: Dragonborn sınıf-genel jetonları kaldırıldı (pul maskeleri ayrı: scripts/dragonborn-pul-maske.py).
 const RACES: Array<[string, string[]]> = [
   ['goliath', Object.keys((soy.races as Record<string, { lineages: object }>).goliath!.lineages)],
-  ['dragonborn', Object.keys((soy.races as Record<string, { lineages: object }>).dragonborn!.lineages)],
   ['elf', ['drow']],
 ];
 const T = 128;
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
 const sprites = RACES.flatMap(([r]) => ['female', 'male'].flatMap((g) => CLASSES.map((c) => `${r}-${g}-${c}`)));
-const all = Object.keys(soy.races).flatMap((r) => ['female', 'male'].flatMap((g) => CLASSES.map((c) => `${r}-${g}-${c}`)));
+const all = Object.keys(soy.races).filter((r) => !genericTokenRetired(r)).flatMap((r) => ['female', 'male'].flatMap((g) => CLASSES.map((c) => `${r}-${g}-${c}`)));
 const hand = await applyHandMasks(all);
 const heads = await buildHeads();
 fs.mkdirSync(path.join(INCELE, 'img'), { recursive: true });

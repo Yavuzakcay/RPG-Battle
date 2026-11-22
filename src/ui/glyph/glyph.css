@@ -1,0 +1,8 @@
+/* Ortak simge setleri (glif): satır içi 16 px, başlık 20 px, çip 16 px. Yalnız görsel (aria-hidden). */
+.glyph { display: inline-block; flex: none; object-fit: contain; user-select: none; }
+.glyph-inline { width: 16px; height: 16px; margin-right: 2px; vertical-align: -3px; }
+.glyph-head { width: 20px; height: 20px; vertical-align: -4px; }
+.glyph-chip { width: 16px; height: 16px; vertical-align: -3px; }
+.glyph-badges { display: inline-flex; align-items: center; gap: 3px; margin-left: 6px; vertical-align: middle; }
+.dmg-chip { display: inline-flex; align-items: center; gap: 3px; margin-left: 4px; padding: 0 6px; border-radius: 10px; font-size: 0.85em; line-height: 1.5;
+  background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.14); white-space: nowrap; }

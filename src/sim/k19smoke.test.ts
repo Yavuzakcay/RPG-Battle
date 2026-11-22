@@ -1,5 +1,5 @@
 /**
- * Kuyruk 19 (görev 11): 12 sınıf × 12., 16. ve 20. seviye duman testi (6.–9. seviye büyüler, Mystic Arcanum, Epic Boon…):
+ * Kuyruk 19 (görev 11): 12 sınıf × 12., 16. ve 20. seviye (2026-11-19: + 6. seviye, seviye sınırı kalktı) duman testi (6.–9. seviye büyüler, Mystic Arcanum, Epic Boon…):
  * oluşturucu sheet'i savaşçıya döner, iki taraf da yapay zekâyla Klasik Çöl haritasında 6 tur oynar; çökme yok.
  */
 import { describe, expect, it } from 'vitest';
@@ -11,8 +11,8 @@ import { classes, getMonster } from '../data';
 import { playBattle } from './balance';
 import { seededRng as seeded } from '../rules/dice';
 
-describe('Kuyruk 19: 12 sınıf × 12/16/20 duman testi', () => {
-  it.each([12, 16, 20])('seviye %i: savaş çökmeden oynanır', (level) => {
+describe('Kuyruk 19: 12 sınıf × 6/12/16/20 duman testi', () => {
+  it.each([6, 12, 16, 20])('seviye %i: savaş çökmeden oynanır', (level) => {
     for (const cls of classes) {
       const sheet = { ...newCharacter(`k19-${cls.id}-${level}`).sheet, classId: cls.id, level, baseScores: suggestedScores(cls.id) };
       const pc = { ...combatantFromSheet(sheet, { id: 'P', ownerId: 'p1' }), side: 'party' as const };

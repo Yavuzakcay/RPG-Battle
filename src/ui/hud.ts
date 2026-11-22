@@ -5,12 +5,15 @@ import { beadsOf, beadThrowLanding, touchableBeads } from '../battle/bead';
 import { DANCE_COMBINED, danceMax, danceMoveHexes, danceProblem } from '../battle/danceLights';
 import { breathOf } from '../battle/breath';
 import { spells, type Spell } from '../data';
+import type { SpellMechanics } from '../data/types';
 import { execute, type BattleState, type Combatant, type Command } from '../battle';
 import { summonDef } from '../battle/summons';
 import { axialToOffset, distance, isInside, offsetToAxial, withinRange, type Offset } from '../rules/hex';
 import { pickArea, type AreaPick, type AreaTargetSpec } from '../battle/areaAttack';
 import { mechanicsAt } from '../battle/spellVersion';
 import { ruleVersion } from '../battle/ruleVersion';
+import { whirlpoolCast } from '../battle/girdap';
+import { GIRDAP_SECENEK } from '../battle/girdapSurum';
 import { contextFor } from './session';
 import { attackChoices, isAreaSpell, type AttackChoice } from './mapView';
 import { teleportHexes } from '../battle/teleport';
@@ -107,12 +110,24 @@ export function attackTargets(state: BattleState, actorId: string): string[] {
     .map((c) => c.id);
 }
 
-/** Tek hedefli büyünün yapılabileceği hedefler. */
-export function spellTargets(state: BattleState, actorId: string, spellName: string): string[] {
-  return Object.values(state.combatants)
+/**
+ * Tek hedefli büyünün yapılabileceği hedefler. Görev B93: seçili Metamagic (Distant Spell) motorun menziliyle: temel menzil
+ * dışındaki hedef, komut seçenekleriyle kuru çalıştırmada geçiyorsa eklenir.
+ */
+export function spellTargets(state: BattleState, actorId: string, spellName: string, metamagic?: string[]): string[] {
+  const base = Object.values(state.combatants)
     .filter((c) => attackChoices(state, actorId, c.id).some((ch) => ch.id === `s-${spellName}` && ch.command))
     .map((c) => c.id);
+  if (!metamagic?.includes('distant')) return base;
+  const ctx = { playerId: state.combatants[actorId]?.ownerId ?? 'gm', isGm: true };
+  const far = Object.values(state.combatants).filter((c) => !base.includes(c.id)
+    && execute(state, { type: 'cast_spell', actorId, spellName, targetId: c.id, metamagic }, ctx, () => 0.5).ok).map((c) => c.id);
+  return [...base, ...far];
 }
+
+/** Görev B93: Distant Spell menzili (motorla aynı: 5+ ft iki katı, dokunuş 30 ft, kendinden değişmez). */
+export const distantRange = (rangeFt: number, metamagic?: string[]): number =>
+  (metamagic?.includes('distant') && rangeFt > 0 ? (rangeFt <= 5 ? 30 : rangeFt * 2) : rangeFt);
 
 /** Büyü listesi: tek hedefli, alan ve elle uygulanan (hedefsiz) büyüler. */
 export function spellMenu(actor: Combatant): Array<{ spell: Spell; kind: 'target' | 'area' | 'self' | 'effect' | 'summon' | 'teleport' }> {
@@ -143,6 +158,24 @@ export function spellMenu(actor: Combatant): Array<{ spell: Spell; kind: 'target
 export function slotChoices(actor: Combatant, spell: Spell): number[] {
   if (spell.level === 0) return [];
   return actor.spellSlots.map((n, i) => (n > 0 && i + 1 >= spell.level ? i + 1 : 0)).filter((l) => l > 0);
+}
+
+/**
+ * SD7: tamamen savaş dışı büyü (`offCombat`: etkisi yok, Game Master anlatır) savaş büyü menüsünde görünmez; karakter ekranı, oluşturucu
+ * ve büyü defterinde "savaş dışı" etiketiyle durur. Savaşta çalışan kolu olan büyüler (arazi dönüştürme, koruma alanı, binek, diriltme,
+ * etki/çağırma/ışınlanma, alan) savaş dışı sayılmaz.
+ */
+const COMBAT_ARMS = ['upgrade', 'combatIfCast', 'k64', 'mb7', 'revive', 'zone', 'effect', 'teleport', 'summon', 'healTargets'];
+export const offCombatOnly = (spell: Spell, m: SpellMechanics = spell.mechanics): boolean =>
+  !!m.offCombat && !spell.area && !COMBAT_ARMS.some((k) => (m as unknown as Record<string, unknown>)[k] !== undefined);
+
+/**
+ * Control Water seçim menüsü: girdap savaşta açıkken (sürüm 84 + `controlWaterWhirlpool`) dört seçenek (Whirlpool savaşta, diğer
+ * üçü Game Master notu); yoksa Kuyruk 19 arazi dönüştürmesinin üçü. Control Water değilse boş.
+ */
+export function waterChoices(state: Pick<BattleState, 'map' | 'kuralSurumu'>, spell: Spell): string[] {
+  if (whirlpoolCast(state, spell)) return [...GIRDAP_SECENEK];
+  return spell.mechanics.upgrade?.terraform?.mode === 'controlWater' ? ['whirlpool', 'flood', 'part'] : [];
 }
 
 /** Büyü slotu var mı (cantrip her zaman). */
@@ -275,7 +308,7 @@ export const areaPathRules = (state: BattleState, act: AreaAct | null) => (act?.
 export const areaExcludable = (state: BattleState, act: AreaAct | null): boolean =>
   act?.kind === 'spell' && ruleVersion(state) >= 41 && !!mechanicsAt(state, act.spell).excludable;
 
-export function areaActSpec(actor: Combatant, act: AreaAct): { spec: AreaTargetSpec; rangeFt: number; label: string } | null {
+export function areaActSpec(actor: Combatant, act: AreaAct, metamagic?: string[]): { spec: AreaTargetSpec; rangeFt: number; label: string } | null {
   // Kuyruk K66a: yarık seçicisi (alanı hat belirler; yer tutucu 10 ft çizgi).
   if (act.kind === 'fissure') return { spec: { shape: 'line', sizeFt: 10, origin: 'point', targets: 'all' }, rangeFt: 500, label: 'Earthquake' };
   // Kuyruk K62-ACIK: boncuk fırlatma (inişte 20 ft küre; menzil 40 ft, ölçü boncuktan: önizleme `beadThrowLanding`).
@@ -286,7 +319,8 @@ export function areaActSpec(actor: Combatant, act: AreaAct): { spec: AreaTargetS
   if (act.kind === 'spell' && !act.spell.area && (act.spell.mechanics.zone?.cage || act.spell.mechanics.k62?.zone?.cage)) {
     return { spec: { shape: 'cube', sizeFt: 10, origin: 'point', targets: 'all' }, rangeFt: act.spell.rangeFt, label: act.spell.name };
   }
-  if (act.kind === 'spell') return act.spell.area ? { spec: act.spell.area, rangeFt: act.spell.rangeFt, label: act.spell.name } : null;
+  // Görev B93: Distant Spell noktadan çıkan alanın menzilini artırır (büyücüden çıkan alanda menzil yok).
+  if (act.kind === 'spell') return act.spell.area ? { spec: act.spell.area, rangeFt: act.spell.area.origin === 'self' ? act.spell.rangeFt : distantRange(act.spell.rangeFt, metamagic), label: act.spell.name } : null;
   if (act.kind === 'monster') {
     const a = actor.attacks[act.index];
     return a?.area ? { spec: a.area, rangeFt: a.area.rangeFt ?? 0, label: a.name } : null;

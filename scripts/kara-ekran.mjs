@@ -63,12 +63,25 @@ const measure = (page, b64) => page.evaluate(async (src) => {
 /** Kuyruk 25: seçicide haritayı seç (bölge çiplerini sırayla dener). Gizli haritalar kayıtlı savaş yolundan açılır. */
 export async function pickMap(page, id) {
   // Game Master ekranı tembel parça: çipler gelmeden sayılırsa liste boş kalır.
-  await page.waitForSelector('[data-region]');
-  for (const chip of await page.locator('[data-region]').all()) {
+  await page.waitForSelector('[data-testid="map-region"]');
+  for (const chip of await page.locator('[data-testid="map-region"]').all()) {
     if (await page.locator(`[data-map="${id}"]`).count()) break;
     await chip.click();
   }
   await page.click(`[data-map="${id}"]`);
+}
+
+/**
+ * KH1: OD1'den beri ana menüde Game Master girişi yok. ANA-MENU-SADELESTIR: "Hızlı savaş" kartı da kalktı; girişsiz tek cihaz yolu
+ * Oda kur: yeni oda (her sayfa yeni bağlam, depo boş) → kurulum, partiye ilk dört hazır karakter işaretlenir (eski Hızlı savaşın varsayılanı).
+ */
+async function openQuick(page) {
+  await page.click('[data-testid="home-room-create"]');
+  await page.click('[data-testid="oda-create"]');
+  await page.waitForSelector('[data-testid="map-region"]');
+  const chips = page.locator('[data-testid="party-chip"] input');
+  const n = Math.min(4, await chips.count());
+  for (let i = 0; i < n; i++) await chips.nth(i).check();
 }
 
 /** Kuyruk 19 (-2): her denetimde sayfa en çok bu kadar beklenir (ilk yükleme Windows'ta yavaş olabiliyor). */
@@ -107,8 +120,7 @@ async function newPage() {
         .map((m) => import(/* @vite-ignore */ m)));
     });
     await page.reload();
-    await page.click('button.role >> nth=1');
-    await page.waitForSelector('[data-region]');
+    await openQuick(page);
     console.log(`ısınma  ${((Date.now() - t0) / 1000).toFixed(1)} sn`);
   } catch (e) {
     console.log(`ısınma  tamamlanmadı (${String(e?.message ?? e).split('\n')[0]}); denetim yine sürer`);
@@ -118,7 +130,9 @@ async function newPage() {
 }
 
 let failures = 0;
+let tried = 0;
 const rows = [];
+const failed = [];
 for (const map of maps) {
   // Kuyruk 19: her harita × mod (varyant: gündüz, gece, fırtına, sis…) tek kez, yalnızca telefon görünümü; PC, efekt ve
   // ayna varyantı denenmez.
@@ -135,13 +149,12 @@ for (const map of maps) {
         await seedCharacters(page);
         if (!map.gizli) {
           await page.reload();
-          await page.click('button.role >> nth=1');
+          await openQuick(page);
           // Kuyruk 25: iki adımlı seçici: haritanın kartını gösteren bölge çipi, sonra kart.
           await pickMap(page, map.id);
           await page.check(`[aria-label="Varyant"] input[value="${v.id}"]`);
-          await page.click('button.cta');
-          await page.waitForSelector('.hud-cta');
-          await page.click('.hud-cta');
+          await page.click('[data-testid="map-start"]');
+          await page.click('[data-testid="battle-start"]');
         } else {
           // Gizli haritalar seçicide yok: savaş kaydı üretilir ve "Kayıtlı savaşa devam et" ile açılır.
           await page.evaluate(async ({ mapId, variantId }) => {
@@ -157,12 +170,12 @@ for (const map of maps) {
             save.saveBattle(s);
           }, { mapId: map.id, variantId: v.id });
           await page.reload();
-          await page.click('text=Kayıtlı savaşa devam et');
+          await page.click('[data-testid="home-resume"]');
         }
-        await page.waitForSelector('.mb-stage');
+        await page.waitForSelector('[data-testid="battle-stage"]');
         await page.mouse.move(1, 1);
         await page.waitForTimeout(400);
-        const shot = await page.locator('.mb-stage').screenshot();
+        const shot = await page.locator('[data-testid="battle-stage"]').screenshot();
         const stage = await measure(page, `data:image/png;base64,${shot.toString('base64')}`);
         const art = await measure(page, `${url}${v.image}`).catch(() => ({ mean: 0, empty: 1 }));
         const artError = await page.locator('.art-error').count();
@@ -174,7 +187,8 @@ for (const map of maps) {
         if (stage.mean < art.mean * MIN_RATIO) bad.push(`karanlık: parlaklık ${stage.mean.toFixed(0)} < ${(art.mean * MIN_RATIO).toFixed(0)}`);
         if (stage.empty > art.empty + MAX_EXTRA_EMPTY) bad.push(`boş piksel %${(stage.empty * 100).toFixed(0)} (görsel %${(art.empty * 100).toFixed(0)})`);
         if (bad.length && attempt === 1) { console.log(`yeniden  ${name.padEnd(42)} ${bad.join('; ')}`); continue; }
-        if (bad.length) { failures++; await page.screenshot({ path: `${OUT}/${name}.png` }); }
+        tried++;
+        if (bad.length) { failures++; failed.push([name, bad[0]]); await page.screenshot({ path: `${OUT}/${name}.png` }); }
         rows.push(`${bad.length ? 'HATA' : 'tamam'}  ${name.padEnd(42)} parlaklık ${stage.mean.toFixed(0).padStart(3)} / görsel ${art.mean.toFixed(0).padStart(3)}  boş %${(stage.empty * 100).toFixed(0).padStart(2)}${bad.length ? `  ${bad.join('; ')}` : ''}`);
         console.log(rows[rows.length - 1]);
         break;
@@ -182,7 +196,7 @@ for (const map of maps) {
         const msg = String(e?.message ?? e).split('\n')[0];
         if (page) await page.screenshot({ path: `${OUT}/${name}.png` }).catch(() => {});
         if (attempt === 1) { console.log(`yeniden  ${name.padEnd(42)} ${msg}`); continue; }
-        failures++;
+        failures++; tried++; failed.push([name, msg]);
         rows.push(`HATA   ${name.padEnd(42)} ${msg}`);
         console.log(rows[rows.length - 1]);
       } finally {
@@ -193,5 +207,6 @@ for (const map of maps) {
 }
 await browser.close();
 await server.close();
-console.log(`\n${rows.length} kontrol, ${failures} hata.${failures ? ` Ekran görüntüleri: ${OUT}/` : ''}`);
+console.log(`\nDenenen ${tried}, geçen ${tried - failures}, düşen ${failures}.${failures ? ` Ekran görüntüleri: ${OUT}/` : ''}`);
+for (const [n, m] of failed) console.log(`  düştü  ${n}  ilk hata: ${m}`);
 process.exit(failures ? 1 : 0);

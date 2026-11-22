@@ -1,0 +1,121 @@
+{
+ "note": "Görev K24: npm run soy-maske-ice üretir; elle düzenlenmez. sprites: yapay zekâ ham maskesinden assets/soy-maske-el/'e yazılan (ya da var olan elle maske yüzünden atlanan) maskeler; sha1: yazılan dosyanın özeti (değişmişse elle düzenlenmiş sayılır, inceleme sayfasında \"ELLE\"); fit: canvas (ham görsel tuvalin tamamı) ya da box (jetonun opak kutusu); olcum: aspect (ham en-boy), iou (otomatik maskeyle), white (beyazın opak alana oranı), spill (jeton dışına taşan beyaz, silindi), removed/filled (temizlik). atlanan: adı eşleşmeyen dosyalar.",
+ "sprites": {
+  "human-erkek-paladin-ID3": {
+   "kaynak": "assets\\soy-maske-ham\\human-erkek-paladin-ID3.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
+   ],
+   "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
+  },
+  "human-erkek-sorcerer-SC-5": {
+   "kaynak": "assets\\soy-maske-ham\\human-erkek-sorcerer-SC-5.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
+   ],
+   "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
+  },
+  "human-erkek-sorcerer-SC-9": {
+   "kaynak": "assets\\soy-maske-ham\\human-erkek-sorcerer-SC-9.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0.071,
+    "spill": 0,
+    "removed": 9,
+    "filled": 10
+   },
+   "uyarilar": [],
+   "sha1": "fabd9f309deb4a71cfc9f11ec671732afbbe86a5"
+  },
+  "human-erkek-warlock-WL-10": {
+   "kaynak": "assets\\soy-maske-ham\\human-erkek-warlock-WL-10.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
+   ],
+   "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
+  },
+  "human-kadin-monk-ID10": {
+   "kaynak": "assets\\soy-maske-ham\\human-kadin-monk-ID10.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0.078,
+    "spill": 0,
+    "removed": 26,
+    "filled": 2
+   },
+   "uyarilar": [],
+   "sha1": "f182de3510e6eb431872dc378216db87398cc3a0"
+  },
+  "human-kadin-paladin-ID3": {
+   "kaynak": "assets\\soy-maske-ham\\human-kadin-paladin-ID3.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
+   ],
+   "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
+  },
+  "human-kadin-warlock-WL-10": {
+   "kaynak": "assets\\soy-maske-ham\\human-kadin-warlock-WL-10.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
+   ],
+   "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
+  }
+ },
+ "atlanan": []
+}

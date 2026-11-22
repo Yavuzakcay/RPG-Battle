@@ -160,10 +160,6 @@
       "gunes": { "ambient": ["ortam-gemi-gunesli-a", "ortam-gemi-gunesli-b"], "music": "gunduz" },
       "firtina": { "ambient": ["ortam-gemi-firtinali-a", "ortam-gemi-firtinali-b"], "music": "gece" }
     },
-    "kale": {
-      "gunduz": { "ambient": ["ortam-kale-gunduz-a", "ortam-kale-gunduz-b"], "music": "gunduz" },
-      "gece": { "ambient": ["ortam-kale-gece-a", "ortam-kale-gece-b"], "music": "gece" }
-    },
     "orman": {
       "orman": { "ambient": ["ortam-orman-gunduz-a", "ortam-orman-gunduz-b"], "music": "gunduz" },
       "gece": { "ambient": ["ortam-orman-gece-a", "ortam-orman-gece-b"], "music": "gece" }
@@ -180,15 +176,11 @@
     },
     "dungeon": {
       "mesale": { "ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece" },
-      "merdiven": { "ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece" },
       "merdiven-yuruyen": { "ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece" },
       "hazine": { "ambient": ["ortam-dungeon-a", "ortam-dungeon-b"], "music": "gece" }
     },
     "magara": {
       "magara": { "ambient": ["ortam-magara-a", "ortam-magara-b"], "music": "gece" }
-    },
-    "ortamlar-diyari": {
-      "gunduz": { "ambient": ["ortam-orman-gunduz-a", "ortam-orman-gunduz-b"], "music": "gunduz" }
     },
     "orman-heykel-golu": {
       "gunduz": { "ambient": ["ortam-orman-gunduz-a", "ortam-orman-gunduz-b"], "music": "gunduz" },

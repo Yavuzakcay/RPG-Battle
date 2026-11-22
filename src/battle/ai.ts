@@ -21,6 +21,11 @@
  * fırsat saldırısı yiyecek yürüyüşten önce bonus eylemle ayrılır (Cunning Action). Konsantre
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
+import { TRANSMUTE_TYPES } from './sorcerer';
+import { buyucu93On } from './buyucu93Surum';
+import { B94_KINDS, druidChoice94, paladinChoice94, rangerChoice94 } from './ai/b94';
+import { ws92On } from './ws92Surum';
+import { limitsOn, liftPlan } from './nesneAgirlik';
 import { canAirMove } from './airMove';
 import { bandGap, bandOf, cellsOn, heightLevels, levelOf, levelToFt } from './cells';
 import { foeField, wallClimbCommand } from './ai/climbAi';
@@ -49,8 +54,8 @@ import { breathOf } from './breath';
 import { isIncapacitated } from '../rules/conditions';
 import { adjustDamage } from '../rules/damage';
 import { monsters, spells } from '../data';
-import { availableForms } from './druid';
-import { costsFrom, distance, hexKey, neighbors, offsetToAxial, sameHex, type Offset } from '../rules/hex';
+import { availableForms, wildShapeFeature } from './druid';
+import { costsFrom, distance, hexKey, neighbors, offsetToAxial, sameHex, withinRange, type Offset } from '../rules/hex';
 import { execute } from './commands';
 import { canSneak, meleeOf, spellOf } from './features';
 import { standUpProblem } from './grapple';
@@ -107,6 +112,7 @@ import { climbs, fliesOrHovers, flySpeed, groundBound, isAirborne } from './flig
 import { altitudeCapFt, altitudeOf, climbCapFt, climbingAloft, wallHex } from './altitude';
 import { legendaryOf } from './boss';
 import { bodyAt, bodyOf, gap, touchesHexes } from './body';
+import { whirlpoolCast, whirlpoolSize } from './girdap';
 import { footprintDistance } from '../rules/footprint';
 import { globalRule } from './ruleControl';
 import { teleportHexes } from './teleport';
@@ -120,6 +126,7 @@ import { difficultyOf, evaluateCandidates, pickByDifficulty, roleOf } from './ai
 import aiRoles from '../../data/yz-roller.json';
 import { bonusPoolCands } from './ai/behaviors';
 import { aiStats, previewCommand } from './ai/preview';
+import { kalan100On } from './kalan100Surum';
 
 const noRoll = () => 0.5;
 const ctxOf = (c: Combatant): CommandContext =>
@@ -535,6 +542,32 @@ function zoneSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
       const loose = !!state.yz?.deprem && s.id === 'earthquake' && enemies >= 2;
       if (worth && (friends === 0 || loose) && (!best || enemies > best.foes)) best = { cmd, foes: enemies };
     }
+  }
+  return best?.cmd ?? null;
+}
+
+/**
+ * Control Water girdabı (kural sürümü 84, anahtar açıkken; `k84:girdap`): en çok düşmanı kapsayan, alanda dost (kendisi dahil,
+ * masumlar) olmayan düşmanın altıgeni; motorun seçeceği en düşük slotun yarıçapıyla. En az iki düşman ya da 20+ HP'li tek düşman.
+ * Değer önceliği `kuralOnceligi['k84:girdap']`.
+ */
+function whirlpoolCommand(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
+  if (!state.map || !actor.pos) return null;
+  const sp = castable(actor).find((x) => whirlpoolCast(state, x));
+  if (!sp) return null;
+  const level = actor.spellSlots.findIndex((n, i) => n > 0 && i + 1 >= sp.level) + 1;
+  if (level <= 0) return null;
+  const { radius } = whirlpoolSize(sp, level);
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  let best: { cmd: Command; n: number } | null = null;
+  for (const f of foes) {
+    if (!f.pos) continue;
+    const hexes = withinRange(f.pos, radius, size);
+    const inside = Object.values(state.combatants).filter((c) => c.hp > 0 && c.pos && !c.summon?.intangible && !c.offFloor && touchesHexes(state, c, hexes));
+    const enemies = inside.filter((c) => c.side !== actor.side && !c.civilian).length;
+    if (inside.some((c) => c.side === actor.side || c.civilian) || !(enemies >= 2 || f.hp >= 20)) continue;
+    const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: sp.name, targetId: f.id };
+    if ((!best || enemies > best.n) && tryCmd(state, actor, cmd).ok) best = { cmd, n: enemies };
   }
   return best?.cmd ?? null;
 }
@@ -1033,7 +1066,7 @@ function multiPlanCommand(state: BattleState, actor: Combatant, foes: Combatant[
   const inReach = (n: string, f: Combatant) => { const a = ready(n); return !!a && !a.area && reachOk(state, actor, f, atkReach(a)).ok; };
   const visible = new Set(foes.map((f) => f.id));
   const steps: MultiStep[] = [];
-  let left = multiTotal(spec, actor);
+  let left = multiTotal(spec, actor, state);
   for (const r of spec.replace ?? []) {
     if (r.cost > left) continue;
     const a = r.name ? ready(r.name) : undefined;
@@ -1735,13 +1768,30 @@ export function chooseCommand(state: BattleState): Command {
   // azalanın inişi (düşme riski yok).
   const cmd1 = cmd0.type === 'end_turn' && k73aOn(state) ? landCommand(state, actor) ?? cmd0 : cmd0;
   // Kuyruk MB2 (74+): binici bu adımda bir şey yapamıyorsa kontrollü bineğini yürütür (binicinin turunda, binicinin kararıyla).
-  const cmd = cmd1.type === 'end_turn' ? controlledMountStep(state, actor) ?? cmd1 : cmd1;
+  const cmd2 = cmd1.type === 'end_turn' ? controlledMountStep(state, actor) ?? cmd1 : cmd1;
+  // Görev KALAN100 (100+): yaklaşırken bütün hareketini harcamış, eylemi boş ve düşmana yetişemeyen yaratık Dash yapar.
+  const cmd = cmd2.type === 'end_turn' && kalan100On(state) ? dashCommand(state, actor) ?? cmd2 : cmd2;
   // Ejderhayı uyandırmaması gereken düşman: komut yine de uyandırıyorsa (gürültülü saldırı gibi) yapmaz.
   if (cmd.type !== 'end_turn' && mustNotWake(state, actor)) {
     const r = tryCmd(state, actor, cmd);
     if (r.ok && wakesDragon(r.events)) return end;
   }
   return cmd;
+}
+
+/**
+ * Görev KALAN100 (sürüm 100+; GENEL-SAVAS-DENETIM A45): yapay zekânın Dash'i. Turu bitirecekken bu tur yürümüş ve bütün
+ * hareketini harcamış, eylemi boş, Dash yapmamış ve bitişiğinde düşman olmayan yaratık Dash yapar; sonraki adım ek hareketi
+ * kendi kuralıyla (yaklaşma, kaçış) kullanır. Sivil ve hareketsiz/bekleyen yaratık (bu tur yürümemiş) yapmaz.
+ */
+function dashCommand(state: BattleState, actor: Combatant): Command | null {
+  if (actor.civilian || !actor.pos || actor.economy.action || actor.economy.dashes > 0 || actor.movementUsed <= 0) return null;
+  const sp = speedHexes(actor);
+  if (sp <= 0 || actor.movementUsed < sp) return null;
+  const foes = foesOf(state, actor).filter((f) => f.pos && f.hp > 0);
+  if (!foes.length || foes.some((f) => gap(state, f, actor) <= 1)) return null;
+  const cmd: Command = { type: 'dash', actorId: actor.id };
+  return tryCmd(state, actor, cmd).ok ? cmd : null;
 }
 
 /**
@@ -1756,6 +1806,52 @@ export function chooseCommand(state: BattleState): Command {
 const HEIGHT_DMG = 3;
 const HEIGHT_FAIL = 0.15;
 function withMetamagic(state: BattleState, actor: Combatant, cmd: Command, end: Command): Command {
+  const c = withMetamagic0(state, actor, cmd, end);
+  return buyucu93On(state) ? withMetamagic93(state, actor, c) : c;
+}
+
+/**
+ * Görev B93 (sürüm 93+): yapay zekânın ek Metamagic seçimleri. Seçeneksiz yapımda Careful (alanda dosta hasar azalıyorsa,
+ * önizlemeyle) ya da Transmuted (hedef türe dirençli/bağışıksa, en çok hasar veren tür önizlemeyle, en az %25 kazanç);
+ * her yapımda Seeking (saldırı zarlı büyü; bedel yalnız ıskada) ve Empowered (hasar zarlı 1+ seviye büyü) puan yedeği
+ * (`MM_RESERVE`) kalıyorsa. Distant, Extended, Subtle ertelendi (hedef/menzil kararı, süre değeri, karşı büyü tehdidi).
+ */
+const MM_RESERVE = 2;
+function withMetamagic93(state: BattleState, actor: Combatant, cmd: Command): Command {
+  const mm = actor.metamagic;
+  if (!mm || cmd.type !== 'cast_spell') return cmd;
+  const spell = spellOf(cmd.spellName);
+  if (!spell) return cmd;
+  const m = mechanicsAt(state, spell);
+  let out: Extract<Command, { type: 'cast_spell' }> = cmd;
+  const spent = () => (out.metamagic ?? []).reduce((n, x) => n + (mm[x] ?? 0), 0);
+  const left = () => resourceLeft(actor, 'sorceryPoints') - spent();
+  const add = (id: string, extra: Partial<Extract<Command, { type: 'cast_spell' }>> = {}) => {
+    const next = { ...out, ...extra, metamagic: [...(out.metamagic ?? []), id] };
+    if (tryCmd(state, actor, next).ok) out = next;
+  };
+  const foeDmg = (p: ReturnType<typeof previewCommand>) => (p.ok ? p.targets.filter((t) => !t.ally && !t.self).reduce((n, t) => n + t.damage.avg, 0) : 0);
+  const allyDmg = (p: ReturnType<typeof previewCommand>) => (p.ok ? p.targets.filter((t) => t.ally || t.self).reduce((n, t) => n + t.damage.avg, 0) : 0);
+  const counted = (out.metamagic ?? []).filter((x) => x !== 'empowered' && x !== 'seeking').length;
+  if (counted === 0 && mm.careful !== undefined && left() >= mm.careful && spell.area && m.save) {
+    const base = previewCommand(state, out);
+    const c2 = { ...out, metamagic: [...(out.metamagic ?? []), 'careful'] };
+    if (allyDmg(base) > 0 && allyDmg(previewCommand(state, c2)) < allyDmg(base)) add('careful');
+  } else if (counted === 0 && mm.transmuted !== undefined && left() >= mm.transmuted && m.damageType && TRANSMUTE_TYPES.includes(m.damageType)) {
+    const base = foeDmg(previewCommand(state, out));
+    let best: { type: string; dmg: number } | null = null;
+    for (const ty of TRANSMUTE_TYPES.filter((x) => x !== m.damageType)) {
+      const d = foeDmg(previewCommand(state, { ...out, metamagic: [...(out.metamagic ?? []), 'transmuted'], transmute: ty }));
+      if (!best || d > best.dmg) best = { type: ty, dmg: d };
+    }
+    if (best && best.dmg >= base * 1.25 + 1) add('transmuted', { transmute: best.type });
+  }
+  if (m.kind === 'attack' && mm.seeking !== undefined && left() >= mm.seeking + MM_RESERVE) add('seeking');
+  if (spell.level >= 1 && (m.damage || m.split?.length) && mm.empowered !== undefined && left() >= mm.empowered + MM_RESERVE) add('empowered');
+  return out;
+}
+
+function withMetamagic0(state: BattleState, actor: Combatant, cmd: Command, end: Command): Command {
   const mm = actor.metamagic;
   if (!mm) return cmd;
   const points = resourceLeft(actor, 'sorceryPoints');
@@ -1998,6 +2094,17 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
     const cmd = clericChoice(state, actor, canAct);
     if (cmd) return cmd;
   }
+  // Görev B94 (94+, basit kurallar): Land's Aid, Nature's Sanctuary.
+  {
+    // Yalnız ilgili özelliği olan savaşçıda (YZ süresi): düşman listesi ve denemeler gereksiz yere hesaplanmaz.
+    const kinds94 = new Set<string>((actor.features ?? []).map((f) => f.effect.kind));
+    if (B94_KINDS.some((k) => kinds94.has(k))) {
+      const foes94 = foesOf(state, actor);
+      const ok94 = (c: Command) => tryCmd(state, actor, c).ok;
+      const cmd = druidChoice94(state, actor, foes94, canAct, ok94) ?? paladinChoice94(state, actor, foes94, canAct, ok94) ?? rangerChoice94(state, actor, foes94, canAct, ok94);
+      if (cmd) return cmd;
+    }
+  }
   // Kuyruk S1: Plane Shift ile geri çekilme (son çare).
   if (canAct) {
     const cmd = retreatChoice(state, actor);
@@ -2012,9 +2119,19 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   }
   // Görev DRUID (basit kural): slotu kalmamış ve konsantre olmayan Druid bonus eylemle en güçlü bilinen biçime girer.
   if (!actor.economy.bonus && !actor.shape && !actor.concentration && foesOf(state, actor).length > 0 && actor.spellSlots.every((n) => n <= 0)) {
-    const form = availableForms(monsters, actor)[0];
+    const forms = availableForms(monsters, actor, state.kuralSurumu ?? 1);
+    const crNum = (cr: string): number => (cr.includes('/') ? Number(cr.split('/')[0]) / Number(cr.split('/')[1]) : Number(cr));
+    // Görev WS92 (92+): seçili biçimler arasında da en güçlüsü (CR, sonra HP); eskiden veri sırasındaki ilki.
+    const form = (ws92On(state) ? [...forms].sort((a, b) => crNum(b.cr) - crNum(a.cr) || b.hp - a.hp) : forms)[0];
     const cmd: Command | null = form ? { type: 'wild_shape', actorId, form: form.id } : null;
     if (cmd && tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  // Görev WS92 (92+, basit kural): Wild Shape biçimindeki Druid, biçimin geçici HP'si bitmiş ve slotu varken (Beast Spells
+  // yoksa) bonus eylemle normal hâline döner (büyüyle devam etsin).
+  if (ws92On(state) && !actor.economy.bonus && actor.shape && !actor.shape.polymorph && !actor.shape.possession && (actor.tempHp ?? 0) <= 0
+    && actor.spellSlots.some((n) => n > 0) && !actor.traits?.includes('beast-spells') && wildShapeFeature(actor)) {
+    const cmd: Command = { type: 'wild_shape', actorId };
+    if (tryCmd(state, actor, cmd).ok) return cmd;
   }
   // Görev BARD (basit kural): bonus eylemle Bardic Inspiration; en çok saldıran, zarı olmayan, menzildeki dosta.
   if (!actor.economy.bonus && foesOf(state, actor).length > 0) {
@@ -2531,6 +2648,8 @@ function goalCommand(state: BattleState, actor: Combatant, canAct: boolean): Com
     if (g.kind === 'retrieve' && ob && g.hexes?.length) {
       if (ob.carriedBy === actor.id) { const go = moveToward(state, actor, g.hexes, sneak); if (go) return go; continue; }
       if (ob.carriedBy) continue;
+      // Kuyruk KQ3 NA1 (sürüm 80): yapay zekâ taşıyamayacağı nesneyi seçmez; ortak taşıma koordinasyonu yok (yardımcı gerekiyorsa vazgeçer).
+      if (limitsOn(state)) { const plan = liftPlan(state, actor, ob); if ('problem' in plan || plan.helpers.length) continue; }
       const closest = [...party].sort((a, b) => distance(a.pos as Offset, ob.at) - distance(b.pos as Offset, ob.at))[0];
       if (closest?.id !== actor.id) continue;
       if (distance(pos, ob.at) <= 1) return { type: 'object_use', actorId: actor.id, objectId: ob.id, action: 'take' };
@@ -3374,6 +3493,7 @@ registerAction({ id: 'k65:firtina', rule: true, kind: 'damage', note: 'Fire Stor
 registerAction({ id: 'k64:ele-gecir', rule: true, kind: 'control', note: 'Ghost Possession: 5 ft içindeki geçerli Humanoid hedefi ele geçir', gen: (s, a, h) => (a.monsterId && !a.summon ? [possessCommand(s, a, h.foes)] : []) });
 registerAction({ id: 'k62:boncuk', rule: true, kind: 'control', note: 'Delayed Blast Fireball: boncuğu düşmanların üstüne koy', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [beadSpell(s, a, h.foes)] : []) });
 registerAction({ id: 'k62:kafes', rule: true, kind: 'control', note: 'Forcecage: güçlü düşmanı kutuya kapat', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [cageSpell(s, a, h.foes)] : []) });
+registerAction({ id: 'k84:girdap', rule: true, kind: 'control', note: 'Control Water girdabı: en çok düşmanı kapsayan, dostsuz düşman altıgeni', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [whirlpoolCommand(s, a, h.foes)] : []) });
 registerAction({ id: 'eski:zemin', rule: true, kind: 'control', note: 'kalıcı zemin büyüsü (Entangle, Web, Spike Growth…)', gen: (s, a, h) => (partyBranch(a) || (a.spellNames.length && !a.summon) ? [zoneSpell(s, a, h.foes)] : []) });
 registerAction({ id: 'eski:nefes', rule: true, kind: 'damage', note: 'Dragonborn nefesi', gen: (s, a, h) => (partyBranch(a) ? [breathWeapon(s, a, h.foes)] : []) });
 registerAction({

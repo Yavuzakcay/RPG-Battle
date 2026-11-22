@@ -13,14 +13,18 @@ import type { CharacterSheet } from '../rules/stats';
 import { seferById, seferRoute } from './sefer';
 import { nextLevelXp } from './engine';
 import { combatantFromSheet } from '../battle/create';
-import { armor } from '../data';
+import { armor, monsters } from '../data';
+import { classKit } from '../rules/classFeatures';
+import { eligibleForms, shapeLimits } from '../battle/druid';
 import { skillBonus, type Skill } from '../rules/skills';
 import type { JourneyMember, JourneyStop } from './types';
 import { gorevById, irkBaslangic, urunById, satisFiyati, yerlesimById, yerlesimHarita, YERLESIM } from '../yerlesim/yerlesim';
-import { levelCap } from '../app/limits';
+import { LEVEL_CAP } from '../app/limits';
 import { HAPIS, dragBack, nonlethal, sucById, wakeUp, type HapisDurum } from './hapishane';
 import { moralDeltas, moralStatuses, reviveCaster, revivedStatus, type MoralReason } from './moral';
 import { MORAL } from '../rules/moral';
+import { addUse, changeCounts, choicesBound, fitChanges, pickChoiceFields, type ChoiceUse, type ChoiceWindow } from '../rules/levelChoices';
+import { blankCharacter, characterIssues, classScoped } from '../rules/builder';
 
 export interface SeruvenNode {
   id: string; x: number; y: number; requires: string[]; all?: boolean; optional?: boolean; boss?: boolean; zorluk?: number;
@@ -28,7 +32,6 @@ export interface SeruvenNode {
   /** Gece için ayrı senaryo (yoksa haritanın `gece` varyantı). */ gece?: string;
   /** Sefer düğümü `<sefer>:<düğüm>` (data/seferler.json). */ sefer?: string;
   /** Kuyruk 32: keşif bayrağıyla açılan gizli düğüm (bayrak yokken görünmez; ör. Heykel Mağarası). */ bayrak?: string;
-  /** Kuyruk 41b: yalnızca 1–5. seviye senaryosu; "Üst seviye" (ustSeviye) açıkken görünmez. */ ustSeviyeGizli?: boolean;
   /** Kuyruk 33: yerleşim düğümü (K34'te dolacak kart verisinin kimliği): savaşsız, "Yakında", yolu kapatmaz (geçilmiş sayılır). */ yerlesim?: string;
   /** Kuyruk 33: haritası olmayan düğümün görünen adı. */ ad?: { tr: string; en: string };
   /**
@@ -82,6 +85,14 @@ export interface SeruvenState {
   result: 'won' | 'lost' | null;
   /** Kuyruk 32: uzun dinlenme sayısı (bağlantı sınavı yeniden denemesi), açılan bağlantılar, son başarısız denemedeki dinlenme sayısı. */
   rests?: number; links?: string[]; linkTry?: Record<string, number>;
+  /** Görev WS92: üye başına son Wild Shape biçim değişiminin yapıldığı dinlenme sayısı (uzun dinlenmede bir değişim). */
+  formSwaps?: Record<string, number>;
+  /**
+   * Görev B93 (A2): Serüven'de son seviye atlamasının seviyesi (seviye penceresi bu seviyede açık) ve üye başına pencere
+   * kullanımları (`seviye`: [seviye, kullanım], `dinlenme`: [dinlenme sayısı, kullanım]; `src/rules/levelChoices.ts`).
+   */
+  levelGained?: number;
+  choiceUse?: Record<string, { seviye?: [number, Record<string, number>]; dinlenme?: [number, Record<string, number>] }>;
   /** Kuyruk 35: atlanan savaş düğümleri (`savaslariAtla` test anahtarı; "atlandı"). */
   skipped?: string[];
   /** Kuyruk 34b: ırka göre başlangıç sayfası (varsa sayfa geçişleri iki yönde serbest); bulunulan yerleşim; görevler. */
@@ -140,6 +151,13 @@ export type SeruvenCommand =
   | { type: 'tasma_cikar'; yol: 'altin' | 'hizmet' }
   /** Kuyruk K48: Moral: ölü üyeyi dirilt (yerleşim tapınağı altınla ya da partide diriltme büyüsü). */
   | { type: 'moral_dirilt'; memberId: string; yol: 'tapinak' | 'buyu' }
+  /**
+   * Görev WS92 (SRD 5.2.1 s. 42 "Known Forms"): Wild Shape biçim listesi: boş yere biçim eklenir (sınıra dek, her zaman);
+   * dolu listede bir biçim yenisiyle değişir (son uzun dinlenmeden beri bir kez).
+   */
+  | { type: 'form_swap'; memberId: string; from: string | null; to: string }
+  /** Görev B93 (A2): seviye atlama / uzun dinlenme seçimleri (yalnız seçim alanları, `CHOICE_FIELDS`). */
+  | { type: 'set_choices'; memberId: string; sheet: Partial<CharacterSheet> }
   /** K47: dünya haritasında yürü, hızlı seyahat (gemi/uçuş), yumuşak kilit kontrolü (`src/world/roam.ts`). */
   | RoamCommand;
 
@@ -162,6 +180,10 @@ export type SeruvenEvent =
   /** Kuyruk K48: diriltme (tapınak ya da büyü): durumlar (dirilen + büyücünün slotu) ve harcanan altın. */
   | { type: 'seruven_dirildi'; memberId: string; yol: 'tapinak' | 'buyu'; statuses: Record<string, CharacterStatus>; gold: number }
   | { type: 'seruven_leveled'; level: number }
+  /** Görev WS92: üyenin Wild Shape biçim listesi değişti (`swap`: değişim, dinlenme sayısına bağlanır). */
+  | { type: 'seruven_forms'; memberId: string; forms: string[]; swap: boolean }
+  /** Görev B93 (A2): üyenin seçim alanları değişti; `use` açık pencerelerde harcanan değişimler. */
+  | { type: 'seruven_choices'; memberId: string; patch: Partial<CharacterSheet>; use: ChoiceUse }
   | { type: 'seruven_link_checked'; link: string; total: number; dc: number; success: boolean; by: string }
   | { type: 'seruven_link_crossed'; link: string; page: string; node: string; flags?: string[]; statuses?: Record<string, CharacterStatus> }
   | { type: 'seruven_yerlesim'; yerlesim: { id: string; map: string | null; from: string | null; seen: string[] } | null; statuses?: Record<string, CharacterStatus> }
@@ -284,8 +306,8 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
       return hapisCommand(state, page, cmd);
     case 'level_up': {
       if (!toggleOn(state, 'seviyeAtlama')) return fail('Serüven seviye atlama kapalı.');
-      // Kuyruk 38: seviye sınırı 5; "Üst seviye" açıkken 20 (Kuyruk 19; önce 10).
-      if (state.level >= levelCap(toggleOn(state, 'ustSeviye'))) return fail('Seviye sınırına ulaşıldı.');
+      // 2026-11-19: seviye sınırı her zaman 20 (eski "ustSeviye" anahtarı kalktı; eski kayıtta varsa yok sayılır).
+      if (state.level >= LEVEL_CAP) return fail('Seviye sınırına ulaşıldı.');
       const need = levelXp(state.level);
       if (need === null || state.xp < need) return fail('XP eşiği aşılmadı.');
       return done(state, [{ type: 'seruven_leveled', level: state.level + 1 }]);
@@ -337,6 +359,8 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
       return done(state, evs);
     }
     case 'moral_dirilt': return moralRevive(state, cmd);
+    case 'form_swap': return formSwap(state, cmd);
+    case 'set_choices': return setChoices(state, cmd);
     case 'world_walk': case 'fast_travel': case 'world_check': {
       const r = roamEvents(state, cmd, (k) => toggleOn(state, k), bestSkill, heavyArmorMember);
       return typeof r === 'string' ? fail(r) : done(state, r);
@@ -395,7 +419,17 @@ function reduceBase(s: SeruvenState | null, e: SeruvenEvent): SeruvenState | nul
     case 'seruven_rested': return { ...s, done: [...s.done, e.key], rests: (s.rests ?? 0) + 1, party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
     case 'seruven_moral': return { ...s, party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
     case 'seruven_dirildi': return { ...s, gold: s.gold - e.gold, party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
-    case 'seruven_leveled': return { ...s, level: e.level, party: s.party.map((m) => (m.sheet.level < e.level ? { ...m, sheet: { ...m.sheet, level: e.level } } : m)) };
+    case 'seruven_forms': return { ...s, party: s.party.map((m) => (m.id === e.memberId ? { ...m, sheet: { ...m.sheet, wildShapeForms: [...e.forms] } } : m)),
+      ...(e.swap ? { formSwaps: { ...(s.formSwaps ?? {}), [e.memberId]: s.rests ?? 0 } } : {}) };
+    case 'seruven_choices': {
+      const cur = memberChoiceUse(s, e.memberId);
+      const sum = addUse(cur, e.use);
+      return { ...s, party: s.party.map((m) => (m.id === e.memberId ? { ...m, sheet: { ...m.sheet, ...e.patch } } : m)),
+        choiceUse: { ...(s.choiceUse ?? {}), [e.memberId]: {
+          ...(sum.seviye ? { seviye: [s.level, sum.seviye] as [number, Record<string, number>] } : {}),
+          ...(sum.dinlenme ? { dinlenme: [s.rests ?? 0, sum.dinlenme] as [number, Record<string, number>] } : {}) } } };
+    }
+    case 'seruven_leveled': return { ...s, level: e.level, levelGained: e.level, party: s.party.map((m) => (m.sheet.level < e.level ? { ...m, sheet: { ...m.sheet, level: e.level } } : m)) };
     case 'seruven_link_checked': return e.success ? { ...s, links: [...new Set([...(s.links ?? []), e.link])] } : { ...s, linkTry: { ...(s.linkTry ?? {}), [e.link]: s.rests ?? 0 } };
     case 'seruven_yerlesim': return {
       ...s, yerlesim: e.yerlesim, ...(e.statuses ? { party: s.party.map((m) => ({ ...m, status: e.statuses?.[m.id] ?? m.status })) } : {}),
@@ -431,12 +465,9 @@ export function pageOrder(): SeruvenPage[] {
 }
 
 /** Kuyruk 32: bayraklı düğüm bayrak bulunana dek görünmez. */
-/**
- * Düğüm görünür mü: bayraklı alt düğüm bayrak alınınca; Kuyruk 41b: `ustSeviyeGizli` düğüm (yalnızca 1–5. seviye
- * senaryosu, ör. Kale Baskını haritası) "Üst seviye" anahtarı açıkken gizli.
- */
+/** Düğüm görünür mü: bayraklı alt düğüm bayrak alınınca (2026-11-19: Kuyruk 41b `ustSeviyeGizli` "Üst seviye" anahtarıyla kalktı). */
 export const nodeVisible = (s: Pick<SeruvenState, 'flags' | 'toggles'>, node: SeruvenNode): boolean =>
-  (!node.bayrak || s.flags.includes(node.bayrak)) && !(node.ustSeviyeGizli && toggleOn(s, 'ustSeviye'));
+  (!node.bayrak || s.flags.includes(node.bayrak));
 
 /** Bir sonraki seviyenin XP eşiği (yolculuk kuralları; SRD 5.2.1). */
 export const levelXp = (level: number): number | null => nextLevelXp(level);
@@ -714,4 +745,71 @@ function moralRevive(state: SeruvenState, cmd: { memberId: string; yol: 'tapinak
 /** Kuyruk 36: düğüm haritasında kapı (0 tabanlı konum). */
 export function nodeKapiAt(node: SeruvenNode, pos: { col: number; row: number }): { to: string | null } | undefined {
   return node.kapilar?.find((k) => k.hexes.some(([c, r]) => c - 1 === pos.col && r - 1 === pos.row));
+}
+
+/** Görev WS92: üyenin Wild Shape biçim sınırı ve uygun biçimleri (Druid değilse null). */
+export function memberForms(m: Pick<JourneyMember, 'sheet'>): { known: number; options: string[]; current: string[] } | null {
+  const f = classKit(m.sheet.classId, m.sheet.level, m.sheet.subclassId).usable.find((u) => u.effect.kind === 'wildShape');
+  const lim = f ? shapeLimits(f, m.sheet.level) : null;
+  if (!f || !lim) return null;
+  const options = eligibleForms(monsters, f, m.sheet.level).map((x) => x.id);
+  return { known: lim.known, options, current: (m.sheet.wildShapeForms ?? []).filter((id) => options.includes(id)) };
+}
+
+/** Görev WS92: biçim değişimi bu dinlenmede yapılabilir mi (ilk uzun dinlenmeden sonra, dinlenme başına bir kez). */
+export const formSwapReady = (s: Pick<SeruvenState, 'rests' | 'formSwaps'>, memberId: string): boolean => (s.rests ?? 0) > (s.formSwaps?.[memberId] ?? 0);
+
+function formSwap(state: SeruvenState, cmd: Extract<SeruvenCommand, { type: 'form_swap' }>): SeruvenResult {
+  const m = state.party.find((x) => x.id === cmd.memberId);
+  if (!m) return fail('Üye yok.');
+  const lim = memberForms(m);
+  if (!lim) return fail('Wild Shape yok.');
+  if (!lim.options.includes(cmd.to)) return fail('Bu biçim bu seviyede alınamaz.');
+  if (lim.current.includes(cmd.to)) return fail('Bu biçim zaten biliniyor.');
+  if (cmd.from === null) {
+    if (lim.current.length >= lim.known) return fail(`Biçim listesi dolu (${lim.known}).`);
+    return done(state, [{ type: 'seruven_forms', memberId: m.id, forms: [...lim.current, cmd.to], swap: false }]);
+  }
+  if (!lim.current.includes(cmd.from)) return fail('Değiştirilecek biçim bilinmiyor.');
+  if (!formSwapReady(state, m.id)) return fail('Biçim değişimi uzun dinlenmeden sonra bir kez.');
+  return done(state, [{ type: 'seruven_forms', memberId: m.id, forms: lim.current.map((x) => (x === cmd.from ? cmd.to : x)), swap: true }]);
+}
+
+/** Görev B93 (A2): hangi seçim pencereleri açık (seviye: bu seviyeye Serüven'de çıkıldı; dinlenme: en az bir uzun dinlenme). */
+export const choiceWindows = (s: Pick<SeruvenState, 'level' | 'levelGained' | 'rests'>): Record<ChoiceWindow, boolean> =>
+  ({ seviye: s.levelGained !== undefined && s.levelGained === s.level, dinlenme: (s.rests ?? 0) > 0 });
+
+/** Görev B93 (A2): üyenin şimdiki pencerelerdeki kullanımı (eski pencerenin kaydı sayılmaz). */
+export function memberChoiceUse(s: Pick<SeruvenState, 'level' | 'rests' | 'choiceUse'>, memberId: string): ChoiceUse {
+  const u = s.choiceUse?.[memberId];
+  return {
+    ...(u?.seviye && u.seviye[0] === s.level ? { seviye: u.seviye[1] } : {}),
+    ...(u?.dinlenme && u.dinlenme[0] === (s.rests ?? 0) ? { dinlenme: u.dinlenme[1] } : {}),
+  };
+}
+
+/** Görev B93 (A2): seçimlerin sorunları (oluşturucu kuralları; yalnız sayfaya bakan kurallar). */
+export function choiceIssues(sheet: CharacterSheet): string[] {
+  return characterIssues({ ...blankCharacter('seruven'), sheet }).map((x) => x.text);
+}
+
+/**
+ * Görev B93 (A2): seviye atlama / uzun dinlenme seçimleri. Yalnız seçim alanları yazılır; çıkarılan/değişen seçimler
+ * sınıfın verisindeki pencereye ve sayıya sığmalı (`data/secim-degisim.json`); yeni sorun (liste, sayı, kitap, ön koşul) çıkmamalı.
+ */
+function setChoices(state: SeruvenState, cmd: Extract<SeruvenCommand, { type: 'set_choices' }>): SeruvenResult {
+  const m = state.party.find((x) => x.id === cmd.memberId);
+  if (!m) return fail('Üye yok.');
+  if (!choicesBound(m.sheet.classId)) return fail('Bu sınıfın seçim değişimi henüz bağlı değil.');
+  const patch = pickChoiceFields(cmd.sheet);
+  const next: CharacterSheet = { ...m.sheet, ...patch };
+  // Başka sınıfa ait seçim (oluşturucu sessizce yok sayar; burada kayda girmesin).
+  const scoped = classScoped(next);
+  if (Object.keys(patch).some((k) => JSON.stringify(scoped[k as keyof CharacterSheet]) !== JSON.stringify(next[k as keyof CharacterSheet]))) return fail('Bu sınıfın seçimi değil.');
+  const fit = fitChanges(m.sheet.classId, changeCounts(m.sheet, next), choiceWindows(state), memberChoiceUse(state, m.id));
+  if (!fit.ok) return fail(`Bu seçim şimdi değiştirilemez: ${fit.key}.`);
+  const before = new Set(choiceIssues(m.sheet));
+  const fresh = choiceIssues(next).filter((x) => !before.has(x));
+  if (fresh.length) return fail(fresh[0]!);
+  return done(state, [{ type: 'seruven_choices', memberId: m.id, patch, use: fit.use }]);
 }

@@ -44,7 +44,8 @@ describe('Paladin: sınıf kiti (SRD 5.2.1 tablosundan)', () => {
   it('slotlar, Lay On Hands (5 × seviye), Paladin\'s Smite, Channel Divinity 2, Extra Attack 5. seviyede', () => {
     const at = (l: number) => combatantFromSheet(sheet(l), { id: 'a', ownerId: 'p' });
     expect(at(1).spellSlots.slice(0, 2)).toEqual([2, 0]);
-    expect(at(1).resources).toEqual({ layOnHands: 5 });
+    // Görev TE99: Human Resourceful'ün Heroic Inspiration'ı tür kaynağı olarak sınıf kaynaklarında (uzun dinlenmede dolar).
+    expect(at(1).resources).toEqual({ layOnHands: 5, heroicInspiration: 1 });
     expect(at(2).resources).toMatchObject({ layOnHands: 10, paladinsSmite: 1 });
     expect(at(3).resources).toMatchObject({ layOnHands: 15, channelDivinity: 2 });
     expect(at(5).spellSlots.slice(0, 3)).toEqual([4, 2, 0]);
@@ -90,7 +91,9 @@ describe('Lay On Hands', () => {
     const s = battle(1, {}, {}, { hp: 4, maxHp: 20 });
     expect(err(s, { type: 'use_feature', actorId: 'A', feature: LOH, targetId: 'C', amount: 6 })).toBe('Havuzda 5 puan var.');
     expect(err(s, { type: 'use_feature', actorId: 'A', feature: LOH, targetId: 'A', amount: 2 })).toContain('tam sağlıklı');
-    expect(err(s, { type: 'use_feature', actorId: 'A', feature: LOH, targetId: 'B', amount: 2 })).toContain('dostuna');
+    // Görev B98 (sürüm 98+, SRD 5.2.1 s. 53 "touch a creature"): düşmana da uygulanır (tam sağlıklı B reddedilir); 97'de yalnız dost.
+    expect(err(s, { type: 'use_feature', actorId: 'A', feature: LOH, targetId: 'B', amount: 2 })).toContain('tam sağlıklı');
+    expect(err({ ...s, kuralSurumu: 97 }, { type: 'use_feature', actorId: 'A', feature: LOH, targetId: 'B', amount: 2 })).toContain('dostuna');
     const far = advanceTo(setup('Düz', { A: { ...A(s), id: 'A' }, C: { hp: 4, maxHp: 20, height: 1 } }), 'A');
     expect(err(far, { type: 'use_feature', actorId: 'A', feature: LOH, targetId: 'C', amount: 2 })).toContain('bitişik');
   });
@@ -132,10 +135,13 @@ describe("Paladin's Smite ve Divine Smite", () => {
     expect(dmg && dmg.type === 'attack_resolved' ? dmg.damageRolls.length : 0).toBe(8);
     expect(err(s, { type: 'cast_spell', actorId: 'A', spellName: 'Divine Smite', targetId: 'C' })).toContain('vurduğun hedefe');
   });
-  it('menzilli isabet smite açmaz', () => {
-    let s = battle(2, {});
+  it('menzilli isabet smite açmaz (97); fırlatılan Melee silah (Javelin) 98+\'ta açar (SRD 5.2.1 Thrown: "If the weapon is a Melee weapon")', () => {
+    let s: BattleState = { ...battle(2, {}), kuralSurumu: 97 };
     s = run(s, { type: 'attack', actorId: 'A', targetId: 'B', option: opt(s, 'Javelin (fırlatma)') }, pad([20, 15], [6, 3])).state;
     expect(A(s).economy.meleeHit).toBeUndefined();
+    let n = battle(2, {});
+    n = run(n, { type: 'attack', actorId: 'A', targetId: 'B', option: opt(n, 'Javelin (fırlatma)') }, pad([20, 15], [6, 3])).state;
+    expect(A(n).economy.meleeHit?.targetId).toBe('B');
   });
 });
 

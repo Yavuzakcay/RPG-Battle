@@ -153,7 +153,8 @@ describe('K18 H3: Magical Discoveries (Lore 6)', () => {
     expect(spellOptions('bard', 6)).not.toContain('Fireball');
     expect(spellOptions('bard', 5, 'college-of-lore')).not.toContain('Fireball');
     expect(discoveryCap('bard', 6, 'college-of-lore')).toBe(2);
-    expect(discoveryCap('bard', 10, 'college-of-lore')).toBeNull();
+    // Görev B94 (SRD 5.2.1 s. 35 "always have them prepared"): Magical Secrets varken de sınır 2 ve sayıya girmez (eskiden null).
+    expect(discoveryCap('bard', 10, 'college-of-lore')).toBe(2);
     const base = { ...newCharacter('lore').sheet, classId: 'bard', level: 6, subclassId: 'college-of-lore', spellNames: ['Fireball', 'Shield', 'Cure Wounds'] };
     expect(spellCounts(base).prepared).toBe(1);
     const three = { ...base, spellNames: [...base.spellNames, 'Haste'] };
@@ -239,9 +240,11 @@ describe('K18 H3: Fighter, Monk, Rogue, Druid, Ranger, Wizard eklemeleri', () =>
       spellNames: ['Magic Missile', 'Shield', 'Misty Step', 'Fireball', 'Lightning Bolt', 'Counterspell'], spellbook: ['Magic Missile', 'Shield', 'Misty Step', 'Fireball', 'Lightning Bolt', 'Counterspell'] };
     const w = combatantFromSheet(sheet, { id: 'W', ownerId: 'p1' });
     expect(w.freeSpells?.['Magic Missile']).toBe('spellMastery');
-    expect(w.freeSpells?.['Misty Step']).toBe('spellMastery');
+    // Görev B93 (SRD 5.2.1 s. 79): Spell Mastery yalnız yapım süresi Action olan büyüde (Misty Step bonus eylem);
+    // Signature Spells her büyüye ayrı kaynak (signatureSpells / signatureSpells2).
+    expect(w.freeSpells?.['Misty Step']).toBeUndefined();
     expect(w.freeSpells?.['Shield']).toBeUndefined();
     expect(w.freeSpells?.['Fireball']).toBe('signatureSpells');
-    expect(w.freeSpells?.['Lightning Bolt']).toBe('signatureSpells');
+    expect(w.freeSpells?.['Lightning Bolt']).toBe('signatureSpells2');
   });
 });

@@ -1,0 +1,33 @@
+{
+  "not": "GORSEL-DUZELTME: elle ten maskesi tanımı (python scripts/soy-maske-ciz.py). Koordinatlar 256 px jeton uzayında; kutu [x0, y0, x1, y1] uçlar dahil, çokgen [[x, y], ...]. bolgeler: bölge içinde L / C (kroma) / h (ton, derece; yoksa her ton) aralığındaki opak pikseller ten; ekle / haric elle düzeltme. bos: jetonda çıplak ten yok (zırh, gölge, hayalet): bilerek boş maske (ten tonu bu jetonda görünmez). Çıktı assets/soy-maske-ham/ → npm run soy-maske-ice → assets/soy-maske-el/ → npm run soy-maske -- --el. Dragonborn maskesi yapılmaz (kullanıcı kararı 2026-11-22; maskesiz jetonlar yedek filtreyle). Kararlar DECISIONS.md GORSEL-DUZELTME.",
+  "jetonlar": {
+    "human-erkek-paladin-ID3": { "bos": true, "neden": "kapalı miğferli tam zırh; çıplak ten yok" },
+    "human-kadin-paladin-ID3": { "bos": true, "neden": "kapalı miğferli tam zırh; çıplak ten yok" },
+    "human-erkek-sorcerer-SC-5": { "bos": true, "neden": "gölge varlığı; insan teni yok" },
+    "human-erkek-warlock-WL-10": { "bos": true, "neden": "hayalet: yüz, saç ve cüppe aynı tayfsal renk; insan teni yok" },
+    "human-kadin-warlock-WL-10": { "bos": true, "neden": "hayalet: yüz, saç ve cüppe aynı tayfsal renk; insan teni yok" },
+    "human-erkek-sorcerer-SC-9": {
+      "bolgeler": [
+        { "cokgen": [[124, 70], [160, 70], [166, 78], [166, 100], [158, 112], [146, 117], [134, 116], [124, 106], [121, 90], [121, 74]], "L": [36, 88], "C": [0, 22] },
+        { "kutu": [105, 74, 113, 90], "L": [45, 90], "C": [0, 22] },
+        { "kutu": [56, 160, 98, 206], "L": [40, 90], "C": [1, 22], "h": [[100, 200]] },
+        { "kutu": [130, 146, 168, 184], "L": [40, 90], "C": [1, 22], "h": [[100, 200]] }
+      ],
+      "haric": [
+        { "kutu": [131, 99, 158, 104], "not": "diş sırası (dişler ve aralıkları)" },
+        { "kutu": [128, 76, 141, 86], "not": "sol göz akı" },
+        { "kutu": [156, 76, 165, 86], "not": "sağ göz akı" }
+      ]
+    },
+    "human-kadin-monk-ID10": {
+      "bolgeler": [
+        { "cokgen": [[121, 64], [128, 56], [136, 50], [148, 47], [162, 53], [165, 64], [161, 84], [157, 96], [147, 103], [132, 103], [124, 97], [121, 85]], "L": [40, 88], "C": [0, 14] },
+        { "kutu": [102, 64, 113, 84], "L": [45, 90], "C": [0, 14] },
+        { "kutu": [74, 166, 97, 191], "L": [50, 96], "C": [0, 10] },
+        { "kutu": [168, 160, 190, 191], "L": [50, 96], "C": [0, 10] },
+        { "kutu": [80, 236, 108, 247], "L": [45, 96], "C": [0, 12] },
+        { "kutu": [161, 233, 182, 243], "L": [45, 96], "C": [0, 12] }
+      ]
+    }
+  }
+}

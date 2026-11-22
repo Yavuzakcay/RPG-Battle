@@ -1,0 +1,267 @@
+kategori,kimlik,tür,ne eksik,önerilen dosya adı
+buyu,acid-splash,savaş büyüsü,büyüye özel efekt yok (genel: alan-asit),public/efekt/efekt-acid-splash.webp
+buyu,alarm,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/alarm.webp
+buyu,animal-friendship,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: charmed),public/efekt/efekt-animal-friendship.webp
+buyu,animal-messenger,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/animal-messenger.webp
+buyu,animate-dead,savaş büyüsü,büyüye özel efekt yok (genel: cagir-ruh),public/efekt/efekt-animate-dead.webp
+buyu,antipathy-sympathy,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/antipathy-sympathy.webp
+buyu,arcane-eye,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/arcane-eye.webp
+buyu,arcane-lock,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/arcane-lock.webp
+buyu,arcanists-magic-aura,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/arcanists-magic-aura.webp
+buyu,astral-projection,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/astral-projection.webp
+buyu,augury,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/augury.webp
+buyu,awaken,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/awaken.webp
+buyu,barkskin,savaş büyüsü,büyüye özel efekt yok (genel: koruma-kalkan),public/efekt/efekt-barkskin.webp
+buyu,beacon-of-hope,savaş büyüsü,büyüye özel efekt yok (genel: koruma-kutsama),public/efekt/efekt-beacon-of-hope.webp
+buyu,bless,savaş büyüsü,büyüye özel efekt yok (genel: koruma-kutsama),public/efekt/efekt-bless.webp
+buyu,blindness-deafness,savaş büyüsü,yalnız durum ikonu/jeton filtresi (Blinded),public/efekt/efekt-blindness-deafness.webp
+buyu,burning-hands,savaş büyüsü,büyüye özel efekt yok (genel: koni-ates),public/efekt/efekt-burning-hands.webp
+buyu,charm-monster,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: charmed),public/efekt/efekt-charm-monster.webp
+buyu,charm-person,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: charmed),public/efekt/efekt-charm-person.webp
+buyu,chill-touch,savaş büyüsü,büyüye özel efekt yok (genel: darbe-buyu),public/efekt/efekt-chill-touch.webp
+buyu,circle-of-death,savaş büyüsü,büyüye özel efekt yok (genel: alan-nekrotik),public/efekt/efekt-circle-of-death.webp
+buyu,clairvoyance,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/clairvoyance.webp
+buyu,clone,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/clone.webp
+buyu,commune,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/commune.webp
+buyu,commune-with-nature,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/commune-with-nature.webp
+buyu,comprehend-languages,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/comprehend-languages.webp
+buyu,compulsion,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: charmed),public/efekt/efekt-compulsion.webp
+buyu,cone-of-cold,savaş büyüsü,büyüye özel efekt yok (genel: koni-buz),public/efekt/efekt-cone-of-cold.webp
+buyu,conjure-animals,savaş büyüsü,büyüye özel efekt yok (genel: cagir-ruh),public/efekt/efekt-conjure-animals.webp
+buyu,contact-other-plane,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/contact-other-plane.webp
+buyu,contingency,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/contingency.webp
+buyu,continual-flame,savaş büyüsü,savaşta görsel yok (döküm görsel üretmiyor),public/efekt/efekt-continual-flame.webp
+buyu,control-weather,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/control-weather.webp
+buyu,create-food-and-water,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/create-food-and-water.webp
+buyu,create-or-destroy-water,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/create-or-destroy-water.webp
+buyu,create-undead,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/create-undead.webp
+buyu,creation,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/creation.webp
+buyu,cure-wounds,savaş büyüsü,büyüye özel efekt yok (genel: iyilestir-buyuk),public/efekt/efekt-cure-wounds.webp
+buyu,dancing-lights,savaş büyüsü,savaşta görsel yok (yalnız renkli altıgen yer tutucusu),public/efekt/efekt-dancing-lights.webp
+buyu,demiplane,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/demiplane.webp
+buyu,detect-evil-and-good,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/detect-evil-and-good.webp
+buyu,detect-magic,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/detect-magic.webp
+buyu,detect-poison-and-disease,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/detect-poison-and-disease.webp
+buyu,detect-thoughts,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/detect-thoughts.webp
+buyu,dimension-door,savaş büyüsü,büyüye özel efekt yok (genel: isinlan-cikis),public/efekt/efekt-dimension-door.webp
+buyu,disguise-self,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/disguise-self.webp
+buyu,divination,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/divination.webp
+buyu,dragons-breath,savaş büyüsü,büyüye özel efekt yok (genel: koni-ates),public/efekt/efekt-dragons-breath.webp
+buyu,dream,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/dream.webp
+buyu,druidcraft,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/druidcraft.webp
+buyu,elementalism,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/elementalism.webp
+buyu,enhance-ability,savaş dışı büyü,yalnız rozet (sayı oku),public/buyu/enhance-ability.webp
+buyu,enthrall,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/enthrall.webp
+buyu,eyebite,savaş büyüsü,yalnız durum ikonu/jeton filtresi (Unconscious),public/efekt/efekt-eyebite.webp
+buyu,fabricate,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/fabricate.webp
+buyu,find-familiar,savaş büyüsü,büyüye özel efekt yok (genel: cagir-dogal),public/efekt/efekt-find-familiar.webp
+buyu,find-steed,savaş büyüsü,büyüye özel efekt yok (genel: cagir-dogal),public/efekt/efekt-find-steed.webp
+buyu,find-the-path,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/find-the-path.webp
+buyu,find-traps,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/find-traps.webp
+buyu,fire-storm,savaş büyüsü,büyüye özel efekt yok (genel: alan-ates),public/efekt/efekt-fire-storm.webp
+buyu,fireball,savaş büyüsü,büyüye özel efekt yok (genel: alan-ates),public/efekt/efekt-fireball.webp
+buyu,flesh-to-stone,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: restrained),public/efekt/efekt-flesh-to-stone.webp
+buyu,floating-disk,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/floating-disk.webp
+buyu,forbiddance,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/forbiddance.webp
+buyu,foresight,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/foresight.webp
+buyu,freedom-of-movement,savaş büyüsü,büyüye özel efekt yok (genel: koruma-ruh),public/efekt/efekt-freedom-of-movement.webp
+buyu,freezing-sphere,savaş büyüsü,büyüye özel efekt yok (genel: alan-buz),public/efekt/efekt-freezing-sphere.webp
+buyu,gaseous-form,savaş büyüsü,büyüye özel efekt yok (genel: koruma-ruh),public/efekt/efekt-gaseous-form.webp
+buyu,gate,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/gate.webp
+buyu,geas,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/geas.webp
+buyu,gentle-repose,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/gentle-repose.webp
+buyu,giant-insect,savaş büyüsü,büyüye özel efekt yok (genel: cagir-dogal),public/efekt/efekt-giant-insect.webp
+buyu,glyph-of-warding,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/glyph-of-warding.webp
+buyu,goodberry,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/goodberry.webp
+buyu,greater-invisibility,savaş büyüsü,yalnız durum ikonu/jeton filtresi (Invisible),public/efekt/efekt-greater-invisibility.webp
+buyu,guards-and-wards,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/guards-and-wards.webp
+buyu,guidance,savaş büyüsü,büyüye özel efekt yok (genel: koruma-kutsama),public/efekt/efekt-guidance.webp
+buyu,hallow,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/hallow.webp
+buyu,hallucinatory-terrain,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/hallucinatory-terrain.webp
+buyu,heal,savaş büyüsü,büyüye özel efekt yok (genel: iyilestir-buyuk),public/efekt/efekt-heal.webp
+buyu,healing-word,savaş büyüsü,büyüye özel efekt yok (genel: iyilestir-buyuk),public/efekt/efekt-healing-word.webp
+buyu,heroes-feast,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/heroes-feast.webp
+buyu,heroism,savaş büyüsü,büyüye özel efekt yok (genel: koruma-ruh),public/efekt/efekt-heroism.webp
+buyu,hideous-laughter,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: incapacitated),public/efekt/efekt-hideous-laughter.webp
+buyu,hold-monster,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: paralyzed),public/efekt/efekt-hold-monster.webp
+buyu,hold-person,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: paralyzed),public/efekt/efekt-hold-person.webp
+buyu,hypnotic-pattern,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: incapacitated),public/efekt/efekt-hypnotic-pattern.webp
+buyu,identify,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/identify.webp
+buyu,illusory-script,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/illusory-script.webp
+buyu,imprisonment,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/imprisonment.webp
+buyu,instant-summons,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/instant-summons.webp
+buyu,invisibility,savaş büyüsü,yalnız durum ikonu/jeton filtresi (Invisible),public/efekt/efekt-invisibility.webp
+buyu,knock,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/knock.webp
+buyu,legend-lore,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/legend-lore.webp
+buyu,light,savaş büyüsü,savaşta görsel yok (döküm görsel üretmiyor),public/efekt/efekt-light.webp
+buyu,locate-animals-or-plants,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/locate-animals-or-plants.webp
+buyu,locate-creature,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/locate-creature.webp
+buyu,locate-object,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/locate-object.webp
+buyu,mage-armor,savaş büyüsü,büyüye özel efekt yok (genel: koruma-kalkan),public/efekt/efekt-mage-armor.webp
+buyu,mage-hand,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/mage-hand.webp
+buyu,magic-circle,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/magic-circle.webp
+buyu,magic-jar,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/magic-jar.webp
+buyu,magic-mouth,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/magic-mouth.webp
+buyu,magnificent-mansion,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/magnificent-mansion.webp
+buyu,major-image,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/major-image.webp
+buyu,mass-cure-wounds,savaş büyüsü,büyüye özel efekt yok (genel: iyilestir-buyuk),public/efekt/efekt-mass-cure-wounds.webp
+buyu,mass-heal,savaş büyüsü,büyüye özel efekt yok (genel: iyilestir-buyuk),public/efekt/efekt-mass-heal.webp
+buyu,mass-healing-word,savaş büyüsü,büyüye özel efekt yok (genel: iyilestir-buyuk),public/efekt/efekt-mass-healing-word.webp
+buyu,mass-suggestion,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: charmed),public/efekt/efekt-mass-suggestion.webp
+buyu,meld-into-stone,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/meld-into-stone.webp
+buyu,mending,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/mending.webp
+buyu,message,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/message.webp
+buyu,mind-blank,savaş büyüsü,büyüye özel efekt yok (genel: koruma-ruh),public/efekt/efekt-mind-blank.webp
+buyu,minor-illusion,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/minor-illusion.webp
+buyu,mirage-arcane,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/mirage-arcane.webp
+buyu,mislead,savaş büyüsü,yalnız durum ikonu/jeton filtresi (Invisible),public/efekt/efekt-mislead.webp
+buyu,misty-step,savaş büyüsü,büyüye özel efekt yok (genel: isinlan-cikis),public/efekt/efekt-misty-step.webp
+buyu,modify-memory,savaş dışı büyü,büyüye özel efekt yok (durum döngüsü: incapacitated),public/buyu/modify-memory.webp
+buyu,move-earth,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/move-earth.webp
+buyu,nondetection,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/nondetection.webp
+buyu,passwall,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/passwall.webp
+buyu,phantom-steed,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/phantom-steed.webp
+buyu,planar-ally,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/planar-ally.webp
+buyu,planar-binding,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/planar-binding.webp
+buyu,power-word-heal,savaş büyüsü,büyüye özel efekt yok (genel: iyilestir-buyuk),public/efekt/efekt-power-word-heal.webp
+buyu,power-word-stun,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: stunned),public/efekt/efekt-power-word-stun.webp
+buyu,prayer-of-healing,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/prayer-of-healing.webp
+buyu,prestidigitation,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/prestidigitation.webp
+buyu,private-sanctum,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/private-sanctum.webp
+buyu,programmed-illusion,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/programmed-illusion.webp
+buyu,project-image,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/project-image.webp
+buyu,protection-from-energy,savaş büyüsü,büyüye özel efekt yok (genel: koruma-ruh),public/efekt/efekt-protection-from-energy.webp
+buyu,protection-from-poison,savaş büyüsü,büyüye özel efekt yok (genel: koruma-ruh),public/efekt/efekt-protection-from-poison.webp
+buyu,purify-food-and-drink,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/purify-food-and-drink.webp
+buyu,raise-dead,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/raise-dead.webp
+buyu,regenerate,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/regenerate.webp
+buyu,reincarnate,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/reincarnate.webp
+buyu,resurrection,savaş dışı büyü,büyüye özel efekt yok (genel: iyilestir-buyuk),public/buyu/resurrection.webp
+buyu,rope-trick,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/rope-trick.webp
+buyu,scrying,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/scrying.webp
+buyu,secret-chest,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/secret-chest.webp
+buyu,seeming,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/seeming.webp
+buyu,sending,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/sending.webp
+buyu,sequester,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/sequester.webp
+buyu,shatter,savaş büyüsü,büyüye özel efekt yok (genel: alan-ses),public/efekt/efekt-shatter.webp
+buyu,shocking-grasp,savaş büyüsü,büyüye özel efekt yok (genel: darbe-buyu),public/efekt/efekt-shocking-grasp.webp
+buyu,silent-image,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/silent-image.webp
+buyu,simulacrum,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/simulacrum.webp
+buyu,sleep,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: incapacitated),public/efekt/efekt-sleep.webp
+buyu,speak-with-animals,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/speak-with-animals.webp
+buyu,speak-with-dead,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/speak-with-dead.webp
+buyu,speak-with-plants,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/speak-with-plants.webp
+buyu,stinking-cloud,savaş büyüsü,büyüye özel alan dokusu yok,public/efekt/efekt-stinking-cloud.webp
+buyu,stone-shape,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/stone-shape.webp
+buyu,stoneskin,savaş büyüsü,büyüye özel efekt yok (genel: koruma-ruh),public/efekt/efekt-stoneskin.webp
+buyu,suggestion,savaş büyüsü,büyüye özel efekt yok (durum döngüsü: charmed),public/efekt/efekt-suggestion.webp
+buyu,sunburst,savaş büyüsü,büyüye özel efekt yok (genel: alan-isik),public/efekt/efekt-sunburst.webp
+buyu,symbol,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/symbol.webp
+buyu,telepathic-bond,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/telepathic-bond.webp
+buyu,teleport,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/teleport.webp
+buyu,teleportation-circle,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/teleportation-circle.webp
+buyu,thaumaturgy,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/thaumaturgy.webp
+buyu,thunderwave,savaş büyüsü,büyüye özel efekt yok (genel: alan-ses),public/efekt/efekt-thunderwave.webp
+buyu,tiny-hut,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/tiny-hut.webp
+buyu,tongues,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/tongues.webp
+buyu,transport-via-plants,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/transport-via-plants.webp
+buyu,tree-stride,savaş büyüsü,büyüye özel efekt yok (genel: isinlan-giris),public/efekt/efekt-tree-stride.webp
+buyu,true-resurrection,savaş dışı büyü,büyüye özel efekt yok (genel: iyilestir-buyuk),public/buyu/true-resurrection.webp
+buyu,tsunami,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/tsunami.webp
+buyu,unseen-servant,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/unseen-servant.webp
+buyu,vampiric-touch,savaş büyüsü,büyüye özel efekt yok (genel: darbe-buyu),public/efekt/efekt-vampiric-touch.webp
+buyu,vitriolic-sphere,savaş büyüsü,büyüye özel efekt yok (genel: alan-asit),public/efekt/efekt-vitriolic-sphere.webp
+buyu,water-breathing,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/water-breathing.webp
+buyu,weird,savaş büyüsü,büyüye özel efekt yok (genel: alan-psisik),public/efekt/efekt-weird.webp
+buyu,wind-walk,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/wind-walk.webp
+buyu,wish,savaş büyüsü,savaşta görsel yok (döküm gözlenemedi),public/efekt/efekt-wish.webp
+buyu,word-of-recall,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/word-of-recall.webp
+buyu,zone-of-truth,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/zone-of-truth.webp
+canavar,young-red-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-red-dragon, ancient-red-dragon, red-dragon-wyrmling)",public/monsters/young-red-dragon.webp
+canavar,black-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-black-dragon, ancient-black-dragon, young-black-dragon)",public/monsters/black-dragon-wyrmling.webp
+canavar,blue-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-blue-dragon, ancient-blue-dragon, young-blue-dragon)",public/monsters/blue-dragon-wyrmling.webp
+canavar,brass-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-brass-dragon, ancient-brass-dragon, young-brass-dragon)",public/monsters/brass-dragon-wyrmling.webp
+canavar,bronze-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-bronze-dragon, ancient-bronze-dragon, young-bronze-dragon)",public/monsters/bronze-dragon-wyrmling.webp
+canavar,copper-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-copper-dragon, ancient-copper-dragon, young-copper-dragon)",public/monsters/copper-dragon-wyrmling.webp
+canavar,gold-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-gold-dragon, ancient-gold-dragon, young-gold-dragon)",public/monsters/gold-dragon-wyrmling.webp
+canavar,green-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-green-dragon, ancient-green-dragon, young-green-dragon)",public/monsters/green-dragon-wyrmling.webp
+canavar,red-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-red-dragon, ancient-red-dragon, young-red-dragon)",public/monsters/red-dragon-wyrmling.webp
+canavar,silver-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-silver-dragon, ancient-silver-dragon, young-silver-dragon)",public/monsters/silver-dragon-wyrmling.webp
+canavar,white-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-white-dragon, ancient-white-dragon, young-white-dragon)",public/monsters/white-dragon-wyrmling.webp
+canavar,young-black-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-black-dragon, ancient-black-dragon, black-dragon-wyrmling)",public/monsters/young-black-dragon.webp
+canavar,young-blue-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-blue-dragon, ancient-blue-dragon, blue-dragon-wyrmling)",public/monsters/young-blue-dragon.webp
+canavar,young-brass-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-brass-dragon, ancient-brass-dragon, brass-dragon-wyrmling)",public/monsters/young-brass-dragon.webp
+canavar,young-bronze-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-bronze-dragon, ancient-bronze-dragon, bronze-dragon-wyrmling)",public/monsters/young-bronze-dragon.webp
+canavar,young-copper-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-copper-dragon, ancient-copper-dragon, copper-dragon-wyrmling)",public/monsters/young-copper-dragon.webp
+canavar,young-gold-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-gold-dragon, ancient-gold-dragon, gold-dragon-wyrmling)",public/monsters/young-gold-dragon.webp
+canavar,young-green-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-green-dragon, ancient-green-dragon, green-dragon-wyrmling)",public/monsters/young-green-dragon.webp
+canavar,young-silver-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-silver-dragon, ancient-silver-dragon, silver-dragon-wyrmling)",public/monsters/young-silver-dragon.webp
+canavar,young-white-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-white-dragon, ancient-white-dragon, white-dragon-wyrmling)",public/monsters/young-white-dragon.webp
+canavar,adult-black-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-black-dragon, black-dragon-wyrmling, young-black-dragon)",public/monsters/adult-black-dragon.webp
+canavar,adult-blue-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-blue-dragon, blue-dragon-wyrmling, young-blue-dragon)",public/monsters/adult-blue-dragon.webp
+canavar,adult-brass-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-brass-dragon, brass-dragon-wyrmling, young-brass-dragon)",public/monsters/adult-brass-dragon.webp
+canavar,adult-bronze-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-bronze-dragon, bronze-dragon-wyrmling, young-bronze-dragon)",public/monsters/adult-bronze-dragon.webp
+canavar,adult-copper-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-copper-dragon, copper-dragon-wyrmling, young-copper-dragon)",public/monsters/adult-copper-dragon.webp
+canavar,adult-gold-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-gold-dragon, gold-dragon-wyrmling, young-gold-dragon)",public/monsters/adult-gold-dragon.webp
+canavar,adult-green-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-green-dragon, green-dragon-wyrmling, young-green-dragon)",public/monsters/adult-green-dragon.webp
+canavar,adult-red-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-red-dragon, red-dragon-wyrmling, young-red-dragon)",public/monsters/adult-red-dragon.webp
+canavar,adult-silver-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-silver-dragon, silver-dragon-wyrmling, young-silver-dragon)",public/monsters/adult-silver-dragon.webp
+canavar,adult-white-dragon,canavar H (ölçek 2),"kendi görseli yok (aynı görüntü: ancient-white-dragon, white-dragon-wyrmling, young-white-dragon)",public/monsters/adult-white-dragon.webp
+canavar,ancient-black-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-black-dragon, black-dragon-wyrmling, young-black-dragon)",public/monsters/ancient-black-dragon.webp
+canavar,ancient-blue-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-blue-dragon, blue-dragon-wyrmling, young-blue-dragon)",public/monsters/ancient-blue-dragon.webp
+canavar,ancient-brass-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-brass-dragon, brass-dragon-wyrmling, young-brass-dragon)",public/monsters/ancient-brass-dragon.webp
+canavar,ancient-bronze-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-bronze-dragon, bronze-dragon-wyrmling, young-bronze-dragon)",public/monsters/ancient-bronze-dragon.webp
+canavar,ancient-copper-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-copper-dragon, copper-dragon-wyrmling, young-copper-dragon)",public/monsters/ancient-copper-dragon.webp
+canavar,ancient-gold-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-gold-dragon, gold-dragon-wyrmling, young-gold-dragon)",public/monsters/ancient-gold-dragon.webp
+canavar,ancient-green-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-green-dragon, green-dragon-wyrmling, young-green-dragon)",public/monsters/ancient-green-dragon.webp
+canavar,ancient-red-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-red-dragon, red-dragon-wyrmling, young-red-dragon)",public/monsters/ancient-red-dragon.webp
+canavar,ancient-silver-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-silver-dragon, silver-dragon-wyrmling, young-silver-dragon)",public/monsters/ancient-silver-dragon.webp
+canavar,ancient-white-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-white-dragon, white-dragon-wyrmling, young-white-dragon)",public/monsters/ancient-white-dragon.webp
+yuzey,warning,yüzey,sprite yok (renkli altıgen),assets-ham/sprite/yuzey-warning-1.png → public/sprites/yuzey-warning-1.webp
+nesne,chest,harita nesnesi,sprite yok (emoji 🧰),assets-ham/sprite/nesne-chest.png → public/sprites/nesne-chest.webp
+nesne,table,harita nesnesi,sprite yok (emoji 🪑),assets-ham/sprite/nesne-table.png → public/sprites/nesne-table.webp
+nesne,door,harita nesnesi,sprite yok (emoji 🚪),assets-ham/sprite/nesne-door.png → public/sprites/nesne-door.webp
+nesne,gate,harita nesnesi,sprite yok (emoji ⛩),assets-ham/sprite/nesne-gate.png → public/sprites/nesne-gate.webp
+nesne,brazier,harita nesnesi,sprite yok (emoji 🔥),assets-ham/sprite/nesne-brazier.png → public/sprites/nesne-brazier.webp
+nesne,lever,harita nesnesi,sprite yok (emoji 🕹),assets-ham/sprite/nesne-lever.png → public/sprites/nesne-lever.webp
+nesne,statueEye,harita nesnesi,sprite yok (emoji 👁),assets-ham/sprite/nesne-statue-eye.png → public/sprites/nesne-statue-eye.webp
+nesne,tent,harita nesnesi,sprite yok (emoji ⛺),assets-ham/sprite/nesne-tent.png → public/sprites/nesne-tent.webp
+nesne,tree,harita nesnesi,sprite yok (emoji 🌲),assets-ham/sprite/nesne-tree.png → public/sprites/nesne-tree.webp
+nesne,bridge,harita nesnesi,sprite yok (emoji 🌉),assets-ham/sprite/nesne-bridge.png → public/sprites/nesne-bridge.webp
+nesne,bonePile,harita nesnesi,sprite yok (emoji 💀),assets-ham/sprite/nesne-bone-pile.png → public/sprites/nesne-bone-pile.webp
+nesne,plaque,harita nesnesi,sprite yok (emoji 📜),assets-ham/sprite/nesne-plaque.png → public/sprites/nesne-plaque.webp
+nesne,boulderPile,harita nesnesi,sprite yok (emoji 🪨),assets-ham/sprite/nesne-boulder-pile.png → public/sprites/nesne-boulder-pile.webp
+nesne,cauldron,harita nesnesi,sprite yok (emoji 🫕),assets-ham/sprite/nesne-cauldron.png → public/sprites/nesne-cauldron.webp
+nesne,iceSeal,harita nesnesi,sprite yok (emoji ❄),assets-ham/sprite/nesne-ice-seal.png → public/sprites/nesne-ice-seal.webp
+nesne,crackedWall,harita nesnesi,sprite yok (emoji 🧱),assets-ham/sprite/nesne-cracked-wall.png → public/sprites/nesne-cracked-wall.webp
+nesne,key,harita nesnesi,sprite yok (emoji 🗝),assets-ham/sprite/nesne-key.png → public/sprites/nesne-key.webp
+nesne,benchLeg,harita nesnesi,sprite yok (emoji 🪵),assets-ham/sprite/nesne-bench-leg.png → public/sprites/nesne-bench-leg.webp
+nesne,chain,harita nesnesi,sprite yok (emoji ⛓),assets-ham/sprite/nesne-chain.png → public/sprites/nesne-chain.webp
+nesne,bucket,harita nesnesi,sprite yok (emoji 🪣),assets-ham/sprite/nesne-bucket.png → public/sprites/nesne-bucket.webp
+nesne,cudgel,harita nesnesi,sprite yok (emoji 🏏),assets-ham/sprite/nesne-cudgel.png → public/sprites/nesne-cudgel.webp
+nesne,ballista,harita nesnesi,sprite yok (emoji 🏹),assets-ham/sprite/nesne-ballista.png → public/sprites/nesne-ballista.webp
+nesne,frozenFall,harita nesnesi,sprite yok (emoji 🧊),assets-ham/sprite/nesne-frozen-fall.png → public/sprites/nesne-frozen-fall.webp
+nesne,rock,harita nesnesi,sprite yok (emoji 🪨),assets-ham/sprite/nesne-rock.png → public/sprites/nesne-rock.webp
+nesne,droppedItem,harita nesnesi,sprite yok (emoji 🗡),assets-ham/sprite/nesne-dropped-item.png → public/sprites/nesne-dropped-item.webp
+nesne,spellbook,harita nesnesi,sprite yok (emoji 📖),assets-ham/sprite/nesne-spellbook.png → public/sprites/nesne-spellbook.webp
+nesne,sword,harita nesnesi,sprite yok (emoji 🗡),assets-ham/sprite/nesne-sword.png → public/sprites/nesne-sword.webp
+nesne,statue,harita nesnesi,sprite yok (emoji 🗿),assets-ham/sprite/nesne-statue.png → public/sprites/nesne-statue.webp
+nesne,potion,harita nesnesi,sprite yok (emoji 🧪),assets-ham/sprite/nesne-potion.png → public/sprites/nesne-potion.webp
+nesne,wand,harita nesnesi,sprite yok (emoji 🪄),assets-ham/sprite/nesne-wand.png → public/sprites/nesne-wand.webp
+nesne,amulet,harita nesnesi,sprite yok (emoji 📿),assets-ham/sprite/nesne-amulet.png → public/sprites/nesne-amulet.webp
+nesne,ring,harita nesnesi,sprite yok (emoji 💍),assets-ham/sprite/nesne-ring.png → public/sprites/nesne-ring.webp
+alan,antilife-shell,büyü alanı (aura),aura varsayılan rengi (aura-altin),public/efekt/efekt-zemin-antilife-shell.webp
+alan,conjure-animals,büyü alanı,alan dokusu yok (renkli altıgen yer tutucusu),public/efekt/efekt-zemin-conjure-animals.webp
+alan,conjure-elemental,büyü alanı,alan dokusu yok (renkli altıgen yer tutucusu),public/efekt/efekt-zemin-conjure-elemental.webp
+alan,dancing-lights,büyü alanı,alan dokusu yok (renkli altıgen yer tutucusu),public/efekt/efekt-zemin-dancing-lights.webp
+alan,flaming-sphere,büyü alanı,alan dokusu yok (renkli altıgen yer tutucusu),public/efekt/efekt-zemin-flaming-sphere.webp
+alan,forcecage,büyü alanı,alan dokusu yok (renkli altıgen yer tutucusu),public/efekt/efekt-zemin-forcecage.webp
+zar,hizalanma-lawful-good,zar teması (hizalanma),zar seti yok (0/7; klasik görsel + 3D renkleri),assets-ham/zarlar/zar-hizalanma-lawful-good.jpg → public/zarlar/hizalanma-lawful-good/d4..d100.webp
+zar,hizalanma-neutral-good,zar teması (hizalanma),zar seti yok (0/7; klasik görsel + 3D renkleri),assets-ham/zarlar/zar-hizalanma-neutral-good.jpg → public/zarlar/hizalanma-neutral-good/d4..d100.webp
+zar,hizalanma-chaotic-good,zar teması (hizalanma),zar seti yok (0/7; klasik görsel + 3D renkleri),assets-ham/zarlar/zar-hizalanma-chaotic-good.jpg → public/zarlar/hizalanma-chaotic-good/d4..d100.webp
+zar,hizalanma-lawful-neutral,zar teması (hizalanma),zar seti yok (0/7; klasik görsel + 3D renkleri),assets-ham/zarlar/zar-hizalanma-lawful-neutral.jpg → public/zarlar/hizalanma-lawful-neutral/d4..d100.webp
+zar,hizalanma-true-neutral,zar teması (hizalanma),zar seti yok (0/7; klasik görsel + 3D renkleri),assets-ham/zarlar/zar-hizalanma-true-neutral.jpg → public/zarlar/hizalanma-true-neutral/d4..d100.webp
+zar,hizalanma-chaotic-neutral,zar teması (hizalanma),zar seti yok (0/7; klasik görsel + 3D renkleri),assets-ham/zarlar/zar-hizalanma-chaotic-neutral.jpg → public/zarlar/hizalanma-chaotic-neutral/d4..d100.webp
+zar,hizalanma-lawful-evil,zar teması (hizalanma),zar seti yok (0/7; klasik görsel + 3D renkleri),assets-ham/zarlar/zar-hizalanma-lawful-evil.jpg → public/zarlar/hizalanma-lawful-evil/d4..d100.webp
+zar,hizalanma-neutral-evil,zar teması (hizalanma),zar seti yok (0/7; klasik görsel + 3D renkleri),assets-ham/zarlar/zar-hizalanma-neutral-evil.jpg → public/zarlar/hizalanma-neutral-evil/d4..d100.webp
+zar,hizalanma-chaotic-evil,zar teması (hizalanma),zar seti yok (0/7; klasik görsel + 3D renkleri),assets-ham/zarlar/zar-hizalanma-chaotic-evil.jpg → public/zarlar/hizalanma-chaotic-evil/d4..d100.webp

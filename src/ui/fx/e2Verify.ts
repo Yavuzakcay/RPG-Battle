@@ -20,7 +20,10 @@ const POS: Record<string, Offset> = { A: o(6, 5), C: o(7, 5), B: o(9, 5), D: o(9
 
 export function field(spell: Spell): BattleState {
   const A = mk('A', { ownerId: 'p1', level: 20, hp: 80, maxHp: 80, spellNames: [spell.name], spellAttack: 12, spellSaveDc: 19, spellMod: 5,
-    spellSlots: [4, 4, 4, 4, 4, 4, 4, 4, 4], modifiers: { str: 0, dex: 2, con: 2, int: 5, wis: 5, cha: 5 } });
+    spellSlots: [4, 4, 4, 4, 4, 4, 4, 4, 4], modifiers: { str: 0, dex: 2, con: 2, int: 5, wis: 5, cha: 5 },
+    // BUYU-TAM (102): Earthquake'in başarısız DEX save'i konsantrasyonu bozar (SRD); büyücü kendi alanında kalır, alan çizimi
+    // doğrulanabilsin diye büyücünün DEX save'i yüksek (yalnız görsel doğrulama düzeni).
+    saves: { str: 0, dex: 30, con: 0, int: 0, wis: 0, cha: 0 } });
   const C = mk('C', { ownerId: 'p1', hp: 3, maxHp: 30, conditions: ['Poisoned', 'Charmed'] });
   const Bn = mk('B', { side: 'enemies', ac: 5, hp: 300, maxHp: 300 });
   const D = mk('D', { side: 'enemies', ac: 5, hp: 300, maxHp: 300 });
@@ -102,6 +105,9 @@ const ATTEMPTS: Array<(s: BattleState) => Partial<Command>> = [
   () => ({}),
   () => ({ targetHex: o(9, 4) }),
   () => ({ targetHexes: [POS.B!, o(12, 5)] }),
+  // Büyücüden uzak nokta (kural sürümü 83, B05: bulut belirince içindeki herkes save atar; büyücü 20 ft'lik bulutun içinde
+  // kalırsa kendi hasarıyla konsantrasyonu bozulup bulut biter: Incendiary Cloud).
+  () => ({ targetHex: o(12, 5) }),
 ];
 
 export interface Verdict { id: string; ok: boolean; how: string; expected: string[]; got?: string[] }
@@ -176,4 +182,92 @@ export function verifyBadge(spell: Spell): Verdict {
 export function verifyBadges(): Verdict[] {
   const R = (B as unknown as { rozetBuyu?: Record<string, string> }).rozetBuyu ?? {};
   return spells.filter((s) => R[s.id]).map(verifyBadge).sort((a, b) => a.id.localeCompare(b.id));
+}
+
+/**
+ * Görsel envanter (harita/belgeler/GORSEL-ENVANTER.md; `scripts/dungeondex-gorsel-esleme.ts`): herhangi bir büyü gerçek
+ * motorla dökülünce oyunda GERÇEKTE çizilenler. Beklenen anahtar aranmaz; aynı hedefleme denemeleri sırayla denenir, ilk
+ * sprite çizen döküm alınır (yoksa en çok görsel üreten). Yalnız okuma: motor ve çizim kodu değişmez.
+ * - `fx`: tek seferlik ve kalıcı efekt sprite kimlikleri (`fxShots` + `groundFx`; zemin/duvar/aura önekli),
+ * - `yuzey`: büyü alanının ya da yüzeyin sprite eşlemesi (`data/sprite-esleme.json` `zones`, `SurfaceLayer`),
+ * - `yerTutucu`: sprite'ı olmayan yeni alan sayısı (renkli altıgen `.spell-zone`),
+ * - `dongu`: yeni durumların döngü şeritleri (`statusFx`), `filtre`: CSS jeton filtresi olan yeni durumlar,
+ * - `rozet`: süren etkinin sayı oku rozeti (`effectIcons` görseli), `durum`: yeni durum adları (ikon rozeti).
+ */
+export interface Observed {
+  id: string; cast: boolean; how: string;
+  fx: string[]; yuzey: string[]; yerTutucu: number; dongu: string[]; filtre: string[]; rozet: string[]; durum: string[];
+}
+const CSS_FILTER_CONDS = ['Petrified', 'Blinded', 'Invisible', 'Unconscious', 'Prone', 'Exhaustion'];
+
+function observeAfter(spell: Spell, before: BattleState, events: BattleEvent[], after: BattleState,
+  zoneKeyOf: (z: { surface?: string; spellId: string }) => string, zoneHas: (k: string) => boolean,
+  loopsOf: (c: Combatant) => string[]): Omit<Observed, 'id' | 'cast' | 'how'> {
+  const fx = new Set<string>();
+  for (const s of fxShots(events, before)) fx.add(s.sprite.id);
+  const g = groundFx(after);
+  for (const p of g.patches) fx.add(`zemin:${p.sprite.id}`);
+  for (const w of g.walls) fx.add(`duvar:${w.sprite.id}`);
+  for (const a of g.auras) fx.add(`aura:${a.sprite.id}`);
+  const oldZones = new Set((before.map?.zones ?? []).map((z) => z.id));
+  const yuzey = new Set<string>();
+  let yerTutucu = 0;
+  for (const z of after.map?.zones ?? []) {
+    if (oldZones.has(z.id)) continue;
+    const k = zoneKeyOf(z as { surface?: string; spellId: string });
+    if (zoneHas(k)) yuzey.add(k);
+    else if (!g.patches.length && !g.walls.length && !g.auras.length) yerTutucu++;
+  }
+  const dongu = new Set<string>(); const filtre = new Set<string>(); const durum = new Set<string>(); const rozet = new Set<string>();
+  for (const [id, c] of Object.entries(after.combatants)) {
+    const was = before.combatants[id];
+    const fresh = c.conditions.filter((x) => !(was?.conditions ?? []).includes(x));
+    for (const x of fresh) { durum.add(x); if (CSS_FILTER_CONDS.includes(x)) filtre.add(x); }
+    const oldLoops = new Set(was ? loopsOf(was) : []);
+    for (const l of loopsOf(c)) if (!oldLoops.has(l)) dongu.add(l);
+    if ((c.exhaustion ?? 0) > (was?.exhaustion ?? 0)) filtre.add('Exhaustion');
+    for (const x of effectIcons(after, c)) if (x.img) rozet.add(x.img);
+  }
+  void spell;
+  return { fx: [...fx], yuzey: [...yuzey], yerTutucu, dongu: [...dongu], filtre: [...filtre], rozet: [...rozet], durum: [...durum] };
+}
+
+/** Tek büyünün oyundaki gerçek görseli (bkz. `Observed`). `loopsOf`, `zoneKeyOf`, `zoneHas` çağırandan (döngüsüz içe aktarma). */
+export function observeSpell(spell: Spell, deps: { zoneKeyOf: (z: { surface?: string; spellId: string }) => string; zoneHas: (k: string) => boolean; loopsOf: (c: Combatant) => string[] }): Observed {
+  const empty = { fx: [], yuzey: [], yerTutucu: 0, dongu: [], filtre: [], rozet: [], durum: [] };
+  if (spell.mechanics.reaction) {
+    const s = field(spell);
+    const ev: BattleEvent[] = [{ type: 'reaction_used', actorId: 'A', reaction: spell.srd, name: spell.name, trigger: 'hit' } as BattleEvent];
+    return { id: spell.id, cast: true, how: 'tepki olayı', ...observeAfter(spell, s, ev, applyEvents(s, ev), deps.zoneKeyOf, deps.zoneHas, deps.loopsOf) };
+  }
+  const score = (o: Omit<Observed, 'id' | 'cast' | 'how'>) => o.fx.length * 100 + o.yuzey.length * 50 + o.dongu.length * 10 + o.rozet.length * 5 + o.filtre.length * 3 + o.durum.length + o.yerTutucu;
+  let best: Observed | null = null;
+  let err = '';
+  const tries: Array<[(s: BattleState) => BattleState, (s: BattleState) => Partial<Command>]> = [...ATTEMPTS.map((a) => [(s: BattleState) => s, a] as [(s: BattleState) => BattleState, typeof a]), ...PREP];
+  for (let i = 0; i < tries.length; i++) {
+    const [prep, aim] = tries[i]!;
+    const s = prep(field(spell));
+    const cmd = { type: 'cast_spell', actorId: 'A', spellName: spell.name, slotLevel: Math.max(1, spell.level) || undefined, ...aim(s) } as Command;
+    let r;
+    try { r = execute(s, cmd, P1, seededRng(11 + i)); } catch (e) { err = String(e); continue; }
+    if (!r.ok) { err = r.error; continue; }
+    let events = r.events;
+    let after = applyEvents(s, events);
+    // Süreli büyü: sürdürme (fırlatma) ve verilen nefes; ilk döküm sprite çizmediyse denenir.
+    if (!fxShots(events, s).length) {
+      const follow: Command[] = [{ type: 'spell_followup', actorId: 'A', targetId: 'B' } as Command,
+        { type: 'breath_weapon', actorId: String((cmd as { targetId?: string }).targetId ?? 'A'), shape: 'cone', targetHex: POS.B! } as Command];
+      for (const f of follow) {
+        let r2;
+        try { r2 = execute(after, f, P1, seededRng(31)); } catch { continue; }
+        if (!r2.ok || !fxShots(r2.events, after).length) continue;
+        events = [...events, ...r2.events]; after = applyEvents(after, r2.events); break;
+      }
+    }
+    const o = observeAfter(spell, s, events, after, deps.zoneKeyOf, deps.zoneHas, deps.loopsOf);
+    const cur: Observed = { id: spell.id, cast: true, how: `cast_spell ${JSON.stringify(aim(s))}`, ...o };
+    if (!best || score(o) > score(best)) best = cur;
+    if (o.fx.length || o.yuzey.length) break;
+  }
+  return best ?? { id: spell.id, cast: false, how: `dökülemedi (${err})`, ...empty };
 }

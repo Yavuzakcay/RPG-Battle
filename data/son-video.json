@@ -7,5 +7,8 @@
   },
   "jingleAfterStartMs": 300,
   "posterHoldMs": 2000,
-  "startTimeoutMs": 2500
+  "startTimeoutMs": 2500,
+  "karartma": 0.42,
+  "gecisMs": 450,
+  "karisimNotu": "SV1: video savaş ekranının üstünde şeffaf: mix-blend-mode: screen (siyah → şeffaf), arkada karartma katmanı rgba(0,0,0,karartma) (0,35–0,5 arası ayarlanır) ve gecisMs yumuşak giriş/çıkış. mix-blend-mode desteklenmiyorsa ya da Ayarlar > Efekt animasyonu kapalıyken eski tam ekran siyah zemin."
 }

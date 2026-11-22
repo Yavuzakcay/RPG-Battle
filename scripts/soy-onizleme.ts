@@ -6,7 +6,7 @@ import { applyHeadOverlay } from '../src/ui/headOverlay';
 import { basOverlay } from './soy-bas';
 import soy from '../data/soy-renkleri.json';
 import type { TintSpec } from '../src/battle/types';
-import { lineageTint } from '../src/battle/avatar';
+import { genericTokenRetired, lineageTint } from '../src/battle/avatar';
 
 const ROOT = path.join(import.meta.dirname ?? '.', '..');
 const CHAR = path.join(ROOT, 'public/characters');
@@ -17,6 +17,7 @@ export default async function onizleme(out: string, classes = ['barbarian', 'wiz
   const T = 96, rows: Array<{ input: Buffer; left: number; top: number }> = [];
   let y = 0, maxW = 0;
   for (const [race, r] of Object.entries(RACES)) for (const g of ['female', 'male']) {
+    if (genericTokenRetired(race)) continue; // sınıf-genel jetonu kaldırılmış ırk (data/jeton-genel.json)
     const sel = only?.find(([ra, ge]) => ra === race && ge === g);
     if (only && !sel) continue;
     let x = 0;

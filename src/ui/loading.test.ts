@@ -11,11 +11,13 @@ const acilis = new Set(Object.keys(import.meta.glob('/public/acilis/*')).map((f)
 
 describe('küçük karakter jetonları', () => {
   it('her karakter jetonunun 96 px kopyası var (npm run karakter-kucuk)', () => {
-    expect(big.length).toBe(240);
+    // KQ6-14 (kesim sonrası sayı güncellemesi): + 240 Gariban (<irk>-<cinsiyet>-<sınıf>-GR, 10 ırk × 2 cinsiyet × 12 sınıf) + 210 Dragonborn alt sınıf (11 sınıf) + 30 Wizard Dragonborn (WZ-A/B); Hızır (Paladin ID10, 18) mevcut dosyaların yerine yazıldı
+    // DRAGONBORN-ESKI-JETON-KALDIR (2026-11-22): Dragonborn'un 24 sınıf-genel jetonu kaldırıldı (240 → 216 sınıf-genel; toplam 2900 → 2876).
+    expect(big.length).toBe(216 + 270 + 1890 + 240 + 210 + 30 + 20); // 216 sınıf-genel + 270 Wizard (WZ-KESIM) + 1890 alt sınıf jetonu (TOPLU-KESIM: warlock 198, sorcerer 162, barbarian/bard/cleric/ranger 162'şer, druid 135, fighter 189, monk 198, paladin 180, rogue 180); + 20 Gladyatör (CC 2026-11-19, fighter ID12)
     expect(small).toEqual(big);
   });
   it('rozet 48 px ve altında önce küçük kopya, sonra asıl görsel; büyükte yalnızca asıl', () => {
-    const a = sheetAvatar({ ...blankCharacter('t').sheet, raceId: 'elf', classId: 'wizard', gender: 'kadin' });
+    const a = sheetAvatar({ ...blankCharacter('t').sheet, raceId: 'elf', classId: 'wizard', gender: 'kadin', level: 3 });
     expect(thumbOf(a.src)).toBe('characters/kucuk/elf-female-wizard.webp');
     expect(badgeChain(a, 44).slice(0, 2)).toEqual(['characters/kucuk/elf-female-wizard.webp', 'characters/elf-female-wizard.webp']);
     expect(badgeChain(a, 56)[0]).toBe('characters/elf-female-wizard.webp');

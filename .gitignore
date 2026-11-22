@@ -7,9 +7,26 @@ sim-sonuc/
 # Dış içerik paketleri (Görev E1): depoya girmez.
 data/custom/
 icerik/
+# Alt sınıf ad temizliği öncesi paket metin yedekleri (yerel).
+_yedek-metin-*/
 
 # Görev K21: soy maskesi inceleme sayfası (npm run soy-incele üretir).
 docs/sabah/soy-inceleme/
 
 # Kuyruk 19B M4: ham varlıklar depo dışı (kullanıcı yerelde depodan çıkarıyor; git'teki mevcut dosyalar bu satırdan etkilenmez).
 assets-ham/
+
+# Kuyruk U1b: yerel paket envanteri (node scripts/u1b-envanter.mjs --yaz üretir).
+harita/belgeler/U1B-ENVANTER-YEREL.md
+
+# Python derleme önbelleği (scripts/*.py çalıştırılınca oluşur)
+__pycache__/
+
+# Eşya ikon hattı: kontrol görselleri ve kontak sayfaları yerel çıktı (npm run esya-ikon -- --kontrol, npm run esya-ikon:rapor).
+harita/belgeler/ESYA-IKON-KONTROL/
+harita/belgeler/ESYA-IKON-KONTAK-*.png
+
+# Görsel döküm (npm run gorsel-dokum): sayfa PNG'leri, index.html, veri; rapor harita/belgeler/GORSEL-DOKUM.md commit edilir.
+gorsel-dokum/
+# Yeniden kesim öncesi jeton yedekleri (yerel; commit edilmez).
+public/characters/_yedek-*/

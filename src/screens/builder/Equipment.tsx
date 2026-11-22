@@ -19,6 +19,15 @@ import { ITEM_KINDS, ITEM_TIERS, itemKind, itemTier, type ItemKind, type ItemTie
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail } from '../../ui/equipmentText';
 import { getLang, t } from '../../i18n';
 import { Fold, InfoPop, toggle } from './shared';
+import { GlyphBadges, GlyphText } from '../../ui/glyph/Glyph';
+import { itemGlyphs } from '../../ui/glyph/glyphs';
+import { RecoBar, RecoTag, useRecoSets } from './Reco';
+import type { Item } from '../../data';
+
+/** Ortak simgeler (glif): eşya özeti ham SRD metnine (`it.text`) düşmediyse simgeli; düştüyse metin aynen. */
+const rawFallback = (it: Item): boolean => !!it.text && itemSummary(it).includes(it.text);
+const itemSumNode = (it: Item) => (rawFallback(it) ? itemSummary(it) : <GlyphText text={itemSummary(it)} />);
+const itemDescPart = (it: Item): string | undefined => (rawFallback(it) ? undefined : itemDetail(it));
 
 type SetFn = (patch: Partial<CharacterSheet>) => void;
 
@@ -43,6 +52,7 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
   const T = L.builder;
   const W = T.wiz;
   const lang = getLang();
+  const reco = useRecoSets();
   const cls = getClass(s.classId);
   const chosenArmor = armor.find((a) => a.name === s.armorName);
   const kind = chosenArmor?.type ?? 'none';
@@ -96,6 +106,7 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
   return (
     <>
       <CarryBar load={load} rule={carryRule} />
+      <RecoBar part="kit" />
 
       <section className="eq-block eq-chosen">
         <h3>{W.eqChosen}</h3>
@@ -139,6 +150,10 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
           {/* Görev K9d: eğitimsiz zırh ve kalkan uyarısı (SRD 5.2.1 Armor Training). */}
           {!armorProficient(s.classId, chosenArmor?.type, s.featureChoices, s) && <p className="warn armor-warn">{W.armorUntrained}</p>}
           {s.shield && !trained('shield') && <p className="warn armor-warn">{W.shieldUntrained}</p>}
+          {/* Görev TE99: kalkan + Two-Handed silah (savaşta kural sürümü 99+ saldırı yok; Lance binekte serbest). */}
+          {s.shield && chosenWeapons.some((w) => w.twoHanded && !w.twoHandedUnlessMounted) && (
+            <p className="warn armor-warn">{W.shieldTwoHanded(chosenWeapons.filter((w) => w.twoHanded && !w.twoHandedUnlessMounted).map((w) => w.name).join(', '))}</p>
+          )}
         </div>
 
         {/* Silahlar: sayı sınırı yok; ustalık hakkı ayrı sayaç. */}
@@ -154,7 +169,7 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
               const full = chosenM.length >= (right?.count ?? 0);
               return (
                 <li key={w.name} className="eq-row on">
-                  <span className="eq-main"><b>{w.name}</b><small>{weaponLine(w)}</small>{lb(w.weight)}</span>
+                  <span className="eq-main"><b>{w.name}<RecoTag show={!!reco?.weapons.includes(w.name)} /></b><small>{weaponLine(w)}</small>{lb(w.weight)}</span>
                   <InfoPop text={weaponTip(w)} />
                   {right && eligible.has(w.id) && mText && (
                     <button className={`mastery-btn star${mOn ? ' on' : ''}`} aria-pressed={mOn} disabled={!mOn && full}
@@ -201,8 +216,8 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
           <ul className="eq-list">
             {chosenItems.map((it) => (
               <li key={it.name} className="eq-row on">
-                <span className="eq-main"><b>{it.name}</b><small>{itemSummary(it)}</small>{lb(it.weight, it.weightApprox)}</span>
-                <InfoPop text={itemDetail(it)} />
+                <span className="eq-main"><b>{it.name}<GlyphBadges list={itemGlyphs(it)} /></b><small>{itemSumNode(it)}</small>{lb(it.weight, it.weightApprox)}</span>
+                <InfoPop text={itemDetail(it)} desc={itemDescPart(it)} />
                 <button className="ghost eq-remove" aria-label={W.removeItem(it.name)} onClick={() => set({ itemNames: toggle(s.itemNames, it.name, false) })}>×</button>
               </li>
             ))}
@@ -235,7 +250,7 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
                           {/* Görev K4: uyum (attunement) sınırı: dördüncü uyumlu eşya seçilemez; nedeni ipucunda ve listenin üstünde. */}
                           <input type="checkbox" checked={false} disabled={locked}
                             onChange={(e: { target: { checked: boolean } }) => set({ itemNames: toggle(s.itemNames, it.name, e.target.checked) })} />
-                          <span><b>{it.name}</b><small>{itemSummary(it)}</small>{it.attunement && <small className="mute">{W.attuneTag}</small>}{lb(it.weight, it.weightApprox)}</span>
+                          <span><b>{it.name}<GlyphBadges list={itemGlyphs(it)} /></b><small>{itemSumNode(it)}</small>{it.attunement && <small className="mute">{W.attuneTag}</small>}{lb(it.weight, it.weightApprox)}</span>
                         </label>
                       );
                     })}

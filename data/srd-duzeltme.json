@@ -1,0 +1,1047 @@
+{
+ "_not": "Görev D1 (kural sürümü 86, `src/battle/srdD1Surum.ts` `SRD_D1_VERSION`): SRD 5.2.1 veri düzeltmeleri. Veri dosyaları yeni (SRD) değerleri tutar; bu dosya her düzeltmenin eski değerini (85 ve altı savaşlar ve replay aynı sonucu versin diye; `src/battle/srdD1.ts`), yenisini ve SRD sayfasını (docs/SRD_CC_v5.2.1.pdf, stat bloğunun başladığı sayfa) tutar. `alan` yol: nokta alt alan, `[x]` dizide `id`/`name` = x olan nesne ya da x ile başlayan metin; `eski: null` = alan yoktu (eski sürümde silinir). Kaynak: harita/belgeler/SRD-VERI-DOGRULAMA.md; test src/data/srdCanavar.test.ts yenilerin veriyle aynı olduğunu denetler. Görev D2 (kural sürümü 88, `src/battle/srdD2Surum.ts`): kayıtta `surum: 88` = eski değer 88'den önce; çağrı verisi `data/summons.json` (kayıt `summons/<büyü>`, `creatures/<yaratık>`).",
+ "surum": 86,
+ "kayitlar": [
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "giant-centipede",
+   "alan": "abilities.str",
+   "eski": 10,
+   "yeni": 5,
+   "sayfa": 349
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "giant-centipede",
+   "alan": "abilities.int",
+   "eski": 10,
+   "yeni": 1,
+   "sayfa": 349
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "adult-white-dragon",
+   "alan": "abilities.con",
+   "eski": 10,
+   "yeni": 22,
+   "sayfa": 340
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "young-white-dragon",
+   "alan": "abilities.int",
+   "eski": 10,
+   "yeni": 6,
+   "sayfa": 340,
+   "not": "PDF'te INT kurtarması \"2\" işaretsiz basılmış; değiştirici −2 alındı (yetkinlik yok)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "bandit-captain",
+   "alan": "saves.wis",
+   "eski": null,
+   "yeni": 2,
+   "sayfa": 261
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "swarm-of-bats",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Charmed, Frightened, Grappled, Paralyzed, Petrified, Prone, Restrained, Stunned",
+   "sayfa": 361
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "swarm-of-ravens",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Charmed, Frightened, Grappled, Paralyzed, Petrified, Prone, Restrained, Stunned",
+   "sayfa": 362
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "cockatrice",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Petrified",
+   "sayfa": 275
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "swarm-of-insects",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Charmed, Frightened, Grappled, Paralyzed, Petrified, Prone, Restrained, Stunned",
+   "sayfa": 361
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "gibbering-mouther",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Prone",
+   "sayfa": 288
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "doppelganger",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Charmed",
+   "sayfa": 280
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "knight",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Frightened",
+   "sayfa": 302
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "vampire-familiar",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Charmed",
+   "sayfa": 334,
+   "not": "SRD \"Charmed (except from its vampire master)\": istisna modellenmedi"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "gorgon",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Exhaustion, Petrified",
+   "sayfa": 292
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "cloaker",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Frightened",
+   "sayfa": 274
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "deva",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Charmed, Exhaustion, Frightened",
+   "sayfa": 279
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "rakshasa",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Charmed, Frightened",
+   "sayfa": 317
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "planetar",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Charmed, Exhaustion, Frightened",
+   "sayfa": 315
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "shrieker-fungus",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Blinded, Charmed, Deafened, Frightened",
+   "sayfa": 286
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "swarm-of-rats",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Charmed, Frightened, Grappled, Paralyzed, Petrified, Prone, Restrained, Stunned",
+   "sayfa": 362
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "violet-fungus",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Blinded, Charmed, Deafened, Frightened",
+   "sayfa": 286
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "gray-ooze",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Blinded, Charmed, Deafened, Exhaustion, Frightened, Grappled, Prone, Restrained",
+   "sayfa": 293
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "death-dog",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Blinded, Charmed, Deafened, Frightened, Stunned, Unconscious",
+   "sayfa": 279
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "swarm-of-piranhas",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Charmed, Frightened, Grappled, Paralyzed, Petrified, Prone, Restrained, Stunned",
+   "sayfa": 362
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "swarm-of-venomous-snakes",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Charmed, Frightened, Grappled, Paralyzed, Petrified, Prone, Restrained, Stunned",
+   "sayfa": 362
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "ettin",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Blinded, Charmed, Deafened, Frightened, Stunned, Unconscious",
+   "sayfa": 284
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "night-hag",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Charmed",
+   "sayfa": 311
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "hydra",
+   "alan": "unsupported[Durum bağışıklığı:]",
+   "eski": null,
+   "yeni": "Durum bağışıklığı: Blinded, Charmed, Deafened, Frightened, Stunned, Unconscious",
+   "sayfa": 300
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "clay-golem",
+   "alan": "attacks[Slam].repeat",
+   "eski": 5,
+   "yeni": 2,
+   "sayfa": 274,
+   "not": "SRD \"makes two Slam attacks, or … three … if it used Hasten this turn\"; Hasten turu data/multiattack.json ifUsed"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "goblin-warrior",
+   "alan": "types",
+   "eski": "humanoid",
+   "yeni": "fey",
+   "sayfa": 290,
+   "not": "eski kayıt \"temadan\" listesindeydi"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "hill-giant",
+   "alan": "types",
+   "eski": "fey",
+   "yeni": "giant",
+   "sayfa": 298,
+   "not": "eski kayıt \"PDF'ten\" işaretliydi (komşu bloğun tür satırı)"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "copper-dragon-wyrmling",
+   "alan": "types",
+   "eski": "monstrosity",
+   "yeni": "dragon",
+   "sayfa": 275,
+   "not": "eski kayıt \"PDF'ten\" işaretliydi (komşu bloğun tür satırı)"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "ancient-red-dragon",
+   "alan": "types",
+   "eski": "monstrosity",
+   "yeni": "dragon",
+   "sayfa": 319,
+   "not": "eski kayıt \"PDF'ten\" işaretliydi (komşu bloğun tür satırı)"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "goblin-minion",
+   "alan": "types",
+   "eski": "humanoid",
+   "yeni": "fey",
+   "sayfa": 290,
+   "not": "eski kayıt \"temadan\" listesindeydi"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "giant-owl",
+   "alan": "types",
+   "eski": "beast",
+   "yeni": "celestial",
+   "sayfa": 352,
+   "not": "eski kayıt \"temadan\" listesindeydi"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "giant-eagle",
+   "alan": "types",
+   "eski": "beast",
+   "yeni": "celestial",
+   "sayfa": 350,
+   "not": "eski kayıt \"PDF'ten\" işaretliydi (komşu bloğun tür satırı)"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "specter",
+   "alan": "types",
+   "eski": "celestial",
+   "yeni": "undead",
+   "sayfa": 327,
+   "not": "eski kayıt \"PDF'ten\" işaretliydi (komşu bloğun tür satırı)"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "pegasus",
+   "alan": "types",
+   "eski": "monstrosity",
+   "yeni": "celestial",
+   "sayfa": 313,
+   "not": "eski kayıt \"temadan\" listesindeydi"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "hobgoblin-captain",
+   "alan": "types",
+   "eski": "humanoid",
+   "yeni": "fey",
+   "sayfa": 299,
+   "not": "eski kayıt \"temadan\" listesindeydi"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "wight",
+   "alan": "types",
+   "eski": "dragon",
+   "yeni": "undead",
+   "sayfa": 341,
+   "not": "eski kayıt \"PDF'ten\" işaretliydi (komşu bloğun tür satırı)"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "barbed-devil",
+   "alan": "types",
+   "eski": "monstrosity",
+   "yeni": "fiend",
+   "sayfa": 262,
+   "not": "eski kayıt \"PDF'ten\" işaretliydi (komşu bloğun tür satırı)"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "wraith",
+   "alan": "types",
+   "eski": "monstrosity",
+   "yeni": "undead",
+   "sayfa": 342,
+   "not": "eski kayıt \"PDF'ten\" işaretliydi (komşu bloğun tür satırı)"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "invisible-stalker",
+   "alan": "types",
+   "eski": "monstrosity",
+   "yeni": "elemental",
+   "sayfa": 301,
+   "not": "eski kayıt \"temadan\" listesindeydi"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "bone-devil",
+   "alan": "types",
+   "eski": "dragon",
+   "yeni": "fiend",
+   "sayfa": 267,
+   "not": "eski kayıt \"PDF'ten\" işaretliydi (komşu bloğun tür satırı)"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "guardian-naga",
+   "alan": "types",
+   "eski": "monstrosity",
+   "yeni": "celestial",
+   "sayfa": 296,
+   "not": "eski kayıt \"temadan\" listesindeydi"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "efreeti",
+   "alan": "types",
+   "eski": "fiend",
+   "yeni": "elemental",
+   "sayfa": 283,
+   "not": "eski kayıt \"PDF'ten\" işaretliydi (komşu bloğun tür satırı)"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "gray-ooze",
+   "alan": "types",
+   "eski": "dragon",
+   "yeni": "ooze",
+   "sayfa": 293,
+   "not": "eski kayıt \"PDF'ten\" işaretliydi (komşu bloğun tür satırı)"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "death-dog",
+   "alan": "types",
+   "eski": "beast",
+   "yeni": "monstrosity",
+   "sayfa": 279,
+   "not": "eski kayıt \"temadan\" listesindeydi"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "giant-elk",
+   "alan": "types",
+   "eski": "beast",
+   "yeni": "celestial",
+   "sayfa": 351,
+   "not": "eski kayıt \"temadan\" listesindeydi"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "chuul",
+   "alan": "types",
+   "eski": "monstrosity",
+   "yeni": "aberration",
+   "sayfa": 273,
+   "not": "eski kayıt \"temadan\" listesindeydi"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "night-hag",
+   "alan": "types",
+   "eski": "fey",
+   "yeni": "fiend",
+   "sayfa": 311,
+   "not": "eski kayıt \"temadan\" listesindeydi"
+  },
+  {
+   "dosya": "data/canavar-turleri.json",
+   "kayit": "otyugh",
+   "alan": "types",
+   "eski": "monstrosity",
+   "yeni": "aberration",
+   "sayfa": 313,
+   "not": "eski kayıt \"PDF'ten\" işaretliydi (komşu bloğun tür satırı)"
+  },
+  {
+   "dosya": "data/yuzme-hizi.json",
+   "kayit": "archelon",
+   "alan": "hiz",
+   "eski": 40,
+   "yeni": 80,
+   "sayfa": 344,
+   "not": "eski değer bellekten yazılmıştı"
+  },
+  {
+   "dosya": "data/yuzme-hizi.json",
+   "kayit": "dragon-turtle",
+   "alan": "hiz",
+   "eski": 40,
+   "yeni": 50,
+   "sayfa": 281,
+   "not": "eski değer bellekten yazılmıştı"
+  },
+  {
+   "dosya": "data/yuzme-hizi.json",
+   "kayit": "giant-shark",
+   "alan": "hiz",
+   "eski": 50,
+   "yeni": 60,
+   "sayfa": 353,
+   "not": "eski değer bellekten yazılmıştı"
+  },
+  {
+   "dosya": "data/yuzme-hizi.json",
+   "kayit": "giant-venomous-snake",
+   "alan": "hiz",
+   "eski": 30,
+   "yeni": 40,
+   "sayfa": 354,
+   "not": "eski değer bellekten yazılmıştı"
+  },
+  {
+   "dosya": "data/yuzme-hizi.json",
+   "kayit": "gibbering-mouther",
+   "alan": "hiz",
+   "eski": 10,
+   "yeni": 20,
+   "sayfa": 288,
+   "not": "eski değer bellekten yazılmıştı"
+  },
+  {
+   "dosya": "data/yuzme-hizi.json",
+   "kayit": "polar-bear",
+   "alan": "hiz",
+   "eski": 30,
+   "yeni": 40,
+   "sayfa": 359,
+   "not": "eski değer bellekten yazılmıştı"
+  },
+  {
+   "dosya": "data/yuzme-hizi.json",
+   "kayit": "reef-shark",
+   "alan": "hiz",
+   "eski": 40,
+   "yeni": 30,
+   "sayfa": 360,
+   "not": "eski değer bellekten yazılmıştı"
+  },
+  {
+   "dosya": "data/canavar-yetenekleri.json",
+   "kayit": "elephant",
+   "alan": "abilities[trample].dc",
+   "eski": 12,
+   "yeni": 16,
+   "sayfa": 348
+  },
+  {
+   "dosya": "data/canavar-yetenekleri.json",
+   "kayit": "elephant",
+   "alan": "abilities[trample].damage",
+   "eski": "2d10+4",
+   "yeni": "2d10+6",
+   "sayfa": 348
+  },
+  {
+   "dosya": "data/canavar-yetenekleri.json",
+   "kayit": "giant-frog",
+   "alan": "abilities[swallow].save",
+   "eski": "str",
+   "yeni": null,
+   "sayfa": 351
+  },
+  {
+   "dosya": "data/canavar-yetenekleri.json",
+   "kayit": "giant-frog",
+   "alan": "abilities[swallow].dc",
+   "eski": 11,
+   "yeni": null,
+   "sayfa": 351
+  },
+  {
+   "dosya": "data/canavar-yetenekleri.json",
+   "kayit": "giant-frog",
+   "alan": "abilities[swallow].small",
+   "eski": true,
+   "yeni": null,
+   "sayfa": 351
+  },
+  {
+   "dosya": "data/canavar-yetenekleri.json",
+   "kayit": "giant-frog",
+   "alan": "abilities[swallow].maxSize",
+   "eski": null,
+   "yeni": "S",
+   "sayfa": 351
+  },
+  {
+   "dosya": "data/canavar-yetenekleri.json",
+   "kayit": "giant-frog",
+   "alan": "abilities[swallow].at",
+   "eski": null,
+   "yeni": "end",
+   "sayfa": 351
+  },
+  {
+   "dosya": "data/canavar-yetenekleri.json",
+   "kayit": "giant-frog",
+   "alan": "abilities[swallow].disgorge",
+   "eski": null,
+   "yeni": true,
+   "sayfa": 351
+  },
+  {
+   "dosya": "data/canavar-yetenekleri.json",
+   "kayit": "giant-toad",
+   "alan": "abilities[swallow].save",
+   "eski": "str",
+   "yeni": null,
+   "sayfa": 354
+  },
+  {
+   "dosya": "data/canavar-yetenekleri.json",
+   "kayit": "giant-toad",
+   "alan": "abilities[swallow].dc",
+   "eski": 13,
+   "yeni": null,
+   "sayfa": 354
+  },
+  {
+   "dosya": "data/canavar-yetenekleri.json",
+   "kayit": "giant-toad",
+   "alan": "abilities[swallow].at",
+   "eski": null,
+   "yeni": "end",
+   "sayfa": 354
+  },
+  {
+   "dosya": "data/canavar-yetenekleri.json",
+   "kayit": "cat",
+   "alan": "passive.jump.long",
+   "eski": 10,
+   "yeni": 15,
+   "sayfa": 346
+  },
+  {
+   "dosya": "data/canavar-yetenekleri.json",
+   "kayit": "remorhaz",
+   "alan": "abilities[swallow].dc",
+   "eski": 17,
+   "yeni": 19,
+   "sayfa": 319
+  },
+  {
+   "dosya": "data/canavar-yetenekleri.json",
+   "kayit": "remorhaz",
+   "alan": "abilities[swallow].dice2",
+   "eski": "5d6",
+   "yeni": "3d6",
+   "sayfa": 319
+  },
+  {
+   "dosya": "data/canavar-yetenekleri.json",
+   "kayit": "purple-worm",
+   "alan": "abilities[swallow].save",
+   "eski": "dex",
+   "yeni": "str",
+   "sayfa": 316
+  },
+  {
+   "dosya": "data/canavar-yetenekleri.json",
+   "kayit": "ice-mephit",
+   "alan": "passive.deathBurst.dice",
+   "eski": "2d6",
+   "yeni": "2d4",
+   "sayfa": 307
+  },
+  {
+   "dosya": "data/multiattack.json",
+   "kayit": "clay-golem",
+   "alan": "total",
+   "eski": 3,
+   "yeni": 2,
+   "sayfa": 274
+  },
+  {
+   "dosya": "data/multiattack.json",
+   "kayit": "clay-golem",
+   "alan": "ifUsed",
+   "eski": null,
+   "yeni": {
+    "ability": "hasten",
+    "total": 3
+   },
+   "sayfa": 274
+  },
+  {
+   "dosya": "data/summons.json",
+   "kayit": "summons/find-familiar",
+   "alan": "forms",
+   "eski": [
+    "bat",
+    "cat",
+    "frog",
+    "hawk",
+    "lizard",
+    "octopus",
+    "owl",
+    "rat",
+    "raven",
+    "spider",
+    "weasel"
+   ],
+   "yeni": [
+    "bat",
+    "cat",
+    "frog",
+    "hawk",
+    "lizard",
+    "octopus",
+    "owl",
+    "rat",
+    "raven",
+    "spider",
+    "weasel",
+    "baboon",
+    "badger",
+    "crab",
+    "deer",
+    "eagle",
+    "giant-fire-beetle",
+    "goat",
+    "hyena",
+    "jackal",
+    "piranha",
+    "scorpion",
+    "seahorse",
+    "vulture"
+   ],
+   "sayfa": 130,
+   "surum": 88,
+   "not": "SRD \"or another Beast that has a Challenge Rating of 0\": 13 biçim eklendi (SRD tablosunda CR 0 Beast)"
+  },
+  {
+   "dosya": "data/summons.json",
+   "kayit": "creatures/draconic-spirit",
+   "alan": "unsupported",
+   "eski": [
+    "Shared Resistances",
+    "durum bağışıklıkları (Charmed, Frightened, Poisoned)",
+    "Blindsight",
+    "yüzme hızı"
+   ],
+   "yeni": [
+    "Shared Resistances",
+    "Duyu: Blindsight 30 ft",
+    "Durum bağışıklığı: Charmed, Frightened, Poisoned"
+   ],
+   "sayfa": 166,
+   "surum": 88,
+   "not": "Blindsight ve durum bağışıklığı motorun okuduğu \"Duyu:\"/\"Durum bağışıklığı:\" notlarıyla; Shared Resistances uygulanmıyor (kalan fark)"
+  },
+  {
+   "dosya": "data/summons.json",
+   "kayit": "creatures/draconic-spirit",
+   "alan": "swimFt",
+   "eski": null,
+   "yeni": 30,
+   "sayfa": 166,
+   "surum": 88,
+   "not": "Speed 30 ft., Fly 60 ft., Swim 30 ft."
+  },
+  {
+   "dosya": "data/summons.json",
+   "kayit": "creatures/animated-object",
+   "alan": "immunities",
+   "eski": null,
+   "yeni": [
+    "poison",
+    "psychic"
+   ],
+   "sayfa": 109,
+   "surum": 88
+  },
+  {
+   "dosya": "data/summons.json",
+   "kayit": "creatures/animated-object",
+   "alan": "unsupported",
+   "eski": null,
+   "yeni": [
+    "Duyu: Blindsight 30 ft",
+    "Durum bağışıklığı: Charmed, Exhaustion, Frightened, Paralyzed, Poisoned"
+   ],
+   "sayfa": 109,
+   "surum": 88
+  },
+  {
+   "dosya": "data/summons.json",
+   "kayit": "creatures/draconic-spirit",
+   "alan": "sharedResistance",
+   "eski": null,
+   "yeni": true,
+   "sayfa": 166,
+   "surum": 89,
+   "not": "Shared Resistances: \"choose one of its Resistances. You have Resistance to the chosen damage type until the spell ends.\" Büyücüye seçilen türe direnç (büyünün tek hasar türü seçimi; `summons.ts` `executeSummon`)"
+  },
+  {
+   "dosya": "data/summons.json",
+   "kayit": "creatures/draconic-spirit",
+   "alan": "unsupported",
+   "eski": [
+    "Shared Resistances",
+    "Duyu: Blindsight 30 ft",
+    "Durum bağışıklığı: Charmed, Frightened, Poisoned"
+   ],
+   "yeni": [
+    "Duyu: Blindsight 30 ft",
+    "Durum bağışıklığı: Charmed, Frightened, Poisoned"
+   ],
+   "sayfa": 166,
+   "surum": 89,
+   "not": "Shared Resistances uygulandı, kalan fark notundan çıktı"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "bat",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 345,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "hawk",
+   "alan": "attacks[Talons].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 355,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "homunculus",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 299,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "owl",
+   "alan": "attacks[Talons].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 358,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "raven",
+   "alan": "attacks[Beak].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 359,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "flying-snake",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 348,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "sprite",
+   "alan": "attacks[Enchanting Bow].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 329,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "awakened-shrub",
+   "alan": "attacks[Rake].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 260,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "badger",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 345,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "cat",
+   "alan": "attacks[Scratch].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 346,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "crab",
+   "alan": "attacks[Claw].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 347,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "frog",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 349,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "giant-fire-beetle",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 351,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "goat",
+   "alan": "attacks[Ram].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 355,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "lizard",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 357,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "octopus",
+   "alan": "attacks[Tentacles].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 358,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "piranha",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 358,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "rat",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 359,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "scorpion",
+   "alan": "attacks[Sting].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 360,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "spider",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 361,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "weasel",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 364,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "adult-gold-dragon",
+   "alan": "attacks[Weakening Breath]",
+   "eski": {
+    "name": "Spellcasting",
+    "bonus": 0,
+    "damage": "The dragon casts one of the following spells, requiring no Material components and using Charisma as the spellcasting ability (spell save DC 21, +13 to hit with spell attacks): At Will: Detect Magic, Guiding Bolt (level 2 version), Shapechange (Beast or Humanoid form only, no Temporary Hit Points ga",
+    "save": {
+     "ability": "str",
+     "dc": 21,
+     "halfOnSave": false
+    },
+    "ranged": true,
+    "range": [
+     60,
+     60
+    ],
+    "rider": "The target has Disadvantage on Strength-based D20 Tests and subtracts 3 (1d6) from its damage rolls. It repeats the save at the end of each of its turns, ending the effect on itself on a success. After 1 minute, it succeeds automatically.",
+    "repeat": 0
+   },
+   "yeni": "Weakening Breath (SRD adı ve metni; 60/90 ft koni)",
+   "sayfa": 291,
+   "surum": 103,
+   "not": "Gece kuyruğu Aşama 4 (KAPSAM103): SRD aktarımında saldırı adı 'Spellcasting' (Weakening Breath metni); 103+ SRD adı ve metni (60/90 ft koni), Multiattack yerine geçmesi çalışır"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "ancient-gold-dragon",
+   "alan": "attacks[Weakening Breath]",
+   "eski": {
+    "name": "Spellcasting",
+    "bonus": 0,
+    "damage": "The dragon casts one of the following spells, requiring no Material components and using Charisma as the spellcasting ability (spell save DC 24, +16 to hit with spell attacks): At Will: Detect Magic, Guiding Bolt (level 4 version), Shapechange (Beast or Humanoid form only, no Temporary Hit Points ga",
+    "save": {
+     "ability": "str",
+     "dc": 24,
+     "halfOnSave": false
+    },
+    "ranged": true,
+    "range": [
+     90,
+     90
+    ],
+    "rider": "The target has Disadvantage on Strength-based D20 Tests and subtracts 5 (1d10) from its damage rolls. It repeats the save at the end of each of its turns, ending the effect on itself on a success. After 1 minute, it succeeds automatically.",
+    "repeat": 0
+   },
+   "yeni": "Weakening Breath (SRD adı ve metni; 60/90 ft koni)",
+   "sayfa": 292,
+   "surum": 103,
+   "not": "Gece kuyruğu Aşama 4 (KAPSAM103): SRD aktarımında saldırı adı 'Spellcasting' (Weakening Breath metni); 103+ SRD adı ve metni (60/90 ft koni), Multiattack yerine geçmesi çalışır"
+  }
+ ]
+}

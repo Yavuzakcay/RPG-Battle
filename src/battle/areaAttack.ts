@@ -34,10 +34,12 @@ import { attackEffect, saveMode, timedCondition } from './durations';
 import { saveDice } from './effectDice';
 import { riderConditionEvents } from './grapple';
 import { hexLabel, terrainAt } from './movement';
-import { damagedReactions, hunterDefenseEvents } from './reactions';
+import { cuttingWordsDamage, damagedReactions, hunterDefenseEvents } from './reactions';
 import { applyEvents } from './reduce';
-import { riderOf } from './riders';
+import { attackConditions, riderOf } from './riders';
 import type { BattleEvent, BattleState, Combatant } from './types';
+import { formMonsterId } from './shapeMonsterCore';
+import { saveVs } from './te99Surum';
 
 export type AreaTargetSpec = AreaSpec & { targets: 'all' | 'enemies' };
 
@@ -118,20 +120,26 @@ export function areaSaveEvents(state: BattleState, actor: Combatant, pick0: Area
     // Görev Y1: yüzey tepkimeleri için hasar türü, zorluk sınıfı ve zar.
     ...(save.damageType ? { damageType: save.damageType } : {}), dc: save.dc, ...(save.damageDice ? { dice: save.damageDice } : {}),
   }];
-  const damage = save.damageDice && pick.reached.length > 0
+  const damage0 = save.damageDice && pick.reached.length > 0
     ? rollDice(save.damageDice, rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };
+  // Görev B94 (sürüm 94+): Cutting Words hasar zarından düşer (bir kez, bütün hedeflere).
+  const cw = cuttingWordsDamage(applyEvents(state, events), actor, damage0.total, pick.reached.map((x) => x.c), save.label, rng);
+  events.push(...cw.events);
+  const damage = { ...damage0, total: cw.total };
   let current = applyEvents(state, events);
   for (const { c, cover } of pick.reached) {
     const t = current.combatants[c.id];
     if (!t || !isTargetable(t)) continue;
     const autoFail = (save.ability === 'str' || save.ability === 'dex') && autoFailsStrDexSave(t.conditions);
     const dexCover = save.ability === 'dex' ? cover : 0;
-    const r = resolveSave({ extra: saveDice(t, save.ability), modifier: t.saves[save.ability] + dexCover, dc: save.dc, mode: saveMode(mode, t, save.ability, actor, { damage: save.damageType }), autoFail },
+    const r = resolveSave({ extra: saveDice(t, save.ability), modifier: t.saves[save.ability] + dexCover, dc: save.dc, mode: saveMode(mode, t, save.ability, actor, { damage: save.damageType }), autoFail,
+      // Görev TE99 (99+): canavar alan saldırısının durumlarına tür save avantajı.
+      ...(save.monster ? saveVs(t, attackConditions(formMonsterId(actor), save.monster.attackName, attackEffect(formMonsterId(actor), save.monster.attackName))) : {}) },
       rollTag(rng, { by: t.id }));
     const amount = saveDamage(t, save.ability, r.success, damage.total, !!save.halfOnSave);
     // Kuyruk 19 (11–20): Superior Hunter's Defense alan hasarında da (SRD "hasar aldığında"): tepkiyle o türe direnç.
     const shd = amount > 0 ? hunterDefenseEvents(current, t, actor.id, save.damageType) : [];
-    const prof0 = profileIn(state, t, !!save.fromSpell);
+    const prof0 = profileIn(state, t, !!save.fromSpell, actor);
     const prof = shd.length && save.damageType ? { ...prof0, resistances: [...prof0.resistances, save.damageType] } : prof0;
     const adj = amount > 0 ? adjustDamage(amount, save.damageType, prof) : { amount: 0, note: null };
     const fx = damageEffects(t, adj.amount, save.damageType ?? '', false, rng);
@@ -147,9 +155,9 @@ export function areaSaveEvents(state: BattleState, actor: Combatant, pick0: Area
     const local: BattleEvent[] = [...shd, ev];
     if (save.monster && !r.success) {
       // Canavar saldırısının süreli etkisi ve rider durumları (save başarısızsa; tek hedefli yolla aynı).
-      const effect = attackEffect(actor.monsterId, save.monster.attackName);
+      const effect = attackEffect(formMonsterId(actor), save.monster.attackName);
       if (effect && fx.hpAfter > 0) local.push(timedCondition(current, t.id, effect, actor.id, `${actor.name}: ${save.label}`));
-      local.push(...riderConditionEvents(current, actor, { ...t, hp: fx.hpAfter }, riderOf(actor.monsterId, save.monster.attackName), save.monster.attackName, rng));
+      local.push(...riderConditionEvents(current, actor, { ...t, hp: fx.hpAfter }, riderOf(formMonsterId(actor), save.monster.attackName), save.monster.attackName, rng));
     }
     events.push(...local);
     current = applyEvents(current, local);
@@ -168,7 +176,7 @@ export function monsterAreaOf(actor: Combatant, index: number, state?: Pick<Batt
   const atk = actor.attacks[index];
   if (!atk?.area || !atk.save) return null;
   // Kuyruk A2 (sürüm 30+): hasarsız alan saldırısına veriden hasar (Yarı-Ejderha nefesi).
-  const a2d = !atk.damageDice && state ? a2AreaDamage(state, actor.monsterId, atk.name) : undefined;
+  const a2d = !atk.damageDice && state ? a2AreaDamage(state, formMonsterId(actor), atk.name) : undefined;
   return {
     spec: atk.area,
     save: { label: atk.name, ability: atk.save.ability, dc: atk.save.dc, halfOnSave: atk.save.halfOnSave,

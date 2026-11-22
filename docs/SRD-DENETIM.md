@@ -13,7 +13,7 @@
 - **Feat**: tam 17
 - **Tür özelliği**: tam 38, savaş dışı 2, kapsam dışı 1
 - **Geçmiş**: tam 4
-- **Savaş kuralı**: tam 8
+- **Savaş kuralı**: kısmi 1, tam 7
 - **Büyü**: tam 226, savaş dışı 113
 - **Canavar yeteneği**: tam 139, savaş dışı 55
 
@@ -490,7 +490,7 @@
 | Geçmiş | Criminal | tam | köken feat'i alert; beceriler Sleight of Hand, Stealth; araç Thieves’ Tools |
 | Geçmiş | Sage | tam | köken feat'i magic-initiate; beceriler Arcana, History; araç Calligrapher’s Supplies |
 | Geçmiş | Soldier | tam | köken feat'i savage-attacker; beceriler Athletics, Intimidation; araç Choose one kind of Gaming Set (see “Equipment”) |
-| Savaş kuralı | Durumlar (15) | tam | src/rules/conditions.ts, kural sürümü 2+ (Blinded…Unconscious); Exhaustion 5.2.1 (−2×d20, −5 ft×, 6'da ölüm) |
+| Savaş kuralı | Durumlar (15) | kısmi | src/rules/conditions.ts, kural sürümü 2+ (Blinded…Unconscious); Exhaustion 5.2.1 (−2×d20, −5 ft×, 6'da ölüm). Eksikler (2026-11-20 genel denetim, sürüm 94): Unconscious Prone içerm |
 | Savaş kuralı | Concentration | tam | hasar save'i DC max(10, yarı), Incapacitated bitirir |
 | Savaş kuralı | Opportunity Attack istisnaları | tam | Disengage, ışınlanma, zorla hareket, görmediği hedef |
 | Savaş kuralı | Cover (yarım, üç çeyrek, tam) | tam | cover.ts; Kuyruk 19: eşya/özellik yarım siperi |
@@ -840,8 +840,8 @@
 | Canavar yeteneği | Boyut (çok altıgen) (156) | tam | multiHex bayrağı (Görev A6) |
 | Canavar yeteneği | Hız (107) | tam | monsterTraits.ts / önceki kuyruklar |
 | Canavar yeteneği | Duyu (101) | tam | monsterTraits.ts / önceki kuyruklar |
+| Canavar yeteneği | Durum bağışıklığı (98) | tam | monsterTraits.ts / önceki kuyruklar |
 | Canavar yeteneği | Multiattack (bileşim, yerine geçen, ek kullanım) (96) | tam | data/multiattack.json |
-| Canavar yeteneği | Durum bağışıklığı (75) | tam | monsterTraits.ts / önceki kuyruklar |
 | Canavar yeteneği | Spellcasting (47) | tam | data/canavar-buyuleri.json (6.+ seviye büyüler görev 3+6 ile) |
 | Canavar yeteneği | Magic Resistance (34) | tam | monsterTraits.ts / önceki kuyruklar |
 | Canavar yeteneği | Legendary Resistance (32) | tam | monsterTraits.ts / önceki kuyruklar |

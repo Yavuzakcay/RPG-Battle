@@ -34,8 +34,14 @@ describe('Serüven ekranı', () => {
   it('K46/K47: üst çubukta Dünya haritası düğmesi (görüntüleyici tembel parça, açılınca yüklenir)', () => {
     expect(view(begin())).toContain('Dünya haritası');
   });
-  it('başlangıç formu karakterleri listeler; ana menüde Serüven kartı', () => {
+  it('başlangıç formu karakterleri listeler; ana menüde Serüven kartı (ANA-MENU-SADELESTIR: `seruvenMenu` bayrağı açıkken)', () => {
     expect(renderToStaticMarkup(<SeruvenScreen characters={[]} onBack={() => {}} onBattle={() => {}} />)).toContain('karakter oluşturun');
-    expect(renderToStaticMarkup(<Home onPlayer={() => {}} onGm={() => {}} onStatus={() => {}} onSeruven={() => {}} />)).toContain('Serüven');
+    const g = globalThis as { localStorage?: unknown };
+    const prev = g.localStorage;
+    const mem = new Map<string, string>([['rpg-battle-deneysel', JSON.stringify({ seruvenMenu: true })]]);
+    g.localStorage = { getItem: (k: string) => mem.get(k) ?? null, setItem: (k: string, v: string) => { mem.set(k, v); }, removeItem: (k: string) => { mem.delete(k); } };
+    try {
+      expect(renderToStaticMarkup(<Home onPlayer={() => {}} onGm={() => {}} onStatus={() => {}} onSeruven={() => {}} />)).toContain('Serüven');
+    } finally { g.localStorage = prev; }
   });
 });

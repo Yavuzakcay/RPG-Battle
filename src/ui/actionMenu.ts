@@ -34,13 +34,13 @@ export type MenuArea = 'top' | 'move' | 'items' | 'special' | 'hidden';
 export interface Place { area: MenuArea; group?: SpecialGroup }
 
 /** Hareket alt menüsüne giden öğeler (yürü, koş… ve ayağa kalkma / kurtulma / kat, binek, düşme). */
-const MOVE_KEYS = new Set(['walk', 'dash', 'disengage', 'jump', 'stand', 'escape_grapple', 'escape', 'escapeSpell', 'floor', 'mount', 'dismount', 'drop', 'fissureClimb', 'shift',
+const MOVE_KEYS = new Set(['walk', 'dash', 'disengage', 'jump', 'stand', 'escape_grapple', 'release_grapple', 'drop_prone', 'escape', 'escapeSpell', 'floor', 'mount', 'dismount', 'drop', 'fissureClimb', 'shift',
   // Görev MB6b: kontrollü bineğin eylemleri (binicinin Hareket alt menüsünde "Binek: …").
   'mountDash', 'mountDisengage', 'mountDodge']);
 /** Eşya alt menüsü: iksirler (`item-<kimlik>`), nesne ve fırlatma. */
-const ITEM_KEYS = new Set(['object', 'throwObject']);
+const ITEM_KEYS = new Set(['object', 'throwObject', 'shield_toggle']);
 /** "Diğer" grubu: her zaman yapılabilen temel eylemler. */
-const OTHER_KEYS = new Set(['dodge', 'help', 'hide', 'shove', 'search', 'distract', 'pull', 'srd19:stonecunning']);
+const OTHER_KEYS = new Set(['ready', 'dodge', 'help', 'hide', 'shove', 'search', 'distract', 'pull', 'srd19:stonecunning']);
 /** Şifa ve koruma özellikleri (anahtar parçası). */
 const HEAL_RE = /(lay-on-hands|divine-spark|preserve-life|healing-touch|wholeness|tireless|inspiration|natures-veil|lands-aid|sanctuary|vigil|vitality|sacred-weapon|nimbus|awakening|forge-bond)/;
 const HEAL_KEYS = new Set(['wind']);
@@ -109,7 +109,7 @@ export function pageOf<T>(items: T[], page: number, size = 6): { shown: T[]; mor
   return { shown: items.slice(p * per, p * per + per), more: true, pages };
 }
 
-/** Büyü sekmeleri: 0. seviye "Hile", sonra seviye başına bir grup; yalnız dolu gruplar. */
+/** Büyü sekmeleri: 0. seviye "Cantrip", sonra seviye başına bir grup; yalnız dolu gruplar. */
 export function spellGroups<T extends { level: number }>(list: T[]): Array<{ level: number; items: T[] }> {
   const by = new Map<number, T[]>();
   for (const s of list) by.set(s.level, [...(by.get(s.level) ?? []), s]);

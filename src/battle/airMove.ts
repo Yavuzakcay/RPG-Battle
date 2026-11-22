@@ -24,7 +24,9 @@ import { afterStepEvents } from './turnHooks';
 import { auraStepEvents, opportunityAttacks, withPos } from './features';
 import { flySpeed } from './flight';
 import { monsterStepEvents } from './monsterSteps';
-import { bodyEnterEvents, checkMover, hexLabel, moveCostFn, occupantAt, terrainAt } from './movement';
+import { blockingOccupant, bodyEnterEvents, checkMover, hexLabel, moveCostFn, occupantAt, terrainAt } from './movement';
+import { swarm95On } from './swarm95Surum';
+import { isSwarm } from './swarmShare';
 import { applyEvents, speedHexes } from './reduce';
 import { zoneStepEvents } from './zones';
 import type { BattleEvent, BattleState, Combatant } from './types';
@@ -70,9 +72,11 @@ function searchCtx(state: BattleState, actor: Combatant) {
     return true;
   };
   /** (h, l) düzeyinde yaratığın hücresi: düşman engel (geçilmez), dost geçilir (durulmaz). */
+  // Görev SWARM95 (95+): sürü düşman hücresinden düzey değiştirir; sürünün hücresinde de değiştirilir (SRD Swarm).
+  const swarm95 = swarm95On(state);
   const blockedBy = (h: Offset, l: number, foesOnly: boolean) => {
     const band = bandOf(actor, levelToFt(l));
-    return others.find((c) => (!foesOnly || c.side !== actor.side) && covers(state, c, h) && bandsOverlap(bandOf(c), band));
+    return others.find((c) => (!foesOnly || c.side !== actor.side) && covers(state, c, h) && bandsOverlap(bandOf(c), band) && !(swarm95 && (isSwarm(actor) || isSwarm(c))));
   };
   return { fnAt, capAt, blockedBy, slabOk };
 }
@@ -85,7 +89,8 @@ function canStop(state: BattleState, actor: Combatant, h: Offset, l: number, cap
     if (t.outOfBounds) return 'Harita dışına çıkılamaz.';
     // Kuyruk K72 (sürüm 60+): sur tepesinde (duruş yüzeyi) durulur.
     if (t.movement === 'blocked' && !(t.flyersPass && l > 0) && !standHeights(state, b).includes(levelToFt(l))) return `${hexLabel(b)} üzerinde durulmaz (${t.name}).`;
-    const o = occupantAt(state, b, actor.id, bandOf(actor, levelToFt(l)));
+    // Görev SWARM95 (95+): SRD Swarm altıgen paylaşımı.
+    const o = blockingOccupant(state, actor, b, bandOf(actor, levelToFt(l)));
     if (o) return `${hexLabel(b)} dolu (${o.name}).`;
   }
   return null;
@@ -247,7 +252,13 @@ export function executeAirMove(state: BattleState, actor: Combatant, to: Offset,
   const setAlt = (s: BattleState, ft: number) => applyEvents(s, [{ type: 'altitude_changed', targetId: actor.id, altitudeFt: ft, label: '' }]);
   const walked: Step[] = [];
   let prev: AirNode = { hex: from, level: l0 };
+  // Hazırla (Ready, sürüm 90): yürüyüş sırasında hazırlanan hareketle yola giren düşmanın hücresinden geçilmez (movement.ts ile aynı).
+  let readyMoved = false;
   for (const step of plan.path) {
+    if (readyMoved && !sameHex(step.hex, prev.hex)) {
+      const occ = occupantAt(current, step.hex, actor.id);
+      if (occ && occ.side !== actor.side) break;
+    }
     const oa = opportunityAttacks(current, actor.id, { from: prev.hex, to: step.hex, fromAlt: levelToFt(prev.level), toAlt: levelToFt(step.level) }, rng);
     effects.push(...oa);
     current = applyEvents(current, oa);
@@ -268,6 +279,7 @@ export function executeAirMove(state: BattleState, actor: Combatant, to: Offset,
       const formed = down() ? [] : monsterStepEvents(current, actor.id, step.hex, rng);
       effects.push(...formed); current = applyEvents(current, formed);
       const stepped = down() ? [] : afterStepEvents(current, actor.id, prev.hex, rng);
+      if (stepped.some((e) => e.type === 'moved' && e.reaction)) readyMoved = true;
       effects.push(...stepped); current = applyEvents(current, stepped);
       stop = entered.stop || (stepped.length > 0 && speedHexes(current.combatants[actor.id] as Combatant) === 0);
     }

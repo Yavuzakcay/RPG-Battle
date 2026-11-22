@@ -1,16 +1,22 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
+import { b94On } from './b94Surum';
+import { ws92On } from './ws92Surum';
+import { spellComponents } from '../rules/spellComponents';
 import { freeShapeArea } from './freeShape';
 import { homeSide } from './allegiance';
 import { possessedEffect, possessionEndEvents, possessionOn } from './possession';
 import { possessorAt } from './possessionCore';
-import { truesightSees } from './sight';
+import { canSeeTarget, truesightSees } from './sight';
+import { areaNeedsSight, unseenTargetProblem } from './seenTargets';
+import { matrisOn } from './matrisSurum';
 import { gazePos } from './chainPact';
 import { lifeBondEvents } from './steed';
 import { executeTerraform } from './terraform';
+import { executeWaterOption, executeWhirlpool, whirlpoolCast } from './girdap';
 import { executeTelekinesis, telekinesisOn } from './telekinesis';
 import { disperseEvents } from './surfaceMix';
 import { polymorphEvents } from './polymorph';
-import { newZoneId, profileIn } from './zones';
+import { newZoneId, overcomesDefenses, profileIn } from './zones';
 import { cloudCastProblem, cloudOf, cloudPointProblem, cloudZoneEvent, stormSourceOf } from './cloud';
 import { airCenterProblem, airSpanFt, cylinderHeightFt, inAirSpan } from './airArea';
 import { k73cOn } from './k73cSurum';
@@ -21,13 +27,15 @@ import { saveMode, spellTimerEvents } from './durations';
 import { getEnvironment, spells, type Spell, type SpellMechanics } from '../data';
 import { danceMax, danceMoveHexes } from './danceLights';
 import { ruleVersion } from './ruleVersion';
+import { attackCtx96 } from './genel96';
+import { genel96On } from './genel96Surum';
 import type { AreaShape } from '../rules/area';
 import { autoFailsStrDexSave, attackSources, isAutoCritical } from '../rules/conditions';
 import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
 import { formatDice, parseDice, rollD20, rollDie, rollDice, rollTag, type Rng } from '../rules/dice';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { combineModes, environmentSources, invertMode, type ModeSource } from '../rules/modes';
-import { checkReach, spellReach } from './range';
+import { checkReach, spellHarms, spellReach } from './range';
 import { attackHeights, sightBlockedBetween } from './cover';
 import { AXIAL_DIRECTIONS, distance, hexKey, neighbors, offsetToAxial, type Offset } from '../rules/hex';
 import { hasDarkness, inShadowAt, litHexes, ruleOf } from './maprules';
@@ -39,7 +47,7 @@ import { paketSpellBonus, paketSpellTransform } from './paket/core';
 import { paketHealRoll } from './paket/p11';
 import { beaconMax } from './healMax';
 import { fireStored, paketCast } from './paket/p11cast';
-import { hexLabel, speedHexes } from './movement';
+import { hexLabel, occupantAt, speedHexes } from './movement';
 import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
 import { atSlot, fail, finish, isTargetable, upcastDiceCount, withinFiveFt, type CommandResult, damageProfile } from './common';
@@ -64,15 +72,23 @@ import { auraSave, hitExtras, weaponAttackEvents, weaponHexNear } from './featur
 import { effectiveAc, smiteEvents, smiteProblem, wardSources } from './divine';
 import { pushAwayEvents } from './forced';
 import { applyEvents } from './reduce';
-import { autoSucceedsType, heldFollow, mechanicsAt } from './spellVersion';
+import { areaOfMechanics, autoSucceedsType, heldFollow, mechanicsAt } from './spellVersion';
+import { buyuTamOn } from './buyuTamSurum';
 import srdSpells from '../../data/srd/spells.json';
 import { executeZoneCast, movableZoneOf, shiftZoneEvents, silencedAt, zoneHexes } from './zones';
-import { executeFireHex, fireHexSpell } from './ignite';
+import { executeFireHex, freeHexAnyOn, freeHexSpell, hexCastable } from './ignite';
 import { cantripBonus, healBonus, healDice, healSelfAfter } from './cleric';
-import { affinityBonus, castWithMetamagic, empowerRolls, innateFor, POINTS } from './sorcerer';
-import { counterspellCheck, damagedReactions, hitReactions, targetedReactions } from './reactions';
+import { castWithMetamagic, empowerCount, empowerRolls, innateFor, POINTS } from './sorcerer';
+import { oneDieBonus, SKIP_ALL, usedOnce, type OnceSkip } from './oneDieBonus';
+import { buyucu93On } from './buyucu93Surum';
+import { counterspellCheck, cuttingWordsDamage, damagedReactions, hitReactions, hunterDefenseEvents, targetedReactions } from './reactions';
 import { resourceLeft } from './types';
+import { resourceDef } from '../rules/classFeatures';
+import { anyListResource } from './anyList';
+import { hurlEvents } from './apex';
 import type { ActiveEffect, AttackOption, CommandWord, BattleEvent, BattleState, Combatant, Command, ExtraDamage, MapObject, SpellZone } from './types';
+import { giantHit, type GiantHit } from './giant';
+import { te99On } from './te99Surum';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 
@@ -101,20 +117,22 @@ function spellDamageRoll(expr: string, actor: Combatant, rng: Rng): { rolls: num
 /** Kuyruk P12 (paket `buyuDegisimi.ikizOkul`; savaşçıda `pkTwinSchool`, sürüm 43+): bu okulun alansız, menzilli büyüsü bir hedef fazla. */
 const schoolTwin = (actor: Combatant, spell: Spell): boolean => !!actor.pkTwinSchool && spell.school === actor.pkTwinSchool && !spell.area && spell.rangeFt > 0;
 
+/** KAPSAM103: büyü Wizard listesinde mi (Empowered Evocation "a Wizard spell"; adı bilinmeyende evet). */
+const wizardSpell = (name?: string): boolean => !name || !!spells.find((s) => s.name === name)?.classes.includes('Wiz');
+
 /** Görev WIZARD: Potent Cantrip (Evoker): save'li cantrip'te başarıda da yarı hasar. */
 const potentCantrip = (actor: Combatant, spell: Spell) => spell.level === 0 && !!actor.traits?.includes('potent-cantrip');
 
-function damageExpr(m: SpellMechanics, actor: Combatant, tier: number, upcast = 0, school?: string, name?: string): string {
+function damageExpr(m: SpellMechanics, actor: Combatant, tier: number, upcast = 0, school?: string, name?: string, skip?: OnceSkip): string {
   const spec = parseDice(m.damage ?? '');
   const count = (m.scalesWithLevel ? spec.count * tier : spec.count) + upcastDiceCount(m, upcast);
   // A1: sabit yukarı slot eki (Heal: slot seviyesi başına +10).
   const upFlat = m.upcast?.applied && m.upcast.dice && upcast > 0 && parseDice(m.upcast.dice).count === 0 ? parseDice(m.upcast.dice).bonus * upcast : 0;
   // Görev CLERIC: Potent Spellcasting (cantrip hasarına WIS; iyileştirme ve zaten değiştiricili cantrip'ler hariç).
   const bonus = spec.bonus + upFlat + (m.addCastingMod ? actor.spellMod : 0) + (m.scalesWithLevel && !m.addCastingMod && m.kind !== 'heal' ? cantripBonus(actor) : 0)
-    // Görev WIZARD: Empowered Evocation (Evoker 10): Evocation büyüsünün hasarına INT (bir hasar zarına; burada toplama).
-    + (school === 'Evocation' && m.kind !== 'heal' && !!actor.traits?.includes('empowered-evocation') ? Math.max(0, actor.spellMod) : 0)
-    // Görev SORCERER: Elemental Affinity (Draconic): soyun hasar türündeki büyüye CHA.
-    + (m.kind !== 'heal' ? affinityBonus(actor, m.damageType) : 0)
+    // Görev WIZARD: Empowered Evocation (Evoker 10, +INT) ve Görev SORCERER: Elemental Affinity (Draconic, +CHA): bir hasar
+    // zarına. Görev B93 (sürüm 93+): çok zarlı/ışınlı büyüde çağıran `skip` ile yalnız bir zara bırakır (`oneDieBonus.ts`).
+    + oneDieBonus(actor, m, school, skip, wizardSpell(name))
     // Görev P0: ek paket buyuDegisimi (hasar eklentisi).
     + (m.kind !== 'heal' && actor.paket ? paketSpellBonus(actor, m.damageType, school, name ? spells.find((s) => s.name === name)?.rangeFt : undefined, !!actor.paket.v42) : 0)
     // Görev WARLOCK: Agonizing Blast: seçilen cantrip'in hasar zarına (her ışına) büyü yeteneği.
@@ -167,8 +185,13 @@ function failEffectEvent(state: BattleState, actor: Combatant, spell: Spell, fe:
  * siper eklenir. Hasar bütün hedefler için bir kez atılır (SRD 5.2.1 save'li etkiler).
  */
 function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng, repeat = false, label?: string): CommandResult {
-  const area = spell.area;
   const m = spell.mechanics;
+  // Mekanik matris B14/B15 (sürüm 83, `m83` `areaTargets`/`area83`): Weird yalnız düşmanlara; Compulsion büyücü merkezli
+  // 30 ft yayılım ("Range: 30 feet … Each creature of your choice that you can see within range").
+  const area0 = areaOfMechanics(m, spell.area);
+  // BUYU-TAM (sürüm 102): yukarı slotta alan yarıçapı (`upcast.radiusFt`, Confusion "radius increases by 5 feet").
+  const area = area0 && buyuTamOn(state) && m.upcast?.applied && m.upcast.radiusFt && (cmd.slotLevel ?? spell.level) > spell.level
+    ? { ...area0, sizeFt: area0.sizeFt + m.upcast.radiusFt * ((cmd.slotLevel ?? spell.level) - spell.level) } : area0;
   if (!area || !state.map || !actor.pos) return fail('Alan büyüsü yalnızca haritalı savaşta.');
   const named = cmd.targetId ? state.combatants[cmd.targetId] : undefined;
   if (cmd.targetId && !named) return fail('Hedef bulunamadı.');
@@ -218,8 +241,11 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   // Kuyruk K73c (sürüm 64+): havadaki merkezin dikey aralığı (prizma düzeyleri, mutlak yükseklik).
   const span = airFt && aim ? airSpanFt(area.sizeFt, cylinderHeightFt(m), airFt) : null;
   const atAlt = (c: Combatant) => (span && aim ? inAirSpan(state, c, aim, span)
-    : pointAlt ? Math.abs(altitudeOf(c) - pointAlt) <= area.sizeFt : !spell.area || areaReachesAltitude(state, spell.area, c, fromFt));
-  const reached = pick.reached.filter((x) => !spared.has(x.c.id) && atAlt(x.c)).map((x) => ({ c: x.c, lof: { blocked: false, cover: x.cover } }));
+    : pointAlt ? Math.abs(altitudeOf(c) - pointAlt) <= area.sizeFt : areaReachesAltitude(state, area, c, fromFt));
+  // Mekanik matris B02 (sürüm 83): "each creature … that you can see" alanında görülmeyen yaratık etkilenmez.
+  const sight = areaNeedsSight(state, spell);
+  if (sight && named && !canSeeTarget(state, actor, named)) return fail(`${spell.name}: hedefi görmen gerekir; ${named.name} görülmüyor.`);
+  const reached = pick.reached.filter((x) => !spared.has(x.c.id) && atAlt(x.c) && (!sight || canSeeTarget(state, actor, x.c))).map((x) => ({ c: x.c, lof: { blocked: false, cover: x.cover } }));
   if (named && !reached.some((x) => x.c.id === named.id)) {
     return fail(`${named.name} alanın dışında veya tam siper arkasında.`);
   }
@@ -230,14 +256,27 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     ...(cloud && !repeat ? cloudZoneEvent(state, actor, spell, cloud, slot.slotLevel, storm) : [])];
   const upFt = airFt || pointAlt;
   const where = area.origin === 'point' && aim ? `, merkez ${hexLabel(aim)}${upFt ? ` (${upFt} ft yükseklikte)` : ''}` : '';
+  // Mekanik matris K02 (kullanıcı kararı, sürüm 83): yayılım büyüleri (Spirit Guardians, Conjure Woodland Beings) yapımda
+  // save attırmaz. SRD 5.2.1: "whenever the Emanation enters a creature's space and whenever a creature enters the Emanation
+  // or ends its turn there" (Incendiary Cloud'daki "When the cloud appears" gibi yapım cümlesi yok). İlk save yaratık
+  // girince, yayılım büyücüyle yürüyüp onu kapsayınca ya da yaratığın tur sonunda (`features.ts` `auraStepEvents`,
+  // `auraTurnEndEvents`; turda bir kez).
+  const auraQuiet = m.lingering === 'aura' && !repeat && matrisOn(state);
+  const hit = auraQuiet ? [] : reached;
+  const splitParts = matrisOn(state) && m.split && m.split.length === 2 && globalRule(state, 'spellsK19')
+    ? m.split.map((p, i) => ({ damageType: p.type, dice: damageExpr({ ...m, damage: p.dice, damageType: p.type, upcast: p.upcast ? { dice: p.upcast, applied: true } : undefined }, actor, tierOf(actor), (slot.slotLevel ?? spell.level) - spell.level, spell.school, spell.name,
+      i > 0 && buyucu93On(state) ? usedOnce(actor, { kind: m.kind, damageType: m.split![0]!.type }, spell.school, undefined, wizardSpell(spell.name)) : undefined) }))
+    : null;
   events.push({
     type: 'spell_cast', actorId: actor.id, targetId: null, label: label ?? (repeat ? `${spell.name} (tekrar)` : spell.name), slotLevel: slot.slotLevel,
-    note: `Alan: ${fs ? `${pick.hexes.length} altıgen (serbest şekil)` : `${area.sizeFt} ft ${SHAPE_NAME[area.shape]}${where}`}; etkilenen: ${reached.map((x) => x.c.name).join(', ') || 'kimse'}.`,
+    note: `Alan: ${fs ? `${pick.hexes.length} altıgen (serbest şekil)` : `${area.sizeFt} ft ${SHAPE_NAME[area.shape]}${where}`}; etkilenen: ${hit.map((x) => x.c.name).join(', ') || 'kimse'}.`,
     // Görev Y1: alanın altıgenleri ve hasar türü (yüzey tepkimeleri: tutuşma, buhar, donma, suda yıldırım).
     // Kuyruk K73c (sürüm 64+): yere değmeyen havadaki alan yerdeki yüzey/nesneye işlemez (altıgenler yalnız görsel: `airHexes`).
     area: { hexes: span && span.loFt > 0 ? [] : pick.hexes, ...(span && span.loFt > 0 ? { airHexes: pick.hexes } : {}),
-      ...(m.damageType ? { damageType: m.damageType } : {}), dc: actor.spellSaveDc ?? 10,
-      ...(m.damage ? { dice: m.damage } : {}), targetIds: reached.map((x) => x.c.id),
+      // Mekanik matris B19 (sürüm 83+): iki hasar türlü büyüde (Ice Storm, Flame Strike; `split`) alan kaydı parçaları yazar
+      // (eski tek tür/zar `damageType`/`dice` veri kalıntısıydı: Ice Storm 7d6 Cold, Flame Strike 10d6 Radiant).
+      ...(auraQuiet ? {} : splitParts ? { parts: splitParts } : { ...(m.damageType ? { damageType: m.damageType } : {}), ...(m.damage ? { dice: m.damage } : {}) }),
+      dc: actor.spellSaveDc ?? 10, targetIds: hit.map((x) => x.c.id),
       // Kuyruk E2: yalnız görsel (reducer okumaz; replay aynı): şekil ve nişan (çizgi ışın, koni doku olarak çizilir).
       shape: area.shape, ...(aim ? { aim } : {}) },
   });
@@ -248,6 +287,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     events.push({ type: 'effect_added', targetId: actor.id, effect: { id: `${spell.srd}:bonus`, name: spell.name, sourceId: actor.id,
       until: state.round + 99, ...(spell.concentration ? { concentration: spell.name } : {}), bonusGrant: m.bonusGrant } });
   }
+  if (auraQuiet) return finish(state, events);
 
   if (m.kind === 'sleep') {
     // Uyku: zar toplamı, HP'si en düşükten başlayarak yaratıkları uyutur.
@@ -274,11 +314,17 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const upcast = (slot.slotLevel ?? spell.level) - spell.level;
   // Kuyruk 19: iki hasar türü (`split`; anahtar `spellsK19`): ana parça `damage`'ın yerine, ikinci parça ayrıca.
   const split = m.split && m.split.length === 2 && globalRule(state, 'spellsK19') ? m.split : null;
-  const partExpr = (p: { dice: string; type: string; upcast?: string }) => damageExpr({ ...m, damage: p.dice, damageType: p.type, upcast: p.upcast ? { dice: p.upcast, applied: true } : undefined }, actor, tierOf(actor), upcast, spell.school, spell.name);
+  // Görev B93 (sürüm 93+): ikinci parçada, birinci parçaya eklenmiş tek-zar ekleri (Empowered Evocation, Elemental Affinity) atlanır.
+  const partExpr = (p: { dice: string; type: string; upcast?: string }, second = false) => damageExpr({ ...m, damage: p.dice, damageType: p.type, upcast: p.upcast ? { dice: p.upcast, applied: true } : undefined }, actor, tierOf(actor), upcast, spell.school, spell.name,
+    second && split && buyucu93On(state) ? usedOnce(actor, { kind: m.kind, damageType: split[0]!.type }, spell.school, undefined, wizardSpell(spell.name)) : undefined);
   const damageType = split ? split[0]!.type : m.damageType;
-  const damage = split ? spellDamageRoll(partExpr(split[0]!), actor, rng)
+  const damage0 = split ? spellDamageRoll(partExpr(split[0]!), actor, rng)
     : m.damage ? spellDamageRoll(damageExpr(m, actor, tierOf(actor), upcast, spell.school, spell.name), actor, rng) : { rolls: [] as number[], total: 0 };
-  const second = split ? { type: split[1]!.type, ...spellDamageRoll(partExpr(split[1]!), actor, rng) } : null;
+  const second = split ? { type: split[1]!.type, ...spellDamageRoll(partExpr(split[1]!, true), actor, rng) } : null;
+  // Görev B94 (sürüm 94+): Cutting Words hasar zarından düşer (bir kez, alandaki bütün hedeflere; iki parçalıda ilk parça).
+  const cwd = m.damage || split ? cuttingWordsDamage(applyEvents(state, events), actor, damage0.total, reached.map((x) => x.c), spell.name, rng) : { events: [], total: damage0.total };
+  events.push(...cwd.events);
+  const damage = { ...damage0, total: cwd.total };
   // Yayılım (Spirit Guardians): yapılınca içindekilere girer; yaratık turda bir kez save yapar.
   const aura = m.lingering === 'aura' ? { aura: { casterId: actor.id, turn: turnKey(state) } } : {};
   let current = applyEvents(state, events);
@@ -296,9 +342,13 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     const save = sleepOrSee ? { d20: null, total: null, success: true } as ReturnType<typeof resolveSave>
       : resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: height ? 'disadvantage' : saveMode(mode, t, ability, actor, { damage: damageType, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? [])] }), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? []), 'spell'] }, rollTag(rng, { by: t.id }));
     const amount = saveDamage(t, ability, save.success, damage.total, !!m.halfOnSave || potentCantrip(actor, spell));
-    const adjusted = amount > 0 ? adjustDamage(amount, damageType, profileIn(state, t, true)) : { amount: 0, note: null };
+    // Görev B94 (sürüm 94+, Superior Hunter's Defense "when you take damage"): büyü alan hasarında da tepkiyle o türe direnç.
+    const shd = b94On(state) && amount > 0 ? hunterDefenseEvents(current, t, actor.id, damageType) : [];
+    if (shd.length) { events.push(...shd); current = applyEvents(current, shd); }
+    const prof94 = shd.length && damageType ? { ...profileIn(state, t, true, actor), resistances: [...profileIn(state, t, true, actor).resistances, damageType] } : profileIn(state, t, true, actor);
+    const adjusted = amount > 0 ? adjustDamage(amount, damageType, prof94) : { amount: 0, note: null };
     const amount2 = second ? saveDamage(t, ability, save.success, second.total, !!m.halfOnSave) : 0;
-    const adjusted2 = second && amount2 > 0 ? adjustDamage(amount2, second.type, profileIn(state, t, true)) : { amount: 0, note: null };
+    const adjusted2 = second && amount2 > 0 ? adjustDamage(amount2, second.type, profileIn(state, t, true, actor)) : { amount: 0, note: null };
     const fx = damageEffects(t, adjusted.amount + adjusted2.amount, damageType ?? '', false, rng);
     // Görev B3: başarısızlıkta süren etki varsa durumlar etkiyle gelir (Fear, Hypnotic Pattern).
     // Kuyruk 19: yeni eklenen başarısızlık etkisi anahtara bağlı (`failEffectGate`; Vitriolic Sphere'in gecikmeli asidi).
@@ -377,7 +427,17 @@ function executeMaplessAura(state: BattleState, actor: Combatant, cmd: CastComma
  * Büyü yapma. Counterspell (Görev R1): büyüyü görebilen bir düşmanın tepkisi varsa önce büyü zarsız denenir
  * (geçersiz komut boşa durdurulmasın), sonra tepki sorulur; durdurulursa eylem harcanır, slot harcanmaz.
  */
-export function executeCast(state: BattleState, actor0: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
+/** FH1 (sürüm 81): hedefsiz altıgen komutunda altıgende yaratık varsa normal yaratık hedeflemesi (isabet/save aynen). */
+function withHexOccupant(state: BattleState, cmd: CastCommand): CastCommand {
+  if (cmd.targetId || cmd.targetIds?.length || !cmd.targetHex || !state.map || !freeHexAnyOn(state)) return cmd;
+  const sp = spells.find((x) => x.name === cmd.spellName);
+  if (!sp || !freeHexSpell(sp)) return cmd;
+  const occ = occupantAt(state, cmd.targetHex);
+  return occ && occ.hp > 0 ? { ...cmd, targetId: occ.id } : cmd;
+}
+
+export function executeCast(state: BattleState, actor0: Combatant, cmd0: CastCommand, rng: Rng): CommandResult {
+  const cmd = withHexOccupant(state, cmd0);
   // Kuyruk 19 (görev 3): 6.–9. seviye büyüler (anahtar spells69; Antimagic Field içinde büyü yok) ve Wish.
   const sp0 = spells.find((x) => x.name === cmd.spellName);
   const bad69 = sp0 ? spells69Problem(state, actor0, sp0) : null;
@@ -400,8 +460,11 @@ export function executeCast(state: BattleState, actor0: Combatant, cmd: CastComm
   const actor00 = ic ? { ...actor0, ...(ic.dc !== undefined ? { spellSaveDc: ic.dc } : {}), ...(ic.attack !== undefined ? { spellAttack: ic.attack } : {}) } : actor0;
   const r0 = executeCastOver(state, actor00, cmd, rng);
   if (!r0.ok) return r0;
+  // Mekanik matris B03 (sürüm 83+): Counterspell'le durdurulan büyü "dissipates with no effect" (SRD 5.2.1): yapım
+  // sonrası kancalar (6.–9. seviye etkileri, şarj, Potent Spellcasting, Free Casting) çalışmaz. 82 ve altı aynen.
+  if (wasCountered(r0.events)) return r0;
   // Kuyruk 19 (görev 3): 6.–9. seviye büyü kancaları (Power Word, Mass Heal, Chain Lightning, Globe…).
-  const ev69 = sp0 ? after69(state, r0.state, actor00, sp0, r0.events, { ...(cmd.targetId ? { id: cmd.targetId } : {}), ...(cmd.targetHex ? { hex: cmd.targetHex } : {}), ...(cmd.choice ? { choice: cmd.choice } : {}) }, rng) : null;
+  const ev69 = sp0 ? after69(state, r0.state, actor00, sp0, r0.events, { ...(cmd.targetId ? { id: cmd.targetId } : {}), ...(cmd.targetHex ? { hex: cmd.targetHex } : {}), ...(cmd.choice ? { choice: cmd.choice } : {}), ...(cmd.targetIds?.length ? { ids: cmd.targetIds } : {}) }, rng) : null;
   const r1 = ev69 ? finish(state, ev69) : r0;
   if (!r1.ok) return r1;
   // Kuyruk 19 (Thief 13 Use Magic Device; featuresK19): şarjlı eşyadan büyüde 1d6 = 6 ise şarj harcanmaz.
@@ -412,7 +475,19 @@ export function executeCast(state: BattleState, actor0: Combatant, cmd: CastComm
     : r1;
   if (!r.ok) return r;
   // Kuyruk 19 (Spell Recall): Free Casting: 1–4. seviye slot 1d4 tutarsa geri gelir.
-  const extra = [...potentTempHpEvents(r.state, actor00.id, cmd.spellName),
+  // Görev B93 (sürüm 93+): Improved Potent Spellcasting yalnız cantrip gerçekten hasar verdiyse (SRD "deal damage").
+  const dealt = !buyucu93On(state) || r.events.some((e) => (e.type === 'attack_resolved' || e.type === 'save_resolved') && e.actorId === actor00.id && e.appliedDamage > 0);
+  // Görev B93 (sürüm 93+): Greater Divine Intervention: Wish bu kaynakla yapıldıysa 2d4 uzun dinlenme bekleme (`<kaynak>:bekle`).
+  const waitEv: BattleEvent[] = buyucu93On(state) ? r.events.flatMap((e) => {
+    const w = e.type === 'feature_used' && e.actorId === actor00.id ? resourceDef(e.feature)?.wait : undefined;
+    return w && w.spells.includes(cmd.spellName) && e.type === 'feature_used'
+      ? [{ type: 'feature_used' as const, actorId: actor00.id, feature: `${e.feature}:bekle`, remaining: rollDice(w.dice, rollTag(rng, { by: actor00.id })).total }] : [];
+  }) : [];
+  // Görev B93 (sürüm 93+, Extended Spell s. 67): "advantage on any saving throw you make to maintain Concentration on that spell".
+  const conc = r.state.combatants[actor00.id]?.concentration;
+  const extEv: BattleEvent[] = buyucu93On(state) && cmd.metamagic?.includes('extended') && conc?.spell === cmd.spellName
+    ? [{ type: 'effect_added', targetId: actor00.id, effect: { id: `mm-extended:${cmd.spellName}`, name: 'Extended Spell', sourceId: actor00.id, concentration: cmd.spellName, concAdv: true } }] : [];
+  const extra = [...waitEv, ...extEv, ...(dealt ? potentTempHpEvents(r.state, actor00.id, cmd.spellName) : []),
     ...freeCastingEvents(r.state, actor00.id, r.events, () => rollDice('1d4', rollTag(rng, { by: actor00.id })).total)];
   return extra.length ? finish(state, [...r.events, ...extra]) : r;
 }
@@ -480,11 +555,27 @@ function breakOnSpellEvents(after: BattleState, cmd: CastCommand): BattleEvent[]
   return out;
 }
 
+/** Mekanik matris B03 (sürüm 83+; olay işareti yalnız 83+'da yazılır): yapım Counterspell'le durduruldu mu. */
+const wasCountered = (events: BattleEvent[]): boolean => events.some((e) => e.type === 'spell_cast' && e.countered === true);
+
 /** Kuyruk 19: Find Steed atının Life Bond'u (sahibe büyüyle gelen iyileşme ata da). */
 function withLifeBond(state: BattleState, cmd: CastCommand, r: CommandResult): CommandResult {
   if (!r.ok) return r;
+  // Mekanik matris B03 (sürüm 83+): durdurulan büyü etkisiz: "büyüyle biten" etki (Modify Memory) de bitmez.
+  if (wasCountered(r.events)) return r;
   const extra = [...lifeBondEvents(r.state, r.events, spells.find((s) => s.name === cmd.spellName)?.level ?? 0), ...breakOnSpellEvents(r.state, cmd)];
   return extra.length ? finish(state, [...r.events, ...extra]) : r;
+}
+
+/**
+ * Görev B93 (arayüz): Divine Intervention kipinde büyü menüsü için sanal büyücü: yalnız listeli kaynağın verdiği hazırlanmamış
+ * büyüler (slotsuz). Kaynak yoksa ya da sürüm < 93 ise null.
+ */
+export function anyListActor(state: BattleState, actor: Combatant): Combatant | null {
+  if (!buyucu93On(state)) return null;
+  const extra = spells.filter((sp) => sp.level > 0 && !actor.spellNames.includes(sp.name) && anyListResource(actor, sp));
+  if (!extra.length) return null;
+  return { ...actor, spellNames: extra.map((x) => x.name), freeSpells: { ...(actor.freeSpells ?? {}), ...Object.fromEntries(extra.map((x) => [x.name, anyListResource(actor, x) as string])) } };
 }
 
 function executeCastAt(state: BattleState, actor00: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
@@ -492,10 +583,26 @@ function executeCastAt(state: BattleState, actor00: Combatant, cmd: CastCommand,
   if (!spell0) return fail(`Büyü bulunamadı: ${cmd.spellName}`);
   // F1: büyüye özgü zorluk sınıfı/saldırı (Magic Initiate'in seçilen yeteneği) bu yapım için.
   const own = actor00.spellStats?.[spell0.name];
-  const actor0 = own ? { ...actor00, spellSaveDc: own.dc, spellAttack: own.attack } : actor00;
+  const actor0a = own ? { ...actor00, spellSaveDc: own.dc, spellAttack: own.attack } : actor00;
+  // Görev B93 (sürüm 93+): Divine Intervention herhangi bir Cleric büyüsü (≤ 5, tepki değil), hazırlanmamış olsa da
+  // (SRD 5.2.1 s. 38 "choose any Cleric spell of level 5 or lower"); yalnız oyuncu isteğiyle slotsuz yapımda.
+  const anyRes = cmd.free && buyucu93On(state) && !actor0a.spellNames.includes(spell0.name) ? anyListResource(actor0a, spell0) : null;
+  const actor0 = anyRes ? { ...actor0a, spellNames: [...actor0a.spellNames, spell0.name], freeSpells: { ...(actor0a.freeSpells ?? {}), [spell0.name]: anyRes } } : actor0a;
   if (!actor0.spellNames.includes(spell0.name)) return fail('Bu büyüyü bilmiyor.');
+  // Mekanik matris B04 (sürüm 83): tepki büyüsü (Shield, Counterspell, Feather Fall, Hellish Rebuke) yalnız tetiğiyle,
+  // tepki sisteminden yapılır (SRD 5.2.1 "Casting Time: Reaction, which you take when …"); komutla yapılınca eskiden
+  // slot harcayıp etkisiz kalıyordu. 82 ve altı aynen.
+  if (matrisOn(state) && spell0.castingTime === 'reaction') return fail(`${spell0.name} tepki büyüsüdür: yalnız tetiklenince (tepki olarak) yapılır.`);
+  // Mekanik matris B02 (sürüm 83): "a creature you can see" isteyen büyüde görülmeyen hedef seçilemez (SRD Invisible).
+  const unseen = unseenTargetProblem(state, actor0, spell0, cmd);
+  if (unseen) return fail(unseen);
   // Görev DRUID: Wild Shape biçiminde büyü yapılamaz (Beast Spells hariç; süren konsantrasyon bozulmaz).
   if (actor0.shape && !actor0.traits?.includes('beast-spells')) return fail('Wild Shape biçiminde büyü yapılamaz.');
+  // Görev WS92 (92+; SRD s. 43 Beast Spells): biçimde bedeli yazılı ya da tükenen malzemeli büyü yapılamaz.
+  if (actor0.shape && !actor0.shape.polymorph && ws92On(state)) {
+    const mat = spellComponents(spell0)?.material;
+    if (mat && (mat.gp !== undefined || mat.consumed)) return fail(`${spell0.name}: Wild Shape biçiminde bedelli ya da tükenen malzemeli büyü yapılamaz (Beast Spells).`);
+  }
   // Görev WARLOCK: yalnızca kendine slotsuz büyü (Armor of Shadows, Fiendish Vigor…): yukarı slot seçilmediyse.
   if (actor0.atWill?.[spell0.name] === 'self' && cmd.slotLevel === undefined && spell0.level > 0) {
     const ts = [...(cmd.targetIds ?? []), ...(cmd.targetId ? [cmd.targetId] : [])];
@@ -533,7 +640,7 @@ function executeCastWith(state: BattleState, actor: Combatant, cmd: CastCommand,
   const counter = counterspellCheck(state, actor, spell.name, spell.level, rng);
   if (counter.countered) {
     return finish(state, [...counter.events, { type: 'spell_cast', actorId: actor.id, targetId: cmd.targetId ?? null, label: spell.name, slotLevel: null,
-      note: 'Counterspell ile durduruldu: büyü boşa gitti, slot harcanmadı.' }]);
+      note: 'Counterspell ile durduruldu: büyü boşa gitti, slot harcanmadı.', ...(matrisOn(state) ? { countered: true as const } : {}) }]);
   }
   const before = applyEvents(state, counter.events);
   const r = castSpell(before, before.combatants[actor.id] as Combatant, cmd, spell, rng);
@@ -582,9 +689,13 @@ function stormBonusOn(state: BattleState, actor: Combatant, spell: Spell, repeat
 }
 
 /** Sonraki tamamlama blokları ve kural sürümleri (sırayla birleşir). */
-const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46], ['k63', 47], ['k64', 48], ['k65', 49], ['k66', 50], ['k67', 51], ['k68', 52], ['k70', 54], ['y1', 55], ['k73c', 64], ['mb7', 70]] as const;
+const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46], ['k63', 47], ['k64', 48], ['k65', 49], ['k66', 50], ['k67', 51], ['k68', 52], ['k70', 54], ['y1', 55], ['k73c', 64], ['mb7', 70], ['m83', 83], ['b102', 102]] as const;
 
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng: Rng, repeat = false): CommandResult {
+  // Control Water girdabı (kural sürümü 84, anahtar `controlWaterWhirlpool`): hedef yaratığın altıgeninde girdap alanı
+  // (`girdap.ts`); anahtar kapalıyken ve 83 ve altında eski yol (`spellsK19` su girdabı).
+  // Dört seçenek (kullanıcı kararı 2026-11-19): `choice` girdap dışıysa (Flood, Part Water, Redirect Flow) etki yok, Game Master notu.
+  if (!repeat && whirlpoolCast(state, spell0)) return cmd.choice && cmd.choice !== 'whirlpool' ? executeWaterOption(state, actor, cmd, spell0) : executeWhirlpool(state, actor, cmd, spell0);
   // Kuyruk 19: tam SRD hâli (`upgrade`; anahtar `spellsK19`): eski sürümde eski mekanik.
   const spell = spell0.mechanics.upgrade && globalRule(state, 'spellsK19')
     ? { ...spell0, mechanics: { ...spell0.mechanics, ...spell0.mechanics.upgrade, upgrade: undefined } } : spell0;
@@ -610,6 +721,11 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     const note = merged.mechanics.sigmayan ?? (merged.mechanics.gmNoted && !merged.mechanics.offCombat ? merged.mechanics.gmNote : undefined);
     if (done && note && !repeat) extra.push({ type: 'map_note', text: `Game Master notu — ${spell.name}: ${note}` });
     return extra.length ? finish(state, [...r.events, ...extra]) : r;
+  }
+  // BUYU-TAM (sürüm 102): bloğun menzili (Etherealness yukarı slot hedefleri "within 10 feet").
+  {
+    const want = spell.mechanics.castRangeFt;
+    if (want !== undefined && want !== spell.rangeFt) return castSpell(state, actor, cmd, { ...spell, rangeFt: want }, rng, repeat);
   }
   // Kuyruk A8 (sürüm 37, Slow): yavaşlatılmış büyücünün somatik (S) bileşenli büyüsü %25 (d4 = 1) başarısız; slot harcanır.
   if (!repeat && ruleVersion(state) >= 37 && actor.effects?.some((e) => e.slowed) && somaticOf(spell)) {
@@ -689,7 +805,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   }
   // Kuyruk 24c: yanıcı haneye ateşli büyü (gres, yağ, ağ, yanıcı nesne; Game Master mekaniği `greaseFlammable`).
   // Kuyruk A6: elde tutulan alev (Produce Flame) yanıcı altıgene de fırlatılır ("a creature or an object").
-  if (!cmd.targetId && cmd.targetHex && state.map && (!repeat || m.held) && fireHexSpell(spell)) return executeFireHex(state, actor, cmd, spell, rng);
+  if (!cmd.targetId && cmd.targetHex && state.map && (!repeat || m.held) && hexCastable(state, spell)) return executeFireHex(state, actor, cmd, spell, rng, freeHexAnyOn(state) && m.damage ? damageExpr(m, actor, tierOf(actor), 0, spell.school, spell.name) : undefined);
   // Kuyruk K70 (sürüm 54): Disintegrate kuvvet yapısını (Wall of Force) hedef altıgeninden yok eder.
   if (!cmd.targetId && cmd.targetHex && state.map && !repeat && m.destroysForce?.length) return executeDestroyForce(state, actor, cmd, spell, m.destroysForce);
   let target: Combatant | undefined;
@@ -786,7 +902,8 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       type: 'healed', actorId: actor.id, targetId: target.id, label: spell.name,
       amount: hpAfter - target.hp, targetHpAfter: hpAfter, ...(hi.rolls ? { rolls: hi.rolls } : {}), ...(hi.changed ? { changed: hi.changed } : {}),
     });
-    events.push(...healSelfAfter(actor, slotLevel, target.id !== actor.id, spell.name));
+    // Görev B93 (sürüm 93+): Blessed Healer yalnız gerçekten iyileşen (canı eksik) başka hedefte.
+    events.push(...healSelfAfter(actor, slotLevel, target.id !== actor.id && (!buyucu93On(state) || hpAfter > target.hp), spell.name));
     return finish(state, events);
   }
 
@@ -799,7 +916,9 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     // Kuyruk 19: bazı türler save'i otomatik kaçırır (Blight: Plant; anahtar `spellsK19`).
     const typeFail = !!m.autoFailTypes?.length && globalRule(state, 'spellsK19') && m.autoFailTypes.includes((target.creatureType ?? '').toLowerCase());
     const autoFail = typeFail || ((ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions));
-    const dexCover = ability === 'dex' ? cover : 0;
+    // Mekanik matris B08 (sürüm 83+, `ignoresCover`; Sacred Flame): "The target gains no benefit from Half Cover or
+    // Three-Quarters Cover for this save." 82 ve altı: siper eklenir (aynen).
+    const dexCover = ability === 'dex' && !m.ignoresCover ? cover : 0;
     // Kuyruk K70 (sürüm 54): türü save'i otomatik başaran (Flesh to Stone: Construct).
     const typeOk = autoSucceedsType(m.autoSuccessTypes, target);
     const save = resolveSave({ ...((m.illusion && truesightSees(state, target, actor)) || typeOk ? { autoSuccess: true } : {}), extra: saveDice(target, ability), modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0,
@@ -808,11 +927,18 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     let rolls: number[] = [];
     if (m.damage) {
       const d = spellDamageRoll(damageExpr(m, actor, tier, upcast, spell.school, spell.name), actor, rng);
-      raw = d.total;
+      // Görev B94 (sürüm 94+): Cutting Words hasar zarından düşer.
+      const cw = cuttingWordsDamage(applyEvents(state, events), actor, d.total, [target], spell.name, rng);
+      events.push(...cw.events);
+      raw = cw.total;
       rolls = d.rolls;
     }
     const amount = saveDamage(target, ability, save.success, raw, !!m.halfOnSave || potentCantrip(actor, spell));
-    const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, profileIn(state, target, true)) : { amount: 0, note: null };
+    // Görev B94 (sürüm 94+): Superior Hunter's Defense save'li tek hedef büyü hasarında da.
+    const shd = b94On(state) && amount > 0 ? hunterDefenseEvents(applyEvents(state, events), target, actor.id, m.damageType) : [];
+    events.push(...shd);
+    const prof94 = shd.length && m.damageType ? { ...profileIn(state, target, true, actor), resistances: [...profileIn(state, target, true, actor).resistances, m.damageType] } : profileIn(state, target, true, actor);
+    const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, prof94) : { amount: 0, note: null };
     const fx = damageEffects(target, adjusted.amount, m.damageType ?? '', false, rng);
     const added = !save.success ? (m.conditions ?? []).filter((c) => !target.conditions.includes(c)) : [];
     events.push({
@@ -865,31 +991,51 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   let leapsLeft = m.leap ? slotLevel ?? spell.level : 0;
   const struck = new Set<string>();
   let seekUsed = false;
+  // Mekanik matris K03 (kullanıcı kararı, sürüm 83): güç/kılıç/ruh saldırısında "saldıran 5 ft içinde" (Prone avantajı/
+  // dezavantajı, otomatik kritik) gücün kendi yerinden. SRD 5.2.1 Spiritual Weapon "make one melee spell attack against one
+  // creature within 5 feet of the force"; Arcane Sword "a target within 5 feet of the sword"; Conjure Fey "within 5 feet of it".
+  const forceAt = matrisOn(state) && m.lingering === 'weapon' ? (linger as { pos?: Offset }).pos : undefined;
+  const near5 = (t: Combatant): boolean => (forceAt ? withinFiveFt(current, { ...actor, pos: forceAt, altitudeFt: t.altitudeFt } as Combatant, t, true)
+    : withinFiveFt(current, actor, t, !rangedSpell));
+  // Görev B93 (sürüm 93+): Empowered Evocation / Elemental Affinity tek zara (ilk hasar veren ışına/darta); Empowered Spell
+  // büyü başına en çok CHA zar (ışınlar arasında ortak), otomatik isabetli dartlarda da (SRD 5.2.1 s. 66, 70, 82).
+  const v93 = buyucu93On(state);
+  let onceLeft = v93 ? oneDieBonus(actor, m, spell.school, undefined, wizardSpell(spell.name)) : 0;
+  let empowerLeft = v93 && actor.traits?.includes('mm-empowered') ? Math.max(1, actor.modifiers.cha) : undefined;
+  const empower = (rolls: number[], sides: number): number[] => {
+    if (empowerLeft === undefined) return empowerRolls(actor, rolls, sides, rng);
+    const used = empowerCount(rolls, sides, empowerLeft);
+    const out = empowerRolls(actor, rolls, sides, rng, empowerLeft);
+    empowerLeft -= used;
+    return out;
+  };
   for (let r = 0; r < raysLeft; r++) {
     const t = current.combatants[curId];
     // Y2: 0 HP'de yenilenmeyi bekleyen yaratık (Troll) hedef olabilir: ateş/asit yenilenmeyi keser (Kuyruk 41b kuralı;
     // büyü saldırısı burada atılmadan bitiyordu, Mağara beraberlikleri).
     if (!t || (t.hp <= 0 && !t.regenPending)) break;
     struck.add(t.id);
-    const expr = damageExpr(m, actor, tier, upcast, spell.school, spell.name);
+    const expr = damageExpr(m, actor, tier, upcast, spell.school, spell.name, v93 ? SKIP_ALL : undefined);
     let ev: BattleEvent;
+    let gh: GiantHit | null = null;
     if (m.kind === 'attack') {
+      const sc = sightConditions(actor, t, current, !rangedSpell);
       const sources = [
         ...environmentSources(env, tag),
         ...attackSources({
-          ...sightConditions(actor, t, current, !rangedSpell), attackerSide: actor.side,
+          ...sc, ...(forceAt && sc.proneWithin5 !== undefined ? { proneWithin5: near5(t) } : {}), ...attackCtx96(current, actor, t),
           ...attackHeights(current, actor, t), ranged: rangedSpell, spell: true,
           targetAsleep: t.asleep === true,
         }),
         ...rangeSources,
-        ...wardSources(current, actor, t, { melee: !rangedSpell, str: false }),
+        ...wardSources(current, actor, t, { melee: !rangedSpell, str: false, notStrDex: true }),
         // Görev F: Precise Hunter (Steady Aim yalnızca silah saldırısında harcanır).
         ...traitSources(current, actor, t).filter((x) => x.reason !== 'Steady Aim'),
         // Görev SORCERER: Innate Sorcery etkinken büyü saldırısında avantaj.
         ...(innateFor(current, actor, spell.name) ? [{ effect: 'advantage' as const, reason: 'Innate Sorcery' }] : []),
       ];
       const mode = combineModes(elusiveFilter(t, sources));
-      const attackInput = { attackBonus: actor.spellAttack ?? 0, targetAc: effectiveAc(current, t) + cover, mode, damage: expr, autoCritical: isAutoCritical(t.conditions, withinFiveFt(current, actor, t, !rangedSpell)), extra: attackDice(actor) };
+      const attackInput = { attackBonus: actor.spellAttack ?? 0, targetAc: effectiveAc(current, t) + cover, mode, damage: expr, autoCritical: isAutoCritical(t.conditions, near5(t)), extra: attackDice(actor) };
       let res = resolveAttack(attackInput, rollTag(rng, { by: actor.id }));
       // Kuyruk 19 (srdK19): Greater Magic Resistance (büyü saldırıları kendiliğinden ıskalar), Reflective Carapace (menzilli büyü saldırısı etkilemez).
       if (t.traits?.includes('greater-magic-resistance') || (rangedSpell && t.traits?.includes('reflective-carapace'))) res = { ...res, hit: false, critical: false, damage: null };
@@ -904,9 +1050,11 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       // Görev SORCERER: Empowered Spell büyü saldırısının hasar zarlarında da.
       const sides = parseDice(expr).sides;
       const rolls0 = res.damage?.rolls ?? [];
-      const rolls1 = res.hit && actor.traits?.includes('mm-empowered') ? empowerRolls(actor, rolls0, sides, rng) : rolls0;
-      const raw = (res.damage?.total ?? 0) - rolls0.reduce((n, x) => n + x, 0) + rolls1.reduce((n, x) => n + x, 0);
-      const adj = res.hit ? adjustDamage(raw, m.damageType, profileIn(state, t, true)) : { amount: 0, note: null };
+      const rolls1 = res.hit && actor.traits?.includes('mm-empowered') ? empower(rolls0, sides) : rolls0;
+      const once = res.hit && onceLeft > 0 ? onceLeft : 0;
+      if (once) onceLeft = 0;
+      const raw = (res.damage?.total ?? 0) - rolls0.reduce((n, x) => n + x, 0) + rolls1.reduce((n, x) => n + x, 0) + once;
+      const adj = res.hit ? adjustDamage(raw, m.damageType, profileIn(state, t, true, actor)) : { amount: 0, note: null };
       // Hunter's Mark: işaretli hedefe büyü saldırısı isabetinde de ek hasar.
       let bonus = res.hit ? hitExtras(current, actor, t, { mode, critical: res.critical }, rng) : { extras: [] as ExtraDamage[] };
       // Görev SORCERER: patlayan zar (Sorcerous Burst): en yüksek yüzde ek zar, en çok büyü yeteneği değiştiricisi kadar.
@@ -914,9 +1062,17 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
         const boom = explodeRolls(rolls1, m.explode, Math.max(0, actor.spellMod), actor, rng);
         if (boom.length) {
           const sum = boom.reduce((n, x) => n + x, 0);
-          const a = adjustDamage(sum, m.damageType, profileIn(state, t, true));
+          const a = adjustDamage(sum, m.damageType, profileIn(state, t, true, actor));
           bonus = { ...bonus, extras: [...bonus.extras, { label: `${spell.name} (patlama)`, rolls: boom, raw: sum, applied: a.amount, type: m.damageType ?? '', note: a.note }] };
         }
+      }
+      // Görev TE99 (99+, SRD 5.2.1 s. 85 Giant Ancestry "hit a target with an attack roll"): büyü saldırısında da.
+      gh = res.hit && raw > 0 && te99On(current) ? giantHit(current, actor, t, { spell: true } as AttackOption, res.critical, rng) : null;
+      if (gh?.extra) bonus = { ...bonus, extras: [...bonus.extras, gh.extra] };
+      // Görev TE99 (99+, SRD 5.2.1 s. 88 Overwhelming Strike "When you roll a 20 on the d20 for an attack roll"): büyü saldırısında da.
+      if (res.hit && res.d20?.kept === 20 && overcomesDefenses(current, actor) && actor.boonScore) {
+        const a = adjustDamage(actor.boonScore, m.damageType, profileIn(state, t, true, actor));
+        bonus = { ...bonus, extras: [...bonus.extras, { label: 'Overwhelming Strike', rolls: [], raw: actor.boonScore, applied: a.amount, type: m.damageType ?? '', note: a.note }] };
       }
       const ac = effectiveAc(current, t) + cover;
       // Hedefin isabet tepkisi (Shield, Parry, Uncanny Dodge; Görev R1).
@@ -926,11 +1082,13 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       }, rng) : null;
       const hit = hr ? hr.hit : res.hit;
       if (!hit) bonus = { extras: [] };
-      // Görev B1: ıskada yarı hasar (Acid Arrow).
-      const miss = !hit && m.halfOnMiss ? (() => {
+      // Görev B1: ıskada yarı hasar (Acid Arrow). Görev B93 (sürüm 93+): Potent Cantrip ıskalanan cantrip'te de yarı hasar,
+      // ek etki yok (ek etkiler yalnız isabette; bizim sürüm: "Hasar cantrip'in ıskalasa ya da save başarılı olsa da yarı hasar verir").
+      const miss = !hit && (m.halfOnMiss || (v93 && !!m.damage && potentCantrip(actor, spell))) ? (() => {
         const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }));
-        const a = adjustDamage(Math.floor(d.total / 2), m.damageType, profileIn(state, t, true));
-        return { rolls: d.rolls, raw: Math.floor(d.total / 2), amount: a.amount, note: a.note };
+        const once = onceLeft; onceLeft = 0;
+        const a = adjustDamage(Math.floor((d.total + once) / 2), m.damageType, profileIn(state, t, true, actor));
+        return { rolls: d.rolls, raw: Math.floor((d.total + once) / 2), amount: a.amount, note: a.note };
       })() : null;
       const total = hit ? hr?.damage ?? 0 : miss?.amount ?? 0;
       if (hr?.events.length) { events.push(...hr.events); current = applyEvents(current, hr.events); }
@@ -947,8 +1105,18 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
         ...(res.extra ? { bonusDice: res.extra } : {}),
       };
     } else {
-      const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }));
-      const adj = guard?.blocked ? { amount: 0, note: null } : adjustDamage(d.total, m.damageType, profileIn(state, t, true));
+      const d0 = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }));
+      // Görev B93 (sürüm 93+): Empowered Spell dartın zarında da; tek-zar eki ilk darta.
+      const er = v93 && actor.traits?.includes('mm-empowered') ? empower(d0.rolls, parseDice(expr).sides) : d0.rolls;
+      const once = onceLeft; onceLeft = 0;
+      const d = { rolls: er, total: d0.total - d0.rolls.reduce((n, x) => n + x, 0) + er.reduce((n, x) => n + x, 0) + once };
+      // Görev B94 (sürüm 94+): Superior Hunter's Defense otomatik isabetli büyüde (Magic Missile) de.
+      const shdA = b94On(state) && !guard?.blocked && d.total > 0 ? hunterDefenseEvents(current, t, actor.id, m.damageType) : [];
+      if (shdA.length) { events.push(...shdA); current = applyEvents(current, shdA); }
+      // Sonraki dartlar: aynı türe direnç bu tur sürer (etki `shd-<tür>`).
+      const shdOn = shdA.length > 0 || (b94On(state) && !!current.combatants[t.id]?.effects?.some((e) => e.id === `shd-${m.damageType}`));
+      const profA = shdOn && m.damageType ? { ...profileIn(state, t, true, actor), resistances: [...profileIn(state, t, true, actor).resistances, m.damageType] } : profileIn(state, t, true, actor);
+      const adj = guard?.blocked ? { amount: 0, note: null } : adjustDamage(d.total, m.damageType, profA);
       const fx = damageEffects(t, adj.amount, m.damageType ?? '', false, rng);
       ev = {
         type: 'attack_resolved', actorId: actor.id, targetId: t.id, label: `${spell.name} (otomatik isabet)`,
@@ -958,13 +1126,23 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
         ...(guard?.blocked ? { reacted: { name: 'Shield', reduced: d.total } } : {}),
       };
     }
+    if (gh && ev.type === 'attack_resolved' && ev.hit) { events.push(...gh.before); current = applyEvents(current, gh.before); }
     events.push(ev);
     current = applyEvents(current, [ev]);
+    if (gh && ev.type === 'attack_resolved' && ev.hit) { const ga = gh.after(current); events.push(...ga); current = applyEvents(current, ga); }
     // Görev B1: isabetten sonra kalan etki (Acid Arrow, Heat Metal) ve can emme (Vampiric Touch).
     if (ev.type === 'attack_resolved' && ev.hit) {
       const after = afterHitEvents(current, actor, t.id, spell, ev.appliedDamage, rng, upcast);
       events.push(...after);
       current = applyEvents(current, after);
+      // Görev B93 (sürüm 93+): Hurl Through Hell büyü saldırısı isabetinde de (alt sınıf, bizim sürüm: "Saldırı isabetinde").
+      const ha = current.combatants[actor.id];
+      const ht = current.combatants[t.id];
+      if (v93 && m.kind === 'attack' && ha && ht) {
+        const hurl = hurlEvents(current, ha, ht, rng);
+        events.push(...hurl);
+        current = applyEvents(current, hurl);
+      }
       // Görev WARLOCK: Repelling Blast: isabette Large ve küçüğü düz geriye (her ışında).
       const push = actor.cantripMods?.[spell.name]?.pushFt;
       const hitT = current.combatants[t.id];
@@ -1176,6 +1354,21 @@ export function rawEffect(raw: Record<string, unknown>, actor: Combatant, dc: nu
   return sub(raw) as Partial<ActiveEffect>;
 }
 
+/** BUYU-TAM (102): menzil içinde, bütün hedeflerin yarıçap içinde kaldığı bir merkez altıgeni var mı (konumsuz hedef engel değil). */
+export function healSphereFits(state: BattleState, from: Offset, rangeFt: number, radiusFt: number, targets: Combatant[]): boolean {
+  const pos = targets.map((t) => t.pos).filter((p): p is Offset => !!p);
+  if (!pos.length || !state.map) return true;
+  const rows = state.map.tiles.length;
+  const cols = state.map.tiles[0]?.length ?? 0;
+  const R = Math.floor(rangeFt / 5);
+  const r = Math.floor(radiusFt / 5);
+  for (let row = 0; row < rows; row++) for (let col = 0; col < cols; col++) {
+    const c = { col, row };
+    if (distance(from, c) <= R && pos.every((p) => distance(c, p) <= r)) return true;
+  }
+  return false;
+}
+
 /** Görev B1: çok hedefli iyileştirme (Mass Healing Word: en çok `healTargets` yaratık, her biri ayrı zar). */
 function executeHealMany(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
   const m = spell.mechanics;
@@ -1193,6 +1386,11 @@ function executeHealMany(state: BattleState, actor: Combatant, cmd: CastCommand,
     }
     targets.push(t);
   }
+  // BUYU-TAM (102; SRD 5.2.1 Mass Cure Wounds "up to six creatures in a 30-foot-radius Sphere centered on a point within range"):
+  // hedeflerin hepsini kapsayan, menzil içinde merkezli bir küre olmalı.
+  if (m.healSphereFt && state.map && actor.pos && !healSphereFits(state, actor.pos, spell.rangeFt, m.healSphereFt, targets)) {
+    return fail(`${spell.name}: hedefler menzil içinde merkezli ${m.healSphereFt} ft yarıçaplı bir kürede olmalı.`);
+  }
   const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const upcast = (slot.slotLevel ?? spell.level) - spell.level;
@@ -1207,7 +1405,8 @@ function executeHealMany(state: BattleState, actor: Combatant, cmd: CastCommand,
   }
   // Blessed Healer: başkası iyileştiyse büyücü (kendisi hedefse onun iyileşmesinden sonra).
   const self = applyEvents(state, events).combatants[actor.id] as Combatant;
-  events.push(...healSelfAfter(self, slot.slotLevel, targets.some((t) => t.id !== actor.id), spell.name));
+  events.push(...healSelfAfter(self, slot.slotLevel, buyucu93On(state)
+    ? events.some((e) => e.type === 'healed' && e.targetId !== actor.id && e.amount > 0) : targets.some((t) => t.id !== actor.id), spell.name));
   return finish(state, events);
 }
 
@@ -1618,7 +1817,10 @@ function executeSmite(state: BattleState, actor: Combatant, cmd: CastCommand, sp
   const ss = spell.mechanics.smiteSave;
   let caught = true;
   if (ss && hit && hit.hp > 0) {
-    const big = ss.largeAdvantage && ['Large', 'Huge', 'Gargantuan'].includes(hit.size) ? 'advantage' : 'normal';
+    // Mekanik matris B07 (sürüm 83+): SRD 5.2.1 "A Large or larger creature has Advantage on this save." Boyut kodu
+    // L/H/G; eski karşılaştırma ('Large'…) hiç eşleşmiyordu (82 ve altı aynen: avantaj yok).
+    const bigSizes: string[] = matrisOn(state) ? ['L', 'H', 'G'] : ['Large', 'Huge', 'Gargantuan'];
+    const big = ss.largeAdvantage && bigSizes.includes(hit.size) ? 'advantage' : 'normal';
     const autoFail = (ss.ability === 'str' || ss.ability === 'dex') && autoFailsStrDexSave(hit.conditions);
     const dc = actor.spellSaveDc ?? 10;
     const save = resolveSave({ extra: saveDice(hit, ss.ability), modifier: hit.saves[ss.ability], dc, mode: saveMode(big, hit, ss.ability), autoFail }, rollTag(rng, { by: hit.id }));
@@ -1638,10 +1840,23 @@ function executeSmite(state: BattleState, actor: Combatant, cmd: CastCommand, sp
       ...(o.escape ? { escapeCheck: { dc: actor.spellSaveDc ?? 10, allyHelp: true } } : {}),
     } });
   }
+  // Mekanik matris B18 (sürüm 83, `m83` `smiteReveal`): Shining Smite "Until the spell ends, the target sheds Bright Light …,
+  // attack rolls against it have Advantage, and it can't benefit from the Invisible condition." Görünmezlik yararı
+  // konsantrasyon süresince kalkar (Faerie Fire'daki `revealed`; ışık ve avantaj koruma kaydında, `wardsOn`).
+  if (spell.mechanics.smiteReveal && hit && hit.hp > 0) {
+    events.push({ type: 'effect_added', targetId: target.id, effect: { id: `${spell.srd}:revealed`, name: spell.name, sourceId: actor.id,
+      until: state.round + 9, ...(spell.concentration ? { concentration: spell.name } : {}), revealed: true } });
+  }
   // Kuyruk 19 (11–20): Smite of Protection (Devotion 15): Divine Smite'tan sonra Paladin ve aurasındaki dostlar sonraki
   // turunun başına dek yarım siperli.
   if (spell.id === 'divine-smite' && actor.traits?.includes('smite-of-protection') && globalRule(state, 'featuresK19')) {
     const radius = (actor.level ?? 0) >= 18 ? 6 : 2;
+    // Görev B94 (sürüm 94+, s. 57 "while in your Aura of Protection"): siper aurada kaldıkça (sonradan giren de alır,
+    // çıkan kaybeder); Paladin'de tek etki `coverAura`, `cover.ts` `grantedHalfCover` okur.
+    if (b94On(state)) {
+      events.push({ type: 'effect_added', targetId: actor.id, effect: { id: 'smite-of-protection', name: 'Smite of Protection', sourceId: actor.id, untilSourceTurn: true, coverAura: radius, icon: '🛡' } });
+      return finish(state, events);
+    }
     for (const c of Object.values(state.combatants)) {
       if (c.side !== actor.side || c.hp <= 0 || (c.id !== actor.id && (!c.pos || !actor.pos || distance(c.pos, actor.pos) > radius))) continue;
       events.push({ type: 'effect_added', targetId: c.id, effect: { id: 'smite-of-protection', name: 'Smite of Protection', sourceId: actor.id, untilSourceTurn: true, halfCover: true, icon: '🛡' } });
@@ -1671,6 +1886,8 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
   const ids = [...new Set(cmd.targetIds ?? (cmd.targetId ? [cmd.targetId] : base.side === 'ally' || base.self ? [actor.id] : []))];
   if (ids.length === 0) return fail('Hedef seçmelisin.');
   if (base.self && ids.some((id) => id !== actor.id)) return fail(`${spell.name} yalnızca büyücünün kendisine.`);
+  // BUYU-TAM (102, Etherealness yukarı slot): büyücü hedeflerden biri olmalı.
+  if (base.includeSelf && !ids.includes(actor.id)) return fail(`${spell.name}: büyücü de hedeflerden biri olmalı.`);
   // Görev B1: seçenekli biçim (Enlarge/Reduce): seçilmezse dosta ilki, düşmana ikincisi.
   const variantKeys = base.variants ? Object.keys(base.variants) : [];
   const firstSide = state.combatants[ids[0] as string]?.side;
@@ -1692,7 +1909,9 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     if (spec.noArmor && t.armored) return fail(`${t.name} zırh giyiyor: ${spell.name} yapılamaz.`);
     if (spec.needsHearing && (t.conditions.includes('Deafened') || t.silenced)) return fail(`${t.name} sağır (Deafened): ${spell.name} duyulmaz.`);
     if (t.id !== actor.id) {
-      const r = checkReach(state, actor, t, spellReach(spell, actor));
+      // Mekanik matris K01 (sürüm 83): seçenekli büyüde zarar seçilen seçenekten (Bestow Curse: hasar seçeneği zarar verir).
+      const reach0 = spellReach(spell, actor);
+      const r = checkReach(state, actor, t, reach0.kind === 'effect' ? { ...reach0, harmless: !spellHarms({ ...m, effect: spec }) } : reach0);
       if (!r.ok) return fail(`${t.name}: ${r.error}`);
     }
     targets.push(t);
@@ -1777,6 +1996,8 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.deathSaveAdv ? { deathSaveAdv: true } : {}), ...(spec.maxHeal ? { maxHeal: true } : {}),
     ...(spec.size ? { size: spec.size } : {}), ...(spec.lethargy ? { lethargy: true } : {}), ...(spec.dropAtZero ? { dropAtZero: true } : {}), ...(spec.deathWard ? { deathWard: true } : {}),
     // K17 G1: Banishment (Ethereal gibi hedef alınamaz), Resilient Sphere (hasar bağışıklığı).
+    // BUYU-TAM (102): Etherealness'in `ethereal`'ı etkiye yazılır (101 ve altında veri alanı okunmuyordu: büyü etkisizdi).
+    ...(spec.ethereal && buyuTamOn(state) ? { ethereal: true } : {}),
     ...(spec.banished ? { banished: true, ethereal: true } : {}), ...(spec.dominate ? { dominate: true, ...(spec.reactionLink ? { reactionLink: true } : {}) } : {}), ...(spec.polymorph ? { polymorph: true } : {}), ...(spec.sealed ? { sealed: true } : {}),
     // Görev B3: büyüleme, hasarla bitme, hasarla yeniden save, süren zorlama, kaçış, koyanın turunda hasar, kopyalar.
     ...(spec.charm ? { charm: true } : {}), ...(spec.breakOnDamage ? { breakOnDamage: spec.breakOnDamage } : {}), ...(spec.breakOnSpell ? { breakOnSpell: true } : {}),
@@ -1799,6 +2020,9 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     // Kuyruk A4 (Expeditious Retreat): süresince bonus eylemle Dash.
     ...(spec.bonusGrant ? { bonusGrant: spec.bonusGrant } : {}),
     ...(spec.blindRetort ? { blindRetort: { types: spec.blindRetort, dc } } : {}),
+    // Mekanik matris B13 (yalnız `m83` verisinde; Holy Aura): büyücüden dost yayılımı.
+    ...(spec.allyAura ? { allyAura: { radiusFt: spec.allyAura.radiusFt, ...(spec.allyAura.saveAdvAll ? { saveAdvAll: true as const } : {}),
+      ...(spec.allyAura.attackedDis ? { attackedDis: true as const } : {}), ...(spec.allyAura.blindRetort ? { blindRetort: { types: spec.allyAura.blindRetort, dc } } : {}) } } : {}),
     // Kuyruk A6: veride olduğu gibi yazılan alanlar.
     ...(spec.raw ? rawEffect(spec.raw, actor, dc) : {}),
     // Kuyruk A7 (Dragon's Breath, `breathGrant`): dokunulan dosta nefes (seçilen tür, yukarı slot zarı, büyücünün DC'si).
@@ -1847,11 +2071,14 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
         + (m.upcast?.hp ?? 0) * Math.max(0, slotLevel - spell.level);
       added.push({ type: 'temp_hp', targetId: t.id, amount: roll, label: spell.name });
     }
-    else added.push({ type: 'effect_added', targetId: t.id, effect: { ...effect, ...(spec.command ? { until: state.round + 1 } : {}),
+    // Mekanik matris B16 (sürüm 83): süren buyruk (`commandPersist`: Suggestion, Mass Suggestion) büyünün süresince
+    // ("Charmed condition for the duration"); yalnız tek turluk buyruk (Command) yapım turu + 1'de biter.
+    else added.push({ type: 'effect_added', targetId: t.id, effect: { ...effect, ...(spec.command && !(spec.commandPersist && matrisOn(state)) ? { until: state.round + 1 } : {}),
       // Kuyruk 19: Banishment: yerli olmayan tam sürede geri dönmez.
       ...(spec.banished && globalRule(state, 'spellsK19') && EXTRAPLANAR.includes(t.creatureType ?? '') ? { banishForever: true } : {}),
       // Mage Armor: AC tabanı 13 + hedefin DEX değiştiricisi.
-      ...(spec.acMin === 'mageArmor' ? { acMin: 13 + t.modifiers.dex } : {}) } });
+      // Görev TE99 (99+, SRD 5.2.1 s. 145 "base AC becomes 13 + its Dexterity modifier"): taban (`acBase`); kalkan/eşya üstüne eklenir.
+      ...(spec.acMin === 'mageArmor' ? { acMin: 13 + t.modifiers.dex, acBase: 13 + t.modifiers.dex } : {}) } });
     // Kuyruk 18 H2: Polymorph: biçim ve geçici HP (seçim `choice` = Beast kimliği).
     if (spec.polymorph) added.push(...polymorphEvents(current, actor, t, cmd.choice));
     // Görev B5: yapılınca kalkan durumlar (Protection from Poison: Poisoned).
@@ -1881,7 +2108,10 @@ function executeRestore(state: BattleState, actor: Combatant, cmd: CastCommand, 
     : m.revive === 'revive' ? Object.values(state.combatants).find((c) => c.side === actor.side && c.life === 'dead' && !c.summon && !c.civilian
       && withinMinute(state, c) && (!state.map || (!!c.pos && !!actor.pos && distance(c.pos, actor.pos) <= 1))) : undefined;
   if (!t) return fail(m.revive === 'revive' ? 'Dokunma menzilinde ölü dost yok.' : 'Hedef seçmelisin.');
-  if (t.side !== actor.side || t.civilian && t.side !== 'party') return fail(`${spell.name} yalnızca dostlara.`);
+  // GENEL96 D19 (sürüm 96+; SRD 5.2.1 s. 163 Spare the Dying "Choose a creature within range that has 0 Hit Points and
+  // isn't dead"; "The range doubles when you reach levels 5 (30 feet), 11 (60 feet), and 17 (120 feet)"): herhangi bir yaratık.
+  const spare96 = m.revive === 'stabilize' && genel96On(state);
+  if (!spare96 && (t.side !== actor.side || t.civilian && t.side !== 'party')) return fail(`${spell.name} yalnızca dostlara.`);
   if (t.summon) return fail(`${spell.name} çağrılmış yaratığa yapılmaz.`);
   let ev: BattleEvent;
   if (m.kind === 'cure' && m.restoreChoices && globalRule(state, 'spellsK19')) {
@@ -1916,7 +2146,8 @@ function executeRestore(state: BattleState, actor: Combatant, cmd: CastCommand, 
     ev = { type: 'life_restored', targetId: t.id, hpAfter: 1, life: 'alive', label: spell.name };
   }
   if (t.id !== actor.id) {
-    const r = checkReach(state, actor, { ...t, hp: Math.max(1, t.hp) }, spellReach(spell, actor));
+    const reachSpell = spare96 && spell.level === 0 ? { ...spell, rangeFt: spell.rangeFt * 2 ** ((actor.level >= 5 ? 1 : 0) + (actor.level >= 11 ? 1 : 0) + (actor.level >= 17 ? 1 : 0)) } : spell;
+    const r = checkReach(state, actor, { ...t, hp: Math.max(1, t.hp) }, spellReach(reachSpell, actor));
     if (!r.ok) return r;
   }
   const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);

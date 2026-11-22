@@ -28,7 +28,7 @@
             "name": "Longsword"
           },
           {
-            "name": "Light crossbow"
+            "name": "Javelin"
           }
         ],
         "skills": [
@@ -52,14 +52,14 @@
         ],
         "weaponMasteries": [
           "longsword",
-          "light-crossbow",
+          "javelin",
           "greatsword",
           "warhammer"
         ],
         "subclassId": "champion",
         "originFeat": "savage-attacker"
       },
-      "not": "Fighter (Champion). Köken feat'i Savage Attacker (Soldier geçmişi; etkisi oyunda yok). 1. seviyede Defense, 4. seviyede ASI STR +2. 1. seviyede 155 GP seçeneğiyle aynı donanım alınır (Chain Mail 75, Shield 10, Longsword 15, Light crossbow 25).",
+      "not": "Fighter (Champion). Köken feat'i Savage Attacker (Soldier geçmişi; etkisi oyunda yok). 1. seviyede Defense, 4. seviyede ASI STR +2. Kalkan + Longsword yakın dövüşçü; menzilli silah Javelin (Thrown, tek elli; Görev KALAN100: TE99'dan beri kalkanla Two-Handed Light crossbow kullanılamıyordu).",
       "levels": {
         "7": {
           "advancements": [
@@ -607,7 +607,7 @@
         ],
         "spellNames": [
           "Cure Wounds",
-          "Hunter's Mark",
+          "Alarm",
           "Entangle",
           "Spike Growth",
           "Barkskin",
@@ -647,13 +647,13 @@
         "1": {
           "spellNames": [
             "Cure Wounds",
-            "Hunter's Mark"
+            "Alarm"
           ]
         },
         "3": {
           "spellNames": [
             "Cure Wounds",
-            "Hunter's Mark",
+            "Alarm",
             "Entangle",
             "Longstrider"
           ]
@@ -1171,12 +1171,12 @@
             "name": "Longsword"
           },
           {
-            "name": "Longbow"
+            "name": "Javelin"
           }
         ],
         "spellNames": [
           "Cure Wounds",
-          "Hunter's Mark",
+          "Alarm",
           "Entangle",
           "Spike Growth",
           "Magic Weapon",
@@ -1204,7 +1204,7 @@
         ],
         "weaponMasteries": [
           "longsword",
-          "longbow"
+          "javelin"
         ],
         "subclassId": "hunter",
         "originFeat": "alert",
@@ -1219,13 +1219,13 @@
         "1": {
           "spellNames": [
             "Cure Wounds",
-            "Hunter's Mark"
+            "Alarm"
           ]
         },
         "3": {
           "spellNames": [
             "Cure Wounds",
-            "Hunter's Mark",
+            "Alarm",
             "Entangle",
             "Longstrider"
           ]
@@ -1233,7 +1233,7 @@
         "7": {
           "spellNames": [
             "Cure Wounds",
-            "Hunter's Mark",
+            "Alarm",
             "Entangle",
             "Spike Growth",
             "Magic Weapon",
@@ -1266,7 +1266,7 @@
           ],
           "spellNames": [
             "Cure Wounds",
-            "Hunter's Mark",
+            "Alarm",
             "Entangle",
             "Spike Growth",
             "Magic Weapon",
@@ -1277,7 +1277,7 @@
           ]
         }
       },
-      "not": "Ranger (Hunter; Görev F), yakın dövüş: Longsword + kalkan, Longbow. 2. seviyede Defense, 4. seviyede ASI STR +1, CON +1. Hunter's Prey: Horde Breaker. Deft Explorer: Athletics uzmanlığı."
+      "not": "Ranger (Hunter; Görev F), yakın dövüş: Longsword + kalkan, menzilli Javelin (Görev KALAN100: kalkanla Two-Handed Longbow TE99'dan beri kullanılamıyordu). 2. seviyede Defense, 4. seviyede ASI STR +1, CON +1. Hunter's Prey: Horde Breaker. Deft Explorer: Athletics uzmanlığı."
     },
     "vex": {
       "sheet": {

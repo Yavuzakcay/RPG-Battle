@@ -44,12 +44,16 @@ function optionFor(sheet: CharacterSheet, weaponName: string, enchant: number, u
   const minDie = twoHands ? feats.minDamageDie : 0;
   // Yan el (Light ek saldırısı): yetenek değiştiricisi hasara eklenmez (negatifse eklenir); Two-Weapon Fighting ekler.
   const dmgMod = use === 'offhand' && !feats.offhandModifier ? Math.min(0, mod) : mod;
-  const bonus = dmgMod + enchant;
+  // SRD 5.2.1 Damage Rolls: "Unless a rule says otherwise, you don't add your ability modifier to a fixed damage amount
+  // that doesn't use a roll, such as the damage of a Blowgun." Büyülü silah bonusu ("add any modifiers") eklenir.
+  const bonus = (fixedDamage(dice) ? 0 : dmgMod) + enchant;
   const name = enchant > 0 ? `${weapon.name} +${enchant}` : weapon.name;
   return {
     label: use === 'thrown' ? `${name} (fırlatma)` : use === 'offhand' ? `${name} (yan el)` : name,
+    // Görev B98: fırlatılan Melee silah "Melee weapon" olarak kalır (davranışı yalnız 98+ okur).
+    ...(use === 'thrown' && !weapon.ranged ? { meleeWeapon: true } : {}),
     attackBonus: mod + (proficient ? d.proficiency : 0) + enchant + archery,
-    damage: bonus === 0 ? dice : `${dice}${bonus > 0 ? '+' : ''}${bonus}`,
+    damage: withBonus(dice, bonus),
     damageType: weapon.damageType,
     ranged,
     spell: false,
@@ -64,7 +68,7 @@ function optionFor(sheet: CharacterSheet, weaponName: string, enchant: number, u
     ability: weapon.finesse || ma ? (d.modifiers.str >= d.modifiers.dex ? 'str' : 'dex') : weapon.ranged ? 'dex' : 'str',
     ...(mastery ? {
       mastery,
-      weaponDamage: enchant === 0 ? dice : `${dice}+${enchant}`,
+      weaponDamage: withBonus(dice, enchant),
       masteryDc: 8 + mod + d.proficiency,
     } : {}),
     ...(minDie > 0 ? { minDie } : {}),
@@ -78,9 +82,26 @@ function optionFor(sheet: CharacterSheet, weaponName: string, enchant: number, u
     ...(weapon.heavy && (weapon.ranged ? d.scores.dex < 13 : d.scores.str < 13) ? { heavyDis: true } : {}),
     // Kuyruk MB1 (SRD Lance "Two-Handed (unless mounted)"): motor 68+ binekte değilken diğer el doluysa reddeder.
     ...(weapon.twoHandedUnlessMounted ? { unlessMounted: true, ...(!otherHandFree(sheet) ? { handBusy: true } : {}) } : {}),
+    // Görev TE99 (99+, SRD 5.2.1 s. 90 Two-Handed "requires two hands when you attack with it"): kalkan takılıyken saldırı yok
+    // (Lance binekte serbest: yukarıdaki kural). Fırlatılan değil; yan el zaten `offHandProblem` ile engelli.
+    ...(weapon.twoHanded && !weapon.twoHandedUnlessMounted && sheet.shield && use !== 'thrown' ? { shieldBusy: true } : {}),
     ...(weapon.loading && use !== 'thrown' ? { loading: true } : {}),
     ...(weapon.ammunition && use !== 'thrown' && weapon.ammo ? { ammo: weapon.ammo } : {}),
   };
+}
+
+/** Zarsız sabit hasar mı (SRD Blowgun "1"). */
+const fixedDamage = (dice: string): boolean => /^\s*-?\d+\s*$/.test(dice);
+
+/**
+ * Hasar zarına sabit ekler. Sabit hasarlı silahta (SRD Blowgun "1") toplam tek sabit olur: eskiden "1+2" yazılıyordu,
+ * `parseDice` reddedip her isabette istisna fırlatıyordu (mekanik matris Ç01; çökme düzeltmesi, eski kayıtta bu saldırı
+ * hiç olay üretmemişti). Yetenek değiştiricisi sabite eklenmez, çağıran ayıklar (SRD 5.2.1 Damage Rolls).
+ */
+function withBonus(dice: string, bonus: number): string {
+  if (bonus === 0) return dice;
+  if (fixedDamage(dice)) return String(Math.max(0, Number(dice) + bonus));
+  return `${dice}${bonus > 0 ? '+' : ''}${bonus}`;
 }
 
 const avgDie = (dice: string): number => {

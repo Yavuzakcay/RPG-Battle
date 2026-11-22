@@ -7,6 +7,10 @@
  * Komut başarılı olursa `action_used` olayı komutun olaylarının ardına eklenir; başarısız
  * komut hiçbir şey harcamaz.
  */
+import { buyucu93On } from './buyucu93Surum';
+import { anyListResource } from './anyList';
+import { ws92On } from './ws92Surum';
+import ws92Data from '../../data/ws92.json';
 import { heldFollow, mechanicsAt } from './spellVersion';
 import { breathOf } from './breath';
 import { abilitiesOf } from './monsterAbilities';
@@ -21,6 +25,8 @@ import { fail, type Failure } from './common';
 import { stunningProblem } from './stunning';
 import { resourceLeft, type BattleEvent, type BattleState, type BonusOption, type Combatant, type Command, type Resources } from './types';
 import { ruleVersion } from './ruleVersion';
+import { te99On } from './te99Surum';
+import { kalan100On } from './kalan100Surum';
 const hasTrait = (c: Pick<Combatant, 'traits'>, t: string): boolean => !!c.traits?.includes(t);
 
 const ACTION_NAMES: Partial<Record<Command['type'], string>> = {
@@ -40,6 +46,7 @@ const ACTION_NAMES: Partial<Record<Command['type'], string>> = {
   distract: 'Dikkat dağıt',
   use_item: 'Eşya kullan',
   escape_grapple: 'yakalamadan kaçış',
+  shield_toggle: 'Utilize',
 };
 
 /** Yan el ek saldırısı (Light; Görev P1) şu an yapılabilir mi: sorun yoksa null (hedef ayrıca denetlenir). */
@@ -161,6 +168,14 @@ export function actionAttacks(actor: Combatant, pact: boolean): number {
   return pact ? Math.max(actor.attacksPerAction, actor.pactAttacks ?? 0) : actor.attacksPerAction;
 }
 
+/** Görev B94 (Abjure Foes, `oneEconomy`): bu tur başka bir hak (hareket, eylem, bonus eylem) kullanıldı mı. */
+export function oneEconomyUsed(actor: Combatant, want: 'move' | 'action' | 'bonus'): boolean {
+  if (!actor.effects?.some((x) => x.oneEconomy)) return false;
+  const e = actor.economy;
+  return (want !== 'move' && actor.movementUsed > 0) || (want !== 'action' && !!e.action) || (want !== 'bonus' && !!e.bonus);
+}
+export const oneEconomyText = 'Korkmuş (Abjure Foes): bu tur yalnız hareket ya da eylem ya da bonus eylemden biri.';
+
 export function economyCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
   const cost = baseCost(state, actor, cmd);
   if (!cost.ok || cost.event?.type !== 'action_used') return cost;
@@ -175,6 +190,8 @@ export function economyCost(state: BattleState, actor: Combatant, cmd: Command):
   if ((cost.event.kind === 'action' || cost.event.kind === 'bonus') && actor.effects?.some((x) => x.noActBonus)) return fail('Zehirli bulutun etkisinde: bu tur eylem ve bonus eylem yapılamaz.');
   // Kuyruk 19: Confusion: bonus eylem yok.
   if (cost.event.kind === 'bonus' && actor.effects?.some((x) => x.noBonus)) return fail('Bu durumda bonus eylem yapılamaz (Confusion).');
+  // Görev B94 (Abjure Foes): yalnız hareket ya da eylem ya da bonus eylem.
+  if ((cost.event.kind === 'action' || cost.event.kind === 'bonus') && oneEconomyUsed(actor, cost.event.kind)) return fail(oneEconomyText);
   if (slowed && cost.event.kind === 'action' && e.bonus) return fail('Slow: bu tur bonus eylem kullanıldı, eylem yapılamaz.');
   if (slowed && cost.event.kind === 'bonus' && e.action) return fail('Slow: bu tur eylem kullanıldı, bonus eylem yapılamaz.');
   if (slowed && cost.event.kind === 'action' && cmd.type === 'attack') return { ok: true, event: { ...cost.event, attacksLeft: 0 } };
@@ -201,15 +218,21 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       if (e.attacksLeft > 0 && e.pactOnly && !pact) return fail('Thirsting Blade: ek saldırı yalnızca pact silahıyla yapılır.');
       // Kuyruk 19 (SRD Loading, Ammunition): Loading silahla eylem başına tek atış; cephane biterse atılamaz.
       if (cmd.type === 'attack' && globalRule(state, 'srdK19')) {
-        if (cmd.option.loading && e.loadingFired && e.attacksLeft > 0) return fail('Loading: bu silahla eylem başına tek atış.');
+        // Görev TE99 (99+, SRD 5.2.1 s. 90 "only one piece of ammunition from a Loading weapon"): silah başına (iki ayrı Loading silahı olur).
+        const fired = te99On(state) ? (e.loadingIds ?? []).includes(cmd.option.weaponId ?? cmd.option.label) : e.loadingFired;
+        if (cmd.option.loading && fired && e.attacksLeft > 0) return fail('Loading: bu silahla eylem başına tek atış.');
         if (cmd.option.ammo && actor.ammo && (actor.ammo[cmd.option.ammo] ?? 0) <= 0) return fail(`Cephane bitti (${cmd.option.ammo}).`);
       }
-      const loading = cmd.type === 'attack' && cmd.option.loading && globalRule(state, 'srdK19') ? { loadingFired: true } : {};
+      const loading = cmd.type === 'attack' && cmd.option.loading && globalRule(state, 'srdK19') ? { loadingFired: true, ...(te99On(state) ? { loadingId: cmd.option.weaponId ?? cmd.option.label } : {}) } : {};
+      // Görev WS92 (92+; SRD Multiattack): biçimin bileşimi (Brown Bear: bir Bite, bir Claw); sayaç `economy.beastUsed`.
+      const comp = cmd.type === 'attack' ? beastComposition(state, actor, cmd.option.beast?.attack) : null;
+      if (comp?.problem && e.attacksLeft > 0) return fail(comp.problem);
+      const beast = comp ? { beast: comp.name } : {};
       if (e.attacksLeft > 0) {
-        return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Attack', attacksLeft: e.attacksLeft - 1, ...light, ...loading } };
+        return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Attack', attacksLeft: e.attacksLeft - 1, ...light, ...loading, ...beast } };
       }
       const n = actionAttacks(actor, pact);
-      return spend(actor, 'action', 'Attack', { attacksLeft: n - 1, ...light, ...loading, ...(n > actor.attacksPerAction ? { pactOnly: true } : {}) });
+      return spend(actor, 'action', 'Attack', { attacksLeft: n - 1, ...light, ...loading, ...beast, ...(n > actor.attacksPerAction ? { pactOnly: true } : {}) });
     }
     case 'offhand_attack': {
       // Önce kuralın kendisi (daha anlamlı neden), sonra eylem ekonomisi.
@@ -240,6 +263,12 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       }
     }
       if (actor.attacks[cmd.attackIndex]?.bonusAction) return spend(actor, 'bonus', actor.attacks[cmd.attackIndex]?.name ?? 'Bonus saldırı');
+      // Görev WS92 (92+; Lion "can replace one attack with a use of Roar"): biçimde Attack eyleminin bir saldırısının yerine.
+      {
+        const swap = beastReplace(state, actor, actor.attacks[cmd.attackIndex]?.name);
+        if (swap && e.attacksLeft > 0) return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: swap, attacksLeft: e.attacksLeft - 1, beast: swap } };
+        if (swap && !e.action) return spend(actor, 'action', 'Attack', { attacksLeft: actionAttacks(actor, false) - 1, beast: swap });
+      }
       return spend(actor, 'action', ACTION_NAMES[cmd.type] ?? cmd.type);
     case 'multiattack':
     case 'search':
@@ -248,11 +277,20 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     case 'pull':
     case 'dodge':
     case 'escape_grapple':
+    case 'shield_toggle':
       // Kuyruk 19: Freedom of Movement ile kurtulmak eylem değil (5 ft hareket).
       if (cmd.type === 'escape_grapple' && actor.effects?.some((e) => e.freeMove)) return { ok: true, event: null };
       // Kuyruk K68a (sürüm 52): enkazdan Freedom of Movement ile kurtulmak eylem değil (5 ft hareket).
       if (cmd.type === 'escape' && ruleVersion(state) >= 52 && actor.effects?.some((e) => e.freeMove) && actor.effects?.some((e) => e.pinned)) return { ok: true, event: null };
       return spend(actor, 'action', ACTION_NAMES[cmd.type] ?? cmd.type);
+    // Hazırla (Ready, sürüm 90): eylem (SRD 5.2.1 s.186).
+    case 'ready': {
+      // Hazırlanan slotlu büyü hazırlarken normal yapılır (SRD 5.2.1 s.186): turda bir slotlu büyü kuralına sayılır.
+      const sp = cmd.response.kind === 'spell' ? spells.find((x) => x.name === (cmd.response as { spellName: string }).spellName) : undefined;
+      const slotted = !!sp && sp.level > 0 && !freeCast(actor, sp.name, cmd.response.kind === 'spell' ? cmd.response.slotLevel ?? undefined : undefined);
+      if (slotted && e.slotTurn === turnKey(state)) return fail('Bu tur zaten büyü slotu harcandı (turda bir slotlu büyü).');
+      return spend(actor, 'action', 'Ready', slotted ? { slotTurn: turnKey(state) } : {});
+    }
     case 'help':
     case 'distract':
     case 'moral_rally':
@@ -273,9 +311,16 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     }
     case 'object_use':
       // Görev S2: kapı açıp kapamak ve nesne almak (Görev S3) eylemsiz; kilit açma, masa devirme, mangal dökme eylem (Utilize).
-      if (cmd.action === 'open' || cmd.action === 'close' || cmd.action === 'take') return { ok: true, event: null };
-      // Kuyruk P12: büyü kitabını bırakmak serbest (nesne etkileşimi; almak `take` gibi).
-      if (cmd.action === 'put') return { ok: true, event: null };
+      // Görev KALAN100 (100+; SRD 5.2.1 s. 13 "You can interact with one object or feature of the environment for free … If you want
+      // to interact with a second object, you need to take the Utilize action"): aç/kapa, al, bırak ve yerden alma (`pick_up`) turda
+      // tek serbest etkileşimi paylaşır; ikincisi aşağıdaki Utilize yolundan.
+      if (kalan100On(state) && (cmd.action === 'open' || cmd.action === 'close' || cmd.action === 'take' || cmd.action === 'put')) {
+        if (!e.interacted) return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Etkileşim', interaction: true } };
+      } else {
+        if (cmd.action === 'open' || cmd.action === 'close' || cmd.action === 'take') return { ok: true, event: null };
+        // Kuyruk P12: büyü kitabını bırakmak serbest (nesne etkileşimi; almak `take` gibi).
+        if (cmd.action === 'put') return { ok: true, event: null };
+      }
       // A1: nesne fırlatmak eylem (Utilize değil; Fast Hands kapsamaz).
       if (cmd.action === 'throw') return spend(actor, 'action', 'Nesne fırlat');
       // Kuyruk 19 (featuresK19): Thief'in Fast Hands'i: Utilize bonus eylemle (eylem kullanılmışsa ya da her zaman tercih edilir).
@@ -378,15 +423,18 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       // Ritüel (1 saat; Find Familiar): savaşta yapılamaz, kurulumda yapılır (Görev R3).
       // Kuyruk 19 (featuresK19): Wild Companion: Find Familiar savaşta Magic eylemiyle (slot ya da Wild Shape).
       const companion = spell.name === 'Find Familiar' && !!actor.traits?.includes('wild-companion') && !!globalRule(state, 'featuresK19');
+      // Görev B93 (Ritual Adept): hazırlanmadan bilinen ritüel büyü yalnız kurulumda ritüel olarak.
+      if (actor.ritualOnly?.includes(spell.name)) return fail(`${spell.name} hazırlanmadı: yalnız ritüel olarak (kurulumda) yapılır.`);
       if (spell.castingTime === 'ritual' && !companion) return fail(`${spell.name} ritüeldir: savaştan önce (kurulumda) yapılır.`);
       if (companion) {
         if (cmd.free && !freeCastResource(actor, spell.name, undefined, true)) return fail('Wild Shape kullanımı kalmadı.');
-        return spend(actor, 'action', spell.name, !cmd.free ? { slotTurn: turnKey(state) } : {});
+        return spend(actor, 'action', spell.name, { ...(!cmd.free ? { slotTurn: turnKey(state) } : {}), ...(buyucu93On(state) && spell.level > 0 ? { leveled: true } : {}), magic: true });
       }
       // Action Surge'ün verdiği eylem Magic eylemi olamaz (SRD 5.2.1).
       if (e.surged && spell.castingTime === 'action') return fail('Action Surge\'ün ek eylemiyle büyü yapılamaz.');
       // Kuyruk 43b: Divine Intervention ile slotsuz yapım (oyuncu isteği): Magic eylemi, slot yok.
-      if (cmd.free && (spell.level === 0 || !freeCastResource(actor, spell.name, cmd.slotLevel, true))) return fail('Bu büyü slotsuz yapılamaz (kullanım hakkı yok ya da büyü listede değil).');
+      // Görev B93 (93+): hazırlanmamış listeli büyü (Divine Intervention `anyFromList`).
+      if (cmd.free && (spell.level === 0 || (!freeCastResource(actor, spell.name, cmd.slotLevel, true) && !(buyucu93On(state) && !actor.spellNames.includes(spell.name) && anyListResource(actor, spell))))) return fail('Bu büyü slotsuz yapılamaz (kullanım hakkı yok ya da büyü listede değil).');
       // Kuyruk P11: bilinmeyen büyü (paket çalınan/kopya) slotsuz yapılır.
       const usesSlot = spell.level > 0 && !cmd.free && !freeCast(actor, spell.name, cmd.slotLevel) && actor.spellNames.includes(spell.name);
       const key = turnKey(state);
@@ -394,11 +442,38 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       // Kuyruk 19: canavarın bonus eylem büyüsü (Divine Aid, Misty Step; kaynak `mspell-b:`) slotsuz yapımda bonus eylemle.
       const bonusSpell = cmd.slotLevel === undefined && !!actor.freeSpells?.[spell.name]?.startsWith('mspell-b:') && (actor.resources[actor.freeSpells[spell.name]!] ?? 0) > 0;
       const time = cmd.free ? 'action' : bonusSpell || (cmd.metamagic?.includes('quickened') && spell.castingTime === 'action') ? 'bonus' : spell.castingTime;
-      const cost = spend(actor, time as 'action' | 'bonus' | 'reaction', spell.name, usesSlot ? { slotTurn: key } : {});
+      // Görev B93 (sürüm 93+, SRD 5.2.1 s. 67 Quickened Spell): bu tur 1+ seviye büyü yapıldıysa Quickened olmaz; Quickened'dan
+      // sonra bu tur 1+ seviye büyü yapılamaz (`economy.leveledCast`, `economy.quickened`).
+      const quick = !!cmd.metamagic?.includes('quickened');
+      const v93 = buyucu93On(state);
+      if (v93 && quick && e.leveledCast) return fail('Quickened Spell: bu tur zaten 1. seviye ya da üstü büyü yapıldı.');
+      if (v93 && !quick && spell.level > 0 && e.quickened) return fail('Quickened Spell kullanıldı: bu tur 1. seviye ya da üstü büyü yapılamaz.');
+      const marks = { ...(v93 && spell.level > 0 ? { leveled: true } : {}), ...(v93 && quick ? { quickened: true } : {}) };
+      // Görev TE99: Magic eylemi işareti (Blink Steps: "Immediately after you take the Attack action or the Magic action").
+      const cost = spend(actor, time as 'action' | 'bonus' | 'reaction', spell.name, { ...(usesSlot ? { slotTurn: key } : {}), ...marks, ...(time === 'action' ? { magic: true } : {}) });
       if (cost.ok && usesSlot && e.slotTurn === key) return fail('Bu tur zaten büyü slotu harcandı (turda bir slotlu büyü).');
       return cost;
     }
     default:
       return { ok: true, event: null };
   }
+}
+
+/** Görev WS92 (92+): biçimin Multiattack bileşimi (`data/ws92.json` `bilesim`): saldırı adı ve sınır aşılırsa sorun metni. */
+function beastComposition(state: BattleState, actor: Combatant, attack: string | undefined): { name: string; problem: string | null } | null {
+  if (!attack || !actor.shape || !ws92On(state)) return null;
+  const rec = (ws92Data.bilesim as Record<string, { en: Record<string, number>; yerine?: string[] }>)[actor.shape.form];
+  if (!rec) return null;
+  const max = rec.en[attack];
+  const used = actor.economy.beastUsed?.[attack] ?? 0;
+  const why = max === undefined ? `Multiattack: ${attack} bu biçimin saldırıları arasında değil.` : used >= max
+    ? `Multiattack: ${Object.entries(rec.en).map(([k, v]) => `${v} ${k}`).join(' + ')} (bu eylemde ${attack} yapıldı).` : null;
+  return { name: attack, problem: why };
+}
+
+/** Görev WS92 (92+): biçimde saldırının yerine kullanılabilen eylem (Lion: Roar); değilse null. */
+function beastReplace(state: BattleState, actor: Combatant, name: string | undefined): string | null {
+  if (!name || !actor.shape || !ws92On(state)) return null;
+  const rec = (ws92Data.bilesim as Record<string, { yerine?: string[] }>)[actor.shape.form];
+  return rec?.yerine?.includes(name) && !Object.keys(actor.economy.beastUsed ?? {}).some((k) => rec.yerine?.includes(k)) ? name : null;
 }

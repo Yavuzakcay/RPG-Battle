@@ -11,6 +11,9 @@
  * - `spellGlobe` / `antimagic` (Globe of Invulnerability, Antimagic Field: içerideki yaratıklar dışarıdan gelen büyüden
  *   etkilenmez; Antimagic içinde büyü yapılamaz).
  */
+import { b94On } from './b94Surum';
+import { buyucu93On } from './buyucu93Surum';
+import { healBonus, healSelfAfter } from './cleric';
 import { ruleVersion } from './ruleVersion';
 import { distance, type Offset } from '../rules/hex';
 import { rollDice, rollDie, rollTag, type Rng } from '../rules/dice';
@@ -24,6 +27,8 @@ import { pickArea } from './areaAttack';
 import { timedCondition } from './durations';
 import { combatantFromMonster } from './create';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
+import { matrisOn } from './matrisSurum';
+import { lateSummonEvents } from './monsterSetup';
 
 type M = Spell['mechanics'] & {
   extraTargets?: number; extraWithinFt?: number; dustAtZero?: boolean; notBelowOne?: boolean; maxHpDrain?: boolean; cures?: string[];
@@ -58,7 +63,7 @@ function shielded(state: BattleState, caster: Combatant, target: Combatant, leve
 }
 
 /** Büyü sonrası olayları düzenler ve ekler (normal yol çalıştıktan sonra). */
-export function after69(before: BattleState, state: BattleState, actor: Combatant, spell: Spell, events: BattleEvent[], target: { id?: string; hex?: Offset; choice?: string }, rng: Rng): BattleEvent[] | null {
+export function after69(before: BattleState, state: BattleState, actor: Combatant, spell: Spell, events: BattleEvent[], target: { id?: string; hex?: Offset; choice?: string; ids?: string[] }, rng: Rng): BattleEvent[] | null {
   if (!on(before)) return null;
   const m = spell.mechanics as M;
   const slot = events.find((e) => e.type === 'spell_cast' || e.type === 'save_resolved') ? spell.level : spell.level;
@@ -77,8 +82,12 @@ export function after69(before: BattleState, state: BattleState, actor: Combatan
   // Chain Lightning: birincil hedefin 30 ft'indeki en çok 3 düşman (aynı DC) save yapar.
   if (m.extraTargets && target.id) {
     const first = cur.combatants[target.id];
+    // Mekanik matris B12 (sürüm 83+): SRD 5.2.1 "One additional bolt leaps from the first target to another target for each
+    // spell slot level above 6." Yapımın slot seviyesi `slot_spent` olayından. 82 ve altı: hep 3.
+    const castLevel = events.find((e): e is Extract<BattleEvent, { type: 'slot_spent' }> => e.type === 'slot_spent' && e.actorId === actor.id)?.level ?? spell.level;
+    const bolts = m.extraTargets + (matrisOn(before) ? Math.max(0, castLevel - spell.level) : 0);
     const others = first ? Object.values(cur.combatants).filter((c) => c.id !== first.id && c.id !== actor.id && c.side !== actor.side && c.hp > 0 && ft(first, c) <= (m.extraWithinFt ?? 30))
-      .slice(0, m.extraTargets) : [];
+      .slice(0, bolts) : [];
     const fake: Combatant = { ...actor, attacks: [{ name: spell.name, bonus: 0, damageDice: m.damage, damageType: m.damageType, save: { ability: m.save as 'dex', dc: actor.spellSaveDc ?? 15, halfOnSave: true }, repeat: 0, ranged: true, range: [600, 600], text: spell.name } as unknown as Combatant['attacks'][number]], rechargeUsed: [] };
     for (const o of others) { const r = monsterAttackEvents(cur, fake, o, 0, rng); if (r.ok) add(r.events); }
   }
@@ -91,8 +100,9 @@ export function after69(before: BattleState, state: BattleState, actor: Combatan
   if (m.riseZombie) for (const e of [...out]) if (e.type === 'save_resolved' && e.targetHpAfter === 0) {
     const t = cur.combatants[e.targetId];
     if (!t || t.creatureType !== 'humanoid' || !t.pos) continue;
-    const z = combatantFromMonster(getMonster('zombie'), { id: `${t.id}-zombie`, name: `Zombi (${t.name})` });
-    add([{ type: 'summoned', ownerId: actor.id, spell: spell.name, combatant: { ...z, side: actor.side, pos: t.pos, initiative: actor.initiative, summon: { by: actor.id, spellId: spell.id, spell: spell.name, level: spell.level, turn: 'after-owner' } }, index: cur.order.indexOf(actor.id) + 1 }]);
+    const z = combatantFromMonster(getMonster('zombie'), { id: `${t.id}-zombie`, name: `Zombi (${t.name})`, kuralSurumu: cur.kuralSurumu ?? 1 });
+    // Görev D2 (88+): zombi savaş başındaki gibi canavar özellikleri ve yetenekleriyle (Zombie: Exhaustion/Poisoned bağışıklığı).
+    add(lateSummonEvents(cur, { type: 'summoned', ownerId: actor.id, spell: spell.name, combatant: { ...z, side: actor.side, pos: t.pos, initiative: actor.initiative, summon: { by: actor.id, spellId: spell.id, spell: spell.name, level: spell.level, turn: 'after-owner' } }, index: cur.order.indexOf(actor.id) + 1 }));
   }
   // Heal ve Power Word Heal: durumlar biter.
   if (m.cures && m.kind === 'heal') for (const e of [...out]) if (e.type === 'healed') {
@@ -104,12 +114,25 @@ export function after69(before: BattleState, state: BattleState, actor: Combatan
     add(powerWordEvents(cur, actor, t, m.powerWord, spell, rng));
     // Words of Creation (Bard 20): ilk hedefin 10 ft'indeki ikinci bir yaratık da hedef (aynı taraftan; en yakın).
     if (actor.traits?.includes('words-of-creation')) {
-      const second = Object.values(cur.combatants).filter((c) => c.id !== t.id && c.id !== actor.id && c.side === t.side && c.life !== 'dead' && ft(t, c) <= 10)
+      // Görev B94 (sürüm 94+, SRD 5.2.1 s. 33 "a second creature within 10 feet of the first target"): ikinci hedefi büyücü seçer
+      // (`targetIds`'in ilk hedeften başka elemanı; herhangi bir taraf); seçilmediyse eskisi gibi aynı taraftan en yakın.
+      const picked = b94On(before) ? (target.ids ?? []).find((id) => id !== t.id) : undefined;
+      const pc = picked ? cur.combatants[picked] : undefined;
+      const second = pc ? (pc.id !== actor.id && pc.life !== 'dead' && ft(t, pc) <= 10 ? pc : undefined)
+        : Object.values(cur.combatants).filter((c) => c.id !== t.id && c.id !== actor.id && c.side === t.side && c.life !== 'dead' && ft(t, c) <= 10)
         .sort((a, b) => ft(t, a) - ft(t, b))[0];
       if (second) add(powerWordEvents(cur, actor, second, m.powerWord, spell, rng));
     }
   }
-  if (m.massHeal) add(massHealEvents(cur, actor, m.massHeal, m.cures ?? [], spell));
+  // Görev B93 (sürüm 93+): Disciple of Life (slotla yapılan iyileştirmede iyileşen her yaratığa 2 + slot seviyesi) ve
+  // Blessed Healer (başkası gerçekten iyileştiyse büyücüye) Mass Heal ve Power Word Heal yolunda da.
+  const slotLv = buyucu93On(before) ? events.find((e): e is Extract<BattleEvent, { type: 'slot_spent' }> => e.type === 'slot_spent' && e.actorId === actor.id)?.level ?? null : null;
+  if (m.massHeal) add(massHealEvents(cur, actor, m.massHeal, m.cures ?? [], spell, healBonus(actor, slotLv)));
+  if (slotLv && (m.massHeal || m.powerWord === 'heal')) {
+    const others = out.some((e) => e.type === 'healed' && e.targetId !== actor.id && e.amount > 0 && e.label === spell.name);
+    const self = cur.combatants[actor.id];
+    if (self) add(healSelfAfter(self, slotLv, others, spell.name));
+  }
   if (m.hpTiers) add(divineWordEvents(cur, actor, spell, rng));
   if (m.prismatic) add(prismaticEvents(cur, actor, spell, target.hex ?? (t ? hexOf(t) : null), rng));
   if (m.reverseGravity) add(reverseGravityEvents(cur, actor, spell, target.hex ?? (t ? hexOf(t) : null), rng));
@@ -137,14 +160,16 @@ function powerWordEvents(state: BattleState, actor: Combatant, t: Combatant, kin
   return [{ type: 'effect_added', targetId: t.id, effect: { id: `pws:${actor.id}:${t.id}`, name: spell.name, sourceId: actor.id, speedZero: true, until: state.round + 1 } as ActiveEffect }];
 }
 
-function massHealEvents(state: BattleState, actor: Combatant, pool: number, cures: string[], spell: Spell): BattleEvent[] {
+function massHealEvents(state: BattleState, actor: Combatant, pool: number, cures: string[], spell: Spell, bonus = 0): BattleEvent[] {
   let left = pool;
   const out: BattleEvent[] = [];
   const allies = Object.values(state.combatants).filter((c) => c.side === actor.side && !c.civilian && c.life !== 'dead' && c.pos && ft(actor, c) <= 60
     && !['undead', 'construct'].includes(c.creatureType ?? '')).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
   for (const c of allies) {
     const amount = Math.min(left, c.maxHp - c.hp);
-    if (amount > 0) { out.push({ type: 'healed', actorId: actor.id, targetId: c.id, label: spell.name, amount, targetHpAfter: c.hp + amount }); left -= amount; }
+    // Görev B93: Disciple of Life havuzun dışında, iyileşen yaratığa (en çok tam cana).
+    const extra = amount > 0 ? Math.min(bonus, c.maxHp - c.hp - amount) : 0;
+    if (amount > 0) { out.push({ type: 'healed', actorId: actor.id, targetId: c.id, label: spell.name, amount: amount + extra, targetHpAfter: c.hp + amount + extra }); left -= amount; }
     for (const k of cures) if (c.conditions.includes(k)) out.push({ type: 'map_effect', rule: 'spells69', targetId: c.id, text: `${spell.name}: ${k} bitti`, removeCondition: k });
     if (left <= 0) break;
   }

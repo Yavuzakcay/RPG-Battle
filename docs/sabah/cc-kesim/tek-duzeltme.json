@@ -1,0 +1,23 @@
+{
+ "adim": "tek",
+ "yazilan": [
+  "celestial-kadin-rogue-ID3"
+ ],
+ "ezilmedi": [],
+ "olcu": {
+  "celestial-kadin-rogue-ID3": {
+   "eski": {
+    "bas": 34,
+    "ayak": 247,
+    "x": 131.0
+   },
+   "yeni": {
+    "bas": 34,
+    "ayak": 246,
+    "x": 131.1
+   },
+   "olcek": 0.1225,
+   "kenar": false
+  }
+ }
+}

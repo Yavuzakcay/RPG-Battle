@@ -1,0 +1,37 @@
+[
+ {
+  "jeton": "celestial-erkek-wizard-WZ-B1",
+  "sonuc": "haleli",
+  "skor": 0.644,
+  "yontem": "halka",
+  "olcu": "en 22, boy 4, kalinlik 1.0, doluluk 0.23, ic_saydam 0.0, ust_saydam 1.0, kapsama 0.9, ust_yay 0.81, px 20, y 23, ust 14"
+ },
+ {
+  "jeton": "celestial-erkek-wizard-WZ-B2",
+  "sonuc": "halesiz",
+  "skor": 0.0,
+  "yontem": "halka",
+  "olcu": ""
+ },
+ {
+  "jeton": "celestial-erkek-wizard-WZ-B3",
+  "sonuc": "haleli",
+  "skor": 0.708,
+  "yontem": "sutun",
+  "olcu": "yay_en 17, yay_y 40, kalinlik 1, bosluk 2, ust 40"
+ },
+ {
+  "jeton": "celestial-erkek-wizard-WZ-B4",
+  "sonuc": "halesiz",
+  "skor": 0.0,
+  "yontem": "halka",
+  "olcu": ""
+ },
+ {
+  "jeton": "celestial-erkek-wizard-WZ-B7",
+  "sonuc": "halesiz",
+  "skor": 0.0,
+  "yontem": "halka",
+  "olcu": ""
+ }
+]

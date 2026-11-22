@@ -11,6 +11,7 @@ import type { BattleEvent, BattleState, Command, CommandContext } from '../../ba
 import { visibleReactions, type DiscoveryStore, type PreviewSettings } from '../../app/discovery';
 
 import { flySpeed } from '../../battle/flight';
+import { walkBudgetHexes } from '../../battle/karar101Surum';
 
 export interface TargetLine {
   id: string;
@@ -30,6 +31,8 @@ export interface TargetLine {
   teleportedTo?: Offset;
   /** Avantaj/dezavantaj kaynakları ("yükseklik: avantaj"). */
   reasons: string[];
+  /** Hedefe gelen hasar türleri (kuru çalıştırma olaylarının `damageType`'ı; çip, ortak simgeli). */
+  dtypes: string[];
 }
 
 export interface MovePreview {
@@ -55,12 +58,23 @@ function mountLine(state: BattleState, cmd: Command, p: CommandPreview): MovePre
   const e = p.events.find((x) => (x.type === 'mounted' || x.type === 'dismounted') && x.actorId === cmd.actorId) as Extract<BattleEvent, { type: 'mounted' | 'dismounted' }> | undefined;
   const a = state.combatants[cmd.actorId];
   if (!e || !a) return undefined;
-  const budget = Math.floor(a.speed / 5) * (1 + a.economy.dashes);
+  const budget = walkBudgetHexes(a);
   const left = Math.max(0, budget - a.movementUsed - e.cost) * 5;
   // Uçamayan binici havadaki binekten inince komut sonunda düşer (MB3).
   const fell = (e.type === 'dismounted' && (e.toFt ?? a.altitudeFt ?? 0) > 0 && flySpeed(a) <= 0) || undefined;
   return { kind: e.type === 'mounted' ? 'mount' : 'dismount', costFt: e.cost * 5, leftFt: left,
     ...(e.type === 'mounted' && e.control === 'kontrollu' ? { control: 'kontrollu' as const } : {}), ...(fell ? { fell } : {}) };
+}
+
+/** Hedefe gelen hasar türleri, olay sırasıyla (saldırı, alan/kurtarma, ek hasar, süregelen hasar; ikinci tür dahil). */
+export function damageTypesOf(events: BattleEvent[], targetId: string): string[] {
+  const out = new Set<string>();
+  for (const e of events) {
+    const x = e as { targetId?: string; damageType?: unknown; secondary?: { type?: unknown } };
+    if (x.targetId !== targetId) continue;
+    for (const d of [x.damageType, x.secondary?.type]) if (typeof d === 'string' && d && d !== 'none') out.add(d.toLowerCase());
+  }
+  return [...out];
 }
 
 const reasonsOf = (events: BattleEvent[], targetId: string): string[] => {
@@ -110,6 +124,7 @@ export function movePreview(state: BattleState, cmd: Command, ctx: CommandContex
         conditions: Object.entries(t.conditions).filter(([, v]) => v > 0.01).map(([k]) => k),
         ...(t.movedTo ? { movedTo: t.movedTo } : {}), ...(t.teleportedTo ? { teleportedTo: t.teleportedTo } : {}),
         reasons: reasonsOf(p.events, t.id),
+        dtypes: t.damage.max > 0 ? damageTypesOf(p.events, t.id) : [],
       };
     }),
     friendlyFire: p.friendlyFire, selfDamage: p.selfDamage,

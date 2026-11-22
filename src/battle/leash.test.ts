@@ -1,6 +1,6 @@
 /**
  * Görev A4: tasma (hareket sınırı). Genel etki: merkez yaratık, yarıçap (altıgen), süre. Özellik türü `leash`
- * (dış içerikteki Biat Yemini gibi): WIS save başarısızsa hedef kullanandan 30 ft (6 altıgen) uzağa gidemez; yürüme,
+ * (dış içerikteki Biat Töresi gibi): WIS save başarısızsa hedef kullanandan 30 ft (6 altıgen) uzağa gidemez; yürüme,
  * atlama ve yapay zekâ bunu sayar; merkez ölünce kalkar.
  */
 import { describe, expect, it } from 'vitest';

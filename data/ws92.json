@@ -1,0 +1,66 @@
+{
+  "not": "Görev WS92 (kural sürümü 92): SRD 5.2.1 stat bloklarından okunan sabitler. illumination: canavar → [parlak, ek loş] altıgen (5 ft) ('Illumination. ... Bright Light in a N-foot radius and Dim Light for an additional N feet'; Azer s. 261, Fire Elemental s. 284, Nightmare s. 311, Will-o’-Wisp s. 342, Giant Fire Beetle s. 351). atlama: canavar → uzun/yüksek atlama (ft; Standing Leap koşulu yok, Running Leap 'running' koşu şartı, Jumper 'dex' DEX skoru; Frog s. 349, Giant Frog s. 351, Giant Toad s. 354, Lion s. 357, Saber-Toothed Tiger s. 360, Cat s. 346). bilesim: Wild Shape/Polymorph biçiminde Multiattack bileşimi (eylem başına saldırı adı → en çok; Brown Bear s. 346 \"one Bite attack and one Claw attack\"); değiştirme (Lion s. 357 \"can replace one attack with a use of Roar\").",
+  "illumination": {
+    "azer-sentinel": [
+      2,
+      2
+    ],
+    "fire-elemental": [
+      6,
+      6
+    ],
+    "nightmare": [
+      2,
+      2
+    ],
+    "will-o-wisp": [
+      4,
+      4
+    ],
+    "giant-fire-beetle": [
+      2,
+      2
+    ]
+  },
+  "atlama": {
+    "frog": {
+      "long": 10,
+      "high": 5
+    },
+    "giant-frog": {
+      "long": 20,
+      "high": 10
+    },
+    "giant-toad": {
+      "long": 20,
+      "high": 10
+    },
+    "lion": {
+      "long": 25,
+      "running": true
+    },
+    "saber-toothed-tiger": {
+      "long": 25,
+      "running": true
+    },
+    "cat": {
+      "dex": true
+    }
+  },
+  "bilesim": {
+    "brown-bear": {
+      "en": {
+        "Bite": 1,
+        "Claw": 1
+      }
+    },
+    "lion": {
+      "en": {
+        "Rend": 2
+      },
+      "yerine": [
+        "Roar"
+      ]
+    }
+  }
+}

@@ -69,14 +69,15 @@ describe('Kuyruk 24c: gres yanıcıdır', () => {
   });
   it('yanıcı olmayan hane hedeflenemez; menzil/görüş yaratıkla aynı', () => {
     expect(execute(field({ toggles: { freeHexTarget: false } }), atHex(o(10, 3)), P1, high).ok).toBe(false);
-    const evs: BattleEvent[] = run(field(), atHex(o(6, 3))).events;
+    // FH1 (sürüm 81+): altıgendeki yaratık normal hedeflenir; hedefsiz (targetId null) yol sürüm 80'e kadar.
+    const evs: BattleEvent[] = run(field({ v: 80 }), atHex(o(6, 3))).events;
     expect(evs.some((e) => e.type === 'spell_cast' && e.targetId === null)).toBe(true);
   });
 });
 
 describe('Kuyruk 30 D3: serbest altıgen hedefleme', () => {
   it('ateş büyüsü boş zemine atılır: slot/eylem harcanır, hemen söner (alev yok)', () => {
-    const r = run(field(), atHex(o(10, 3)));
+    const r = run(field({ v: 80 }), atHex(o(10, 3))); // sürüm 81+: FH1 "boşa gitti" notu (freeHex.test.ts)
     expect(r.events.some((e) => e.type === 'spell_cast' && e.targetId === null && /söndü/.test(e.note ?? ''))).toBe(true);
     expect(zones(r.state)).toEqual(['grease']);
   });

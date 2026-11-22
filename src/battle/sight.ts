@@ -8,6 +8,7 @@ import { withinFiveFt } from './common';
 import { frightenedNow, grappleAttackRule, srdConditions } from './ruleVersion';
 import { globalRule } from './ruleControl';
 import { distance } from '../rules/hex';
+import { genel96On } from './genel96Surum';
 import type { BattleState, Combatant } from './types';
 
 const revealed = (c: Combatant) => c.effects?.some((e) => e.revealed) ?? false;
@@ -69,7 +70,8 @@ export function senseSees(state: Pick<BattleState, 'map' | 'kuralSurumu'> | unde
   // Kuyruk K63: gerçek görüş menzili tek yerde (`truesightRange`; Boon, Witch Sight, canavar duyusu, True Seeing, paket `algi`).
   const ts = truesightRange(state, observer);
   // Kuyruk 19 (Dwarf Stonecunning): süreli Tremorsense (yerdeki yaratıklar).
-  const tremor = !isAirborne(target) ? Math.max(0, ...(observer.effects ?? []).map((e) => e.tremorsense ?? 0)) : 0;
+  // GENEL96 H10 (sürüm 96+; SRD 5.2.1 s. 190 Tremorsense "doesn't count as a form of sight"): görme sayılmaz.
+  const tremor = !isAirborne(target) && !genel96On(state) ? Math.max(0, ...(observer.effects ?? []).map((e) => e.tremorsense ?? 0)) : 0;
   const blind = observer.senses && globalRule(state, 'specialSenses') ? observer.senses.blindsight ?? 0 : 0;
   const ft = Math.max(blind, ts, feral, tremor);
   return ft > 0 && distance(observer.pos, target.pos) * 5 <= ft;
@@ -95,6 +97,20 @@ export function knowsWhere(state: Pick<BattleState, 'map' | 'kuralSurumu'> & Par
   if (observer.conditions.some((x) => ['Incapacitated', 'Stunned', 'Paralyzed', 'Unconscious', 'Petrified'].includes(x))) return false;
   return (observer.effects ?? []).some((e) => e.senseTypes && e.senseTypes.types.includes(target.creatureType as string)
     && (!observer.pos || !target.pos || distance(observer.pos, target.pos) * 5 <= e.senseTypes.ft));
+}
+
+/**
+ * Mekanik matris B02 (sürüm 83): `viewer`, `target`'ı görebiliyor mu ("a creature you can see" isteyen büyüler).
+ * Ölçüt saldırılarla aynı: Invisible hedef açığa çıkmışsa (`revealed`), görünmezi gören (See Invisibility) ya da
+ * Blindsight/Truesight menzilindeyse görülür; Blinded yaratık yalnız bu duyuların menzilinde görür (SRD 5.2.1 Blinded
+ * "You can't see"). Kendini her zaman görür.
+ */
+export function canSeeTarget(state: BattleState | undefined, viewer: Combatant, target: Combatant): boolean {
+  if (viewer.id === target.id) return true;
+  const sense = senseSees(state, viewer, target);
+  if (viewer.conditions.includes('Blinded') && !sense) return false;
+  if (!target.conditions.includes('Invisible')) return true;
+  return revealed(target) || seesInvisible(viewer) || sense;
 }
 
 /**

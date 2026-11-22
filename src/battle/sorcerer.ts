@@ -16,6 +16,21 @@ import { rollDie, rollTag, type Rng } from '../rules/dice';
 import { resourceDef } from '../rules/classFeatures';
 import { fail, finish, type CommandResult, type Failure } from './common';
 import { resourceLeft, type BattleEvent, type BattleState, type Combatant } from './types';
+import { buyucu93On } from './buyucu93Surum';
+import srdSpells from '../../data/srd/spells.json';
+
+/** Görev B93: büyünün SRD kaydı (yapım süresi, süre). */
+const srdOf = (spell: Spell): { castingTime?: string; duration?: string } | undefined => {
+  const id = spell.srd?.replace(/^spells:/, '');
+  return id ? (srdSpells.spells as Array<{ id: string; castingTime?: string; duration?: string }>).find((x) => x.id === id) : undefined;
+};
+
+/** Görev B93 (Extended Spell): SRD süresi en az 1 dakika (dakika, saat, gün, dağıtılana dek). */
+export function extendable(spell: Spell): boolean {
+  const d = (srdOf(spell)?.duration ?? '').toLowerCase();
+  if (!d) return !!(spell.mechanics.effect?.rounds && spell.mechanics.effect.rounds >= 10);
+  return /minute|hour|day|until dispelled/.test(d);
+}
 
 /** Motorun uyguladığı Metamagic seçenekleri (bedelleri sınıf verisinde: `data/class-features.json` `metamagic.costs`). */
 export const METAMAGIC = ['careful', 'distant', 'empowered', 'extended', 'heightened', 'quickened', 'seeking', 'subtle', 'transmuted', 'twinned'] as const;
@@ -28,7 +43,9 @@ const INNATE = 'sorcerer:innate-sorcery';
 export const innateActive = (state: BattleState, c: Combatant) => !!c.effects?.some((e) => e.id === INNATE && (e.until === undefined || e.until >= state.round));
 /** Innate Sorcery bu büyüye uygulanır mı (K11: yalnızca sınıf büyüleri; `classSpells` yoksa hepsi). */
 export const innateFor = (state: BattleState, c: Combatant, spellName: string) =>
-  innateActive(state, c) && (!c.classSpells || c.classSpells.includes(spellName));
+  innateActive(state, c) && (!c.classSpells || c.classSpells.includes(spellName)
+    // Görev B93 (sürüm 93+): her zaman hazır sınıf/alt sınıf büyüleri de (Draconic Spells; SRD s. 65).
+    || (buyucu93On(state) && !!c.classSpellsAlways?.includes(spellName)));
 
 /** Bu yapımda en çok kaç Metamagic (Sorcery Incarnate + Innate Sorcery etkin: 2). */
 export const metamagicLimit = (state: BattleState, c: Combatant) => (c.traits?.includes('sorcery-incarnate') && innateActive(state, c) ? 2 : 1);
@@ -55,8 +72,13 @@ export function metamagicProblem(state: BattleState, actor: Combatant, ids: stri
   if (cost > resourceLeft(actor, POINTS)) return `Sorcery Point yetmiyor (${cost} gerekli).`;
   // Kuyruk P11: paket Twinned (`buyuDegisimi.ikiz`) paket kaynağıyla.
   if (ids.includes('twinned') && actor.pkTwin?.resource && resourceLeft(actor, actor.pkTwin.resource) < actor.pkTwin.cost) return 'İkiz büyü: kullanım kalmadı.';
-  if (ids.includes('quickened') && spell.castingTime !== 'action') return 'Quickened Spell yalnızca eylemle yapılan büyüde.';
-  if (ids.includes('extended') && !(spell.mechanics.effect?.rounds && spell.mechanics.effect.rounds >= 10)) return 'Extended Spell en az 1 dakika süren büyüde.';
+  const v93 = buyucu93On(state);
+  // Görev B93 (sürüm 93+): yapım süresi ve süre SRD kaydından (Mending, Creation… 1 dakika: Quickened olmaz; Extended süresi
+  // en az 1 dakika olan bütün büyüler; Self-alanda Distant ve hasarsız büyüde Empowered etkisiz: reddedilir).
+  if (ids.includes('quickened') && (spell.castingTime !== 'action' || (v93 && srdOf(spell)?.castingTime !== undefined && !/^Action/.test(srdOf(spell)?.castingTime ?? '')))) return 'Quickened Spell yalnızca eylemle yapılan büyüde.';
+  if (ids.includes('extended') && !(v93 ? extendable(spell) : !!(spell.mechanics.effect?.rounds && spell.mechanics.effect.rounds >= 10))) return 'Extended Spell en az 1 dakika süren büyüde.';
+  if (v93 && ids.includes('distant') && spell.area?.origin === 'self') return 'Distant Spell menzili olan büyüde.';
+  if (v93 && ids.includes('empowered') && !spell.mechanics.damage && !spell.mechanics.split?.length) return 'Empowered Spell hasar zarı olan büyüde.';
   if (ids.includes('twinned') && !(spell.mechanics.upcast?.applied && spell.mechanics.upcast.targets)) return 'Twinned Spell yalnızca yukarı slotta ek hedef alan büyüde.';
   if (ids.includes('heightened') && !spell.mechanics.save) return 'Heightened Spell save isteyen büyüde.';
   if (ids.includes('careful') && !spell.mechanics.save) return 'Careful Spell save isteyen büyüde.';
@@ -91,6 +113,13 @@ export function castWithMetamagic(state: BattleState, actor: Combatant, spell: S
   // Distant: 5+ ft menzil iki katı, dokunuş (5 ft) 30 ft; kendinden (0) değişmez.
   if (list.includes('distant') && s.rangeFt > 0) s = { ...s, rangeFt: s.rangeFt <= 5 ? 30 : s.rangeFt * 2 };
   if (list.includes('extended') && s.mechanics.effect) s = { ...s, mechanics: { ...s.mechanics, effect: { ...s.mechanics.effect, rounds: Math.min(14400, s.mechanics.effect.rounds * 2) } } };
+  // Görev B93 (sürüm 93+): Extended başarısızlık etkisinin ve kalıcı alanın süresini de ikiye katlar (en çok 24 saat).
+  if (list.includes('extended') && buyucu93On(state)) {
+    const m = s.mechanics;
+    s = { ...s, mechanics: { ...m,
+      ...(m.failEffect ? { failEffect: { ...m.failEffect, rounds: Math.min(14400, (m.failEffect.rounds ?? 10) * 2) } } : {}),
+      ...(m.zone?.rounds ? { zone: { ...m.zone, rounds: Math.min(14400, m.zone.rounds * 2) } } : {}) } };
+  }
   if (list.includes('subtle')) s = { ...s, noVerbal: true };
   // Transmuted: türü listedeki başka bir türe çevir (seçim yoksa listede ilk farklı tür); seçimli büyüde seçim kalkar.
   if (list.includes('transmuted')) {
@@ -109,10 +138,17 @@ export function castWithMetamagic(state: BattleState, actor: Combatant, spell: S
   return { spell: s, actor: a, events };
 }
 
-/** Empowered Spell: hasar zarlarından ortalamanın altındaki en düşük CHA değiştiricisi kadarı (en az 1) yeniden atılır. */
-export function empowerRolls(actor: Combatant, rolls: number[], sides: number, rng: Rng): number[] {
+/** Empowered Spell'in yeniden atacağı zar sayısı (ortalamanın altındakiler, en çok `limit`). */
+export const empowerCount = (rolls: number[], sides: number, limit: number): number =>
+  Math.min(limit, rolls.filter((v) => v < (sides + 1) / 2).length);
+
+/**
+ * Empowered Spell: hasar zarlarından ortalamanın altındaki en düşük CHA değiştiricisi kadarı (en az 1) yeniden atılır.
+ * Görev B93 (sürüm 93+): çok ışınlı büyüde çağıran büyü başına kalan sayıyı `limit` ile verir.
+ */
+export function empowerRolls(actor: Combatant, rolls: number[], sides: number, rng: Rng, limit?: number): number[] {
   if (!actor.traits?.includes('mm-empowered')) return rolls;
-  const n = Math.max(1, actor.modifiers.cha);
+  const n = limit ?? Math.max(1, actor.modifiers.cha);
   const order = rolls.map((v, i) => ({ v, i })).filter((x) => x.v < (sides + 1) / 2).sort((a, b) => a.v - b.v).slice(0, n);
   const out = [...rolls];
   for (const { i } of order) out[i] = rollDie(sides, rollTag(rng, { kind: 'damage', by: actor.id }));
@@ -136,7 +172,7 @@ export function executeFontOfMagic(state: BattleState, actor: Combatant, mode: '
   if (actor.level < row[1]) return fail(`${level}. seviye slot için Sorcerer seviyesi en az ${row[1]}.`);
   if (resourceLeft(actor, POINTS) < row[0]) return fail(`${row[0]} Sorcery Point gerekli.`);
   return finish(state, [{ type: 'feature_used', actorId: actor.id, feature: POINTS, remaining: resourceLeft(actor, POINTS) - row[0] },
-    { type: 'slot_created', actorId: actor.id, level }]);
+    { type: 'slot_created', actorId: actor.id, level, ...(buyucu93On(state) ? { extra: true } : {}) }]);
 }
 
 /** Innate Sorcery etkisi (use_feature): kullanım ya da Sorcery Incarnate ile 2 puan. */
@@ -150,8 +186,7 @@ export function innateSorceryEvents(state: BattleState, actor: Combatant, key: s
   return [pay, { type: 'effect_added', targetId: actor.id, effect: { id: key, name, sourceId: actor.id, until: state.round + rounds - 1, icon: '✺' } }];
 }
 
-/** Elemental Affinity: büyünün hasar türü soyun türüyse CHA (bir kez). */
-export const affinityBonus = (actor: Combatant, type: string | undefined) =>
-  type && actor.traits?.includes(`affinity-${type}`) ? Math.max(0, actor.modifiers.cha) : 0;
+/** Elemental Affinity: büyünün hasar türü soyun türüyse CHA (tek zara; ortak yardımcı `oneDieBonus.ts`). */
+export { affinityBonus } from './oneDieBonus';
 
 export const spellByName = (name: string) => spells.find((s) => s.name === name);

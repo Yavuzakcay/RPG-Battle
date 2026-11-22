@@ -1,12 +1,12 @@
 {
- "note": "Görev AS2: test ve simülasyon fikstürü. Kuyruk E1–K50 boyunca data/subclasses.json içindeki SRD 5.2.1 alt sınıf kayıtlarının (12, sınıf başına 1) mekaniği, aynen. Uygulamada bu 12 alt sınıf dış pakette (icerik/ek-<sınıf>.json, aynı kimlikler); bu dosya uygulama paketine girmez, yalnızca src/test-setup.ts ve icerik/ yokken simülasyon (src/sim/simIcerik.ts) okur.",
+ "note": "Görev AS2: test ve simülasyon fikstürü. Kuyruk E1–K50 boyunca data/subclasses.json içindeki SRD 5.2.1 alt sınıf kayıtlarının (12, sınıf başına 1) mekaniği, aynen. Uygulamada bu 12 alt sınıf dış pakette (icerik/ek-<sınıf>.json, aynı kimlikler); bu dosya uygulama paketine girmez, yalnızca src/test-setup.ts ve icerik/ yokken simülasyon (src/sim/simIcerik.ts) okur. Adlar ve Türkçe açıklamalar 2026-11-21'den beri paketteki hâliyle (İngilizce ad Türkçe adın çevirisi; Türkçe açıklama SRD metninin çevirisi).",
  "subclasses": [
   {
    "id": "path-of-the-berserker",
    "class": "barbarian",
    "srd": "subclasses:path-of-the-berserker",
    "name": {
-    "tr": "Çılgın Savaşçı Yolu",
+    "tr": "Berserker Yolu",
     "en": "Path of the Berserker"
    },
    "role": {
@@ -22,7 +22,7 @@
       "en": "Frenzy"
      },
      "description": {
-      "tr": "Öfkedeyken Reckless Attack kullandıysan turunda STR saldırısıyla vurduğun ilk hedefe Öfke hasarı kadar d6 ek hasar.",
+      "tr": "Öfken (Rage) etkinken Reckless Attack kullanırsan, turunda Güç tabanlı bir saldırıyla vurduğun ilk hedefe ek hasar verirsin. Ek hasarı bulmak için Rage Damage bonusun kadar d6 atıp toplarsın. Hasar, saldırıda kullanılan silahın ya da Unarmed Strike'ın hasar türündendir.",
       "en": "If you use Reckless Attack while your Rage is active, you deal extra damage to the first target you hit on your turn with a Strength-based attack. To determine the extra damage, roll a number of d6s equal to your Rage Damage bonus, and add them together. The damage has the same type as the weapon or Unarmed Strike used for the attack."
      },
      "status": "calisir",
@@ -60,7 +60,7 @@
       "en": "Retaliation"
      },
      "description": {
-      "tr": "5 ft içindeki bir yaratık sana hasar verince tepkiyle ona bir yakın dövüş saldırısı.",
+      "tr": "5 ft içindeki bir yaratıktan hasar aldığında, tepkini kullanarak o yaratığa silahla ya da Unarmed Strike ile bir yakın dövüş saldırısı yapabilirsin.",
       "en": "When you take damage from a creature that is within 5 feet of you, you can take a Reaction to make one melee attack against that creature, using a weapon or an Unarmed Strike."
      },
      "status": "calisir",
@@ -81,7 +81,7 @@
       "en": "Intimidating Presence"
      },
      "description": {
-      "tr": "Bonus eylemle 30 ft içindeki seçtiğin yaratıklar WIS save; başarısızsa 1 dakika Frightened.",
+      "tr": "Bonus eylemle tehditkâr varlığın ve ilkel gücünle başkalarına dehşet salabilirsin. Bunu yaptığında, senden çıkan 30 ft'lik yayılımdaki (Emanation) seçtiğin her yaratık WIS kurtarma zarı atar (DC 8 + STR değiştiricin + yeterlilik bonusun). Başaramayan yaratık 1 dakika Frightened olur. Frightened yaratık her turunun sonunda kurtarma zarını tekrarlar; başarırsa etki onda biter.\nBu özelliği kullandıktan sonra uzun dinlenmeyi bitirene dek yeniden kullanamazsın; ancak bir Rage kullanımı harcayarak (eylem gerekmez) kullanımını geri kazanabilirsin.",
       "en": "As a Bonus Action, you can strike terror into others with your menacing presence and primal power. When you do so, each creature of your choice in a 30-foot Emanation originating from you must make a Wisdom saving throw (DC 8 plus your Strength modifier and Proficiency Bonus). On a failed save, a creature has the Frightened condition for 1 minute. At the end of each of the Frightened creature’s turns, the creature repeats the save, ending the effect on itself on a success.\nOnce you use this feature, you can’t use it again until you finish a Long Rest unless you expend a use of your Rage (no action required) to restore your use of it."
      },
      "status": "calisir",
@@ -108,8 +108,8 @@
    "class": "bard",
    "srd": "subclasses:college-of-lore",
    "name": {
-    "tr": "Bilgi Koleji",
-    "en": "College of Lore"
+    "tr": "Kadim Bilgi Koleji",
+    "en": "College of Ancient Lore"
    },
    "role": {
     "tr": "Büyülü bilginin derinliklerine iner",
@@ -144,7 +144,7 @@
       "en": "Cutting Words"
      },
      "description": {
-      "tr": "Tepkiyle Bardic Inspiration zarını bir yaratığın saldırı, hasar ya da kontrol zarından düşersin.",
+      "tr": "Zekânla başkalarını doğaüstü biçimde dağıtmayı, şaşırtmayı, güvenlerini ve becerilerini sarsmayı öğrenirsin. Görebildiğin ve 60 ft içindeki bir yaratık hasar zarı attığında ya da bir yetenek kontrolünde veya saldırı zarında başarılı olduğunda, tepkini kullanarak bir Bardic Inspiration kullanımı harcayabilirsin; Bardic Inspiration zarını atar ve gelen sayıyı yaratığın zarından çıkarırsın. Böylece hasar azalır ya da başarı başarısızlığa dönebilir.",
       "en": "You learn to use your wit to supernaturally distract, confuse, and otherwise sap the confidence and competence of others. When a creature that you can see within 60 feet of yourself makes a damage roll or succeeds on an ability check or attack roll, you can take a Reaction to expend one use of your Bardic Inspiration; roll your Bardic Inspiration die, and subtract the number rolled from the creature’s roll, reducing the damage or potentially turning the success into a failure."
      },
      "status": "calisir",
@@ -168,7 +168,7 @@
       "en": "Magical Discoveries"
      },
      "description": {
-      "tr": "Cleric, Druid ya da Wizard listesinden iki büyü öğrenirsin.",
+      "tr": "Seçtiğin iki büyü öğrenirsin. Bu büyüler Cleric, Druid ya da Wizard büyü listesinden ya da bunların herhangi bir birleşiminden olabilir. Seçtiğin büyü bir cantrip ya da Bard Features tablosuna göre büyü slotun olan seviyede bir büyü olmalıdır.\nSeçtiğin büyüler her zaman hazırdır; her Bard seviyesi kazandığında bunlardan birini bu koşullara uyan başka bir büyüyle değiştirebilirsin.",
       "en": "You learn two spells of your choice. These spells can come from the Cleric, Druid, or Wizard spell list or any combination thereof (see a class’s section for its spell list). A spell you choose must be a cantrip or a spell for which you have spell slots, as shown in the Bard Features table.\nYou always have the chosen spells prepared, and whenever you gain a Bard level, you can replace one of the spells with another spell that meets these requirements."
      },
      "status": "calisir",
@@ -210,8 +210,8 @@
    "class": "cleric",
    "srd": "subclasses:life-domain",
    "name": {
-    "tr": "Yaşam Etki Alanı",
-    "en": "Life Domain"
+    "tr": "Yaşam Manastırı",
+    "en": "Monastery of Life"
    },
    "role": {
     "tr": "Dünyanın yaralarını sarar",
@@ -226,7 +226,7 @@
       "en": "Disciple of Life"
      },
      "description": {
-      "tr": "Slotla yaptığın iyileştirme büyüleri ek olarak 2 + büyü seviyesi kadar HP verir.",
+      "tr": "Büyü slotuyla yaptığın bir büyü bir yaratığın HP'sini geri getirdiğinde, o yaratık büyüyü yaptığın turda ek HP kazanır. Ek HP 2 + büyü slotunun seviyesi kadardır.",
       "en": "When a spell you cast with a spell slot restores Hit Points to a creature, that creature regains additional Hit Points on the turn you cast the spell. The additional Hit Points equal 2 plus the spell slot’s level."
      },
      "status": "calisir",
@@ -245,7 +245,7 @@
       "en": "Life Domain Spells"
      },
      "description": {
-      "tr": "Alanın büyüleri her zaman hazır.",
+      "tr": "Bu ilahi alanla bağın, bazı büyülerin her zaman hazır olmasını sağlar. Yaşam Etki Alanı Büyüleri tablosundaki bir Cleric seviyesine ulaştığında, o satırdaki büyüler bundan sonra hep hazırdır.",
       "en": "Your connection to this divine domain ensures you always have certain spells ready. When you reach a Cleric level specified in the Life Domain Spells table, you thereafter always have the listed spells prepared."
      },
      "status": "calisir",
@@ -283,7 +283,7 @@
       "en": "Preserve Life"
      },
      "description": {
-      "tr": "Channel Divinity ile 30 ft içindeki yaralılara Cleric seviyesinin beş katı kadar HP dağıtırsın (en çok yarı HP'ye dek).",
+      "tr": "Magic eylemiyle kutsal sembolünü gösterir ve bir Channel Divinity kullanımı harcayarak, Cleric seviyenin beş katı kadar HP geri getirebilen şifa enerjisi çağırırsın. 30 ft içindeki Bloodied yaratıkları seç (sen de dahil olabilirsin) ve bu HP'yi aralarında paylaştır. Bu özellik bir yaratığı en çok HP üst sınırının yarısına kadar iyileştirebilir.",
       "en": "As a Magic action, you present your Holy Symbol and expend a use of your Channel Divinity to evoke healing energy that can restore a number of Hit Points equal to five times your Cleric level. Choose Bloodied creatures within 30 feet of yourself (which can include you), and divide those Hit Points among them. This feature can restore a creature to no more than half its Hit Point maximum."
      },
      "status": "calisir",
@@ -307,7 +307,7 @@
       "en": "Blessed Healer"
      },
      "description": {
-      "tr": "Başkasını slotla iyileştirince sen de 2 + büyü seviyesi kadar HP kazanırsın.",
+      "tr": "Başkalarına yaptığın şifa büyüleri seni de iyileştirir. Büyü slotuyla, senden başka bir ya da daha fazla yaratığın HP'sini geri getiren bir büyü yaptıktan hemen sonra 2 + büyü slotunun seviyesi kadar HP kazanırsın.",
       "en": "The healing spells you cast on others heal you as well. Immediately after you cast a spell with a spell slot that restores Hit Points to one or more creatures other than yourself, you regain Hit Points equal to 2 plus the spell slot’s level."
      },
      "status": "calisir",
@@ -326,7 +326,7 @@
       "en": "Supreme Healing"
      },
      "description": {
-      "tr": "İyileştirme zarları en yüksek değerini verir.",
+      "tr": "Bir büyüyle ya da Channel Divinity ile bir yaratığın HP'sini geri getirmek için normalde bir ya da daha fazla zar atacağın zaman, iyileştirme için bu zarları atmazsın; her zar için olası en yüksek sayıyı kullanırsın. Örneğin bir büyüyle bir yaratığa 2d6 HP geri getirmek yerine 12 HP geri getirirsin.",
       "en": "When you would normally roll one or more dice to restore Hit Points to a creature with a spell or Channel Divinity, don’t roll those dice for the healing; instead use the highest number possible for each die. For example, instead of restoring 2d6 Hit Points to a creature with a spell, you restore 12."
      },
      "status": "calisir",
@@ -360,7 +360,7 @@
       "en": "Circle of the Land Spells"
      },
      "description": {
-      "tr": "Seçtiğin toprak türüne göre büyüler her zaman hazır.",
+      "tr": "Her uzun dinlenmeyi bitirdiğinde bir toprak türü seç: kurak (arid), kutup (polar), ılıman (temperate) ya da tropikal (tropical). Seçtiğin türün tablosuna bak; Druid seviyendeki ve daha düşük seviyelerdeki büyüler hazırdır.",
       "en": "Whenever you finish a Long Rest, choose one type of land: arid, polar, temperate, or tropical. Consult the table below that corresponds to the chosen type; you have the spells listed for your Druid level and lower prepared."
      },
      "status": "calisir",
@@ -465,7 +465,7 @@
       "en": "Land’s Aid"
      },
      "description": {
-      "tr": "Wild Shape harcayarak bir alanda düşmanlara necrotic hasar ve bir dosta HP.",
+      "tr": "Magic eylemiyle bir Wild Shape kullanımı harcayıp 60 ft içinde bir nokta seçebilirsin. O noktayı merkez alan 10 ft yarıçaplı kürede bir anlığına can veren çiçekler ve can emen dikenler belirir. Küredeki seçtiğin her yaratık büyü kurtarma DC'ne karşı CON kurtarma zarı atar; başaramazsa 2d6 nekrotik hasar alır, başarırsa yarısını. Alandaki seçtiğin bir yaratık 2d6 HP kazanır.\nHasar ve iyileştirme Druid seviyesi 10'da (3d6) ve 14'te (4d6) 1d6 artar.",
       "en": "As a Magic action, you can expend a use of your Wild Shape and choose a point within 60 feet of yourself. Vitality-giving flowers and life-draining thorns appear for a moment in a 10-foot-radius Sphere centered on that point. Each creature of your choice in the Sphere must make a Constitution saving throw against your spell save DC, taking 2d6 Necrotic damage on a failed save or half as much damage on a successful one. One creature of your choice in that area regains 2d6 Hit Points.\nThe damage and healing increase by 1d6 when you reach Druid levels 10 (3d6) and 14 (4d6)."
      },
      "status": "calisir",
@@ -494,7 +494,7 @@
       "en": "Natural Recovery"
      },
      "description": {
-      "tr": "Kısa dinlenmede büyü slotlarının bir kısmını geri kazanırsın; bir çember büyüsünü slotsuz yaparsın.",
+      "tr": "Toprak Çemberi Büyüleri özelliğinle hazırladığın 1. seviye ve üstü büyülerden birini büyü slotu harcamadan yapabilirsin; bunu yeniden yapmak için uzun dinlenmeyi bitirmen gerekir.\nAyrıca kısa dinlenmeyi bitirdiğinde harcanmış büyü slotlarından geri kazanacaklarını seçebilirsin. Slotların toplam seviyesi Druid seviyenin yarısına (yukarı yuvarlanır) eşit ya da daha az olmalı ve hiçbiri 6. seviye ya da üstü olmamalıdır. Örneğin 6. seviye bir Druid isen en çok üç seviyelik slot geri kazanırsın: bir 3. seviye slot, bir 2. ve bir 1. seviye slot ya da üç 1. seviye slot. Bu özellikle slot geri kazandıktan sonra uzun dinlenmeyi bitirene dek bunu yeniden yapamazsın.",
       "en": "You can cast one of the level 1+ spells that you have prepared from your Circle Spells feature without expending a spell slot, and you must finish a Long Rest before you do so again.\nIn addition, when you finish a Short Rest, you can choose expended spell slots to recover. The spell slots can have a combined level that is equal to or less than half your Druid level (round up), and none of them can be level 6+. For example, if you’re a level 6 Druid, you can recover up to three levels’ worth of spell slots. You can recover a level 3 spell slot, a level 2 and a level 1 spell slot, or three level 1 spell slots. Once you recover spell slots with this feature, you can’t do so again until you finish a Long Rest."
      },
      "status": "calisir",
@@ -513,7 +513,7 @@
       "en": "Nature’s Ward"
      },
      "description": {
-      "tr": "Poisoned durumuna bağışıklık ve toprak türüne göre bir hasar türüne direnç.",
+      "tr": "Poisoned durumuna bağışıksın ve Toprak Çemberi Büyüleri özelliğinde şu an seçili toprak türünle ilişkili bir hasar türüne Doğanın Koruması tablosunda gösterildiği gibi dirençlisin.",
       "en": "You are immune to the Poisoned condition, and you have Resistance to a damage type associated with your current land choice in the Circle Spells feature, as shown in the Nature’s Ward table."
      },
      "status": "calisir",
@@ -532,7 +532,7 @@
       "en": "Nature’s Sanctuary"
      },
      "description": {
-      "tr": "Wild Shape harcayarak koruyucu bir ağaç alanı yaratırsın (yarı siper, direnç).",
+      "tr": "Magic eylemiyle bir Wild Shape kullanımı harcayıp 120 ft içinde yerdeki 15 ft'lik bir küpte hayalî ağaçlar ve sarmaşıklar belirtebilirsin. Bunlar 1 dakika ya da sen Incapacitated olana veya ölene dek orada kalır. O alandayken sen ve dostların yarım siperden (Half Cover) yararlanırsınız; dostların orada Doğanın Koruması özelliğinin şu anki direncini de kazanır.\nBonus eylemle küpü 120 ft içindeki yere en çok 60 ft taşıyabilirsin.",
       "en": "As a Magic action, you can expend a use of your Wild Shape and cause spectral trees and vines to appear in a 15-foot Cube on the ground within 120 feet of yourself. They last there for 1 minute or until you have the Incapacitated condition or die. You and your allies have Half Cover while in that area, and your allies gain the current Resistance of your Nature’s Ward while there.\nAs a Bonus Action, you can move the Cube up to 60 feet to ground within 120 feet of yourself."
      },
      "status": "calisir",
@@ -557,8 +557,8 @@
    "class": "fighter",
    "srd": "subclasses:champion",
    "name": {
-    "tr": "Şampiyon",
-    "en": "Champion"
+    "tr": "Gladyatör",
+    "en": "Gladiator"
    },
    "role": {
     "tr": "Savaşta bedensel ustalığın peşinden gider",
@@ -569,11 +569,11 @@
      "id": "improved-critical",
      "level": 3,
      "name": {
-      "tr": "Gelişmiş Kritik",
-      "en": "Improved Critical"
+      "tr": "Keskin Vuruş",
+      "en": "Keen Strike"
      },
      "description": {
-      "tr": "Silah ve silahsız saldırıların 19 ya da 20'de kritik.",
+      "tr": "Silahlı ya da silahsız saldırılarında d20'de 19 veya 20 gelirse kritik vurursun.",
       "en": "Your attack rolls with weapons and Unarmed Strikes can score a Critical Hit on a roll of 19 or 20 on the d20."
      },
      "status": "calisir",
@@ -589,11 +589,11 @@
      "id": "remarkable-athlete",
      "level": 3,
      "name": {
-      "tr": "Olağanüstü Atlet",
-      "en": "Remarkable Athlete"
+      "tr": "Arena Çevikliği",
+      "en": "Arena Agility"
      },
      "description": {
-      "tr": "İnisiyatif ve STR (Athletics) kontrollerinde avantaj; kritikten sonra yarı hızla fırsat saldırısı almadan hareket.",
+      "tr": "İnisiyatif atışlarında ve Güç (Athletics) kontrollerinde Avantaj alırsın. Kritik vurduktan hemen sonra hızının yarısı kadar hareket edebilirsin; bu hareket fırsat saldırısına yol açmaz.",
       "en": "Thanks to your athleticism, you have Advantage on Initiative rolls and Strength (Athletics) checks.\nIn addition, immediately after you score a Critical Hit, you can move up to half your Speed without provoking Opportunity Attacks."
      },
      "status": "calisir",
@@ -608,11 +608,11 @@
      "id": "additional-fighting-style",
      "level": 7,
      "name": {
-      "tr": "Ek Dövüş Stili",
-      "en": "Additional Fighting Style"
+      "tr": "İkinci Okul",
+      "en": "Second Discipline"
      },
      "description": {
-      "tr": "Bir Fighting Style feat'i daha.",
+      "tr": "Seçeceğin bir Fighting Style feat'ini daha kazanırsın.",
       "en": "You gain another Fighting Style feat of your choice."
      },
      "status": "calisir",
@@ -627,11 +627,11 @@
      "id": "heroic-warrior",
      "level": 10,
      "name": {
-      "tr": "Kahraman Savaşçı",
-      "en": "Heroic Warrior"
+      "tr": "Kalabalığın Coşkusu",
+      "en": "Crowd's Roar"
      },
      "description": {
-      "tr": "Savaşta tur başında Heroic Inspiration yoksa kazanırsın.",
+      "tr": "Savaşta turun başladığında Heroic Inspiration'ın yoksa onu kendine verirsin.",
       "en": "The thrill of battle drives you toward victory. During combat, you can give yourself Heroic Inspiration whenever you start your turn without it."
      },
      "status": "calisir",
@@ -646,11 +646,11 @@
      "id": "superior-critical",
      "level": 15,
      "name": {
-      "tr": "Üstün Kritik",
-      "en": "Superior Critical"
+      "tr": "Usta Vuruş",
+      "en": "Master Strike"
      },
      "description": {
-      "tr": "Silah ve silahsız saldırıların 18–20'de kritik.",
+      "tr": "Silahlı ya da silahsız saldırılarında d20'de 18, 19 veya 20 gelirse kritik vurursun.",
       "en": "Your attack rolls with weapons and Unarmed Strikes can now score a Critical Hit on a roll of 18–20 on the d20."
      },
      "status": "calisir",
@@ -666,11 +666,11 @@
      "id": "survivor",
      "level": 18,
      "name": {
-      "tr": "Hayatta Kalan",
-      "en": "Survivor"
+      "tr": "Arenadan Sağ Çıkan",
+      "en": "Arena Survivor"
      },
      "description": {
-      "tr": "Ölüm save'lerinde avantaj, 18+ 20 sayılır; Bloodied iken tur başında 5 + CON HP.",
+      "tr": "Ölüm kurtarma zarlarında Avantaj alırsın; 18–20 gelen zar 20 gibi sayılır. Bloodied durumdaysan ve en az 1 HP'in varsa her turunun başında 5 + Dayanıklılık (CON) değiştiricin kadar HP kazanırsın.",
       "en": "You attain the pinnacle of resilience in battle, giving you these benefits.\nDefy Death. You have Advantage on Death Saving Throws. Moreover, when you roll 18–20 on a Death Saving Throw, you gain the benefit of rolling a 20 on it.\nHeroic Rally. At the start of each of your turns, you regain Hit Points equal to 5 plus your Constitution modifier if you are Bloodied and have at least 1 Hit Point."
      },
      "status": "calisir",
@@ -688,8 +688,8 @@
    "class": "monk",
    "srd": "subclasses:warrior-of-the-open-hand",
    "name": {
-    "tr": "Açık El Savaşçısı",
-    "en": "Warrior of the Open Hand"
+    "tr": "Sadelik Disiplini",
+    "en": "Discipline of Simplicity"
    },
    "role": {
     "tr": "Silahsız dövüş tekniklerinde ustalaşır",
@@ -704,7 +704,7 @@
       "en": "Open Hand Technique"
      },
      "description": {
-      "tr": "Flurry of Blows isabetinde Addle, Push ya da Topple.",
+      "tr": "Flurry of Blows'un verdiği bir saldırıyla bir yaratığı her vurduğunda, o hedefe aşağıdaki etkilerden birini uygulayabilirsin.\nAddle. Hedef bir sonraki turunun başına dek fırsat saldırısı yapamaz.\nPush. Hedef STR kurtarma zarını başarmazsa senden en çok 15 ft uzağa itilir.\nTopple. Hedef DEX kurtarma zarını başarmazsa Prone olur.",
       "en": "Whenever you hit a creature with an attack granted by your Flurry of Blows, you can impose one of the following effects on that target.\nAddle. The target can’t make Opportunity Attacks until the start of its next turn.\nPush. The target must succeed on a Strength saving throw or be pushed up to 15 feet away from you.\nTopple. The target must succeed on a Dexterity saving throw or have the Prone condition."
      },
      "status": "calisir",
@@ -727,7 +727,7 @@
       "en": "Wholeness of Body"
      },
      "description": {
-      "tr": "Bonus eylemle Martial Arts zarı + WIS kadar HP (WIS kadar kullanım).",
+      "tr": "Kendini iyileştirme yetisi kazanırsın. Bonus eylemle Martial Arts zarını atarsın; gelen sayı + WIS değiştiricin kadar HP kazanırsın (en az 1 HP).\nBu özelliği WIS değiştiricin kadar kullanabilirsin (en az bir kez); harcanan bütün kullanımları uzun dinlenmeyi bitirince geri kazanırsın.",
       "en": "You gain the ability to heal yourself. As a Bonus Action, you can roll your Martial Arts die. You regain a number of Hit Points equal to the number rolled plus your Wisdom modifier (minimum of 1 Hit Point regained).\nYou can use this feature a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
      },
      "status": "calisir",
@@ -771,7 +771,7 @@
       "en": "Quivering Palm"
      },
      "description": {
-      "tr": "Unarmed Strike isabetinde Focus harcayarak titreşim; sonra CON save ya da büyük force hasarı.",
+      "tr": "Birinin bedeninde öldürücü titreşimler başlatma yetisi kazanırsın. Bir yaratığı Unarmed Strike ile vurduğunda 4 Focus Point harcayarak fark edilmeyen bu titreşimleri başlatabilirsin; titreşimler Monk seviyen kadar gün sürer. Sen onları bitirmek için bir eylem kullanmadıkça zararsızdır. Ya da kendi turunda Attack eylemini yaptığında saldırılardan birinden vazgeçerek titreşimleri bitirebilirsin. Bitirmek için sen ve hedef aynı varoluş düzleminde olmalısınız. Bitirdiğinde hedef CON kurtarma zarı atar; başaramazsa 10d12 kuvvet hasarı alır, başarırsa yarısını.\nAynı anda bu özelliğin etkisinde yalnız bir yaratık olabilir. Titreşimleri zararsız biçimde bitirebilirsin (eylem gerekmez).",
       "en": "You gain the ability to set up lethal vibrations in someone’s body. When you hit a creature with an Unarmed Strike, you can expend 4 Focus Points to start these imperceptible vibrations, which last for a number of days equal to your Monk level. The vibrations are harmless unless you take an action to end them. Alternatively, when you take the Attack action on your turn, you can forgo one of the attacks to end the vibrations. To end them, you and the target must be on the same plane of existence. When you end them, the target must make a Constitution saving throw, taking 10d12 Force damage on a failed save or half as much damage on a successful one.\nYou can have only one creature under the effect of this feature at a time. You can end the vibrations harmlessly (no action required)."
      },
      "status": "calisir",
@@ -796,8 +796,8 @@
    "class": "paladin",
    "srd": "subclasses:oath-of-devotion",
    "name": {
-    "tr": "Bağlılık Yemini",
-    "en": "Oath of Devotion"
+    "tr": "Sadakat Töresi",
+    "en": "Code of Loyalty"
    },
    "role": {
     "tr": "Adalet ve düzen ülkülerini savunur",
@@ -808,12 +808,12 @@
      "id": "oath-of-devotion-spells",
      "level": 3,
      "name": {
-      "tr": "Bağlılık Yemini Büyüleri",
-      "en": "Oath of Devotion Spells"
+      "tr": "Sadakat Töresi Büyüleri",
+      "en": "Code of Loyalty Spells"
      },
      "description": {
-      "tr": "Yemin büyüleri her zaman hazır.",
-      "en": "The magic of your oath ensures you always have certain spells ready; when you reach a Paladin level specified in the Oath of Devotion Spells table, you thereafter always have the listed spells prepared."
+      "tr": "Yemininin büyüsü bazı büyülerin her zaman hazır olmasını sağlar; Sadakat Töresi Büyüleri tablosundaki bir Paladin seviyesine ulaştığında, o satırdaki büyüler bundan sonra hep hazırdır.",
+      "en": "The magic of your oath ensures you always have certain spells ready; when you reach a Paladin level specified in the Code of Loyalty Spells table, you thereafter always have the listed spells prepared."
      },
      "status": "calisir",
      "effect": {
@@ -840,7 +840,7 @@
       "en": "Sacred Weapon"
      },
      "description": {
-      "tr": "Channel Divinity ile yakın dövüş silahına CHA kadar saldırı bonusu ve Radiant hasar seçeneği.",
+      "tr": "Attack eylemini yaptığında bir Channel Divinity kullanımı harcayıp elinde tuttuğun bir yakın dövüş silahına olumlu enerji yükleyebilirsin. 10 dakika boyunca ya da bu özelliği yeniden kullanana dek, o silahla yaptığın saldırı zarlarına CHA değiştiricini eklersin (en az +1) ve onunla her vurduğunda silahın normal hasar türünde ya da ışıltı hasarı verdirirsin.\nSilah ayrıca 20 ft yarıçapta parlak ışık ve onun 20 ft ötesine loş ışık yayar.\nBu etkiyi erken bitirebilirsin (eylem gerekmez). Silahı taşımıyorsan etki de biter.",
       "en": "When you take the Attack action, you can expend one use of your Channel Divinity to imbue one Melee weapon that you are holding with positive energy. For 10 minutes or until you use this feature again, you add your Charisma modifier to attack rolls you make with that weapon (minimum bonus of +1), and each time you hit with it, you cause it to deal its normal damage type or Radiant damage.\nThe weapon also emits Bright Light in a 20-foot radius and Dim Light 20 feet beyond that.\nYou can end this effect early (no action required). This effect also ends if you aren’t carrying the weapon."
      },
      "status": "calisir",
@@ -867,7 +867,7 @@
       "en": "Aura of Devotion"
      },
      "description": {
-      "tr": "Sen ve aurandaki dostlar Charmed durumuna bağışık.",
+      "tr": "Aura of Protection'ın içindeyken sen ve dostların Charmed durumuna bağışıksınız. Charmed bir dost auraya girerse, orada kaldığı sürece bu durumun ona etkisi olmaz.",
       "en": "You and your allies have Immunity to the Charmed condition while in your Aura of Protection. If a Charmed ally enters the aura, that condition has no effect on that ally while there."
      },
      "status": "calisir",
@@ -883,10 +883,10 @@
      "level": 15,
      "name": {
       "tr": "Koruyucu Darbe",
-      "en": "Smite of Protection"
+      "en": "Warding Strike"
      },
      "description": {
-      "tr": "Divine Smite yapınca auran dostlara yarı siper verir.",
+      "tr": "Büyülü darben artık koruyucu enerji yayar. Divine Smite yaptığında Aura of Protection'ın içindeyken sen ve dostların yarım siperden (Half Cover) yararlanırsınız. Aura bu yararı bir sonraki turunun başına dek sağlar.",
       "en": "Your magical smite now radiates protective energy. Whenever you cast Divine Smite , you and your allies have Half Cover while in your Aura of Protection. The aura has this benefit until the start of your next turn."
      },
      "status": "calisir",
@@ -905,7 +905,7 @@
       "en": "Holy Nimbus"
      },
      "description": {
-      "tr": "Bonus eylemle 10 dakika auran parlak ışık, düşmanlara radiant hasar ve Fiend/Undead save'lerine karşı avantaj.",
+      "tr": "Bonus eylemle Aura of Protection'ına kutsal güç yükleyerek 10 dakika boyunca ya da sen bitirene dek (eylem gerekmez) aşağıdaki yararları sağlayabilirsin. Bu özelliği kullandıktan sonra uzun dinlenmeyi bitirene dek yeniden kullanamazsın. Bir 5. seviye büyü slotu harcayarak da (eylem gerekmez) kullanımını geri kazanabilirsin.\nHoly Ward. Bir Fiend ya da Undead'in sana attırdığı her kurtarma zarında avantajlısın.\nRadiant Damage. Bir düşman turuna aurada başladığında CHA değiştiricin + yeterlilik bonusun kadar ışıltı hasarı alır.\nSunlight. Aura, güneş ışığı olan parlak ışıkla dolar.",
       "en": "As a Bonus Action, you can imbue your Aura of Protection with holy power, granting the benefits below for 10 minutes or until you end them (no action required). Once you use this feature, you can’t use it again until you finish a Long Rest. You can also restore your use of it by expending a level 5 spell slot (no action required).\nHoly Ward. You have Advantage on any saving throw you are forced to make by a Fiend or an Undead.\nRadiant Damage. Whenever an enemy starts its turn in the aura, that creature takes Radiant damage equal to your Charisma modifier plus your Proficiency Bonus.\nSunlight. The aura is filled with Bright Light that is sunlight."
      },
      "status": "calisir",
@@ -968,7 +968,7 @@
       "en": "Hunter’s Prey"
      },
      "description": {
-      "tr": "Colossus Slayer (yaralı hedefe turda bir kez 1d8) ya da Horde Breaker (yakındaki ikinci hedefe ek saldırı).",
+      "tr": "Aşağıdaki özellik seçeneklerinden birini seçerek kazanırsın. Kısa ya da uzun dinlenmeyi her bitirdiğinde seçtiğin seçeneği diğeriyle değiştirebilirsin.\nColossus Slayer. Azmin en dayanıklı düşmanı bile yıpratır. Bir yaratığı silahla vurduğunda, hedefin HP'si eksikse silah ona 1d8 ek hasar verir. Bu ek hasarı turda yalnız bir kez verebilirsin.\nHorde Breaker. Turlarının her birinde bir kez, silahla saldırdığında aynı silahla, ilk hedefin 5 ft içindeki, silahın menzilinde olan ve bu tur saldırmadığın başka bir yaratığa bir saldırı daha yapabilirsin.",
       "en": "You gain one of the following feature options of your choice. Whenever you finish a Short or Long Rest, you can replace the chosen option with the other one.\nColossus Slayer. Your tenacity can wear down even the most resilient foes. When you hit a creature with a weapon, the weapon deals an extra 1d8 damage to the target if it’s missing any of its Hit Points. You can deal this extra damage only once per turn.\nHorde Breaker. Once on each of your turns when you make an attack with a weapon, you can make another attack with the same weapon against a different creature that is within 5 feet of the original target, that is within the weapon’s range, and that you haven’t attacked this turn."
      },
      "status": "calisir",
@@ -997,7 +997,7 @@
       "en": "Defensive Tactics"
      },
      "description": {
-      "tr": "Escape the Horde (fırsat saldırıları dezavantajlı) ya da Multiattack Defense.",
+      "tr": "Aşağıdaki özellik seçeneklerinden birini seçerek kazanırsın. Kısa ya da uzun dinlenmeyi her bitirdiğinde seçtiğin seçeneği diğeriyle değiştirebilirsin.\nEscape the Horde. Sana yapılan fırsat saldırıları dezavantajlıdır.\nMultiattack Defense. Bir yaratık seni saldırı zarıyla vurduğunda, o yaratığın bu tur sana yapacağı diğer bütün saldırı zarları dezavantajlıdır.",
       "en": "You gain one of the following feature options of your choice. Whenever you finish a Short or Long Rest, you can replace the chosen option with the other one.\nEscape the Horde. Opportunity Attacks have Disadvantage against you.\nMultiattack Defense. When a creature hits you with an attack roll, that creature has Disadvantage on all other attack rolls against you this turn."
      },
      "status": "calisir",
@@ -1026,7 +1026,7 @@
       "en": "Superior Hunter’s Prey"
      },
      "description": {
-      "tr": "Hunter's Mark hasarını turda bir kez 30 ft içindeki ikinci bir yaratığa da verirsin.",
+      "tr": "Turda bir kez, Hunter's Mark ile işaretlediğin bir yaratığa hasar verdiğinde, o büyünün ek hasarını ilk yaratığın 30 ft içinde görebildiğin başka bir yaratığa da verebilirsin.",
       "en": "Once per turn when you deal damage to a creature marked by your Hunter’s Mark , you can also deal that spell’s extra damage to a different creature that you can see within 30 feet of the first creature."
      },
      "status": "calisir",
@@ -1081,7 +1081,7 @@
       "en": "Fast Hands"
      },
      "description": {
-      "tr": "Cunning Action ile Sleight of Hand, kilit açma ya da Utilize eylemi.",
+      "tr": "Bonus eylemle aşağıdakilerden birini yapabilirsin.\nSleight of Hand. Thieves' Tools ile kilit açmak ya da tuzak sökmek veya yankesicilik yapmak için Çeviklik (Sleight of Hand) kontrolü yaparsın.\nUse an Object. Utilize eylemini yaparsın ya da o eylemi gerektiren bir büyülü eşyayı kullanmak için Magic eylemini yaparsın.",
       "en": "As a Bonus Action, you can do one of the following.\nSleight of Hand. Make a Dexterity (Sleight of Hand) check to pick a lock or disarm a trap with Thieves’ Tools or to pick a pocket.\nUse an Object. Take the Utilize action, or take the Magic action to use a magic item that requires that action."
      },
      "status": "calisir",
@@ -1100,7 +1100,7 @@
       "en": "Second-Story Work"
      },
      "description": {
-      "tr": "Tırmanma hızı ve DEX ile atlama.",
+      "tr": "Özellikle zor erişilen yerlere girmek için eğitim almışsın; şu yararları kazanırsın.\nClimber. Hızına eşit bir tırmanma hızı kazanırsın.\nJumper. Atlama mesafeni Güç yerine Çevikliğinle belirleyebilirsin.",
       "en": "You’ve trained to get into especially hard-to-reach places, granting you these benefits.\nClimber. You gain a Climb Speed equal to your Speed.\nJumper. You can determine your jump distance using your Dexterity rather than your Strength."
      },
      "status": "calisir",
@@ -1119,7 +1119,7 @@
       "en": "Supreme Sneak"
      },
      "description": {
-      "tr": "Cunning Strike seçeneği Stealth Attack: saldırı gizlenmeni bozmaz (siper gerekir).",
+      "tr": "Aşağıdaki Cunning Strike seçeneğini kazanırsın.\nStealth Attack (Bedel: 1d6). Hide eyleminden gelen Invisible durumundaysan, turu dörtte üç siper (Three-Quarters Cover) ya da tam siper (Total Cover) arkasında bitirirsen bu saldırı sendeki durumu bitirmez.",
       "en": "You gain the following Cunning Strike option.\nStealth Attack (Cost: 1d6). If you have the Hide action’s Invisible condition, this attack doesn’t end that condition on you if you end the turn behind Three-Quarters Cover or Total Cover."
      },
      "status": "calisir",
@@ -1138,7 +1138,7 @@
       "en": "Use Magic Device"
      },
      "description": {
-      "tr": "Dört eşyaya bağlanma; asa yükleri ve parşömenler için avantajlar.",
+      "tr": "Büyülü eşyaları en iyi biçimde kullanmayı öğrenmişsin; şu yararları kazanırsın.\nAttunement. Aynı anda en çok dört büyülü eşyaya bağlanabilirsin.\nCharges. Yük harcayan bir büyülü eşya özelliğini her kullandığında 1d6 at. 6 gelirse özelliği yük harcamadan kullanırsın.\nScrolls. Büyü yeteneği olarak Zekâ'yı kullanarak her Spell Scroll'u kullanabilirsin. Büyü bir cantrip ya da 1. seviye büyüyse güvenle yaparsın. Parşömen daha yüksek seviyeli bir büyü içeriyorsa önce bir Zekâ (Arcana) kontrolünü başarman gerekir (DC 10 + büyünün seviyesi). Başarırsan büyüyü parşömenden yaparsın; başaramazsan parşömen ufalanıp yok olur.",
       "en": "You’ve learned how to maximize use of magic items, granting you the following benefits.\nAttunement. You can attune to up to four magic items at once.\nCharges. Whenever you use a magic item property that expends charges, roll 1d6. On a roll of 6, you use the property without expending the charges.\nScrolls. You can use any Spell Scroll , using Intelligence as your spellcasting ability for the spell. If the spell is a cantrip or a level 1 spell, you can cast it reliably. If the scroll contains a higher-level spell, you must first succeed on an Intelligence (Arcana) check (DC 10 plus the spell’s level). On a successful check, you cast the spell from the scroll. On a failed check, the scroll disintegrates."
      },
      "status": "calisir",
@@ -1157,7 +1157,7 @@
       "en": "Thief’s Reflexes"
      },
      "description": {
-      "tr": "Savaşın ilk turunda iki tur oynarsın.",
+      "tr": "Pusu kurmakta ve tehlikeden hızla sıyrılmakta ustasın. Her savaşın ilk turunda iki tur oynayabilirsin. İlk turunu normal inisiyatifinde, ikincisini inisiyatifin eksi 10'da oynarsın.",
       "en": "You are adept at laying ambushes and quickly escaping danger. You can take two turns during the first round of any combat. You take your first turn at your normal Initiative and your second turn at your Initiative minus 10."
      },
      "status": "calisir",
@@ -1175,8 +1175,8 @@
    "class": "sorcerer",
    "srd": "subclasses:draconic-sorcery",
    "name": {
-    "tr": "Ejderha Büyücülüğü",
-    "en": "Draconic Sorcery"
+    "tr": "Pulkanat",
+    "en": "Scalewing"
    },
    "role": {
     "tr": "Ejderhaların büyüsünü soluğunda taşır",
@@ -1191,7 +1191,7 @@
       "en": "Draconic Resilience"
      },
      "description": {
-      "tr": "HP artışı ve zırhsız AC 10 + DEX + CHA.",
+      "tr": "Bedenindeki büyü, ejderha armağanının fiziksel izlerini ortaya çıkarır. HP üst sınırın 3 artar ve her yeni Sorcerer seviyesi kazandığında 1 daha artar.\nBedeninin bazı bölgeleri ejderha pullarıyla da kaplıdır. Zırh giymiyorken temel Zırh Sınıfın (AC) 10 + DEX ve CHA değiştiricilerindir.",
       "en": "The magic in your body manifests physical traits of your draconic gift. Your Hit Point maximum increases by 3, and it increases by 1 whenever you gain another Sorcerer level.\nParts of you are also covered by dragon-like scales. While you aren’t wearing armor, your base Armor Class equals 10 plus your Dexterity and Charisma modifiers."
      },
      "status": "calisir",
@@ -1215,7 +1215,7 @@
       "en": "Draconic Spells"
      },
      "description": {
-      "tr": "Ejderha büyüleri her zaman hazır.",
+      "tr": "Ejderha Büyüleri tablosundaki bir Sorcerer seviyesine ulaştığında, o satırdaki büyüler bundan sonra hep hazırdır.",
       "en": "When you reach a Sorcerer level specified in the Draconic Spells table, you thereafter always have the listed spells prepared."
      },
      "status": "calisir",
@@ -1253,7 +1253,7 @@
       "en": "Elemental Affinity"
      },
      "description": {
-      "tr": "Seçtiğin hasar türüne direnç; o türde büyülerin hasarına CHA eklenir.",
+      "tr": "Ejderha büyün, ejderhalarla ilişkili bir hasar türüyle yakınlık taşır. Şu türlerden birini seç: asit, soğuk, ateş, yıldırım ya da zehir.\nO hasar türüne dirençlisin ve o türde hasar veren bir büyü yaptığında, büyünün bir hasar zarına CHA değiştiricini ekleyebilirsin.",
       "en": "Your draconic magic has an affinity with a damage type associated with dragons. Choose one of those types: Acid, Cold, Fire, Lightning, or Poison.\nYou have Resistance to that damage type, and when you cast a spell that deals damage of that type, you can add your Charisma modifier to one damage roll of that spell."
      },
      "status": "calisir",
@@ -1309,7 +1309,7 @@
       "en": "Dragon Wings"
      },
      "description": {
-      "tr": "Bonus eylemle bir saat uçuş hızı.",
+      "tr": "Bonus eylemle sırtında ejderha kanatları belirtebilirsin. Kanatlar 1 saat ya da sen onları kaldırana dek (eylem gerekmez) kalır. Bu süre boyunca 60 ft uçuş hızın olur.\nBu özelliği kullandıktan sonra uzun dinlenmeyi bitirene dek yeniden kullanamazsın; ancak 3 Sorcery Point harcayarak (eylem gerekmez) kullanımını geri kazanabilirsin.",
       "en": "As a Bonus Action, you can cause draconic wings to appear on your back. The wings last for 1 hour or until you dismiss them (no action required). For the duration, you have a Fly Speed of 60 feet.\nOnce you use this feature, you can’t use it again until you finish a Long Rest unless you spend 3 Sorcery Points (no action required) to restore your use of it."
      },
      "status": "calisir",
@@ -1335,7 +1335,7 @@
       "en": "Dragon Companion"
      },
      "description": {
-      "tr": "Summon Dragon'u slotsuz ve konsantrasyonsuz yaparsın.",
+      "tr": "Summon Dragon'u malzeme bileşeni olmadan yapabilirsin. Ayrıca onu bir kez büyü slotu olmadan yapabilirsin; bu yolla yapma hakkını uzun dinlenmeyi bitirince geri kazanırsın.\nBüyüyü yapmaya başladığında onu konsantrasyon gerektirmeyecek biçimde değiştirebilirsin. Bunu yaparsan büyünün süresi o yapım için 1 dakika olur.",
       "en": "You can cast Summon Dragon without a Material component. You can also cast it once without a spell slot, and you regain the ability to cast it in this way when you finish a Long Rest.\nWhenever you start casting the spell, you can modify it so that it doesn’t require Concentration. If you do so, the spell’s duration becomes 1 minute for that casting."
      },
      "status": "calisir",
@@ -1359,8 +1359,8 @@
    "class": "warlock",
    "srd": "subclasses:fiend-patron",
    "name": {
-    "tr": "İblis Hamisi",
-    "en": "Fiend Patron"
+    "tr": "Zebani",
+    "en": "Hellwarden"
    },
    "role": {
     "tr": "Alt düzlemlerle anlaşma yapar",
@@ -1372,10 +1372,10 @@
      "level": 3,
      "name": {
       "tr": "Karanlığın Lütfu",
-      "en": "Dark One’s Blessing"
+      "en": "Boon of the Dark"
      },
      "description": {
-      "tr": "Bir düşmanı 0 HP'ye düşürünce CHA + Warlock seviyesi kadar geçici HP.",
+      "tr": "Bir düşmanı 0 HP'ye düşürdüğünde, CHA değiştiricin + Warlock seviyen kadar geçici HP kazanırsın (en az 1 geçici HP). Başka biri 10 ft içindeki bir düşmanı 0 HP'ye düşürdüğünde de bu yararı kazanırsın.",
       "en": "When you reduce an enemy to 0 Hit Points, you gain Temporary Hit Points equal to your Charisma modifier plus your Warlock level (minimum of 1 Temporary Hit Point). You also gain this benefit if someone else reduces an enemy within 10 feet of you to 0 Hit Points."
      },
      "status": "calisir",
@@ -1394,7 +1394,7 @@
       "en": "Fiend Spells"
      },
      "description": {
-      "tr": "Hami büyüleri her zaman hazır.",
+      "tr": "Hamin olan varlığın büyüsü bazı büyülerin her zaman hazır olmasını sağlar; İblis Büyüleri tablosundaki bir Warlock seviyesine ulaştığında, o satırdaki büyüler bundan sonra hep hazırdır.",
       "en": "The magic of your patron ensures you always have certain spells ready; when you reach a Warlock level specified in the Fiend Spells table, you thereafter always have the listed spells prepared."
      },
      "status": "calisir",
@@ -1429,10 +1429,10 @@
      "level": 6,
      "name": {
       "tr": "Karanlığın Şansı",
-      "en": "Dark One’s Own Luck"
+      "en": "Dark Fortune"
      },
      "description": {
-      "tr": "Kontrol ya da save'e d10 eklersin (CHA kadar kullanım).",
+      "tr": "İblis haminden kaderi lehine çevirmesini isteyebilirsin. Bir yetenek kontrolü ya da kurtarma zarı attığında bu özellikle zarına 1d10 ekleyebilirsin. Bunu zarı gördükten sonra, ama zarın sonuçları gerçekleşmeden önce yapabilirsin.\nBu özelliği CHA değiştiricin kadar kullanabilirsin (en az bir kez), ama bir zara en çok bir kez. Harcanan bütün kullanımları uzun dinlenmeyi bitirince geri kazanırsın.",
       "en": "You can call on your fiendish patron to alter fate in your favor. When you make an ability check or a saving throw, you can use this feature to add 1d10 to your roll. You can do so after seeing the roll but before any of the roll’s effects occur.\nYou can use this feature a number of times equal to your Charisma modifier (minimum of once), but you can use it no more than once per roll. You regain all expended uses when you finish a Long Rest."
      },
      "status": "calisir",
@@ -1452,7 +1452,7 @@
       "en": "Fiendish Resilience"
      },
      "description": {
-      "tr": "Kısa dinlenmede seçtiğin bir hasar türüne direnç.",
+      "tr": "Kısa ya da uzun dinlenmeyi her bitirdiğinde kuvvet dışında bir hasar türü seç. Bu özellikle başka bir tür seçene dek o hasar türüne dirençlisin.",
       "en": "Choose one damage type, other than Force, whenever you finish a Short or Long Rest. You have Resistance to that damage type until you choose a different one with this feature."
      },
      "status": "calisir",
@@ -1557,7 +1557,7 @@
       "en": "Hurl Through Hell"
      },
      "description": {
-      "tr": "Saldırı isabetinde hedef CHA save; başarısızsa cehennemden geçer, psychic hasar ve Incapacitated.",
+      "tr": "Turda bir kez, bir yaratığı saldırı zarıyla vurduğunda hedefi bir anda Alt Düzlemler'in içinden geçirmeyi deneyebilirsin. Hedef büyü kurtarma DC'ne karşı CHA kurtarma zarını başarmazsa gözden kaybolur ve bir kâbus manzarasının içinden savrulur. Hedef Fiend değilse 8d10 psişik hasar alır ve senin bir sonraki turunun sonuna dek Incapacitated olur; o zaman önceki yerine ya da en yakın boş yere döner.\nBu özelliği kullandıktan sonra uzun dinlenmeyi bitirene dek yeniden kullanamazsın; ancak bir Pact Magic büyü slotu harcayarak (eylem gerekmez) kullanımını geri kazanabilirsin.",
       "en": "Once per turn when you hit a creature with an attack roll, you can try to instantly transport the target through the Lower Planes. The target must succeed on a Charisma saving throw against your spell save DC, or the target disappears and hurtles through a nightmare landscape. The target takes 8d10 Psychic damage if it isn’t a Fiend, and it has the Incapacitated condition until the end of your next turn, when it returns to the space it previously occupied or the nearest unoccupied space.\nOnce you use this feature, you can’t use it again until you finish a Long Rest unless you expend a Pact Magic spell slot (no action required) to restore your use of it."
      },
      "status": "calisir",
@@ -1575,8 +1575,8 @@
    "class": "wizard",
    "srd": "subclasses:evoker",
    "name": {
-    "tr": "Evokasyon Ustası",
-    "en": "Evoker"
+    "tr": "Azap Öğretisi",
+    "en": "Torment Doctrine"
    },
    "role": {
     "tr": "Patlayıcı element etkileri yaratır",
@@ -1587,11 +1587,11 @@
      "id": "evocation-savant",
      "level": 3,
      "name": {
-      "tr": "Evocation Bilgini",
-      "en": "Evocation Savant"
+      "tr": "Azap Bilgini",
+      "en": "Torment Savant"
      },
      "description": {
-      "tr": "Spellbook'una iki Evocation büyüsü ekler; her seviyede bir tane daha.",
+      "tr": "Evocation okulundan, her biri en çok 2. seviye iki Wizard büyüsü seç ve ücretsiz olarak spellbook'una ekle.\nAyrıca bu sınıfta her yeni büyü slotu seviyesine eriştiğinde, Evocation okulundan bir Wizard büyüsünü ücretsiz olarak spellbook'una ekleyebilirsin. Seçilen büyü, büyü slotun olan bir seviyede olmalıdır.",
       "en": "Choose two Wizard spells from the Evocation school, each of which must be no higher than level 2, and add them to your spellbook for free.\nIn addition, whenever you gain access to a new level of spell slots in this class, you can add one Wizard spell from the Evocation school to your spellbook for free. The chosen spell must be of a level for which you have spell slots."
      },
      "status": "hikaye"
@@ -1600,11 +1600,11 @@
      "id": "potent-cantrip",
      "level": 3,
      "name": {
-      "tr": "Güçlü Cantrip",
-      "en": "Potent Cantrip"
+      "tr": "Güçlü Hile",
+      "en": "Potent Trick"
      },
      "description": {
-      "tr": "Hasar cantrip'in ıskalasa ya da save başarılı olsa da yarı hasar verir.",
+      "tr": "Hasar veren cantrip'lerin, etkinin asıl yükünden kaçan yaratıkları bile etkiler. Bir yaratığa cantrip yaptığında saldırı zarın ıskalarsa ya da hedef cantrip'e karşı kurtarma zarını başarırsa, hedef cantrip'in hasarının (varsa) yarısını alır, ama cantrip'in başka bir etkisine uğramaz.",
       "en": "Your damaging cantrips affect even creatures that avoid the brunt of the effect. When you cast a cantrip at a creature and you miss with the attack roll or the target succeeds on a saving throw against the cantrip, the target takes half the cantrip’s damage (if any) but suffers no additional effect from the cantrip."
      },
      "status": "calisir",
@@ -1620,10 +1620,10 @@
      "level": 6,
      "name": {
       "tr": "Büyü Yontma",
-      "en": "Sculpt Spells"
+      "en": "Spell Sculpting"
      },
      "description": {
-      "tr": "Evocation alanındaki seçtiğin yaratıklar save'i başarır ve hasar almaz.",
+      "tr": "Evocation büyülerinin etkileri içinde görece güvenli cepler yaratabilirsin. Görebildiğin başka yaratıkları etkileyen bir Evocation büyüsü yaptığında, aralarından 1 + büyünün seviyesi kadarını seçebilirsin. Seçilen yaratıklar büyüye karşı kurtarma zarlarını kendiliğinden başarır ve başarılı kurtarmada normalde yarı hasar alacaklarsa hiç hasar almazlar.",
       "en": "You can create pockets of relative safety within the effects of your evocations. When you cast an Evocation spell that affects other creatures that you can see, you can choose a number of them equal to 1 plus the spell’s level. The chosen creatures automatically succeed on their saving throws against the spell, and they take no damage if they would normally take half damage on a successful save."
      },
      "status": "calisir",
@@ -1638,11 +1638,11 @@
      "id": "empowered-evocation",
      "level": 10,
      "name": {
-      "tr": "Güçlendirilmiş Evocation",
-      "en": "Empowered Evocation"
+      "tr": "Güçlendirilmiş Azap",
+      "en": "Empowered Torment"
      },
      "description": {
-      "tr": "Evocation büyülerinin hasarına INT eklenir.",
+      "tr": "Evocation okulundan bir Wizard büyüsü yaptığında, büyünün bir hasar zarına INT değiştiricini ekleyebilirsin.",
       "en": "Whenever you cast a Wizard spell from the Evocation school, you can add your Intelligence modifier to one damage roll of that spell."
      },
      "status": "calisir",
@@ -1658,10 +1658,10 @@
      "level": 14,
      "name": {
       "tr": "Aşırı Yükleme",
-      "en": "Overchannel"
+      "en": "Overload"
      },
      "description": {
-      "tr": "Seviye 1–5 hasar büyüsünün zarları en yüksek değeri verir; tekrarında necrotic hasar alırsın.",
+      "tr": "Büyülerinin gücünü artırabilirsin. 1–5. seviye bir büyü slotuyla hasar veren bir Wizard büyüsü yaptığında, büyüyü yaptığın turda o büyüyle en yüksek hasarı verebilirsin.\nBunu ilk yaptığında olumsuz bir etki yaşamazsın. Uzun dinlenmeyi bitirmeden bu özelliği yeniden kullanırsan, büyüyü yaptıktan hemen sonra büyü slotunun her seviyesi için 2d12 nekrotik hasar alırsın. Bu hasar direnci ve bağışıklığı yok sayar.\nUzun dinlenmeyi bitirmeden bu özelliği her yeniden kullandığında, büyü seviyesi başına nekrotik hasar 1d12 artar.",
       "en": "You can increase the power of your spells. When you cast a Wizard spell with a spell slot of levels 1–5 that deals damage, you can deal maximum damage with that spell on the turn you cast it.\nThe first time you do so, you suffer no adverse effect. If you use this feature again before you finish a Long Rest, you take 2d12 Necrotic damage for each level of the spell slot immediately after you cast it. This damage ignores Resistance and Immunity.\nEach time you use this feature again before finishing a Long Rest, the Necrotic damage per spell level increases by 1d12."
      },
      "status": "calisir",

@@ -1,0 +1,42 @@
+/* Görsel envanter galerisi (#galeri; tembel parça). Telefon (390 px) ve masaüstü; yatay kaydırma yok. */
+.galeri { max-width: 1200px; margin: 0 auto; padding: 8px 12px 24px; box-sizing: border-box; }
+.galeri header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.galeri header h1 { font-size: 1.25rem; margin: 0; }
+.gal-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; background: var(--panel); padding: 6px; border-radius: 12px; }
+.gal-tabs button { padding: 4px 10px; font-size: 0.9rem; }
+.gal-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; background: var(--panel); padding: 6px 10px; border-radius: 12px; }
+.gal-bar input[type='search'] { flex: 1 1 160px; min-width: 0; }
+.gal-check { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.gal-count, .gal-legend { margin: 6px 0; font-size: 0.85rem; }
+.gal-count { background: var(--panel); padding: 4px 10px; border-radius: 10px; }
+.gal-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; background: var(--panel); padding: 4px 10px; border-radius: 10px; }
+.gal-key { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 4px; border: 2px solid #4caf50; }
+.gal-key.genel { border: 2px dashed #e0b03a; }
+.gal-key.yedek { border: 2px solid #e0453a; }
+.gal-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); gap: 8px; }
+.gal-tile { background: var(--panel); border: 2px solid transparent; border-radius: 10px; padding: 6px; text-align: center; min-width: 0; }
+.gal-tile.var { border-color: rgba(76, 175, 80, 0.55); }
+.gal-tile.genel { border: 2px dashed #e0b03a; }
+.gal-tile.yedek { border-color: #e0453a; }
+.gal-vis { height: 88px; display: flex; align-items: center; justify-content: center; background: #0d0f14; border-radius: 8px; overflow: hidden; }
+.gal-fx { width: 88px; height: 88px; display: block; }
+.gal-img { max-width: 84px; max-height: 84px; image-rendering: pixelated; }
+.gal-vis .char-figure { max-width: 88px; max-height: 88px; }
+.gal-glyph { display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 12px; border: 3px solid #6b7280;
+  background: #1a1d25; color: #e8e4d8; font-size: 30px; line-height: 1; }
+.gal-name { font-size: 0.82rem; font-weight: 600; margin-top: 4px; overflow-wrap: anywhere; line-height: 1.2; }
+.gal-src { font-size: 0.7rem; color: var(--mute); overflow-wrap: anywhere; }
+.gal-more { display: block; margin: 12px auto 0; }
+.gal-size { background: var(--panel); padding: 8px 10px; border-radius: 12px; }
+.gal-size-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; }
+.gal-size-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.gal-size-pair small { display: block; font-size: 0.7rem; color: #c9c4b6; }
+.gal-size-cell { margin: 0; background: #0d0f14; border-radius: 8px; padding: 4px; text-align: center; }
+.gal-size-cell svg { width: 100%; height: auto; display: block; }
+.gal-size-cell figcaption { font-size: 0.8rem; color: #e8e4d8; }
+.gal-hex { fill: #20242e; stroke: #3a4150; stroke-width: 2; }
+.gal-body { fill: rgba(224, 176, 58, 0.18); stroke: #e0b03a; stroke-width: 3; stroke-dasharray: 8 6; }
+.gal-anchor { fill: rgba(76, 175, 80, 0.25); stroke: #4caf50; stroke-width: 3; }
+.gal-size-table { margin-top: 10px; border-collapse: collapse; font-size: 0.85rem; width: 100%; }
+.gal-size-table th, .gal-size-table td { border-bottom: 1px solid var(--line, #444); padding: 4px 6px; text-align: left; }
+@media (prefers-reduced-motion: reduce) { .gal-fx image { animation: none !important; } }

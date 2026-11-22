@@ -46,7 +46,8 @@ const same = (s: BattleState, evs: BattleEvent[], after: BattleState) => expect(
 describe('Swallow (6): yalnızca yakaladığı hedef; save başarısızsa yutulur', () => {
   for (const id of ['giant-frog', 'giant-toad', 'tarrasque', 'behir', 'remorhaz', 'purple-worm']) {
     it(id, () => {
-      const s = arena(id, { foeP: held() });
+      // Görev D1 (kural sürümü 86): Giant Frog SRD s. 351 "swallows a Small or smaller target" (eskiden Medium da); hedef Small.
+      const s = arena(id, { foeP: { ...held(), ...(id === 'giant-frog' ? { size: 'S' as const } : {}) } });
       const r = ok(use(s, 'swallow'));
       const a = r.state.combatants.A!;
       expect(a.effects?.some((e) => e.swallowedBy === 'X')).toBe(true);
@@ -100,7 +101,9 @@ describe('Su koşullu (3): Bubble Dash, Aquatic Charge', () => {
     it(id, () => {
       const s = arena(id, { tiles: water });
       const r = ok(use(s, 'bubble-dash'));
-      expect(r.events.some((e) => e.type === 'dashed')).toBe(true);
+      // Görev WS92 (92+; SRD): Dash + Disengage değil, yüzme hızı (Giant Seahorse yarısı) kadar fırsat saldırısız hareket.
+      expect(r.events.some((e) => e.type === 'moved' && !!e.free)).toBe(true);
+      expect(r.events.some((e) => e.type === 'dashed')).toBe(false);
       expect(use(arena(id), 'bubble-dash').ok).toBe(false);
     });
   }

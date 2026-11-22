@@ -7,9 +7,11 @@ tamamlanmış hâlidir. Kararlar `DECISIONS.md` (Görev AS2), kitapçık ↔ kay
 ## Sonuç
 
 - **120 = 108 paket + 12 bizim** (test `src/content/as2.test.ts`, yerel `icerik/` varken). Kural sürümü 78.
-- Paket (`icerik/ek-<sınıf>.json`, 12 dosya, depoya girmez): **109** alt sınıf. Görevin başında **97** idi; eksik 12 tam olarak
+- Paket (`icerik/ek-<sınıf>.json`, 12 dosya, depoya girmez): **108** alt sınıf. Görevin başında **97** idi; eksik 12 tam olarak
   SRD karşılıklarıydı (sınıf başına bir). 12 SRD kaydı `data/subclasses.json`'dan aynı kimlikle pakete taşındı (mekanik
-  kayıttan, Türkçe adlar kitapçıktan). Barış Alanı pakette kalır, listeden çıkar (`kaldirilan`) → **108** görünür.
+  kayıttan, Türkçe adlar kitapçıktan). Yalnız Barış Alanı kaldırıldı (`kaldirilan`; 2026-11-21 ad temizliğinden beri paket
+  dosyasında da yok, kimliği Birlik Manastırı'na yönlenir) → **108** görünür. Yaşam Manastırı (`life-domain`) pakette kalır;
+  2026-11-21'deki "Yaşam kaldırıldı" değişikliği 2026-11-22'de geri alındı (kullanıcı kararı değildi; DECISIONS.md).
 - Bizim (`classData.subclasses`): 11 imza (`data/imza.json`) + Karadul Çemberi (`data/karadul.json`) = **12**.
 - Orijinal SRD 12 kaydı uygulamadan kaldırıldı (`data/subclasses.json` boş); depodaki kopya yalnız test/sim fikstürü
   (`src/rules/fixtures/srd-alt-siniflar.json`).
@@ -22,9 +24,9 @@ tamamlanmış hâlidir. Kararlar `DECISIONS.md` (Görev AS2), kitapçık ↔ kay
 | Bard | 8 | 1 | 9 | `college-of-lore` → Kadim Bilgi Koleji | `imza_sair` |
 | Cleric | 7 (Barış hariç) | 1 | 8 | `life-domain` → Yaşam Alanı | `imza_birlik` (eski `baris-alani` buna yönlenir) |
 | Druid | 7 | 1 | 8 | `circle-of-the-land` → Toprak Çemberi | `karadul-cemberi` (yalnız kadın) |
-| Fighter | 10 | 1 | 11 | `champion` → Şampiyon | `imza_imparator` (yalnız erkek) |
+| Fighter | 10 | 1 | 11 | `champion` → Gladyatör | `imza_imparator` (yalnız erkek) |
 | Monk | 10 | 1 | 11 | `warrior-of-the-open-hand` → Sadelik Disiplini | `imza_bilge` |
-| Paladin | 9 | 1 | 10 | `oath-of-devotion` → Sadakat Yemini | `imza_hizir` |
+| Paladin | 9 | 1 | 10 | `oath-of-devotion` → Sadakat Töresi | `imza_hizir` |
 | Ranger | 8 | 1 | 9 | `hunter` → Avcı | `imza_ciftci` |
 | Rogue | 9 | 1 | 10 | `thief` → Hırsız | `imza_infazci` |
 | Sorcerer | 8 | 1 | 9 | `draconic-sorcery` → Pulkanat | `imza_dunganga` |
@@ -42,7 +44,7 @@ paket sayıları.
 | SRD 5.2.1 (`data/subclasses.json`) | 12, her zaman | boş; aynı kimlikler pakette |
 | İmza (`data/imza.json`) | 11; ev kuralı `imza_<ad>` (sürüm 23+), Ayarlar `rpg-battle-deneysel.imza` | 11; hep seçilebilir; savaşta 78+ hep açık, 23–77 ev kuralıyla |
 | Karadul (`data/karadul.json`) | Ayarlar `karadulEnabled` + `karadulWomenOnly`; ev kuralı `karadulCemberi` (21+) | hep seçilebilir, yalnız kadın (`cinsiyet`); savaşta 78+ hep açık |
-| Dış paket (`icerik/*.json`) | 97; localStorage kopyası, aç/sil, kopya politikası, çalışmayanı gizle | 109 (108 görünür); klasör kalıcı ana kaynak, hepsi seçilebilir |
+| Dış paket (`icerik/*.json`) | 97; localStorage kopyası, aç/sil, kopya politikası, çalışmayanı gizle | 108 (Barış Alanı çıktı; hepsi görünür); klasör kalıcı ana kaynak, hepsi seçilebilir |
 
 ## Paket yamaları (`icerik/yama/`)
 

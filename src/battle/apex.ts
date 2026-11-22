@@ -27,7 +27,9 @@ import { damageEffects } from './damage-effects';
 import { saveMode, timedCondition } from './durations';
 import { saveDice } from './effectDice';
 import { globalRule } from './ruleControl';
+import { b94On } from './b94Surum';
 import { resourceLeft, type ActiveEffect, type BattleEvent, type BattleState, type Combatant, type UsableFeature } from './types';
+import { te99On } from './te99Surum';
 
 type Use = { feature: string; targetId?: string; to?: Offset };
 export const APEX_KINDS = ['fearAura', 'nimbus', 'wings', 'quiveringPalm', 'sanctuary', 'blinkStep', 'shadowMerge', 'selfEffect'] as const;
@@ -63,7 +65,7 @@ function payment(actor: Combatant, f: UsableFeature): { resource: string; cost: 
  */
 export function apexCost(state: BattleState, actor: Combatant, f: UsableFeature): 'action' | 'bonus' | 'free' {
   const e = f.effect;
-  if (e.kind === 'quiveringPalm') return quiveringOf(state, actor).length > 0 && !actor.economy.meleeHit?.martialArts ? 'action' : 'free';
+  if (e.kind === 'quiveringPalm') return quiveringOf(state, actor).length > 0 && !palmHit(actor) ? 'action' : 'free';
   if (e.kind === 'sanctuary') return sanctuaryOf(state, actor, f.key) ? 'bonus' : 'action';
   return f.type;
 }
@@ -75,14 +77,14 @@ export function apexProblem(state: BattleState, actor: Combatant, f: UsableFeatu
     if (!payment(actor, f)) return `${f.name}: kullanım kalmadı (Rage kullanımı da yok).`;
     return fearTargets(state, actor, e.rangeFt).length > 0 ? null : `${e.rangeFt} ft içinde görülen düşman yok.`;
   }
-  if (e.kind === 'nimbus') return payment(actor, f) ? null : `${f.name}: kullanım kalmadı.`;
+  if (e.kind === 'nimbus') return payment(actor, f) || nimbusSlot(state, actor) >= 0 ? null : `${f.name}: kullanım kalmadı.`;
   if (e.kind === 'wings') {
     if (actor.effects?.some((x) => x.id === f.key)) return 'Kanatlar zaten açık.';
     return payment(actor, f) ? null : `${f.name}: kullanım kalmadı (3 Sorcery Point da yok).`;
   }
   if (e.kind === 'quiveringPalm') {
     const hit = actor.economy.meleeHit;
-    if (hit?.martialArts) {
+    if (palmHit(actor)) {
       if (resourceLeft(actor, f.resource ?? '') < e.cost) return `${e.cost} Focus gerekli.`;
       return null;
     }
@@ -94,6 +96,8 @@ export function apexProblem(state: BattleState, actor: Combatant, f: UsableFeatu
     if (!state.map || !actor.pos) return 'Yalnızca haritalı savaşta.';
     if (resourceLeft(actor, f.resource ?? '') <= 0) return 'Blink Steps bu tur kullanıldı.';
     if (!actor.economy.action) return 'Önce Attack ya da Magic eylemini kullan.';
+    // Görev TE99 (99+, SRD 5.2.1 s. 88 "Immediately after you take the Attack action or the Magic action"): Dash, Dodge… sonrası değil.
+    if (te99On(state) && !actor.economy.attackOrMagic) return 'Blink Steps yalnız Attack ya da Magic eyleminden sonra.';
     if (cmd.to) return teleportProblem(state, actor, cmd.to, { rangeFt: e.rangeFt, sight: true });
     return teleportHexes(state, actor, { rangeFt: e.rangeFt, sight: true }).length ? null : 'Işınlanılacak boş altıgen yok.';
   }
@@ -115,6 +119,8 @@ export function apexProblem(state: BattleState, actor: Combatant, f: UsableFeatu
     if (live) {
       const from = live.center ?? live.hexes[0];
       if (from && distance(from, cmd.to) * 5 > e.moveFt) return `Küp en çok ${e.moveFt} ft taşınır.`;
+      // Görev B94 (sürüm 94+, SRD 5.2.1 s. 46 "to a space within 120 feet of yourself"): yeni yer Druid'in menzilinde.
+      if (b94On(state) && (!actor.pos || distance(actor.pos, cmd.to) * 5 > e.rangeFt)) return `Menzil ${e.rangeFt} ft.`;
       return null;
     }
     if (!actor.pos || distance(actor.pos, cmd.to) * 5 > e.rangeFt) return `Menzil ${e.rangeFt} ft.`;
@@ -122,6 +128,10 @@ export function apexProblem(state: BattleState, actor: Combatant, f: UsableFeatu
   }
   return null;
 }
+
+/** Görev B94: Holy Nimbus'u yenileyecek 5+ seviye slotun dizini (yoksa ya da sürüm < 94 ise −1). */
+const nimbusSlot = (state: BattleState, actor: Combatant): number =>
+  b94On(state) ? actor.spellSlots.findIndex((n, i) => i >= 4 && n > 0) : -1;
 
 const spend = (actor: Combatant, p: { resource: string; cost: number }): BattleEvent =>
   ({ type: 'feature_used', actorId: actor.id, feature: p.resource, remaining: resourceLeft(actor, p.resource) - p.cost });
@@ -155,7 +165,11 @@ export function executeApex(state: BattleState, actor: Combatant, f: UsableFeatu
     return finish(state, events);
   }
   if (e.kind === 'nimbus') {
-    events.push(spend(actor, payment(actor, f) as { resource: string; cost: number }));
+    // Görev B94 (sürüm 94+, s. 57 "restore your use of it by expending a level 5 spell slot (no action required)"):
+    // kullanım yoksa 5. seviye (ya da üstü) slot harcanır.
+    const pay = payment(actor, f);
+    const slot = pay ? -1 : nimbusSlot(state, actor);
+    events.push(pay ? spend(actor, pay) : { type: 'slot_spent', actorId: actor.id, level: slot + 1, remaining: (actor.spellSlots[slot] ?? 1) - 1 });
     const until = state.round + e.rounds - 1;
     events.push({ type: 'effect_added', targetId: actor.id, effect: {
       id: f.key, name: f.name, sourceId: actor.id, until, saveAdvVs: e.types, light: e.light, icon: '☀',
@@ -165,7 +179,10 @@ export function executeApex(state: BattleState, actor: Combatant, f: UsableFeatu
         id: `feature:${f.key}:${actor.id}:${state.round}`, spellId: `feature:${f.key}`, name: f.name, casterId: actor.id, side: actor.side,
         dc: 0, slotLevel: 0, hexes: [], anchorId: actor.id, radius: Math.round(e.radiusFt / 5), until,
         damage: String(Math.max(0, actor.modifiers.cha + actor.proficiency)),
-        spec: { on: ['start'], targets: 'enemies', damageType: 'radiant', color: '#ffe680', icon: '☀' },
+        // Görev B94 (94+, "Bright Light that is sunlight"): alan güneş ışığı (Sunlight Sensitivity).
+        spec: { on: ['start'], targets: 'enemies', damageType: 'radiant', color: '#ffe680', icon: '☀', ...(b94On(state) ? { sunlight: true } : {}) },
+        // Görev B94 (A2, sürüm 94+): Aura of Protection'a bağlı; Paladin Incapacitated/0 HP iken durur (`sourceDown`).
+        ...(b94On(state) ? { pausedIfCasterDown: true } : {}),
       } });
     }
     return finish(state, events);
@@ -177,7 +194,7 @@ export function executeApex(state: BattleState, actor: Combatant, f: UsableFeatu
   }
   if (e.kind === 'quiveringPalm') {
     const hit = actor.economy.meleeHit;
-    if (hit?.martialArts) {
+    if (hit && palmHit(actor)) {
       const t = state.combatants[hit.targetId];
       if (!t || t.hp <= 0) return fail('Hedef bulunamadı.');
       const dc = actor.stunning?.dc ?? 8 + actor.proficiency + actor.modifiers.wis;
@@ -237,6 +254,8 @@ export function executeApex(state: BattleState, actor: Combatant, f: UsableFeatu
       id: `feature:${f.key}:${actor.id}:${state.round}`, spellId: `feature:${f.key}`, name: f.name, casterId: actor.id, side: actor.side,
       dc: 0, slotLevel: 0, hexes, center: to, until: state.round + e.rounds - 1,
       spec: { coverFor: 'allies', resist: wardOf(actor), color: '#5fbf5f', icon: '🌿' },
+      // Görev B94 (A2, sürüm 94+): "until you have the Incapacitated condition or die" (`sourceDown`).
+      ...(b94On(state) ? { endsIfCasterDown: true } : {}),
     } });
     return finish(state, events);
   }
@@ -318,4 +337,10 @@ export function overchannelAfter(state: BattleState, actor: Combatant, slotLevel
       damageType: 'necrotic', targetHpAfter: fx.hpAfter, effects: fx.effects });
   }
   return events;
+}
+
+/** Quivering Palm'ı kuran isabet: 97+ (Görev B95-B, bizim alt sınıf metni "Unarmed Strike isabetinde") yalnız Unarmed Strike; eskide Martial Arts isabeti. */
+function palmHit(actor: Combatant): boolean {
+  const hit = actor.economy.meleeHit;
+  return actor.sinif97 ? !!hit?.unarmed : !!hit?.martialArts;
 }

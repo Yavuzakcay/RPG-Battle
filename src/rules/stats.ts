@@ -2,7 +2,7 @@
  * Karakter formundan türetilen değerler: skorlar, AC, HP, hız, save'ler, büyü DC'si ve slotlar.
  * Saf fonksiyonlar: ekran veya depolama bilmez, aynı girdiye hep aynı sonucu verir.
  */
-import { armor as armorList, getClass, getRace, items as itemList, spellSlots } from '../data';
+import { SHIELD, armor as armorList, getClass, getRace, items as itemList, spellSlots } from '../data';
 import { ABILITIES, abilityModifier, proficiencyBonus, type Ability } from './abilities';
 import { isSkill, SKILLS, skillTable, type Skill } from './skills';
 import { classKit, gainedFeatures, optionTraining, packTraining, speedBonus } from './classFeatures';
@@ -79,6 +79,10 @@ export interface CharacterSheet {
   metamagic?: string[];
   /** Köken (Origin) feat'i, SRD kimliği (Alert, Magic Initiate, Savage Attacker, Skilled). Geçmiş seçiliyse geçmişinki geçerli (`originFeatOf`). */
   originFeat?: string;
+  /** Görev TE99 (SRD 5.2.1 s. 86 Versatile): Human'ın ek Origin feat'i (`kimlik[@liste]`). */
+  speciesFeat?: string;
+  /** Görev TE99 (SRD 5.2.1 s. 85–86): soy büyülerinin yeteneği (INT, WIS ya da CHA; soy seçilirken). Yoksa eski kural. */
+  lineageAbility?: 'int' | 'wis' | 'cha';
   /** Seviye yuvalarındaki seçimler: ASI ya da feat, Fighting Style, Epic Boon (bkz. `rules/advancement.ts`). */
   advancements?: Advancement[];
 }
@@ -88,6 +92,8 @@ export interface DerivedStats {
   modifiers: Scores;
   proficiency: number;
   ac: number;
+  /** KARAR101: kalkanın AC katkısı (kalkan yoksa 0). */
+  shieldAc?: number;
   /**
    * AC'nin bileşenleri (özet ekranı için): `base` zırhsız 10, `armor` zırhın taban AC'si, `dex`/`con`/`wis`
    * yetenek katkısı, `shield` kalkan, `item` eşya bonusları (`name` eşyanın adı).
@@ -102,6 +108,8 @@ export interface DerivedStats {
   jack: number;
   /** Her ability için save bonusu (proficiency ve item bonusları dahil). */
   saves: Scores;
+  /** Görev WS92: kurtarmalara eşyalardan gelen toplam ek (Wild Shape biçiminde eşya kaynaşır, ek düşer). */
+  itemSaveBonus?: number;
   saveProficiencies: Ability[];
   /** Yetkin olunan becerilerin bonusları; listede olmayanın bonusu ability modifier'ıdır. */
   skills: Partial<Record<Skill, number>>;
@@ -290,7 +298,7 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     if (ar.type !== 'heavy') acParts.push({ kind: 'dex', value: dexPart });
   }
   // Görev K9d: kalkanın AC'si yalnızca eğitimle (SRD 5.2.1 Armor Training: Shield).
-  if (sheet.shield && armorProficient(cls.id, 'shield', sheet.featureChoices, sheet)) acParts.push({ kind: 'shield', value: 2 });
+  if (sheet.shield && armorProficient(cls.id, 'shield', sheet.featureChoices, sheet)) acParts.push({ kind: 'shield', value: SHIELD.baseAc });
   const feats = featEffects(sheetFeats(sheet));
   // Defense (Fighting Style): zırh giyerken +1.
   if (feats.armoredAcBonus && ar.type !== 'none') acParts.push({ kind: 'feat', value: feats.armoredAcBonus, name: 'Defense' });
@@ -302,6 +310,9 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     if (v) acParts.push({ kind: 'item', value: v, name: n });
   }
   const ac = acParts.reduce((n, p) => n + p.value, 0);
+  // KARAR101: kalkanın AC katkısı (kalkan parçası + eşyaların `shieldAcBonus`'u); kalkan tak/çıkar komutu bu kadar değiştirir.
+  const shieldAc = !sheet.shield ? 0 : acParts.filter((p) => p.kind === 'shield').reduce((n, p) => n + p.value, 0)
+    + activeItemNames(sheet).reduce((n, x) => n + (findItem(x).effects.shieldAcBonus ?? 0), 0);
 
   // HP
   const hd = cls.hitDie;
@@ -339,6 +350,7 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     proficiency: prof,
     ac,
     acParts,
+    ...(shieldAc ? { shieldAc } : {}),
     ...(armorStrengthShort !== undefined ? { armorStrengthShort } : {}),
     maxHp,
     speed,
@@ -347,6 +359,7 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     initiative: modifiers.dex + (feats.initiativeProficiency ? prof : jack),
     jack,
     saves,
+    ...(saveBonus ? { itemSaveBonus: saveBonus } : {}),
     saveProficiencies: [...cls.saves, ...kit.saveProficiencies.filter((a) => !cls.saves.includes(a))],
     skills: withSoySkills(skillTable(modifiers, prof, subclassSkills(sheet), sheet.expertise ?? []), modifiers, jack, soyEtki?.beceri),
     spellSaveDc: cls.casting ? 8 + prof + castMod : null,

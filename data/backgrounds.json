@@ -52,7 +52,8 @@
       "summary": {
         "tr": "Karanlık sokaklarda yaşadın. Çeviklik, Dayanıklılık ya da Zekâ artar; Alert ile inisiyatifte yetkinlik bonusu; El Çabukluğu ve Gizlilik becerileri.",
         "en": "You lived in dark alleys. Raises Dexterity, Constitution or Intelligence; Alert adds your Proficiency Bonus to Initiative; Sleight of Hand and Stealth."
-      }
+      },
+      "toolId": "thieves-tools"
     },
     {
       "id": "sage",

@@ -1,4 +1,5 @@
 /** Olayları insanın okuyacağı satırlara çevirir (geçerli dilde; metinler src/i18n/strings.ts `log`). */
+import { featureName, groupName, heldItemName } from './heldItemName';
 import { leafGoals } from '../battle/goals';
 import { goalText } from './goalText';
 import { riderOf } from '../battle/riders';
@@ -8,7 +9,12 @@ import type { Offset } from '../rules/hex';
 import { skillLabel } from '../rules/skills';
 import { terrainOf } from '../map/terrain';
 import { getLang, t } from '../i18n';
+import { spells } from '../data';
+import hazirla from '../../data/hazirla.json';
+import { SECENEK_ADI } from '../battle/girdapSurum';
+import { hpModeFor, hpPhrase } from './hpVisibility';
 import terrainTable from '../../data/arazi-buyu-etkileri.json';
+import { saveWhyParts } from './reasons';
 
 const TERRAIN_TEXT = terrainTable.satirlar as Array<{ id: string; tr: string; en: string }>;
 
@@ -24,6 +30,8 @@ function effectText(e: DamageEffect): string {
     case 'death_ward': return L.deathWard(e.name);
     case 'relentless_rage': return L.relentlessRage(e.natural, e.total, e.dc, e.success, e.hp);
     case 'relentless_endurance': return L.relentlessEndurance;
+    case 'knocked_out': return L.knockedOutFx();
+    case 'stone_endurance': return L.stoneEnduranceFx(e.name, e.roll, e.amount);
     case 'absorbed': return L.absorbedFx(e.amount);
     case 'trait_fx': return L.traitFx(e.name);
     case 'dying': return L.dying;
@@ -55,11 +63,23 @@ function riderPart(state: BattleState, actorId: string, label: string, rider: st
   return spec.unsupported ? L.riderPartial(spec.unsupported, spec.text ?? '') : null;
 }
 
+/** Hazırla tetiğinin görünen adı (`data/hazirla.json`, dile göre). */
+export function readyTriggerName(id: string): string {
+  const d = (hazirla.tetikler as Array<{ id: string; ad: { tr: string; en: string } }>).find((x) => x.id === id);
+  return d ? d.ad[getLang() === 'en' ? 'en' : 'tr'] : id;
+}
+
 export function describeEvent(event: BattleEvent, state: BattleState): string {
   const L = t().log;
   // Görev K13B: Game Master'ın yerleştirdiği yüzey/nesne kaynağı `gm`.
   const n = (id: string) => state.combatants[id]?.name ?? (id === 'gm' ? 'Game Master' : id);
   const mode = (m: string) => L.mode[m] ?? '';
+  // Görev OD1B: gizli düşman HP'si (oda ayarı): hasar/iyileşme sayısı yerine kısa ifade. `hpAfter` yoksa şimdiki can.
+  const hid = (id: string) => hpModeFor(state.combatants[id]);
+  const phrase = (id: string, after: number | undefined, kind: 'damage' | 'heal' = 'damage'): string => {
+    const c = state.combatants[id]; const m = hpModeFor(c);
+    return m && c ? hpPhrase(m, after ?? c.hp, c.maxHp, kind) : '';
+  };
   switch (event.type) {
     case 'battle_started':
       return L.started(event.state.order.map((id) => n(id)).join(', '));
@@ -69,12 +89,13 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
         const verdict = event.critical ? L.verdict.crit : event.fumble ? L.verdict.fumble : event.hit ? L.verdict.hit : L.verdict.miss;
         parts.push(L.attackRoll(event.d20.join(' / '), mode(event.mode), event.total, event.targetAc, event.cover ? L.cover(event.cover) : '', verdict));
       }
+      const hideT = hid(event.targetId);
       if (event.hit && event.rawDamage > 0) {
         const extra = (event.extra ?? []).reduce((sum, x) => sum + x.applied, 0);
-        parts.push(damagePart(event.damageRolls, event.rawDamage, event.appliedDamage - extra, event.damageType, event.damageNote));
+        parts.push(hideT ? phrase(event.targetId, event.targetHpAfter) : damagePart(event.damageRolls, event.rawDamage, event.appliedDamage - extra, event.damageType, event.damageNote));
       }
-      for (const x of event.extra ?? []) parts.push(`${x.label}: ${damagePart(x.rolls, x.raw, x.applied, x.type, x.note)}`);
-      if (event.savage) parts.push(L.savage(event.savage.totals[0], event.savage.totals[1], event.savage.totals[event.savage.kept]));
+      if (!hideT) for (const x of event.extra ?? []) parts.push(`${x.label}: ${damagePart(x.rolls, x.raw, x.applied, x.type, x.note)}`);
+      if (event.savage && !hideT) parts.push(L.savage(event.savage.totals[0], event.savage.totals[1], event.savage.totals[event.savage.kept]));
       if (event.autoMiss) parts.push(L.autoMiss(event.autoMiss));
       if (event.cunning) parts.push(L.cunning(event.cunning.options.join(', '), event.cunning.dice));
       if (event.reacted) parts.push(L.reacted(event.reacted.name, event.reacted.ac ?? 0, event.reacted.reduced ?? 0));
@@ -88,11 +109,15 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'save_resolved': {
       const ab = event.ability.toUpperCase();
       const parts = [`${n(event.actorId)} → ${n(event.targetId)}: ${event.label}`];
+      // G01: kipin kaynağı varsa (`modeWhy`) kip rozeti ondan (motorun `mode` alanı çoğu yolda sabit 'normal'); yoksa eskisi gibi.
+      const why = saveWhyParts(event.modeWhy, getLang());
+      const shown = why ? (why.kind === 'adv' ? 'advantage' : why.kind === 'dis' ? 'disadvantage' : 'normal') : event.mode;
       parts.push(event.natural === null ? L.saveAuto(ab)
-        : L.saveRoll(ab, event.d20.join(' / '), mode(event.mode), event.total ?? 0, event.cover ?? 0, event.dc, event.success));
-      if (event.rawDamage > 0) parts.push(damagePart(event.damageRolls, event.rawDamage, event.secondary ? event.appliedDamage - event.secondary.applied : event.appliedDamage, event.damageType, event.damageNote));
+        : L.saveRoll(ab, event.d20.join(' / '), mode(shown), event.total ?? 0, event.cover ?? 0, event.dc, event.success));
+      if (why && event.natural !== null) parts.push(L.saveWhy(why.kind, why.names, ab));
+      if (event.rawDamage > 0) parts.push(hid(event.targetId) ? phrase(event.targetId, event.targetHpAfter) : damagePart(event.damageRolls, event.rawDamage, event.secondary ? event.appliedDamage - event.secondary.applied : event.appliedDamage, event.damageType, event.damageNote));
       // Kuyruk 19: ikinci hasar türü (Ice Storm, Flame Strike).
-      if (event.secondary && event.secondary.raw > 0) parts.push(damagePart(event.secondary.rolls, event.secondary.raw, event.secondary.applied, event.secondary.type, event.secondary.note));
+      if (event.secondary && event.secondary.raw > 0 && !hid(event.targetId)) parts.push(damagePart(event.secondary.rolls, event.secondary.raw, event.secondary.applied, event.secondary.type, event.secondary.note));
       if (event.bonusDice?.length) parts.push(L.bonusDice(bonusText(event.bonusDice)));
       if (event.conditionsAdded.length > 0) parts.push(L.conditionsAdded(event.conditionsAdded.join(', ')));
       if (event.reasons.length > 0) parts.push(L.effects(event.reasons.join(', ')));
@@ -102,7 +127,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return parts.join('. ');
     }
     case 'healed':
-      return L.healed(n(event.actorId), n(event.targetId), event.label, event.amount);
+      return hid(event.targetId) ? `${n(event.actorId)} → ${n(event.targetId)}: ${event.label}, ${phrase(event.targetId, event.targetHpAfter, 'heal')}.` : L.healed(n(event.actorId), n(event.targetId), event.label, event.amount);
     case 'slot_spent':
       return L.slotSpent(n(event.actorId), event.level, event.remaining);
     case 'spell_cast':
@@ -112,11 +137,13 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'effect_ended':
       return L.effectEnded(n(event.targetId), event.name, L.effectWhy[event.reason] ?? event.reason);
     case 'temp_hp':
+      if (hid(event.targetId)) return `${n(event.targetId)}: ${event.label} — ${t().oda.hpLog.buff}.`;
       return L.tempHp(n(event.targetId), event.amount, event.label);
     case 'hp_boosted':
+      if (hid(event.targetId)) return `${n(event.targetId)}: ${event.label} — ${t().oda.hpLog.buff}.`;
       return L.hpBoosted(n(event.targetId), event.amount, event.label);
     case 'effect_tick': {
-      const parts = [L.effectTick(n(event.targetId), event.name, damagePart(event.damageRolls, event.appliedDamage, event.appliedDamage, event.damageType, null))];
+      const parts = [L.effectTick(n(event.targetId), event.name, hid(event.targetId) ? phrase(event.targetId, event.targetHpAfter) : damagePart(event.damageRolls, event.appliedDamage, event.appliedDamage, event.damageType, null))];
       for (const e of event.effects) parts.push(effectText(e));
       if (event.save) parts.push(L.effectSave(event.save.ability.toUpperCase(), event.save.total, event.save.dc, event.save.success));
       return parts.join('. ');
@@ -134,6 +161,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'concentration_ended':
       return L.concEnded(n(event.actorId), event.label);
     case 'max_hp_drained':
+      if (hid(event.targetId)) return `${n(event.targetId)}: ${event.label} — ${phrase(event.targetId, undefined)}.`;
       return L.maxHpDrained(n(event.targetId), event.amount, event.label);
     case 'ability_drained':
       return L.abilityDrained(n(event.targetId), event.ability.toUpperCase(), event.amount, event.dies, event.label);
@@ -147,6 +175,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'curse_save':
       return L.curseSave(n(event.actorId), event.label, event.d20.join(' / '), event.total, event.dc, event.success);
     case 'bond_damage':
+      if (hid(event.targetId)) return `${n(event.targetId)}: ${event.label} — ${n(event.fromId)}: ${phrase(event.targetId, event.targetHpAfter)}.`;
       return L.bondDamage(n(event.targetId), n(event.fromId), event.label, event.amount, event.targetHpAfter);
     case 'reaction_used':
       return L.reaction(n(event.actorId), event.name, event.sourceId ? n(event.sourceId) : null);
@@ -219,6 +248,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'regeneration':
       return event.died ? L.regenDied(n(event.actorId)) : event.blocked ? L.regenBlockedTurn(n(event.actorId)) : L.regen(n(event.actorId), event.amount);
     case 'hp_adjusted':
+      if (hid(event.targetId)) return `${n(event.targetId)}: ${phrase(event.targetId, event.hpAfter)}.`;
       return L.hpAdjusted(n(event.targetId), event.hpAfter);
     case 'life_restored':
       return L.lifeRestored(n(event.targetId), event.life === 'alive', event.label);
@@ -232,6 +262,17 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.aiRoleSet(n(event.targetId), event.role);
     case 'exhaustion_changed':
       return L.exhaustion(n(event.targetId), event.level);
+    // Hazırla (Ready, sürüm 90).
+    case 'readied': {
+      const r = event.readied.response;
+      const resp = r.kind === 'attack' ? L.readyResp.attack(r.option?.label ?? state.combatants[event.actorId]?.attacks[r.attackIndex ?? 0]?.name ?? '?')
+        : r.kind === 'move' ? L.readyResp.move : L.readyResp.spell(r.spellName);
+      return L.readied(n(event.actorId), readyTriggerName(event.readied.trigger), resp);
+    }
+    case 'ready_released':
+      return L.readyReleased(n(event.actorId), readyTriggerName(event.trigger));
+    case 'ready_lapsed':
+      return L.readyLapsed(n(event.actorId), L.readyWhy[event.reason] ?? event.reason);
     case 'summon_steered':
       return L.summonSteered(n(event.summonId));
     case 'haste_action':
@@ -249,13 +290,20 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'shift_granted':
       return L.shiftGranted(n(event.actorId), event.hexes * 5);
     case 'map_effect': {
+      // Görev WS92: yutma satırları TR/EN metinden (yutan, yutma etkisinin kaynağı).
+      if (event.swallowLog) {
+        const by = state.combatants[event.targetId]?.effects?.find((e) => e.swallowedBy)?.swallowedBy;
+        const f = L.swallow?.[event.swallowLog];
+        if (f) return f(n(event.targetId), by ? n(by) : '');
+      }
       const parts = [`${n(event.targetId)}: ${event.text}`];
       if (event.roll) {
         const r = event.roll;
         parts.push(L.mapRoll(r.label, r.d20.join(' / '), mode(r.mode), r.total, r.dc, r.success));
       }
       const d = event.damage;
-      if (d && d.applied + d.raw > 0) {
+      if (d && d.applied + d.raw > 0 && hid(event.targetId)) parts.push(phrase(event.targetId, undefined));
+      else if (d && d.applied + d.raw > 0) {
         const sum = d.rolls.reduce((a, b) => a + b, 0);
         parts.push(sum > d.raw && d.rolls.length > 0
           ? L.halfDamage(d.rolls.join('+'), sum, d.raw, d.applied, d.type)
@@ -274,6 +322,13 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'lava_warning':
       return L.lavaWarning(event.hexes.length);
     case 'map_note':
+      // Control Water (sürüm 84): savaş dışı seçeneğin Game Master notu dile göre (Türkçe veri, İngilizce metin tablosu).
+      if (event.secenekNotu) {
+        const key = `${event.secenekNotu.spell}/${event.secenekNotu.choice}`;
+        const note = L.gmOptionText(key);
+        const sp = spells.find((x) => x.id === event.secenekNotu!.spell);
+        if (note && sp) return L.gmOption(sp.name, SECENEK_ADI[event.secenekNotu.choice] ?? event.secenekNotu.choice, note);
+      }
       return event.text;
     case 'ability_recharge':
       return event.used ? '' : L.abilityRecharge(n(event.actorId), event.abilityId, event.d6 ?? 0, !!event.recharged);
@@ -303,7 +358,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       const b = n(event.targetId);
       const M = L.mastery;
       switch (event.mastery) {
-        case 'graze': return event.damage ? M.graze(a, b, damagePart([], event.damage.raw, event.damage.applied, event.damage.type, event.damage.note)) : '';
+        case 'graze': return event.damage ? M.graze(a, b, hid(event.targetId) ? phrase(event.targetId, event.hpAfter) : damagePart([], event.damage.raw, event.damage.applied, event.damage.type, event.damage.note)) : '';
         case 'cleave': return M.cleave(a, b);
         case 'push': return M.push(a, b);
         case 'sap': return M.sap(a, b);
@@ -330,7 +385,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'extra_damage':
       return `${n(event.actorId)} → ${n(event.targetId)}: ${event.label}. ${damagePart(event.rolls, event.raw, event.applied, event.damageType, event.damageNote)}`;
     case 'feature_used':
-      return L.featureUsed(n(event.actorId), L.feature[event.feature] ?? event.feature, event.remaining);
+      return L.featureUsed(n(event.actorId), featureName(event.feature, state, event.actorId), event.remaining);
     case 'buff_added':
       return L.buffAdded(n(event.targetId), event.buff.source, event.buff.until);
     case 'buff_removed':
@@ -367,9 +422,9 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'patrol_moved':
       return '';
     case 'groups_formed':
-      return t().alarm.formed(Object.entries(event.members).map(([g, ids]) => `${g} ${ids.length} (${t().alarm.state[state.groups?.find((x) => x.id === g)?.state ?? 'asleep']})`).join(', '));
+      return t().alarm.formed(Object.entries(event.members).map(([g, ids]) => `${groupName(g)} ${ids.length} (${t().alarm.state[state.groups?.find((x) => x.id === g)?.state ?? 'asleep']})`).join(', '));
     case 'group_alarmed':
-      return t().alarm.alarmed(event.groupId, event.byId && event.byId !== 'gm' ? `${event.reason}: ${n(event.byId)}` : event.reason);
+      return t().alarm.alarmed(groupName(event.groupId), event.byId && event.byId !== 'gm' ? `${event.reason}: ${n(event.byId)}` : event.reason);
     case 'goal_changed': {
       const g = state.goals ? [...state.goals.list, ...leafGoals(state.goals.list)].find((x) => x.id === event.goalId) : undefined;
       return t().goals.log(event.status === 'done' ? '✓' : '✗', g ? goalText(g, state) : event.goalId);
@@ -388,7 +443,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'altitude_changed':
       return event.objectId ? L.altitudeObject(event.label, event.altitudeFt) : L.altitude(n(event.targetId ?? ''), event.altitudeFt, event.label);
     case 'item_dropped':
-      return L.itemDropped(n(event.actorId), event.item, event.label);
+      return L.itemDropped(n(event.actorId), heldItemName(event.item, event.options ?? []), event.label);
     case 'item_picked':
       return L.itemPicked(n(event.actorId));
     case 'zone_spotted':
@@ -419,7 +474,9 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'grappled':
       return L.grappled(n(event.targetId), n(event.by), event.label, event.escapeDc, event.restrained);
     case 'grapple_ended':
-      return L.grappleEnded(n(event.targetId), event.reason);
+      return event.reason === 'released' ? L.grappleReleased(n(event.targetId)) : L.grappleEnded(n(event.targetId), event.reason);
+    case 'shield_changed':
+      return L.shieldChanged(n(event.actorId), event.on);
     case 'grapple_escape':
       return L.grappleEscape(n(event.actorId), skillLabel(event.skill), event.d20.join(' / '), event.total, event.dc, event.success);
   }

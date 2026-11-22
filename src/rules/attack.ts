@@ -1,5 +1,6 @@
 /** Saldırı ve save çözümleme. Zarlar dışarıdan verilen rastgele üreticiyle atılır. */
 import { rollD20, rollDice, rollExploding, rollTag, type D20Result, type DiceResult, type Rng, type RollKind, type RollMode } from './dice';
+import { askReaction } from './reactionChoice';
 
 /**
  * Zar eklentisi (Görev R2; Bless +1d4, Bane −1d4): d20'nin ardından atılır, toplama eklenir (doğal 20/1 değişmez).
@@ -7,6 +8,10 @@ import { rollD20, rollDice, rollExploding, rollTag, type D20Result, type DiceRes
  */
 export interface ExtraDie {
   label: string; die: string; sign: 1 | -1; effectId?: string; holderId?: string; single?: boolean;
+  /** Görev B98 (sürüm 98+, Bardic Inspiration): zarı kullanmadan önce taşıyana sorulur (`askReaction`, tetik `inspire`; öneri: kullan). */
+  ask?: boolean;
+  /** Görev TE99: kararın tetiği (yoksa `inspire`); `boon`: Peerless Aim, Improve Fate, Heroic Inspiration (her ikinci şans türünde). */
+  askTrigger?: 'boon';
   /**
    * Görev F: başarısız zarın ardından (eklenti olarak atılmaz). `d20`: yeniden at, `rerollBonus` ekle (Indomitable);
    * `twenty`: zar 20 sayılır (Stroke of Luck); `onFail`: `die` kadar ekle, tutarsa harca (Tactical Mind). Kullanılınca
@@ -26,6 +31,8 @@ export interface ExtraDie {
   /** Kuyruk 19 (Halfling Luck): yalnızca doğal 1'de. */
   onNatural1?: boolean;
   rerollBonus?: number;
+  /** Görev B95-B (97+): `d20` yeniden atışı en iyi zarla (20) bile başarıya yetmiyorsa seçilmez (kaynak harcanmaz; Indomitable). */
+  skipHopeless?: boolean;
   resource?: string;
   /** Kuyruk 18 H3: yalnızca bu durumlara karşı save'de (Countercharm: Charmed, Frightened). */
   against?: string[];
@@ -85,8 +92,19 @@ export function secondChance(
   }
   // Kuyruk 19 (`plus`, Burst of Ingenuity): sabit ek yalnızca başarıya çevirecekse seçilir.
   const x = (extra ?? []).find((e) => e.reroll && !['floor', 'onSuccess', 'worse', 'set', 'natFloor', 'setSpoil', 'forceFail'].includes(e.reroll) && (!e.onNatural1 || fail.natural === 1) && (!e.against || e.against.some((c) => fail.against?.includes(c)))
-    && (e.reroll !== 'plus' || fail.total + (e.rerollBonus ?? 0) >= fail.need));
+    && (e.reroll !== 'plus' || fail.total + (e.rerollBonus ?? 0) >= fail.need)
+    && !(e.skipHopeless && fail.total - fail.natural + 20 + (e.rerollBonus ?? 0) < fail.need));
   if (!x) return null;
+  // Görev B98 (sürüm 98+, SRD 5.2.1 s. 31 "it can roll the die"): taşıyan d20 sonucunu görünce karar verir; kullanmazsa zar
+  // atılmaz, etki kalır ve sıradaki ikinci şans denenir. Öneri (yapay zekâ, kancasız Rng): kullan (eski davranış).
+  // Görev TE99 (sürüm 99+, SRD 5.2.1 s. 8, s. 88 "you can"): Peerless Aim, Improve Fate, Heroic Inspiration de sorulur (`boon`).
+  if (x.ask && (x.reroll === 'onFail' || x.askTrigger)) {
+    const trigger = x.askTrigger ?? 'inspire';
+    const id = trigger === 'inspire' ? 'inspire' : 'use';
+    const answer = askReaction(rng, { reactorId: x.holderId ?? '', trigger, sourceId: x.holderId,
+      info: { label: x.label, total: fail.total, ac: fail.need }, options: [{ id, name: x.label }], suggested: { option: id } });
+    if (answer?.option !== id) return secondChance((extra ?? []).filter((e) => e !== x), fail, rng);
+  }
   // Görev BARD: tek kullanımlık etkinin zarı (Bardic Inspiration) atılınca etki biter (reducer: `single` + `effectId`).
   const base = { label: x.label, ...(x.holderId ? { holderId: x.holderId } : {}), ...(x.single && x.effectId ? { single: true, effectId: x.effectId } : {}) };
   if (x.reroll === 'plus') {
@@ -248,6 +266,12 @@ export function spoilChance(extra: ExtraDie[] | undefined, ok: { total: number; 
   const parsed = /^(\d+)d(\d+)$/.exec(x.die);
   // En büyük olası ceza bile bozamıyorsa zar atılmaz (karar: yalnızca sonucu değiştirebilecekse).
   if (parsed && ok.total - Number(parsed[1]) * Number(parsed[2]) >= ok.need) return null;
+  // Görev TE99 (sürüm 99+, Improve Fate "you can roll 2d4"): zar atılmadan önce boon sahibine sorulur.
+  if (x.ask) {
+    const answer = askReaction(rng, { reactorId: x.holderId ?? '', trigger: 'boon', sourceId: x.holderId,
+      info: { label: x.label, total: ok.total, ac: ok.need }, options: [{ id: 'use', name: x.label }], suggested: { option: 'use' } });
+    if (answer?.option !== 'use') return null;
+  }
   const v = rollDice(x.die, rollTag(rng, { kind: ok.kind })).total;
   if (ok.total - v >= ok.need) return null;
   return { total: ok.total - v, entry: { label: x.label, die: x.die, value: -v, ...(x.holderId ? { holderId: x.holderId } : {}), ...(x.resource ? { resource: x.resource } : {}) } };

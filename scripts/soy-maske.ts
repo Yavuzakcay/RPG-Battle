@@ -13,9 +13,9 @@ import { rgbToLab, deltaE } from '../src/ui/color';
 import { tintPixels } from '../src/ui/tint';
 import soy from '../data/soy-renkleri.json';
 import type { TintSpec } from '../src/battle/types';
-import { lineageTint, paletteKeys, paletteTint } from '../src/battle/avatar';
+import { genericTokenRetired, lineageTint, paletteKeys, paletteTint } from '../src/battle/avatar';
 
-import { CHAR, OTO as OUT, ROOT } from './soy-maske-yollar';
+import { CHAR, ELLE, OTO as OUT, ROOT } from './soy-maske-yollar';
 import { applyHandMasks } from './soy-maske-el';
 import { basOverlay, buildHeads } from './soy-bas';
 import { applyHeadOverlay } from '../src/ui/headOverlay';
@@ -23,9 +23,14 @@ const CLASSES = ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'pal
 type MaskCfg = { L: [number, number]; C: [number, number]; h: Array<[number, number]>; bright: number; th: number; zone?: number; fill?: { genders: string[]; hole: number; L: number; open?: number; minComp?: number; grow?: { L: number; C: number; steps: number } }; byGender?: Record<string, Partial<MaskCfg>> };
 type Race = { mask: MaskCfg; lineages: Record<string, TintSpec['to'] | null>; select?: TintSpec['select'] };
 const RACES = (soy as unknown as { races: Record<string, Race> }).races;
-const FIX = (soy as unknown as { maskFix?: Record<string, { exclude?: number[][]; include?: number[][]; head?: boolean; seed?: number[] }> }).maskFix ?? {};
+// `aday` (Ranger ID4): `include` kutusunda ten adayı ırk renginin yerine bu açıklık/kroma aralığı (nötr gri ten: kroma < 3).
+const FIX = (soy as unknown as { maskFix?: Record<string, { exclude?: number[][]; include?: number[][]; head?: boolean; seed?: number[]; aday?: { L: [number, number]; C: [number, number] } }> }).maskFix ?? {};
 const hIn = (h: number, [a, b]: [number, number]) => (a <= b ? h >= a && h <= b : h >= a || h <= b);
 const inBox = (x: number, y: number, b: number[]) => x >= b[0]! && y >= b[1]! && x <= b[2]! && y <= b[3]!;
+const adayOk = (r: { L: [number, number]; C: [number, number] }, l: [number, number, number], alpha: number): boolean => {
+  const C = Math.hypot(l[1], l[2]);
+  return alpha >= 128 && l[0] >= r.L[0] && l[0] <= r.L[1] && C >= r.C[0] && C <= r.C[1];
+};
 
 export function skinMask(name: string, cfg: MaskCfg, data: Uint8Array, W: number, H: number): Uint8Array {
   const N = W * H;
@@ -107,7 +112,7 @@ export function skinMask(name: string, cfg: MaskCfg, data: Uint8Array, W: number
     const x = i % W, y = (i / W) | 0;
     if (fix?.head && y > headY) clean[i] = 0;
     if (fix?.exclude?.some((b) => inBox(x, y, b))) clean[i] = 0;
-    if (fix?.include?.some((b) => inBox(x, y, b)) && cand[i]) clean[i] = 1;
+    if (fix?.include?.some((b) => inBox(x, y, b)) && (fix.aday ? adayOk(fix.aday, lab[i]!, data[i * 4 + 3]!) : cand[i])) clean[i] = 1;
   }
   return clean;
 }
@@ -202,8 +207,51 @@ const only = args.find((x, i) => !x.startsWith('--') && !['--onizleme', '--maske
 const preview = args.includes('--onizleme') ? args[args.indexOf('--onizleme') + 1] : null;
 const sheets = args.includes('--maskeler');
 fs.mkdirSync(OUT, { recursive: true });
+// KQ6 bağlama: `--alt` alt sınıf ve Gariban jetonlarının (`<ırk>-<erkek|kadin>-<sınıf>-<kod>.webp`, Celestial hariç) ten maskesi.
+// Aynı otomatik yöntem; ırkın `maskAlt` ayarı (Goliath: yalnız baş) varsa o, yoksa `mask`. Maskesi çıkmayan (kabuk/odun yüzlü, tam örtülü)
+// jeton boyanmaz: dosya yazılmaz, `data/soy-maske-alt-rapor.json`'a "yok" yazılır. Elle maske (`assets/soy-maske-el/`) bunların önüne geçer.
+if (args.includes('--alt')) {
+  const repFile = path.join(ROOT, 'data/soy-maske-alt-rapor.json');
+  const rep: Record<string, number> = fs.existsSync(repFile) ? JSON.parse(fs.readFileSync(repFile, 'utf8')).jetonlar : {};
+  const re = new RegExp(`^(${Object.keys(RACES).join('|')})-(erkek|kadin)-(${CLASSES.join('|')})-(.+)\\.webp$`);
+  const names = fs.readdirSync(CHAR).map((f) => re.exec(f)).filter((m): m is RegExpExecArray => !!m);
+  for (const m of names) {
+    const name = m[0].replace(/\.webp$/, ''), race = m[1]!, g = m[2] === 'erkek' ? 'male' : 'female';
+    if ((only && only !== race) || race === 'dragonborn') continue; // Dragonborn: yalnız pul hattı (scripts/dragonborn-pul-maske.py → maske-pul/); eski yedek maske (KJ2/KJ3) yok
+    const r = RACES[race]!;
+    const base = (r as Race & { maskAlt?: MaskCfg }).maskAlt ?? r.mask;
+    const { data, W, H } = await raw(path.join(CHAR, `${name}.webp`));
+    const mask = skinMask(name, { ...base, ...(base.byGender?.[g]) }, data, W, H);
+    const out = path.join(OUT, `${name}.png`);
+    // Goliath: gri ten zırh/pelerin/hayaletle aynı renk; yalnız baş bölgesi (bbox'ın üst %30'u, generic jetonlardaki `head` kuralı).
+    // Ranger ID4: jeton başına `maskFix.include` kutusu (çene hizasına dek yüz) baş çizgisinin altında da korunur.
+    if ((base as MaskCfg & { headOnly?: boolean }).headOnly) {
+      let y0 = H, y1 = 0; for (let i = 0; i < W * H; i++) if (data[i * 4 + 3]! >= 128) { const y = (i / W) | 0; y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+      const keep = FIX[name]?.include ?? [];
+      const hy = y0 + (y1 - y0) * 0.3; for (let i = 0; i < W * H; i++) if (((i / W) | 0) > hy && !keep.some((b) => inBox(i % W, (i / W) | 0, b))) mask[i] = 0;
+    }
+    // Güvenlik: maske jetonun opak alanının %40'ından büyükse (hayalet, tam örtülü, ten renginde kıyafet) boyanmaz.
+    let n = 0, opaque = 0; for (let i = 0; i < W * H; i++) { if (mask[i]) n++; if (data[i * 4 + 3]! >= 128) opaque++; }
+    if (n > opaque * 0.4) n = 0;
+    rep[name] = n;
+    if (n < 30) { fs.rmSync(out, { force: true }); continue; }
+    const buf = Buffer.alloc(W * H);
+    for (let i = 0; i < W * H; i++) buf[i] = mask[i] ? 255 : 0;
+    await sharp(buf, { raw: { width: W, height: H, channels: 1 } }).png({ palette: true, colours: 2, compressionLevel: 9 }).toFile(out);
+  }
+  fs.writeFileSync(repFile, JSON.stringify({ not: 'npm run soy-maske -- --alt: alt sınıf/Gariban jetonlarının otomatik ten maskesi piksel sayısı (< 30: maske yok, boyanmaz).', jetonlar: rep }, null, 1) + '\n');
+  console.log('alt maske', Object.keys(rep).length, 'jeton; maskesiz', Object.values(rep).filter((n) => n < 30).length);
+  process.exit(0);
+}
 // Görev K21: elle maskeler (assets/soy-maske-el/; yalnızca okunur) önce; ölçüm ve önizleme onları kullanır.
-const hand = await applyHandMasks(Object.keys(RACES).flatMap((r) => ['female', 'male'].flatMap((g) => CLASSES.map((c) => `${r}-${g}-${c}`))));
+// GORSEL-DUZELTME: elle maskesi olan alt sınıf/Gariban jetonları da (raporda yalnız bunlar; sınıf-genel jetonların hepsi).
+const SUB_EL = new RegExp(`^(${Object.keys(RACES).join('|')})-(erkek|kadin)-(${CLASSES.join('|')})-.+$`);
+const elleSub = fs.existsSync(ELLE) ? fs.readdirSync(ELLE).map((f) => f.replace(/\.png$/i, '')).filter((n) => SUB_EL.test(n) && fs.existsSync(path.join(CHAR, `${n}.webp`))) : [];
+// DRAGONBORN-ESKI-JETON-KALDIR: sınıf-genel jetonu kaldırılmış ırk (`data/jeton-genel.json`) sınıf-genel maske/ölçüm döngüsünde yok.
+const GENEL_IRKLAR = Object.keys(RACES).filter((r) => !genericTokenRetired(r));
+const hand = await applyHandMasks([...GENEL_IRKLAR.flatMap((r) => ['female', 'male'].flatMap((g) => CLASSES.map((c) => `${r}-${g}-${c}`))), ...elleSub]);
+// GORSEL-DUZELTME `--el`: yalnız elle maskeler (doğrulama, public/characters/maske-el/ kopyası, data/soy-maske-rapor.json); otomatik maske ve ölçüm yok.
+if (args.includes('--el')) process.exit(0);
 // Görev K22: kafa kaplaması (kapsam veride); ölçüm kaplanmış kafayla yapılır.
 await buildHeads();
 const report: Record<string, unknown> = {};
@@ -211,6 +259,7 @@ const report: Record<string, unknown> = {};
 const paletRows: Record<string, Record<string, Record<string, number[]>>> = {};
 for (const [race, r] of Object.entries(RACES)) {
   if (only && only !== race) continue;
+  if (!GENEL_IRKLAR.includes(race)) continue;
   const rows: Record<string, Record<string, number[]>> = {};
   const tiles: Array<{ input: Buffer; left: number; top: number }> = [];
   let n = 0;
@@ -260,5 +309,7 @@ for (const [race, r] of Object.entries(RACES)) {
   report[race] = rows;
   console.log(race, 'tamam');
 }
-if (!only) fs.writeFileSync(path.join(ROOT, 'data/soy-olcum.json'), JSON.stringify({ note: 'Görev K15: npm run soy-maske üretir. Her ırk/cinsiyet/sınıf jetonunda, her soyun boyamasından sonra ten maskesinin ortalama Lab rengi (L, a, b). Test (src/ui/tint.test.ts) soy çiftleri arası ΔE eşiğini bu dosyadan denetler. DROW-PALET: paletler: paletli soyların (elf/drow) her paletinin aynı ölçümü; races içindeki değer seçili palettir.', races: report, paletler: paletRows }, null, 1) + '\n');
+// Alt soy görünüm kararı: `paletler.yogunluk` (scripts/soy-yogunluk.ts yazar) yeniden üretimde korunur.
+const yogunluk = (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'data/soy-olcum.json'), 'utf8')).paletler?.yogunluk; } catch { return undefined; } })();
+if (!only) fs.writeFileSync(path.join(ROOT, 'data/soy-olcum.json'), JSON.stringify({ note: 'Görev K15: npm run soy-maske üretir. Her ırk/cinsiyet/sınıf jetonunda, her soyun boyamasından sonra ten maskesinin ortalama Lab rengi (L, a, b). Test (src/ui/tint.test.ts) soy çiftleri arası ΔE eşiğini bu dosyadan denetler. DROW-PALET: paletler: paletli soyların (elf/drow) her paletinin aynı ölçümü; races içindeki değer seçili palettir.', races: report, paletler: { ...paletRows, ...(yogunluk ? { yogunluk } : {}) } }, null, 1) + '\n');
 if (preview) await import('./soy-onizleme').then((m) => m.default(preview));

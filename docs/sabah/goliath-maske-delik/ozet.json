@@ -1,0 +1,58 @@
+{
+  "jeton": 283,
+  "kafa_kaplamasi_atlanan": 6,
+  "delik_toplam": 14746,
+  "delik_jeton_basina": {
+    "medyan": 43,
+    "p90": 111,
+    "en_cok": 389,
+    "sifir_jeton": 13
+  },
+  "eski_ayar_toplam": 30612,
+  "eski_ayar_L72_ustu_px": 2841,
+  "eski_ayar_L28_alti_px": 9829,
+  "yeni_ayar_L28_alti_px": 0,
+  "yeni_ayar_L72_ustu_px": 0,
+  "en_kotu_10": [
+    [
+      "goliath-erkek-barbarian-ID1",
+      389
+    ],
+    [
+      "goliath-male-barbarian",
+      291
+    ],
+    [
+      "goliath-female-rogue",
+      274
+    ],
+    [
+      "goliath-female-barbarian",
+      270
+    ],
+    [
+      "goliath-kadin-barbarian-ID7",
+      254
+    ],
+    [
+      "goliath-erkek-barbarian-ID7",
+      215
+    ],
+    [
+      "goliath-female-monk",
+      208
+    ],
+    [
+      "goliath-male-rogue",
+      183
+    ],
+    [
+      "goliath-kadin-rogue-ID2",
+      170
+    ],
+    [
+      "goliath-erkek-cleric-ID5",
+      150
+    ]
+  ]
+}

@@ -10,7 +10,8 @@
 import data from '../../data/nesne-hareket.json';
 import { applyEvents } from './reduce';
 import { damageObjectEvents, makeObject } from './objects';
-import { objectAt } from './objectData';
+import { OBJECTS, objectAt } from './objectData';
+import { nesneOn, objectWeightLb, throwRangeByWeight, weightClassOf } from './nesneAgirlik';
 import { occupantAt, terrainAt } from './movement';
 import { globalRule } from './ruleControl';
 import { ruleVersion } from './ruleVersion';
@@ -25,7 +26,14 @@ type Weight = keyof typeof data.agirlik;
 
 export const objectMotionOn = (s: BattleState): boolean => ruleVersion(s) >= MOTION_VERSION && !!globalRule(s, 'objectMotion');
 /** Nesnenin ağırlık sınıfı; hareketli değilse null. */
-export const weightOf = (o: MapObject): Weight | null => ((data.hareketli as Record<string, Weight>)[o.kind] ?? null);
+export const weightOf = (o: MapObject, s?: BattleState): Weight | null => {
+  // Kuyruk KQ3 NA1 (sürüm 80): sınıf ağırlıktan (Game Master ağırlığı değiştirince sınıf da değişir); taşınabilir her nesne hareketli.
+  if (s && nesneOn(s)) {
+    const lb = objectWeightLb(o);
+    return (data.hareketli as Record<string, Weight>)[o.kind] || (OBJECTS[o.kind]?.carryable && lb > 0) ? weightClassOf(lb) as Weight : null;
+  }
+  return (data.hareketli as Record<string, Weight>)[o.kind] ?? null;
+};
 const sizeOf = (s: BattleState) => ({ cols: s.map?.tiles[0]?.length ?? 0, rows: s.map?.tiles.length ?? 0 });
 const same = (a: Offset, b: Offset) => a.col === b.col && a.row === b.row;
 const objOf = (s: BattleState, id: string) => s.map?.objects?.find((o) => o.id === id && !o.carriedBy);
@@ -63,7 +71,7 @@ function nextFor(at: Offset, mode: ForcedMode, o: ForcedOptions, size: { cols: n
 export function forcedMoveObject(state: BattleState, objectId: string, mode: ForcedMode, feet: number, by: string, rng: Rng, o: ForcedOptions = {}): BattleEvent[] {
   if (!objectMotionOn(state)) return [];
   const obj = objOf(state, objectId);
-  const w = obj ? weightOf(obj) : null;
+  const w = obj ? weightOf(obj, state) : null;
   if (!obj || !w) return [];
   const steps = Math.floor(Math.floor(feet / 5) * data.agirlik[w].itmeCarpani);
   const out: BattleEvent[] = [];
@@ -89,7 +97,10 @@ export function forcedMoveObject(state: BattleState, objectId: string, mode: For
 }
 
 /** Fırlatma mesafesi (ft) ağırlığa göre; hareketli değilse 0. */
-export const throwRangeFt = (o: MapObject): number => { const w = weightOf(o); return w ? data.agirlik[w].firlatmaFt : 0; };
+export const throwRangeFt = (o: MapObject, s?: BattleState): number => {
+  if (s && nesneOn(s)) return weightOf(o, s) ? throwRangeByWeight(objectWeightLb(o)) : 0;
+  const w = weightOf(o); return w ? data.agirlik[w].firlatmaFt : 0;
+};
 
 /**
  * Nesneyi fırlat: `from` (fırlatanın yeri) ile hedef arası en çok `throwRangeFt`. Hedefte yaratık varsa zar (`hit`, yoksa
@@ -100,7 +111,7 @@ export function throwObject(state: BattleState, from: Offset, objectId: string, 
   if (!objectMotionOn(state)) return { problem: 'Nesne hareketi kapalı.' };
   const obj = objOf(state, objectId);
   if (!obj) return { problem: 'Nesne yok.' };
-  const range = rangeFt ?? throwRangeFt(obj);
+  const range = rangeFt ?? throwRangeFt(obj, state);
   if (!range) return { problem: 'Bu nesne fırlatılamaz.' };
   if (distance(from, to) * 5 > range) return { problem: `En çok ${range} ft fırlatılabilir.` };
   const target = occupantAt(state, to);
@@ -131,7 +142,7 @@ export function throwProblem(state: BattleState, actor: Combatant, obj: MapObjec
   if (!objectMotionOn(state)) return 'Nesne hareketi kapalı (Game Master anahtarı "Nesne hareketi").';
   if (!obj || obj.carriedBy || !state.map?.objects?.some((o) => o.id === obj.id)) return 'Nesne yok.';
   if (!actor.pos || distance(actor.pos, obj.at) > 1) return 'Nesneye bitişik olmalısın.';
-  const w = weightOf(obj);
+  const w = weightOf(obj, state);
   if (!w) return 'Bu nesne fırlatılamaz.';
   if (!(data.oyuncuFirlatma as Record<string, unknown>)[w]) return 'Bu nesne fırlatılamayacak kadar ağır.';
   return null;
@@ -141,12 +152,12 @@ export function playerThrowObject(state: BattleState, actor: Combatant, objectId
   const obj = objOf(state, objectId);
   const why = throwProblem(state, actor, obj);
   if (why || !obj) return { problem: why ?? 'Nesne yok.' };
-  const w = weightOf(obj) as Weight;
+  const w = weightOf(obj, state) as Weight;
   const dmg = (data.oyuncuFirlatma as Record<string, { zar: string; tur: string }>)[w] as { zar: string; tur: string };
   if (!to) return { problem: 'Hedef altıgen seçmelisin.' };
   if (same(to, obj.at)) return { problem: 'Nesne kendi yerine fırlatılamaz.' };
   const d = parseDice(dmg.zar);
-  return { hit: { dice: formatDice(d.count, d.sides, d.bonus + actor.modifiers.str), type: dmg.tur }, range: data.agirlik[w].firlatmaFt };
+  return { hit: { dice: formatDice(d.count, d.sides, d.bonus + actor.modifiers.str), type: dmg.tur }, range: nesneOn(state) ? throwRangeByWeight(objectWeightLb(obj)) : data.agirlik[w].firlatmaFt };
 }
 
 /**
@@ -157,7 +168,7 @@ export function conjureDebris(state: BattleState, near: Offset): { objectId: str
   if (!objectMotionOn(state)) return null;
   const size = sizeOf(state);
   const ring = [near, ...neighbors(near, size)];
-  for (const h of ring) { const o = objectAt(state, h); if (o && weightOf(o)) return { objectId: o.id, events: [], label: { tr: o.kind, en: o.kind } }; }
+  for (const h of ring) { const o = objectAt(state, h); if (o && weightOf(o, state)) return { objectId: o.id, events: [], label: { tr: o.kind, en: o.kind } }; }
   const spot = ring.find((h) => objectStep(state, h) === 'ok');
   if (!spot) return null;
   const ch = state.map?.tiles[near.row]?.[near.col] ?? '.';

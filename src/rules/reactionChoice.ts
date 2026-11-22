@@ -24,7 +24,15 @@ export type ReactionTrigger = 'hit' | 'targeted' | 'leave' | 'cast' | 'damaged' 
   /** Kuyruk K54 (imza): iskalanan saldırı, dosta isabet/hedef, dostun düşmesi. */
   | 'miss' | 'ally'
   /** Kuyruk S1: tepki değil, büyünün seçim istemi (`rules/choice.ts`). */
-  | 'choice';
+  | 'choice'
+  /** Hazırla (Ready, sürüm 90): hazırlanan eylemin tetiği (SRD 5.2.1 s.186). */
+  | 'ready'
+  /** Görev B98: Bardic Inspiration zarını kullanma kararı (başarısız d20 sonrası; tepki harcanmaz). */
+  | 'inspire'
+  /** Görev TE99: Peerless Aim, Improve Fate, Heroic Inspiration kullanma kararı (d20 sonucu görüldükten sonra; tepki harcanmaz). */
+  | 'boon'
+  /** Görev TE99: Giant Ancestry isabet yeteneği (Fire's Burn, Frost's Chill, Hill's Tumble) kullanma kararı. */
+  | 'giant';
 
 export interface ReactionRequest {
   /** Tepkiyi verecek yaratık. */

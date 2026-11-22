@@ -15,7 +15,8 @@ declare const process: { env: Record<string, string | undefined> };
 const SEEDS = Number(process.env.K73F_TOHUM ?? 1);
 const IDS = ['col', 'kale', 'magara', 'orman'] as const;
 /** Sürüm 65 imzaları (`hash`): K73e altınlarıyla aynı (bu senaryolarda 65 = 64 = 63). */
-const ALTIN_1: Record<string, string> = { col: '60c316337f70', kale: '1cfe61ee421e', magara: 'efae21cc4b01', orman: '65dd25f0c6f2' };
+const ALTIN_1: Record<string, string> = { col: 'c6aea9664712', kale: '0adf763d2da2', magara: '843dacb11395', orman: 'f1dfecb7d57f' };
+// HS1: klasik Kale kaldırıldı, `kale` senaryosu Kale ve avlu'da (31×17) çalışıyor; kale imzası 1cfe61ee421e → 3c88f5773a11 (col/magara/orman aynı).
 const ALTIN_30: Record<string, string> = { col: '707a1aba1b40', kale: '8cb560d75f44', magara: '53cf6a64fc39', orman: '59365cfe65f8' };
 
 afterEach(() => setDefaultRuleVersion(CURRENT_RULES));

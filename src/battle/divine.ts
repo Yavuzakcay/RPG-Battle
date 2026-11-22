@@ -9,6 +9,9 @@
  *   Protection from Evil and Good (belli türlerin saldırıları dezavantajlı).
  * - Süren güçlendirmeler (`buffs`): Divine Favor (+1d4 radiant), Magic Weapon (+1), Sacred Weapon.
  */
+import { sinif97On } from './sinif97Surum';
+import { b94On } from './b94Surum';
+import { b98On } from './b98Surum';
 import { soyFeatureProblem } from './soyEtki';
 import { adjacent3D, k73bOn } from './adjacency';
 import { circleAttackDis } from './possessionCore';
@@ -43,6 +46,7 @@ import { executePaket, paketProblem } from './paket';
 import { needHealMoral } from './imza54';
 import { senseSees } from './sight';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Buff, type Combatant, type UsableFeature } from './types';
+import { te99On } from './te99Surum';
 
 type UseFeature = { feature: string; targetId?: string; amount?: number; cure?: boolean; to?: Offset; choice?: string };
 
@@ -100,7 +104,8 @@ export function featureProblem(state: BattleState, actor: Combatant, cmd: UseFea
   if (e.kind === 'healPool') {
     const target = cmd.targetId ? state.combatants[cmd.targetId] : actor;
     if (!target) return 'Hedef bulunamadı.';
-    if (target.side !== actor.side) return 'Yalnızca kendine ya da bir dostuna.';
+    // Görev B98 (sürüm 98+, SRD 5.2.1 s. 53 "touch a creature (which could be yourself)"): herhangi bir yaratık; tür istisnası yok.
+    if (target.side !== actor.side && !b98On(state)) return 'Yalnızca kendine ya da bir dostuna.';
     if (target.life === 'dead') return `${target.name} öldü.`;
     if (e.touch && !touching(state, actor, target)) return 'Dokunmak için bitişik olmalısın.';
     const amount = cmd.amount ?? 0;
@@ -112,6 +117,12 @@ export function featureProblem(state: BattleState, actor: Combatant, cmd: UseFea
     if (!cmd.cure && target.hp >= target.maxHp) return `${target.name} zaten tam sağlıklı.`;
   }
   return null;
+}
+
+/** Görev B94: Sacred Weapon'ın silahı: seçilen (elde, yakın dövüş) ya da ilk yakın dövüş silahı; yoksa undefined. */
+export function sacredWeaponOf(actor: Combatant, choice?: string): string | undefined {
+  const ws = actor.weaponOptions.filter((o) => !o.ranged && !o.spell && o.weaponId && o.weaponId !== 'unarmed-strike' && o.tag !== 'unarmed');
+  return (choice && ws.some((o) => o.weaponId === choice) ? choice : ws[0]?.weaponId) ?? undefined;
 }
 
 /** Bir özelliğin süren güçlendirmesi (Sacred Weapon): yetenek bonusu en az `min`. */
@@ -139,7 +150,10 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
   if (e.kind === 'divineSense') {
     return finish(state, [
       ...(f.resource ? [{ type: 'feature_used' as const, actorId: actor.id, feature: f.resource, remaining: resourceLeft(actor, f.resource) - 1 }] : []),
-      { type: 'effect_added', targetId: actor.id, effect: { id: 'divine-sense', name: f.name, sourceId: actor.id, until: state.round + e.rounds, senseTypes: { types: e.types, ft: e.rangeFt }, icon: '✨' } },
+      // Görev B94 (sürüm 94+, SRD 5.2.1 s. 55 "for the next 10 minutes or until you have the Incapacitated condition"): süre
+      // diğer etkiler gibi `rounds − 1` (eskiden bir tur fazla) ve Incapacitated olunca biter (`endsIfSourceDown`).
+      { type: 'effect_added', targetId: actor.id, effect: { id: 'divine-sense', name: f.name, sourceId: actor.id, until: state.round + e.rounds - (b94On(state) ? 1 : 0),
+        senseTypes: { types: e.types, ft: e.rangeFt }, icon: '✨', ...(b94On(state) ? { endsIfSourceDown: true } : {}) } },
     ]);
   }
   if (e.kind === 'landsAid') return rng ? executeLandsAid(state, actor, f, cmd.to, rng) : fail('Zar gerekli.');
@@ -195,12 +209,19 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
     }
     return finish(state, events);
   }
-  const buff = featureBuff(actor, f, state.round) as Buff;
+  const buff0 = featureBuff(actor, f, state.round) as Buff;
+  // Görev B94 (sürüm 94+, SRD 5.2.1 s. 56 "imbue one Melee weapon that you are holding … ends if you aren't carrying the
+  // weapon"): güçlendirme tek silaha (komutun `choice`'u ya da ilk yakın dövüş silahı); silah bırakılınca biter.
+  const one = b94On(state) && buff0.meleeOnly ? sacredWeaponOf(actor, cmd.choice) : undefined;
+  const lit = buff0.radiant && globalRule(state, 'featuresK19');
+  const buff: Buff = one ? { ...buff0, enchantBy: one, endsOnDrop: lit ? { lightId: 'sacred-weapon-light' } : {} } : buff0;
   if (f.resource) events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource, remaining: resourceLeft(actor, f.resource) - 1 });
   events.push({ type: 'buff_added', targetId: actor.id, buff });
   // Kuyruk 19 (featuresK19): Sacred Weapon'ın silahı 20 ft parlak + 20 ft loş ışık yayar (karanlık haritada `litHexes`; 8 altıgen).
-  if (buff.radiant && globalRule(state, 'featuresK19')) {
-    events.push({ type: 'effect_added', targetId: actor.id, effect: { id: 'sacred-weapon-light', name: `${f.name} (ışık)`, sourceId: actor.id, until: buff.until, light: 8 } });
+  // Görev B94 (94+, K67a loş ışık modeli): 4 altıgen parlak + 4 altıgen loş.
+  if (lit) {
+    events.push({ type: 'effect_added', targetId: actor.id, effect: { id: 'sacred-weapon-light', name: `${f.name} (ışık)`, sourceId: actor.id, until: buff.until,
+      ...(b94On(state) ? { light: 4, lightDim: 4 } : { light: 8 }) } });
   }
   return finish(state, events);
 }
@@ -285,22 +306,31 @@ const curesOf = (actor: Combatant, base: string[]): string[] =>
   actor.traits?.includes('restoring-touch') ? [...new Set([...base, 'Blinded', 'Charmed', 'Deafened', 'Frightened', 'Paralyzed', 'Stunned'])] : base;
 
 /** Hedefin AC'si (koruma etkileri dahil). */
-export function effectiveAc(state: BattleState, target: Combatant): number {
+export function effectiveAc(state: BattleState, target: Combatant, attacker?: Combatant): number {
   // Shield (Görev R1): sonraki turunun başına dek işaret.
   const shield = Math.max(0, ...(target.marks ?? []).filter((m) => m.kind === 'shield').map((m) => m.ac ?? 0));
   // Görev S1: süren etkilerden AC tabanı (Barkskin, Mage Armor) ve eklenti (Haste, Slow).
-  const fx = target.effects ?? [];
-  const base = Math.max(target.ac, ...fx.map((e) => e.acMin ?? 0));
+  // Görev B95-B (97+, SRD 5.2.1 s. 30 Sundering Blow "another creature"): tek kullanımlık eklenti, kaynağının kendi saldırısına işlemez.
+  const own97 = !!attacker && sinif97On(state);
+  const fx = (target.effects ?? []).filter((e) => !(own97 && e.consumeOnAttacked && e.sourceId === attacker!.id));
+  // Görev TE99 (99+, SRD 5.2.1 s. 145, s. 177): Mage Armor tabanı (`acBase`) zırhsız taban hesabıyla karşılaştırılır,
+  // kalkan/eşya/feat (`acExtra`) üstüne eklenir; Barkskin gibi `acMin` toplam AC'nin tabanı. 98 ve altı: hepsi `acMin`.
+  const t99 = te99On(state);
+  const extra = t99 && !target.shape ? target.acExtra ?? 0 : 0;
+  const withBase = t99 ? Math.max(target.ac - extra, ...fx.map((e) => e.acBase ?? 0)) + extra : target.ac;
+  const base = Math.max(withBase, ...fx.map((e) => (t99 && e.acBase !== undefined ? 0 : e.acMin ?? 0)));
   return base + shield + fx.reduce((n, e) => n + (e.ac ?? 0), 0) + wardsOn(state, target).reduce((n, w) => n + (w.ward?.ac ?? 0), 0);
 }
 
 /** Hedefe yapılan saldırıya koruma etkilerinden gelen avantaj/dezavantaj. */
-export function wardSources(state: BattleState, attacker: Combatant, target: Combatant, opts: { melee?: boolean; str?: boolean } = {}): ModeSource[] {
+export function wardSources(state: BattleState, attacker: Combatant, target: Combatant, opts: { melee?: boolean; str?: boolean; /** Görev TE99: saldırı STR/DEX'li değil (Pact of the Blade CHA, büyü saldırısı). */ notStrDex?: boolean } = {}): ModeSource[] {
   const out: ModeSource[] = [];
   // Görev B1: süren etkiler. Hedefe saldırı dezavantajlı (Blur); saldıranın saldırısı dezavantajlı (Heat Metal,
   // Ray of Enfeeblement: başarısız save'de yalnızca STR tabanlı = yakın dövüş, başarılı save'de bir sonraki saldırı).
   // Kuyruk A4: Blur'u Blindsight/Truesight menzilindeki saldıran yok sayar.
   for (const e of target.effects ?? []) if (e.attackedDis && !(e.sensesPierce && senseSees(state, attacker, target))) out.push({ effect: 'disadvantage', reason: e.name });
+  // Mekanik matris B13 (sürüm 83+, `syncAuras`): Holy Aura yayılımındaki dosta "other creatures have Disadvantage on attack rolls against them".
+  if (target.allyAura?.attackedDis) out.push({ effect: 'disadvantage', reason: target.allyAura.name });
   // Görev B4: işaretli hedefe saldırı avantajlı (Faerie Fire).
   // Kuyruk A7 (Faerie Fire, `attackedAdvSee`): yalnızca hedefi gören saldırana (Blinded değil, karanlıkta görüyor).
   const sees = () => !attacker.conditions.includes('Blinded') && canSee(state, attacker, target);
@@ -308,7 +338,9 @@ export function wardSources(state: BattleState, attacker: Combatant, target: Com
   // Kuyruk 19: Grappler feat'i (Attack Advantage): yakaladığı yaratığa saldırı avantajlı.
   if (attacker.traits?.includes('grappler') && target.grapple?.by === attacker.id && globalRule(state, 'featuresK19')) out.push({ effect: 'advantage', reason: 'Grappler' });
   // Kuyruk A6 (sürüm 35, `str`): yalnızca STR tabanlı saldırı (Ray of Enfeeblement: Finesse'te DEX seçilmişse ve büyüde değil).
-  for (const e of attacker.effects ?? []) if (e.attackDis && (e.attackDis.str ? (opts.str ?? opts.melee) : (!e.attackDis.melee || opts.melee))) out.push({ effect: 'disadvantage', reason: e.name });
+  // Görev TE99 (99+, SRD 5.2.1 s. 92 "any D20 Test that involves Strength or Dexterity"): eğitimsiz zırh yalnız STR/DEX'li saldırıda.
+  const t99s = te99On(state) && !!opts.notStrDex;
+  for (const e of attacker.effects ?? []) if (e.attackDis && !(t99s && e.attackDis.strDex) && (e.attackDis.str ? (opts.str ?? opts.melee) : (!e.attackDis.melee || opts.melee))) out.push({ effect: 'disadvantage', reason: e.name });
   // Kuyruk A7 (sürüm 36): güneş ışığına duyarlı yaratık güneş ışığı alanında (Daylight) saldırıda dezavantajlı.
   if (attacker.traits?.includes('sunlight-sensitive') && ruleVersion(state) >= 36 && zonesAt(state, attacker.pos).some((z) => (z.spec ?? zoneSpecOf(z))?.sunlight)) out.push({ effect: 'disadvantage', reason: 'Sunlight Sensitivity' });
   // Kuyruk K64b: Magic Circle: seçilen türün silindirdeki hedefe (ters yönde dışarıdakine) saldırısı dezavantajlı.

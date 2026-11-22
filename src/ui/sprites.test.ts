@@ -28,7 +28,10 @@ describe('sprite eşlemesi', () => {
     expect(resolveSprite('yuzey-sis-1', new Set(['yuzey-sis']))).toBe('yuzey-sis');
     expect(resolveSprite('yuzey-sis-2', new Set(['yuzey-sis']))).toBeNull();
     expect(zoneSprite({ spellId: 'surface:oil', surface: 'oil' }, { col: 1, row: 1 }, new Set())).toBeNull();
-    expect(zoneLook({ spellId: 'fog-cloud' }, [{ col: 0, row: 0 }], new Set())).toBeNull();
+    // YZ1: sprite yoksa eşlemesi olan alan düz renk dolgu yedeğiyle çizilir (yama yok); eşlemesiz alan hâlâ yer tutucuda.
+    const flat = zoneLook({ spellId: 'fog-cloud' }, [{ col: 0, row: 0 }], new Set());
+    expect(flat?.patches).toEqual([]); expect(flat?.style.renk).toBeTruthy();
+    expect(zoneLook({ spellId: 'yok-buyu' }, [{ col: 0, row: 0 }], new Set())).toBeNull();
     expect(objectSprite('oilBarrel', { col: 1, row: 1 }, new Set())).toBeNull();
   });
   it('K15C: ağırlıklı seçim deterministik; su-3 ağırlığı 0,3 (≈%13)', () => {

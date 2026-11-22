@@ -18,6 +18,7 @@ import { fail, finish, type CommandResult } from './common';
 import { ruleOf } from './maprules';
 import { moveCostFn, speedHexes } from './movement';
 import type { BattleEvent, BattleState, Combatant } from './types';
+import { lateMonster } from './monsterSetup';
 
 export interface FloorLink { to: string; toVariant?: string; at: Offset[]; arrive: Offset[]; enemies?: Record<string, number> }
 
@@ -66,7 +67,7 @@ export function executeChangeFloor(state: BattleState, actor: Combatant, rng: Rn
   const stored = state.floors?.[link.to];
   const m = getMap(link.to, link.toVariant ? { variantId: link.toVariant } : {});
   const variantId = link.toVariant ?? m.variants[0]?.id ?? '';
-  const map = stored ?? buildMapState(m, variantId, state.map?.ruleToggles ?? {}, state.map?.ruleParams);
+  const map = stored ?? buildMapState(m, variantId, state.map?.ruleToggles ?? {}, state.map?.ruleParams, undefined, state.kuralSurumu ?? 1);
   const env = environmentFor(m, variantId);
   // Taşınanlar: ölü olmayan parti savaşçıları ve çağrıları (bu kattakiler).
   const here = Object.values(state.combatants).filter((c) => !c.offFloor);
@@ -88,15 +89,24 @@ export function executeChangeFloor(state: BattleState, actor: Combatant, rng: Rn
       const mon = getMonster(id);
       for (let k = 0; k < count; k++) {
         n += 1;
-        const c = combatantFromMonster(mon, { id: `kat-${link.to}-${n}`, name: `${mon.name} ${n}` });
+        const c = combatantFromMonster(mon, { id: `kat-${link.to}-${n}`, name: `${mon.name} ${n}`, kuralSurumu: state.kuralSurumu ?? 1 });
         const roll = rollD20('normal', rollTag(rng, { kind: 'initiative', by: c.id }));
         added.push({ ...c, side: 'enemies', initiative: roll.kept + c.modifiers.dex, pos: pool[n - 1] ?? null });
       }
     }
   }
+  // Görev D2 (88+): gelen düşmanlar savaş başındaki gibi canavar özellikleri ve yetenekleriyle (yeni katın haritasında);
+  // auraları kat değişiminden sonra `zone_created`.
+  const lateZones: BattleEvent[] = [];
+  for (let i = 0; i < added.length; i++) {
+    const c = added[i] as Combatant;
+    const r = lateMonster({ ...state, map, combatants: { ...state.combatants, [c.id]: c } }, c);
+    added[i] = r.combatant;
+    lateZones.push(...r.zones.map((zone) => ({ type: 'zone_created', zone }) as BattleEvent));
+  }
   return finish(state, [{
     type: 'floor_changed', actorId: actor.id, from, to: link.to, map, environmentId: env, prev: state.map as NonNullable<BattleState['map']>,
     moved, parked: parked.map((c) => ({ id: c.id, pos: c.pos as Offset })), restored: restored.map((c) => c.id), added,
     hexesUsed: speedHexes(actor),
-  }]);
+  }, ...lateZones]);
 }

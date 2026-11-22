@@ -13,6 +13,8 @@
  * Döngüsel içe aktarmayı önlemek için saldırı yapan tepkiler (Riposte, Retaliation) saldırıyı çağıranın verdiği
  * fonksiyonla yapar (`Strikes`).
  */
+import { sinif97On } from './sinif97Surum';
+import { heldMetal, wearsMetal } from './heldItems';
 import { spells } from '../data';
 import { chainResist } from './chainPact';
 import { gap } from './body';
@@ -28,13 +30,17 @@ import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { saveMode, timedCondition } from './durations';
 import { canSee, saveEffect } from './maprules';
+import { matrisOn } from './matrisSurum';
+import { canSeeTarget } from './sight';
 import { applyEvents } from './reduce';
 import { mirrorImageHit } from './mind';
 import { freeSpellResource } from '../rules/classFeatures';
-import type { BattleEvent, BattleState, Combatant, ReactionSpec } from './types';
+import type { BattleEvent, BattleState, Combatant, CunningOption, ReactionSpec } from './types';
 import { globalRule } from './ruleControl';
+import { b94On } from './b94Surum';
 import { gap64 } from './adjacency';
 import { hiddenTo } from './k74Surum';
+import { saveVs } from './te99Surum';
 
 /** Kuyruk 19 (srdK19): Ink Cloud kancası (`monsterAbilities.ts` yükleyince kaydeder; döngüsel içe aktarma yok). */
 type InkHook = (state: BattleState, id: string, on: 'turnEnd' | 'damaged', rng: Rng) => BattleEvent[];
@@ -103,14 +109,80 @@ function slotLevels(c: Combatant, spec: ReactionSpec, min: number): number[] {
 }
 
 /** Tepkinin şu an kullanılabilirliği (havuz, Recharge, slot). */
-function usable(c: Combatant, spec: ReactionSpec, minSlot = 1): boolean {
+function usable(c: Combatant, spec: ReactionSpec, minSlot = 1, v94 = false): boolean {
   if (spec.pool && poolLeft(c, spec) <= 0) return false;
   if (spec.recharge && c.reactionSpent?.includes(spec.id)) return false;
-  if (spec.resource && (c.resources[spec.resource] ?? 0) <= 0) return false;
+  if (spec.resource && (c.resources[spec.resource] ?? 0) <= 0 && !fontPays(c, spec, v94)) return false;
   if (spec.spell && !spec.pool && !resourceOf(c, spec) && slotLevels(c, spec, minSlot).length === 0) return false;
   // Kuyruk A6 (sürüm 35): Silence içinde sözlü (V) bileşenli tepki büyüsü yapılamaz (Shield, Hellish Rebuke…).
   if (spec.spell && c.silenced && !spells.find((x) => x.name === spec.spell || x.srd === spec.spell || x.id === spec.spell)?.noVerbal) return false;
   return true;
+}
+
+/**
+ * Görev B94 (SRD 5.2.1 s. 32, Font of Inspiration: "expend a spell slot to regain one expended use", eylemsiz): kullanımı
+ * bitmiş Bard'ın Cutting Words'ü en düşük slotla ödenir. Yalnız 94+ savaşta (`v94`).
+ */
+const fontSlot = (c: Combatant): number => c.spellSlots.findIndex((n) => n > 0);
+function fontPays(c: Combatant, spec: ReactionSpec, v94: boolean): boolean {
+  return v94 && spec.kind === 'cutting' && !!spec.resource && (c.resources[spec.resource] ?? 0) <= 0 && !!c.traits?.includes('font-of-inspiration') && fontSlot(c) >= 0;
+}
+/** Cutting Words ödemesi: kullanım varsa onu, yoksa Font ile en düşük slot (kullanım geri gelir ve harcanır). */
+function cuttingPaid(c: Combatant, spec: ReactionSpec, trigger: ReactionTrigger, sourceId: string, v94: boolean): BattleEvent[] {
+  if (!fontPays(c, spec, v94)) return [reactionUsed(c, spec, trigger, sourceId)];
+  const i = fontSlot(c);
+  return [{ type: 'slot_spent', actorId: c.id, level: i + 1, remaining: (c.spellSlots[i] ?? 1) - 1 },
+    reactionUsed(c, spec, trigger, sourceId, { resource: { id: spec.resource as string, remaining: 0 } })];
+}
+
+/** Cutting Words'ü kullanabilecek Bard: `roller`ın karşı tarafında, 60 ft içinde, onu görüyor, tepkisi ve kullanımı (ya da Font) var. */
+function cuttingBards(state: BattleState, roller: Combatant): Array<{ bard: Combatant; spec: ReactionSpec; sides: number }> {
+  const v94 = b94On(state);
+  const out: Array<{ bard: Combatant; spec: ReactionSpec; sides: number }> = [];
+  for (const bard of Object.values(state.combatants)) {
+    if (bard.side === roller.side || bard.hp <= 0 || !canReact(bard)) continue;
+    const spec = (bard.reactions ?? []).find((r) => r.kind === 'cutting' && usable(bard, r, 1, v94));
+    const die = bard.features?.find((f) => f.effect.kind === 'inspire')?.effect;
+    if (!spec || !die || die.kind !== 'inspire' || !die.die) continue;
+    if (feetBetween(state, bard, roller) > (spec.rangeFt ?? 60) || !sees(state, bard, roller)) continue;
+    out.push({ bard, spec, sides: Number(die.die.split('d')[1] ?? 6) });
+  }
+  return out;
+}
+
+/**
+ * Görev B94 (sürüm 94+, SRD 5.2.1 s. 35 Cutting Words: "makes a damage roll"): saldırı dışı hasar zarı (save'li büyü ve alan,
+ * canavar nefesi). Hasar bir kez atılır, zar toplamından düşer (bütün hedeflere). Bard yalnız dostu etkilenecekken önerir.
+ */
+export function cuttingWordsDamage(state: BattleState, roller: Combatant, total: number, victims: Combatant[], label: string, rng: Rng): { events: BattleEvent[]; total: number } {
+  if (!b94On(state) || total <= 0) return { events: [], total };
+  for (const { bard, spec, sides } of cuttingBards(state, roller)) {
+    const allies = victims.filter((v) => v.side === bard.side && v.hp > 0);
+    if (!allies.length) continue;
+    const heavy = allies.some((v) => total >= Math.max(6, Math.ceil(v.hp / 3)) || total >= v.hp);
+    const answer = askReaction(rng, { reactorId: bard.id, trigger: 'hit', sourceId: roller.id, info: { label, total, ac: 0, damage: total },
+      options: [{ id: spec.id, name: spec.name }], suggested: heavy ? { option: spec.id } : null });
+    if (!answer || answer.option !== spec.id) continue;
+    const roll = rollDie(sides, rollTag(rng, { by: bard.id }));
+    return { events: [...cuttingPaid(bard, spec, 'hit', roller.id, true), { type: 'map_note', text: `${bard.name}: ${spec.name} −${roll} (${label})` }], total: Math.max(0, total - roll) };
+  }
+  return { events: [], total };
+}
+
+/**
+ * Görev B94 (sürüm 94+, Cutting Words: "succeeds on an ability check"): başarılı yetenek kontrolü (kaçış, beceri kontrolü).
+ * Zar kontrol toplamından düşer; öneri yalnız başarıyı çevirebilecekse.
+ */
+export function cuttingWordsCheck(state: BattleState, roller: Combatant, total: number, dc: number, label: string, rng: Rng): { events: BattleEvent[]; total: number } {
+  if (!b94On(state) || total < dc) return { events: [], total };
+  for (const { bard, spec, sides } of cuttingBards(state, roller)) {
+    const answer = askReaction(rng, { reactorId: bard.id, trigger: 'hit', sourceId: roller.id, info: { label, total, ac: dc, damage: 0 },
+      options: [{ id: spec.id, name: spec.name }], suggested: total - dc < Math.ceil(sides / 2) ? { option: spec.id } : null });
+    if (!answer || answer.option !== spec.id) continue;
+    const roll = rollDie(sides, rollTag(rng, { by: bard.id }));
+    return { events: [...cuttingPaid(bard, spec, 'hit', roller.id, true), { type: 'map_note', text: `${bard.name}: ${spec.name} −${roll} (${label})` }], total: total - roll };
+  }
+  return { events: [], total };
 }
 
 const specsOf = (c: Combatant, kinds: ReactionSpec['kind'][]): ReactionSpec[] =>
@@ -192,10 +264,12 @@ function hitOptions(state: BattleState, ctx: HitContext): { specs: ReactionSpec[
     if (r.ranged && !ctx.ranged) continue;
     // Kritik vuruş AC'yle ıskalatılamaz (doğal 20 her zaman isabet).
     if ((r.kind === 'shield' || r.kind === 'parry') && !ctx.critical) specs.push(r);
-    else if (r.kind === 'halve' && ctx.damage > 0 && sees(state, t, ctx.attacker)) specs.push(r);
+    // Görev B95-B (97+, SRD 5.2.1 s. 62 Uncanny Dodge "an attacker that you can see"): görünmez saldırgan ve Blinded Rogue'da yok.
+    else if (r.kind === 'halve' && ctx.damage > 0 && sees(state, t, ctx.attacker) && (!sinif97On(state) || canSeeTarget(state, t, ctx.attacker))) specs.push(r);
     else if (r.kind === 'resist' && ctx.damage > 0) specs.push(r);
     else if (r.kind === 'deflect' && t.deflect && ctx.damage > 0 && (t.deflect.types.includes(ctx.damageType) || !!t.traits?.includes('deflect-energy'))) specs.push(r);
-    else if (r.kind === 'reduce' && ctx.damage > 0 && (!r.types || r.types.includes(ctx.damageType))) specs.push(r);
+    // KARAR101 (101+): her hasarda tepki olan azaltma (Stone's Endurance `anyDamage`) isabet yolunda değil, `damageEffects`'te.
+    else if (r.kind === 'reduce' && !r.anyDamage && ctx.damage > 0 && (!r.types || r.types.includes(ctx.damageType))) specs.push(r);
   }
   // Öneri: ıskalatabilen AC tepkisi (bedavası önce), yoksa bedava azaltma, yoksa ağır isabette yarıya indirme.
   const turns = specs.filter((r) => (r.kind === 'parry' || r.kind === 'shield') && ctx.total < ctx.ac + (r.acBonus ?? 0))
@@ -258,9 +332,10 @@ export function registerAllyHit(h: AllyHitHook): void { if (!allyHitHooks.includ
  */
 function cuttingWords(state: BattleState, ctx: HitContext, rng: Rng): { events: BattleEvent[]; hit: boolean; damage: number; reacted: HitOutcome['reacted'] } | null {
   const t = ctx.target;
+  const v94 = b94On(state);
   for (const bard of Object.values(state.combatants)) {
     if (bard.side !== t.side || bard.hp <= 0 || !canReact(bard)) continue;
-    const spec = (bard.reactions ?? []).find((r) => r.kind === 'cutting' && usable(bard, r));
+    const spec = (bard.reactions ?? []).find((r) => r.kind === 'cutting' && usable(bard, r, 1, v94));
     const die = bard.features?.find((f) => f.effect.kind === 'inspire')?.effect;
     if (!spec || !die || die.kind !== 'inspire' || !die.die) continue;
     if (feetBetween(state, bard, ctx.attacker) > (spec.rangeFt ?? 60) || !sees(state, bard, ctx.attacker)) continue;
@@ -277,7 +352,7 @@ function cuttingWords(state: BattleState, ctx: HitContext, rng: Rng): { events: 
     if (!answer || answer.option !== spec.id) continue;
     const mode = answer.choice === 'damage' || ctx.critical ? 'damage' : 'attack';
     const roll = rollDie(sides, rollTag(rng, { by: bard.id }));
-    const events: BattleEvent[] = [reactionUsed(bard, spec, 'hit', ctx.attacker.id)];
+    const events: BattleEvent[] = cuttingPaid(bard, spec, 'hit', ctx.attacker.id, v94);
     if (mode === 'attack') {
       if (ctx.total - roll < ctx.ac) return { events, hit: false, damage: 0, reacted: { name: spec.name, ac: roll } };
       return { events, hit: true, damage: ctx.damage, reacted: { name: spec.name, ac: roll } };
@@ -387,7 +462,9 @@ export function afterAttackReactions(state: BattleState, attackerId: string, tar
 function blindRetortEvents(state: BattleState, holderId: string, attackerId: string, rng: Rng): BattleEvent[] {
   const h = state.combatants[holderId];
   const a = state.combatants[attackerId];
-  const e = h?.effects?.find((x) => x.blindRetort);
+  // Mekanik matris B13 (sürüm 83+): Holy Aura yayılımındaki dost ("when a Fiend or an Undead hits an affected creature").
+  const aa = h?.allyAura?.blindRetort ? h.allyAura : undefined;
+  const e = h?.effects?.find((x) => x.blindRetort) ?? (aa ? { id: aa.srd, name: aa.name, sourceId: aa.by, blindRetort: aa.blindRetort } : undefined);
   if (!h || !a || !e?.blindRetort || a.hp <= 0 || !e.blindRetort.types.includes((a.creatureType ?? '').toLowerCase())) return [];
   const { dc } = e.blindRetort;
   const save = resolveSave({ extra: saveDice(a, 'con'), modifier: a.saves.con, dc, mode: saveMode('normal', a, 'con'), against: ['Blinded', 'spell'] }, rollTag(rng, { by: a.id }));
@@ -463,13 +540,31 @@ function antennaeReaction(state: BattleState, reactorId: string, attackerId: str
   if (!spec) return [];
   const answer = askReaction(rng, { reactorId: m.id, trigger: 'hit', sourceId: a.id, options: [{ id: spec.id, name: spec.name }], suggested: { option: spec.id } });
   if (answer?.option !== spec.id) return [];
-  return [reactionUsed(m, spec, 'hit', a.id), ...corrodeEvents(m, a, spec.dc ?? 11, rng)];
+  // Mekanik matris B23 (sürüm 83): metal silahı ya da zırhı olmayana tepki harcanmaz.
+  if (matrisOn(state) && !heldMetal(a).length && !wearsMetal(a)) return [];
+  return [reactionUsed(m, spec, 'hit', a.id), ...corrodeEvents(m, a, spec.dc ?? 11, rng, state)];
 }
 
 /** Rust Monster Antennae (eylem ya da tepki): DEX save; başarısızsa metal silahın saldırılarına −1 (en çok −5). */
-export function corrodeEvents(m: Combatant, t: Combatant, dc: number, rng: Rng): BattleEvent[] {
+export function corrodeEvents(m: Combatant, t: Combatant, dc: number, rng: Rng, state?: BattleState): BattleEvent[] {
+  // Mekanik matris B23 (sürüm 83): SRD 5.2.1 "Antennae. The rust monster targets one nonmagical metal object—armor or a
+  // weapon—worn or carried by a creature within 5 feet of itself. Dexterity Saving Throw: DC 11, the creature with the object.
+  // Failure: The object takes a −1 penalty to the AC it offers (armor) or to its attack rolls (weapon). Armor is destroyed
+  // if the penalty reduces its AC to 10". Metal nesne yoksa hedef de save de yok; silah yoksa ceza metal zırhın AC'sine.
+  const m83 = !!state && matrisOn(state);
+  const weapon = heldMetal(t).length > 0;
+  if (m83 && !weapon && !wearsMetal(t)) return [{ type: 'map_note', text: `${m.name}: Antennae — ${t.name} metal silah ya da zırh taşımıyor (etkisiz).` }];
   const ev = saveEffect(t, 'srdK19', `${m.name}: Antennae`, 'dex', dc, rng);
   const failed = ev.type === 'map_effect' && ev.roll && !ev.roll.success;
+  if (m83 && !weapon) {
+    if (!failed) return [ev];
+    // Zırh: AC'ye −1 birikir; AC 10'a inince zırh yok olur (ceza 10'un altına inmez).
+    const was = (t.effects ?? []).find((e) => e.id === `corrode-ac:${t.id}`);
+    const pen = Math.min(Math.max(0, t.ac - 10), -(was?.ac ?? 0) + 1);
+    if (pen <= -(was?.ac ?? 0)) return [ev];
+    return [ev, ...(was ? [{ type: 'effect_ended' as const, targetId: t.id, effectId: was.id, name: was.name, reason: 'expired' as const }] : []),
+      { type: 'effect_added' as const, targetId: t.id, effect: { id: `corrode-ac:${t.id}`, name: 'Paslanmış zırh', sourceId: m.id, ac: -pen, icon: '🦀' } }];
+  }
   const now = (t.effects ?? []).find((e) => e.id === `corrode:${t.id}`);
   const pen = Math.min(5, (now?.dice ? Number(now.dice.die) : 0) + 1);
   if (!failed || (now && pen === Number(now.dice?.die ?? 0))) return [ev];
@@ -662,6 +757,9 @@ export function counterspellCheck(state: BattleState, caster: Combatant, spellNa
     if (!canReact(r) || r.side === caster.side) continue;
     const spec = specsOf(r, ['counterspell']).find((s) => usable(r, s, 3));
     if (!spec || feetBetween(current, r, caster) > (spec.rangeFt ?? 60) || !sees(current, r, caster)) continue;
+    // Mekanik matris B03 (sürüm 83+): SRD 5.2.1 Counterspell "when you see a creature … casting a spell": görünmez büyücü
+    // (See Invisibility, açığa çıkma, Blindsight/Truesight yoksa) görülmez, tepki yok. 82 ve altı aynen.
+    if (matrisOn(current) && !canSeeTarget(current, r, caster)) continue;
     const o = option(r, spec, 3);
     // Öneri: slotlu büyüleri durdur (cantrip'e değmez).
     const answer = askReaction(rng, { reactorId: r.id, trigger: 'cast', sourceId: caster.id, info: { spell: spellName, level: spellLevel },
@@ -772,7 +870,7 @@ export function turnStartReactions(state: BattleState, actorId: string, rng: Rng
     const ability = spec.save ?? 'wis';
     const dc = spec.dc ?? 10;
     const condition = spec.condition ?? 'Frightened';
-    const save = resolveSave({ extra: saveDice(a, ability), modifier: a.saves[ability], dc, mode: saveMode('normal', a, ability, undefined, { against: [condition], genis: true }) }, rollTag(rng, { by: a.id }));
+    const save = resolveSave({ extra: saveDice(a, ability), modifier: a.saves[ability], dc, mode: saveMode('normal', a, ability, undefined, { against: [condition], genis: true }), ...saveVs(a, [condition]) }, rollTag(rng, { by: a.id }));
     const added = !save.success && !a.conditions.includes(condition) ? [condition] : [];
     events.push({
       type: 'save_resolved', actorId: r.id, targetId: a.id, label: spec.name, ability, dc, mode: 'normal', reasons: [],
@@ -799,7 +897,13 @@ export function reactionRechargeEvents(c: Combatant, rng: Rng): BattleEvent[] {
 // ---------------------------------------------------------------- fırsat saldırısı kararı
 
 /** Fırsat saldırısı yapılsın mı (oyuncuya sorulabilir; öneri: her zaman). */
-export function askOpportunity(o: Combatant, moverId: string, rng: Rng): boolean {
+export function askOpportunity(o: Combatant, moverId: string, rng: Rng, cunning: CunningOption[] = []): false | { cunning?: CunningOption[] } {
   const opt = { id: OPPORTUNITY, name: 'Opportunity Attack' };
-  return askReaction(rng, { reactorId: o.id, trigger: 'leave', sourceId: moverId, options: [opt], suggested: { option: OPPORTUNITY } }) !== null;
+  // Görev B95-B (97+, SRD 5.2.1 s. 63 Cunning Strike "When you deal Sneak Attack damage"): fırsat saldırısında da tek seçenekli
+  // Cunning Strike seçilebilir (`cunning`: çağıranın verdiği uygun seçenekler; öneri seçeneksiz, yapay zekânın seçimi ertelendi).
+  const extra = cunning.map((x) => ({ id: `${OPPORTUNITY}:cunning:${x}`, name: `Opportunity Attack + Cunning Strike (${x})` }));
+  const a = askReaction(rng, { reactorId: o.id, trigger: 'leave', sourceId: moverId, options: [opt, ...extra], suggested: { option: OPPORTUNITY } });
+  if (a === null) return false;
+  const pick = a.option.startsWith(`${OPPORTUNITY}:cunning:`) ? a.option.slice(`${OPPORTUNITY}:cunning:`.length) as CunningOption : null;
+  return pick ? { cunning: [pick] } : {};
 }

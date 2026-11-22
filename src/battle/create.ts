@@ -1,4 +1,14 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
+import { SINIF97_VERSION } from './sinif97Surum';
+import { TE99_VERSION, te99On } from './te99Surum';
+import { KARAR101_VERSION } from './karar101Surum';
+import { KAPSAM103_VERSION } from './kapsam103Surum';
+import { STONE_ID } from './karar101';
+import srdSpells from '../../data/srd/spells.json';
+import { B94_VERSION } from './b94Surum';
+import { WS92_VERSION } from './ws92Surum';
+import { creatureTypeAt, hasSrdD1, monsterAt, swimSpeedAt } from './srdD1';
+import { SRD_D1_VERSION } from './srdD1Surum';
 import { withMonsterAbilities } from './monsterAbilities';
 import { globalRule } from './ruleControl';
 import { presetObjects } from './objects';
@@ -15,7 +25,7 @@ import { activeItemNames, armorProficient, deriveStats, raceResistances, type Ch
 import { armor, getClass, getMonster, getRace, items, spells, weapons, type Lineage, type Monster, type ReactionMechanic } from '../data';
 import { lineageOf, lineageSpells, raceDarkvision } from '../rules/lineage';
 import { featEffects, sheetFeats } from '../rules/advancement';
-import { featFreeSpells, featResources, magicInitiateAbilities, magicInitiateSpells } from '../rules/backgrounds';
+import { backgroundById, featFreeSpells, featResources, magicInitiateAbilities, magicInitiateSpells } from '../rules/backgrounds';
 import { carryLoad, carrySpeedPenalty, heavilyLoaded, type CarryRule } from '../rules/carry';
 import { GIANT_RESOURCE } from './giant';
 import { boonResources } from './boons';
@@ -29,9 +39,10 @@ import { itemBag, mergeBags, paketBag } from './paket/bag';
 import { paketInitAdv, withPaket } from './paket/core';
 import { withMonsterTraits } from './monsterTraits';
 import { monsterPhase } from './phase';
-import creatureTypes from '../../data/canavar-turleri.json';
 import yuzeyler from '../../data/yuzeyler.json';
 import { CURRENT_RULES } from './ruleVersion';
+import { matrisOn } from './matrisSurum';
+import { genel96On } from './genel96Surum';
 import { ALT_SOY_VERSION } from './altSoySurum';
 import { soyEffects, soyFeatures, soyInitMod, withSoy } from './soyEtki';
 import { controlState, defaultRuleToggles } from './ruleControl';
@@ -77,6 +88,9 @@ function monsterReactionFields(monsterId: string): Partial<Combatant> {
 /** Görev K3: Goliath Cloud's Jaunt (bonus eylemle 30 ft ışınlanma; Giant Ancestry kaynağı). */
 /** Kuyruk 19 (görev 7): tür özelliklerinin kalanları (`species.ts`) anahtar açıkken savaş başında eklenir. */
 function withSpecies(state: BattleState): BattleState {
+  // Görev TE99 (sürüm 99+, SRD 5.2.1 s. 84–86 "regain … when you finish a Long/Short Rest"): tür kaynakları savaş başında
+  // yeniden dolmaz; savaşçıdaki (kayıtlı durumdan gelen) değer kalır. 98 ve altı: her savaş dolu (eski davranış).
+  const keep = te99On(state);
   const combatants: Record<string, Combatant> = {};
   for (const [id, c0] of Object.entries(state.combatants)) {
     const sp = c0.raceId && !c0.monsterId ? speciesParts(c0.raceId, c0.level, c0.proficiency, c0.speed, id) : null;
@@ -84,7 +98,7 @@ function withSpecies(state: BattleState): BattleState {
       ...c0,
       effects: [...(c0.effects ?? []), ...sp.effects],
       ...(sp.features.length ? { features: [...(c0.features ?? []), ...sp.features] } : {}),
-      resources: { ...c0.resources, ...sp.resources },
+      resources: keep ? { ...sp.resources, ...c0.resources } : { ...c0.resources, ...sp.resources },
       ...(sp.traits.length ? { traits: [...new Set([...(c0.traits ?? []), ...sp.traits])] } : {}),
     };
   }
@@ -179,7 +193,15 @@ export function combatantFromSheet(
     // Gloves of Missile Snaring: menzilli silah isabetine tepkiyle 1d10 + DEX azaltma.
     ...(p.rangedReduce ? { reactions: [...(c.reactions ?? []), { id: 'item:gloves-of-missile-snaring', name: 'Gloves of Missile Snaring', kind: 'reduce' as const, dice: `${p.rangedReduce}${c.modifiers.dex >= 0 ? '+' : ''}${c.modifiers.dex}`, ranged: true }] } : {}),
     ...(Object.keys(p.casts).length ? { itemCasts: p.casts } : {}),
-    ...(p.weaponBonus ? { weaponOptions: c.weaponOptions.map((o) => (o.weaponId === 'unarmed-strike' ? o : withWeaponBonus(o, p.weaponBonus))) } : {}),
+    ...(p.weaponBonus ? { weaponOptions: c.weaponOptions.map((o) => {
+      if (o.weaponId === 'unarmed-strike') return o;
+      const old = withWeaponBonus(o, p.weaponBonus);
+      // Görev TE99 (99+, SRD 5.2.1 s. 209 "attack rolls and damage rolls made with this piece of magic ammunition"): cephane
+      // bonusu yalnız cephaneli silaha; 99 seçeneği `te99Alt` (savaş başında sürüme göre seçilir).
+      const n99 = o.ammo ? Math.max(p.weaponBonusNoAmmo, p.ammoBonus) : p.weaponBonusNoAmmo;
+      const alt = n99 > 0 ? withWeaponBonus(o, n99) : o;
+      return JSON.stringify(alt) === JSON.stringify(old) ? old : { ...old, te99Alt: alt };
+    }) } : {}),
     ...(p.spellBonus && c.spellSaveDc !== null ? { spellSaveDc: c.spellSaveDc + p.spellBonus } : {}),
     ...(p.spellBonus && c.spellAttack !== null ? { spellAttack: c.spellAttack + p.spellBonus } : {}),
     ...(p.addSpells.length ? {
@@ -216,7 +238,7 @@ function combatantFromSheetBase(
   const standing: ActiveEffect[] = [
     ...(heavy ? [{ id: 'load:heavy', name: 'Ağır yüklü', sourceId: opts.id, attackDis: {}, saveDis: ['str', 'dex', 'con'], checkDis: ['str', 'dex', 'con'] } satisfies ActiveEffect] : []),
     ...soyEffects(sheet, opts.id),
-    ...(untrained ? [{ id: 'armor:untrained', name: 'Eğitimsiz zırh', sourceId: opts.id, attackDis: {}, saveDis: ['str', 'dex'], checkDis: ['str', 'dex'], noCast: true } satisfies ActiveEffect] : []),
+    ...(untrained ? [{ id: 'armor:untrained', name: 'Eğitimsiz zırh', sourceId: opts.id, attackDis: { strDex: true }, saveDis: ['str', 'dex'], checkDis: ['str', 'dex'], noCast: true } satisfies ActiveEffect] : []),
   ];
   const race = getRace(sheet.raceId);
   const cls = getClass(sheet.classId);
@@ -243,11 +265,18 @@ function combatantFromSheetBase(
   // Kuyruk 19: Pact of the Tome ritüelleri (her zaman hazır).
   const known3 = [...known2, ...inv.rituals.filter((n) => !known2.includes(n))];
   // Kuyruk 19 (görev 3): Mystic Arcanum gibi bütün sınıf listesinden seçilen büyüler (seçilmezse savaşta işe yarayan ilk).
-  const known = [...known3, ...arcanumPicks(sheet).filter((n) => !known3.includes(n))];
+  const known4 = [...known3, ...arcanumPicks(sheet).filter((n) => !known3.includes(n))];
+  // Görev B93: kitaptan seçilen her zaman hazır büyüler (Spell Mastery, Signature Spells; `spellPicks[].fromBook`).
+  const known5 = [...known4, ...bookPicks(sheet).filter((n) => !known4.includes(n))];
+  // Görev B93: Ritual Adept: kitaptaki SRD ritüel büyüleri hazırlanmadan, yalnız ritüel olarak (`ritualOnly`).
+  const ritualOnly = gainedFeatures(sheet.classId, sheet.level, sheet.subclassId).some((f) => f.mechanic?.ritualFromBook)
+    ? (sheet.spellbook ?? []).filter((n) => !known5.includes(n) && srdRitual(n)) : [];
+  const known = [...known5, ...ritualOnly];
   // Soy büyülerinin yeteneği (SRD: INT, WIS ya da CHA, soy seçilirken): büyücü sınıfta sınıfın yeteneği, değilse en
   // yükseği (yaklaşık; DECISIONS.md, Görev K3).
+  // Görev TE99 (SRD 5.2.1 s. 85–86 "choose the ability when you select the lineage"): oyuncunun seçtiği yetenek (`lineageAbility`).
   const castAbility = cls.casting?.ability
-    ?? (fromLineage.length > 0 ? (['int', 'wis', 'cha'] as const).reduce((a, b) => (d.modifiers[b] > d.modifiers[a] ? b : a)) : null);
+    ?? (fromLineage.length > 0 ? sheet.lineageAbility ?? (['int', 'wis', 'cha'] as const).reduce((a, b) => (d.modifiers[b] > d.modifiers[a] ? b : a)) : null);
   const castMod = castAbility ? d.modifiers[castAbility] : 0;
   return {
     id: opts.id,
@@ -260,9 +289,13 @@ function combatantFromSheetBase(
     side: 'party',
     ownerId: opts.ownerId,
     ac: d.ac,
+    // Görev TE99: AC'nin taban dışı parçaları (kalkan, feat, eşya, alt soy): Mage Armor tabanı bunları yutmaz.
+    ...((): Partial<Combatant> => { const x = d.acParts.filter((p) => p.kind === 'shield' || p.kind === 'feat' || p.kind === 'item').reduce((n, p) => n + p.value, 0); return x ? { acExtra: x } : {}; })(),
     hp: d.maxHp,
     maxHp: d.maxHp,
     speed: Math.max(0, d.speed - carrySpeedPenalty(load.level, carryRule)),
+    // Kuyruk KQ3 NA1: nesne taşıma kapasitesi (boyut ve Powerful Build dahil) ve kendi yükü.
+    carryCapLb: load.capacity, carryUsedLb: load.weight,
     ...(load.level !== 'ok' ? { load: load.level } : {}),
     ...((): Partial<Combatant> => {
       // Görev WARLOCK: savaştan önce yapılmış sayılan büyü (Armor of Shadows: zırhsızsa Mage Armor; 8 saat).
@@ -270,7 +303,8 @@ function combatantFromSheetBase(
         const fx = spells.find((s) => s.name === n)?.mechanics.effect;
         if (!fx?.acMin || armor.find((a) => a.name === sheet.armorName)?.type !== 'none') return [];
         const ac = fx.acMin === 'mageArmor' ? 13 + d.modifiers.dex : fx.acMin;
-        return [{ id: `invocation:${n}`, name: n, sourceId: opts.id, acMin: ac } satisfies ActiveEffect];
+        // Görev TE99: taban AC (`acBase`; 99+ kalkan/eşya üstüne eklenir), 98 ve altı `acMin`.
+        return [{ id: `invocation:${n}`, name: n, sourceId: opts.id, acMin: ac, ...(fx.acMin === 'mageArmor' ? { acBase: ac } : {}) } satisfies ActiveEffect];
       });
       const all = [...standing, ...pre];
       return all.length > 0 ? { effects: all } : {};
@@ -294,6 +328,8 @@ function combatantFromSheetBase(
     // Kuyruk S2: metal zırh (Heat Metal; zırh verisinde `metal`).
     ...((armor.find((a) => a.name === sheet.armorName) as { metal?: boolean } | undefined)?.metal ? { metalArmor: true } : {}),
     ...(sheet.shield ? { shieldHeld: true } : {}),
+    // KARAR101: kalkanın AC katkısı (tak/çıkar komutu; yalnız 101+ savaşta okunur).
+    ...(d.shieldAc ? { shieldAc: d.shieldAc } : {}),
     // Devil's Sight (Görev WARLOCK): 120 ft (büyülü karanlık dahil; `maprules.canSee`).
     darkvision: inv.traits.includes('devils-sight') ? Math.max(120, raceDarkvision(sheet)) : raceDarkvision(sheet),
     civilian: false,
@@ -311,7 +347,11 @@ function combatantFromSheetBase(
     modifiers: d.modifiers,
     // Kuyruk 39: Aura of Protection (Paladin 6; kısmi): kendi save'lerine CHA değiştiricisi (en az +1).
     saves: kit.traits.includes('aura-of-protection') ? Object.fromEntries(Object.entries(d.saves).map(([k, v]) => [k, v + Math.max(1, d.modifiers.cha)])) as typeof d.saves : d.saves,
+    // Görev WS92: eşyalardan gelen kurtarma eki (Wild Shape biçiminde eşya kaynaşır: biçimde düşülür).
+    ...(d.itemSaveBonus ? { itemSaveBonus: d.itemSaveBonus } : {}),
     skills: d.skills,
+    // Görev TE99: alet yetkinliği (sınıf ve geçmiş verisinden; Thieves' Tools kilit açma).
+    ...((): Partial<Combatant> => { const t = [...new Set([...(cls.tools ?? []), ...(backgroundById(sheet.backgroundId)?.toolId ? [backgroundById(sheet.backgroundId)!.toolId!] : [])])]; return t.length ? { toolProfs: t } : {}; })(),
     ...(d.jack ? { jack: d.jack } : {}),
     // Görev DRUID: bilinen Wild Shape biçimleri (seçilmediyse uygun bütün biçimler).
     ...(sheet.wildShapeForms?.length ? { wildShapeForms: sheet.wildShapeForms } : {}),
@@ -335,33 +375,42 @@ function combatantFromSheetBase(
     ...((): Partial<Combatant> => {
       // Kuyruk 41b: Divine Intervention gibi listeli kaynak, bilinen uygun büyülere slotsuz kullanım bağlar (feat önce).
       const free = { ...featFreeSpells(sheet) };
+      // Görev B94: `alwaysPreparedOnly` listede her zaman hazır olmayan eşleşmeler (93 ve altı savaşta geri eklenir).
+      const legacy: Record<string, string> = {};
       for (const id of Object.keys(resources)) {
         const list = resourceDef(id)?.freeSpellList;
         if (!list) continue;
         const taken: Record<number, number> = {};
         // Kuyruk 19: oluşturucuda seçilen büyüler (Spell Mastery, Signature Spells) önce; seçilmeyen seviyede ilk bilinen.
         const feat = resourceDef(id)?.feature;
-        const picks = Object.entries(sheet.featureChoices ?? {}).filter(([k]) => typeof feat === 'string' && k.startsWith(`${feat}/`)).map(([, v]) => v);
+        // Görev B93: `pickSlot`: kaynak yalnız o yuvadaki seçime (Signature Spells: her büyüye ayrı kullanım).
+        const slot = resourceDef(id)?.pickSlot;
+        const picks = Object.entries(sheet.featureChoices ?? {}).filter(([k]) => typeof feat === 'string' && (slot ? k === `${feat}/${slot}` : k.startsWith(`${feat}/`))).map(([, v]) => v);
         const pickedLevels = new Set(picks.map((n) => spells.find((x) => x.name === n)?.level));
         for (const n of [...picks.filter((x) => known.includes(x)), ...known.filter((x) => !pickedLevels.has(spells.find((y) => y.name === x)?.level))]) {
           const sp = spells.find((x) => x.name === n);
-          if (sp && ((sp.level >= (list.minLevel ?? 1) && sp.level <= list.maxLevel && sp.castingTime !== 'reaction'
+          if (sp && (!list.castingTime || sp.castingTime === list.castingTime) && ((sp.level >= (list.minLevel ?? 1) && sp.level <= list.maxLevel && sp.castingTime !== 'reaction'
             && (list.names ? list.names.includes(sp.name) : sp.classes.some((c) => list.classes.includes(c)))) || list.extraNames?.includes(sp.name))) {
             // Kuyruk 18 H3: `perLevel` (Spell Mastery 1, Signature Spells 2): seviye başına ilk N bilinen büyü.
             if (list.perLevel !== undefined && (taken[sp.level] ?? 0) >= list.perLevel) continue;
+            if (list.alwaysPreparedOnly && !kit.alwaysPrepared.includes(sp.name)) { if (free[n] === undefined && legacy[n] === undefined) legacy[n] = id; continue; }
             if (free[n] === undefined) { free[n] = id; taken[sp.level] = (taken[sp.level] ?? 0) + 1; }
           }
         }
       }
-      return Object.keys(free).length ? { freeSpells: free } : {};
+      return { ...(Object.keys(free).length ? { freeSpells: free } : {}), ...(Object.keys(legacy).length ? { freeSpellsPre94: legacy } : {}) };
     })(),
     // F1: Magic Initiate büyüleri feat'in yeteneğiyle (sınıf büyüsü olarak da biliniyorsa sınıfınki geçerli).
     ...((): Partial<Combatant> => {
       const own = new Set([...(sheet.spellNames ?? []), ...kit.alwaysPrepared]);
-      const stats = Object.fromEntries(Object.entries(magicInitiateAbilities(sheet)).filter(([n]) => !own.has(n))
+      // Görev TE99: seçilen soy büyüsü yeteneği (büyücü sınıfta da; sınıf listesinde bilinen büyü sınıfınkiyle).
+      const la = sheet.lineageAbility;
+      const lin: Record<string, 'int' | 'wis' | 'cha'> = la ? Object.fromEntries(lineageSpells(sheet).map((n) => [n, la])) : {};
+      const stats = Object.fromEntries(Object.entries({ ...lin, ...magicInitiateAbilities(sheet) }).filter(([n]) => !own.has(n))
         .map(([n, ab]) => [n, { dc: 8 + d.proficiency + d.modifiers[ab], attack: d.proficiency + d.modifiers[ab] }]));
       return Object.keys(stats).length ? { spellStats: stats } : {};
     })(),
+    ...(ritualOnly.length ? { ritualOnly } : {}),
     casterTag: `${race.name} ${cls.name}`.toLowerCase(),
     attacks: [],
     multiattack: false,
@@ -428,7 +477,10 @@ function combatantFromSheetBase(
     ...((): Partial<Combatant> => {
       const code = cls.spellCode;
       const own = code ? (sheet.spellNames ?? []).filter((n) => spells.find((x) => x.name === n)?.classes.includes(code)) : [];
-      return own.length ? { classSpells: own } : {};
+      // Görev B93 (SRD 5.2.1 s. 65; kullanıcı onayı, K11 sapması kalktı): sınıf/alt sınıf özelliğinin her zaman hazır
+      // büyüleri (Draconic Spells) Sorcerer büyüsü sayılır; Innate Sorcery sürüm 93+'da bunlara da (`classSpellsAlways`).
+      const always = code ? kit.alwaysPrepared.filter((n) => !own.includes(n)) : [];
+      return { ...(own.length ? { classSpells: own } : {}), ...(own.length && always.length ? { classSpellsAlways: always } : {}) };
     })(),
     // Görev SORCERER: seçilen Metamagic seçenekleri ve bedelleri; Font of Magic puan tavanı.
     ...((): Partial<Combatant> => {
@@ -484,9 +536,14 @@ export function monsterSenses(monster: Pick<Monster, 'unsupported'>): Combatant[
 }
 
 export function combatantFromMonster(
-  monster: Monster,
-  opts: { id: string; name?: string; height?: Height },
+  monster0: Monster,
+  /** Görev D1: `kuralSurumu` (yoksa yeni savaşın sürümü `defaultRuleVersion()`): < 86'da SRD düzeltmesi öncesi veri. */
+  opts: { id: string; name?: string; height?: Height; kuralSurumu?: number },
 ): Combatant {
+  const v = opts.kuralSurumu ?? defaultRuleVersion();
+  const monster = monsterAt(monster0, v);
+  const type = creatureTypeAt(monster.id, v);
+  const swimFt = swimSpeedAt(monster.id, v);
   const mods = {} as Scores;
   for (const a of ABILITIES) mods[a as Ability] = abilityModifier(monster.abilities[a]);
   const who = { skills: monster.skills ?? {}, modifiers: mods };
@@ -494,8 +551,8 @@ export function combatantFromMonster(
     id: opts.id,
     monsterId: monster.id,
     ...(monster.egitimli ? { egitimli: true as const } : {}),
-    // SRD yaratık türü (Divine Smite, Protection from Evil and Good; data/canavar-turleri.json).
-    ...((creatureTypes.types as Record<string, string>)[monster.id] ? { creatureType: (creatureTypes.types as Record<string, string>)[monster.id] } : {}),
+    // SRD yaratık türü (Divine Smite, Protection from Evil and Good; data/canavar-turleri.json; Görev D1: sürüme göre).
+    ...(type ? { creatureType: type } : {}),
     name: opts.name ?? monster.name,
     avatar: monsterAvatar(monster),
     side: 'enemies',
@@ -504,7 +561,10 @@ export function combatantFromMonster(
     hp: monster.hp,
     maxHp: monster.hp,
     speed: monster.speed,
-    initiativeBonus: mods.dex,
+    ...(swimFt ? { swimFt } : {}),
+    // KAPSAM103 (103+; SRD 5.2.1 stat bloğu "Initiative +X"): canavarın inisiyatifi stat bloğundan (yetkinlik/özellik dahil);
+    // alan yoksa (özel canavar) ya da eski savaşta DEX değiştiricisi.
+    initiativeBonus: v >= KAPSAM103_VERSION && monster.initiative !== undefined ? monster.initiative : mods.dex,
     initiative: 0,
     height: opts.height ?? 0,
     pos: null,
@@ -632,7 +692,58 @@ export interface MapChoice {
   ruleParams?: Record<string, Record<string, number | string>>;
 }
 
+/**
+ * Görev D1 (kural sürümü 86): canavar savaşçısını sürümün verisine çeker. Savaşçılar `startBattle`'dan önce kurulur
+ * (Game Master ekranı, simülasyon, testler); sürüm < 86 savaşta güncel veriden kurulmuş savaşçının SRD düzeltmesi geçen
+ * alanları (tür, değiştiriciler, kurtarmalar, STR puanı, tırmanma değiştiricisi, yüzme hızı, saldırı tekrarı) eski
+ * değerlere döner. Alan güncel veriyle aynı değilse (çağrı seçimi, sonradan değişiklik) dokunulmaz; tekrar çağrılabilir.
+ */
+export function srdD1Revert(c: Combatant, v: number): Combatant {
+  if (v >= SRD_D1_VERSION || !c.monsterId || !hasSrdD1(c.monsterId)) return c;
+  let m: Monster;
+  try { m = getMonster(c.monsterId); } catch { return c; }
+  const now = combatantFromMonster(m, { id: c.id, kuralSurumu: SRD_D1_VERSION });
+  const old = combatantFromMonster(m, { id: c.id, kuralSurumu: v });
+  const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+  const out: Combatant = { ...c };
+  for (const k of ['creatureType', 'modifiers', 'saves', 'strScore', 'climbMod', 'swimFt'] as const) {
+    if (same(c[k], now[k]) && !same(now[k], old[k])) {
+      if (old[k] === undefined) delete out[k];
+      else (out as unknown as Record<string, unknown>)[k] = old[k];
+    }
+  }
+  if (c.attacks.length === now.attacks.length) {
+    out.attacks = c.attacks.map((a, i) => (a.repeat === now.attacks[i]?.repeat && old.attacks[i] && old.attacks[i]!.repeat !== a.repeat ? { ...a, repeat: old.attacks[i]!.repeat } : a));
+  }
+  return out;
+}
+
+/** Görev WS92: canavar saldırılarının hasar zarı savaşın kural sürümündeki veriden (92'de "1d2" → "1" düzeltmesi geri alınır). */
+export function ws92DiceRevert(c: Combatant, v: number): Combatant {
+  if (v >= WS92_VERSION || !c.monsterId || !hasSrdD1(c.monsterId)) return c;
+  let m: Monster;
+  try { m = getMonster(c.monsterId); } catch { return c; }
+  const old = monsterAt(m, v);
+  if (old === m) return c;
+  let changed = false;
+  const attacks = c.attacks.map((a) => {
+    const now = m.attacks.find((x) => x.name === a.name)?.damageDice;
+    const was = old.attacks.find((x) => x.name === a.name)?.damageDice;
+    if (now === undefined || was === undefined || now === was || a.damageDice !== now) return a;
+    changed = true;
+    return { ...a, damageDice: was };
+  });
+  return changed ? { ...c, attacks } : c;
+}
+
 /** Korunacak masum (GM yönetir, silahsız, eylem yapmaz). Değerler haritanın `objective` kuralından. */
+/** Görev B94 (A2): `combatantFromSheet`'in save'lere yazdığı kendi aura bonusunu çıkarır (işaret `auraOwnLive`). */
+export function unbakeOwnAura(c: Combatant): Combatant {
+  if (!c.traits?.includes('aura-of-protection') || c.auraOwnLive) return c;
+  const b = Math.max(1, c.modifiers.cha);
+  return { ...c, auraOwnLive: true, saves: Object.fromEntries(Object.entries(c.saves).map(([k, v]) => [k, v - b])) as Combatant['saves'] };
+}
+
 export function civilianCombatant(index: number, stats: { hp: number; ac: number; speedHexes: number }, gorselId = defaultCivilianLook(index)): Combatant {
   const look = civilianLook(gorselId);
   return {
@@ -665,7 +776,7 @@ function multiHexWide(map: { tiles?: string[] }): boolean {
  * anahtarlarıyla).
  */
 export function buildMapState(m: ReturnType<typeof getMap>, variantId: string, toggles: Record<string, boolean>, params?: Record<string, Record<string, unknown>>,
-  options?: string[]): MapState {
+  options?: string[], surum?: number): MapState {
   return {
     id: m.id, variantId, mirrored: m.mirrored, tiles: [...m.tiles],
     ...(options && options.length > 0 ? { options: [...options] } : {}),
@@ -676,7 +787,8 @@ export function buildMapState(m: ReturnType<typeof getMap>, variantId: string, t
     // Kuyruk 16 K16B: hazır yüzeyler (yalnızca `surfaces` alanı olan haritada; eski haritalarda alan yok).
     ...(m.surfaces?.length ? { zones: presetZones(m.surfaces) } : {}),
     // Kuyruk 24: Game Master'ın mekanik anahtarları/parametreleri (yalnızca varsayılandan farklılar).
-    ...controlState(m.id, variantId, toggles, params as never),
+    // KARAR101: varsayılan savaşın kural sürümüne göre (`acikSurum`).
+    ...controlState(m.id, variantId, toggles, params as never, surum),
     // Kuyruk 26: yükseklik katmanı (yalnızca katmanlı haritada; eski haritalarda alan yok).
     ...(m.heights ? { heights: m.heights.map((row) => [...row]) } : {}),
     ...(m.ramps?.length ? { ramps: m.ramps.map((h) => `${h.col},${h.row}`) } : {}),
@@ -689,6 +801,7 @@ export function startBattle(
   participants: Combatant[],
   rng: Rng,
   opts: { map?: MapChoice; diceMode?: DiceMode; multiHex?: boolean; /** Kuyruk K58 G5: yapay zekâ zorluğu (kayıtta). */ yz?: BattleState['yz']; yuzeyEtkilesimi?: boolean; kuralSurumu?: number; houseRules?: Record<string, boolean>; goals?: Goals | null; groupStates?: Record<string, { state?: GroupState; links?: string[] }>;
+    /** Kuyruk KQ3 NA1: Taşıma yükü oda kuralı (nesne ağırlığı sınırı; kapalı ya da yoksa sınır yok). */ tasima?: 'off' | 'srd' | 'tiered';
     /** Kuyruk 31: Serüven savaşı: bitince keşfe devam ve çıkış altıgenleri. */ explore?: { exits: Offset[] } } = {},
 ): { state: BattleState; events: BattleEvent[] } {
   let map: MapState | undefined;
@@ -704,7 +817,7 @@ export function startBattle(
     const m = getMap(opts.map.id, { mirrored, ...(opts.map.variantId ? { variantId: opts.map.variantId } : {}) });
     const variant = opts.map.variantId ? m.variants.find((v) => v.id === opts.map?.variantId) : m.variants[0];
     if (!variant) throw new Error(`Harita varyantı bulunamadı: "${opts.map.variantId ?? ''}"`);
-    map = buildMapState(m, variant.id, opts.map.ruleToggles ?? defaultRuleToggles(), opts.map.ruleParams, opts.map.options);
+    map = buildMapState(m, variant.id, opts.map.ruleToggles ?? defaultRuleToggles(), opts.map.ruleParams, opts.map.options, opts.kuralSurumu ?? defaultRuleVersion());
     env = environmentFor(m, variant.id);
     if (opts.goals === undefined && m.goals) goals = goalsFromData(m.goals);
     groups = groupsFrom(m.groups, opts.groupStates);
@@ -743,6 +856,41 @@ export function startBattle(
   }
   // Remarkable Athlete (Champion; Görev F): inisiyatifte avantaj.
   const rules = opts.kuralSurumu ?? defaultRuleVersion();
+  // Görev D1: sürüm < 86 savaşta canavarlar SRD düzeltmesi öncesi veriyle (eski kayıt/simülasyon aynı).
+  if (rules < SRD_D1_VERSION) participants = participants.map((p) => srdD1Revert(p, rules));
+  // Görev WS92: 92'de düzeltilen saldırı zarı (sabit 1 hasar) daha eski kural sürümüyle başlayan savaşta eski değerle.
+  if (rules < WS92_VERSION) participants = participants.map((p) => ws92DiceRevert(p, rules));
+  // Görev B94 (A2, sürüm 94+): Aura of Protection'ın Paladin'e kendi bonusu sheet'ten çıkar, aura yolundan (`auraSaveOf`)
+  // gelir: Incapacitated/0 HP iken sürmez (SRD 5.2.1 s. 55).
+  if (rules >= B94_VERSION) participants = participants.map(unbakeOwnAura);
+  // Görev B95-B (97+): durum görmeyen sınıf yardımcıları (Relentless Rage…) için savaşçı işareti.
+  if (rules >= SINIF97_VERSION) participants = participants.map((p) => ({ ...p, sinif97: true }));
+  // KAPSAM103 (103+): durum görmeyen sınıf yardımcıları (Empowered Evocation, Gift of the Depths) için savaşçı işareti.
+  if (rules >= KAPSAM103_VERSION) participants = participants.map((p) => ({ ...p, k103: true }));
+  // Görev TE99 (99+, SRD 5.2.1 s. 90 Two-Handed): kalkan takılıyken iki elli silah seçeneği saldırı listesinden çıkar
+  // (yapay zekâ, fırsat saldırısı, Hazırla aynı listeden); arayüz nedeniyle gösterir (`shieldBlocked`).
+  // Görev TE99: eşya bonusu bağı (`te99Alt`) sürüme göre; Javelin of Lightning (99+) Javelin seçeneğine Lightning türü.
+  participants = participants.map((p) => !p.weaponOptions.some((o) => o.te99Alt) ? p
+    : { ...p, weaponOptions: p.weaponOptions.map(({ te99Alt, ...o }) => (rules >= TE99_VERSION && te99Alt ? te99Alt : o)) });
+  // KARAR101: kalkan tak/çıkar yalnız 101+ savaşta (eski savaşta alan yok: durum eskisiyle aynı).
+  if (rules < KARAR101_VERSION) participants = participants.map((p) => { if (p.shieldAc === undefined) return p; const { shieldAc: _s, ...rest } = p; return rest; });
+  // KARAR101 (101+; SRD 5.2.1 s. 85 Stone's Endurance "When you take damage, you can take a Reaction"): her hasarda tepki
+  // (`damageEffects`); isabet tepkisi yolundan çıkar.
+  if (rules >= KARAR101_VERSION) participants = participants.map((p) => !p.reactions?.some((r) => r.id === STONE_ID) ? p
+    : { ...p, reactions: p.reactions.map((r) => (r.id === STONE_ID ? { ...r, anyDamage: true } : r)) });
+  if (rules >= TE99_VERSION) participants = participants.map((p) => {
+    const swap = (p.itemHits ?? []).filter((h) => h.replaceType && h.weaponId);
+    if (swap.length) p = { ...p, weaponOptions: p.weaponOptions.map((o) => { const h = swap.find((x) => x.weaponId === o.weaponId); return h ? { ...o, altDamageType: h.type } : o; }) };
+    const blocked = p.weaponOptions.filter((o) => o.shieldBusy);
+    return blocked.length ? { ...p, weaponOptions: p.weaponOptions.filter((o) => !o.shieldBusy), shieldBlocked: blocked } : p;
+  });
+  // Görev B94 (sürüm 94+, SRD 5.2.1 s. 46 Natural Recovery: "a spell … from your Circle Spells feature"): seçili arazinin dışındaki
+  // daire büyüleri slotsuz yapılmaz. 93 ve altı savaşta eski liste (`freeSpellsPre94` geri eklenir).
+  participants = participants.map((p) => {
+    if (!p.freeSpellsPre94) return p;
+    const { freeSpellsPre94: old, ...rest } = p;
+    return rules >= B94_VERSION ? rest as Combatant : { ...rest, freeSpells: { ...old, ...(p.freeSpells ?? {}) } } as Combatant;
+  });
   const rolled = participants.map((p) => {
     const tag = rollTag(rng, { kind: 'initiative', by: p.id, bonus: p.initiativeBonus });
     // Kuyruk 17 H: inisiyatif atılırken Incapacitated olan dezavantajlı atar (SRD 5.2.1 Incapacitated "Surprised");
@@ -754,7 +902,9 @@ export function startBattle(
       || (p.traits?.includes('initiative-advantage') === true && !!globalRule({ map, kuralSurumu: rules } as unknown as BattleState, 'srdK19'))
       // Kuyruk P9: ek paket `zarEtkisi.inisiyatifAvantaji` (sürüm 38+).
       || (rules >= 38 && paketInitAdv(p));
-    const dis = isIncapacitated(p.conditions);
+    // Görev TE99 (sürüm 99+, SRD 5.2.1 s. 13 inisiyatif DEX kontrolü; s. 92 Armor Training "any D20 Test that involves …
+    // Dexterity"): DEX kontrol dezavantajı (eğitimsiz zırh, ağır yük) inisiyatifte de.
+    const dis = isIncapacitated(p.conditions) || (rules >= TE99_VERSION && (p.effects ?? []).some((e) => e.checkDis?.includes('dex')));
     const d = adv !== dis ? rollD20(adv ? 'advantage' : 'disadvantage', tag).kept : rollDie(20, tag);
     // Bitkinlik (Görev S1): inisiyatif DEX kontrolü, −2 × seviye.
     // Kuyruk AS1b (sürüm 71): iç mekân haritasında alt soyun inisiyatif farkı.
@@ -785,13 +935,43 @@ export function startBattle(
     ...(opts.houseRules ? { houseRules: { ...opts.houseRules } } : {}),
     // Görev S3: hedefler: Game Master'ın listesi (null = hedefsiz), yoksa haritanın hazır hedefleri.
     ...(goals ? { goals } : {}),
+    ...(opts.tasima ? { tasima: opts.tasima } : {}),
     // Görev S4: uyuyan/habersiz gruplar (üyeler savaş başında, `groups_formed`).
     ...(groups ? { groups } : {}),
   };
   // Kuyruk 24: Orman mekaniklerinin savaş başı kısmı (alarm grupları, kütük siperi, nehir; kural sürümü 3 ve Game Master anahtarı).
   // Kuyruk K48: Moral tam modu (ev kuralı + sürüm 20): karakterlere havuz; kapalıysa kayıtlı Moral alanı silinir.
-  const final = withPaket(withImza(withKaradul(withMorale(withSoy(withCelestial(stripItemsWhenOff(map ? applyForestStart(state) : state)))))));
+  const built = withPaket(withImza(withKaradul(withMorale(withSoy(withCelestial(stripItemsWhenOff(map ? applyForestStart(state) : state)))))));
+  // Mekanik matris (sürüm 83+): durum bilmeyen save yolları için sürüm işareti baştan (sonra `syncAuras` korur; replay aynı).
+  const m83 = matrisOn(built);
+  const g96 = genel96On(built);
+  const t99 = te99On(built);
+  const final = m83 || g96 ? { ...built, combatants: Object.fromEntries(Object.entries(built.combatants).map(([k, c]) => [k, { ...c, ...(m83 ? { srd83: true as const } : {}), ...(g96 ? { srd96: true as const } : {}), ...(t99 ? { te99: true as const } : {}) }])) } : built;
   return { state: final, events: [{ type: 'battle_started', state: final }] };
+}
+
+/**
+ * Görev B93: `spellPicks` içinde `fromBook: true` olan seçimler (Spell Mastery, Signature Spells): büyü kitabındaki (eski
+ * kayıtta hazırlananlar) seçilen büyü her zaman hazır. Seçim yoksa ya da kitapta değilse eklenmez (kaynak hazırlanandan seçer).
+ */
+/** Görev B93: SRD kaydında Ritual etiketi olan büyü (veride `srd: "spells:<kimlik>"`). */
+function srdRitual(name: string): boolean {
+  const id = spells.find((x) => x.name === name)?.srd?.replace(/^spells:/, '');
+  return !!id && !!(srdSpells.spells as Array<{ id: string; ritual?: boolean }>).find((x) => x.id === id)?.ritual;
+}
+
+export function bookPicks(sheet: CharacterSheet): string[] {
+  const out: string[] = [];
+  const book = new Set([...(sheet.spellbook ?? []), ...(sheet.spellNames ?? [])]);
+  for (const f of gainedFeatures(sheet.classId, sheet.level, sheet.subclassId)) {
+    for (const p of f.mechanic?.spellPicks ?? []) {
+      if (!p.fromBook || sheet.level < (p.minClassLevel ?? 1)) continue;
+      const chosen = sheet.featureChoices?.[`${f.key}/${p.slot}`];
+      const sp = chosen ? spells.find((x) => x.name === chosen) : undefined;
+      if (sp && book.has(sp.name) && sp.level === p.level && sp.classes.includes(p.cls ?? 'Wiz') && (!p.castingTime || sp.castingTime === p.castingTime) && !out.includes(sp.name)) out.push(sp.name);
+    }
+  }
+  return out;
 }
 
 /** Kuyruk 19 (görev 3): `spellPicks` içinde `all: true` olan seçimler (Mystic Arcanum): seviye eşiğine ulaşılmışsa seçilen ya da ilk uygun büyü. */

@@ -7,21 +7,35 @@
  *   dezavantajı), Illumination (ışık), Flyby (uçarken fırsat saldırısı almaz), Fire Aura (dokunana/başlayana 1d10
  *   Fire), Stench (5 ft'te tur başlayan CON save ya da Poisoned), Spider Climb, Ice Walk (buz/kar) / Web Walker (ağ).
  */
-import { getMonster, monsterSpells, spells } from '../data';
+import { ws92On } from './ws92Surum';
+import ws92Data from '../../data/ws92.json';
+import { getMonster, monsterSpells, spells, type Monster } from '../data';
 import { hasDarkness } from './maprules';
+import { monsterAt } from './srdD1';
+import { masterExceptions } from './srdD3';
+import { srdD3On } from './srdD3Surum';
+import { shape91On } from './shape91Surum';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, SpellZone } from './types';
 
 const CONDS = ['Blinded', 'Charmed', 'Deafened', 'Exhaustion', 'Frightened', 'Grappled', 'Incapacitated', 'Invisible', 'Paralyzed', 'Petrified', 'Poisoned', 'Prone', 'Restrained', 'Stunned', 'Unconscious'];
 
-export function monsterTraitParts(state: BattleState, c: Combatant): { effects: ActiveEffect[]; traits: string[]; senses?: Combatant['senses']; zones: SpellZone[] } {
+/** `m0`: canavar kaydı (Görev D2: çağrı bloğu gibi `monsters.json`'da olmayan kayıt için); yoksa `getMonster(c.monsterId)`. */
+export function monsterTraitParts(state: BattleState, c: Combatant, m0?: Monster): { effects: ActiveEffect[]; traits: string[]; senses?: Combatant['senses']; zones: SpellZone[] } {
   const out = { effects: [] as ActiveEffect[], traits: [] as string[], zones: [] as SpellZone[] } as { effects: ActiveEffect[]; traits: string[]; senses?: Combatant['senses']; zones: SpellZone[] };
   if (!c.monsterId) return out;
   let m;
-  try { m = getMonster(c.monsterId); } catch { return out; }
+  try { m = m0 ?? getMonster(c.monsterId); } catch { return out; }
+  // Görev D1: veri savaşın kural sürümünde (85 ve altı: eksik durum bağışıklığı notları SRD düzeltmesi öncesi gibi yok).
+  m = monsterAt(m, state.kuralSurumu ?? 1);
   const u = (m.unsupported ?? []) as string[];
   const fx: Partial<ActiveEffect> = {};
   for (const s of u) {
-    if (s.startsWith('Durum bağışıklığı:')) fx.immune = s.slice(18).split(',').map((x) => x.trim()).filter((x) => CONDS.includes(x));
+    // Görev WS91 (91+; SRD s. 305 Archmage "Charmed (with Mind Blank)"): koşullu bağışıklık, koşulun büyüsü stat bloğunda
+    // "cast before combat" yazılıysa savaşta geçerli (`beforeCombat`).
+    if (s.startsWith('Durum bağışıklığı:')) fx.immune = s.slice(18).split(',').map((x) => x.trim())
+      .map((x) => (shape91On(state) ? withSpell(x, c.monsterId as string) : x)).filter((x) => CONDS.includes(x));
+    // Görev WS91 (91+; SRD s. 183 "Flying", "Hover"): süzülen canavar Prone/Incapacitated/hız 0 iken düşmez (`altitude.ts`).
+    else if (s === 'Hover' && shape91On(state)) out.traits.push('hover');
     else if (s.startsWith('Hız: Climb') || s === 'Trait: Spider Climb') fx.climb = true;
     else if (s.startsWith('Hız: Swim')) out.traits.push('gift-of-the-depths');
     else if (s.startsWith('Duyu:')) {
@@ -31,7 +45,12 @@ export function monsterTraitParts(state: BattleState, c: Combatant): { effects: 
     else if (s === 'Trait: Sunlight Sensitivity' && state.map && !hasDarkness(state)) fx.attackDis = {};
     // Kuyruk A7: karanlık haritada güneş ışığına (Daylight) girince (sürüm 36+, `divine.ts` wardSources).
     else if (s === 'Trait: Sunlight Sensitivity' && state.map) out.traits.push('sunlight-sensitive');
-    else if (s === 'Trait: Illumination') fx.light = 6;
+    // Görev WS92 (92+; SRD "Bright Light in a N-foot radius and Dim Light for an additional N feet"): parlak + ek loş
+    // stat bloğundan (`data/ws92.json`). 91 ve altı: hepsinde 30 ft parlak.
+    else if (s === 'Trait: Illumination') {
+      const il = (ws92Data.illumination as Record<string, number[]>)[m.id];
+      Object.assign(fx, ws92On(state) && il ? { light: il[0], lightDim: il[1] } : { light: 6 });
+    }
     else if (s === 'Trait: Flyby') out.traits.push('flyby');
     // SRD: Web Walker yalnızca ağların, Ice Walk yalnızca buz/karın hareket kısıtını kaldırır (Freedom of Movement değil).
     else if (s === 'Trait: Web Walker') fx.webWalker = true;
@@ -45,11 +64,26 @@ export function monsterTraitParts(state: BattleState, c: Combatant): { effects: 
           : { on: ['start', 'enter'], once: true, targets: 'enemies', damageType: 'fire', color: '#ff7a33', icon: '🔥' } });
     }
   }
+  // Görev D3 (89+): efendi istisnası (Vampire Familiar: efendisi Vampire'dan Charmed olur; `data/srd-d3.json`).
+  const except = srdD3On(state) && fx.immune?.length ? masterExceptions(c.monsterId) : undefined;
+  if (except) {
+    const own = Object.fromEntries(Object.entries(except).filter(([k]) => fx.immune?.includes(k)));
+    if (Object.keys(own).length) fx.immuneExcept = own;
+  }
   if (Object.keys(fx).length) out.effects.push({ ...fx, id: `srd19:${c.id}:traits`, name: m.name, sourceId: c.id } as ActiveEffect);
   return out;
 }
 
 type SpellRef = { name: string; level?: number; note?: string };
+
+/** "Charmed (with Mind Blank)": büyü canavarın büyülerinde "cast before combat" ise "Charmed", değilse olduğu gibi (sayılmaz). */
+function withSpell(x: string, monsterId: string): string {
+  const m = /^(\w+) \(with (.+)\)$/.exec(x);
+  if (!m) return x;
+  const rec = monsterSpells[monsterId] as MonsterSpellRec | undefined;
+  const all = [...(rec?.spellcasting?.atWill ?? []), ...(rec?.spellcasting?.daily ?? []).flatMap((g) => g.spells)];
+  return all.some((r) => r.name === m[2] && r.note === 'cast before combat') ? (m[1] as string) : x;
+}
 type MonsterSpellRec = {
   spellcasting?: { ability: string; dc: number; attack?: number; atWill: SpellRef[]; daily: { uses: number; spells: SpellRef[] }[] };
   bonus?: { entry: string; uses?: number; spells: SpellRef[] }[];
@@ -92,19 +126,32 @@ export function monsterSpellParts(c: Combatant): Partial<Combatant> | null {
   };
 }
 
+/**
+ * Tek canavarın özellik kurulumu (canavar özellikleri, duyular, auralar, canavar büyüleri). Savaş başında
+ * `withMonsterTraits`, Görev D2'den beri (sürüm 88) savaş sırasında eklenen canavarda `monsterSetup.ts` aynı işlevi kullanır.
+ */
+export function monsterTraitSetup(state: BattleState, c0: Combatant, m?: Monster): { c: Combatant; zones: SpellZone[] } {
+  let c = c0;
+  const p = monsterTraitParts(state, c, m);
+  const sp = monsterSpellParts(c);
+  if (sp) c = { ...c, ...sp };
+  return {
+    zones: p.zones,
+    c: !p.effects.length && !p.traits.length && !p.senses ? c : {
+      ...c, effects: [...(c.effects ?? []), ...p.effects], ...(p.traits.length ? { traits: [...new Set([...(c.traits ?? []), ...p.traits])] } : {}),
+      ...(p.senses ? { senses: p.senses } : {}),
+    },
+  };
+}
+
 /** Savaş başında bütün canavarlara (ve haritaya: auralar) uygulanır. */
 export function withMonsterTraits(state: BattleState): BattleState {
   const combatants: Record<string, Combatant> = {};
   const zones: SpellZone[] = [];
-  for (let [id, c] of Object.entries(state.combatants)) {
-    const p = monsterTraitParts(state, c);
-    zones.push(...p.zones);
-    const sp = monsterSpellParts(c);
-    if (sp) c = { ...c, ...sp };
-    combatants[id] = !p.effects.length && !p.traits.length && !p.senses ? c : {
-      ...c, effects: [...(c.effects ?? []), ...p.effects], ...(p.traits.length ? { traits: [...new Set([...(c.traits ?? []), ...p.traits])] } : {}),
-      ...(p.senses ? { senses: p.senses } : {}),
-    };
+  for (const [id, c] of Object.entries(state.combatants)) {
+    const r = monsterTraitSetup(state, c);
+    zones.push(...r.zones);
+    combatants[id] = r.c;
   }
   const map = state.map && zones.length ? { ...state.map, zones: [...(state.map.zones ?? []), ...zones] } : state.map;
   return { ...state, combatants, ...(map ? { map } : {}) };

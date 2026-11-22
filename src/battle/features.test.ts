@@ -368,10 +368,13 @@ describe('parti yapay zekâsı sınıf özelliklerini kullanır', () => {
     expect(chooseCommand(s)).toEqual({ type: 'spell_followup', actorId: 'Tavi', targetId: 'E' });
   });
   it('savaşçı bu tur yürüyerek kılıcına ulaşabiliyorsa arbaletle atmak yerine yürür', () => {
-    const s = battle([bor(), dummy('E')], { Bor: o(2, 3), E: o(6, 3) });
+    // Görev KALAN100: sim partisinde Bor kalkan + Javelin (TE99'dan beri kalkanla Two-Handed silah yok); bu test yakın dövüş ↔ menzilli
+    // seçimini sınadığı için kalkansız, Light crossbow'lu Bor kopyasıyla ve güncel kural sürümüyle.
+    const archer = () => combatantFromSheet({ ...(PARTY[0] as (typeof PARTY)[number]), shield: false, weapons: [{ name: 'Longsword' }, { name: 'Light crossbow' }] }, { id: 'Bor', ownerId: 'p1' });
+    const s = battle([archer(), dummy('E')], { Bor: o(2, 3), E: o(6, 3) });
     const cmd = chooseCommand(s);
     expect(cmd.type).toBe('move');
-    const far = battle([bor(), dummy('E')], { Bor: o(0, 3), E: o(14, 3) });
+    const far = battle([archer(), dummy('E')], { Bor: o(0, 3), E: o(14, 3) });
     // Kılıca bu tur ulaşamıyor: yerinden arbaletle atar.
     expect(chooseCommand(far)).toMatchObject({ type: 'attack', option: { label: 'Light crossbow' } });
   });

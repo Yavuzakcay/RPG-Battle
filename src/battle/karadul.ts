@@ -12,7 +12,7 @@
  */
 import { as2On } from './as2Surum';
 import data from '../../data/karadul.json';
-import creatureTypes from '../../data/canavar-turleri.json';
+import { creatureTypeAt } from './srdD1';
 import { getMonster, type Monster } from '../data';
 import { gap64 } from './adjacency';
 import { fail, finish, type CommandResult } from './common';
@@ -34,7 +34,6 @@ export const KARADUL_ID = data.subclass.id;
 export const GAZE_KEY = 'ev:karadul/gaze';
 export const SPIDER_KEY = 'ev:karadul/spider';
 export const SPIDER_WEAPON = 'karadul:spider';
-const TYPES = creatureTypes.types as Record<string, string>;
 const R = data.kaynaklar;
 
 /** Görev AS2: 78+ savaşta hep açık (alt sınıf hep seçilebilir); 21–77 ev kuralı `karadulCemberi` ile (eski kayıt/replay). */
@@ -80,7 +79,8 @@ export function withKaradul(state: BattleState): BattleState {
 const gazeId = (actor: Combatant) => `karadul:gaze:${actor.id}`;
 const charmedBy = (target: Combatant, actor: Combatant) => !!target.effects?.some((e) => e.id === gazeId(actor));
 const charmCount = (state: BattleState, actor: Combatant) => Object.values(state.combatants).filter((c) => charmedBy(c, actor)).length;
-const typeOf = (c: Combatant) => (c.monsterId ? TYPES[c.monsterId] : 'humanoid');
+// Görev D1: tür savaşın kural sürümündeki veriden (85 ve altı: SRD düzeltmesi öncesi).
+const typeOf = (state: BattleState, c: Combatant) => (c.monsterId ? creatureTypeAt(c.monsterId, state.kuralSurumu ?? 1) : 'humanoid');
 
 export function karadulProblem(state: BattleState, actor: Combatant, f: UsableFeature, targetId?: string): string | null {
   if (!karadulOn(state)) return `${f.name}: Karadul Çemberi ev kuralı kapalı.`;
@@ -94,7 +94,7 @@ export function karadulProblem(state: BattleState, actor: Combatant, f: UsableFe
   if (resourceLeft(actor, R.bakis) <= 0) return `${f.name}: kullanım kalmadı (uzun dinlenmede yenilenir).`;
   const t = targetId ? state.combatants[targetId] : undefined;
   if (!t || t.hp <= 0 || t.side === actor.side) return 'Bir düşman seç.';
-  if (!data.bakis.turler.includes(typeOf(t) ?? '')) return `${t.name} insansı ya da canavar değil.`;
+  if (!data.bakis.turler.includes(typeOf(state, t) ?? '')) return `${t.name} insansı ya da canavar değil.`;
   if (charmedBy(t, actor)) return `${t.name} zaten büyülenmiş.`;
   if (state.map && (!actor.pos || !t.pos || gap64(state, actor, t) * 5 > data.bakis.menzilFt)) return `${data.bakis.menzilFt} ft içinde olmalı.`;
   if (charmCount(state, actor) >= Math.max(data.bakis.enAzHedef, humanMods(actor).cha)) return 'Aynı anda büyüleyebileceğin hedef sınırı doldu (CHA).';

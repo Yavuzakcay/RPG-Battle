@@ -6,6 +6,7 @@
  * aynı kalır. Kuralın `surum` alanı (Kuyruk 24 mekanikleri 3) kural sürümü daha eski savaşlarda kuralı kapatır. Saf.
  */
 import data from '../../data/kural-kontrol.json';
+import surumData from '../../data/kural-surumu.json';
 import { getMap, type MapRuleData } from '../map/maps';
 import type { BattleState, MapState } from './types';
 
@@ -15,7 +16,9 @@ export interface RuleControlSpec { tr: string; en: string; default?: boolean; pa
   /** Kuyruk 24c: harita bağımsız mekanik (her haritada; değerler `defaults` + parametreler; `surum` gereken kural sürümü). */
   global?: boolean; surum?: number; defaults?: Record<string, RuleParamValue>;
   /** Kuyruk 26: yalnızca yükseklik katmanı (`heights`) olan haritalarda (panelde ve motorda). */
-  heights?: boolean }
+  heights?: boolean;
+  /** KARAR101: bu kural sürümünden başlayan savaşta varsayılan açık (`default: false` olsa da; eski savaş eski varsayılanla). */
+  acikSurum?: number }
 export const RULE_CONTROL = data.rules as unknown as Record<string, RuleControlSpec>;
 export const WIND_DIRS = ['N', 'NE', 'SE', 'S', 'SW', 'NW'] as const;
 export type RuleParamValue = number | string;
@@ -26,11 +29,20 @@ let defaultToggles: Record<string, boolean> = {};
 export const setDefaultRuleToggles = (t: Record<string, boolean>): void => { defaultToggles = { ...t }; };
 export const defaultRuleToggles = (): Record<string, boolean> => defaultToggles;
 
+/**
+ * Kuralın veri varsayılanı bu kural sürümünde (KARAR101: `acikSurum`'dan itibaren açık; yoksa `default !== false`).
+ * Sürüm verilmezse güncel sürüm (yeni savaş kurulumu).
+ */
+export function specDefault(spec: RuleControlSpec, surum: number = surumData.surum): boolean {
+  if (spec.acikSurum !== undefined && surum >= spec.acikSurum) return true;
+  return spec.default !== false;
+}
+
 /** Kural bu savaşta açık mı (Game Master seçimi > veri varsayılanı; denetlenmeyen kural hep açık). */
-export function ruleEnabled(map: Pick<MapState, 'ruleToggles'> | undefined, id: string): boolean {
+export function ruleEnabled(map: Pick<MapState, 'ruleToggles'> | undefined, id: string, surum?: number): boolean {
   const spec = RULE_CONTROL[id];
   if (!spec) return true;
-  return map?.ruleToggles?.[id] ?? spec.default !== false;
+  return map?.ruleToggles?.[id] ?? specDefault(spec, surum ?? 1);
 }
 
 /** Kuralın Game Master parametreleriyle birleşmiş hâli. */
@@ -56,7 +68,7 @@ export function controllableRules(mapId: string, variantId: string): Array<{ rul
  */
 export function globalRule(state: Pick<BattleState, 'map' | 'kuralSurumu'>, id: string): MapRuleData | undefined {
   const spec = RULE_CONTROL[id];
-  if (!spec?.global || (state.kuralSurumu ?? 1) < (spec.surum ?? 1) || !ruleEnabled(state.map, id)) return undefined;
+  if (!spec?.global || (state.kuralSurumu ?? 1) < (spec.surum ?? 1) || !ruleEnabled(state.map, id, state.kuralSurumu ?? 1)) return undefined;
   if (spec.heights && !state.map?.heights) return undefined;
   return { id, ...(spec.defaults ?? {}), ...(state.map?.ruleParams?.[id] ?? {}) };
 }
@@ -72,12 +84,12 @@ export function validParam(spec: RuleParamSpec, v: unknown): boolean {
  * Kurulum seçiminden durumda saklanacak alanlar: varsayılandan farklı anahtarlar ve geçerli, kuraldakinden farklı
  * parametreler. Boşsa alan yazılmaz.
  */
-export function controlState(mapId: string, variantId: string, toggles: Record<string, boolean> | undefined, params: RuleParams | undefined):
+export function controlState(mapId: string, variantId: string, toggles: Record<string, boolean> | undefined, params: RuleParams | undefined, surum?: number):
   { ruleToggles?: Record<string, boolean>; ruleParams?: RuleParams } {
   const out: { ruleToggles?: Record<string, boolean>; ruleParams?: RuleParams } = {};
   for (const { rule, spec } of controllableRules(mapId, variantId)) {
     const on = toggles?.[rule.id];
-    if (on !== undefined && on !== (spec.default !== false)) out.ruleToggles = { ...out.ruleToggles, [rule.id]: on };
+    if (on !== undefined && on !== specDefault(spec, surum)) out.ruleToggles = { ...out.ruleToggles, [rule.id]: on };
     for (const ps of spec.params) {
       const v = params?.[rule.id]?.[ps.key];
       if (v === undefined || v === rule[ps.key] || !validParam(ps, v)) continue;

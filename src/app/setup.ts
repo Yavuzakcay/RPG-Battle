@@ -244,6 +244,7 @@ export function createMapBattle(
     civilianPlacement?: CivilianPlacement; civilianSeed?: number; civilianHexes?: Offset[]; strictObjective?: boolean;
     dragon?: string; dragonWake?: DragonWakeMode; dragonWakeChance?: number; civilianArtSeed?: number;
     diceMode?: DiceMode;
+    /** Kuyruk KQ3 NA1: Taşıma yükü kuralı (nesne ağırlığı sınırı). */ carryRule?: CarryRule;
     /** Kuyruk 24: harita mekaniği anahtarları ve parametreleri (Game Master kurulumu). */
     ruleToggles?: Record<string, boolean>; ruleParams?: Record<string, Record<string, number | string>>;
     /** Görev K13B: ev kuralları (kurulum listesi). */
@@ -277,6 +278,7 @@ export function createMapBattle(
       ...(choice.ruleToggles ? { ruleToggles: choice.ruleToggles } : {}), ...(choice.ruleParams ? { ruleParams: choice.ruleParams } : {}),
     },
     ...(choice.diceMode ? { diceMode: choice.diceMode } : {}),
+    ...(choice.carryRule ? { tasima: choice.carryRule } : {}),
     // Kuyruk K20: Celestial ev kuralı Ayarlar'dan (Game Master kurulumunun seçimi önce gelir).
     ...(choice.houseRules || Object.values(characterHouseRules()).some(Boolean) ? { houseRules: { ...Object.fromEntries(Object.entries(characterHouseRules()).filter(([, v]) => v)), ...choice.houseRules } } : {}),
     ...(choice.goals !== undefined ? { goals: choice.goals } : {}),

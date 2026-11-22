@@ -7,6 +7,7 @@
  * (`swallowedBy`, monsterAbilities.ts) ve Corrosive Form cezası (`corroded`). Çağrı yeri `riderConditionEvents` (isabet,
  * tek hedefli save ve alan save'i yolları) ve hasar eklentisi için `withA2Extras`/`a2AreaDamage`. Saf.
  */
+import { ws92On } from './ws92Surum';
 import data from '../../data/canavar-ekleri-a2.json';
 import type { Ability } from '../rules/abilities';
 import { distance, type Offset } from '../rules/hex';
@@ -22,6 +23,7 @@ import { forcedMove } from './motion';
 import { applyEvents } from './reduce';
 import { ruleVersion } from './ruleVersion';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
+import { saveVs } from './te99Surum';
 
 /** A2 eklerinin kural sürümü. */
 export const RIDERS_A2_VERSION = 30;
@@ -43,13 +45,17 @@ export interface A2Spec {
   swallow?: { dice: string; type: string; escapeDamage: number; escapeDc: number; maxSize?: string; grappledOnly?: boolean; escapeCheck?: number };
   corrode?: { armor?: boolean; weapon?: boolean };
   tur: string;
+  /** Görev WS92: bu kural sürümünden itibaren (yoksa A2'den beri). */
+  surum?: number;
   not_?: string;
   kalan?: string;
 }
 export const A2_RIDERS = (data as unknown as { ekler: Record<string, A2Spec> }).ekler;
 
 export function a2Of(state: Pick<BattleState, 'kuralSurumu'>, monsterId: string | undefined, attackName: string): A2Spec | undefined {
-  return monsterId && ridersA2On(state) ? A2_RIDERS[`${monsterId}:${attackName}`] : undefined;
+  const a = monsterId && ridersA2On(state) ? A2_RIDERS[`${monsterId}:${attackName}`] : undefined;
+  // Görev WS92: sonradan eklenen ek, kaydındaki kural sürümünden önceki savaşta yok sayılır (`surum`).
+  return a && (a.surum ?? 0) > ruleVersion(state) ? undefined : a;
 }
 
 /** İsabette ek hasar (rider `extra`'sına eklenir); sürüm 30 altında aynen döner. */
@@ -76,7 +82,7 @@ function effectOf(state: BattleState, actor: Combatant, attackName: string, spec
 }
 
 function saveFails(target: Combatant, save: { ability: Ability; dc: number }, rng: Rng, out: BattleEvent[], condition: string): boolean {
-  const r = resolveSave({ extra: saveDice(target, save.ability), modifier: target.saves[save.ability], dc: save.dc, mode: saveMode('normal', target, save.ability, undefined, { against: [condition] }),
+  const r = resolveSave({ extra: saveDice(target, save.ability), modifier: target.saves[save.ability], dc: save.dc, mode: saveMode('normal', target, save.ability, undefined, { against: [condition] }), ...saveVs(target, [condition]),
     autoFail: (save.ability === 'str' || save.ability === 'dex') && autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
   out.push({ type: 'condition_save', targetId: target.id, condition, ability: save.ability, dc: save.dc, d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { bonusDice: r.extra } : {}) });
   return !r.success;
@@ -146,7 +152,9 @@ export function a2Events(state: BattleState, actor: Combatant, target: Combatant
     const s = a.swallow;
     if (target.grapple) out.push({ type: 'grapple_ended', targetId: target.id, reason: label });
     out.push({ type: 'effect_added', targetId: target.id, effect: { id: `swallow:${actor.id}:${target.id}`, name: `${attackName} (${actor.name})`, sourceId: actor.id, swallowedBy: actor.id,
-      grants: ['Blinded', 'Restrained'], until: state.round + 6000, swallow: { dice: s.dice, type: s.type, escapeDamage: s.escapeDamage, escapeDc: s.escapeDc },
+      grants: ['Blinded', 'Restrained'], until: state.round + 6000, swallow: { dice: s.dice, type: s.type, escapeDamage: s.escapeDamage, escapeDc: s.escapeDc,
+        // Görev WS92 (92+): yutulan midede (konum yutanınki, Total Cover).
+        ...(ws92On(state) ? { inside: true } : {}) },
       ...(s.escapeCheck ? { escapeCheck: { dc: s.escapeCheck } } : {}) } as ActiveEffect });
   }
   // Aşındırma: zırh AC −1 (AC 10'a dek) ya da silah saldırısı −1 (−5'e dek; Corrosive Form yolu).

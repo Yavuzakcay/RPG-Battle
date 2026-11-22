@@ -5,7 +5,10 @@
  * `Avatar.tsx` içinde kullanır.
  */
 import { useState, type CSSProperties, type ReactNode } from 'react';
-import { HALO_CLIP_PCT, lineageLook, wingBox, type LookSheet, type WingLayerSpec } from './lineageLook';
+import { WingFilterDefs } from './WingFilter';
+import { LookContext } from './lookContext';
+import { FOOT_FRAC, lineageLook, wingBox, wingFilterId, type LookSheet, type WingLayerSpec } from './lineageLook';
+import { useWingData } from './wingData';
 
 const BASE = import.meta.env.BASE_URL;
 
@@ -15,21 +18,31 @@ export function WingLayer(props: { wing: WingLayerSpec; size: number }) {
   const [gone, setGone] = useState(false);
   if (gone) return null;
   const b = wingBox(wing, size / 2, size / 2, size);
-  const style: CSSProperties = { width: b.width, height: b.height, left: b.x, top: b.y, ...(wing.filtre ? { filter: wing.filtre } : {}) };
-  return <img className="look-wing" data-wing={wing.id} src={`${BASE}${wing.src}`} alt="" style={style} aria-hidden="true" onError={() => setGone(true)} />;
+  const sp = wing.sprite;
+  const filter = wing.palet ? `url(#${wingFilterId(wing.palet)})` : wing.filtre || undefined;
+  const defs = wing.palet ? <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true"><WingFilterDefs palet={wing.palet} /></svg> : null;
+  // Animasyonlu sayfa: karakter ekranlarında yalnız ilk kare sabit (arka plan kesiti).
+  const style: CSSProperties = { width: b.width, height: b.height, left: b.x, top: b.y, ...(filter ? { filter } : {}),
+    ...(sp ? { backgroundImage: `url(${BASE}${wing.src})`, backgroundSize: `${sp.sutun * 100}% ${sp.satir * 100}%`, backgroundPosition: '0 0', backgroundRepeat: 'no-repeat' } : {}) };
+  if (sp) return <>{defs}<span className="look-wing" data-wing={wing.id} style={style} aria-hidden="true" /></>;
+  return <>{defs}<img className="look-wing" data-wing={wing.id} src={`${BASE}${wing.src}`} alt="" style={{ ...style, ...(wing.esnet ? { objectFit: 'fill' } : {}) }} aria-hidden="true" onError={() => setGone(true)} /></>;
 }
 
 /** `ability`: karakter ekranı (liste, oluşturucu önizlemesi): uçma yeteneği olan karakter havada olmasa da kanatlı görünür. */
 export function LookFrame(props: { sheet: LookSheet; size: number; flying?: boolean; ability?: boolean; children: ReactNode }) {
+  useWingData(); // Paket: kanat verisi tembel.
   const look = lineageLook(props.sheet, { ...(props.flying ? { flying: true } : {}), ...(props.ability ? { ability: true } : {}) });
   const style = {
     width: props.size, height: props.size,
-    '--look-filter': look.filter || 'none', '--look-sx': look.scaleX, '--look-sy': look.scaleY, '--halo-clip': `${HALO_CLIP_PCT}%`,
+    '--look-filter': look.filter || 'none', '--look-sx': look.scaleX, '--look-sy': look.scaleY, '--look-foot': `${FOOT_FRAC * 100}%`,
   } as CSSProperties;
+  // KW1: tek kanatlı slot (Dragonborn) kanadı rozetin içinde çizer (zemin dairesi ile figür arası): burada ayrı katman yok, görünüm bağlamla iner.
+  // ROZET-CERCEVE-KIRPMA: görünüm her zaman bağlamla iner (rozet sığdırması alt soy oranını bilmeli); rozet kanadı yalnız `ayna` slotunda çizer.
+  const inside = !!look.wing?.ayna;
   return (
-    <span className={`look-frame${look.hideHalo ? ' halo-hidden' : ''}`} style={style}>
-      {look.wing && <WingLayer wing={look.wing} size={props.size} />}
-      {props.children}
+    <span className="look-frame" style={style}>
+      {look.wing && !inside && <WingLayer wing={look.wing} size={props.size} />}
+      <LookContext.Provider value={look}>{props.children}</LookContext.Provider>
     </span>
   );
 }

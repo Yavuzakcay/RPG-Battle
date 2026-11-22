@@ -18,6 +18,7 @@
  *   - kolu çek (eylem; yürüyen merdiveni durdurur, Kuyruk 21 D2b).
  * Bütün sonuçlar olaylarda; zarlar rng'den (zar defteri, replay). Saf.
  */
+import { carriersOf, liftPlan, nesneOn, putEvents } from './nesneAgirlik';
 import { executeAttackPanel, panelAreaEvents } from './walls';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { adjustDamage } from '../rules/damage';
@@ -38,6 +39,8 @@ import { areaDamageOf, elementReactionEvents, surfaceEvent } from './surfaces';
 import { terrainOf } from '../map/terrain';
 import { p12On } from './paket/p12surum';
 import type { AttackOption, BattleEvent, BattleState, Combatant, Command, MapObject, ObjectAction, ObjectKind, ObjectState } from './types';
+import { te99On } from './te99Surum';
+import { kapsam103On } from './kapsam103Surum';
 
 const sizeOf = (s: BattleState) => ({ cols: s.map?.tiles[0]?.length ?? 0, rows: s.map?.tiles.length ?? 0 });
 const tileOf = (s: BattleState, h: Offset) => terrainOf(s.map?.tiles[h.row]?.[h.col] ?? '#');
@@ -188,6 +191,11 @@ export function executeObjectUse(state: BattleState, actor: Combatant, objectId:
   const obj = live(state, objectId);
   if (!obj) return fail('Nesne yok.');
   // Kuyruk P12 (sürüm 43+): taşınan büyü kitabını kendi altıgenine bırak (serbest nesne etkileşimi).
+  if (action === 'put' && nesneOn(state) && carriersOf(obj).includes(actor.id)) {
+    // Kuyruk KQ3 NA1 (sürüm 80): taşınan her nesne bırakılır (serbest nesne etkileşimi); ortak yükte yalnız kendi payından çıkar.
+    const ev = putEvents(state, actor, obj);
+    return typeof ev === 'string' ? fail(ev) : finish(state, ev);
+  }
   if (action === 'put') {
     if (obj.kind !== 'spellbook' || !p12On(state)) return fail('Bu nesne bırakılmaz.');
     if (obj.carriedBy !== actor.id || !actor.pos) return fail('Nesneyi taşımıyorsun.');
@@ -214,12 +222,21 @@ export function executeObjectUse(state: BattleState, actor: Combatant, objectId:
       if ((state.map?.objects ?? []).some((o) => o.carriedBy === actor.id && OBJECTS[o.kind]?.key)) {
         return finish(state, [{ type: 'object_changed', objectId: obj.id, state: 'closed', label: `${name} kilidi anahtarla açıldı` }]);
       }
-      const bonus = skillBonus(actor, 'sleightOfHand');
-      const d = rollD20('normal', rollTag(rng, { by: actor.id, kind: 'check' }));
-      const total = d.kept + bonus;
+      // Görev TE99 (99+, SRD 5.2.1 s. 93 Thieves' Tools "Utilize: Pick a lock (DC 15)", s. 20 alet yetkinliği): DEX kontrolü,
+      // aletle yetkinse + yeterlilik, Sleight of Hand'de de yetkinse avantaj. Envanter modeli yok: aleti yetkin olan taşıyor sayılır,
+      // olmayan kilit açamaz (⚠ DECISIONS TE99). 98 ve altı: herkes Sleight of Hand bonusuyla.
+      const t99 = te99On(state);
+      const tool = !!actor.toolProfs?.includes('thieves-tools');
+      if (t99 && !tool) return fail("Kilit açmak için Thieves' Tools gerekir.");
+      const bonus = t99 ? actor.modifiers.dex + actor.proficiency : skillBonus(actor, 'sleightOfHand');
+      const d = rollD20(t99 && actor.skills.sleightOfHand !== undefined ? 'advantage' : 'normal', rollTag(rng, { by: actor.id, kind: 'check' }));
+      // KAPSAM103 (103+; SRD 5.2.1 s. 63 Reliable Talent "ability check that uses one of your skill or tool proficiencies … treat a
+      // d20 roll of 9 or lower as a 10"): alet yetkinliğiyle kilit açmada da.
+      const nat = kapsam103On(state) && tool && actor.traits?.includes('reliable-talent') && d.kept < 10 ? 10 : d.kept;
+      const total = nat + bonus;
       const success = total >= dc;
       return finish(state, [{ type: 'object_changed', objectId: obj.id, ...(success ? { state: 'closed' as const } : {}), label: success ? `${name} kilidi açıldı` : `${name} kilidi açılamadı`,
-        check: { d20: d.kept, total, dc, success } }]);
+        check: { d20: nat, total, dc, success } }]);
     }
   }
   // Kuyruk 21 D2b: kol çekilince yürüyen merdiven durur (geri alınmaz).
@@ -248,8 +265,14 @@ export function executeObjectUse(state: BattleState, actor: Combatant, objectId:
     if (obj.carriedBy) return fail('Nesneyi biri taşıyor.');
     if (actor.civilian || actor.summon) return fail('Bu savaşçı nesne taşımaz.');
     // Kuyruk 36: doğaçlama silah (SRD Improvised Weapons: yetkinliksiz, STR; hasar zarı veriden).
-    const arm = def.weapon ? improvisedOption(actor, def.tr, def.weapon) : undefined;
-    return finish(state, [{ type: 'object_changed', objectId: obj.id, carriedBy: actor.id, label: `${name} alındı`, ...(arm ? { arm } : {}) }]);
+    // Görev TE99 (99+, SRD 5.2.1 s. 183 "An Improvised weapon … deals 1d4 damage"): gerçek silah eşdeğeri olmayan nesne 1d4.
+    const arm = def.weapon ? improvisedOption(actor, def.tr, te99On(state) && !def.weapon.equivalent ? { ...def.weapon, damage: '1d4' } : def.weapon) : undefined;
+    // Kuyruk KQ3 NA1 (sürüm 80): kapasiteyi aşan nesne tek kişiye reddedilir; yeterliyse bitişik dostlar yükü paylaşır.
+    const plan = nesneOn(state) ? liftPlan(state, actor, obj) : { helpers: [] as string[] };
+    if ('problem' in plan) return fail(plan.problem);
+    const helpers = plan.helpers.map((id) => state.combatants[id]?.name ?? id);
+    return finish(state, [{ type: 'object_changed', objectId: obj.id, carriedBy: actor.id, ...(plan.helpers.length ? { carriers: plan.helpers } : {}),
+      label: plan.helpers.length ? `${name} alındı (yük paylaşıldı: ${helpers.join(', ')})` : `${name} alındı`, ...(arm ? { arm } : {}) }]);
   }
   return fail('Bu nesneyle bu yapılamaz.');
 }
@@ -297,13 +320,13 @@ export function objectRisk(state: BattleState, h: Offset): number {
 }
 
 /** Görev S2: haritanın hazır nesneleri (savaş başında; kimlik tür + sıra). */
-export function presetObjects(list: Array<{ id?: string; kind: string; at: Offset; state?: string; lockDc?: number; gizli?: boolean; bulDc?: number; flag?: string }>): MapObject[] {
+export function presetObjects(list: Array<{ id?: string; kind: string; at: Offset; state?: string; lockDc?: number; gizli?: boolean; bulDc?: number; flag?: string; agirlikLb?: number }>): MapObject[] {
   const n: Record<string, number> = {};
   return list.filter((o) => OBJECTS[o.kind as ObjectKind]).map((o) => {
     const kind = o.kind as ObjectKind;
     n[kind] = (n[kind] ?? 0) + 1;
     const st = (o.state as ObjectState | undefined) ?? OBJECTS[kind].defaultState;
-    return { id: o.id ?? `${kind}:${n[kind]}`, kind, at: o.at, hp: OBJECTS[kind].hp, ...(st ? { state: st } : {}), ...(o.lockDc ? { lockDc: o.lockDc } : {}),
+    return { id: o.id ?? `${kind}:${n[kind]}`, kind, at: o.at, hp: OBJECTS[kind].hp, ...(st ? { state: st } : {}), ...(o.lockDc ? { lockDc: o.lockDc } : {}), ...(o.agirlikLb ? { agirlikLb: o.agirlikLb } : {}),
       ...(o.gizli ? { gizli: true, ...(o.bulDc ? { findDc: o.bulDc } : {}), ...(o.flag ? { flag: o.flag } : {}) } : {}) };
   });
 }

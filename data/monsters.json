@@ -23,6 +23,8 @@
       "hide"
     ],
     "cr": "1/4",
+    "initiative": 2,
+    "srdPage": 290,
     "attacks": [
       {
         "name": "Scimitar",
@@ -67,6 +69,8 @@
     },
     "darkvision": 60,
     "cr": "1/4",
+    "initiative": 3,
+    "srdPage": 325,
     "attacks": [
       {
         "name": "Shortsword",
@@ -121,6 +125,8 @@
       "wis": 0
     },
     "cr": "1/4",
+    "initiative": -2,
+    "srdPage": 343,
     "attacks": [
       {
         "name": "Slam",
@@ -162,6 +168,8 @@
       "stealth": 4
     },
     "cr": "1/4",
+    "initiative": 2,
+    "srdPage": 364,
     "attacks": [
       {
         "name": "Bite",
@@ -194,6 +202,8 @@
     },
     "darkvision": 0,
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 332,
     "attacks": [
       {
         "name": "Mace",
@@ -237,6 +247,8 @@
     },
     "darkvision": 60,
     "cr": "1/2",
+    "initiative": 3,
+    "srdPage": 298,
     "attacks": [
       {
         "name": "Longsword",
@@ -285,6 +297,8 @@
       "stealth": 7
     },
     "cr": "1",
+    "initiative": 3,
+    "srdPage": 353,
     "attacks": [
       {
         "name": "Bite",
@@ -339,6 +353,8 @@
     },
     "darkvision": 60,
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 288,
     "attacks": [
       {
         "name": "Bite",
@@ -390,13 +406,16 @@
     "darkvision": 0,
     "saves": {
       "str": 4,
-      "dex": 5
+      "dex": 5,
+      "wis": 2
     },
     "skills": {
       "athletics": 4,
       "deception": 4
     },
     "cr": "2",
+    "initiative": 3,
+    "srdPage": 261,
     "attacks": [
       {
         "name": "Scimitar",
@@ -446,6 +465,8 @@
     },
     "darkvision": 60,
     "cr": "2",
+    "initiative": -1,
+    "srdPage": 312,
     "attacks": [
       {
         "name": "Greatclub",
@@ -494,6 +515,8 @@
       "perception": 5
     },
     "cr": "3",
+    "initiative": 1,
+    "srdPage": 313,
     "attacks": [
       {
         "name": "Rend",
@@ -534,6 +557,8 @@
       "survival": 7
     },
     "cr": "3",
+    "initiative": 0,
+    "srdPage": 309,
     "attacks": [
       {
         "name": "Abyssal Glaive",
@@ -582,6 +607,8 @@
       "perception": 5
     },
     "cr": "5",
+    "initiative": 1,
+    "srdPage": 333,
     "attacks": [
       {
         "name": "Rend",
@@ -623,6 +650,8 @@
       "perception": 2
     },
     "cr": "5",
+    "initiative": 2,
+    "srdPage": 298,
     "attacks": [
       {
         "name": "Tree Club",
@@ -678,6 +707,8 @@
       "perception": 4
     },
     "cr": "6",
+    "initiative": 0,
+    "srdPage": 343,
     "attacks": [
       {
         "name": "Bite",
@@ -731,6 +762,8 @@
       "stealth": 4
     },
     "cr": "10",
+    "initiative": 4,
+    "srdPage": 318,
     "attacks": [
       {
         "name": "Rend",
@@ -800,6 +833,8 @@
       "stealth": 4
     },
     "cr": "2",
+    "initiative": 4,
+    "srdPage": 263,
     "multiattack": true,
     "attacks": [
       {
@@ -866,6 +901,8 @@
       "stealth": 2
     },
     "cr": "3",
+    "initiative": 2,
+    "srdPage": 266,
     "multiattack": true,
     "attacks": [
       {
@@ -931,6 +968,8 @@
       "stealth": 2
     },
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 268,
     "attacks": [
       {
         "name": "Rend",
@@ -1008,6 +1047,8 @@
       "stealth": 2
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 269,
     "multiattack": true,
     "attacks": [
       {
@@ -1090,6 +1131,8 @@
       "stealth": 3
     },
     "cr": "1",
+    "initiative": 3,
+    "srdPage": 275,
     "attacks": [
       {
         "name": "Rend",
@@ -1167,6 +1210,8 @@
       "stealth": 4
     },
     "cr": "3",
+    "initiative": 4,
+    "srdPage": 290,
     "multiattack": true,
     "attacks": [
       {
@@ -1252,6 +1297,8 @@
       "stealth": 3
     },
     "cr": "2",
+    "initiative": 3,
+    "srdPage": 293,
     "multiattack": true,
     "attacks": [
       {
@@ -1322,6 +1369,8 @@
       "stealth": 2
     },
     "cr": "4",
+    "initiative": 2,
+    "srdPage": 318,
     "multiattack": true,
     "attacks": [
       {
@@ -1390,6 +1439,8 @@
       "stealth": 2
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 324,
     "multiattack": true,
     "attacks": [
       {
@@ -1473,6 +1524,8 @@
       "stealth": 2
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 339,
     "multiattack": true,
     "attacks": [
       {
@@ -1542,6 +1595,8 @@
       "stealth": 5
     },
     "cr": "7",
+    "initiative": 5,
+    "srdPage": 264,
     "multiattack": true,
     "attacks": [
       {
@@ -1609,6 +1664,8 @@
       "stealth": 4
     },
     "cr": "9",
+    "initiative": 4,
+    "srdPage": 266,
     "multiattack": true,
     "attacks": [
       {
@@ -1676,6 +1733,8 @@
       "stealth": 3
     },
     "cr": "6",
+    "initiative": 3,
+    "srdPage": 268,
     "multiattack": true,
     "attacks": [
       {
@@ -1760,6 +1819,8 @@
       "stealth": 3
     },
     "cr": "8",
+    "initiative": 3,
+    "srdPage": 270,
     "multiattack": true,
     "attacks": [
       {
@@ -1845,6 +1906,8 @@
       "stealth": 4
     },
     "cr": "7",
+    "initiative": 4,
+    "srdPage": 276,
     "multiattack": true,
     "attacks": [
       {
@@ -1930,6 +1993,8 @@
       "stealth": 6
     },
     "cr": "10",
+    "initiative": 6,
+    "srdPage": 291,
     "multiattack": true,
     "attacks": [
       {
@@ -2018,6 +2083,8 @@
       "stealth": 4
     },
     "cr": "8",
+    "initiative": 4,
+    "srdPage": 293,
     "multiattack": true,
     "attacks": [
       {
@@ -2090,6 +2157,8 @@
       "stealth": 4
     },
     "cr": "9",
+    "initiative": 4,
+    "srdPage": 324,
     "multiattack": true,
     "attacks": [
       {
@@ -2161,7 +2230,7 @@
       "str": 18,
       "dex": 10,
       "con": 18,
-      "int": 10,
+      "int": 6,
       "wis": 11,
       "cha": 12
     },
@@ -2175,6 +2244,8 @@
       "stealth": 3
     },
     "cr": "6",
+    "initiative": 3,
+    "srdPage": 340,
     "multiattack": true,
     "attacks": [
       {
@@ -2245,6 +2316,8 @@
       "stealth": 7
     },
     "cr": "14",
+    "initiative": 12,
+    "srdPage": 264,
     "multiattack": true,
     "attacks": [
       {
@@ -2316,6 +2389,8 @@
       "stealth": 5
     },
     "cr": "16",
+    "initiative": 10,
+    "srdPage": 266,
     "multiattack": true,
     "attacks": [
       {
@@ -2388,6 +2463,8 @@
       "stealth": 5
     },
     "cr": "13",
+    "initiative": 10,
+    "srdPage": 268,
     "multiattack": true,
     "attacks": [
       {
@@ -2476,6 +2553,8 @@
       "stealth": 5
     },
     "cr": "15",
+    "initiative": 10,
+    "srdPage": 270,
     "multiattack": true,
     "attacks": [
       {
@@ -2565,6 +2644,8 @@
       "stealth": 6
     },
     "cr": "14",
+    "initiative": 11,
+    "srdPage": 276,
     "multiattack": true,
     "attacks": [
       {
@@ -2654,6 +2735,8 @@
       "stealth": 8
     },
     "cr": "17",
+    "initiative": 14,
+    "srdPage": 291,
     "multiattack": true,
     "attacks": [
       {
@@ -2687,9 +2770,9 @@
         "repeat": 0
       },
       {
-        "name": "Spellcasting",
+        "name": "Weakening Breath",
         "bonus": 0,
-        "damage": "The dragon casts one of the following spells, requiring no Material components and using Charisma as the spellcasting ability (spell save DC 21, +13 to hit with spell attacks): At Will: Detect Magic, Guiding Bolt (level 2 version), Shapechange (Beast or Humanoid form only, no Temporary Hit Points ga",
+        "damage": "Strength Saving Throw: DC 21, each creature that isn’t currently affected by this breath in a 60-foot Cone. Failure: The target has Disadvantage on Strength-based D20 Tests and subtracts 3 (1d6) from its damage rolls. It repeats the save at the end of each of its turns, ending the effect on itself o",
         "save": {
           "ability": "str",
           "dc": 21,
@@ -2747,6 +2830,8 @@
       "stealth": 6
     },
     "cr": "15",
+    "initiative": 11,
+    "srdPage": 294,
     "multiattack": true,
     "attacks": [
       {
@@ -2822,6 +2907,8 @@
       "stealth": 6
     },
     "cr": "17",
+    "initiative": 12,
+    "srdPage": 318,
     "multiattack": true,
     "attacks": [
       {
@@ -2896,6 +2983,8 @@
       "stealth": 5
     },
     "cr": "16",
+    "initiative": 10,
+    "srdPage": 324,
     "multiattack": true,
     "attacks": [
       {
@@ -2970,7 +3059,7 @@
     "abilities": {
       "str": 22,
       "dex": 10,
-      "con": 10,
+      "con": 22,
       "int": 8,
       "wis": 12,
       "cha": 12
@@ -2985,6 +3074,8 @@
       "stealth": 5
     },
     "cr": "13",
+    "initiative": 10,
+    "srdPage": 340,
     "multiattack": true,
     "attacks": [
       {
@@ -3057,6 +3148,8 @@
       "stealth": 9
     },
     "cr": "21",
+    "initiative": 16,
+    "srdPage": 265,
     "multiattack": true,
     "attacks": [
       {
@@ -3128,6 +3221,8 @@
       "stealth": 7
     },
     "cr": "23",
+    "initiative": 14,
+    "srdPage": 267,
     "multiattack": true,
     "attacks": [
       {
@@ -3203,6 +3298,8 @@
       "stealth": 6
     },
     "cr": "20",
+    "initiative": 12,
+    "srdPage": 269,
     "multiattack": true,
     "attacks": [
       {
@@ -3291,6 +3388,8 @@
       "stealth": 7
     },
     "cr": "22",
+    "initiative": 14,
+    "srdPage": 271,
     "multiattack": true,
     "attacks": [
       {
@@ -3383,6 +3482,8 @@
       "stealth": 8
     },
     "cr": "21",
+    "initiative": 15,
+    "srdPage": 277,
     "multiattack": true,
     "attacks": [
       {
@@ -3472,6 +3573,8 @@
       "stealth": 9
     },
     "cr": "24",
+    "initiative": 16,
+    "srdPage": 292,
     "multiattack": true,
     "attacks": [
       {
@@ -3505,9 +3608,9 @@
         "repeat": 0
       },
       {
-        "name": "Spellcasting",
+        "name": "Weakening Breath",
         "bonus": 0,
-        "damage": "The dragon casts one of the following spells, requiring no Material components and using Charisma as the spellcasting ability (spell save DC 24, +16 to hit with spell attacks): At Will: Detect Magic, Guiding Bolt (level 4 version), Shapechange (Beast or Humanoid form only, no Temporary Hit Points ga",
+        "damage": "Strength Saving Throw: DC 24, each creature that isn’t currently affected by this breath in a 90-foot Cone. Failure: The target has Disadvantage on Strength-based D20 Tests and subtracts 5 (1d10) from its damage rolls. It repeats the save at the end of each of its turns, ending the effect on itself o",
         "save": {
           "ability": "str",
           "dc": 24,
@@ -3565,6 +3668,8 @@
       "stealth": 8
     },
     "cr": "22",
+    "initiative": 15,
+    "srdPage": 294,
     "multiattack": true,
     "attacks": [
       {
@@ -3640,6 +3745,8 @@
       "stealth": 7
     },
     "cr": "24",
+    "initiative": 14,
+    "srdPage": 319,
     "multiattack": true,
     "attacks": [
       {
@@ -3714,6 +3821,8 @@
       "stealth": 7
     },
     "cr": "23",
+    "initiative": 14,
+    "srdPage": 325,
     "multiattack": true,
     "attacks": [
       {
@@ -3803,6 +3912,8 @@
       "stealth": 6
     },
     "cr": "20",
+    "initiative": 12,
+    "srdPage": 341,
     "multiattack": true,
     "attacks": [
       {
@@ -3866,12 +3977,14 @@
       "cha": 4
     },
     "cr": "0",
+    "initiative": 2,
+    "srdPage": 345,
     "attacks": [
       {
         "name": "Bite",
         "bonus": 4,
         "damage": "1 Piercing damage.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "piercing",
         "ranged": false,
         "reachFt": 5
@@ -3903,6 +4016,8 @@
       "perception": 6
     },
     "cr": "0",
+    "initiative": 2,
+    "srdPage": 348,
     "attacks": [
       {
         "name": "Talons",
@@ -3936,12 +4051,14 @@
       "perception": 6
     },
     "cr": "0",
+    "initiative": 3,
+    "srdPage": 355,
     "attacks": [
       {
         "name": "Talons",
         "bonus": 5,
         "damage": "1 Slashing damage.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "slashing",
         "ranged": false,
         "reachFt": 5
@@ -3974,12 +4091,14 @@
       "cha": 0
     },
     "cr": "0",
+    "initiative": 2,
+    "srdPage": 299,
     "attacks": [
       {
         "name": "Bite",
         "bonus": 4,
         "damage": "1 Piercing damage, and the target is subjected to the following effect. Constitution Saving Throw: DC 12. Failure: The target has the Poisoned condition until the end of the homunculus’s next turn. Failure by 5 or More: The target has the Poisoned condition for 1 minute. While Poisoned, the target h",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "piercing",
         "rider": ", and the target is subjected to the following effect. Constitution Saving Throw: DC 12. Failure: The target has the Poisoned condition until the end of the homunculus’s next turn. Failure by 5 or More: The target has the Poisoned condition for 1 minute. While Poisoned, the target has the Unconsciou",
         "ranged": false,
@@ -4018,12 +4137,14 @@
       "stealth": 5
     },
     "cr": "0",
+    "initiative": 1,
+    "srdPage": 358,
     "attacks": [
       {
         "name": "Talons",
         "bonus": 3,
         "damage": "1 Slashing damage.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "slashing",
         "ranged": false,
         "reachFt": 5
@@ -4055,12 +4176,14 @@
       "perception": 3
     },
     "cr": "0",
+    "initiative": 2,
+    "srdPage": 359,
     "attacks": [
       {
         "name": "Beak",
         "bonus": 4,
         "damage": "1 Piercing damage.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "piercing",
         "ranged": false,
         "reachFt": 5
@@ -4092,6 +4215,8 @@
       "perception": 3
     },
     "cr": "0",
+    "initiative": 0,
+    "srdPage": 363,
     "packTactics": true,
     "attacks": [
       {
@@ -4122,6 +4247,8 @@
       "cha": 10
     },
     "cr": "1/8",
+    "initiative": 1,
+    "srdPage": 261,
     "attacks": [
       {
         "name": "Scimitar",
@@ -4167,6 +4294,8 @@
       "perception": 6
     },
     "cr": "1/8",
+    "initiative": 2,
+    "srdPage": 345,
     "packTactics": true,
     "attacks": [
       {
@@ -4199,12 +4328,14 @@
       "cha": 5
     },
     "cr": "1/8",
+    "initiative": 2,
+    "srdPage": 348,
     "attacks": [
       {
         "name": "Bite",
         "bonus": 4,
         "damage": "1 Piercing damage plus 5 (2d4) Poison damage.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "piercing",
         "rider": "+ 2d4 poison",
         "ranged": false,
@@ -4239,6 +4370,8 @@
       "stealth": 6
     },
     "cr": "1/8",
+    "initiative": 2,
+    "srdPage": 290,
     "bonusActions": [
       "disengage",
       "hide"
@@ -4287,6 +4420,8 @@
       "perception": 2
     },
     "cr": "1/8",
+    "initiative": 1,
+    "srdPage": 296,
     "attacks": [
       {
         "name": "Spear",
@@ -4329,6 +4464,8 @@
     },
     "darkvision": 60,
     "cr": "1/8",
+    "initiative": 2,
+    "srdPage": 302,
     "packTactics": true,
     "attacks": [
       {
@@ -4374,6 +4511,8 @@
       "cha": 12
     },
     "cr": "1/8",
+    "initiative": 1,
+    "srdPage": 308,
     "attacks": [
       {
         "name": "Ocean Spear",
@@ -4423,6 +4562,8 @@
     },
     "darkvision": 60,
     "cr": "1/8",
+    "initiative": 3,
+    "srdPage": 329,
     "attacks": [
       {
         "name": "Proboscis",
@@ -4453,6 +4594,8 @@
       "cha": 8
     },
     "cr": "1/8",
+    "initiative": 0,
+    "srdPage": 336,
     "packTactics": true,
     "attacks": [
       {
@@ -4499,6 +4642,8 @@
       "dex": 4
     },
     "cr": "1/4",
+    "initiative": 4,
+    "srdPage": 259,
     "attacks": [
       {
         "name": "Slash",
@@ -4538,6 +4683,8 @@
     },
     "darkvision": 60,
     "cr": "1/4",
+    "initiative": 0,
+    "srdPage": 281,
     "attacks": [
       {
         "name": "Rend",
@@ -4597,6 +4744,8 @@
       "cha": 6
     },
     "cr": "1/4",
+    "initiative": 3,
+    "srdPage": 349,
     "attacks": [
       {
         "name": "Bite",
@@ -4639,6 +4788,8 @@
       "stealth": 6
     },
     "cr": "1/4",
+    "initiative": 2,
+    "srdPage": 352,
     "attacks": [
       {
         "name": "Talons",
@@ -4681,6 +4832,8 @@
       "religion": 2
     },
     "cr": "1/4",
+    "initiative": 0,
+    "srdPage": 316,
     "attacks": [
       {
         "name": "Mace",
@@ -4733,6 +4886,8 @@
       "stealth": 4
     },
     "cr": "1/4",
+    "initiative": 2,
+    "srdPage": 316,
     "multiattack": true,
     "attacks": [
       {
@@ -4788,6 +4943,8 @@
       "perception": 1
     },
     "cr": "1/4",
+    "initiative": 2,
+    "srdPage": 359,
     "attacks": [
       {
         "name": "Bite",
@@ -4825,6 +4982,8 @@
       "stealth": 8
     },
     "cr": "1/4",
+    "initiative": 4,
+    "srdPage": 329,
     "attacks": [
       {
         "name": "Needle Sword",
@@ -4839,7 +4998,7 @@
         "name": "Enchanting Bow",
         "bonus": 6,
         "damage": "1 Piercing damage, and the target has the Charmed condition until the start of the sprite’s next turn.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "piercing",
         "rider": ", and the target has the Charmed condition until the start of the sprite’s next turn.",
         "ranged": true,
@@ -4889,6 +5048,8 @@
       "stealth": 2
     },
     "cr": "1/4",
+    "initiative": 0,
+    "srdPage": 308,
     "attacks": [
       {
         "name": "Claw",
@@ -4948,6 +5109,8 @@
       "cha": 4
     },
     "cr": "1/4",
+    "initiative": 2,
+    "srdPage": 361,
     "attacks": [
       {
         "name": "Bites",
@@ -4967,6 +5130,7 @@
       "slashing"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed, Frightened, Grappled, Paralyzed, Petrified, Prone, Restrained, Stunned",
       "Duyu: Blindsight 60 ft",
       "Boyut Large: tek hex (çok hex'li boyut yok)",
       "Trait: Swarm"
@@ -4992,6 +5156,8 @@
       "perception": 5
     },
     "cr": "1/4",
+    "initiative": 2,
+    "srdPage": 362,
     "attacks": [
       {
         "name": "Beaks",
@@ -5025,6 +5191,7 @@
       "slashing"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed, Frightened, Grappled, Paralyzed, Petrified, Prone, Restrained, Stunned",
       "Trait: Swarm"
     ]
   },
@@ -5048,6 +5215,8 @@
       "perception": 3
     },
     "cr": "1/2",
+    "initiative": 2,
+    "srdPage": 344,
     "multiattack": true,
     "attacks": [
       {
@@ -5098,6 +5267,8 @@
     },
     "darkvision": 60,
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 275,
     "attacks": [
       {
         "name": "Petrifying Bite",
@@ -5110,7 +5281,10 @@
         "reachFt": 5
       }
     ],
-    "traits": "Uçma 40 ft"
+    "traits": "Uçma 40 ft",
+    "unsupported": [
+      "Durum bağışıklığı: Petrified"
+    ]
   },
   {
     "id": "darkmantle",
@@ -5132,6 +5306,8 @@
       "stealth": 3
     },
     "cr": "1/2",
+    "initiative": 3,
+    "srdPage": 278,
     "attacks": [
       {
         "name": "Crush",
@@ -5172,6 +5348,8 @@
       "stealth": 4
     },
     "cr": "1/2",
+    "initiative": 2,
+    "srdPage": 307,
     "attacks": [
       {
         "name": "Claw",
@@ -5230,6 +5408,8 @@
       "cha": 3
     },
     "cr": "1/2",
+    "initiative": 2,
+    "srdPage": 354,
     "attacks": [
       {
         "name": "Sting",
@@ -5264,6 +5444,8 @@
     },
     "darkvision": 60,
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 289,
     "attacks": [
       {
         "name": "Rend",
@@ -5314,6 +5496,8 @@
       "stealth": 3
     },
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 307,
     "attacks": [
       {
         "name": "Claw",
@@ -5379,6 +5563,8 @@
       "stealth": 3
     },
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 307,
     "attacks": [
       {
         "name": "Claw",
@@ -5443,6 +5629,8 @@
       "stealth": 5
     },
     "cr": "1/2",
+    "initiative": 3,
+    "srdPage": 321,
     "attacks": [
       {
         "name": "Hooves",
@@ -5499,6 +5687,8 @@
       "survival": 5
     },
     "cr": "1/2",
+    "initiative": 2,
+    "srdPage": 322,
     "multiattack": true,
     "attacks": [
       {
@@ -5547,6 +5737,8 @@
       "cha": 1
     },
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 361,
     "attacks": [
       {
         "name": "Bites",
@@ -5566,6 +5758,7 @@
       "slashing"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed, Frightened, Grappled, Paralyzed, Petrified, Prone, Restrained, Stunned",
       "Duyu: Blindsight 30 ft",
       "Trait: Spider Climb",
       "Trait: Swarm"
@@ -5592,6 +5785,8 @@
       "survival": 2
     },
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 272,
     "attacks": [
       {
         "name": "Grab",
@@ -5651,6 +5846,8 @@
       "stealth": 5
     },
     "cr": "1",
+    "initiative": 1,
+    "srdPage": 282,
     "multiattack": true,
     "attacks": [
       {
@@ -5706,6 +5903,8 @@
       "perception": 6
     },
     "cr": "1",
+    "initiative": 3,
+    "srdPage": 350,
     "multiattack": true,
     "attacks": [
       {
@@ -5750,6 +5949,8 @@
       "perception": 3
     },
     "cr": "1",
+    "initiative": 0,
+    "srdPage": 354,
     "packTactics": true,
     "attacks": [
       {
@@ -5791,6 +5992,8 @@
       "stealth": 6
     },
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 290,
     "bonusActions": [
       "disengage",
       "hide"
@@ -5846,6 +6049,8 @@
       "cha": 13
     },
     "cr": "1",
+    "initiative": 1,
+    "srdPage": 297,
     "attacks": [
       {
         "name": "Claw",
@@ -5896,6 +6101,8 @@
       "perception": 5
     },
     "cr": "1",
+    "initiative": 1,
+    "srdPage": 298,
     "multiattack": true,
     "attacks": [
       {
@@ -5938,6 +6145,8 @@
       "stealth": 5
     },
     "cr": "1",
+    "initiative": 3,
+    "srdPage": 300,
     "attacks": [
       {
         "name": "Sting",
@@ -5986,6 +6195,8 @@
       "stealth": 4
     },
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 356,
     "packTactics": true,
     "multiattack": true,
     "attacks": [
@@ -6044,6 +6255,8 @@
       "cha": 4
     },
     "cr": "1",
+    "initiative": 5,
+    "srdPage": 314,
     "multiattack": true,
     "attacks": [
       {
@@ -6112,6 +6325,8 @@
       "stealth": 5
     },
     "cr": "1",
+    "initiative": 3,
+    "srdPage": 317,
     "attacks": [
       {
         "name": "Rend",
@@ -6176,6 +6391,8 @@
     },
     "darkvision": 60,
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 327,
     "attacks": [
       {
         "name": "Life Drain",
@@ -6233,6 +6450,8 @@
       "stealth": 5
     },
     "cr": "1",
+    "initiative": 3,
+    "srdPage": 327,
     "attacks": [
       {
         "name": "Rend",
@@ -6280,6 +6499,8 @@
       "stealth": 6
     },
     "cr": "1",
+    "initiative": 4,
+    "srdPage": 329,
     "attacks": [
       {
         "name": "Shortsword",
@@ -6328,6 +6549,8 @@
     },
     "darkvision": 60,
     "cr": "2",
+    "initiative": 0,
+    "srdPage": 259,
     "attacks": [
       {
         "name": "Bite",
@@ -6386,6 +6609,8 @@
       "perception": 3
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 272,
     "multiattack": true,
     "attacks": [
       {
@@ -6440,6 +6665,8 @@
       "perception": 5
     },
     "cr": "2",
+    "initiative": 1,
+    "srdPage": 282,
     "multiattack": true,
     "attacks": [
       {
@@ -6495,6 +6722,8 @@
       "survival": 3
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 284,
     "multiattack": true,
     "attacks": [
       {
@@ -6566,6 +6795,8 @@
       "stealth": 4
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 286,
     "multiattack": true,
     "attacks": [
       {
@@ -6607,6 +6838,8 @@
       "perception": 2
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 350,
     "multiattack": true,
     "attacks": [
       {
@@ -6664,6 +6897,8 @@
     },
     "darkvision": 60,
     "cr": "2",
+    "initiative": -1,
+    "srdPage": 288,
     "attacks": [
       {
         "name": "Bite",
@@ -6697,6 +6932,7 @@
     ],
     "traits": "Aberrant Ground, Gibbering",
     "unsupported": [
+      "Durum bağışıklığı: Prone",
       "Hız: Swim 20 ft (yalnızca yürüme/uçma kullanılır)",
       "Trait: Aberrant Ground",
       "Trait: Gibbering"
@@ -6723,6 +6959,8 @@
       "perception": 5
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 295,
     "multiattack": true,
     "attacks": [
       {
@@ -6759,6 +6997,8 @@
     },
     "darkvision": 60,
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 308,
     "multiattack": true,
     "attacks": [
       {
@@ -6842,6 +7082,8 @@
       "perception": 6
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 313,
     "attacks": [
       {
         "name": "Hooves",
@@ -6880,6 +7122,8 @@
       "religion": 5
     },
     "cr": "2",
+    "initiative": 0,
+    "srdPage": 316,
     "multiattack": true,
     "attacks": [
       {
@@ -6931,6 +7175,8 @@
     },
     "darkvision": 60,
     "cr": "2",
+    "initiative": 1,
+    "srdPage": 322,
     "attacks": [
       {
         "name": "Claw",
@@ -6989,6 +7235,8 @@
       "stealth": 5
     },
     "cr": "2",
+    "initiative": 3,
+    "srdPage": 338,
     "multiattack": true,
     "attacks": [
       {
@@ -7051,6 +7299,8 @@
     },
     "darkvision": 120,
     "cr": "2",
+    "initiative": 9,
+    "srdPage": 341,
     "attacks": [
       {
         "name": "Shock",
@@ -7111,6 +7361,8 @@
       "survival": 3
     },
     "cr": "3",
+    "initiative": 2,
+    "srdPage": 271,
     "multiattack": true,
     "attacks": [
       {
@@ -7175,6 +7427,8 @@
       "insight": 3
     },
     "cr": "3",
+    "initiative": 4,
+    "srdPage": 280,
     "multiattack": true,
     "attacks": [
       {
@@ -7208,6 +7462,7 @@
     ],
     "traits": "Multiattack: The doppelganger makes two Slam attacks and uses Unsettling Visage if available.",
     "unsupported": [
+      "Durum bağışıklığı: Charmed",
       "Eylem: Read Thoughts",
       "Bonus eylem: Shape-Shift",
       "Multiattack (kısmi): The doppelganger makes two Slam attacks and uses Unsettling Visage if available."
@@ -7233,6 +7488,8 @@
       "perception": 5
     },
     "cr": "3",
+    "initiative": 1,
+    "srdPage": 297,
     "packTactics": true,
     "multiattack": true,
     "attacks": [
@@ -7290,6 +7547,8 @@
     },
     "darkvision": 60,
     "cr": "3",
+    "initiative": 4,
+    "srdPage": 299,
     "multiattack": true,
     "attacks": [
       {
@@ -7344,6 +7603,8 @@
       "con": 4
     },
     "cr": "3",
+    "initiative": 0,
+    "srdPage": 302,
     "multiattack": true,
     "attacks": [
       {
@@ -7374,6 +7635,7 @@
     ],
     "traits": "Multiattack: The knight makes two attacks, using Greatsword or Heavy Crossbow in any combination.",
     "unsupported": [
+      "Durum bağışıklığı: Frightened",
       "Tepki: Parry",
       "Multiattack (kısmi, ilk saldırı tekrarlanır): The knight makes two attacks, using Greatsword or Heavy Crossbow in any combination."
     ]
@@ -7396,6 +7658,8 @@
     },
     "darkvision": 60,
     "cr": "3",
+    "initiative": 3,
+    "srdPage": 306,
     "multiattack": true,
     "attacks": [
       {
@@ -7448,6 +7712,8 @@
       "wis": 3
     },
     "cr": "3",
+    "initiative": -1,
+    "srdPage": 309,
     "multiattack": true,
     "attacks": [
       {
@@ -7509,6 +7775,8 @@
       "cha": 15
     },
     "cr": "3",
+    "initiative": 2,
+    "srdPage": 311,
     "attacks": [
       {
         "name": "Hooves",
@@ -7559,6 +7827,8 @@
       "stealth": 7
     },
     "cr": "3",
+    "initiative": 5,
+    "srdPage": 334,
     "multiattack": true,
     "attacks": [
       {
@@ -7592,6 +7862,7 @@
       "necrotic"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed",
       "Hız: Climb 30 ft (yalnızca yürüme/uçma kullanılır)",
       "Trait: Vampiric Connection",
       "Bonus eylem: Deathless Agility"
@@ -7617,6 +7888,8 @@
       "perception": 2
     },
     "cr": "3",
+    "initiative": 3,
+    "srdPage": 337,
     "multiattack": true,
     "attacks": [
       {
@@ -7670,6 +7943,8 @@
       "stealth": 4
     },
     "cr": "3",
+    "initiative": 4,
+    "srdPage": 339,
     "packTactics": true,
     "multiattack": true,
     "attacks": [
@@ -7735,6 +8010,8 @@
       "stealth": 4
     },
     "cr": "3",
+    "initiative": 4,
+    "srdPage": 341,
     "multiattack": true,
     "attacks": [
       {
@@ -7812,6 +8089,8 @@
       "stealth": 5
     },
     "cr": "3",
+    "initiative": 1,
+    "srdPage": 342,
     "packTactics": true,
     "attacks": [
       {
@@ -7872,6 +8151,8 @@
       "con": 5
     },
     "cr": "4",
+    "initiative": 5,
+    "srdPage": 277,
     "attacks": [
       {
         "name": "Bite",
@@ -7934,6 +8215,8 @@
     },
     "darkvision": 60,
     "cr": "4",
+    "initiative": 1,
+    "srdPage": 287,
     "multiattack": true,
     "attacks": [
       {
@@ -8024,6 +8307,8 @@
       "perception": 4
     },
     "cr": "4",
+    "initiative": 4,
+    "srdPage": 296,
     "multiattack": true,
     "attacks": [
       {
@@ -8090,6 +8375,8 @@
       "stealth": 7
     },
     "cr": "4",
+    "initiative": 3,
+    "srdPage": 301,
     "multiattack": true,
     "attacks": [
       {
@@ -8142,6 +8429,8 @@
       "stealth": 7
     },
     "cr": "4",
+    "initiative": 3,
+    "srdPage": 331,
     "multiattack": true,
     "attacks": [
       {
@@ -8205,6 +8494,8 @@
       "cha": 2
     },
     "cr": "4",
+    "initiative": 2,
+    "srdPage": 332,
     "packTactics": true,
     "multiattack": true,
     "attacks": [
@@ -8257,6 +8548,8 @@
       "perception": 2
     },
     "cr": "4",
+    "initiative": 2,
+    "srdPage": 338,
     "multiattack": true,
     "attacks": [
       {
@@ -8332,6 +8625,8 @@
       "stealth": 4
     },
     "cr": "4",
+    "initiative": 2,
+    "srdPage": 339,
     "multiattack": true,
     "attacks": [
       {
@@ -8394,6 +8689,8 @@
     },
     "darkvision": 60,
     "cr": "5",
+    "initiative": 5,
+    "srdPage": 258,
     "multiattack": true,
     "attacks": [
       {
@@ -8470,6 +8767,8 @@
       "perception": 8
     },
     "cr": "5",
+    "initiative": 3,
+    "srdPage": 262,
     "multiattack": true,
     "attacks": [
       {
@@ -8545,6 +8844,8 @@
       "perception": 6
     },
     "cr": "5",
+    "initiative": 0,
+    "srdPage": 272,
     "multiattack": true,
     "attacks": [
       {
@@ -8602,6 +8903,8 @@
     },
     "darkvision": 60,
     "cr": "5",
+    "initiative": -1,
+    "srdPage": 282,
     "multiattack": true,
     "attacks": [
       {
@@ -8672,6 +8975,8 @@
       "performance": 5
     },
     "cr": "5",
+    "initiative": 5,
+    "srdPage": 289,
     "multiattack": true,
     "attacks": [
       {
@@ -8740,6 +9045,8 @@
       "perception": 7
     },
     "cr": "5",
+    "initiative": 0,
+    "srdPage": 292,
     "attacks": [
       {
         "name": "Gore",
@@ -8771,6 +9078,7 @@
     ],
     "traits": "",
     "unsupported": [
+      "Durum bağışıklığı: Exhaustion, Petrified",
       "Boyut Large: tek hex (çok hex'li boyut yok)",
       "Bonus eylem: Trample"
     ]
@@ -8801,6 +9109,8 @@
       "stealth": 5
     },
     "cr": "5",
+    "initiative": 5,
+    "srdPage": 297,
     "multiattack": true,
     "attacks": [
       {
@@ -8857,6 +9167,8 @@
     },
     "darkvision": 60,
     "cr": "5",
+    "initiative": 2,
+    "srdPage": 321,
     "multiattack": true,
     "attacks": [
       {
@@ -8938,6 +9250,8 @@
       "perception": 7
     },
     "cr": "5",
+    "initiative": 3,
+    "srdPage": 337,
     "multiattack": true,
     "attacks": [
       {
@@ -9010,6 +9324,8 @@
     },
     "darkvision": 60,
     "cr": "5",
+    "initiative": 3,
+    "srdPage": 342,
     "attacks": [
       {
         "name": "Life Drain",
@@ -9064,6 +9380,8 @@
       "perception": 8
     },
     "cr": "6",
+    "initiative": 0,
+    "srdPage": 273,
     "multiattack": true,
     "attacks": [
       {
@@ -9145,6 +9463,8 @@
       "stealth": 10
     },
     "cr": "6",
+    "initiative": 4,
+    "srdPage": 281,
     "multiattack": true,
     "attacks": [
       {
@@ -9204,6 +9524,8 @@
       "stealth": 10
     },
     "cr": "6",
+    "initiative": 7,
+    "srdPage": 301,
     "multiattack": true,
     "attacks": [
       {
@@ -9276,6 +9598,8 @@
       "perception": 4
     },
     "cr": "6",
+    "initiative": 2,
+    "srdPage": 305,
     "multiattack": true,
     "attacks": [
       {
@@ -9334,6 +9658,8 @@
       "stealth": 6
     },
     "cr": "6",
+    "initiative": 6,
+    "srdPage": 306,
     "multiattack": true,
     "attacks": [
       {
@@ -9403,6 +9729,8 @@
       "perception": 5
     },
     "cr": "6",
+    "initiative": 7,
+    "srdPage": 314,
     "multiattack": true,
     "attacks": [
       {
@@ -9460,6 +9788,8 @@
       "cha": 2
     },
     "cr": "6",
+    "initiative": 2,
+    "srdPage": 336,
     "multiattack": true,
     "attacks": [
       {
@@ -9550,6 +9880,8 @@
       "survival": 4
     },
     "cr": "7",
+    "initiative": 5,
+    "srdPage": 349,
     "multiattack": true,
     "attacks": [
       {
@@ -9619,6 +9951,8 @@
       "perception": 4
     },
     "cr": "7",
+    "initiative": 0,
+    "srdPage": 312,
     "regeneration": 10,
     "multiattack": true,
     "attacks": [
@@ -9688,6 +10022,8 @@
       "stealth": 5
     },
     "cr": "7",
+    "initiative": 5,
+    "srdPage": 330,
     "multiattack": true,
     "attacks": [
       {
@@ -9747,6 +10083,8 @@
       "stealth": 10
     },
     "cr": "8",
+    "initiative": 10,
+    "srdPage": 260,
     "multiattack": true,
     "attacks": [
       {
@@ -9806,6 +10144,8 @@
       "con": 7
     },
     "cr": "8",
+    "initiative": 5,
+    "srdPage": 272,
     "multiattack": true,
     "attacks": [
       {
@@ -9879,6 +10219,8 @@
       "stealth": 5
     },
     "cr": "8",
+    "initiative": 5,
+    "srdPage": 274,
     "multiattack": true,
     "attacks": [
       {
@@ -9905,6 +10247,7 @@
     ],
     "traits": "Uçma 40 ft. Light Sensitivity. Multiattack: The cloaker makes one Attach attack and two Tail attacks.",
     "unsupported": [
+      "Durum bağışıklığı: Frightened",
       "Boyut Large: tek hex (çok hex'li boyut yok)",
       "Trait: Light Sensitivity",
       "Bonus eylem: Moan",
@@ -9936,6 +10279,8 @@
       "perception": 3
     },
     "cr": "8",
+    "initiative": 2,
+    "srdPage": 285,
     "multiattack": true,
     "attacks": [
       {
@@ -9997,6 +10342,8 @@
       "cha": 6
     },
     "cr": "8",
+    "initiative": 3,
+    "srdPage": 329,
     "multiattack": true,
     "attacks": [
       {
@@ -10064,6 +10411,8 @@
       "insight": 6
     },
     "cr": "9",
+    "initiative": 7,
+    "srdPage": 267,
     "multiattack": true,
     "attacks": [
       {
@@ -10128,6 +10477,8 @@
       "perception": 11
     },
     "cr": "9",
+    "initiative": 4,
+    "srdPage": 275,
     "multiattack": true,
     "attacks": [
       {
@@ -10190,6 +10541,8 @@
       "perception": 6
     },
     "cr": "9",
+    "initiative": 3,
+    "srdPage": 285,
     "multiattack": true,
     "attacks": [
       {
@@ -10243,6 +10596,8 @@
       "cha": 12
     },
     "cr": "9",
+    "initiative": 3,
+    "srdPage": 333,
     "multiattack": true,
     "attacks": [
       {
@@ -10310,6 +10665,8 @@
       "perception": 10
     },
     "cr": "10",
+    "initiative": 7,
+    "srdPage": 258,
     "multiattack": true,
     "attacks": [
       {
@@ -10400,6 +10757,8 @@
       "perception": 9
     },
     "cr": "10",
+    "initiative": 4,
+    "srdPage": 279,
     "multiattack": true,
     "attacks": [
       {
@@ -10419,6 +10778,7 @@
       "radiant"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed, Exhaustion, Frightened",
       "Hover",
       "Trait: Exalted Restoration",
       "Trait: Magic Resistance",
@@ -10455,6 +10815,8 @@
       "religion": 11
     },
     "cr": "10",
+    "initiative": 4,
+    "srdPage": 296,
     "multiattack": true,
     "attacks": [
       {
@@ -10518,6 +10880,8 @@
     },
     "darkvision": 120,
     "cr": "10",
+    "initiative": 3,
+    "srdPage": 330,
     "multiattack": true,
     "attacks": [
       {
@@ -10581,6 +10945,8 @@
       "wis": 7
     },
     "cr": "11",
+    "initiative": 2,
+    "srdPage": 280,
     "multiattack": true,
     "attacks": [
       {
@@ -10650,6 +11016,8 @@
       "cha": 8
     },
     "cr": "11",
+    "initiative": 1,
+    "srdPage": 283,
     "multiattack": true,
     "attacks": [
       {
@@ -10715,6 +11083,8 @@
       "cha": 8
     },
     "cr": "11",
+    "initiative": 7,
+    "srdPage": 299,
     "multiattack": true,
     "attacks": [
       {
@@ -10802,6 +11172,8 @@
       "perception": 8
     },
     "cr": "11",
+    "initiative": 8,
+    "srdPage": 320,
     "multiattack": true,
     "attacks": [
       {
@@ -10855,6 +11227,8 @@
       "religion": 12
     },
     "cr": "11",
+    "initiative": 10,
+    "srdPage": 327,
     "multiattack": true,
     "attacks": [
       {
@@ -10931,6 +11305,8 @@
       "perception": 6
     },
     "cr": "12",
+    "initiative": 7,
+    "srdPage": 305,
     "multiattack": true,
     "attacks": [
       {
@@ -10995,6 +11371,8 @@
       "persuasion": 8
     },
     "cr": "12",
+    "initiative": 7,
+    "srdPage": 283,
     "multiattack": true,
     "attacks": [
       {
@@ -11069,6 +11447,8 @@
       "cha": 7
     },
     "cr": "13",
+    "initiative": 5,
+    "srdPage": 310,
     "multiattack": true,
     "attacks": [
       {
@@ -11124,6 +11504,8 @@
       "perception": 8
     },
     "cr": "13",
+    "initiative": 8,
+    "srdPage": 317,
     "multiattack": true,
     "attacks": [
       {
@@ -11163,6 +11545,7 @@
       "piercing"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed, Frightened",
       "Duyu: Truesight 60 ft",
       "Trait: Greater Magic Resistance",
       "Trait: Fiendish Restoration",
@@ -11199,6 +11582,8 @@
       "perception": 10
     },
     "cr": "13",
+    "initiative": 7,
+    "srdPage": 330,
     "multiattack": true,
     "attacks": [
       {
@@ -11291,6 +11676,8 @@
       "persuasion": 9
     },
     "cr": "14",
+    "initiative": 7,
+    "srdPage": 300,
     "multiattack": true,
     "attacks": [
       {
@@ -11370,6 +11757,8 @@
       "religion": 5
     },
     "cr": "15",
+    "initiative": 10,
+    "srdPage": 309,
     "multiattack": true,
     "attacks": [
       {
@@ -11453,6 +11842,8 @@
     },
     "darkvision": 120,
     "cr": "16",
+    "initiative": 9,
+    "srdPage": 302,
     "multiattack": true,
     "attacks": [
       {
@@ -11540,6 +11931,8 @@
       "perception": 11
     },
     "cr": "16",
+    "initiative": 10,
+    "srdPage": 315,
     "multiattack": true,
     "attacks": [
       {
@@ -11577,6 +11970,7 @@
       "radiant"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed, Exhaustion, Frightened",
       "Hover",
       "Duyu: Truesight 120 ft",
       "Boyut Large: tek hex (çok hex'li boyut yok)",
@@ -11609,6 +12003,8 @@
       "con": 11
     },
     "cr": "17",
+    "initiative": 6,
+    "srdPage": 281,
     "multiattack": true,
     "attacks": [
       {
@@ -11691,6 +12087,8 @@
       "religion": 15
     },
     "cr": "17",
+    "initiative": 12,
+    "srdPage": 328,
     "multiattack": true,
     "attacks": [
       {
@@ -11801,6 +12199,8 @@
       "perception": 9
     },
     "cr": "19",
+    "initiative": 14,
+    "srdPage": 261,
     "multiattack": true,
     "attacks": [
       {
@@ -11871,6 +12271,8 @@
       "persuasion": 19
     },
     "cr": "20",
+    "initiative": 14,
+    "srdPage": 314,
     "multiattack": true,
     "attacks": [
       {
@@ -11953,6 +12355,8 @@
       "perception": 9
     },
     "cr": "21",
+    "initiative": 17,
+    "srdPage": 304,
     "multiattack": true,
     "attacks": [
       {
@@ -12030,6 +12434,8 @@
       "perception": 14
     },
     "cr": "21",
+    "initiative": 20,
+    "srdPage": 326,
     "multiattack": true,
     "attacks": [
       {
@@ -12121,6 +12527,8 @@
       "perception": 11
     },
     "cr": "23",
+    "initiative": 14,
+    "srdPage": 303,
     "multiattack": true,
     "attacks": [
       {
@@ -12233,6 +12641,8 @@
       "perception": 9
     },
     "cr": "30",
+    "initiative": 18,
+    "srdPage": 331,
     "multiattack": true,
     "attacks": [
       {
@@ -12328,12 +12738,14 @@
       "cha": 6
     },
     "cr": "0",
+    "initiative": -1,
+    "srdPage": 260,
     "attacks": [
       {
         "name": "Rake",
         "bonus": 1,
         "damage": "1 Slashing damage.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "slashing",
         "ranged": false,
         "reachFt": 5
@@ -12366,6 +12778,8 @@
       "cha": 6
     },
     "cr": "0",
+    "initiative": 2,
+    "srdPage": 345,
     "packTactics": true,
     "attacks": [
       {
@@ -12403,12 +12817,14 @@
       "perception": 3
     },
     "cr": "0",
+    "initiative": 0,
+    "srdPage": 345,
     "attacks": [
       {
         "name": "Bite",
         "bonus": 2,
         "damage": "1 Piercing damage.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "piercing",
         "ranged": false,
         "reachFt": 5
@@ -12447,12 +12863,14 @@
       "stealth": 4
     },
     "cr": "0",
+    "initiative": 2,
+    "srdPage": 346,
     "attacks": [
       {
         "name": "Scratch",
         "bonus": 4,
         "damage": "1 Slashing damage.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "slashing",
         "ranged": false,
         "reachFt": 5
@@ -12481,6 +12899,8 @@
       "cha": 10
     },
     "cr": "0",
+    "initiative": 0,
+    "srdPage": 275,
     "attacks": [
       {
         "name": "Club",
@@ -12516,12 +12936,14 @@
       "stealth": 2
     },
     "cr": "0",
+    "initiative": 0,
+    "srdPage": 347,
     "attacks": [
       {
         "name": "Claw",
         "bonus": 2,
         "damage": "1 Bludgeoning damage.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "bludgeoning",
         "ranged": false,
         "reachFt": 5
@@ -12555,6 +12977,8 @@
       "perception": 4
     },
     "cr": "0",
+    "initiative": 3,
+    "srdPage": 347,
     "attacks": [
       {
         "name": "Ram",
@@ -12592,12 +13016,14 @@
       "stealth": 3
     },
     "cr": "0",
+    "initiative": 1,
+    "srdPage": 348,
     "attacks": [
       {
         "name": "Bite",
         "bonus": 3,
         "damage": "1 Piercing damage.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "piercing",
         "ranged": false,
         "reachFt": 5
@@ -12627,12 +13053,14 @@
       "cha": 3
     },
     "cr": "0",
+    "initiative": 0,
+    "srdPage": 351,
     "attacks": [
       {
         "name": "Bite",
         "bonus": 1,
         "damage": "1 Fire damage.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "fire",
         "ranged": false,
         "reachFt": 5
@@ -12672,12 +13100,14 @@
       "perception": 2
     },
     "cr": "0",
+    "initiative": 0,
+    "srdPage": 355,
     "attacks": [
       {
         "name": "Ram",
         "bonus": 2,
         "damage": "1 Bludgeoning damage, or 2 (1d4) Bludgeoning damage if the goat moved 20+ feet straight toward the target immediately before the hit.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "bludgeoning",
         "rider": ", or 2 (1d4) Bludgeoning damage if the goat moved 20+ feet straight toward the target immediately before the hit.",
         "ranged": false,
@@ -12710,6 +13140,8 @@
       "perception": 3
     },
     "cr": "0",
+    "initiative": 1,
+    "srdPage": 356,
     "packTactics": true,
     "attacks": [
       {
@@ -12745,6 +13177,8 @@
       "stealth": 4
     },
     "cr": "0",
+    "initiative": 2,
+    "srdPage": 356,
     "attacks": [
       {
         "name": "Bite",
@@ -12775,6 +13209,8 @@
     },
     "darkvision": 120,
     "cr": "0",
+    "initiative": -3,
+    "srdPage": 304,
     "attacks": [
       {
         "name": "Vile Slime",
@@ -12816,12 +13252,14 @@
     },
     "darkvision": 30,
     "cr": "0",
+    "initiative": 0,
+    "srdPage": 357,
     "attacks": [
       {
         "name": "Bite",
         "bonus": 2,
         "damage": "1 Piercing damage.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "piercing",
         "ranged": false,
         "reachFt": 5
@@ -12855,12 +13293,14 @@
       "stealth": 6
     },
     "cr": "0",
+    "initiative": 2,
+    "srdPage": 357,
     "attacks": [
       {
         "name": "Tentacles",
         "bonus": 4,
         "damage": "1 Bludgeoning damage.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "bludgeoning",
         "ranged": false,
         "reachFt": 5
@@ -12892,12 +13332,14 @@
     },
     "darkvision": 60,
     "cr": "0",
+    "initiative": 3,
+    "srdPage": 358,
     "attacks": [
       {
         "name": "Bite",
         "bonus": 5,
         "damage": "1 Piercing damage.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "piercing",
         "ranged": false,
         "reachFt": 5
@@ -12930,12 +13372,14 @@
       "perception": 2
     },
     "cr": "0",
+    "initiative": 0,
+    "srdPage": 359,
     "attacks": [
       {
         "name": "Bite",
         "bonus": 2,
         "damage": "1 Piercing damage.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "piercing",
         "ranged": false,
         "reachFt": 5
@@ -12964,12 +13408,14 @@
       "cha": 2
     },
     "cr": "0",
+    "initiative": 0,
+    "srdPage": 360,
     "attacks": [
       {
         "name": "Sting",
         "bonus": 2,
         "damage": "1 Piercing damage plus 3 (1d6) Poison damage.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "piercing",
         "rider": "+ 1d6 poison",
         "ranged": false,
@@ -13002,6 +13448,8 @@
       "stealth": 5
     },
     "cr": "0",
+    "initiative": 1,
+    "srdPage": 361,
     "attacks": [
       {
         "name": "Vuruş",
@@ -13037,6 +13485,8 @@
       "cha": 1
     },
     "cr": "0",
+    "initiative": -5,
+    "srdPage": 286,
     "attacks": [
       {
         "name": "Vuruş",
@@ -13050,6 +13500,7 @@
     ],
     "traits": "",
     "unsupported": [
+      "Durum bağışıklığı: Blinded, Charmed, Deafened, Frightened",
       "Duyu: Blindsight 30 ft",
       "Tepki: Shriek",
       "Saldırı yok: basit karşılık \"Vuruş\" eklendi"
@@ -13075,12 +13526,14 @@
       "stealth": 4
     },
     "cr": "0",
+    "initiative": 2,
+    "srdPage": 361,
     "attacks": [
       {
         "name": "Bite",
         "bonus": 4,
         "damage": "1 Piercing damage plus 2 (1d4) Poison damage.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "piercing",
         "rider": "+ 1d4 poison",
         "ranged": false,
@@ -13117,12 +13570,14 @@
       "stealth": 5
     },
     "cr": "0",
+    "initiative": 3,
+    "srdPage": 364,
     "attacks": [
       {
         "name": "Bite",
         "bonus": 5,
         "damage": "1 Piercing damage.",
-        "damageDice": "1d2",
+        "damageDice": "1",
         "damageType": "piercing",
         "ranged": false,
         "reachFt": 5
@@ -13154,6 +13609,8 @@
       "con": 5
     },
     "cr": "1/8",
+    "initiative": -1,
+    "srdPage": 346,
     "attacks": [
       {
         "name": "Bite",
@@ -13193,6 +13650,8 @@
       "religion": 2
     },
     "cr": "1/8",
+    "initiative": 1,
+    "srdPage": 278,
     "attacks": [
       {
         "name": "Ritual Sickle",
@@ -13226,6 +13685,8 @@
       "stealth": 3
     },
     "cr": "1/8",
+    "initiative": 1,
+    "srdPage": 350,
     "attacks": [
       {
         "name": "Claw",
@@ -13268,6 +13729,8 @@
       "perception": 2
     },
     "cr": "1/8",
+    "initiative": 3,
+    "srdPage": 353,
     "packTactics": true,
     "attacks": [
       {
@@ -13307,6 +13770,8 @@
       "stealth": 5
     },
     "cr": "1/8",
+    "initiative": 3,
+    "srdPage": 355,
     "attacks": [
       {
         "name": "Bite",
@@ -13346,6 +13811,8 @@
       "perception": 5
     },
     "cr": "1/8",
+    "initiative": 2,
+    "srdPage": 357,
     "attacks": [
       {
         "name": "Bite",
@@ -13379,6 +13846,8 @@
       "str": 4
     },
     "cr": "1/8",
+    "initiative": 0,
+    "srdPage": 357,
     "attacks": [
       {
         "name": "Hooves",
@@ -13416,6 +13885,8 @@
       "persuasion": 5
     },
     "cr": "1/8",
+    "initiative": 1,
+    "srdPage": 312,
     "attacks": [
       {
         "name": "Rapier",
@@ -13451,6 +13922,8 @@
       "str": 4
     },
     "cr": "1/8",
+    "initiative": 0,
+    "srdPage": 359,
     "attacks": [
       {
         "name": "Hooves",
@@ -13480,6 +13953,8 @@
       "cha": 3
     },
     "cr": "1/8",
+    "initiative": 2,
+    "srdPage": 363,
     "attacks": [
       {
         "name": "Bite",
@@ -13514,6 +13989,8 @@
       "cha": 5
     },
     "cr": "1/4",
+    "initiative": 1,
+    "srdPage": 260,
     "attacks": [
       {
         "name": "Beak",
@@ -13551,6 +14028,8 @@
       "stealth": 5
     },
     "cr": "1/4",
+    "initiative": 3,
+    "srdPage": 266,
     "attacks": [
       {
         "name": "Bite",
@@ -13583,6 +14062,8 @@
       "cha": 5
     },
     "cr": "1/4",
+    "initiative": 0,
+    "srdPage": 346,
     "attacks": [
       {
         "name": "Gore",
@@ -13620,6 +14101,8 @@
       "stealth": 4
     },
     "cr": "1/4",
+    "initiative": 2,
+    "srdPage": 346,
     "attacks": [
       {
         "name": "Bite",
@@ -13669,6 +14152,8 @@
       "cha": 7
     },
     "cr": "1/4",
+    "initiative": 0,
+    "srdPage": 347,
     "attacks": [
       {
         "name": "Hooves",
@@ -13705,6 +14190,8 @@
       "perception": 2
     },
     "cr": "1/4",
+    "initiative": 0,
+    "srdPage": 348,
     "attacks": [
       {
         "name": "Ram",
@@ -13742,6 +14229,8 @@
       "perception": 3
     },
     "cr": "1/4",
+    "initiative": 0,
+    "srdPage": 349,
     "attacks": [
       {
         "name": "Bite",
@@ -13769,14 +14258,16 @@
     "hp": 9,
     "speed": 30,
     "abilities": {
-      "str": 10,
+      "str": 5,
       "dex": 14,
       "con": 12,
-      "int": 10,
+      "int": 1,
       "wis": 7,
       "cha": 3
     },
     "cr": "1/4",
+    "initiative": 2,
+    "srdPage": 349,
     "attacks": [
       {
         "name": "Bite",
@@ -13816,6 +14307,8 @@
       "stealth": 4
     },
     "cr": "1/4",
+    "initiative": 1,
+    "srdPage": 351,
     "attacks": [
       {
         "name": "Bite",
@@ -13856,6 +14349,8 @@
       "dex": 3
     },
     "cr": "1/4",
+    "initiative": 1,
+    "srdPage": 352,
     "attacks": [
       {
         "name": "Bite",
@@ -13893,6 +14388,8 @@
       "perception": 2
     },
     "cr": "1/4",
+    "initiative": 4,
+    "srdPage": 354,
     "attacks": [
       {
         "name": "Bite",
@@ -13932,6 +14429,8 @@
       "stealth": 7
     },
     "cr": "1/4",
+    "initiative": 3,
+    "srdPage": 355,
     "attacks": [
       {
         "name": "Bite",
@@ -13972,6 +14471,8 @@
       "stealth": 5
     },
     "cr": "1/4",
+    "initiative": 1,
+    "srdPage": 296,
     "attacks": [
       {
         "name": "Bone Cudgel",
@@ -14011,6 +14512,8 @@
       "stealth": 7
     },
     "cr": "1/4",
+    "initiative": 3,
+    "srdPage": 358,
     "bonusActions": [
       "disengage",
       "hide"
@@ -14047,6 +14550,8 @@
       "cha": 7
     },
     "cr": "1/4",
+    "initiative": 1,
+    "srdPage": 360,
     "attacks": [
       {
         "name": "Hooves",
@@ -14083,6 +14588,8 @@
       "dex": 2
     },
     "cr": "1/4",
+    "initiative": 0,
+    "srdPage": 362,
     "attacks": [
       {
         "name": "Bites",
@@ -14102,6 +14609,7 @@
       "slashing"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed, Frightened, Grappled, Paralyzed, Petrified, Prone, Restrained, Stunned",
       "Hız: Climb 30 ft (yalnızca yürüme/uçma kullanılır)",
       "Trait: Swarm"
     ]
@@ -14122,6 +14630,8 @@
       "cha": 1
     },
     "cr": "1/4",
+    "initiative": -5,
+    "srdPage": 286,
     "multiattack": true,
     "attacks": [
       {
@@ -14137,6 +14647,7 @@
     ],
     "traits": "Multiattack: The fungus makes two Rotting Touch attacks.",
     "unsupported": [
+      "Durum bağışıklığı: Blinded, Charmed, Deafened, Frightened",
       "Duyu: Blindsight 30 ft"
     ]
   },
@@ -14160,6 +14671,8 @@
       "perception": 5
     },
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 345,
     "multiattack": true,
     "attacks": [
       {
@@ -14200,6 +14713,8 @@
       "stealth": 2
     },
     "cr": "1/2",
+    "initiative": 0,
+    "srdPage": 347,
     "attacks": [
       {
         "name": "Bite",
@@ -14242,6 +14757,8 @@
       "perception": 3
     },
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 351,
     "attacks": [
       {
         "name": "Ram",
@@ -14276,6 +14793,8 @@
       "cha": 5
     },
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 353,
     "attacks": [
       {
         "name": "Ram",
@@ -14315,6 +14834,8 @@
       "stealth": 2
     },
     "cr": "1/2",
+    "initiative": -2,
+    "srdPage": 293,
     "attacks": [
       {
         "name": "Pseudopod",
@@ -14334,6 +14855,7 @@
       "fire"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Blinded, Charmed, Deafened, Exhaustion, Frightened, Grappled, Prone, Restrained",
       "Hız: Climb 10 ft (yalnızca yürüme/uçma kullanılır)",
       "Duyu: Blindsight 60 ft",
       "Trait: Amorphous",
@@ -14357,6 +14879,8 @@
     },
     "darkvision": 60,
     "cr": "1/2",
+    "initiative": 2,
+    "srdPage": 305,
     "attacks": [
       {
         "name": "Touch",
@@ -14397,6 +14921,8 @@
       "perception": 2
     },
     "cr": "1/2",
+    "initiative": 2,
+    "srdPage": 360,
     "packTactics": true,
     "attacks": [
       {
@@ -14433,6 +14959,8 @@
     },
     "darkvision": 60,
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 320,
     "multiattack": true,
     "attacks": [
       {
@@ -14488,6 +15016,8 @@
       "perception": 5
     },
     "cr": "1/2",
+    "initiative": 0,
+    "srdPage": 321,
     "multiattack": true,
     "attacks": [
       {
@@ -14534,6 +15064,8 @@
       "stealth": 6
     },
     "cr": "1/2",
+    "initiative": 2,
+    "srdPage": 322,
     "attacks": [
       {
         "name": "Draining Swipe",
@@ -14585,6 +15117,8 @@
     },
     "darkvision": 60,
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 333,
     "regeneration": 5,
     "attacks": [
       {
@@ -14621,6 +15155,8 @@
       "wis": 3
     },
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 364,
     "attacks": [
       {
         "name": "Hooves",
@@ -14655,6 +15191,8 @@
     },
     "darkvision": 60,
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 326,
     "attacks": [
       {
         "name": "Hooves",
@@ -14699,6 +15237,8 @@
       "perception": 4
     },
     "cr": "1/2",
+    "initiative": 1,
+    "srdPage": 342,
     "attacks": [
       {
         "name": "Bite",
@@ -14732,6 +15272,8 @@
       "cha": 1
     },
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 259,
     "multiattack": true,
     "attacks": [
       {
@@ -14775,6 +15317,8 @@
       "perception": 3
     },
     "cr": "1",
+    "initiative": 1,
+    "srdPage": 346,
     "multiattack": true,
     "attacks": [
       {
@@ -14826,6 +15370,8 @@
       "stealth": 4
     },
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 279,
     "multiattack": true,
     "attacks": [
       {
@@ -14840,7 +15386,10 @@
         "repeat": 2
       }
     ],
-    "traits": "Multiattack: The death dog makes two Bite attacks."
+    "traits": "Multiattack: The death dog makes two Bite attacks.",
+    "unsupported": [
+      "Durum bağışıklığı: Blinded, Charmed, Deafened, Frightened, Stunned, Unconscious"
+    ]
   },
   {
     "id": "dire-wolf",
@@ -14863,6 +15412,8 @@
       "stealth": 4
     },
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 347,
     "packTactics": true,
     "attacks": [
       {
@@ -14901,6 +15452,8 @@
       "perception": 3
     },
     "cr": "1",
+    "initiative": 2,
+    "srdPage": 352,
     "attacks": [
       {
         "name": "Bite",
@@ -14939,6 +15492,8 @@
       "stealth": 5
     },
     "cr": "1",
+    "initiative": 1,
+    "srdPage": 352,
     "attacks": [
       {
         "name": "Tentacles",
@@ -14976,6 +15531,8 @@
     },
     "darkvision": 60,
     "cr": "1",
+    "initiative": 1,
+    "srdPage": 354,
     "attacks": [
       {
         "name": "Bite",
@@ -15014,6 +15571,8 @@
     },
     "darkvision": 60,
     "cr": "1",
+    "initiative": 3,
+    "srdPage": 362,
     "attacks": [
       {
         "name": "Bites",
@@ -15033,6 +15592,7 @@
       "slashing"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed, Frightened, Grappled, Paralyzed, Petrified, Prone, Restrained, Stunned",
       "Hız: Swim 40 ft (yalnızca yürüme/uçma kullanılır)",
       "Trait: Swarm",
       "Trait: Water Breathing"
@@ -15059,6 +15619,8 @@
       "stealth": 7
     },
     "cr": "1",
+    "initiative": 3,
+    "srdPage": 363,
     "bonusActions": [
       "disengage",
       "hide"
@@ -15099,6 +15661,8 @@
       "perception": 5
     },
     "cr": "2",
+    "initiative": 1,
+    "srdPage": 344,
     "attacks": [
       {
         "name": "Bite",
@@ -15141,6 +15705,8 @@
       "cha": 1
     },
     "cr": "2",
+    "initiative": 4,
+    "srdPage": 259,
     "attacks": [
       {
         "name": "Smother",
@@ -15180,6 +15746,8 @@
       "cha": 7
     },
     "cr": "2",
+    "initiative": -2,
+    "srdPage": 260,
     "attacks": [
       {
         "name": "Slam",
@@ -15222,6 +15790,8 @@
       "con": 4
     },
     "cr": "2",
+    "initiative": 1,
+    "srdPage": 261,
     "attacks": [
       {
         "name": "Burning Hammer",
@@ -15261,6 +15831,8 @@
       "cha": 9
     },
     "cr": "2",
+    "initiative": 1,
+    "srdPage": 263,
     "attacks": [
       {
         "name": "Greataxe",
@@ -15301,6 +15873,8 @@
       "religion": 2
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 278,
     "attacks": [
       {
         "name": "Pact Blade",
@@ -15335,6 +15909,8 @@
       "cha": 1
     },
     "cr": "2",
+    "initiative": -4,
+    "srdPage": 286,
     "attacks": [
       {
         "name": "Pseudopod",
@@ -15393,6 +15969,8 @@
       "wis": 2
     },
     "cr": "2",
+    "initiative": 3,
+    "srdPage": 287,
     "attacks": [
       {
         "name": "Bite",
@@ -15446,6 +16024,8 @@
       "str": 5
     },
     "cr": "2",
+    "initiative": 0,
+    "srdPage": 349,
     "attacks": [
       {
         "name": "Gore",
@@ -15488,6 +16068,8 @@
       "perception": 4
     },
     "cr": "2",
+    "initiative": 6,
+    "srdPage": 351,
     "attacks": [
       {
         "name": "Ram",
@@ -15529,6 +16111,8 @@
       "stealth": 4
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 295,
     "multiattack": true,
     "attacks": [
       {
@@ -15577,6 +16161,8 @@
       "perception": 2
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 356,
     "attacks": [
       {
         "name": "Bite",
@@ -15616,6 +16202,8 @@
       "stealth": 5
     },
     "cr": "2",
+    "initiative": 3,
+    "srdPage": 308,
     "attacks": [
       {
         "name": "Bite",
@@ -15665,6 +16253,8 @@
     },
     "darkvision": 60,
     "cr": "2",
+    "initiative": 0,
+    "srdPage": 326,
     "attacks": [
       {
         "name": "Gore",
@@ -15714,6 +16304,8 @@
       "cha": 1
     },
     "cr": "2",
+    "initiative": -2,
+    "srdPage": 312,
     "attacks": [
       {
         "name": "Pseudopod",
@@ -15763,6 +16355,8 @@
       "wis": 0
     },
     "cr": "2",
+    "initiative": -2,
+    "srdPage": 344,
     "undeadFortitude": true,
     "attacks": [
       {
@@ -15804,6 +16398,8 @@
       "stealth": 4
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 358,
     "attacks": [
       {
         "name": "Bite",
@@ -15843,6 +16439,8 @@
       "stealth": 4
     },
     "cr": "2",
+    "initiative": 2,
+    "srdPage": 359,
     "multiattack": true,
     "attacks": [
       {
@@ -15881,6 +16479,8 @@
       "cha": 6
     },
     "cr": "2",
+    "initiative": -1,
+    "srdPage": 360,
     "attacks": [
       {
         "name": "Gore",
@@ -15923,6 +16523,8 @@
       "stealth": 7
     },
     "cr": "2",
+    "initiative": 3,
+    "srdPage": 360,
     "bonusActions": [
       "disengage",
       "hide"
@@ -15962,6 +16564,8 @@
       "cha": 3
     },
     "cr": "2",
+    "initiative": 4,
+    "srdPage": 362,
     "attacks": [
       {
         "name": "Bites",
@@ -15981,6 +16585,7 @@
       "slashing"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed, Frightened, Grappled, Paralyzed, Petrified, Prone, Restrained, Stunned",
       "Hız: Swim 30 ft (yalnızca yürüme/uçma kullanılır)",
       "Duyu: Blindsight 10 ft",
       "Trait: Swarm"
@@ -16005,6 +16610,8 @@
       "str": 6
     },
     "cr": "3",
+    "initiative": 0,
+    "srdPage": 344,
     "multiattack": true,
     "attacks": [
       {
@@ -16041,6 +16648,8 @@
     },
     "darkvision": 60,
     "cr": "3",
+    "initiative": -1,
+    "srdPage": 262,
     "attacks": [
       {
         "name": "Bite",
@@ -16080,6 +16689,8 @@
       "cha": 4
     },
     "cr": "3",
+    "initiative": 2,
+    "srdPage": 262,
     "multiattack": true,
     "attacks": [
       {
@@ -16134,6 +16745,8 @@
       "cha": 3
     },
     "cr": "3",
+    "initiative": 1,
+    "srdPage": 353,
     "multiattack": true,
     "attacks": [
       {
@@ -16188,6 +16801,8 @@
       "stealth": 3
     },
     "cr": "3",
+    "initiative": 1,
+    "srdPage": 295,
     "multiattack": true,
     "attacks": [
       {
@@ -16231,6 +16846,8 @@
       "stealth": 4
     },
     "cr": "3",
+    "initiative": 2,
+    "srdPage": 356,
     "attacks": [
       {
         "name": "Bite",
@@ -16270,6 +16887,8 @@
       "stealth": 7
     },
     "cr": "3",
+    "initiative": 3,
+    "srdPage": 313,
     "multiattack": true,
     "attacks": [
       {
@@ -16310,6 +16929,8 @@
       "cha": 4
     },
     "cr": "3",
+    "initiative": 2,
+    "srdPage": 278,
     "attacks": [
       {
         "name": "Swarm of Grasping Hands",
@@ -16358,6 +16979,8 @@
       "stealth": 5
     },
     "cr": "4",
+    "initiative": 3,
+    "srdPage": 344,
     "multiattack": true,
     "attacks": [
       {
@@ -16394,6 +17017,8 @@
       "cha": 1
     },
     "cr": "4",
+    "initiative": -3,
+    "srdPage": 265,
     "attacks": [
       {
         "name": "Dissolving Pseudopod",
@@ -16444,6 +17069,8 @@
       "perception": 4
     },
     "cr": "4",
+    "initiative": 0,
+    "srdPage": 273,
     "multiattack": true,
     "attacks": [
       {
@@ -16501,6 +17128,8 @@
       "cha": 6
     },
     "cr": "4",
+    "initiative": -1,
+    "srdPage": 348,
     "multiattack": true,
     "attacks": [
       {
@@ -16541,6 +17170,8 @@
       "perception": 4
     },
     "cr": "4",
+    "initiative": -1,
+    "srdPage": 284,
     "multiattack": true,
     "attacks": [
       {
@@ -16568,6 +17199,7 @@
     ],
     "traits": "Multiattack: The ettin makes one Battleaxe attack and one Morningstar attack.",
     "unsupported": [
+      "Durum bağışıklığı: Blinded, Charmed, Deafened, Frightened, Stunned, Unconscious",
       "Boyut Large: tek hex (çok hex'li boyut yok)"
     ]
   },
@@ -16593,6 +17225,8 @@
       "perception": 3
     },
     "cr": "4",
+    "initiative": -2,
+    "srdPage": 355,
     "multiattack": true,
     "attacks": [
       {
@@ -16635,6 +17269,8 @@
       "stealth": 5
     },
     "cr": "4",
+    "initiative": 1,
+    "srdPage": 303,
     "multiattack": true,
     "attacks": [
       {
@@ -16690,6 +17326,8 @@
     },
     "darkvision": 60,
     "cr": "5",
+    "initiative": 3,
+    "srdPage": 284,
     "multiattack": true,
     "attacks": [
       {
@@ -16740,6 +17378,8 @@
     },
     "darkvision": 60,
     "cr": "5",
+    "initiative": -1,
+    "srdPage": 285,
     "multiattack": true,
     "attacks": [
       {
@@ -16787,6 +17427,8 @@
       "stealth": 5
     },
     "cr": "5",
+    "initiative": -1,
+    "srdPage": 350,
     "multiattack": true,
     "attacks": [
       {
@@ -16838,6 +17480,8 @@
       "perception": 3
     },
     "cr": "5",
+    "initiative": 3,
+    "srdPage": 353,
     "multiattack": true,
     "attacks": [
       {
@@ -16882,6 +17526,8 @@
       "stealth": 5
     },
     "cr": "5",
+    "initiative": 5,
+    "srdPage": 311,
     "multiattack": true,
     "attacks": [
       {
@@ -16901,6 +17547,7 @@
       "fire"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed",
       "Trait: Coven Magic",
       "Trait: Magic Resistance",
       "Trait: Soul Bag",
@@ -16929,6 +17576,8 @@
       "con": 7
     },
     "cr": "5",
+    "initiative": 0,
+    "srdPage": 313,
     "multiattack": true,
     "attacks": [
       {
@@ -16996,6 +17645,8 @@
       "stealth": 5
     },
     "cr": "5",
+    "initiative": 5,
+    "srdPage": 320,
     "multiattack": true,
     "attacks": [
       {
@@ -17046,6 +17697,8 @@
       "stealth": 3
     },
     "cr": "5",
+    "initiative": -1,
+    "srdPage": 323,
     "multiattack": true,
     "attacks": [
       {
@@ -17107,6 +17760,8 @@
       "cha": 5
     },
     "cr": "5",
+    "initiative": -1,
+    "srdPage": 363,
     "multiattack": true,
     "attacks": [
       {
@@ -17143,6 +17798,8 @@
     },
     "darkvision": 60,
     "cr": "5",
+    "initiative": 8,
+    "srdPage": 334,
     "multiattack": true,
     "attacks": [
       {
@@ -17205,6 +17862,8 @@
       "stealth": 6
     },
     "cr": "5",
+    "initiative": 3,
+    "srdPage": 334,
     "multiattack": true,
     "attacks": [
       {
@@ -17267,6 +17926,8 @@
     },
     "darkvision": 60,
     "cr": "5",
+    "initiative": 2,
+    "srdPage": 337,
     "multiattack": true,
     "attacks": [
       {
@@ -17335,6 +17996,8 @@
       "stealth": 6
     },
     "cr": "5",
+    "initiative": 0,
+    "srdPage": 343,
     "multiattack": true,
     "attacks": [
       {
@@ -17391,6 +18054,8 @@
       "con": 8
     },
     "cr": "6",
+    "initiative": 2,
+    "srdPage": 357,
     "multiattack": true,
     "attacks": [
       {
@@ -17428,6 +18093,8 @@
     },
     "darkvision": 60,
     "cr": "7",
+    "initiative": -1,
+    "srdPage": 323,
     "regeneration": 10,
     "multiattack": true,
     "attacks": [
@@ -17478,6 +18145,8 @@
       "con": 8
     },
     "cr": "8",
+    "initiative": 6,
+    "srdPage": 298,
     "multiattack": true,
     "attacks": [
       {
@@ -17530,6 +18199,8 @@
       "perception": 6
     },
     "cr": "8",
+    "initiative": 4,
+    "srdPage": 300,
     "multiattack": true,
     "attacks": [
       {
@@ -17545,6 +18216,7 @@
     ],
     "traits": "Hold Breath, Multiple Heads, Reactive Heads. Multiattack: The hydra makes as many Bite attacks as it has heads.",
     "unsupported": [
+      "Durum bağışıklığı: Blinded, Charmed, Deafened, Frightened, Stunned, Unconscious",
       "Hız: Swim 40 ft (yalnızca yürüme/uçma kullanılır)",
       "Boyut Huge: tek hex (çok hex'li boyut yok)",
       "Trait: Hold Breath",
@@ -17576,6 +18248,8 @@
       "perception": 4
     },
     "cr": "8",
+    "initiative": 3,
+    "srdPage": 363,
     "multiattack": true,
     "attacks": [
       {
@@ -17623,6 +18297,8 @@
     },
     "darkvision": 60,
     "cr": "9",
+    "initiative": 3,
+    "srdPage": 274,
     "multiattack": true,
     "attacks": [
       {
@@ -17634,7 +18310,7 @@
         "rider": "+ 1d12 acid , and the target’s Hit Point maximum decreases by an amount equal to the Acid damage taken.",
         "ranged": false,
         "reachFt": 5,
-        "repeat": 5
+        "repeat": 2
       }
     ],
     "traits": "Acid Absorption, Berserk, Immutable Form, Magic Resistance. Multiattack: The golem makes two Slam attacks, or it makes three Slam attacks if it used Hasten this turn.",
@@ -17685,6 +18361,8 @@
       "perception": 7
     },
     "cr": "9",
+    "initiative": 6,
+    "srdPage": 289,
     "multiattack": true,
     "attacks": [
       {
@@ -17754,6 +18432,8 @@
       "stealth": 7
     },
     "cr": "11",
+    "initiative": 3,
+    "srdPage": 263,
     "multiattack": true,
     "attacks": [
       {
@@ -17828,6 +18508,8 @@
     },
     "darkvision": 60,
     "cr": "11",
+    "initiative": 5,
+    "srdPage": 319,
     "attacks": [
       {
         "name": "Bite",
@@ -17880,6 +18562,8 @@
       "stealth": 9
     },
     "cr": "13",
+    "initiative": 14,
+    "srdPage": 335,
     "multiattack": true,
     "attacks": [
       {
@@ -17950,6 +18634,8 @@
       "con": 11
     },
     "cr": "15",
+    "initiative": 3,
+    "srdPage": 316,
     "multiattack": true,
     "attacks": [
       {
@@ -18009,6 +18695,8 @@
       "perception": 8
     },
     "cr": "16",
+    "initiative": 10,
+    "srdPage": 306,
     "multiattack": true,
     "attacks": [
       {

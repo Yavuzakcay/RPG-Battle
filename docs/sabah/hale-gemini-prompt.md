@@ -1,0 +1,1 @@
+Bu sayfadaki 9 karakteri (3x3, magenta zemin) aynen koru: aynı poz, kıyafet, renkler, boyut ve hücre konumu. Tek değişiklik: başın üstündeki hale/halka/çizgi tamamen silinsin, kafa, saç ve şapka doğal biçimde tamamlansın. Hale yerine başka hiçbir şey ekleme. Zemin aynı magenta kalsın, piksel art stili ve çizgi kalınlığı değişmesin.

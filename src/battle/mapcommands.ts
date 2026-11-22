@@ -3,6 +3,7 @@
  * herkes kırmaya çalışabilir).
  * Parametreler haritanın JSON'undan.
  */
+import { cuttingWordsCheck } from './reactions';
 import { checkBase, ruleVersion } from './ruleVersion';
 import { rollD20, rollTag, type Rng } from '../rules/dice';
 import { checkMode, skillBonus } from '../rules/skills';
@@ -35,6 +36,15 @@ export function executeEscape(state: BattleState, actor: Combatant, rng: Rng): C
     const events: BattleEvent[] = [{ type: 'moved', actorId: actor.id, path: [actor.pos], cost: 1 }, { type: 'effect_ended', targetId: actor.id, effectId: held.id, name: held.name, reason: 'save' }];
     return { ok: true, state: applyEvents(state, events), events };
   }
+  // Görev TE99 (99+, SRD 5.2.1 s. 178 Burning): yanan yaratık eylemle Prone olup ateşi söndürür (zar yok).
+  const burning = !held?.escapeCheck ? actor.effects?.find((e) => e.ongoing?.extinguish) : undefined;
+  if (burning) {
+    const events: BattleEvent[] = [
+      ...(actor.conditions.includes('Prone') ? [] : [{ type: 'condition_changed', targetId: actor.id, condition: 'Prone', present: true, reason: `${burning.name}: söndürme` } as BattleEvent]),
+      { type: 'effect_ended', targetId: actor.id, effectId: burning.id, name: burning.name, reason: 'save' },
+    ];
+    return { ok: true, state: applyEvents(state, events), events };
+  }
   if (held?.escapeCheck) {
     const dc = held.escapeCheck.dc;
     // Kuyruk A6: Phantasmal Force'ta Study eylemi INT (Investigation).
@@ -42,9 +52,12 @@ export function executeEscape(state: BattleState, actor: Combatant, rng: Rng): C
     const bonus = skillBonus(actor, skill);
     const mode = checkMode(actor, skill, checkBase(state, actor, 'normal', skill));
     const d = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus }));
-    const { total, extra } = finishCheck(actor, skill, d.kept, bonus, dc, mode, rng);
+    const { total: total0, extra } = finishCheck(actor, skill, d.kept, bonus, dc, mode, rng);
+    // Görev B94 (sürüm 94+): Cutting Words başarılı kontrolü çevirebilir.
+    const cw = cuttingWordsCheck(state, actor, total0, dc, held.name, rng);
+    const total = cw.total;
     const success = total >= dc;
-    const events: BattleEvent[] = [{ type: 'grapple_escape', actorId: actor.id, skill, d20: d.rolls, total, dc, success, ...(extra.length ? { bonusDice: extra } : {}) }];
+    const events: BattleEvent[] = [...cw.events, { type: 'grapple_escape', actorId: actor.id, skill, d20: d.rolls, total, dc, success, ...(extra.length ? { bonusDice: extra } : {}) }];
     if (success) events.push({ type: 'effect_ended', targetId: actor.id, effectId: held.id, name: held.name, reason: 'save' });
     return { ok: true, state: applyEvents(state, events), events };
   }

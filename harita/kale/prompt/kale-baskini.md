@@ -6,7 +6,7 @@
 - **Hedef görsel boyutu:** **2616 × 1668 px** (en-boy 1.568). Gemini başka boyut verirse oran aynı kalmalı (ör. 5232 × 3336); içe aktarma küçültür.
 - **Gemini'ye eklenecek görseller (bu sırayla):**
   1. Yerleşim: `harita/kale/onizleme/kale-baskini-izgarasiz.png` (düz renk; ızgaralı sürüm `kale-baskini-izgara.png` yalnızca senin kontrolün için).
-  2. Stil örneği: `public/maps/kale/kale-klasik.webp` (aynı oyunun Klasik harita görseli).
+  2. Stil örneği: `public/maps/kale/kale-avlu.webp` (aynı oyunun Kale ve avlu görseli).
 - **Tema:** Şafak vakti kale baskını: batıda sık ağaçlı orman kenarı ve çalılar, hendek ve açık dış kapı, taş döşeli avlu ortasında suyla çevrili kuyu, doğuda iç bina (koğuş, koridor, mahzen) ve iki köşe kulesi. Fıçılar, masa, sandık ve mangal yerlerinde.
 - Çıktıyı `assets-ham/harita/kale/kale-baskini.png` (ya da .jpg/.webp; tam üstten çizilmiş referans: `harita/kale/gorsel/kale-baskini.jpg`) olarak kaydedip `npm run harita-gorsel -- kale-baskini` çalıştırın.
 

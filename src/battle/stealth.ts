@@ -23,6 +23,7 @@ import { rollD20, rollTag, type Rng } from '../rules/dice';
 import type { Offset } from '../rules/hex';
 import { isIncapacitated } from '../rules/conditions';
 import { checkMode, skillBonus, strCheckAdvantage } from '../rules/skills';
+import { genel96On } from './genel96Surum';
 import { fail, type CommandResult } from './common';
 import { lineOfFire } from './cover';
 import { globalRule } from './ruleControl';
@@ -32,6 +33,7 @@ import { combineModes } from '../rules/modes';
 import { terrainAt } from './movement';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
+import { te99On } from './te99Surum';
 
 /** SRD 5.2.1 Hide eyleminin zorluğu (data/stealth.json). */
 export const HIDE_DC: number = stealthJson.dc;
@@ -88,6 +90,12 @@ export function passivePerception(state: BattleState, watcher: Combatant, at: Of
   const light = Math.max(web, dim);
   // Kuyruk AS1b (sürüm 71+ alt soy etkisi): Algı kontrolü dezavantajı pasif Algıyı 5 düşürür (SRD).
   const soyDis = soyCheckDis(state, watcher, 'perception') ? s2rules.hafifOrtu.passivePenalty : 0;
+  // GENEL96 F11 (sürüm 96+; SRD 5.2.1 s. 186 Passive Perception): Algı kontrolündeki avantaj +5, dezavantaj −5; kaynaklar tek
+  // kipte birleşir (görmeye dayalı hafif örtü/loş, alt soy, Poisoned, Frightened; Enhance Ability, Rage gibi avantajlar).
+  if (genel96On(state)) {
+    const mode = checkMode(watcher, 'perception', checkBase(state, watcher, light > 0 ? 'disadvantage' : 'normal', 'perception'));
+    return stealthJson.passivePerceptionBase + skillBonus(watcher, 'perception') - dark - distracted + (mode === 'advantage' ? 5 : mode === 'disadvantage' ? -5 : 0);
+  }
   return stealthJson.passivePerceptionBase + skillBonus(watcher, 'perception') - dark - distracted - light - soyDis;
 }
 
@@ -152,6 +160,9 @@ export function executeHide(state: BattleState, actor: Combatant, rng: Rng): Com
   const mode = combineModes([
     ...(checkMode(actor, 'stealth') === 'advantage' && !strCheckAdvantage(actor, 'stealth') ? [{ effect: 'advantage' as const, reason: 'Enhance Ability' }] : []),
     ...(actor.stealthDisadvantage ? [{ effect: 'disadvantage' as const, reason: 'Zırh' }] : []),
+    // Görev TE99 (99+, SRD 5.2.1 s. 92): DEX kontrol dezavantajı (eğitimsiz zırh, ağır yük) Gizlen'de de.
+    ...(te99On(state) && checkMode(actor, 'stealth') === 'disadvantage'
+      ? [{ effect: 'disadvantage' as const, reason: (actor.effects ?? []).find((e) => e.checkDis?.includes('dex'))?.name ?? 'Dezavantaj' }] : []),
     // Kuyruk 16 K16E (kural sürümü 2): korkan yaratık (kaynak görüş hattında) yetenek kontrolünde dezavantajlı.
     ...(checkBase(state, actor) === 'disadvantage' ? [{ effect: 'disadvantage' as const, reason: 'Frightened' }] : []),
     // Kuyruk AS1b (sürüm 71+ alt soy etkisi): Gizlen kontrolü dezavantajı (Blue, Storm; karanlıkta Parlayan Ruh).
@@ -228,6 +239,22 @@ const REVEALING: Partial<Record<Command['type'], string>> = {
   move: 'yürüdü',
   jump: 'atladı',
 };
+
+/**
+ * GENEL96 C12 (sürüm 96+; SRD 5.2.1 s. 183 Hide "the condition ends … if you … make an attack roll"; s. 14): komut
+ * içinde saldırı zarı atan (`attack_resolved`) her gizlenmiş yaratık açığa çıkar: Martial Arts/Flurry vuruşu, takip
+ * saldırısı, tepki ve Ready saldırısı dahil. Komutu verenin `revealEvent`'le açığa çıkışı ayrıca sayılmaz.
+ */
+export function attackRevealEvents(before: BattleState, after: BattleState, events: BattleEvent[], skip?: string): BattleEvent[] {
+  if (!genel96On(before) || after.status !== 'active') return [];
+  const ids = new Set(events.filter((e) => e.type === 'attack_resolved').map((e) => (e as { actorId: string }).actorId));
+  const out: BattleEvent[] = [];
+  for (const id of ids) {
+    if (id === skip || !before.combatants[id]?.hidden || !after.combatants[id]?.hidden) continue;
+    out.push({ type: 'revealed', actorId: id, reason: 'saldırdı' });
+  }
+  return out;
+}
 
 /** Başarılı bir komuttan sonra, komutu veren gizlenmişse ortaya çıkma olayı. */
 export function revealEvent(before: BattleState, after: BattleState, cmd: Command): BattleEvent | null {

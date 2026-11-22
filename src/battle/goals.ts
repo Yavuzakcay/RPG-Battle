@@ -58,8 +58,9 @@ export function liveGoalStatus(s: BattleState, g: Goal): GoalStatus {
     case 'retrieve': {
       const o = objOf(s, g.objectId);
       if (!o) return 'failed';
-      const carrier = o.carriedBy ? s.combatants[o.carriedBy] : undefined;
-      return carrier && up(carrier) && onAny(carrier, g.hexes) ? 'done' : 'open';
+      // Kuyruk KQ3 NA1: ortak taşımada taşıyanlardan biri çıkışa varınca tamam.
+      const carriers = (o.carriedBy ? [o.carriedBy, ...(o.carriers ?? [])] : []).map((id) => s.combatants[id]);
+      return carriers.some((carrier) => carrier && up(carrier) && onAny(carrier, g.hexes)) ? 'done' : 'open';
     }
   }
 }

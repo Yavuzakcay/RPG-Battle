@@ -2,7 +2,7 @@
  * Görev A4: tasma (hareket sınırı). Süreli etkide `leash: { centerId, radius }` (altıgen): yaratık merkezdeki
  * yaratıktan `radius` altıgenden daha uzağa kendi hareketiyle gidemez (zaten dışarıdaysa uzaklaşamaz, yaklaşabilir).
  * Merkez ölür ya da kaybolursa sınır kalkar. Kaynak veride: özellik etkisi `kind: 'leash'` (WIS save'li; dış içerikteki
- * Biat Yemini gibi alt sınıf özellikleri) ya da büyü etkisi `mechanics.effect.leash`. Yürüme maliyeti (`moveCostFn`),
+ * Biat Töresi gibi alt sınıf özellikleri) ya da büyü etkisi `mechanics.effect.leash`. Yürüme maliyeti (`moveCostFn`),
  * atlama, yapay zekâ ve arayüz aynı denetimi kullanır. Saf modül.
  */
 import { resolveSave } from '../rules/attack';

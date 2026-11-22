@@ -1,0 +1,48 @@
+{
+ "tiefling-erkek-cleric-ID9": {
+  "halka_kutu": [
+   114,
+   18,
+   149,
+   42
+  ],
+  "halka_px_once": 188,
+  "eklenen_ic_px": 64,
+  "boynuz_altinda_eklenmedi_px": 0,
+  "boynuz_kesisim_px": 2,
+  "boynuz_kesisim_once": 2,
+  "degisen_px": 917
+ },
+ "dragonborn-erkek-cleric-ID9": {
+  "halka_kutu": [
+   112,
+   37,
+   140,
+   56
+  ],
+  "halka_px_once": 130,
+  "eklenen_ic_px": 47,
+  "boynuz_altinda_eklenmedi_px": 3,
+  "boynuz_kesisim_px": 10,
+  "boynuz_kesisim_once": 10,
+  "degisen_px": 617,
+  "pul_maske_kesisim_px": 19,
+  "halka_pul_kesisim_px": 0
+ },
+ "dragonborn-kadin-cleric-ID9": {
+  "halka_kutu": [
+   109,
+   29,
+   141,
+   51
+  ],
+  "halka_px_once": 169,
+  "eklenen_ic_px": 55,
+  "boynuz_altinda_eklenmedi_px": 1,
+  "boynuz_kesisim_px": 3,
+  "boynuz_kesisim_once": 3,
+  "degisen_px": 761,
+  "pul_maske_kesisim_px": 15,
+  "halka_pul_kesisim_px": 0
+ }
+}

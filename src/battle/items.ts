@@ -20,6 +20,8 @@ import { saveMode } from './durations';
 import { saveDice } from './effectDice';
 import { globalRule } from './ruleControl';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
+import { saveVs } from './te99Surum';
+import { te99On } from './te99Surum';
 
 /** Kullanılabilecek sarf eşyaları (adı, adedi). */
 export function consumablesOf(c: Combatant): Array<{ id: string; name: string; count: number }> {
@@ -69,9 +71,12 @@ export function executeUseItem(state: BattleState, actor: Combatant, itemId: str
   if (u.kind === 'effect') {
     if (u.damage) {
       // Potion of Poison: içen CON save (başarıda yarı) ve Poisoned.
-      const save = u.save ? resolveSave({ extra: saveDice(t, u.save.ability), modifier: t.saves[u.save.ability], dc: u.save.dc, mode: saveMode('normal', t, u.save.ability) }, rollTag(rng, { by: t.id })) : null;
+      // Görev TE99 (99+, SRD 5.2.1 s. 236 "you take 4d6 Poison damage and must succeed on a DC 13 Constitution saving throw or
+      // have the Poisoned condition"): hasar her durumda tam; save yalnız Poisoned'ı belirler (Dwarven Resilience avantajıyla).
+      const t99 = te99On(state);
+      const save = u.save ? resolveSave({ extra: saveDice(t, u.save.ability), modifier: t.saves[u.save.ability], dc: u.save.dc, mode: saveMode('normal', t, u.save.ability, undefined, t99 ? { against: ['Poisoned'] } : undefined), ...saveVs(t, ['Poisoned']) }, rollTag(rng, { by: t.id })) : null;
       const d = rollDice(u.damage, rollTag(rng, { kind: 'damage' }));
-      const raw = save?.success ? Math.floor(d.total / 2) : d.total;
+      const raw = save?.success && !t99 ? Math.floor(d.total / 2) : d.total;
       const adj = adjustDamage(raw, u.damageType, damageProfile(t));
       const fx = damageEffects(t, adj.amount, u.damageType ?? '', false, rng);
       events.push({ type: 'effect_tick', targetId: t.id, effectId: `item:${itemId}`, name: it.name, damageRolls: d.rolls, appliedDamage: adj.amount, damageType: u.damageType ?? '', targetHpAfter: fx.hpAfter, effects: fx.effects });
@@ -85,7 +90,7 @@ export function executeUseItem(state: BattleState, actor: Combatant, itemId: str
   }
   // Fırlatma: save'li hasar/durum.
   const dc = u.dc ?? 8 + actor.modifiers.dex + actor.proficiency;
-  const save = resolveSave({ extra: saveDice(t, u.save), modifier: t.saves[u.save], dc, mode: saveMode('normal', t, u.save, actor, { ...(u.damageType ? { damage: u.damageType } : {}), ...(u.grants?.length ? { against: u.grants } : {}), genis: true }) }, rollTag(rng, { by: t.id }));
+  const save = resolveSave({ extra: saveDice(t, u.save), modifier: t.saves[u.save], dc, mode: saveMode('normal', t, u.save, actor, { ...(u.damageType ? { damage: u.damageType } : {}), ...(u.grants?.length ? { against: u.grants } : {}), genis: true }), ...saveVs(t, u.grants ?? []) }, rollTag(rng, { by: t.id }));
   const typeOk = !u.vs || u.vs.includes((t.creatureType ?? '').toLowerCase());
   const d = !save.success && u.damage && typeOk ? rollDice(u.damage, rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };
   const adj = d.total > 0 ? adjustDamage(d.total, u.damageType, damageProfile(t)) : { amount: 0, note: null };
@@ -100,7 +105,9 @@ export function executeUseItem(state: BattleState, actor: Combatant, itemId: str
     events.push({ type: 'effect_added', targetId: t.id, effect: { id: `item:${itemId}:${actor.id}`, name: it.name, sourceId: actor.id,
       ...(u.grants?.length ? { grants: u.grants } : {}), ...(u.escapeDc ? { escapeCheck: { dc: u.escapeDc } } : {}),
       // Yanma (SRD 5.2.1 Burning): tur başında hasar; DEX save (DC 10) ile söner.
-      ...(u.burning ? { ongoing: { dice: u.burning, type: 'fire', save: 'dex', dc: 10 } } : {}), icon: u.burning ? '🔥' : '🕸' } });
+      // Görev TE99 (99+, SRD 5.2.1 s. 178 "As an action, you can extinguish fire on yourself by giving yourself the Prone
+      // condition"): save yok, söndürme eylemi (`escape`).
+      ...(u.burning ? { ongoing: { dice: u.burning, type: 'fire', save: 'dex', dc: 10, ...(te99On(state) ? { noSave: true, extinguish: true } : {}) } } : {}), icon: u.burning ? '🔥' : '🕸' } });
   }
   return finish(state, events);
 }

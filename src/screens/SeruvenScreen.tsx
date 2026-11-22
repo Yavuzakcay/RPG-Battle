@@ -6,10 +6,12 @@
  */
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  SERUVEN, TOGGLE_KEYS, bestSkill, executeSeruven, gateOpen, prevPage, levelXp, linkCrossable, linkFound, linkOpen, linksHere, nodeKey, nodeOpen, nodeStop, nodeVisible, pageById, pageOrder, toggleOn,
+  SERUVEN, TOGGLE_KEYS, bestSkill, choiceWindows, executeSeruven, formSwapReady, memberForms, gateOpen, prevPage, levelXp, linkCrossable, linkFound, linkOpen, linksHere, nodeKey, nodeOpen, nodeStop, nodeVisible, pageById, pageOrder, toggleOn,
   type SeruvenCommand, type SeruvenEvent, type SeruvenNode, type SeruvenPage, type SeruvenState,
 } from '../journey/seruven';
 import { seferById } from '../journey/sefer';
+import { getMonster } from '../data';
+import type { JourneyMember } from '../journey/types';
 import { clearSeruven, loadSeruven, saveSeruven } from '../app/seruvenSave';
 import { isNight, prisonerLook, linkCrossCommand, linkSession, nightVariant, nodeJourney, hapisResultCommands, hapisSession, seruvenBattleSession, seruvenResultCommand, seruvenSkipCommand, sucResultCommand, sucSession, yerlesimCrossCommand, yerlesimSession } from '../app/seruvenBattle';
 import { YerlesimHub } from './YerlesimHub';
@@ -40,6 +42,10 @@ import { STRINGS_TR } from '../i18n/strings';
 const BASE = import.meta.env.BASE_URL;
 // K46: dünya haritası görüntüleyici (ayrı tembel parça).
 const WorldMapViewer = lazy(() => import('../ui/world/WorldMapViewer'));
+// Görev B93 (A2): seçim kipindeki oluşturucu (tembel; ana parçaya girmez).
+const Builder = lazy(() => import('./Builder').then((m) => ({ default: m.Builder })));
+import { choicesBound, pendingChoices, pickChoiceFields } from '../rules/levelChoices';
+import { characterFromSheet } from '../rules/builder';
 import { partyWorld, seruvenFog } from '../world/seruvenFog';
 import { daysToSurface, prisonSurfaced } from '../world/prison';
 import { nodeWorld, pageRegion, raceRegion, type Pt } from '../world/worldData';
@@ -47,6 +53,8 @@ import { dayOf, hourOfDay, nodeTapAction, openHubs, partyPos, passiveHints } fro
 import { WALK_RULES, findPath, hubsNearSea } from '../world/walk';
 import { REGION_TOGGLE, SWIM, arrivalRegion, type WorldRegion } from '../world/regions';
 import { RegionLoading } from '../ui/world/RegionLoading';
+import { NewDiceNotice } from '../ui/DiceThemePicker';
+import { isUnlocked, loadDiceStore, recordUnlocks, unlocksFromSeruven } from '../app/diceUnlock';
 const toolOn = () => { try { return location.hash.includes('dugum') || localStorage.getItem('rpg-battle-dugum') === '1'; } catch { return false; } };
 
 /** Düğümün görünen adı: sefer düğümünün adı ya da haritanın görünen adı. */
@@ -77,6 +85,8 @@ export function SeruvenScreen(props: {
     if (!r.ok) { setError(r.error); return false; }
     const next = cmd.type === 'start' ? r.events : [...events, ...r.events];
     setEvents(next); setState(r.state); setError(null); saveSeruven(next);
+    // SD9: açılma kancası: Serüven olaylarını DİNLER (düğüm tamamlama, yerleşim, ödül/hazine) → oyuncu profili (idempotent).
+    recordUnlocks(unlocksFromSeruven(r.events, (id) => isUnlocked(loadDiceStore(), id)));
     return true;
   };
   // Biten savaştan dönüş: sonuç bir kez yazılır.
@@ -139,11 +149,11 @@ export function SeruvenScreen(props: {
     if (ss) props.onBattle(ss, `yer:${map}`, yerFilter(next.state));
   };
   const onSuc = () => { const ss = sucSession(state, Math.random); if (ss) props.onBattle(ss, `suc:${state.suc?.asama ?? ''}`); };
-  return <PageView lastEvent={events[events.length - 1]} state={state} run={run} error={error} onBack={props.onBack} onReset={reset} onMap={onMap} onSuc={onSuc}
+  return <><NewDiceNotice /><PageView lastEvent={events[events.length - 1]} state={state} run={run} error={error} onBack={props.onBack} onReset={reset} onMap={onMap} onSuc={onSuc}
     onBattle={(node) => {
       const s = node.startsWith('link:') ? linkSession(state, node.slice(5), Math.random) : seruvenBattleSession(state, node, Math.random);
       if (s) props.onBattle(s, state.hapis && !node.startsWith('link:') ? `hapis:${node}` : node);
-    }} />;
+    }} /></>;
 }
 
 function StartForm(props: { characters: SavedCharacter[]; onStart: (c: SeruvenCommand) => void; error: string | null }) {
@@ -182,6 +192,8 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
   const { state, run } = props;
   const S = t().seruven;
   const en = getLang() === 'en';
+  // Görev B93 (A2): seçimleri düzenlenen üye (Builder seçim kipi).
+  const [edit, setEdit] = useState<string | null>(null);
   const page = pageById(state.page) as SeruvenPage;
   const order = pageOrder();
   const idx = order.findIndex((p) => p.id === page.id);
@@ -241,6 +253,17 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
   };
   const cardNode = card ? page.nodes.find((n) => n.id === card) : undefined;
   const prev = prevPage(state, page);
+  // Görev B93 (A2): seviye atlama / uzun dinlenme seçimleri (oluşturucunun seçim kipi; izin denetimi motorda).
+  const editing = edit ? state.party.find((m) => m.id === edit) : undefined;
+  if (editing) {
+    return (
+      <Suspense fallback={null}>
+        {props.error && <p className="error seruven-choice-error" role="alert">{props.error}</p>}
+        <Builder choices initial={characterFromSheet(editing.id, editing.sheet)} onCancel={() => setEdit(null)}
+          onSave={(c) => { if (run({ type: 'set_choices', memberId: editing.id, sheet: pickChoiceFields(c.sheet) })) setEdit(null); }} />
+      </Suspense>
+    );
+  }
   // Kuyruk 34b: yerleşimdeyken hub ekranı (sayfa yerine).
   if (state.yerlesim) {
     return (
@@ -409,6 +432,10 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
             {m.status.moralOlum && <> <span className="moral-dead">{moralDeathText(m.name, getLang())}</span></>}
             {temple && <> <button type="button" className="ghost" disabled={state.gold < MORAL.dirilme.tapinakUcreti} onClick={() => run({ type: 'moral_dirilt', memberId: m.id, yol: 'tapinak' })}>{t().view.moral.reviveTemple(MORAL.dirilme.tapinakUcreti)}</button></>}
             {caster && <> <button type="button" className="ghost" disabled={state.gold < caster.gold} onClick={() => run({ type: 'moral_dirilt', memberId: m.id, yol: 'buyu' })}>{t().view.moral.reviveSpell(caster.spell, caster.gold)}</button></>}
+            {!m.status.dead && <FormSwap state={state} member={m} run={run} />}
+            {/* Görev B95 (A): eksik seçim (alt sınıf, boş yuva, ustalık, Expertise) varsa düğme öne çıkar ve seçim ister. */}
+            {!m.status.dead && choicesBound(m.sheet.classId) && <> <button type="button" className={pendingChoices(m.sheet).length ? 'cta' : 'ghost'} title={S.choicesHelp} onClick={() => setEdit(m.id)}>
+              {pendingChoices(m.sheet).length ? S.choicesPending : choiceWindows(state).seviye || choiceWindows(state).dinlenme ? S.choicesOpen : S.choices}</button></>}
           </span>;
         })}
         {state.tasma && <span className="journey-member" title={S.collarHelp}>⛓ {S.collarOn}</span>}
@@ -497,3 +524,43 @@ function LinkActions(props: { state: SeruvenState; run: (c: SeruvenCommand) => b
   );
 }
 
+
+/**
+ * Görev WS92 (SRD 5.2.1 s. 42 "Known Forms"): Druid üyenin Wild Shape biçim listesi: boş yere ekleme her zaman, dolu listede
+ * uzun dinlenmeden sonra bir biçim değişimi (motor `form_swap`). Druid değilse çizilmez.
+ */
+function FormSwap(props: { state: SeruvenState; member: JourneyMember; run: (c: SeruvenCommand) => boolean }) {
+  const S = t().seruven;
+  const lim = memberForms(props.member);
+  const [from, setFrom] = useState<string>('');
+  const [to, setTo] = useState<string>('');
+  if (!lim || !lim.options.length) return null;
+  const name = (id: string) => { try { return getMonster(id).name; } catch { return id; } };
+  const free = lim.current.length < lim.known;
+  const ready = formSwapReady(props.state, props.member.id);
+  const fromId = free && from === '' ? null : (lim.current.includes(from) ? from : free ? null : lim.current[0] ?? null);
+  const options = lim.options.filter((x) => !lim.current.includes(x));
+  const toId = options.includes(to) ? to : options[0] ?? '';
+  return (
+    <details className="form-swap">
+      <summary>{S.forms(lim.current.length, lim.known)}</summary>
+      <div role="group" aria-label={S.formsTitle(props.member.name)}>
+        <small className="mute">{lim.current.map(name).join(', ') || '—'}</small>
+        <label className="fx-choice fx-stack"><span className="fx-label">{S.formsFrom}</span>
+          <select value={fromId ?? ''} onChange={(e: { target: { value: string } }) => setFrom(e.target.value)}>
+            {free && <option value="">{S.formsAdd}</option>}
+            {lim.current.map((id) => <option key={id} value={id}>{name(id)}</option>)}
+          </select>
+        </label>
+        <label className="fx-choice fx-stack"><span className="fx-label">{S.formsTo}</span>
+          <select value={toId} onChange={(e: { target: { value: string } }) => setTo(e.target.value)}>
+            {options.map((id) => <option key={id} value={id}>{name(id)}</option>)}
+          </select>
+        </label>
+        <button type="button" className="ghost" disabled={!toId || (fromId !== null && !ready)}
+          onClick={() => props.run({ type: 'form_swap', memberId: props.member.id, from: fromId, to: toId })}>{fromId === null ? S.formsAddGo : S.formsGo}</button>
+        <small className="mute">{fromId !== null && !ready ? S.formsWait : S.formsNote}</small>
+      </div>
+    </details>
+  );
+}

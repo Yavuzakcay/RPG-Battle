@@ -1,42 +1,1771 @@
 {
-  "note": "Zar tepsisinin görsel temaları. Yeni tema = public/zarlar/<id>/ altında yeni görsel seti (npm run zarlar, assets-ham/zarlar/zar-<id>.jpg) + bu listeye yeni girdi; kod değişmez. Sayı konumu 128×128 görsel koordinatında (sayının merkezi), boyu px. three alanı: 3D zar renkleri (gövde, yüz, kenar, sayı, doğal 20/1 parıltısı, avantajda sayılan zarın halkası). Klasik set Gemini ile üretildi (ticari kullanım kontrolü: DECISIONS.md, Görev J2). Kuyruk 17 G6: renk/CSS temaları görsel seti olmadan: `base` başka temanın görsellerini kullanır, `filter` 2D görsele CSS filtresi; 3D renkleri `three`. Yalnızca görsel (kayıt/replay etkilenmez); seçim bu cihazda (localStorage). Gerçek doku seti gelince `base`/`filter` yerine `dice` yazılır.",
+  "note": "Zar tepsisinin görsel temaları. Yeni tema = public/zarlar/<id>/ altında yeni görsel seti (npm run zarlar, assets-ham/zarlar/zar-<id>.jpg) + bu listeye yeni girdi; kod değişmez. Sayı konumu 128×128 görsel koordinatında (sayının merkezi), boyu px. three alanı: 3D zar renkleri (gövde, yüz, kenar, sayı, doğal 20/1 parıltısı, avantajda sayılan zarın halkası). Klasik set Gemini ile üretildi (ticari kullanım kontrolü: DECISIONS.md, Görev J2). Kuyruk 17 G6: renk/CSS temaları görsel seti olmadan: `base` başka temanın görsellerini kullanır, `filter` 2D görsele CSS filtresi; 3D renkleri `three`. Yalnızca görsel (kayıt/replay etkilenmez); seçim bu cihazda (localStorage). Gerçek doku seti gelince `base`/`filter` yerine `dice` yazılır. SD9 (zar sahipliği): `kategori` (malzeme/sinif/irk/harita/dusman/esya); `seti` verilmiş temada görseller public/zarlar/<id>/d4..d100.webp (npm run zarlar; hazır olanlar data/zar-mevcut.json); set henüz yoksa `base` (klasik) görselleri kullanılır, 3D renkleri `three`. Sayı konumu `dice` yoksa klasikten. Eşleme ve açılma kuralları data/zar-esleme.json. SD9c: eski CSS filtreli iki renk teması kaldırıldı; eski kayıt göçü src/app/diceUnlock.ts LEGACY_IDS.",
   "default": "klasik",
   "themes": [
     {
       "id": "klasik",
-      "name": { "tr": "Klasik", "en": "Classic" },
-      "text": { "color": "#3b2408", "stroke": "#fff3c4", "size": 30 },
-      "three": { "body": "#e8c264", "face": "#f3dc96", "edge": "#6b4512", "number": "#2e1c06", "crit": "#ffd84a", "fumble": "#e0453a", "ring": "#ffd84a" },
+      "name": {
+        "tr": "Klasik",
+        "en": "Classic"
+      },
+      "text": {
+        "color": "#3b2408",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#e8c264",
+        "face": "#f3dc96",
+        "edge": "#6b4512",
+        "number": "#2e1c06",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      },
       "dice": {
-        "4": { "image": "zarlar/klasik/d4.webp", "x": 56, "y": 96 },
-        "6": { "image": "zarlar/klasik/d6.webp", "x": 42, "y": 84 },
-        "8": { "image": "zarlar/klasik/d8.webp", "x": 65, "y": 50 },
-        "10": { "image": "zarlar/klasik/d10.webp", "x": 64, "y": 62 },
-        "12": { "image": "zarlar/klasik/d12.webp", "x": 64, "y": 76 },
-        "20": { "image": "zarlar/klasik/d20.webp", "x": 64, "y": 84 },
-        "100": { "image": "zarlar/klasik/d100.webp", "x": 64, "y": 70, "size": 24 }
-      }
-    },
-    {
-      "id": "kemik",
-      "name": { "tr": "Kemik", "en": "Bone" },
-      "base": "klasik", "filter": "grayscale(1) sepia(0.35) brightness(1.18) contrast(0.95)",
-      "text": { "color": "#2b2420", "stroke": "#f4ecdc", "size": 30 },
-      "three": { "body": "#e6dcc4", "face": "#f3ecdc", "edge": "#6e6250", "number": "#2b2420", "crit": "#fff2b0", "fumble": "#b8321f", "ring": "#e0c060" }
-    },
-    {
-      "id": "obsidyen",
-      "name": { "tr": "Obsidyen", "en": "Obsidian" },
-      "base": "klasik", "filter": "grayscale(1) brightness(0.42) contrast(1.5)",
-      "text": { "color": "#ece4ff", "stroke": "#120c1a", "size": 30 },
-      "three": { "body": "#1d1824", "face": "#2b2433", "edge": "#6a5a8a", "number": "#ece4ff", "crit": "#c79bff", "fumble": "#ff5a5a", "ring": "#9b7bff" }
+        "4": {
+          "image": "zarlar/klasik/d4.webp",
+          "x": 56,
+          "y": 96
+        },
+        "6": {
+          "image": "zarlar/klasik/d6.webp",
+          "x": 42,
+          "y": 84
+        },
+        "8": {
+          "image": "zarlar/klasik/d8.webp",
+          "x": 65,
+          "y": 50
+        },
+        "10": {
+          "image": "zarlar/klasik/d10.webp",
+          "x": 64,
+          "y": 62
+        },
+        "12": {
+          "image": "zarlar/klasik/d12.webp",
+          "x": 64,
+          "y": 76
+        },
+        "20": {
+          "image": "zarlar/klasik/d20.webp",
+          "x": 64,
+          "y": 84
+        },
+        "100": {
+          "image": "zarlar/klasik/d100.webp",
+          "x": 64,
+          "y": 70,
+          "size": 24
+        }
+      },
+      "kategori": "malzeme"
     },
     {
       "id": "altin",
-      "name": { "tr": "Altın", "en": "Gold" },
-      "base": "klasik", "filter": "saturate(1.7) brightness(1.12) hue-rotate(-8deg)",
-      "text": { "color": "#3a2600", "stroke": "#fff0a0", "size": 30 },
-      "three": { "body": "#d9a520", "face": "#f2c94c", "edge": "#7a5200", "number": "#3a2600", "crit": "#fff27a", "fumble": "#d9452b", "ring": "#fff27a" }
+      "name": {
+        "tr": "Altın",
+        "en": "Gold"
+      },
+      "base": "klasik",
+      "filter": "saturate(1.7) brightness(1.12) hue-rotate(-8deg)",
+      "text": {
+        "color": "#3a2600",
+        "stroke": "#fff0a0",
+        "size": 30
+      },
+      "three": {
+        "body": "#d9a520",
+        "face": "#f2c94c",
+        "edge": "#7a5200",
+        "number": "#3a2600",
+        "crit": "#fff27a",
+        "fumble": "#d9452b",
+        "ring": "#fff27a"
+      },
+      "kategori": "malzeme",
+      "seti": "zarlar/altin"
+    },
+    {
+      "id": "bronz",
+      "kategori": "malzeme",
+      "name": {
+        "tr": "Bronz",
+        "en": "Bronze"
+      },
+      "base": "klasik",
+      "seti": "zarlar/bronz",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#a9793a",
+        "face": "#be9a6b",
+        "edge": "#4c361a",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "elmas",
+      "kategori": "malzeme",
+      "name": {
+        "tr": "Elmas",
+        "en": "Diamond"
+      },
+      "base": "klasik",
+      "seti": "zarlar/elmas",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#cfe8f0",
+        "face": "#dbeef4",
+        "edge": "#5d686c",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "epoksi",
+      "kategori": "malzeme",
+      "name": {
+        "tr": "Epoksi",
+        "en": "Epoxy"
+      },
+      "base": "klasik",
+      "seti": "zarlar/epoksi",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#5fb7a8",
+        "face": "#87c9be",
+        "edge": "#2b524c",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "gokkusagi",
+      "kategori": "malzeme",
+      "name": {
+        "tr": "Gökkuşağı",
+        "en": "Rainbow"
+      },
+      "base": "klasik",
+      "seti": "zarlar/gokkusagi",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#c070d0",
+        "face": "#d094dc",
+        "edge": "#56325e",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "gumus",
+      "kategori": "malzeme",
+      "name": {
+        "tr": "Gümüş",
+        "en": "Silver"
+      },
+      "base": "klasik",
+      "seti": "zarlar/gumus",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#c9cfd6",
+        "face": "#d6dbe0",
+        "edge": "#5a5d60",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "inci",
+      "kategori": "malzeme",
+      "name": {
+        "tr": "İnci",
+        "en": "Pearl"
+      },
+      "base": "klasik",
+      "seti": "zarlar/inci",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#efe6dc",
+        "face": "#f3ece5",
+        "edge": "#6c6763",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "oltu-tasi",
+      "kategori": "malzeme",
+      "name": {
+        "tr": "Oltu Taşı",
+        "en": "Jet"
+      },
+      "base": "klasik",
+      "seti": "zarlar/oltu-tasi",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#3a2a22",
+        "face": "#6b5f59",
+        "edge": "#1a130f",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "safir",
+      "kategori": "malzeme",
+      "name": {
+        "tr": "Safir",
+        "en": "Sapphire"
+      },
+      "base": "klasik",
+      "seti": "zarlar/safir",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#2f4fa8",
+        "face": "#637bbe",
+        "edge": "#15244c",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "yakut",
+      "kategori": "malzeme",
+      "name": {
+        "tr": "Yakut",
+        "en": "Ruby"
+      },
+      "base": "klasik",
+      "seti": "zarlar/yakut",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#c2304a",
+        "face": "#d16477",
+        "edge": "#571621",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "zumrut",
+      "kategori": "malzeme",
+      "name": {
+        "tr": "Zümrüt",
+        "en": "Emerald"
+      },
+      "base": "klasik",
+      "seti": "zarlar/zumrut",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#2f9a5a",
+        "face": "#63b383",
+        "edge": "#154528",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "sinif-barbarian",
+      "kategori": "sinif",
+      "name": {
+        "tr": "Barbarian",
+        "en": "Barbarian"
+      },
+      "base": "klasik",
+      "seti": "zarlar/sinif-barbarian",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#b5542b",
+        "face": "#c87f60",
+        "edge": "#512613",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "sinif-bard",
+      "kategori": "sinif",
+      "name": {
+        "tr": "Bard",
+        "en": "Bard"
+      },
+      "base": "klasik",
+      "seti": "zarlar/sinif-bard",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#b86bb5",
+        "face": "#ca90c8",
+        "edge": "#533051",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "sinif-cleric",
+      "kategori": "sinif",
+      "name": {
+        "tr": "Cleric",
+        "en": "Cleric"
+      },
+      "base": "klasik",
+      "seti": "zarlar/sinif-cleric",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#e8dfc0",
+        "face": "#eee7d0",
+        "edge": "#686456",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "sinif-druid",
+      "kategori": "sinif",
+      "name": {
+        "tr": "Druid",
+        "en": "Druid"
+      },
+      "base": "klasik",
+      "seti": "zarlar/sinif-druid",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#5f8f4a",
+        "face": "#87ab77",
+        "edge": "#2b4021",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "sinif-fighter",
+      "kategori": "sinif",
+      "name": {
+        "tr": "Fighter",
+        "en": "Fighter"
+      },
+      "base": "klasik",
+      "seti": "zarlar/sinif-fighter",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#8a8f99",
+        "face": "#a7abb2",
+        "edge": "#3e4045",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "sinif-monk",
+      "kategori": "sinif",
+      "name": {
+        "tr": "Monk",
+        "en": "Monk"
+      },
+      "base": "klasik",
+      "seti": "zarlar/sinif-monk",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#d49a3a",
+        "face": "#dfb36b",
+        "edge": "#5f451a",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "sinif-paladin",
+      "kategori": "sinif",
+      "name": {
+        "tr": "Paladin",
+        "en": "Paladin"
+      },
+      "base": "klasik",
+      "seti": "zarlar/sinif-paladin",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#e6c85a",
+        "face": "#ecd683",
+        "edge": "#675a28",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "sinif-ranger",
+      "kategori": "sinif",
+      "name": {
+        "tr": "Ranger",
+        "en": "Ranger"
+      },
+      "base": "klasik",
+      "seti": "zarlar/sinif-ranger",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#4f7a3c",
+        "face": "#7b9b6d",
+        "edge": "#24371b",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "sinif-rogue",
+      "kategori": "sinif",
+      "name": {
+        "tr": "Rogue",
+        "en": "Rogue"
+      },
+      "base": "klasik",
+      "seti": "zarlar/sinif-rogue",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#4a4a5c",
+        "face": "#777785",
+        "edge": "#212129",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "sinif-sorcerer",
+      "kategori": "sinif",
+      "name": {
+        "tr": "Sorcerer",
+        "en": "Sorcerer"
+      },
+      "base": "klasik",
+      "seti": "zarlar/sinif-sorcerer",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#c2403a",
+        "face": "#d1706b",
+        "edge": "#571d1a",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "sinif-warlock",
+      "kategori": "sinif",
+      "name": {
+        "tr": "Warlock",
+        "en": "Warlock"
+      },
+      "base": "klasik",
+      "seti": "zarlar/sinif-warlock",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#6a3d8f",
+        "face": "#8f6eab",
+        "edge": "#301b40",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "sinif-wizard",
+      "kategori": "sinif",
+      "name": {
+        "tr": "Wizard",
+        "en": "Wizard"
+      },
+      "base": "klasik",
+      "seti": "zarlar/sinif-wizard",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#3f5fa8",
+        "face": "#6f87be",
+        "edge": "#1c2b4c",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "irk-celestial",
+      "kategori": "irk",
+      "name": {
+        "tr": "Celestial",
+        "en": "Celestial"
+      },
+      "base": "klasik",
+      "seti": "zarlar/irk-celestial",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#e8d98a",
+        "face": "#eee2a7",
+        "edge": "#68623e",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "irk-dragonborn",
+      "kategori": "irk",
+      "name": {
+        "tr": "Dragonborn",
+        "en": "Dragonborn"
+      },
+      "base": "klasik",
+      "seti": "zarlar/irk-dragonborn",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#b0432f",
+        "face": "#c47263",
+        "edge": "#4f1e15",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "irk-dwarf",
+      "kategori": "irk",
+      "name": {
+        "tr": "Dwarf",
+        "en": "Dwarf"
+      },
+      "base": "klasik",
+      "seti": "zarlar/irk-dwarf",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#8a6a3a",
+        "face": "#a78f6b",
+        "edge": "#3e301a",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "irk-elf",
+      "kategori": "irk",
+      "name": {
+        "tr": "Elf",
+        "en": "Elf"
+      },
+      "base": "klasik",
+      "seti": "zarlar/irk-elf",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#4f9a5a",
+        "face": "#7bb383",
+        "edge": "#244528",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "irk-gnome",
+      "kategori": "irk",
+      "name": {
+        "tr": "Gnome",
+        "en": "Gnome"
+      },
+      "base": "klasik",
+      "seti": "zarlar/irk-gnome",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#8f5fb0",
+        "face": "#ab87c4",
+        "edge": "#402b4f",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "irk-goliath",
+      "kategori": "irk",
+      "name": {
+        "tr": "Goliath",
+        "en": "Goliath"
+      },
+      "base": "klasik",
+      "seti": "zarlar/irk-goliath",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#6f7f8f",
+        "face": "#939fab",
+        "edge": "#323940",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "irk-halfling",
+      "kategori": "irk",
+      "name": {
+        "tr": "Halfling",
+        "en": "Halfling"
+      },
+      "base": "klasik",
+      "seti": "zarlar/irk-halfling",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#c98a4a",
+        "face": "#d6a777",
+        "edge": "#5a3e21",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "irk-human",
+      "kategori": "irk",
+      "name": {
+        "tr": "Human",
+        "en": "Human"
+      },
+      "base": "klasik",
+      "seti": "zarlar/irk-human",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#4a78b5",
+        "face": "#779ac8",
+        "edge": "#213651",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "irk-orc",
+      "kategori": "irk",
+      "name": {
+        "tr": "Orc",
+        "en": "Orc"
+      },
+      "base": "klasik",
+      "seti": "zarlar/irk-orc",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#5f8a2e",
+        "face": "#87a762",
+        "edge": "#2b3e15",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "irk-tiefling",
+      "kategori": "irk",
+      "name": {
+        "tr": "Tiefling",
+        "en": "Tiefling"
+      },
+      "base": "klasik",
+      "seti": "zarlar/irk-tiefling",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#a23a6a",
+        "face": "#b96b8f",
+        "edge": "#491a30",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "harita-ada",
+      "kategori": "harita",
+      "name": {
+        "tr": "Ada",
+        "en": "Island"
+      },
+      "base": "klasik",
+      "seti": "zarlar/harita-ada",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#e0c27a",
+        "face": "#e8d19b",
+        "edge": "#655737",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "harita-bataklik",
+      "kategori": "harita",
+      "name": {
+        "tr": "Bataklık",
+        "en": "Swamp"
+      },
+      "base": "klasik",
+      "seti": "zarlar/harita-bataklik",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#5a6b3a",
+        "face": "#83906b",
+        "edge": "#28301a",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "harita-col",
+      "kategori": "harita",
+      "name": {
+        "tr": "Çöl",
+        "en": "Desert"
+      },
+      "base": "klasik",
+      "seti": "zarlar/harita-col",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#d8b66a",
+        "face": "#e2c88f",
+        "edge": "#615230",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "harita-coral",
+      "kategori": "harita",
+      "name": {
+        "tr": "Mercan",
+        "en": "Coral"
+      },
+      "base": "klasik",
+      "seti": "zarlar/harita-coral",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#e8806a",
+        "face": "#eea08f",
+        "edge": "#683a30",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "harita-cyberpunk",
+      "kategori": "harita",
+      "name": {
+        "tr": "Siberpunk",
+        "en": "Cyberpunk"
+      },
+      "base": "klasik",
+      "seti": "zarlar/harita-cyberpunk",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#c02f9f",
+        "face": "#d063b7",
+        "edge": "#561548",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "harita-dag",
+      "kategori": "harita",
+      "name": {
+        "tr": "Dağ",
+        "en": "Mountain"
+      },
+      "base": "klasik",
+      "seti": "zarlar/harita-dag",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#8a8f9a",
+        "face": "#a7abb3",
+        "edge": "#3e4045",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "harita-dungeon",
+      "kategori": "harita",
+      "name": {
+        "tr": "Zindan",
+        "en": "Dungeon"
+      },
+      "base": "klasik",
+      "seti": "zarlar/harita-dungeon",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#5f5f6a",
+        "face": "#87878f",
+        "edge": "#2b2b30",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "harita-gemi",
+      "kategori": "harita",
+      "name": {
+        "tr": "Gemi",
+        "en": "Ship"
+      },
+      "base": "klasik",
+      "seti": "zarlar/harita-gemi",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#7a5a3a",
+        "face": "#9b836b",
+        "edge": "#37281a",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "harita-kale",
+      "kategori": "harita",
+      "name": {
+        "tr": "Kale",
+        "en": "Castle"
+      },
+      "base": "klasik",
+      "seti": "zarlar/harita-kale",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#7f7f88",
+        "face": "#9f9fa6",
+        "edge": "#39393d",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "harita-magara",
+      "kategori": "harita",
+      "name": {
+        "tr": "Mağara",
+        "en": "Cave"
+      },
+      "base": "klasik",
+      "seti": "zarlar/harita-magara",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#6a5a4a",
+        "face": "#8f8377",
+        "edge": "#302821",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "harita-orman",
+      "kategori": "harita",
+      "name": {
+        "tr": "Orman",
+        "en": "Forest"
+      },
+      "base": "klasik",
+      "seti": "zarlar/harita-orman",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#3f7a45",
+        "face": "#6f9b74",
+        "edge": "#1c371f",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "harita-sehir",
+      "kategori": "harita",
+      "name": {
+        "tr": "Şehir",
+        "en": "City"
+      },
+      "base": "klasik",
+      "seti": "zarlar/harita-sehir",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#b8b0a0",
+        "face": "#cac4b8",
+        "edge": "#534f48",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "harita-space",
+      "kategori": "harita",
+      "name": {
+        "tr": "Uzay",
+        "en": "Space"
+      },
+      "base": "klasik",
+      "seti": "zarlar/harita-space",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#2a2a5a",
+        "face": "#5f5f83",
+        "edge": "#131328",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "harita-taverna",
+      "kategori": "harita",
+      "name": {
+        "tr": "Taverna",
+        "en": "Tavern"
+      },
+      "base": "klasik",
+      "seti": "zarlar/harita-taverna",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#a0693a",
+        "face": "#b88e6b",
+        "edge": "#482f1a",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "harita-volkan",
+      "kategori": "harita",
+      "name": {
+        "tr": "Volkan",
+        "en": "Volcano"
+      },
+      "base": "klasik",
+      "seti": "zarlar/harita-volkan",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#c2502a",
+        "face": "#d17c5f",
+        "edge": "#572413",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "dusman-beholder",
+      "kategori": "dusman",
+      "name": {
+        "tr": "Beholder",
+        "en": "Beholder"
+      },
+      "base": "klasik",
+      "seti": "zarlar/dusman-beholder",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#7a3a8a",
+        "face": "#9b6ba7",
+        "edge": "#371a3e",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "dusman-bosluk",
+      "kategori": "dusman",
+      "name": {
+        "tr": "Boşluk",
+        "en": "Void"
+      },
+      "base": "klasik",
+      "seti": "zarlar/dusman-bosluk",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#34304a",
+        "face": "#676477",
+        "edge": "#171621",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "dusman-couatl",
+      "kategori": "dusman",
+      "name": {
+        "tr": "Couatl",
+        "en": "Couatl"
+      },
+      "base": "klasik",
+      "seti": "zarlar/dusman-couatl",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#3f9a8a",
+        "face": "#6fb3a7",
+        "edge": "#1c453e",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "dusman-dev",
+      "kategori": "dusman",
+      "name": {
+        "tr": "Dev",
+        "en": "Giant"
+      },
+      "base": "klasik",
+      "seti": "zarlar/dusman-dev",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#9a7a5a",
+        "face": "#b39b83",
+        "edge": "#453728",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "dusman-devoruer",
+      "kategori": "dusman",
+      "name": {
+        "tr": "Devoruer",
+        "en": "Devourer"
+      },
+      "base": "klasik",
+      "seti": "zarlar/dusman-devoruer",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#6a8a3a",
+        "face": "#8fa76b",
+        "edge": "#303e1a",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "dusman-ejderha",
+      "kategori": "dusman",
+      "name": {
+        "tr": "Ejderha",
+        "en": "Dragon"
+      },
+      "base": "klasik",
+      "seti": "zarlar/dusman-ejderha",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#b8322a",
+        "face": "#ca655f",
+        "edge": "#531613",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "dusman-flumph",
+      "kategori": "dusman",
+      "name": {
+        "tr": "Flumph",
+        "en": "Flumph"
+      },
+      "base": "klasik",
+      "seti": "zarlar/dusman-flumph",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#c8a0d8",
+        "face": "#d6b8e2",
+        "edge": "#5a4861",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "dusman-gibbering",
+      "kategori": "dusman",
+      "name": {
+        "tr": "Gibbering",
+        "en": "Gibbering Mouther"
+      },
+      "base": "klasik",
+      "seti": "zarlar/dusman-gibbering",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#a07060",
+        "face": "#b89488",
+        "edge": "#48322b",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "dusman-iblis",
+      "kategori": "dusman",
+      "name": {
+        "tr": "İblis",
+        "en": "Fiend"
+      },
+      "base": "klasik",
+      "seti": "zarlar/dusman-iblis",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#a8221f",
+        "face": "#be5957",
+        "edge": "#4c0f0e",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "dusman-illithid",
+      "kategori": "dusman",
+      "name": {
+        "tr": "Illithid",
+        "en": "Illithid"
+      },
+      "base": "klasik",
+      "seti": "zarlar/dusman-illithid",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#6a5aa8",
+        "face": "#8f83be",
+        "edge": "#30284c",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "dusman-lich",
+      "kategori": "dusman",
+      "name": {
+        "tr": "Lich",
+        "en": "Lich"
+      },
+      "base": "klasik",
+      "seti": "zarlar/dusman-lich",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#5f9a8a",
+        "face": "#87b3a7",
+        "edge": "#2b453e",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "dusman-tarrasque",
+      "kategori": "dusman",
+      "name": {
+        "tr": "Tarrasque",
+        "en": "Tarrasque"
+      },
+      "base": "klasik",
+      "seti": "zarlar/dusman-tarrasque",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#7a8a5a",
+        "face": "#9ba783",
+        "edge": "#373e28",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "item-kum-saati",
+      "kategori": "esya",
+      "name": {
+        "tr": "Kum Saati",
+        "en": "Hourglass"
+      },
+      "base": "klasik",
+      "seti": "zarlar/item-kum-saati",
+      "text": {
+        "color": "#281a0a",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#d8b050",
+        "face": "#e2c47c",
+        "edge": "#614f24",
+        "number": "#281a0a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "item-potion",
+      "kategori": "esya",
+      "name": {
+        "tr": "İksir",
+        "en": "Potion"
+      },
+      "base": "klasik",
+      "seti": "zarlar/item-potion",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#c23a8a",
+        "face": "#d16ba7",
+        "edge": "#571a3e",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "hizalanma-lawful-good",
+      "kategori": "hizalanma",
+      "name": {
+        "tr": "Lawful Good",
+        "en": "Lawful Good"
+      },
+      "base": "klasik",
+      "seti": "zarlar/hizalanma-lawful-good",
+      "text": {
+        "color": "#1c1408",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#e8d27a",
+        "face": "#f3e6a8",
+        "edge": "#6b5a1a",
+        "number": "#2e2406",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "hizalanma-neutral-good",
+      "kategori": "hizalanma",
+      "name": {
+        "tr": "Neutral Good",
+        "en": "Neutral Good"
+      },
+      "base": "klasik",
+      "seti": "zarlar/hizalanma-neutral-good",
+      "text": {
+        "color": "#1c1408",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#7fc78a",
+        "face": "#a6dcae",
+        "edge": "#2f6a3a",
+        "number": "#10301a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "hizalanma-chaotic-good",
+      "kategori": "hizalanma",
+      "name": {
+        "tr": "Chaotic Good",
+        "en": "Chaotic Good"
+      },
+      "base": "klasik",
+      "seti": "zarlar/hizalanma-chaotic-good",
+      "text": {
+        "color": "#1c1408",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#8fd0e8",
+        "face": "#b6e3f2",
+        "edge": "#2e6f86",
+        "number": "#0f3340",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "hizalanma-lawful-neutral",
+      "kategori": "hizalanma",
+      "name": {
+        "tr": "Lawful Neutral",
+        "en": "Lawful Neutral"
+      },
+      "base": "klasik",
+      "seti": "zarlar/hizalanma-lawful-neutral",
+      "text": {
+        "color": "#1c1408",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#7d93b8",
+        "face": "#a3b4d0",
+        "edge": "#2f405e",
+        "number": "#10192b",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "hizalanma-true-neutral",
+      "kategori": "hizalanma",
+      "name": {
+        "tr": "True Neutral",
+        "en": "True Neutral"
+      },
+      "base": "klasik",
+      "seti": "zarlar/hizalanma-true-neutral",
+      "text": {
+        "color": "#1c1408",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#a6a6a6",
+        "face": "#c8c8c8",
+        "edge": "#4a4a4a",
+        "number": "#1a1a1a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "hizalanma-chaotic-neutral",
+      "kategori": "hizalanma",
+      "name": {
+        "tr": "Chaotic Neutral",
+        "en": "Chaotic Neutral"
+      },
+      "base": "klasik",
+      "seti": "zarlar/hizalanma-chaotic-neutral",
+      "text": {
+        "color": "#1c1408",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#b58fd0",
+        "face": "#d0b4e3",
+        "edge": "#5a3a76",
+        "number": "#24103a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "hizalanma-lawful-evil",
+      "kategori": "hizalanma",
+      "name": {
+        "tr": "Lawful Evil",
+        "en": "Lawful Evil"
+      },
+      "base": "klasik",
+      "seti": "zarlar/hizalanma-lawful-evil",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#9a2a38",
+        "face": "#c0505d",
+        "edge": "#4a0f18",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "hizalanma-neutral-evil",
+      "kategori": "hizalanma",
+      "name": {
+        "tr": "Neutral Evil",
+        "en": "Neutral Evil"
+      },
+      "base": "klasik",
+      "seti": "zarlar/hizalanma-neutral-evil",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#4a4a4a",
+        "face": "#6e6e6e",
+        "edge": "#161616",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "hizalanma-chaotic-evil",
+      "kategori": "hizalanma",
+      "name": {
+        "tr": "Chaotic Evil",
+        "en": "Chaotic Evil"
+      },
+      "base": "klasik",
+      "seti": "zarlar/hizalanma-chaotic-evil",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#8a2a8a",
+        "face": "#b457b4",
+        "edge": "#401040",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
     }
   ]
 }

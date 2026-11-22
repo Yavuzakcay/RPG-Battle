@@ -76,7 +76,7 @@ act(s, 'royal-word-2', seviye=7, tur='bonus', kaynak={'id': 'imzaHukumdar', 'say
     ad='Hükümdar Sözü', k54c=True, not_='Sana ve 5 ft içindeki dostlarına saldırırken dezavantaj (1 tur).')
 act(s, 'exalted-throne', seviye=15, tur='bonus', kaynak={'id': 'imzaYuceTaht', 'sayi': 1, 'yenilenme': 'long'}, hedef='allies', yaricapFt=30, kendisi=True,
     etki={'name': 'Yüce Taht', 'sure': 10, 'dice': {'die': '$pbHalf', 'sign': 1, 'on': ['attack']}, 'hitDie': '$pbHalf', 'icon': '👑'},
-    kendiEtki={'name': 'Yüce Taht', 'sure': 10, 'resist': ['acid', 'bludgeoning', 'cold', 'fire', 'force', 'lightning', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder'], 'tempHp': '$lvl2', 'icon': '👑'},
+    kendiEtki={'name': 'Yüce Taht', 'sure': 1, 'resist': ['acid', 'bludgeoning', 'cold', 'fire', 'force', 'lightning', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder'], 'tempHp': '$lvl2', 'icon': '👑'},
     ad='Yüce Taht')
 pas(s, 'crown-presence', 7, {'aura': {'yaricapFt': {'7': 10, '10': 20}, 'save': {'7': 1, '15': 2}, 'yetenekler': ['wis']}},
     'Kurtulma bonusu WIS kurtulmalarına (korku ve büyülenme çoğunlukla WIS); auranın içi savaş başında ve her olayda yenilenir.')
@@ -139,12 +139,12 @@ UYKULU = {'name': 'Uykulu', 'sure': 1, 'speedMult': 0.5, 'attackDis': {}, 'icon'
 SP = 'sorceryPoints'
 act(s, 'lullaby', seviye=3, tur='action', kaynak={'id': 'imzaNinni', **PB}, hedef='enemies', yaricapFt=30, enCok='$cha', enCokCarpan={'14': 2},
     save={'yetenek': 'wis', 'dc': ['cha'], 'dezVs': ['Frightened']}, cesaret=10, etki=UYKULU, ad='Ninni', ozellikAdi='lullaby-blood',
-    yedek={'id': SP, 'maliyet': 1}, yz='kontrol',
+    yedek={'id': SP, 'maliyet': 1}, yz='kontrol', yzYaklas=True,
     not_='Sürüm 27+: ücretsiz kullanım bitince 1 Büyücülük Puanı. 14. seviyede 2 kat hedef ek puan istemeden (K50 yaklaşımı).')
 act(s, 'basket', seviye=6, tur='action', kaynak={'id': 'imzaSepet', 'sayi': 1, 'yenilenme': 'long'}, hedef='enemy', menzilFt=30,
     save={'yetenek': 'wis', 'dc': ['cha'], 'dezVs': ['Frightened'], 'dezEtki': ['Uykulu']}, cesaret=10,
     etki={'name': 'Sepet', 'sure': 2, 'sureEfsanevi': 1, 'grants': ['Incapacitated'], 'speedZero': True, 'breakOnDamage': True, 'icon': '🧺'}, ad='Sepet',
-    yedek={'id': SP, 'maliyet': 3}, param={'tekAd': 'Sepet', 'cagriEtki': 'imza:imza_dunganga/call-aura'}, yz='kontrol',
+    yedek={'id': SP, 'maliyet': 3}, param={'tekAd': 'Sepet', 'cagriEtki': 'imza:imza_dunganga/call-aura'}, yz='kontrol', yzYaklas=True,
     not_='Sürüm 27+: ücretsiz kullanım bitince 3 Büyücülük Puanı; aynı anda tek sepet (Dunganga Çağrısı sürerken yeterlilik kadar).')
 act(s, 'basket-swift', seviye=18, tur='bonus', kaynak={'id': 'imzaSepet', 'sayi': 1, 'yenilenme': 'long'}, hedef='enemy', menzilFt=30,
     save={'yetenek': 'wis', 'dc': ['cha'], 'dezVs': ['Frightened'], 'dezEtki': ['Uykulu']}, cesaret=10,
@@ -208,6 +208,7 @@ pas(s, 'expanded', 3, {'alwaysPrepared': {'3': ['Guiding Bolt', 'Faerie Fire', '
     'Genişletilmiş liste her zaman hazır sayılır (Warlock büyü seçiminde ayrı liste yok).')
 
 # ---------------- Cleric: Birlik Manastırı (ev kuralı değil) ----------------
+# 2026-11-19 (kullanıcı kararı): 17. seviye özelliğin adı 'Barış Azizi' / 'Saint of Peace' (eski 'Yıkılmaz Birlik'); kimlik ve etki aynı.
 s = 'imza_birlik'
 sub(s, 'cleric', 'Birlik Manastırı', 'Unity Monastery', 'Yükü paylaşan: bağ, ortak can', 'Shares the burden: bonds and a shared life pool', [
     F('forge-bond', 3, 'Bağ Kurma', 'Forge Bond', 'Yakındaki üç dostunu birbirine bağlarsın, 10 tur sürer.', 'Bind up to three nearby allies together for 10 rounds.'),
@@ -215,7 +216,7 @@ sub(s, 'cleric', 'Birlik Manastırı', 'Unity Monastery', 'Yükü paylaşan: ba�
     F('vigil', 3, 'Teselli Nöbeti', 'Vigil of Solace', 'Bağlı dostların geçici can ve biraz cesaret kazanır.', 'Bonded allies gain temporary HP and a little heart.'),
     F('shared-vitality', 6, 'Birlik Can Havuzu', 'Shared Vitality', 'Bağlı dostların canı tek bir havuzda toplanır, hasar havuzdan düşer. Dikkat: havuz biterse bağlı herkes ölür.', 'Bonded allies pool their HP; damage comes off the pool. Warning: if the pool empties, all of them die.'),
     F('common-cure', 8, 'Ortak Şifa', 'Common Cure', 'Birini iyileştirince diğer bağlı dostlar da biraz iyileşir.', 'Healing one bonded ally heals the others a little.'),
-    F('unbroken-union', 17, 'Yıkılmaz Birlik', 'Unbroken Union', 'Havuz bitecekken ayakta kalır ve herkesin cesareti tazelenir.', 'When the pool would empty, it holds.'),
+    F('unbroken-union', 17, 'Barış Azizi', 'Saint of Peace', 'Havuz bitecekken ayakta kalır ve herkesin cesareti tazelenir.', 'When the pool would empty, it holds.'),
 ], kural=False)
 act(s, 'forge-bond', seviye=3, tur='bonus', kaynak={'id': 'imzaBag', 'sayi': 'pb', 'yenilenme': 'long'}, hedef='allies', yaricapFt=30, kendisi=True, enCok=3, bag=True,
     etki={'name': 'Bağlı', 'sure': 10, 'icon': '🔗'}, ad='Bağ Kurma', yz='bag', not_='Rahip kendisini de bağlar (3 dosta ek); yeni bağ eskisini bitirir.')
@@ -292,7 +293,7 @@ act(s, 'mind-object', seviye=3, tur='bonus', kullan={'id': 'focus', 'maliyet': 1
     agirlikSeviye={'3': ['hafif'], '11': ['hafif', 'orta']}, ad='Zihin Gücü: Nesne', ozellikAdi='mind-might', k54=True,
     not_='Nesne Monk\'tan uzağa itilir (50 lb = hafif; 11. seviyede 200 lb = orta).')
 act(s, 'mind-move', **{**ZIHIN, 'seviye': 11, 'kip': 'free', 'mesafe': 20, 'ozellikAdi': 'greater-mind-might'}, hedefVeHex=True, ad='Zihin Gücü: Taşı', k54=True)
-act(s, 'mind-hurl', seviye=11, tur='action', kullan={'id': 'focus', 'maliyet': 2}, hedef='enemy', menzilFt=60, hedefVeHex=True, ozel='firlat',
+act(s, 'mind-hurl', seviye=11, tur='action', kullan={'id': 'focus', 'maliyet': 3}, hedef='enemy', menzilFt=60, hedefVeHex=True, ozel='firlat',
     save={'yetenek': 'dex', 'dc': ['wis']}, yari=True, hasar={'zar': {'11': '3d6'}, 'tur': 'bludgeoning'}, ad='Zihin Gücü: Fırlat', ozellikAdi='greater-mind-might', k54=True,
     not_='İkinci seçim nesnenin altıgeni; orada hareketli nesne yoksa zemin enkazı belirir (K53).')
 pas(s, 'patience', 3, {'sabir': {'ucretsiz': 'pb', 'odak': 1}, 'kaynak': {'id': 'imzaSabir', 'sayi': 'pb', 'yenilenme': 'long'}}, 'Tepki: yakın dövüşte sana iskalayan düşmana silahsız saldırı; önce ücretsiz kullanım, sonra 1 Odak.', k54=True)
@@ -317,12 +318,12 @@ sub(s, 'paladin', 'Hızır Yemini', 'Oath of Hızır', 'İmdada yetişen', 'Arri
     F('hastening-road', 20, 'Yetişen Yol', 'The Hastening Road', '10 tur boyunca dostların daha dirençli.', 'For 10 rounds your allies are hardier.'),
 ])
 act(s, 'hastening-road', seviye=20, tur='action', kaynak={'id': 'imzaYetisenYol', 'sayi': 1, 'yenilenme': 'long'}, hedef='allies', yaricapFt=30, kendisi=True,
-    etki={'name': 'Yetişen Yol', 'sure': 10, 'resist': ['acid', 'bludgeoning', 'cold', 'fire', 'force', 'lightning', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder'], 'icon': '🕊'},
+    etki={'name': 'Yetişen Yol', 'sure': 1, 'resist': ['acid', 'bludgeoning', 'cold', 'fire', 'force', 'lightning', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder'], 'icon': '🕊'},
     ad='Yetişen Yol', not_='Sürüm 25+: tur başı dosta ışınlanma (Yetişen Yol: Adım) ve turda bir hasar devralma.')
 act(s, 'road-step', seviye=20, tur='free', hedef='ally', menzilFt=60, ozel='yolAdimi', ad='Yetişen Yol: Adım', ozellikAdi='hastening-road', k54=True,
     not_='Yetişen Yol sürerken turda bir: 60 ft içindeki dostun yanına ışınlanma (hareket harcamaz).')
-pas(s, 'just-in-time', 3, {'tamZamaninda': {'menzilFt': 60, 'kaynak': 'channelDivinity', 'hasarPayi': 0.5}},
-    'Tepki (Kanal Gücü): 60 ft içindeki dost saldırı zarından önce hedef alınınca yanına ışınlanır, saldırı sana yönelir; isabette hasarın yarısını alırsın.', k54=True)
+pas(s, 'just-in-time', 3, {'tamZamaninda': {'menzilFt': 15, 'kaynak': 'channelDivinity', 'hasarPayi': 0.5}},
+    'Tepki (Kanal Gücü): 15 ft içindeki dost saldırı zarından önce hedef alınınca yanına ışınlanır, saldırı sana yönelir; isabette hasarın yarısını alırsın.', k54=True)
 pas(s, 'sense-of-need', 3, {'muhtac': {'menzilFt': 120, 'moral': 1}},
     '120 ft içindeki 0 HP ya da Çökmüş dostlar haritada işaretli; Elle Şifa ile iyileştirilen Çökmüş dost 1 Motivasyon kazanır (Moral tam modu).', k54=True)
 pas(s, 'aura-hard-times', 7, {'name': 'Dar Gün Aurası', 'icon': '🕊', 'auras': [

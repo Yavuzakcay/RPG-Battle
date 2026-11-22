@@ -64,7 +64,10 @@ describe('ASI ve feat etkileri', () => {
   it('kurala aykırı dağıtım ve yanlış yuva sorun olur', () => {
     expect(characterProblems(fighter({ advancements: [asi(4, { str: 1 })] })).join(' ')).toContain('ASI');
     expect(characterProblems(fighter({ advancements: [{ level: 5, featId: 'grappler', abilities: { str: 1 } }] })).join(' ')).toContain('yuva yok');
-    expect(characterProblems(fighter({ advancements: [{ level: 4, featId: 'archery' }] })).join(' ')).toContain('alınamaz');
+    // Görev TE99 (SRD 5.2.1 s. 87, K-F1 kullanıcı kararı): Fighting Style özelliği olan sınıf ASI yuvasında Fighting Style feat'i
+    // alabilir (eskiden "alınamaz"); özelliği olmayan sınıf (Rogue) alamaz.
+    expect(characterProblems(fighter({ advancements: [{ level: 4, featId: 'archery' }] })).join(' ')).not.toContain('alınamaz');
+    expect(characterProblems(fighter({ classId: 'rogue', subclassId: undefined, advancements: [{ level: 4, featId: 'archery' }] })).join(' ')).toContain('alınamaz');
     expect(characterProblems(fighter({ originFeat: 'grappler' })).join(' ')).toContain('köken');
   });
   it('Alert inisiyatife yetkinlik, Defense zırhla +1 AC, Archery menzilli silaha +2', () => {

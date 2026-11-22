@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { classes, monsters, type Monster } from '../data';
 import type { DragonWakeMode } from '../battle/types';
 import { isWideMap, maps, pickerVisible, variantLabel } from '../map/maps';
-import { alignmentEnabled, characterHouseRules, upperLevelsEnabled } from '../app/features';
+import { alignmentEnabled, characterHouseRules } from '../app/features';
 import { AlignmentPanel } from '../ui/gm/AlignmentPanel';
 import { alignmentMoralOn } from '../rules/alignmentMoral';
 import { alignmentLongRest } from '../rules/alignmentRest';
@@ -32,6 +32,8 @@ import { DICE_MODES, type DiceMode } from '../rules/manualDice';
 import { useDiceFlow } from '../ui/diceFlow';
 import { DicePrompt } from '../ui/DicePrompt';
 import { HouseRulesPanel } from '../ui/gm/HouseRulesPanel';
+import { RoomRules } from '../ui/settings/RoomRules';
+import { Fold } from '../ui/settings/SegRow';
 import { MapRulesPanel } from '../ui/gm/MapRulesPanel';
 import type { RuleParams } from '../battle/ruleControl';
 import { GoalsPanel } from '../ui/gm/GoalsPanel';
@@ -39,7 +41,10 @@ import { GroupsPanel, type GroupChoice } from '../ui/gm/GroupsPanel';
 import { goalsFromData } from '../battle/goals';
 import { SEFERLER } from '../journey/sefer';
 import { presetObjects } from '../battle/objects';
-import type { Goals } from '../battle/types';
+import { draftFromGoals, hasMapGoals, resetForMap, resolveDraft, type GoalsDraft } from '../oda/hedef';
+import type { ReactNode } from 'react';
+import type { Oda } from '../oda/model';
+import { joinRoom, leaveRoom } from '../oda/store';
 import { houseRuleDefaults, type HouseRuleId } from '../battle/houseRules';
 
 const BASE = import.meta.env.BASE_URL;
@@ -71,14 +76,19 @@ async function shrinkImage(file: File): Promise<string> {
 /** Kuyruk K58 G5: yapay zekâ zorluğu. */
 type AiDiff = 'kolay' | 'normal' | 'usta';
 export function GmScreen(props: {
-  characters: SavedCharacter[]; onStart: (s: Session) => void; onBack: () => void;
+  characters: SavedCharacter[]; onStart: (s: Session, goalDraft?: GoalsDraft) => void; onBack: () => void;
   /** Dinlenme (herkes uzun dinlensin): karakter listesini günceller. */
   onUpdateCharacters?: (list: SavedCharacter[]) => void;
   /** Açılışta seçili harita, varyant ve ejderha uyandırma kipi (testler ve kısayollar için). */
   initial?: { mapId?: string; variantId?: string; dragonWake?: DragonWakeMode; allMonsters?: boolean };
   /** Kuyruk 18 V4: "Sefer" listesinden seferi aç (yolculuk ekranı, bayraktan bağımsız). */
   onSefer?: (id: string) => void;
+  /** Görev OD1: oda düzenleyicisi. Verilirse zar modu, zorluk, çok altıgen ve harita mekanikleri odadan; parti odaya katılanlardan; yoksa Hızlı savaş (sade). */
+  room?: Oda; locked?: boolean; onRoomChange?: (fn: (o: Oda) => Oda) => void; roomPanel?: ReactNode; title?: string; backLabel?: string;
 }) {
+  const room = props.room;
+  const roomLocked = !!room && props.locked === true;
+  const rm = (fn: (o: Oda) => Oda) => props.onRoomChange?.(fn);
   const valid = props.characters.filter((c) => characterProblems(c).length === 0);
   // Ölü ya da 0 HP'deki karakter savaşa giremez (önce dinlenmeli); listede nedeniyle görünür.
   const ready = valid.filter((c) => statusBlock(c) === null);
@@ -86,7 +96,7 @@ export function GmScreen(props: {
   const tired = valid.filter((c) => !isRested(c.sheet, c.status) && !c.status?.dead);
   // Seçim yapılana kadar ilk dört hazır karakter (sonradan eklenenler de) partide.
   const [chosen, setParty] = useState<string[] | null>(null);
-  const party = chosen ?? ready.slice(0, Math.min(4, MAX_PARTY)).map((c) => c.id);
+  const party = room ? ready.filter((c) => room.parti.includes(c.id)).map((c) => c.id) : chosen ?? ready.slice(0, Math.min(4, MAX_PARTY)).map((c) => c.id);
   const partyFull = party.length >= MAX_PARTY;
   const [counts, setCounts] = useState<Record<string, number>>({ wolf: 2 });
   const [customs, setCustoms] = useState<Monster[]>([]);
@@ -132,27 +142,41 @@ export function GmScreen(props: {
   const [query, setQuery] = useState('');
   const [allMonsters, setAllMonsters] = useState(props.initial?.allMonsters ?? false);
   // Zar modu: fiziksel zarda inisiyatif zarları da burada, savaş kurulurken istenir.
-  const [diceMode, setDiceMode] = useState<DiceMode>('auto');
+  const [diceModeLocal, setDiceMode] = useState<DiceMode>('auto');
+  const diceMode: DiceMode = room ? room.ayarlar.zarModu : diceModeLocal;
   // Kuyruk 43: çok altıgenli büyük yaratıklar (deneysel, varsayılan kapalı).
-  const [multiHex, setMultiHex] = useState(false);
-  const [aiDiff, setAiDiff] = useState<{ party: AiDiff; enemies: AiDiff }>({ party: 'normal', enemies: 'normal' });
+  const [multiHexLocal, setMultiHexLocal] = useState(false);
+  const multiHex = room ? room.ayarlar.gelismis.cokAltigen : multiHexLocal;
+  const setMultiHex = (v: boolean) => (room ? rm((o) => ({ ...o, ayarlar: { ...o.ayarlar, gelismis: { ...o.ayarlar.gelismis, cokAltigen: v } } })) : setMultiHexLocal(v));
+  const [aiDiffLocal, setAiDiff] = useState<{ party: AiDiff; enemies: AiDiff }>({ party: 'normal', enemies: 'normal' });
+  const aiDiff = room ? room.ayarlar.zorluk : aiDiffLocal;
   // Görev K13B: ev kuralları (haritanın sefer bayrağıyla varsayılan; Game Master değiştirir).
   const [houseRules, setHouseRules] = useState<Record<HouseRuleId, boolean> | null>(null);
   // Kuyruk 24: harita mekaniği anahtarları ve parametreleri (harita ya da varyant değişince sıfırlanır).
-  const [ruleToggles, setRuleToggles] = useState<Record<string, boolean>>({});
-  const [ruleParams, setRuleParams] = useState<RuleParams>({});
+  const [ruleTogglesLocal, setRuleToggles] = useState<Record<string, boolean>>({});
+  const [ruleParamsLocal, setRuleParams] = useState<RuleParams>({});
+  // Odada harita mekaniği anahtarları odanın kaydında (kimlik başına; haritada olmayan kimlik savaşa yazılmaz).
+  const ruleToggles = room ? room.ayarlar.gelismis.ruleToggles : ruleTogglesLocal;
+  const ruleParams: RuleParams = room ? room.ayarlar.gelismis.ruleParams : ruleParamsLocal;
   // Harita değişince liste haritanın varsayılanına döner (sefer kuralları haritaya bağlı).
-  useEffect(() => { setHouseRules(null); setGoals(undefined); setGroupStates({}); setRuleToggles({}); setRuleParams({}); }, [mapId]);
+  useEffect(() => { setHouseRules(null); setGoalDraft((d) => resetForMap(d)); setGroupStates({}); if (!room) { setRuleToggles({}); setRuleParams({}); } }, [mapId]);
   // Görev S4: grup durumları ve komşuları (boş = haritanın varsayılanı).
   const [groupStates, setGroupStates] = useState<GroupChoice>({});
   // Görev S3: hedefler (undefined = haritanın hazır hedefleri; null = hedefsiz, eski kural).
-  const [goals, setGoals] = useState<Goals | null | undefined>(undefined);
+  // Görev OD1C: hedef taslağı (yalnız tür; altıgen ve nesne haritada seçilir). Haritadaki hedefler (`undefined`) taslağa çevrilir.
+  const [goalLocal, setGoalLocal] = useState<GoalsDraft | null | undefined>(undefined);
+  const goalDraft = room ? room.ayarlar.hedefler : goalLocal;
+  const setGoalDraft = (f: (d: GoalsDraft | null | undefined) => GoalsDraft | null | undefined) => {
+    if (room) rm((o) => ({ ...o, ayarlar: { ...o.ayarlar, ...(((n) => (n === undefined ? {} : { hedefler: n }))(f(o.ayarlar.hedefler))) } }));
+    else setGoalLocal(f);
+  };
   const mapGoals = useMemo(() => (map?.goals ? goalsFromData(map.goals) ?? null : null), [map]);
   const mapObjects = useMemo(() => presetObjects(map?.objects ?? []).map((o) => ({ id: o.id, kind: o.kind })), [map]);
   // Kurulan savaşın katılımcıları (zarı atan oyuncu mu); tıklamada hemen gerektiği için ref.
   const starting = useRef<Combatant[]>([]);
   const isPlayer = (id: string) => starting.current.some((c) => c.id === id && c.side === 'party' && !c.civilian);
-  const dice = useDiceFlow<Session>(diceMode, isPlayer, props.onStart);
+  const pendingRef = useRef<GoalsDraft | undefined>(undefined);
+  const dice = useDiceFlow<Session>(diceMode, isPlayer, (s) => props.onStart(s, pendingRef.current));
   const pool = useMemo(() => (allMonsters ? all : all.filter((m) => fitsMap(m.id, mapId))), [all, allMonsters, mapId]);
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -165,6 +189,7 @@ export function GmScreen(props: {
       .sort((a, b) => cold(a) - cold(b) || crNumber(a.cr) - crNumber(b.cr) || a.name.localeCompare(b.name));
   }, [all, pool, query, counts, variant, tierFilter]);
   const tiers = TIERS.map((t) => ({ tier: t, list: shown.filter((m) => tierOf(m.cr) === t) })).filter((g) => g.list.length > 0);
+  const resolved = resolveDraft(goalDraft);
   if (!map || !variant) return null;
   const optional = optionalRules(map.id, variant.id);
   const plan = {
@@ -207,9 +232,11 @@ export function GmScreen(props: {
     <div className="menu-screen">
       <main className="app wide">
         <header>
-          <h1>{G.title}</h1>
-          <button className="ghost" onClick={props.onBack}>{L.common.home}</button>
+          <h1>{props.title ?? (room ? G.title : t().oda.quickTitle)}</h1>
+          <button className="ghost" onClick={props.onBack}>{props.backLabel ?? L.common.home}</button>
         </header>
+
+        {room && props.roomPanel}
 
         {props.onSefer && (
           <section className="panel gm-sefer">
@@ -225,15 +252,18 @@ export function GmScreen(props: {
 
         <section className="panel">
           <h2>{G.party(plan.party.length, MAX_PARTY)}</h2>
+          {room && <p className="mute">{t().oda.partyHelp}</p>}
           {ready.length === 0 && (
             <p className="empty-state">{G.partyEmpty}</p>
           )}
           <p className={`mute party-limit${partyFull ? ' full' : ''}`}>{G.partyLimit(MAX_PARTY, partyFull)}</p>
           <div className="chips">
             {ready.map((c) => (
-              <label key={c.id} className={`chip${party.includes(c.id) ? ' on' : ''}${partyFull && !party.includes(c.id) ? ' off' : ''}`}>
+              <label key={c.id} data-testid="party-chip" className={`chip${party.includes(c.id) ? ' on' : ''}${partyFull && !party.includes(c.id) ? ' off' : ''}`}>
                 <input type="checkbox" checked={party.includes(c.id)} disabled={partyFull && !party.includes(c.id)}
-                  onChange={(e: { target: { checked: boolean } }) => setParty(e.target.checked ? (partyFull ? party : [...party, c.id]) : party.filter((x) => x !== c.id))} />
+                  onChange={(e: { target: { checked: boolean } }) => (room
+                    ? rm((o) => (e.target.checked ? joinRoom(o, c.id) : leaveRoom(o, c.id)))
+                    : setParty(e.target.checked ? (partyFull ? party : [...party, c.id]) : party.filter((x) => x !== c.id)))} />
                 {c.sheet.name} ({className(c.sheet.classId)} {c.sheet.level}){c.status ? ` · ${hpText(c)}` : ''}
               </label>
             ))}
@@ -277,16 +307,16 @@ export function GmScreen(props: {
             {/* Kuyruk 25: iki adımlı seçici: önce bölge (Derinlikler Yeraltı'nın altında; `ust`), sonra bölgenin harita kartları.
                 Gizli haritalar (`gizli`: yer tutucu görselli deneme haritaları, yalnızca başka haritadan girilen) listede yok. */}
             <div className="chips region-chips" role="radiogroup" aria-label={G.region}>
-              {mapRegions(maps.filter((m) => pickerVisible(m, upperLevelsEnabled()))).map(({ id, list }) => (
-                <button key={id} type="button" data-region={id} role="radio" aria-checked={regionOf(map) === id} className={`chip${regionOf(map) === id ? ' on' : ''}`}
+              {mapRegions(maps.filter((m) => pickerVisible(m))).map(({ id, list }) => (
+                <button key={id} type="button" data-region={id} data-testid="map-region" role="radio" aria-checked={regionOf(map) === id} className={`chip${regionOf(map) === id ? ' on' : ''}`}
                   onClick={() => { const first = list[0]; if (first && regionOf(map) !== id) { setMapId(first.id); setVariantId(first.variants[0]?.id ?? ''); setOptions([]); } }}>
                   {G.regions[id] ?? id}
                 </button>
               ))}
             </div>
             <div className="map-cards" role="radiogroup" aria-label={G.map}>
-              {(mapRegions(maps.filter((m) => pickerVisible(m, upperLevelsEnabled()))).find((g) => g.id === regionOf(map))?.list ?? []).map((m) => (
-                <button key={m.id} type="button" data-map={m.id} role="radio" aria-checked={m.id === map.id} className={`map-card${m.id === map.id ? ' on' : ''}`}
+              {(mapRegions(maps.filter((m) => pickerVisible(m))).find((g) => g.id === regionOf(map))?.list ?? []).map((m) => (
+                <button key={m.id} type="button" data-map={m.id} data-testid="map-card" role="radio" aria-checked={m.id === map.id} className={`map-card${m.id === map.id ? ' on' : ''}`}
                   onClick={() => { setMapId(m.id); setVariantId(m.variants[0]?.id ?? ''); setOptions([]); }}>
                   <img loading="lazy" src={`${BASE}${m.variants[0]?.image ?? ''}`} alt="" />
                   <b>{G.mapInfo[m.id]?.name ?? m.name}</b>
@@ -492,13 +522,13 @@ export function GmScreen(props: {
         <section className="panel">
           {problems.length > 0 && <ul className="problems">{problems.map((p) => <li key={p}>{p}</li>)}</ul>}
           {regenFoes.length > 0 && <p className="warn regen-warn" role="note">{G.regenWarn(regenFoes.join(', '))}</p>}
-          <label className="dice-mode">{D.mode.label}{' '}
+          {!room && <label className="dice-mode">{D.mode.label}{' '}
             <select aria-label={D.mode.label} value={diceMode} onChange={(e: { target: { value: string } }) => setDiceMode(e.target.value as DiceMode)}>
               {DICE_MODES.map((m) => <option key={m} value={m}>{D.mode[m]}</option>)}
             </select>
-          </label>
-          {diceMode !== 'auto' && <p className="mute">{D.mode.note}</p>}
-          <fieldset className="ai-difficulty"><legend>{G.aiDifficulty.label}</legend>
+          </label>}
+          {!room && diceMode !== 'auto' && <p className="mute">{D.mode.note}</p>}
+          {!room && <fieldset className="ai-difficulty"><legend>{G.aiDifficulty.label}</legend>
             {(['party', 'enemies'] as const).map((side) => (
               <label key={side}>{G.aiDifficulty[side]}{' '}
                 <select aria-label={`${G.aiDifficulty.label}: ${G.aiDifficulty[side]}`} value={aiDiff[side]} onChange={(e: { target: { value: string } }) => setAiDiff((d) => ({ ...d, [side]: e.target.value as AiDiff }))}>
@@ -506,23 +536,27 @@ export function GmScreen(props: {
                 </select>
               </label>
             ))}
-          </fieldset>
+          </fieldset>}
+          <GoalsPanel value={goalDraft === undefined ? draftFromGoals(mapGoals) : goalDraft} mapGoals={mapGoals} objects={mapObjects} size={map?.size ?? { cols: 15, rows: 7 }} onChange={(d) => setGoalDraft(() => d)} />
+          {room && <Fold title={t().setupUi.advanced} help={t().setupUi.advancedHelp} className="gm-advanced"><fieldset className="oda-lock" disabled={roomLocked}>
           <label className="multihex-toggle" title={G.multiHex.note}>
             <input type="checkbox" checked={multiHex} onChange={(e: { target: { checked: boolean } }) => setMultiHex(e.target.checked)} /> {G.multiHex.label}
           </label>
           <small className="mute multihex-note">{G.multiHex.note}</small>
           <MapRulesPanel key={`${map.id}/${variant.id}`} mapId={map.id} variantId={variant.id} toggles={ruleToggles} params={ruleParams}
-            onChange={(tg, ps) => { setRuleToggles(tg); setRuleParams(ps); }} />
+            onChange={(tg, ps) => { if (room) rm((o) => ({ ...o, ayarlar: { ...o.ayarlar, gelismis: { ...o.ayarlar.gelismis, ruleToggles: tg, ruleParams: ps as typeof o.ayarlar.gelismis.ruleParams } } })); else { setRuleToggles(tg); setRuleParams(ps); } }} />
           <HouseRulesPanel value={houseRules ?? houseRuleDefaults(mapSefer, characterHouseRules())} onChange={setHouseRules} />
           <GroupsPanel groups={map?.groups ?? []} value={groupStates} onChange={setGroupStates} />
-          <GoalsPanel value={goals === undefined ? mapGoals : goals} mapGoals={mapGoals} objects={mapObjects} size={map?.size ?? { cols: 15, rows: 7 }} onChange={setGoals} />
-          <button className="cta" disabled={problems.length > 0}
+          </fieldset></Fold>}
+          {roomLocked && <p className="mute oda-lock-start">{t().oda.startLocked}</p>}
+          <button className="cta" data-testid="map-start" disabled={problems.length > 0 || roomLocked}
             onClick={() => {
               // Masum görünümü tohumu bir kez seçilir: elle zar girilince kurulum aynı tohumla yeniden çalışır.
               const seed = Math.floor(Math.random() * 1e9);
               const participants = planParticipants(plan);
               starting.current = participants;
-              dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode, ruleToggles, ruleParams, houseRules: houseRules ?? houseRuleDefaults(mapSefer, characterHouseRules()), ...(multiHex ? { multiHex: true } : {}), ...(aiDiff.party !== 'normal' || aiDiff.enemies !== 'normal' ? { yz: { zorluk: { ...(aiDiff.party !== 'normal' ? { party: aiDiff.party } : {}), ...(aiDiff.enemies !== 'normal' ? { enemies: aiDiff.enemies } : {}) } } } : {}), ...(goals !== undefined ? { goals } : {}), ...(Object.keys(groupStates).length ? { groupStates } : {}) }, rng));
+              pendingRef.current = hasMapGoals(goalDraft) ? goalDraft ?? undefined : undefined;
+              dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode, ruleToggles, ruleParams, houseRules: houseRules ?? houseRuleDefaults(mapSefer, characterHouseRules()), ...(multiHex ? { multiHex: true } : {}), ...(aiDiff.party !== 'normal' || aiDiff.enemies !== 'normal' ? { yz: { zorluk: { ...(aiDiff.party !== 'normal' ? { party: aiDiff.party } : {}), ...(aiDiff.enemies !== 'normal' ? { enemies: aiDiff.enemies } : {}) } } } : {}), ...(resolved.goals !== undefined ? { goals: resolved.goals } : {}), ...(Object.keys(groupStates).length ? { groupStates } : {}) }, rng));
             }}>{G.setup}</button>
           {dice.pending && (
             <DicePrompt key={dice.pending.step} request={dice.pending.request}

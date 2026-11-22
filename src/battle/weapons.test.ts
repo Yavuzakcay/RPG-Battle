@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { weaponAttackOption } from './weapons';
+import { parseDice } from '../rules/dice';
 import type { CharacterSheet } from '../rules/stats';
 
 const sheet = (p: Partial<CharacterSheet> & Pick<CharacterSheet, 'raceId' | 'classId' | 'level' | 'baseScores'>): CharacterSheet => ({
@@ -44,6 +45,14 @@ describe('weaponAttackOption', () => {
     const o = weaponAttackOption(sheet({ raceId: 'human', classId: 'ranger', level: 5, baseScores: sc(10, 16, 12, 10, 14, 8) }), 'Longbow');
     expect(o.ranged).toBe(true);
     expect(o.attackBonus).toBe(6); // DEX 3 + proficiency 3
+  });
+  it('Ç01: sabit hasarlı Blowgun ("1") geçerli zar ifadesi üretir, yetenek değiştiricisi eklenmez (SRD Damage Rolls)', () => {
+    const f = sheet({ raceId: 'human', classId: 'fighter', level: 5, baseScores: sc(16, 14, 12, 10, 10, 8) });
+    const o = weaponAttackOption(f, 'Blowgun');
+    expect(o.damage).toBe('1'); // SRD: "you don't add your ability modifier to a fixed damage amount … such as … a Blowgun"
+    expect(o.attackBonus).toBe(5); // saldırıda DEX 2 + yetkinlik 3 yine var
+    expect(parseDice(o.damage)).toEqual({ count: 0, sides: 1, bonus: 1 });
+    expect(weaponAttackOption(f, 'Blowgun', 1).damage).toBe('2'); // büyülü silah bonusu eklenir
   });
   it('olmayan silahta hata verir', () => {
     expect(() => weaponAttackOption(sheet({ raceId: 'human', classId: 'fighter', level: 1, baseScores: sc(10, 10, 10, 10, 10, 10) }), 'Yok')).toThrow();

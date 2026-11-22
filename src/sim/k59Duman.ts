@@ -47,7 +47,7 @@ const MAP_TYPES: Array<{ id: string; scenario?: string; map?: { mapId: string; v
   { id: 'col-nehir', scenario: 'k29-col-kanyon-nehri' }, { id: 'kasaba', scenario: 'k34-kasaba-han' },
   { id: 'lagim', scenario: 'k35-kasaba-lagim' }, { id: 'hapishane', scenario: 'k36-dis-halka' },
   { id: 'volkan-ejder', scenario: 'volkan-ejder' },
-  { id: 'vitrin', map: { mapId: 'ortamlar-diyari', variantId: 'gunduz' } },
+  { id: 'vitrin', map: { mapId: 'kale-avlu', variantId: 'gunduz' } },
   { id: 'deniz-firtina', map: { mapId: 'gemi', variantId: 'firtina' } },
 ];
 const mapFilter = opt('--harita')?.split(',');

@@ -57,7 +57,7 @@ const SPN: Record<string, string> = { 'elf/trance': 'uzun dinlenme kısalığı 
 for (const s of species) for (const t of s.traits) add('Tür özelliği', `${s.name}: ${t.name}`, SP[`${s.id}/${t.id}`] ?? 'yok', SPN[`${s.id}/${t.id}`] ?? (SP[`${s.id}/${t.id}`] ? 'motor (species.ts, lineage.ts, giant.ts, breath)' : ''));
 for (const b of bgs) add('Geçmiş', b.name, 'tam', `köken feat'i ${b.feat}; beceriler ${b.skills.join(', ')}; araç ${b.tool}`);
 const RULES: Array<[string, string, string]> = [
-  ['Durumlar (15)', 'tam', 'src/rules/conditions.ts, kural sürümü 2+ (Blinded…Unconscious); Exhaustion 5.2.1 (−2×d20, −5 ft×, 6\'da ölüm)'],
+  ['Durumlar (15)', 'kısmi', 'src/rules/conditions.ts, kural sürümü 2+ (Blinded…Unconscious); Exhaustion 5.2.1 (−2×d20, −5 ft×, 6\'da ölüm). Eksikler (2026-11-20 genel denetim, sürüm 94): Unconscious Prone içermiyor, Poisoned kontrol dezavantajı ve pasif Algı ±5 yok, Petrified direnci/Poisoned bağışıklığı yok, Exhaustion bağışıklığı denetlenmiyor: harita/belgeler/GENEL-SAVAS-DENETIM.md §2'],
   ['Concentration', 'tam', 'hasar save\'i DC max(10, yarı), Incapacitated bitirir'],
   ['Opportunity Attack istisnaları', 'tam', 'Disengage, ışınlanma, zorla hareket, görmediği hedef'],
   ['Cover (yarım, üç çeyrek, tam)', 'tam', 'cover.ts; Kuyruk 19: eşya/özellik yarım siperi'],

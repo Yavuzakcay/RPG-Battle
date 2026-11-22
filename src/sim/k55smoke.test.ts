@@ -20,7 +20,7 @@ describe('K55: 12 sınıf × 3/7/11 duman testi (sürüm 26, yüzeyli harita)', 
       const pc = { ...combatantFromSheet(sheet, { id: 'P', ownerId: 'p1' }), side: 'party' as const };
       const foes = (level >= 7 ? ['ogre', 'owlbear'] : ['goblin-warrior', 'wolf']).map((m, i) => ({ ...combatantFromMonster(getMonster(m), { id: `O${i}`, name: m }), side: 'enemies' as const }));
       const rng = seeded(level * 55 + cls.id.length);
-      const session = createMapBattle([pc, ...foes], { mapId: 'ortamlar-diyari', variantId: 'gunduz', mirrored: false }, rng);
+      const session = createMapBattle([pc, ...foes], { mapId: 'kale-avlu', variantId: 'gunduz', mirrored: false }, rng);
       const r = execute(session.state, { type: 'start_battle' }, { playerId: 'gm', isGm: true }, rng);
       expect(r.ok, `${cls.id}/${level}`).toBe(true);
       if (!r.ok) continue;

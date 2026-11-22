@@ -10,12 +10,16 @@ import { items, type Item } from '../data';
 import type { ActiveEffect, AttackOption, Combatant } from './types';
 
 
-export type ItemHit = { label: string; dice: string; type: string; vs?: string[]; ranged?: boolean; melee?: boolean; critOnly?: boolean };
+export type ItemHit = { label: string; dice: string; type: string; vs?: string[]; ranged?: boolean; melee?: boolean; critOnly?: boolean; ammo?: boolean; weaponId?: string; replaceType?: boolean };
 
 /** Bu saldırıya uygulanacak eşya isabet ekleri. */
 export function itemHitsFor(actor: Combatant, option: AttackOption, target: Combatant, natural20 = false): ItemHit[] {
   const type = (target.creatureType ?? '').toLowerCase();
-  return (actor.itemHits ?? []).filter((h) => (!h.critOnly || natural20) && (!h.vs || h.vs.includes(type)) && (!h.ranged || option.ranged) && (!h.melee || !option.ranged));
+  // Görev TE99 (99+, `te99` işareti): eşya silaha bağlı: tür değişimi ek hasar değil (Javelin of Lightning, savaş başında
+  // `altDamageType`), cephane eki yalnız cephaneli silahta (Ammunition of Slaying), silah eki yalnız o silahta.
+  const t99 = !!actor.te99;
+  return (actor.itemHits ?? []).filter((h) => (!h.critOnly || natural20) && (!h.vs || h.vs.includes(type)) && (!h.ranged || option.ranged) && (!h.melee || !option.ranged)
+    && !(t99 && (h.replaceType || (h.ammo && !option.ammo) || (h.weaponId && option.weaponId !== h.weaponId))));
 }
 
 /** Karakterin etkin (ayarlanmış) eşyalarından savaşçı parçaları. */
@@ -23,6 +27,8 @@ export interface ItemParts {
   traits: string[]; fallReduction: number; noStealthDis: boolean; rangedReduce?: string;
   effects: ActiveEffect[]; hits: ItemHit[]; casts: Record<string, { dc?: number; attack?: number }>; spellBonus: number;
   addSpells: string[]; addResources: Record<string, number>; addFree: Record<string, string>; weaponBonus: number;
+  /** Görev TE99: cephane bonusu (Ammunition, +N) ve onun dışındaki silah bonusu ayrı (99+ yalnız cephaneli silaha). */
+  ammoBonus: number; weaponBonusNoAmmo: number;
 }
 export function itemParts(owned: string[], ownerId: string): ItemParts {
   const list = owned.map((n) => items.find((i) => i.name === n)).filter((i): i is Item => !!i);
@@ -37,6 +43,8 @@ export function itemParts(owned: string[], ownerId: string): ItemParts {
   let noStealthDis = false;
   let rangedReduce: string | undefined;
   let weaponBonus = 0;
+  let ammoBonus = 0;
+  let weaponBonusNoAmmo = 0;
   let spellBonus = 0;
   for (const it of list) {
     if (it.passive) {
@@ -48,8 +56,10 @@ export function itemParts(owned: string[], ownerId: string): ItemParts {
       if (typeof rr === 'string') rangedReduce = rr;
       if (Object.keys(rest).length) effects.push({ ...(rest as Partial<ActiveEffect>), id: `item:${it.id}`, name: it.name, sourceId: ownerId } as ActiveEffect);
     }
-    if (it.onHit) hits.push({ label: it.onHit.label ?? it.name, dice: it.onHit.dice, type: it.onHit.type, ...(it.onHit.vs ? { vs: it.onHit.vs } : {}), ...(it.onHit.ranged ? { ranged: true } : {}), ...(it.onHit.melee ? { melee: true } : {}), ...(it.onHit.critOnly ? { critOnly: true } : {}) });
+    if (it.onHit) hits.push({ label: it.onHit.label ?? it.name, dice: it.onHit.dice, type: it.onHit.type, ...(it.onHit.vs ? { vs: it.onHit.vs } : {}), ...(it.onHit.ranged ? { ranged: true } : {}), ...(it.onHit.melee ? { melee: true } : {}), ...(it.onHit.critOnly ? { critOnly: true } : {}),
+      ...(it.onHit.ammo ? { ammo: true } : {}), ...(it.onHit.weaponId ? { weaponId: it.onHit.weaponId } : {}), ...(it.onHit.replaceType ? { replaceType: true } : {}) });
     weaponBonus = Math.max(weaponBonus, it.bonus?.weapon ?? 0);
+    if (it.bonus?.ammoOnly) ammoBonus = Math.max(ammoBonus, it.bonus.weapon ?? 0); else weaponBonusNoAmmo = Math.max(weaponBonusNoAmmo, it.bonus?.weapon ?? 0);
     spellBonus = Math.max(spellBonus, it.bonus?.spell ?? 0);
     if (it.spells?.length) {
       const res = `item:${it.id}`;
@@ -58,7 +68,7 @@ export function itemParts(owned: string[], ownerId: string): ItemParts {
       for (const sp of it.spells) { addFree[sp.name] ??= res; addSpells.push(sp.name); }
     }
   }
-  return { traits, fallReduction, noStealthDis, ...(rangedReduce ? { rangedReduce } : {}), effects, hits, casts, spellBonus, addSpells, addResources, addFree, weaponBonus };
+  return { traits, fallReduction, noStealthDis, ...(rangedReduce ? { rangedReduce } : {}), effects, hits, casts, spellBonus, addSpells, addResources, addFree, weaponBonus, ammoBonus, weaponBonusNoAmmo };
 }
 
 /**

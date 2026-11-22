@@ -12,6 +12,7 @@
   "text": "dönen bıçak duvarı (100 ft uzun ya da 60 ft çaplı halka, 20 ft yüksek, 5 ft kalın): içinde, girince ya da tur sonunda DEX save 6d10 kuvvet (yarı), turda bir; üç çeyrek siper, zorlu arazi",
   "concentration": true,
   "mechanics": {
+   "m83": {"zone": {"rounds": 100, "difficult": 2, "on": ["cast", "enter", "end"], "once": true, "save": "dex", "damage": "6d10", "damageType": "force", "half": true, "color": "#c9c9d6", "icon": "⚔"}},
    "kind": "save",
    "save": "dex",
    "damage": "6d10",
@@ -598,6 +599,7 @@
   "text": "30 ft, WIS save: başarısızsa Charmed, yerinde dans eder; DEX save ve saldırılarında dezavantaj, ona saldırılar avantajlı; eylemle yeniden save (konsantrasyon, 1 dakika); başarılıysa bir tur dans",
   "concentration": true,
   "mechanics": {
+   "m83": {"conditions": ["Charmed"], "effect": {"targets": 1, "side": "enemy", "rounds": 10, "grants": ["Charmed"], "charm": true, "speedZero": true, "attackDis": {}, "saveDis": ["dex"], "attackedAdv": true, "repeatSave": true, "icon": "💃", "onSave": {"speedZero": true, "untilOwnTurnEnd": true, "icon": "💃"}}},
    "kind": "effect",
    "save": "wis",
    "effect": {
@@ -666,6 +668,7 @@
   "rangeFt": 60,
   "text": "60 ft içinde 12 yaratık WIS save, başarısızsa Charmed ve öneriyi uygular (24 saat; hasar alınca biter); yukarı slotla 10/30/366 gün",
   "mechanics": {
+   "m83": {"effect": {"targets": 12, "side": "enemy", "rounds": 14400, "grants": ["Charmed"], "command": ["halt", "flee", "approach", "drop"], "charm": true, "needsHearing": true, "icon": "🗣", "choices": ["halt", "flee", "approach", "drop"], "commandPersist": true, "breakOnDamage": "casterSide", "variants": {"drop": {"command": null, "commandPersist": null, "disarmed": true, "icon": "🗡"}}}},
    "kind": "effect",
    "save": "wis",
    "effect": {
@@ -978,6 +981,7 @@
   "text": "120 ft, diken duvarı (60 ft uzun ya da 20 ft çaplı halka): oluşunca DEX save 7d8 delme (yarı); görüşü keser, içinden geçmek 4 kat hareket ve DEX save 7d8 kesme (yarı) (konsantrasyon); +1d8/slot",
   "concentration": true,
   "mechanics": {
+   "m83": {"zone": {"rounds": 100, "difficult": 4, "obscured": "heavy", "on": ["cast", "enter", "end"], "once": true, "save": "dex", "damage": "7d8", "damageType": "slashing", "half": true, "castTrigger": {"damageType": "piercing"}, "color": "#4e7a3a", "icon": "🌿"}},
    "kind": "save",
    "save": "dex",
    "damage": "7d8",
@@ -1065,6 +1069,7 @@
   "text": "90 ft, hayalet kılıç: yakın büyü saldırısı 4d12 + büyü değiştiricisi kuvvet; sonraki turlarda bonus eylemle 30 ft taşınıp yeniden saldırır (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
+   "m83": {"addCastingMod": true, "lingering": "weapon", "lingerMoveFt": 30, "repeat": null},
    "kind": "attack",
    "damage": "4d12",
    "damageType": "force",
@@ -1090,6 +1095,7 @@
   "text": "90 ft içinde 10 ft yarıçaplı, 40 ft yüksek ışık sütunu: içindeki her yaratığa ya iyileştirme 4d12 + büyü değiştiricisi ya da DEX save 6d12 ışık (yarı); sütun 30 ft taşınır (konsantrasyon); +1d12/slot",
   "concentration": true,
   "mechanics": {
+   "m83": {"zone": {"rounds": 100, "on": ["cast", "enter", "end"], "once": true, "save": "dex", "damage": "6d12", "damageType": "radiant", "half": true, "targets": "all", "light": 0, "healAllies": "4d12", "color": "#fff1a8", "icon": "✨"}},
    "k73c": {
     "cylinderFt": 40
    },
@@ -1230,6 +1236,7 @@
   "rangeFt": 0,
   "text": "Eterik Sınır'a geçer: yalnızca eterik olanlarla etkileşir, dikey hareket iki kat (8 saate dek); her üst slot +3 istekli yaratık",
   "mechanics": {
+    "b102": {"effect": {"targets": 1, "side": "ally", "rounds": 4800, "ethereal": true, "icon": "👻", "includeSelf": true}, "upcast": {"targets": 3}, "castRangeFt": 10},
    "kind": "effect",
    "effect": {
     "targets": 1,
@@ -1860,6 +1867,7 @@
   "text": "500 ft içinde 100 ft yarıçaplı sarsıntı: zorlu arazi; dökümde ve tur sonlarında yerdeki yaratıklar DEX save, başarısızsa Prone ve konsantrasyon kırılır; yarıklar, yapılara 50 ezme (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
+    "b102": {"zone": {"rounds": 10, "difficult": 2, "on": ["cast"], "save": "dex", "conditions": ["Prone"], "color": "#8a6b3d", "icon": "🌋", "casterEnd": true, "fissures": {"count": "1d6", "depthDie": "1d10", "depthStepFt": 10, "widthHexes": 2, "structureKinds": ["door", "gate", "tent", "crackedWall"]}, "structures": {"damage": 50, "damageType": "bludgeoning", "heightsFt": {"door": 10, "gate": 15, "tent": 10, "crackedWall": 10, "panel": 10}, "collapse": {"save": "dex", "dice": "12d6", "type": "bludgeoning", "escapeDc": 20, "rubble": "t"}}, "dropConcentration": true}},
    "kind": "save",
    "save": "dex",
    "conditions": [
@@ -1950,6 +1958,7 @@
   "text": "30 ft yayılım: seçilen yaratıklar bütün save'lerde avantajlı, onlara saldırılar dezavantajlı; onları yakın dövüşte vuran Fiend ya da Undead CON save, başarısızsa Blinded (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
+   "m83": {"effect": {"targets": 1, "side": "ally", "self": true, "rounds": 10, "icon": "😇", "allyAura": {"radiusFt": 30, "saveAdvAll": true, "attackedDis": true, "blindRetort": ["fiend", "undead"]}}, "approx": ""},
    "kind": "effect",
    "effect": {
     "targets": 8,
@@ -2008,6 +2017,7 @@
   "text": "150 ft içinde 20 ft yarıçaplı köz bulutu (yoğun örtü): oluşunca, girince ve tur sonunda DEX save 10d8 ateş (yarı), turda bir; her tur 10 ft uzaklaşır (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
+   "m83": {"zone": {"rounds": 10, "obscured": "heavy", "on": ["cast", "enter", "end"], "once": true, "save": "dex", "damage": "10d8", "damageType": "fire", "half": true, "drift": 10, "color": "#d9622b", "icon": "🔥"}},
    "kind": "save",
    "save": "dex",
    "damage": "10d8",
@@ -2514,6 +2524,7 @@
   "text": "1 mil içinde 300 ft yarıçaplı fırtına bulutu: oluşunca CON save 2d6 gök gürültüsü ve Deafened; sonraki turlarda 4d6 asit yağmur, 6 hedefe DEX save 10d6 yıldırım (yarı), 2d6 ezme dolu, 1d6 soğuk; zorlu arazi, yoğun örtü (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
+   "m83": {"zone": {"rounds": 10, "on": ["cast", "start"], "stages": true, "castTrigger": {"save": "con", "damage": "2d6", "damageType": "thunder", "conditions": ["Deafened"], "hold": "spell"}, "color": "#5a6b8c", "icon": "⛈"}},
    "kind": "save",
    "save": "con",
    "damage": "2d6",
@@ -2623,6 +2634,7 @@
   "text": "120 ft içinde 30 ft yarıçaplı kürede seçilen yaratıklar WIS save: başarısızsa 10d10 psişik ve Frightened, tur sonlarında yeniden save (başarısızsa 5d10 psişik); başarılıysa yarı hasar (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
+   "m83": {"areaTargets": "enemies"},
    "kind": "save",
    "save": "wis",
    "damage": "10d10",

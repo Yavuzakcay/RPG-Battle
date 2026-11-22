@@ -85,7 +85,9 @@ export function winnerOf(state: BattleState): 'party' | 'enemies' | null {
   // Uyuyan ejderha: uyanık düşmanlar yenilince parti kazanır (ejderha uyurken sıvışılır). Çağrılmış yaratıklar
   // (Görev R3) tarafı ayakta tutmaz. Uyuyan grup üyesi (Görev S4) ayakta sayılır: uyanabilir.
   const alive = (side: 'party' | 'enemies') =>
-    Object.values(state.combatants).some((c) => (c.allegiance?.side ?? c.side) === side && !c.civilian && !c.summon && (!c.offFloor || c.offFloor === POSSESS_FLOOR) && !isPossessedBody(c) && !(c.asleep && !c.group) && (c.hp > 0 || c.regenPending));
+    Object.values(state.combatants).some((c) => (c.allegiance?.side ?? c.side) === side && !c.civilian && !c.summon && (!c.offFloor || c.offFloor === POSSESS_FLOOR) && !isPossessedBody(c) && !(c.asleep && !c.group) && (c.hp > 0 || c.regenPending)
+      // KARAR101 (101+, SRD Knocking Out): bayıltılan (1 HP, Unconscious) yenilmiş sayılır (SRD savaş sonunu tanımlamıyor; karar).
+      && !c.knockedOut);
   const objective = state.map?.objective;
   if (objective?.strict && civiliansAlive(state) < objective.needed) return 'enemies';
   // Görev S3: hedefler (varsa) önce; düşmanların hepsi düşünce yine parti kazanır, parti düşünce düşman.
@@ -104,6 +106,8 @@ export function isTargetable(c: Combatant): boolean {
   if (c.offFloor) return false;
   // Görev WIZARD: Blink ile Ethereal'deki yaratık hedef alınamaz.
   if (c.effects?.some((e) => e.ethereal)) return false;
+  // Görev WS92 (92+ işareti): yutanın midesindeki yaratık dışarıdan hedef alınmaz, hücre kaplamaz (Total Cover).
+  if (c.effects?.some((e) => e.swallowedBy && e.swallow?.inside)) return false;
   return c.hp > 0 || c.regenPending || c.life === 'dying' || c.life === 'stable';
 }
 
@@ -202,11 +206,15 @@ export function withinFiveFt(state: BattleState, a: Combatant, b: Combatant, mel
  * Protection from Energy, Gaseous Form). Hasar ayarlamanın tek yolu (`adjustDamage` çağıranlar).
  */
 const SEALED_IMMUNE = ['acid', 'bludgeoning', 'cold', 'fire', 'force', 'lightning', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder'];
-export function damageProfile(t: Combatant): { resistances: string[]; immunities: string[]; vulnerabilities: string[]; absorb?: string[] } {
-  const extra = [...(t.effects ?? []).flatMap((e) => e.resist ?? []), ...(t.auraResist ?? [])];
+export function damageProfile(t: Combatant): { resistances: string[]; immunities: string[]; vulnerabilities: string[]; absorb?: string[]; srdOrder?: boolean } {
+  // GENEL96 (sürüm 96+, `srd96` işareti; SRD 5.2.1 s. 186 Petrified "Resist Damage. You have Resistance to all damage").
+  const stone = t.srd96 && t.conditions.includes('Petrified') ? SEALED_IMMUNE : [];
+  const extra = [...(t.effects ?? []).flatMap((e) => e.resist ?? []), ...(t.auraResist ?? []), ...stone];
   // K17 G1: Resilient Sphere: kürenin içindeki yaratık hasar almaz (SRD 5.2.1: dışarıdan gelen saldırı ve etkiler).
   if (t.effects?.some((e) => e.sealed)) return { resistances: t.resistances, immunities: [...SEALED_IMMUNE], vulnerabilities: [] };
   return {
+    // GENEL96 (s. 17 Order of Application): direnç, sonra zayıflık.
+    ...(t.srd96 ? { srdOrder: true } : {}),
     resistances: extra.length ? [...new Set([...t.resistances, ...extra])] : t.resistances,
     // Kuyruk 19 (Mind Blank): süren etkinin hasar bağışıklığı.
     immunities: t.effects?.some((e) => e.immuneDamage?.length) ? [...new Set([...t.immunities, ...(t.effects ?? []).flatMap((e) => e.immuneDamage ?? [])])] : t.immunities,

@@ -99,10 +99,15 @@ function statusBadges(c: Pick<Combatant, 'conditions' | 'mapStatus'> & Partial<P
   if ((c as { burrowed?: true }).burrowed) out.push({ key: 'burrowed', icon: '⛏', title: S.burrowed });
   // Görev E1: Deafened rozetle (yalnızca görsel).
   if (c.conditions.includes('Deafened')) out.push({ key: 'deafened', icon: '🔇', title: S.deafened });
+  // Hazırla (Ready, sürüm 90): tepkisini ayırdı.
+  if ((c as { readied?: unknown }).readied) out.push({ key: 'readied', icon: '⏳', title: S.readied });
   // Kuyruk K48: Moral 0'da Çökmüş (belirgin simge; Incapacitated simgesinin yerine).
   const broken = c.effects?.some((e) => e.id === 'moral:cokmus');
   if (broken) out.push({ key: 'broken', icon: '💔', title: S.broken });
   // Kuyruk MB6 (yalnız görsel): bineğin üstündeki (biniyor) ve binicisi olan bineğin (binici var) tek rozeti; düşük öncelik.
+  // Görev WS92 (yalnız görsel): yutanın midesinde.
+  const sw = c.effects?.find((e) => e.swallowedBy && e.swallow?.inside);
+  if (sw) out.push({ key: 'swallowed', icon: '👄', title: S.swallowed(sw.name) });
   if (c.riding) out.push({ key: 'mounted', icon: '🐎', title: S.mounted });
   else if (c.rider) out.push({ key: 'ridden', icon: '🐎', title: S.ridden });
   // Etkisiz bırakan durumlar (Görev H): Paralyzed ve Stunned Incapacitated'ı içerir, yalnızca biri gösterilir.

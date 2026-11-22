@@ -98,6 +98,10 @@ export interface Race {
    */
   lineageOptional?: boolean;
   traits: string;
+  /** Görev TE99 (SRD 5.2.1 s. 85–86 Skillful, Keen Senses): türden beceri yetkinliği (sayı, isteğe bağlı liste). */
+  skillChoice?: { count: number; from?: string[] };
+  /** Görev TE99 (SRD 5.2.1 s. 86 Versatile): türden ek bir Origin feat'i. */
+  originFeat?: boolean;
   /** Kuyruk K20: ev kuralı türü (Celestial): bu ev kuralı açık değilse oluşturucuda seçilemez (`data/ev-kurallari.json`). */
   evKurali?: string;
   /** Kuyruk K20: hikâye yurdu ve oyuna başladığı bölge (kefaret yolu henüz yok). */
@@ -130,6 +134,8 @@ export interface CharacterClass {
   /** Büyü listesi kodu (spells.json içindeki "classes" alanıyla eşleşir). */
   spellCode: string | null;
   weaponProficiency: 'simple' | 'martial';
+  /** Görev TE99 (SRD 5.2.1 sınıf tablosu "Tool Proficiencies"): savaşta kullanılan alet yetkinliği (Rogue: Thieves' Tools). */
+  tools?: string[];
   /** Simple sınıfların proficient olduğu martial silah özellikleri (Rogue: finesse/light, Monk: light). */
   martialWeaponProperties: Array<'finesse' | 'light'>;
   /** Görev K6: büyü kitabı (Wizard): 1. seviyede `initial`, sonraki her seviyede `perLevel` büyü. */
@@ -353,6 +359,37 @@ export interface SpellMechanics {
   k73c?: Partial<SpellMechanics>;
   /** Kuyruk MB7 (kural sürümü 70+): Phantom Steed çağırma (`data/summons.json` `phantom-steed`). */
   mb7?: Partial<SpellMechanics>;
+  /** Mekanik matris düzeltmeleri (kural sürümü 83+; harita/belgeler/MEKANIK-MATRIS.md): bloktaki alanlar üstüne yazılır. */
+  m83?: Partial<SpellMechanics>;
+  /** Gece kuyruğu Aşama 3 (kural sürümü 102, BUYU-TAM): SRD tam tarama düzeltmeleri (mekaniğin üstüne yazılır). */
+  b102?: Partial<SpellMechanics>;
+  /** BUYU-TAM (102): çok hedefli iyileştirmede hedefler menzil içinde merkezli bu yarıçaplı kürede (Mass Cure Wounds 30 ft). */
+  healSphereFt?: number;
+  /** BUYU-TAM (102): büyünün menzili (ft) bu değerle değişir (Etherealness yukarı slot hedefleri "within 10 feet"). */
+  castRangeFt?: number;
+  /**
+   * Control Water girdabı (kural sürümü 84, Game Master anahtarı `controlWaterWhirlpool`; `src/battle/girdap.ts`): anahtar açıkken
+   * yapım bu bloğun girdabıyla (`whirlpool`); kapalıyken ve 83 ve altında eski mekanik (`upgrade`, `spellsK19`).
+   */
+  k84?: Partial<SpellMechanics>;
+  whirlpool?: boolean;
+  /**
+   * Mekanik matris B14 (yalnız `m83` bloğunda; Weird): alan yalnız düşmanları etkiler ("Each creature of your choice in a
+   * 30-foot-radius Sphere"); büyünün `area.targets` alanını ezer.
+   */
+  areaTargets?: 'enemies';
+  /**
+   * Mekanik matris B15 (yalnız `m83` bloğunda; Compulsion): büyünün alan tanımını ezer (SRD "Range: 30 feet … Each
+   * creature of your choice that you can see within range": büyücü merkezli 30 ft yayılım). Okuma `spellAreaAt`.
+   */
+  area83?: NonNullable<Spell['area']>;
+  /**
+   * Mekanik matris B18 (yalnız `m83` bloğunda; Shining Smite): isabet alan hedef büyü sürdükçe Invisible'dan yararlanamaz
+   * ("it can't benefit from the Invisible condition"): hedefe konsantrasyona bağlı `revealed` etkisi.
+   */
+  smiteReveal?: boolean;
+  /** Mekanik matris B08 (yalnız `m83` bloğunda; Sacred Flame): hedefin DEX save'ine siper bonusu eklenmez. */
+  ignoresCover?: boolean;
   /**
    * Kuyruk K73c (sürüm 64+, Görev 3): anlık silindir büyüsünün yüksekliği (ft; veride biçim küre). Havada merkezlenince
    * dairesi merkezde, silindir aşağı uzanır (`src/battle/airArea.ts`). Yerde merkezliyken kullanılmaz.
@@ -538,6 +575,13 @@ export interface SpellMechanics {
  * düşmanları). `move`: sonraki turlarda alan taşınır (`spell_followup`; maliyet ve ft).
  */
 export interface ZoneSpec {
+  /**
+   * Mekanik matris B05 (sürüm 83+): yapım anı (`on: 'cast'`) tetiğinin farkları; alan kuralının üstüne yazılır. Wall of Thorns
+   * yapımda Piercing (sonra Slashing), Storm of Vengeance yapımda CON save, 2d6 Thunder ve büyü süresince Deafened.
+   */
+  castTrigger?: Partial<Omit<ZoneSpec, 'castTrigger'>>;
+  /** Mekanik matris B05 (sürüm 83+, Conjure Celestial Healing Light): büyücünün tarafı save yerine bu zar + büyü değiştiricisi kadar iyileşir (yukarı slot zarı dahil). */
+  healAllies?: string;
   /** Kuyruk 19: Wall of Stone: altıgen başına kırılabilir panel (walls.ts); `permanent` konsantrasyon tam sürerse kalıcı. */
   panels?: boolean;
   /** Kuyruk K62 (sürüm 46): panel değerleri (Wall of Ice: AC 12, 30 HP; yoksa Wall of Stone 15/90), bağışık ve zayıf türler (zayıf = hasar iki kat). */
@@ -630,6 +674,11 @@ export interface ZoneSpec {
   resist?: string[];
   /** Kuyruk 19: girdap (Control Water): tur başında alandaki sudakileri merkeze `pull` altıgen çeker; uzaklaşmak için Athletics. */
   vortex?: { pull: number };
+  /**
+   * Control Water girdabı (kural sürümü 84): alanın `band` altıgen ötesine kadar (dışındakiler) tur başında merkeze `pullFt`
+   * çekilir; başarısız save'de yakalanır (hız 0, kurtulma eylemle Athletics `escape`). `src/battle/girdap.ts`.
+   */
+  whirl?: { band: number; pullFt: number };
   /** Kuyruk A6 (Gust of Wind): başarısız save'de büyücüden bu kadar ft itme; büyücüye yaklaşan adım bu kat maliyet. */
   push?: number;
   costToward?: number;
@@ -677,6 +726,10 @@ export interface EffectSpec {
   side: 'ally' | 'enemy' | 'any';
   /** Görev B1: yalnızca büyücünün kendisi (Shillelagh, Blur). */
   self?: boolean;
+  /** BUYU-TAM (102): büyücü hedeflerden biri olmalı (Etherealness yukarı slot). */
+  includeSelf?: boolean;
+  /** BUYU-TAM (102): hedef Ethereal düzleme geçer (hedef alınmaz; Etherealness). 101 ve altında etkiye yazılmıyordu. */
+  ethereal?: boolean;
   rounds: number;
   dice?: { die: string; sign: 1 | -1; on: Array<'attack' | 'save' | 'check'>; skill?: 'chosen'; single?: boolean };
   reduce?: { die: string; type: 'chosen' };
@@ -823,6 +876,11 @@ export interface EffectSpec {
   dashOnCast?: boolean;
   /** Kuyruk A4 (Holy Aura): yakın dövüşle isabet ettiren bu türler CON save ya da Blinded. */
   blindRetort?: string[];
+  /**
+   * Mekanik matris B13 (yalnız `m83` bloğunda; Holy Aura): büyücüden yayılım. Etki büyücüde; yarıçap içindeki dostlar
+   * (kendisi dahil) yayılımda kaldıkça save avantajı, onlara saldırı dezavantajı ve yakın dövüş yansıması alır (`syncAuras`).
+   */
+  allyAura?: { radiusFt: number; saveAdvAll?: boolean; attackedDis?: boolean; blindRetort?: string[] };
   /** CILA: sözlü buyruk: hedef Deafened ise işlemez (Command, Suggestion). */
   needsHearing?: boolean;
   /** CILA: save'e sabit eklenti (yetenek → değer; Slow DEX −2). */
@@ -871,6 +929,8 @@ export interface ReactionMechanic {
   types?: string[];
   /** Azaltma zarı (`reduce`). */
   dice?: string;
+  /** KARAR101 (sürüm 101+, Stone's Endurance "When you take damage"): her hasarda (`damageEffects`), yalnız isabette değil. */
+  anyDamage?: boolean;
   /** Karşılık saldırısı (Riposte): canavar saldırısının adı. */
   counterAttack?: string;
   /** Recharge (d6 ≥ değer; tur başında). */
@@ -949,12 +1009,20 @@ export interface Item {
   /** Kuyruk 19 (SRD denetimi): taşınırken/giyilirken savaşta kalıcı etki (savaşçıda `item:<id>` süren etkisi; ActiveEffect alanları). */
   passive?: Record<string, unknown>;
   /** Kuyruk 19: büyülü bonus: zırh AC'si, kalkan AC'si, silah saldırı ve hasarı, büyü saldırısı ve DC'si. */
-  bonus?: { armor?: number; shield?: number; weapon?: number; spell?: number };
+  bonus?: { armor?: number; shield?: number; weapon?: number; spell?: number; /** Görev TE99 (99+): `weapon` bonusu yalnız cephaneli silaha (Ammunition, +N). */ ammoOnly?: boolean };
   /** Kuyruk 19: silah isabetinde ek hasar (Flame Tongue, Dragon Slayer…); `vs` yaratık türleri; `ranged`/`melee` silah türü. */
-  onHit?: { dice: string; type: string; vs?: string[]; ranged?: boolean; melee?: boolean; label?: string; /** yalnızca doğal 20 */ critOnly?: boolean };
+  onHit?: { dice: string; type: string; vs?: string[]; ranged?: boolean; melee?: boolean; label?: string; /** yalnızca doğal 20 */ critOnly?: boolean;
+    /** Görev TE99 (99+): yalnız cephaneli silahın isabetinde (Ammunition of Slaying). */ ammo?: boolean;
+    /** Görev TE99 (99+): eşyanın kendisi bu silah (Javelin of Lightning: `javelin`). */ weaponId?: string;
+    /** Görev TE99 (99+): ek hasar değil, o silahın hasar türü `type` olabilir (Javelin of Lightning "Lightning damage instead of Piercing"). */ replaceType?: boolean };
   /** Kuyruk 19: yüklü büyüler (değnek, asa, yüzük): her yapım `cost` yük harcar; DC/saldırı eşyanınki (yoksa büyücününki). */
   spells?: Array<{ name: string; cost?: number; level?: number }>;
   charges?: number;
+  /**
+   * Görev TE99: yükün şafakta yenilenmesi (SRD 5.2.1 "regains … daily at dawn"; oyunda uzun dinlenme): zar ("1d6+1"),
+   * sabit sayı ("1") ya da "all". Yoksa yenilenmez (tek kullanımlık: Bead of Force, Necklace of Fireballs…).
+   */
+  recharge?: string;
   dc?: number;
   attack?: number;
   /** Kuyruk 19: savaşta etkisi yok (gerekçe; envanterde "savaş dışı" etiketi). */
@@ -1024,6 +1092,10 @@ export type CreatureSize = 'T' | 'S' | 'M' | 'L' | 'H' | 'G';
 export interface Monster {
   id: string;
   name: string;
+  /** KAPSAM103 (kural sürümü 103+): SRD stat bloğundaki "Initiative +X" (`scripts/srd-canavar.mjs`; yoksa DEX değiştiricisi). */
+  initiative?: number;
+  /** SRD 5.2.1 PDF sayfası (stat bloğu; `data/srd/monsters.json` `page`). */
+  srdPage?: number;
   /** Kuyruk K75 (79+): binicisini kabul etmeye eğitilmiş binek (kontrollü binek; `data/binek.json` `egitimli` listesine ek, özel canavar için). */
   egitimli?: boolean;
   /** Boyut; verilmezse Medium. */
@@ -1165,7 +1237,13 @@ export interface FeatureMechanic {
   traits?: string[];
   /** Kuyruk 19: oluşturucuda seçilen büyüler (Spell Mastery, Signature Spells): `featureChoices['<özellik>/<slot>']`. */
   /** Kuyruk 19: `cls` sınıf listesi (varsayılan Wiz), `all` bütün sınıf listesinden (bilinmesi gerekmez; Mystic Arcanum), `minClassLevel` bu seviyeden. */
-  spellPicks?: Array<{ slot: string; level: number; cls?: string; all?: boolean; minClassLevel?: number }>;
+  /** Görev B93 (Ritual Adept): büyü kitabındaki SRD ritüel büyüleri hazırlanmadan ritüel olarak (kurulum). */
+  ritualFromBook?: boolean;
+  /** Görev B93 (Evocation Savant): büyü kitabına bu okuldan bedelsiz büyüler: `base` (en çok `maxBaseLevel`), alt sınıf seviyesinden sonra her yeni slot seviyesinde +1. */
+  spellbookBonus?: { school: string; base: number; maxBaseLevel: number; perNewSlotLevel: number };
+  spellPicks?: Array<{ slot: string; level: number; cls?: string; all?: boolean; minClassLevel?: number;
+    /** Görev B93: büyü kitabından seçilir ve her zaman hazırdır (hazır sayısına girmez; Spell Mastery, Signature Spells). */ fromBook?: boolean;
+    /** Görev B93: yalnız bu yapım süresindeki büyü (Spell Mastery: Action). */ castingTime?: string }>;
   /** Görev F: oyuncunun seçtiği seçenek (Hunter's Prey, Defensive Tactics): her biri bir işaret; `default` seçilmediyse. */
   options?: Array<{ id: string; trait: string; armor?: Array<'light' | 'medium' | 'heavy' | 'shield'>; martialWeapons?: boolean; cantrips?: number; resist?: string[];
     /** Görev DRUID: seçeneğe bağlı her zaman hazır büyüler (arazi) ve Nature's Ward direnci. */
@@ -1338,6 +1416,12 @@ export type FeatureEffect =
   | { kind: 'paket'; target?: 'ally' | 'enemy' | 'any'; hex?: 'hex' | 'after' };
 
 export interface ResourceDef {
+  /** Görev B93: bu büyüler bu kaynakla yapılınca kaynak zar kadar uzun dinlenme kullanılamaz (Greater Divine Intervention: Wish, 2d4). */
+  wait?: { spells: string[]; dice: string };
+  /** Görev B93: kaynak yalnız özelliğin bu seçim yuvasındaki büyüye (Signature Spells: her büyüye ayrı kullanım). */
+  pickSlot?: string;
+  /** Görev B93: yalnız savaş dışında (dinlenmede) kullanılan kaynak: savaş ekranında gösterilmez (Arcane Recovery). */
+  outOfCombat?: boolean;
   name: string;
   /** Kaynağı veren özellik(ler): `sınıf:özellik`. */
   feature: string | string[];
@@ -1360,6 +1444,9 @@ export interface ResourceDef {
    * 5. seviyeye dek, tepki değil). `lastResort`: yalnızca büyünün seviyesinde ya da üstünde slot kalmadıysa harcanır.
    */
   freeSpellList?: { classes: string[]; /** Kuyruk 19: yalnızca bu adlar (Natural Recovery: daire büyüleri). */ names?: string[]; minLevel?: number; maxLevel: number; lastResort?: boolean;
+    /** Görev B93: yalnız bu yapım süresindeki büyü (Spell Mastery: Action). */ castingTime?: string;
+    /** Görev B93 (sürüm 93+, Divine Intervention): listedeki herhangi bir büyü, hazırlanmamış olsa da (oyuncu isteğiyle `cast_spell.free`). */ anyFromList?: boolean;
+    /** Görev B94 (sürüm 94+, Natural Recovery): `names` ile birlikte yalnız karakterin her zaman hazır büyüleri (seçili arazinin Circle Spells). */ alwaysPreparedOnly?: boolean;
     /** Kuyruk 18 H3: seviye başına yalnızca bilinen ilk büyü (Spell Mastery, Signature Spells: seçim arayüzü yerine). */ perLevel?: number;
     /** Kuyruk 19: sınıf ve seviye sınırı dışında bu adlar da (Greater Divine Intervention: Wish). */ extraNames?: string[] };
   /** Görev SORCERER: savaşta dönüştürmeyle bu kaynağın tavanı aşılmaz (Font of Magic: Sorcery Points). */

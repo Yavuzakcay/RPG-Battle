@@ -1,9 +1,16 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
+import { kalan100On } from './kalan100Surum';
+import { karar101On } from './karar101Surum';
+import { sinif97On } from './sinif97Surum';
+import { getMonster } from '../data';
+import { formMonsterId } from './shapeMonsterCore';
 import { plantChar, soyPlantWalker } from './altSoySurum';
 import { afterStepEvents } from './turnHooks';
 import { groundWardFn } from './groundWard';
 import { solidBarrierAt } from './barriers';
 import { sizeRank } from './forced';
+import { genel96On } from './genel96Surum';
+import { rollSkillCheck } from './checks';
 import { interposeCost } from './arcaneHand';
 import { globalRule } from './ruleControl';
 import { spells } from '../data';
@@ -27,6 +34,8 @@ import { burnEffect, enterHexEvents, isRiskyHex, mapEnterCost, ruleOf, stuckInBo
 import { islandOf, jumpPath, jumpRisk, lavaLine, lavaOver, rollJump } from './jumprisk';
 import { auraSlows, auraStepEvents, opportunityAttacks, withPos } from './features';
 import { deepWaterBlocks, isLiquidTile, waterWalks } from './deepWater';
+import { yuzmeOn } from './yuzmeSurum';
+import { waterHexAt, swimTile } from './yuzme';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 import { climbs, flySpeed, hovers, isAirborne, spellJumpFt } from './flight';
@@ -50,6 +59,8 @@ import { usedThisTurn } from './classTraits';
 import { turnKey } from './economy';
 import { conveyorBlocks, conveyorFlow, conveyorSlideEvents, isUphillStep } from './conveyor';
 import { diggable } from './burrow';
+import { swarm95On } from './swarm95Surum';
+import { isSwarm, swarmShareOk } from './swarmShare';
 
 /** Kullanıcıya gösterilen 1 tabanlı konum metni. */
 export const hexLabel = (o: Offset): string => `sütun ${o.col + 1}, satır ${o.row + 1}`;
@@ -90,24 +101,43 @@ export { speedHexes };
 
 /** Altıgende duran başka bir savaşçı (ölüler yer kaplamaz). */
 export function occupantAt(state: BattleState, at: Offset, exceptId?: string, band?: Band): Combatant | undefined {
+  return Object.values(state.combatants).find(occupies(state, at, exceptId, band));
+}
+
+/** Altıgeni (hücre bandında) kaplayan savaşçı yüklemi (`occupantAt`, `occupantsAt`). */
+function occupies(state: BattleState, at: Offset, exceptId?: string, band?: Band): (c: Combatant) => boolean {
   // Kuyruk K71c (sürüm 58+): hücre doluluğu: yalnız `band` düzeylerini (verilmezse yer, düzey 0) kaplayan yaratık.
   const probe = band ?? (cellsOn(state) ? GROUND_BAND : undefined);
-  return Object.values(state.combatants).find(
-    // Kuyruk MB1 (68+): bineğinin üstündeki binici hücre kaplamaz (bineğin hücreleri yığının hücreleri).
-    (c) => c.id !== exceptId && c.pos !== null && !c.summon?.noSpace && !(c.riding && seatedRider(state, c)) && covers(state, c, at) && isTargetable(c) && fillsBand(state, c, probe),
-  );
+  // Kuyruk MB1 (68+): bineğinin üstündeki binici hücre kaplamaz (bineğin hücreleri yığının hücreleri).
+  return (c) => c.id !== exceptId && c.pos !== null && !c.summon?.noSpace && !(c.riding && seatedRider(state, c)) && covers(state, c, at) && isTargetable(c) && fillsBand(state, c, probe);
+}
+
+/** Görev SWARM95: altıgendeki bütün savaşçılar (sürü paylaşımında birden çok olabilir). */
+export function occupantsAt(state: BattleState, at: Offset, exceptId?: string, band?: Band): Combatant[] {
+  return Object.values(state.combatants).filter(occupies(state, at, exceptId, band));
+}
+
+/**
+ * Görev SWARM95 (95+, SRD Swarm): `actor`ın `at` altıgeninde durmasını engelleyen savaşçı (yoksa undefined). Sürü herkesin
+ * altıgeninde durur; sürü olmayan yalnız altıgendeki herkes sürüyse (`swarmShareOk`). 94 ve altı: `occupantAt` aynen.
+ */
+export function blockingOccupant(state: BattleState, actor: Combatant, at: Offset, band?: Band): Combatant | undefined {
+  const first = occupantAt(state, at, actor.id, band);
+  if (!first || !swarm95On(state)) return first;
+  return swarmShareOk(state, actor, occupantsAt(state, at, actor.id, band)) ? undefined : first;
 }
 
 /**
  * GM'in yerleştirebileceği altıgen mi: harita içinde, engel, lav, derin su ve oyun alanı dışı değil.
  * (Doluluk ayrıca denetlenir.) Alev ve tuzak gibi tehlikeler GM'in kararıdır.
  */
-export function placeProblem(state: BattleState, at: Offset): string | null {
+export function placeProblem(state: BattleState, at: Offset, actor?: Pick<Combatant, 'swimFt'>): string | null {
   if (!isInside(at, sizeOf(state))) return 'Harita dışı.';
   const t = terrainAt(state, at);
   if (t.outOfBounds || t.movement === 'blocked') return `${hexLabel(at)} engel (${t.name}).`;
   if (t.movement === 'deadly') return `${hexLabel(at)} uygun değil (${t.name}).`;
-  if (t.rule === 'deepWater') return `${hexLabel(at)} su (${t.name}).`;
+  // KQ6-8 (sürüm 82): yüzücü canavar su altıgenine konabilir.
+  if (t.rule === 'deepWater' && !(actor?.swimFt && yuzmeOn(state))) return `${hexLabel(at)} su (${t.name}).`;
   return null;
 }
 
@@ -160,13 +190,15 @@ export function executePlace(state: BattleState, actorId: string, at: Offset, ct
   if (!ctx.isGm && !canControl(actor, ctx)) return fail('Bu savaşçıyı yönetme yetkin yok.');
   // Görev A6: çok altıgenli yaratığın bütün gövdesi geçerli altıgenlerde olmalı.
   for (const h of bodyAt(state, actor, at)) {
-    const why = placeProblem(state, h);
+    const why = placeProblem(state, h, actor);
     if (why) return fail(why);
   }
   if (!ctx.isGm) {
     const map = getMap(state.map.id, { mirrored: state.map.mirrored, variantId: state.map.variantId });
     const zone = actor.side === 'party' ? map.startZones.players : map.startZones.enemies;
-    if (!zone.some((h) => sameHex(h, at))) return fail(`${hexLabel(at)} kendi başlangıç bölgende değil.`);
+    // KQ6-8 (sürüm 82): yüzücü canavar bölgeye bitişik su altıgenine de konabilir.
+    const swimNear = !!actor.swimFt && yuzmeOn(state) && waterHexAt(state, at) && zone.some((h) => distance(h, at) <= 1);
+    if (!zone.some((h) => sameHex(h, at)) && !swimNear) return fail(`${hexLabel(at)} kendi başlangıç bölgende değil.`);
   }
   for (const h of bodyAt(state, actor, at)) {
     const other = occupantAt(state, h, actor.id);
@@ -179,7 +211,8 @@ export function executePlace(state: BattleState, actorId: string, at: Offset, ct
 export function executeStartBattle(state: BattleState, ctx: CommandContext): CommandResult {
   if (!ctx.isGm) return fail('Savaşı yalnızca GM başlatabilir.');
   if (state.status !== 'setup') return fail('Savaş zaten başladı.');
-  const missing = Object.values(state.combatants).filter((c) => c.pos === null);
+  // HATA-FAMILIAR: kaybolmuş çağrılar (eski kayıtlarda kalan artıklar) haritada olmadığı için yerleşmeyen sayılmaz.
+  const missing = Object.values(state.combatants).filter((c) => c.pos === null && !c.summon?.gone);
   if (missing.length > 0) return fail(`Henüz yerleşmeyenler var: ${missing.map((c) => c.name).join(', ')}.`);
   const events: BattleEvent[] = [{ type: 'combat_started' }];
   return { ok: true, state: applyEvents(state, events), events };
@@ -303,23 +336,31 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
   const sizeRank = (x: string) => SZ.indexOf(x);
   const wrestler = !!actor.traits?.includes('grappler') && !!globalRule(state, 'featuresK19');
   // Kuyruk 19 (Bugbear Abduct): yakaladığını taşımak ek hareket istemez.
-  const dragging = !actor.traits?.includes('abduct') && Object.values(state.combatants).some((c) => c.grapple?.by === actor.id && !(wrestler && sizeRank(c.size) <= sizeRank(actor.size)));
+  // Görev KALAN100 (100+; SRD 5.2.1 s. 182 Grappled "Movable": "every foot of movement costs it 1 extra foot unless you are Tiny or
+  // two or more sizes smaller than it"): Tiny ya da iki+ boy küçük yakalanan ek maliyet istemez.
+  const k100 = kalan100On(state);
+  const dragging = !actor.traits?.includes('abduct') && Object.values(state.combatants).some((c) => c.grapple?.by === actor.id && !(wrestler && sizeRank(c.size) <= sizeRank(actor.size))
+    && !(k100 && (c.size === 'T' || sizeRank(c.size) <= sizeRank(actor.size) - 2)));
   const enemyAt = new Map<string, Combatant>();
   // Kuyruk K71c (sürüm 58+): yalnız yürüyenin düzeylerini (bandını) kaplayan düşman yolu keser; uçan düşmanın üstünden
   // (ya da altından) geçer (K6). Hızlı yol: havada kimse yokken bant hesabı yapılmaz (`fillsBand`). Değişken irtifada
   // (`dyn`) altıgendeki bütün düşmanlar tutulur, bant her çağrıda süzülür.
   const moverBand = cellsOn(state) ? bandOf(actor) : undefined;
   const enemiesAt = dyn ? new Map<string, Combatant[]>() : null;
+  const swarm95 = swarm95On(state);
   for (const c of Object.values(state.combatants)) {
     // Dokunulamaz çağrının (ruh sürüsü, Flaming Sphere) içinden geçilir (Görev B2).
     if (c.pos === null || c.side === actor.side || !isTargetable(c) || isIntangible(c)) continue;
-    if (enemiesAt) { const k = hexKey(c.pos); enemiesAt.set(k, [...(enemiesAt.get(k) ?? []), c]); } else if (fillsBand(state, c, moverBand)) enemyAt.set(hexKey(c.pos), c);
+    // Görev SWARM95 (95+): sürüyle aynı altıgendeki sürü olmayan düşman yolu keser (sürünün içinden geçilir, onun değil).
+    if (enemiesAt) { const k = hexKey(c.pos); enemiesAt.set(k, [...(enemiesAt.get(k) ?? []), c]); }
+    else if (fillsBand(state, c, moverBand)) { const k = hexKey(c.pos); const was = enemyAt.get(k); if (!(swarm95 && was && !isSwarm(was))) enemyAt.set(k, c); }
   }
   const enemyFor = (k: string): Combatant | undefined => {
     if (!enemiesAt || !dyn) return enemyAt.get(k);
     const list = enemiesAt.get(k);
     if (!list) return undefined;
     const band = bandOf(actor, dyn.ft);
+    if (swarm95) { const m = list.filter((c) => fillsBand(state, c, band)); return m.find((c) => !isSwarm(c)) ?? m[0]; }
     return list.find((c) => fillsBand(state, c, band));
   };
   // Görev B2: büyü alanları (zorlu arazi, Plant Growth, rüzgâr duvarı); zemin maliyetiyle birikmez, büyüğü geçer.
@@ -329,6 +370,7 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
   const handsOut = Object.values(state.combatants).some((c) => c.effects?.some((e) => e.interpose));
   const phase = phaseOf(actor);
   const through = phase?.difficult ? 2 : 1;
+  const g96 = genel96On(state);
   const allyAt = new Set<string>();
   if (phase?.difficult) for (const c of Object.values(state.combatants)) if (c.pos !== null && c.id !== actor.id && c.side === actor.side && isTargetable(c) && fillsBand(state, c, moverBand)) allyAt.add(hexKey(c.pos));
   // Görev A4: tasma: merkezden yarıçap dışına uzaklaşan adım yok.
@@ -337,9 +379,12 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
   const uphill = conveyorBlocks(state, actor, flying);
   // Kuyruk 20 A2: Prone yaratık yalnızca sürünür (SRD 5.2.1 Crawling: her ft için 1 ek ft); kural sürümü 2.
   const crawling = !flying && actor.conditions.includes('Prone') && srdConditions(state);
+  const crawl101 = karar101On(state);
   // Kuyruk 24d: çok derin su (kıyıdan eşikten uzak) yalnızca yüzücü, suda yürüyen ve uçan için (Game Master mekaniği).
   const tooDeep = aloft ? () => false : deepWaterBlocks(state, actor);
   const walker = waterWalks(state, actor);
+  // KQ6-8 (sürüm 82): yüzücü canavar için su altıgenleri (derin, sığ, nehir) zorlu zemin değil.
+  const swimmer = !!actor.swimFt && yuzmeOn(state);
   const freeMove = !!actor.effects?.some((e) => e.freeMove || e.burrow);
   // Kuyruk K54b: Mevzi İşareti / Yol aç / Kuşbakışı Plan: korunan altıgende zor zemin yok.
   const ward = groundWardFn(state, actor);
@@ -435,7 +480,7 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
     // Kuyruk 19: Water Walk: sıvı zemin normal zemin gibi.
     // Kuyruk 19: Freedom of Movement: zorlu arazi etkilemez.
     const free = freeMove || (!!ward && ward(h));
-    const t = (walker && isLiquidTile(t0)) || ((free || (iceWalk && (t0.char === 'i' || t0.char === 'q')) || (plantWalk && plantChar(t0.char))) && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
+    const t = (walker && isLiquidTile(t0)) || ((free || (iceWalk && (t0.char === 'i' || t0.char === 'q')) || (plantWalk && plantChar(t0.char)) || (swimmer && swimTile(t0.char))) && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
     const wall = (!!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null) || (squeeze && doorAt(h));
     const terrain = wall ? through : overTop || climbOver ? 1 : hov && t.movement === 'deadly' ? null : enterCost(t, flying);
     const base0 = terrain === null || flying || wall || (walker && isLiquidTile(t0)) ? terrain : mapEnterCost(state, prev, h, terrain, climber || !!hstep);
@@ -449,10 +494,20 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
     const nimble = !!enemy && ((!!actor.traits?.includes('halfling-nimbleness') && sizeRank(enemy.size) > sizeRank(actor.size))
       // Kuyruk 19 (Swarm, Air/Water/Fire Form): yaratık altıgenlerinden geçer; sürünün altıgeninden de herkes geçer.
       || !!actor.effects?.some((e) => e.passCreatures) || !!enemy.effects?.some((e) => e.passCreatures && e.noHeal) || gas);
-    const cost = ground === null || !enemy ? ground : phase || nimble ? Math.max(through, ground) : isIncapacitated(enemy.conditions) ? Math.max(2, ground) : null;
+    // GENEL96 E23/E24 (sürüm 96+; SRD 5.2.1 s. 14 Moving around Other Creatures): Tiny düşmanın altıgeninden geçilir ve
+    // zorlu arazi değildir; iki boy büyük ya da küçük düşmanın altıgeninden zorlu arazi olarak geçilir. 95 ve altı: geçilmez.
+    const tinyPass = g96 && !!enemy && enemy.size === 'T';
+    const sizePass = g96 && !!enemy && Math.abs(sizeRank(enemy.size) - sizeRank(actor.size)) >= 2;
+    const cost = ground === null || !enemy ? ground : phase || nimble ? Math.max(through, ground) : tinyPass ? ground
+      : isIncapacitated(enemy.conditions) || sizePass ? Math.max(2, ground) : null;
     // Kuyruk 19 (stormRules): fırtınada uçmak iki kat hareket.
-    const slow = (slowed(h) ? 2 : 1) * (dragging ? 2 : 1) * (crawling ? 2 : 1) * (stormFly ? 2 : 1);
-    return cost === null ? null : cost * slow * (grip ? 2 : 1) * climbStep;
+    // KARAR101 (sürüm 101+; SRD 5.2.1 s. 179 Crawling "each foot of movement costs 1 extra foot (2 extra feet in Difficult
+    // Terrain)"; parantezdeki 2 ek ft zorlu arazinin kendi ekini içerir): sürünme zemine 1 ekler (normal 1 → 2, zorlu 2 → 3);
+    // 100 ve altı ×2 (zorluda 4).
+    const crawlAdd = crawling && crawl101;
+    const slow = (slowed(h) ? 2 : 1) * (dragging ? 2 : 1) * (crawling && !crawlAdd ? 2 : 1) * (stormFly ? 2 : 1);
+    const c101 = cost !== null && crawlAdd ? cost + 1 : cost;
+    return c101 === null ? null : c101 * slow * (grip ? 2 : 1) * climbStep;
   };
 }
 
@@ -498,7 +553,8 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
     const s2gas = ruleVersion(state) >= 41 && actor.effects?.some((e) => e.shareSpace);
     const doorGap = ruleVersion(state) >= 41 && actor.effects?.some((e) => e.squeeze) && (state.map?.objects ?? []).some((o) => (o.kind === 'door' || o.kind === 'gate') && o.state !== 'open' && sameHex(o.at, h));
     if (target.movement === 'blocked' && !doorGap && !onTop) return fail(`${hexLabel(h)} geçilmez (${target.name}).`);
-    const other = occupantAt(state, h, actor.id, cellsOn(state) ? bandOf(actor) : undefined);
+    // Görev SWARM95 (95+): SRD Swarm altıgen paylaşımı (sürü herkesin altıgeninde, herkes sürünün altıgeninde durur).
+    const other = blockingOccupant(state, actor, h, cellsOn(state) ? bandOf(actor) : undefined);
     if (other && !s2gas) return fail(`${hexLabel(h)} dolu (${other.name}).`);
   }
 
@@ -534,7 +590,14 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
   let prev = from;
   let current = state;
   const down = () => ((current.combatants[actor.id] as Combatant).hp <= 0);
-  for (const step of path.path) {
+  // Hazırla (Ready, sürüm 90): yürüyüş sırasında hazırlanan hareketle yola giren yaratık: önceden bulunan yol artık dolu
+  // altıgenden geçemez (düşman) ya da orada bitemez (dost); yürüyüş bir önceki altıgende durur.
+  let readyMoved = false;
+  for (const [i, step] of path.path.entries()) {
+    if (readyMoved) {
+      const occ = occupantAt(current, step, actor.id);
+      if (occ && (occ.side !== actor.side || i === path.path.length - 1)) break;
+    }
     const opportunity = opportunityAttacks(current, actor.id, { from: prev, to: step }, rng);
     effects.push(...opportunity);
     current = applyEvents(current, opportunity);
@@ -563,6 +626,7 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
     current = applyEvents(current, formed);
     // Kuyruk P10 (sürüm 39): adım sonrası kancaları (ek paket `dusmanYaklasti`); hızı 0 olursa yürüyüş durur.
     const stepped = down() || ruleVersion(current) < 39 ? [] : afterStepEvents(current, actor.id, prev, rng);
+    if (stepped.some((e) => e.type === 'moved' && e.reaction)) readyMoved = true;
     effects.push(...stepped);
     current = applyEvents(current, stepped);
     prev = step;
@@ -629,27 +693,75 @@ export const HIGH_JUMP = 'spell:jump-high';
  */
 export function highJumpReachFt(state: BattleState, c: Combatant): number {
   if (ruleVersion(state) < 52 || !usedThisTurn(state, c, HIGH_JUMP)) return 0;
-  return Math.min(spellJumpFt(c), altitudeCapFt(state, c));
+  // Görev WS92 (92+): Standing Leap'in yüksek atlaması (Frog 5, Giant Frog/Toad 10 ft) da yerinde zıplama erişimi.
+  // Görev KALAN100 (100+): büyüsüz High Jump; koşarak yapıldıysa (tur kaydı `HIGH_JUMP_RUN`) tam yükseklik.
+  const srd = kalan100On(state) ? srdHighJumpFt(c, usedThisTurn(state, c, HIGH_JUMP_RUN)) : 0;
+  return Math.min(Math.max(spellJumpFt(c), leapOf(c)?.high ?? 0, srd), altitudeCapFt(state, c));
 }
+/** Görev KALAN100: koşarak yapılan büyüsüz yüksek zıplamanın tur kaydı. */
+const HIGH_JUMP_RUN = 'kalan100:high-jump-run';
+/**
+ * Görev KALAN100 (SRD 5.2.1 s. 183 High Jump: "3 plus your Strength modifier (minimum of 0 feet) if you move at least 10 feet on
+ * foot immediately before the jump. When you make a standing High Jump, you can jump only half that distance"): ft.
+ */
+export function srdHighJumpFt(c: Pick<Combatant, 'modifiers' | 'strScore'>, running: boolean): number {
+  const mod = c.modifiers?.str ?? Math.floor(((c.strScore ?? 10) - 10) / 2);
+  const ft = Math.max(0, 3 + mod);
+  return running ? ft : Math.floor(ft / 2);
+}
+/**
+ * Görev KALAN100: koşu sayılır mı: bu tur yürüyerek en az 10 ft (2 altıgen hareket) ve son hareketi yürüyüş (`run` kaydı var).
+ * ⚠ "immediately before": arada yapılan eylem izlenmez (uzun atlamanın düz çizgi koşusu gibi yön de aranmaz).
+ */
+const highJumpRunning = (c: Combatant, state?: BattleState): boolean => !isAirborne(c)
+  // KARAR101 (101+, "immediately before"): kesintisiz son yürüyüş en az 2 altıgen (`walkStreak`; araya giren iş sıfırlar).
+  && (state && karar101On(state) ? (c.walkStreak ?? 0) >= 2 : c.run !== null && c.movementUsed >= 2);
+/** Görev KALAN100: yerinde zıplamanın yüksekliği (ft): Jump büyüsü, Standing Leap ya da (100+) büyüsüz High Jump'ın en yükseği. */
+export function highJumpFt(state: BattleState, c: Combatant): number {
+  const srd = kalan100On(state) ? srdHighJumpFt(c, highJumpRunning(c, state)) : 0;
+  return Math.max(spellJumpFt(c), leapOf(c)?.high ?? 0, srd);
+}
+/** Görev WS92: yerinde zıplamanın hareket maliyeti (Jump büyüsü 10 ft; Standing Leap yüksek atlaması ft başına 1 ft). */
+const highJumpCost = (c: Combatant, state?: BattleState): number => (spellJumpFt(c) > 0 ? SPELL_JUMP_COST
+  : Math.max(1, Math.ceil(Math.max(leapOf(c)?.high ?? 0, state && kalan100On(state) ? srdHighJumpFt(c, highJumpRunning(c, state)) : 0) / 5)));
 
 /** Yerinde yüksek zıplamanın sorunu (yoksa null): sürüm 52, katmansız harita, Jump etkisi, bu tur zıplanmamış, 10 ft hareket. */
 export function highJumpProblem(state: BattleState, actor: Combatant): string | null {
   if (ruleVersion(state) < 52) return 'Zaten bu altıgende.';
-  if (spellJumpFt(actor) <= 0) return 'Yerinde zıplamak için Jump etkisi gerekir.';
+  const srdOnly = spellJumpFt(actor) <= 0 && !leapOf(actor)?.high;
+  if (srdOnly && !kalan100On(state)) return 'Yerinde zıplamak için Jump etkisi gerekir.';
+  // Görev KALAN100 (100+): büyüsüz High Jump (yükseklik 0 ise yok; turda bir yerinde zıplama yeter).
+  if (srdOnly && highJumpFt(state, actor) <= 0) return 'Zıplama yüksekliği 0 ft (3 + STR değiştiricisi; durarak yarısı).';
+  if (srdOnly && usedThisTurn(state, actor, HIGH_JUMP)) return 'Bu tur zaten yüksek zıpladın.';
   if (layerActive(state)) return 'Yükseklik katmanlı haritada yüksek zıplama komşu yüksek altıgene yapılır.';
   if (isAirborne(actor)) return 'Havadayken zıplanmaz.';
   if (usedThisTurn(state, actor, SPELL_JUMP)) return 'Jump bu tur kullanıldı.';
   if (altitudeCapFt(state, actor) <= 0) return 'Tavan çok alçak.';
-  if (SPELL_JUMP_COST > speedHexes(actor) - actor.movementUsed) return 'Hareket yetmiyor.';
+  if (highJumpCost(actor, state) > speedHexes(actor) - actor.movementUsed) return 'Hareket yetmiyor.';
   return null;
 }
 
 /** Uzun atlama menzili (ft): koşarak STR skoru kadar, koşusuz yarısı (aşağı yuvarlanır). */
 export function jumpRangeFeet(c: Combatant, running: boolean, state?: Pick<BattleState, 'map' | 'kuralSurumu'>): number {
   // Kuyruk 19 (featuresK19): Thief'in Second-Story Work'ü (Jumper): atlama mesafesi DEX skoruyla da.
-  const score = state && c.traits?.includes('second-story-work') && globalRule(state, 'featuresK19') ? Math.max(c.strScore, c.dexScore ?? 0) : c.strScore;
-  return running ? score : Math.floor(score / 2);
+  // Görev WS92 (92+): canavar Jumper'ı (Cat) mesafeyi DEX skoruyla belirler; Standing Leap koşusuz da, Running Leap yalnız koşarak `long` ft.
+  const leap = leapOf(c);
+  const score = leap?.dex ? c.dexScore ?? monsterDex(c) ?? c.strScore
+    : state && ((c.traits?.includes('second-story-work') && globalRule(state, 'featuresK19'))
+      // Görev B95-B (97+, bizim Thief metni "Jumper: … Dexterity rather than your Strength"): gerçek Thief'in işareti (`jumper-dex`).
+      || (c.traits?.includes('jumper-dex') && sinif97On(state))) ? Math.max(c.strScore, c.dexScore ?? 0) : c.strScore;
+  const base = running ? score : Math.floor(score / 2);
+  return leap?.long && (running || !leap.running) ? Math.max(base, leap.long) : base;
 }
+/** Görev WS92: canavar savaşçısının DEX skoru (savaşçıda `dexScore` yalnız karakterde; canavarda stat bloğundan). */
+function monsterDex(c: Combatant): number | undefined {
+  const id = formMonsterId(c);
+  if (!id) return undefined;
+  try { return getMonster(id).abilities.dex; } catch { return undefined; }
+}
+/** Görev WS92 (92+ etkisi): canavarın atlama özelliği (yoksa undefined). */
+export const leapOf = (c: Pick<Combatant, 'effects'>): NonNullable<Combatant['effects']>[number]['leap'] =>
+  c.effects?.find((e) => e.leap)?.leap;
 
 /**
  * Uzun atlama (5e). Menzil kanal genişliğiyle ölçülür: aradaki altıgen sayısı × 5 ft,
@@ -666,7 +778,11 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
     const why = highJumpProblem(state, actor);
     if (why) return fail(why);
     const t = turnKey(state);
-    return finish(state, [{ type: 'jumped', actorId: actor.id, from, to, gap: 0, cost: SPELL_JUMP_COST, running: false, traitTurns: { [SPELL_JUMP]: t, [HIGH_JUMP]: t } }]);
+    // Görev WS92: Standing Leap (Jump etkisi yokken) Jump büyüsünün tur kaydını harcamaz.
+    const spell = spellJumpFt(actor) > 0;
+    // Görev KALAN100: koşarak büyüsüz yüksek zıplama tur kaydına (erişim tam yükseklikle).
+    const run: Record<string, string> = !spell && kalan100On(state) && highJumpRunning(actor, state) ? { [HIGH_JUMP_RUN]: t } : {};
+    return finish(state, [{ type: 'jumped', actorId: actor.id, from, to, gap: 0, cost: highJumpCost(actor, state), running: false, traitTurns: spell ? { [SPELL_JUMP]: t, [HIGH_JUMP]: t } : { [HIGH_JUMP]: t, ...run } }]);
   }
   // Görev A4: tasma: atlayarak da uzaklaşılmaz.
   if (leashBlocks(leashOf(state, actor), to, from)) return fail('Tasma: bağlı olduğu yaratıktan daha uzağa gidemez.');
@@ -691,7 +807,7 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   if (up > 0 && up <= spellFt && !isAirborne(actor)) {
     const landing0 = terrainAt(state, to);
     if (landing0.movement === 'blocked' || landing0.movement === 'deadly') return fail(`${hexLabel(to)} üzerine inilemez (${landing0.name}).`);
-    const other0 = occupantAt(state, to, actor.id);
+    const other0 = blockingOccupant(state, actor, to);
     if (other0) return fail(`${hexLabel(to)} dolu (${other0.name}).`);
     if (SPELL_JUMP_COST > speedHexes(actor) - actor.movementUsed) return fail('Hareket yetmiyor.');
     const jumped: BattleEvent = { type: 'jumped', actorId: actor.id, from, to, gap, cost: SPELL_JUMP_COST, running: false, traitTurns: { [SPELL_JUMP]: turnKey(state) } };
@@ -723,7 +839,7 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   if (landing.movement === 'deadly') return fail(`İniş altıgeni ${hexLabel(to)} lav: atlama reddedildi.`);
   if (landing.movement === 'blocked') return fail(`${hexLabel(to)} üzerine inilemez (${landing.name}).`);
   // Kuyruk K73f (66+): batık/yer altındaki atlayanın varışı yalnız kendi katmanında (yukarıda); yüzeydeki yaratık engel değil.
-  const other = layered ? undefined : occupantAt(state, to, actor.id);
+  const other = layered ? undefined : blockingOccupant(state, actor, to);
   if (other) return fail(`${hexLabel(to)} dolu (${other.name}).`);
   // Kuyruk K69 (sürüm 53, çok altıgen): inişte gövde sığmalı.
   const fit = bodyFitProblem(state, actor, to);
@@ -748,7 +864,18 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   const jumped: BattleEvent = useSpell
     ? { type: 'jumped', actorId: actor.id, from, to, gap, cost, running, traitTurns: { [SPELL_JUMP]: turnKey(state) } }
     : { type: 'jumped', actorId: actor.id, from, to, gap, cost, running };
-  return finish(state, [jumped, ...landingSlide(state, actor, jumped)]);
+  return finish(state, [jumped, ...landingSlide(state, actor, jumped), ...roughLanding(state, actor, landing, rng)]);
+}
+
+/**
+ * GENEL96 E11/F14 (sürüm 96+; SRD 5.2.1 s. 185 Long Jump "If you land in Difficult Terrain, you must succeed on a DC 10
+ * Dexterity (Acrobatics) check or have the Prone condition"): zorunlu kontrol (Game Master seçeneği değil). Uçan muaf.
+ */
+function roughLanding(state: BattleState, actor: Combatant, landing: { movement: string }, rng: Rng): BattleEvent[] {
+  if (!genel96On(state) || landing.movement !== 'difficult' || isAirborne(actor)) return [];
+  const check = rollSkillCheck(actor, 'acrobatics', 10, rng, 'Zorlu araziye iniş (Long Jump)', state);
+  if (check.type !== 'skill_checked' || check.success || actor.conditions.includes('Prone')) return [check];
+  return [check, { type: 'condition_changed', targetId: actor.id, condition: 'Prone', present: true, reason: 'zorlu araziye düştü' }];
 }
 
 /**

@@ -1,0 +1,879 @@
+{
+ "_not": "KW1: Dragonborn kanat kökü (yalnız görünüm). Jeton uzayı 256 px: [sol x, sağ x]; y = kanat-esleme.json dragonborn.omuz × 256. sinif: <sınıf>-<erkek|kadin>[-gr|-genel] medyanı; jeton: gruptan > 5 px sapanlar için ezme (anahtar = dosya adı, dragonborn- öneksiz). Üretici scripts/dragonborn-kanat-kok.py (siluet kenarı − 6 px içeri; ayrıntı betik başlığında).",
+ "sinif": {
+  "barbarian-erkek": [
+   84,
+   165
+  ],
+  "barbarian-erkek-gr": [
+   81,
+   175
+  ],
+  "barbarian-kadin": [
+   91,
+   172
+  ],
+  "barbarian-kadin-gr": [
+   82,
+   161
+  ],
+  "bard-erkek": [
+   100,
+   165
+  ],
+  "bard-erkek-gr": [
+   113,
+   180
+  ],
+  "bard-kadin": [
+   109,
+   165
+  ],
+  "bard-kadin-gr": [
+   106,
+   173
+  ],
+  "cleric-erkek": [
+   100,
+   166
+  ],
+  "cleric-erkek-gr": [
+   100,
+   177
+  ],
+  "cleric-kadin": [
+   106,
+   164
+  ],
+  "cleric-kadin-gr": [
+   87,
+   176
+  ],
+  "druid-erkek": [
+   95,
+   172
+  ],
+  "druid-erkek-gr": [
+   107,
+   176
+  ],
+  "druid-kadin": [
+   96,
+   160
+  ],
+  "druid-kadin-gr": [
+   99,
+   169
+  ],
+  "fighter-erkek": [
+   88,
+   172
+  ],
+  "fighter-erkek-gr": [
+   115,
+   183
+  ],
+  "fighter-kadin": [
+   84,
+   172
+  ],
+  "fighter-kadin-gr": [
+   103,
+   172
+  ],
+  "monk-erkek": [
+   98,
+   176
+  ],
+  "monk-erkek-gr": [
+   121,
+   172
+  ],
+  "monk-kadin": [
+   106,
+   179
+  ],
+  "monk-kadin-gr": [
+   124,
+   172
+  ],
+  "paladin-erkek": [
+   93,
+   176
+  ],
+  "paladin-erkek-gr": [
+   96,
+   171
+  ],
+  "paladin-kadin": [
+   90,
+   175
+  ],
+  "paladin-kadin-gr": [
+   88,
+   167
+  ],
+  "ranger-erkek": [
+   103,
+   172
+  ],
+  "ranger-erkek-gr": [
+   80,
+   178
+  ],
+  "ranger-kadin": [
+   99,
+   168
+  ],
+  "ranger-kadin-gr": [
+   84,
+   178
+  ],
+  "rogue-erkek": [
+   99,
+   172
+  ],
+  "rogue-erkek-gr": [
+   97,
+   181
+  ],
+  "rogue-kadin": [
+   100,
+   174
+  ],
+  "rogue-kadin-gr": [
+   88,
+   181
+  ],
+  "sorcerer-erkek": [
+   103,
+   172
+  ],
+  "sorcerer-erkek-gr": [
+   118,
+   183
+  ],
+  "sorcerer-kadin": [
+   110,
+   172
+  ],
+  "sorcerer-kadin-gr": [
+   106,
+   172
+  ],
+  "warlock-erkek": [
+   98,
+   173
+  ],
+  "warlock-erkek-gr": [
+   113,
+   172
+  ],
+  "warlock-kadin": [
+   97,
+   172
+  ],
+  "warlock-kadin-gr": [
+   96,
+   173
+  ],
+  "wizard-erkek": [
+   104,
+   171
+  ],
+  "wizard-erkek-gr": [
+   101,
+   174
+  ],
+  "wizard-kadin": [
+   103,
+   172
+  ],
+  "wizard-kadin-gr": [
+   103,
+   172
+  ]
+ },
+ "jeton": {
+  "erkek-barbarian-ID1": [
+   84,
+   172
+  ],
+  "erkek-barbarian-ID2": [
+   97,
+   172
+  ],
+  "erkek-barbarian-ID5": [
+   84,
+   176
+  ],
+  "erkek-barbarian-ID9": [
+   84,
+   159
+  ],
+  "erkek-bard-ID1": [
+   116,
+   172
+  ],
+  "erkek-bard-ID3": [
+   105,
+   159
+  ],
+  "erkek-bard-ID5": [
+   96,
+   182
+  ],
+  "erkek-bard-ID6": [
+   108,
+   163
+  ],
+  "erkek-bard-ID7": [
+   81,
+   149
+  ],
+  "erkek-bard-ID8": [
+   78,
+   170
+  ],
+  "erkek-bard-ID9": [
+   109,
+   165
+  ],
+  "erkek-cleric-ID1": [
+   108,
+   172
+  ],
+  "erkek-cleric-ID2": [
+   110,
+   169
+  ],
+  "erkek-cleric-ID3": [
+   100,
+   158
+  ],
+  "erkek-cleric-ID4": [
+   73,
+   166
+  ],
+  "erkek-cleric-ID6": [
+   94,
+   162
+  ],
+  "erkek-cleric-ID7": [
+   77,
+   174
+  ],
+  "erkek-cleric-ID8": [
+   98,
+   158
+  ],
+  "erkek-cleric-ID9": [
+   116,
+   172
+  ],
+  "erkek-druid-ID1": [
+   107,
+   168
+  ],
+  "erkek-druid-ID3": [
+   80,
+   178
+  ],
+  "erkek-druid-ID5": [
+   84,
+   173
+  ],
+  "erkek-druid-ID6": [
+   113,
+   182
+  ],
+  "erkek-fighter-ID1": [
+   84,
+   161
+  ],
+  "erkek-fighter-ID10": [
+   84,
+   163
+  ],
+  "erkek-fighter-ID11": [
+   119,
+   176
+  ],
+  "erkek-fighter-ID2": [
+   118,
+   174
+  ],
+  "erkek-fighter-ID3": [
+   116,
+   180
+  ],
+  "erkek-fighter-ID6": [
+   115,
+   180
+  ],
+  "erkek-fighter-ID7": [
+   101,
+   172
+  ],
+  "erkek-fighter-ID8": [
+   81,
+   178
+  ],
+  "erkek-fighter-ID9": [
+   92,
+   154
+  ],
+  "erkek-monk-ID1": [
+   90,
+   171
+  ],
+  "erkek-monk-ID10": [
+   116,
+   180
+  ],
+  "erkek-monk-ID11": [
+   92,
+   172
+  ],
+  "erkek-monk-ID2": [
+   78,
+   172
+  ],
+  "erkek-monk-ID3": [
+   85,
+   179
+  ],
+  "erkek-monk-ID4": [
+   124,
+   172
+  ],
+  "erkek-monk-ID5": [
+   79,
+   165
+  ],
+  "erkek-monk-ID6": [
+   118,
+   176
+  ],
+  "erkek-monk-ID7": [
+   106,
+   183
+  ],
+  "erkek-monk-ID9": [
+   109,
+   180
+  ],
+  "erkek-paladin-ID2": [
+   100,
+   172
+  ],
+  "erkek-paladin-ID4": [
+   101,
+   180
+  ],
+  "erkek-paladin-ID5": [
+   73,
+   159
+  ],
+  "erkek-paladin-ID6": [
+   87,
+   175
+  ],
+  "erkek-paladin-ID8": [
+   106,
+   181
+  ],
+  "erkek-paladin-ID9": [
+   80,
+   164
+  ],
+  "erkek-ranger-ID1": [
+   111,
+   174
+  ],
+  "erkek-ranger-ID2": [
+   88,
+   166
+  ],
+  "erkek-ranger-ID4": [
+   84,
+   172
+  ],
+  "erkek-ranger-ID6": [
+   84,
+   174
+  ],
+  "erkek-ranger-ID8": [
+   84,
+   172
+  ],
+  "erkek-ranger-ID9": [
+   107,
+   162
+  ],
+  "erkek-rogue-ID1": [
+   113,
+   175
+  ],
+  "erkek-rogue-ID2": [
+   118,
+   180
+  ],
+  "erkek-rogue-ID3": [
+   97,
+   160
+  ],
+  "erkek-rogue-ID4": [
+   84,
+   172
+  ],
+  "erkek-rogue-ID5": [
+   107,
+   171
+  ],
+  "erkek-rogue-ID8": [
+   96,
+   182
+  ],
+  "erkek-sorcerer-SC-1": [
+   84,
+   168
+  ],
+  "erkek-sorcerer-SC-2": [
+   115,
+   172
+  ],
+  "erkek-sorcerer-SC-3": [
+   116,
+   177
+  ],
+  "erkek-sorcerer-SC-5": [
+   95,
+   172
+  ],
+  "erkek-sorcerer-SC-6": [
+   88,
+   170
+  ],
+  "erkek-sorcerer-SC-7": [
+   116,
+   176
+  ],
+  "erkek-sorcerer-SC-8": [
+   84,
+   181
+  ],
+  "erkek-sorcerer-SC-9": [
+   113,
+   174
+  ],
+  "erkek-warlock-WL-10": [
+   109,
+   180
+  ],
+  "erkek-warlock-WL-11": [
+   119,
+   172
+  ],
+  "erkek-warlock-WL-2": [
+   98,
+   165
+  ],
+  "erkek-warlock-WL-4": [
+   92,
+   178
+  ],
+  "erkek-warlock-WL-7": [
+   108,
+   172
+  ],
+  "erkek-warlock-WL-8": [
+   121,
+   142
+  ],
+  "erkek-warlock-WL-9": [
+   107,
+   178
+  ],
+  "erkek-wizard-WZ-A2": [
+   105,
+   157
+  ],
+  "erkek-wizard-WZ-A3": [
+   84,
+   154
+  ],
+  "erkek-wizard-WZ-A5": [
+   84,
+   174
+  ],
+  "erkek-wizard-WZ-A6": [
+   96,
+   176
+  ],
+  "erkek-wizard-WZ-A7": [
+   94,
+   162
+  ],
+  "erkek-wizard-WZ-A8": [
+   81,
+   156
+  ],
+  "erkek-wizard-WZ-B1": [
+   114,
+   172
+  ],
+  "erkek-wizard-WZ-B3": [
+   114,
+   171
+  ],
+  "erkek-wizard-WZ-B4": [
+   117,
+   173
+  ],
+  "erkek-wizard-WZ-B6": [
+   123,
+   183
+  ],
+  "erkek-wizard-WZ-B7": [
+   84,
+   173
+  ],
+  "kadin-barbarian-ID1": [
+   97,
+   172
+  ],
+  "kadin-barbarian-ID2": [
+   111,
+   172
+  ],
+  "kadin-barbarian-ID3": [
+   98,
+   172
+  ],
+  "kadin-barbarian-ID5": [
+   84,
+   172
+  ],
+  "kadin-barbarian-ID6": [
+   91,
+   155
+  ],
+  "kadin-barbarian-ID8": [
+   89,
+   166
+  ],
+  "kadin-barbarian-ID9": [
+   76,
+   151
+  ],
+  "kadin-bard-ID1": [
+   129,
+   182
+  ],
+  "kadin-bard-ID4": [
+   99,
+   157
+  ],
+  "kadin-bard-ID5": [
+   109,
+   173
+  ],
+  "kadin-bard-ID6": [
+   105,
+   157
+  ],
+  "kadin-bard-ID7": [
+   91,
+   149
+  ],
+  "kadin-bard-ID8": [
+   94,
+   172
+  ],
+  "kadin-bard-ID9": [
+   110,
+   177
+  ],
+  "kadin-cleric-ID1": [
+   109,
+   172
+  ],
+  "kadin-cleric-ID4": [
+   99,
+   156
+  ],
+  "kadin-cleric-ID6": [
+   84,
+   168
+  ],
+  "kadin-cleric-ID7": [
+   109,
+   174
+  ],
+  "kadin-cleric-ID9": [
+   115,
+   171
+  ],
+  "kadin-druid-ID1": [
+   97,
+   151
+  ],
+  "kadin-druid-ID3": [
+   79,
+   164
+  ],
+  "kadin-druid-ID4": [
+   79,
+   158
+  ],
+  "kadin-druid-ID5": [
+   86,
+   155
+  ],
+  "kadin-druid-ID6": [
+   103,
+   162
+  ],
+  "kadin-druid-ID8": [
+   122,
+   168
+  ],
+  "kadin-fighter-ID1": [
+   84,
+   159
+  ],
+  "kadin-fighter-ID10": [
+   84,
+   164
+  ],
+  "kadin-fighter-ID2": [
+   108,
+   169
+  ],
+  "kadin-fighter-ID3": [
+   112,
+   172
+  ],
+  "kadin-fighter-ID6": [
+   113,
+   175
+  ],
+  "kadin-fighter-ID7": [
+   104,
+   172
+  ],
+  "kadin-fighter-ID9": [
+   92,
+   157
+  ],
+  "kadin-monk-ID1": [
+   91,
+   171
+  ],
+  "kadin-monk-ID10": [
+   112,
+   173
+  ],
+  "kadin-monk-ID2": [
+   75,
+   172
+  ],
+  "kadin-monk-ID3": [
+   87,
+   179
+  ],
+  "kadin-monk-ID4": [
+   124,
+   172
+  ],
+  "kadin-monk-ID5": [
+   82,
+   165
+  ],
+  "kadin-monk-ID6": [
+   115,
+   183
+  ],
+  "kadin-paladin-ID2": [
+   98,
+   181
+  ],
+  "kadin-paladin-ID4": [
+   98,
+   180
+  ],
+  "kadin-paladin-ID5": [
+   74,
+   161
+  ],
+  "kadin-paladin-ID6": [
+   84,
+   172
+  ],
+  "kadin-paladin-ID8": [
+   104,
+   177
+  ],
+  "kadin-paladin-ID9": [
+   79,
+   165
+  ],
+  "kadin-ranger-ID2": [
+   74,
+   161
+  ],
+  "kadin-ranger-ID4": [
+   84,
+   172
+  ],
+  "kadin-ranger-ID6": [
+   84,
+   164
+  ],
+  "kadin-ranger-ID7": [
+   117,
+   171
+  ],
+  "kadin-ranger-ID8": [
+   84,
+   172
+  ],
+  "kadin-ranger-ID9": [
+   100,
+   162
+  ],
+  "kadin-rogue-ID1": [
+   109,
+   179
+  ],
+  "kadin-rogue-ID10": [
+   98,
+   167
+  ],
+  "kadin-rogue-ID2": [
+   112,
+   179
+  ],
+  "kadin-rogue-ID3": [
+   93,
+   163
+  ],
+  "kadin-rogue-ID4": [
+   84,
+   172
+  ],
+  "kadin-rogue-ID6": [
+   106,
+   180
+  ],
+  "kadin-rogue-ID8": [
+   96,
+   182
+  ],
+  "kadin-rogue-ID9": [
+   85,
+   169
+  ],
+  "kadin-sorcerer-SC-1": [
+   106,
+   165
+  ],
+  "kadin-sorcerer-SC-3": [
+   114,
+   179
+  ],
+  "kadin-sorcerer-SC-4": [
+   119,
+   172
+  ],
+  "kadin-sorcerer-SC-8": [
+   83,
+   169
+  ],
+  "kadin-warlock-WL-10": [
+   78,
+   173
+  ],
+  "kadin-warlock-WL-11": [
+   112,
+   182
+  ],
+  "kadin-warlock-WL-2": [
+   91,
+   149
+  ],
+  "kadin-warlock-WL-3": [
+   91,
+   177
+  ],
+  "kadin-warlock-WL-4": [
+   87,
+   154
+  ],
+  "kadin-warlock-WL-6": [
+   88,
+   169
+  ],
+  "kadin-warlock-WL-7": [
+   110,
+   172
+  ],
+  "kadin-warlock-WL-8": [
+   100,
+   161
+  ],
+  "kadin-warlock-WL-9": [
+   103,
+   165
+  ],
+  "kadin-wizard-WZ-A1": [
+   109,
+   171
+  ],
+  "kadin-wizard-WZ-A2": [
+   104,
+   159
+  ],
+  "kadin-wizard-WZ-A3": [
+   82,
+   168
+  ],
+  "kadin-wizard-WZ-A5": [
+   84,
+   174
+  ],
+  "kadin-wizard-WZ-A6": [
+   96,
+   162
+  ],
+  "kadin-wizard-WZ-A7": [
+   94,
+   163
+  ],
+  "kadin-wizard-WZ-A8": [
+   82,
+   157
+  ],
+  "kadin-wizard-WZ-B1": [
+   113,
+   172
+  ],
+  "kadin-wizard-WZ-B3": [
+   114,
+   174
+  ],
+  "kadin-wizard-WZ-B4": [
+   115,
+   176
+  ],
+  "kadin-wizard-WZ-B6": [
+   123,
+   172
+  ],
+  "kadin-wizard-WZ-B7": [
+   84,
+   175
+  ]
+ }
+}

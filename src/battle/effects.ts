@@ -28,6 +28,7 @@ import { askChoice } from '../rules/choice';
 import { hexKey, type Offset } from '../rules/hex';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
 import { autoSucceedsType } from './spellVersion';
+import { saveVs } from './te99Surum';
 
 const profileOf = (c: Combatant) => damageProfile(c);
 
@@ -126,7 +127,8 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
         ...(save.success ? [] : [{ type: 'action_used' as const, actorId: id, kind: 'action' as const, what: e.name }])];
     }
     // Kuyruk 19: Conjure Elemental tutsağı: tur başında save; başarısızsa hasar, başarılıysa serbest.
-    if (e.startSave) {
+    // Mekanik matris K04 (sürüm 83): yakalandığı turun başında tekrar save yok (`skip`).
+    if (e.startSave && !(e.startSave.skip && e.startSave.skip.round === current.round && e.startSave.skip.turnIndex === current.turnIndex)) {
       const ss = e.startSave;
       const r = resolveSave({ extra: saveDice(c, ss.ability), modifier: c.saves[ss.ability], dc: ss.dc, mode: saveMode('normal', c, ss.ability) }, rollTag(rng, { by: c.id }));
       const d = !r.success ? rollDice(ss.dice, rollTag(rng, { kind: 'damage', by: e.sourceId })) : null;
@@ -221,7 +223,9 @@ export function effectTurnEndEvents(state: BattleState, id: string, rng: Rng): B
       // Kuyruk A6: Protection from Evil and Good: korunulan türden kaynağın büyüsüne/korkusuna yeni save avantajlı.
       const pfeg = pfegRepeatAdv(current, c.id, e.sourceId, [...(e.grants ?? []), ...(e.charm ? ['Charmed'] : [])]);
       // Kuyruk K70 (sürüm 54): türü otomatik başaran (Flesh to Stone: Construct) tur sonu save'ini de geçer.
-      const r = resolveSave({ ...(autoSucceedsType(e.repeatSave.autoTypes, c) ? { autoSuccess: true } : {}), extra: saveDice(c, ability), modifier: c.saves[ability], dc, mode: saveMode(pfeg ? 'advantage' : 'normal', c, ability, undefined, { against: [...(e.grants ?? []), ...(e.charm ? ['Charmed'] : [])] }) }, rollTag(rng, { by: c.id }));
+      const r = resolveSave({ ...(autoSucceedsType(e.repeatSave.autoTypes, c) ? { autoSuccess: true } : {}), extra: saveDice(c, ability), modifier: c.saves[ability], dc, mode: saveMode(pfeg ? 'advantage' : 'normal', c, ability, undefined, { against: [...(e.grants ?? []), ...(e.charm ? ['Charmed'] : [])] }),
+        // Görev TE99 (99+): Dwarven Resilience/Fey Ancestry/Brave tekrar save'inde de.
+        ...saveVs(c, [...(e.grants ?? []), ...(e.charm ? ['Charmed'] : [])]) }, rollTag(rng, { by: c.id }));
       // Kuyruk 19: başarısız save'de yinelenen hasar (Phantasmal Killer).
       const fd = !r.success ? e.repeatSave.failDamage : undefined;
       const d = fd ? rollDice(fd.dice, rollTag(rng, { kind: 'damage', by: e.sourceId })) : null;

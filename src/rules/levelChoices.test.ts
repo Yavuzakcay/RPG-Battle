@@ -1,0 +1,224 @@
+/** Görev B93 (A2): Serüven seviye atlama / uzun dinlenme seçimleri (ortak yardımcı; sınıflar `data/secim-degisim.json`). */
+import { describe, expect, it } from 'vitest';
+import { blankCharacter, suggestedScores } from './builder';
+import { changeCounts, choicesBound, fitChanges, pendingChoices, ruleFor } from './levelChoices';
+import { recommendedSpells } from '../screens/builderDefaults';
+import { choiceIssues, executeSeruven, type SeruvenState } from '../journey/seruven';
+import type { CharacterSheet } from './stats';
+
+const SUB: Record<string, string> = { paladin: 'oath-of-devotion', ranger: 'hunter', bard: 'college-of-lore', druid: 'circle-of-the-land', cleric: 'life-domain', sorcerer: 'draconic-sorcery', wizard: 'evoker', warlock: 'fiend-patron', fighter: 'champion' };
+const sheetOf = (classId: string, level: number, patch: Partial<CharacterSheet> = {}): CharacterSheet => {
+  const base: CharacterSheet = { ...blankCharacter('x').sheet, name: 'Deneme', classId, level, baseScores: suggestedScores(classId), subclassId: SUB[classId],
+    ...(classId === 'sorcerer' ? { metamagic: ['careful', 'distant'] } : {}), ...patch };
+  return { ...base, ...recommendedSpells(base), ...patch };
+};
+const begin = (sheet: CharacterSheet, extra: Partial<SeruvenState> = {}): SeruvenState => {
+  const r = executeSeruven(null, { type: 'start', id: 's', seed: 1, party: [{ id: 'p1', name: 'Deneme', sheet }], toggles: { irkBaslangic: false } });
+  if (!r.ok) throw new Error(r.error);
+  return { ...r.state, ...extra };
+};
+/** Sayfaya bakan büyü sorunları (sınıf becerileri sayfada tutulmaz: sarmalayıcıda hep eksik görünür). */
+const spellIssues = (s: CharacterSheet) => choiceIssues(s).filter((x) => !x.startsWith('Sınıf becerileri'));
+const cantrips = (s: CharacterSheet) => (s.spellNames ?? []).filter((n) => ['Fire Bolt', 'Light', 'Mage Hand', 'Prestidigitation', 'Ray of Frost', 'Shocking Grasp', 'Minor Illusion', 'Sacred Flame', 'Guidance', 'Thaumaturgy', 'Eldritch Blast', 'Toll the Dead', 'Spare the Dying', 'Resistance', 'Mending', 'Message', 'Acid Splash', 'Chill Touch', 'Poison Spray', 'Blade Ward', 'Friends', 'True Strike', 'Word of Radiance', 'Sorcerous Burst', 'Dancing Lights', 'Elementalism', 'Shillelagh', 'Starry Wisp', 'Thunderclap'].includes(n));
+
+describe('A2: seçim değişimi kuralları (veriden)', () => {
+  it('yalnız verisi olan sınıflar bağlı (Cleric, Sorcerer, Wizard, Warlock; B94: Bard, Druid, Ranger, Paladin); kural kodda sınıf adı olmadan veriden', () => {
+    for (const c of ['cleric', 'sorcerer', 'wizard', 'warlock', 'bard', 'druid', 'ranger', 'paladin']) expect(choicesBound(c)).toBe(true);
+    // Görev B95 (A): Barbarian, Fighter, Monk, Rogue da bağlı; bilinmeyen sınıf bağlı değil.
+    for (const c of ['barbarian', 'fighter', 'monk', 'rogue']) expect(choicesBound(c)).toBe(true);
+    expect(choicesBound('yok')).toBe(false);
+    expect(ruleFor('cleric', 'hazir').dinlenme).toBe('hepsi');
+    expect(ruleFor('warlock', 'secenek:warlock:mystic-arcanum/6').seviye).toBe(1);
+    expect(ruleFor('warlock', 'secenek:warlock/fiend:fiendish-resilience').dinlenme).toBe('hepsi');
+  });
+  it('değişim sayımı: cantrip ve hazır büyü ayrı; sayıya sığmayan reddedilir', () => {
+    const a = sheetOf('sorcerer', 3);
+    const counts = changeCounts(a, { ...a, spellNames: (a.spellNames ?? []).slice(1) });
+    expect(Object.values(counts).reduce((n, x) => n + x, 0)).toBe(1);
+    expect(fitChanges('sorcerer', { cantrip: 2 }, { seviye: true, dinlenme: false }, {}).ok).toBe(false);
+    expect(fitChanges('sorcerer', { cantrip: 1 }, { seviye: true, dinlenme: false }, {}).ok).toBe(true);
+    expect(fitChanges('sorcerer', { cantrip: 1 }, { seviye: true, dinlenme: false }, { seviye: { cantrip: 1 } }).ok).toBe(false);
+    expect(fitChanges('sorcerer', { cantrip: 1 }, { seviye: false, dinlenme: true }, {}).ok).toBe(false);
+    expect(fitChanges('cleric', { hazir: 5 }, { seviye: false, dinlenme: true }, {}).ok).toBe(true);
+    // Yazılmayan alan yalnız eklenir (Expertise, büyü kitabı).
+    expect(fitChanges('wizard', { spellbook: 1 }, { seviye: true, dinlenme: true }, {}).ok).toBe(false);
+  });
+});
+
+describe('A2: Serüven set_choices', () => {
+  it('seviye atlamada yeni seçim eklenir ve kaydedilir; bir cantrip değişimi; ikincisi reddedilir', () => {
+    const sh = sheetOf('sorcerer', 3);
+    expect(spellIssues(sh)).toEqual([]);
+    let s = begin(sh, { xp: 999999, toggles: { irkBaslangic: false, seviyeAtlama: true } });
+    const lv = executeSeruven(s, { type: 'level_up' });
+    expect(lv.ok).toBe(true);
+    if (!lv.ok) return;
+    s = lv.state;
+    const m = s.party[0]!.sheet;
+    expect(m.level).toBe(4);
+    // 4. seviye: +1 cantrip, +1 hazır büyü (SRD tablosu); eksik varken yeni seçim eklenebilir.
+    const own = cantrips(m);
+    const newC = ['Ray of Frost', 'Shocking Grasp', 'Mage Hand', 'Light', 'Prestidigitation', 'Fire Bolt', 'Minor Illusion', 'Acid Splash', 'Chill Touch'].filter((n) => !own.includes(n));
+    const add = executeSeruven(s, { type: 'set_choices', memberId: 'p1', sheet: { spellNames: [...(m.spellNames ?? []), newC[0]!] } });
+    expect(add.ok).toBe(true);
+    if (!add.ok) return;
+    expect(add.state.party[0]!.sheet.spellNames).toContain(newC[0]);
+    // Bir cantrip değişimi (seviye penceresi).
+    const cur = add.state.party[0]!.sheet.spellNames ?? [];
+    const swap1 = executeSeruven(add.state, { type: 'set_choices', memberId: 'p1', sheet: { spellNames: cur.map((n) => (n === own[0] ? newC[1]! : n)) } });
+    expect(swap1.ok).toBe(true);
+    if (!swap1.ok) return;
+    const cur2 = swap1.state.party[0]!.sheet.spellNames ?? [];
+    const swap2 = executeSeruven(swap1.state, { type: 'set_choices', memberId: 'p1', sheet: { spellNames: cur2.map((n) => (n === own[1] ? newC[2]! : n)) } });
+    expect(swap2.ok).toBe(false);
+    // Liste dışı büyü (oluşturucu kuralı) reddedilir.
+    const bad = executeSeruven(add.state, { type: 'set_choices', memberId: 'p1', sheet: { spellNames: [...cur, 'Cure Wounds'] } });
+    expect(bad.ok).toBe(false);
+  });
+  it('Cleric: uzun dinlenmeden sonra hazır listenin hepsi değişir; dinlenmeden önce değişmez; Serüven başında değişim yok', () => {
+    const sh = sheetOf('cleric', 3);
+    expect(spellIssues(sh)).toEqual([]);
+    const lvl = (sh.spellNames ?? []).filter((n) => !cantrips(sh).includes(n));
+    const pool = ['Bless', 'Cure Wounds', 'Guiding Bolt', 'Healing Word', 'Shield of Faith', 'Command', 'Inflict Wounds', 'Sanctuary', 'Detect Magic', 'Bane'].filter((n) => !lvl.includes(n));
+    const swapped = (sh.spellNames ?? []).map((n) => { const i = lvl.indexOf(n); return i >= 0 && i < 2 ? pool[i]! : n; });
+    const s0 = begin(sh);
+    expect(executeSeruven(s0, { type: 'set_choices', memberId: 'p1', sheet: { spellNames: swapped } }).ok).toBe(false);
+    const r = executeSeruven({ ...s0, rests: 1 }, { type: 'set_choices', memberId: 'p1', sheet: { spellNames: swapped } });
+    expect(r.ok).toBe(true);
+    // Seçim alanı olmayan alan yazılmaz.
+    const r2 = executeSeruven({ ...s0, rests: 1 }, { type: 'set_choices', memberId: 'p1', sheet: { name: 'Başka', raceId: 'dwarf' } });
+    expect(r2.ok && r2.state.party[0]!.sheet.name).toBe('Deneme');
+  });
+  it('bağlı olmayan sınıf reddedilir', () => {
+    // Görev B95 (A): on iki sınıfın hepsi bağlı; bağlı olmayan sınıf kimliğiyle denenir.
+    const s = begin(sheetOf('fighter', 3), { rests: 1 });
+    const odd = { ...s, party: s.party.map((m) => ({ ...m, sheet: { ...m.sheet, classId: 'yok' } })) };
+    expect(executeSeruven(odd, { type: 'set_choices', memberId: 'p1', sheet: {} }).ok).toBe(false);
+  });
+});
+
+describe('Görev B94 (A1): Bard, Druid, Ranger, Paladin seçim değişimi (SRD 5.2.1)', () => {
+  it('Bard: seviyede bir cantrip ve bir hazır büyü; dinlenmede değişim yok; Expertise yalnız eklenir (s. 32)', () => {
+    expect(fitChanges('bard', { cantrip: 1, hazir: 1 }, { seviye: true, dinlenme: false }, {}).ok).toBe(true);
+    expect(fitChanges('bard', { hazir: 1 }, { seviye: false, dinlenme: true }, {}).ok).toBe(false);
+    expect(fitChanges('bard', { expertise: 1 }, { seviye: true, dinlenme: true }, {}).ok).toBe(false);
+  });
+  it('Druid: seviyede bir cantrip, uzun dinlenmede hazır listenin hepsi; Primal Order değişmez; Circle of the Land arazisi dinlenmede (s. 41–42, 46)', () => {
+    expect(fitChanges('druid', { hazir: 6 }, { seviye: false, dinlenme: true }, {}).ok).toBe(true);
+    expect(fitChanges('druid', { cantrip: 1 }, { seviye: false, dinlenme: true }, {}).ok).toBe(false);
+    expect(fitChanges('druid', { 'secenek:druid:primal-order': 1 }, { seviye: true, dinlenme: true }, {}).ok).toBe(false);
+    expect(ruleFor('druid', 'secenek:druid/circle-of-the-land:circle-of-the-land-spells').dinlenme).toBe('hepsi');
+  });
+  it('Ranger ve Paladin: uzun dinlenmede bir hazır büyü ve bütün ustalıklar; seviyede Fighting Style ve bir yuva cantrip\'i (s. 54, 58)', () => {
+    for (const c of ['ranger', 'paladin']) {
+      expect(fitChanges(c, { hazir: 1, weaponMasteries: 2 }, { seviye: false, dinlenme: true }, {}).ok).toBe(true);
+      expect(fitChanges(c, { hazir: 2 }, { seviye: false, dinlenme: true }, {}).ok).toBe(false);
+      expect(fitChanges(c, { stil: 1, cantrip: 1 }, { seviye: true, dinlenme: false }, {}).ok).toBe(true);
+      expect(fitChanges(c, { stil: 1 }, { seviye: false, dinlenme: true }, {}).ok).toBe(false);
+      expect(fitChanges(c, { advancements: 1 }, { seviye: true, dinlenme: true }, {}).ok).toBe(false);
+    }
+    expect(ruleFor('ranger', 'secenek:ranger/hunter:hunters-prey').dinlenme).toBe('hepsi');
+  });
+  it('changeCounts: Fighting Style yuvası (feat ya da Blessed Warrior) `stil`, ASI/feat yuvası `advancements`', () => {
+    const a = sheetOf('paladin', 4, { advancements: [{ level: 2, featId: 'defense' }, { level: 4, featId: 'ability-score-improvement', abilities: { str: 2 } }] });
+    expect(changeCounts(a, { ...a, advancements: [{ level: 2, featId: 'blessed-warrior' }, a.advancements![1]!] })).toEqual({ stil: 1 });
+    expect(changeCounts(a, { ...a, advancements: [a.advancements![0]!, { level: 4, featId: 'ability-score-improvement', abilities: { cha: 2 } }] })).toEqual({ advancements: 1 });
+  });
+});
+
+describe('Görev B95 (A): Barbarian, Fighter, Monk, Rogue Serüven seviye atlama seçimleri (SRD 5.2.1)', () => {
+  const levelUp = (s: SeruvenState): SeruvenState => {
+    const r = executeSeruven({ ...s, xp: 9999999, toggles: { ...s.toggles, seviyeAtlama: true } }, { type: 'level_up' });
+    if (!r.ok) throw new Error(r.error);
+    return r.state;
+  };
+  const choose = (s: SeruvenState, sheet: Partial<CharacterSheet>) => executeSeruven(s, { type: 'set_choices', memberId: 'p1', sheet });
+  const ROGUE_SKILLS = ['stealth', 'acrobatics', 'perception', 'sleightOfHand', 'investigation', 'athletics'] as CharacterSheet['skills'];
+  const asi = (level: number) => ({ level, featId: 'ability-score-improvement', abilities: { con: 2 } });
+
+  it('kurallar veriden: Barbarian/Fighter dinlenmede bir ustalık (s. 29, 48), Rogue hepsi (s. 62), Fighter seviyede Fighting Style (s. 47), Monk değişim yok', () => {
+    for (const c of ['barbarian', 'fighter']) {
+      expect(fitChanges(c, { weaponMasteries: 1 }, { seviye: false, dinlenme: true }, {}).ok).toBe(true);
+      expect(fitChanges(c, { weaponMasteries: 2 }, { seviye: false, dinlenme: true }, {}).ok).toBe(false);
+      expect(fitChanges(c, { weaponMasteries: 1 }, { seviye: true, dinlenme: false }, {}).ok).toBe(false);
+    }
+    expect(fitChanges('rogue', { weaponMasteries: 2 }, { seviye: false, dinlenme: true }, {}).ok).toBe(true);
+    expect(fitChanges('fighter', { stil: 1 }, { seviye: true, dinlenme: false }, {}).ok).toBe(true);
+    expect(fitChanges('barbarian', { stil: 1 }, { seviye: true, dinlenme: true }, {}).ok).toBe(false);
+    for (const c of ['barbarian', 'fighter', 'monk', 'rogue']) {
+      expect(fitChanges(c, { subclassId: 1 }, { seviye: true, dinlenme: true }, {}).ok).toBe(false);
+      expect(fitChanges(c, { advancements: 1 }, { seviye: true, dinlenme: true }, {}).ok).toBe(false);
+      expect(fitChanges(c, { expertise: 1 }, { seviye: true, dinlenme: true }, {}).ok).toBe(false);
+    }
+  });
+
+  it('3. seviyede alt sınıf otomatik atanmaz, istenir; seçilince karaktere yazılır (dört sınıf)', () => {
+    const subs: Record<string, string> = { barbarian: 'path-of-the-berserker', fighter: 'champion', monk: 'warrior-of-the-open-hand', rogue: 'thief' };
+    for (const [c, sub] of Object.entries(subs)) {
+      const s = levelUp(begin(sheetOf(c, 2, { subclassId: undefined, ...(c === 'fighter' ? { advancements: [{ level: 1, featId: 'defense' }] } : {}),
+        ...(c === 'rogue' ? { skills: ROGUE_SKILLS, expertise: ['stealth', 'acrobatics'] } : {}) })));
+      const m = s.party[0]!.sheet;
+      expect(m.level).toBe(3);
+      expect(m.subclassId).toBeUndefined();
+      expect(pendingChoices(m)).toContain('subclassId');
+      const r = choose(s, { subclassId: sub });
+      expect(r.ok).toBe(true);
+      if (!r.ok) continue;
+      expect(r.state.party[0]!.sheet.subclassId).toBe(sub);
+      expect(pendingChoices(r.state.party[0]!.sheet)).not.toContain('subclassId');
+      // Seçilen alt sınıf sonraki seviyede değiştirilemez (yalnız eklenir).
+      const other = levelUp(r.state);
+      expect(choose(other, { subclassId: Object.values(subs).find((x) => x !== sub) }).ok).toBe(false);
+    }
+  });
+
+  it('ASI/feat yuvası ve Epic Boon eklenir (Barbarian 4, Monk 4, Fighter 6 ve 19)', () => {
+    for (const c of ['barbarian', 'monk']) {
+      const s = levelUp(begin(sheetOf(c, 3)));
+      expect(pendingChoices(s.party[0]!.sheet)).toContain('advancements');
+      const r = choose(s, { advancements: [asi(4)] });
+      expect(r.ok).toBe(true);
+      if (r.ok) expect(r.state.party[0]!.sheet.advancements).toEqual([asi(4)]);
+    }
+    const fAdv = [{ level: 1, featId: 'defense' }, asi(4)];
+    const f = levelUp(begin(sheetOf('fighter', 5, { advancements: fAdv })));
+    const r6 = choose(f, { advancements: [...fAdv, asi(6)] });
+    expect(r6.ok).toBe(true);
+    const full = [{ level: 1, featId: 'defense' }, ...[4, 6, 8, 12, 14, 16].map((l) => ({ level: l, featId: 'ability-score-improvement', abilities: { [l % 4 === 0 ? 'str' : 'dex']: 1, con: 1 } }))];
+    const f19 = levelUp(begin(sheetOf('fighter', 18, { advancements: full })));
+    expect(pendingChoices(f19.party[0]!.sheet)).toContain('advancements');
+    const boon = { level: 19, featId: 'boon-of-combat-prowess', abilities: { str: 1 } };
+    const r19 = choose(f19, { advancements: [...full, boon] });
+    expect(r19.ok, r19.ok ? '' : r19.error).toBe(true);
+    if (r19.ok) expect(r19.state.party[0]!.sheet.advancements).toContainEqual(boon);
+  });
+
+  it('yeni Weapon Mastery hakkı seviyede eklenir; uzun dinlenmede Fighter bir, Rogue hepsini değiştirir', () => {
+    const f = levelUp(begin(sheetOf('fighter', 3, { advancements: [{ level: 1, featId: 'defense' }], weaponMasteries: ['longsword', 'greatsword', 'shortbow'] })));
+    expect(pendingChoices(f.party[0]!.sheet)).toContain('weaponMasteries');
+    const add = choose(f, { weaponMasteries: ['longsword', 'greatsword', 'shortbow', 'longbow'] });
+    expect(add.ok).toBe(true);
+    if (!add.ok) return;
+    expect(add.state.party[0]!.sheet.weaponMasteries).toEqual(['longsword', 'greatsword', 'shortbow', 'longbow']);
+    // Seviye penceresinde var olan ustalık değişmez.
+    expect(choose(add.state, { weaponMasteries: ['rapier', 'greatsword', 'shortbow', 'longbow'] }).ok).toBe(false);
+    const rested = { ...add.state, rests: 1 };
+    expect(choose(rested, { weaponMasteries: ['rapier', 'greatsword', 'shortbow', 'longbow'] }).ok).toBe(true);
+    expect(choose(rested, { weaponMasteries: ['rapier', 'scimitar', 'shortbow', 'longbow'] }).ok).toBe(false);
+    const rogue = begin(sheetOf('rogue', 3, { skills: ROGUE_SKILLS, expertise: ['stealth', 'acrobatics'], weaponMasteries: ['dagger', 'shortsword'] }), { rests: 1 });
+    const rr = choose(rogue, { weaponMasteries: ['rapier', 'shortbow'] });
+    expect(rr.ok).toBe(true);
+    if (rr.ok) expect(rr.state.party[0]!.sheet.weaponMasteries).toEqual(['rapier', 'shortbow']);
+  });
+
+  it('Rogue 6. seviye Expertise istenir ve eklenir (s. 61); var olan değişmez', () => {
+    const s = levelUp(begin(sheetOf('rogue', 5, { skills: ROGUE_SKILLS, expertise: ['stealth', 'acrobatics'], advancements: [asi(4)] })));
+    expect(pendingChoices(s.party[0]!.sheet)).toContain('expertise');
+    const r = choose(s, { expertise: ['stealth', 'acrobatics', 'perception', 'sleightOfHand'] });
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.state.party[0]!.sheet.expertise).toEqual(['stealth', 'acrobatics', 'perception', 'sleightOfHand']);
+    expect(pendingChoices(r.state.party[0]!.sheet)).not.toContain('expertise');
+    expect(choose(r.state, { expertise: ['investigation', 'acrobatics', 'perception', 'sleightOfHand'] }).ok).toBe(false);
+  });
+});

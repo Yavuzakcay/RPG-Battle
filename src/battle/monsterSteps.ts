@@ -11,13 +11,15 @@ import { damageEffect } from './maprules';
 import { terrainAt } from './movement';
 import { isLiquidTile } from './deepWater';
 import type { BattleEvent, BattleState } from './types';
+import { formMonsterId } from './shapeMonsterCore';
 
 type P = { fireForm?: { dice: string; type: string }; waterSusceptible?: { dice: string; type: string } };
 const DATA = data as unknown as Record<string, { passive?: P }>;
 
 export function monsterStepEvents(state: BattleState, actorId: string, step: Offset, rng: Rng): BattleEvent[] {
   const a = state.combatants[actorId];
-  const p = a?.monsterId ? DATA[a.monsterId]?.passive : undefined;
+  const id = a ? formMonsterId(a) : undefined;
+  const p = id ? DATA[id]?.passive : undefined;
   if (!a || !p || !globalRule(state, 'srdK19')) return [];
   const out: BattleEvent[] = [];
   if (p.fireForm) {

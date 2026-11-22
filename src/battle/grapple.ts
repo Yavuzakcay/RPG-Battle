@@ -10,6 +10,9 @@
  * - Hücum ("20+ ft düz koşup vurursa"): turdaki son düz koşu (`run`) en az o kadar ve hedef koşu
  *   yönünde bitişikse tutar.
  */
+import { cuttingWordsCheck } from './reactions';
+import { formMonsterId } from './shapeMonsterCore';
+import { ws92On } from './ws92Surum';
 import { adjacent3D, k73bOn } from './adjacency';
 import { checkBase } from './ruleVersion';
 import { extrasTotal, rollExtras } from '../rules/attack';
@@ -24,24 +27,33 @@ import { bodyFitProblem, occupantAt, placeProblem } from './movement';
 import { checkMode, skillBonus } from '../rules/skills';
 import { fail, finish, isTargetable, type CommandResult } from './common';
 import { attackEffect, makeTimer, saveMode, timedCondition } from './durations';
-import { speedHexes } from './reduce';
+import { speedHexes, speedHexesNoDash } from './reduce';
 import type { RiderSpec } from './riders';
 import { a2Events } from './ridersA2';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
 import { flySpeed } from './flight';
 import { globalRule } from './ruleControl';
+import { saveVs } from './te99Surum';
 
 const SIZES = ['T', 'S', 'M', 'L', 'H', 'G'] as const;
 /** Hedef boyut sınırına uyuyor mu ("Large or smaller"). */
 export const fitsSize = (target: Combatant, max?: string) => !max || SIZES.indexOf(target.size) <= SIZES.indexOf(max as (typeof SIZES)[number]);
 
-/** Ayağa kalkmanın maliyeti: hızın yarısı (altıgen, yukarı yuvarlanır). */
-export const standUpCost = (c: Combatant) => Math.ceil(Math.floor((flySpeed(c) > 0 ? flySpeed(c) : c.speed) / 5) / 2);
+/**
+ * Ayağa kalkmanın maliyeti: hızın yarısı (altıgen, yukarı yuvarlanır). GENEL96 E7/B33 (sürüm 96+, `srd96`; SRD 5.2.1
+ * s. 186 Prone "half your Speed (round down)"): şu anki hızdan (Exhaustion, Slow, Haste, Longstrider sayılır; Dash katı
+ * sayılmaz). 95 ve altı: temel hızdan.
+ */
+export const standUpCost = (c: Combatant) => (c.srd96
+  ? Math.ceil((c.economy.dashFt !== undefined ? speedHexesNoDash(c) : Math.floor(speedHexes(c) / (1 + c.economy.dashes))) / 2)
+  : Math.ceil(Math.floor((flySpeed(c) > 0 ? flySpeed(c) : c.speed) / 5) / 2));
 
 /** Ayağa kalkabilir mi; değilse neden. */
 export function standUpProblem(c: Combatant): string | null {
   if (!c.conditions.includes('Prone')) return 'Yerde değil.';
   if (speedZero(c.conditions)) return 'Hızı 0 (Grappled, Restrained, Paralyzed…): ayağa kalkamaz.';
+  // GENEL96 (sürüm 96+): etkiden gelen hız 0'da da kalkılamaz (SRD 5.2.1 s. 186 "If your Speed is 0, you can't right yourself").
+  if (c.srd96 && speedHexes(c) === 0) return 'Hızı 0: ayağa kalkamaz.';
   if (c.movementUsed + standUpCost(c) > speedHexes(c)) return 'Ayağa kalkacak kadar hareket kalmadı (hızın yarısı gerekir).';
   return null;
 }
@@ -74,9 +86,12 @@ export function executeEscapeGrapple(state: BattleState, actor: Combatant, rng: 
   // Avantaj ile dezavantaj birbirini götürür (SRD).
   const mode: RollMode = !pb ? mode0 : mode0 === 'disadvantage' ? 'normal' : 'advantage';
   const d = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus: Math.max(ath, acr) }));
-  const { total, extra } = finishCheck(actor, skill, d.kept, Math.max(ath, acr), g.escapeDc, mode, rng);
+  const { total: total0, extra } = finishCheck(actor, skill, d.kept, Math.max(ath, acr), g.escapeDc, mode, rng);
+  // Görev B94 (sürüm 94+): Cutting Words başarılı kontrolü çevirebilir.
+  const cw = cuttingWordsCheck(state, actor, total0, g.escapeDc, 'Grapple', rng);
+  const total = cw.total;
   const success = total >= g.escapeDc;
-  const events: BattleEvent[] = [{ type: 'grapple_escape', actorId: actor.id, skill, d20: d.rolls, total, dc: g.escapeDc, success, ...(extra.length ? { bonusDice: extra } : {}) }];
+  const events: BattleEvent[] = [...cw.events, { type: 'grapple_escape', actorId: actor.id, skill, d20: d.rolls, total, dc: g.escapeDc, success, ...(extra.length ? { bonusDice: extra } : {}) }];
   if (success) events.push({ type: 'grapple_ended', targetId: actor.id, reason: 'kaçtı' });
   return finish(state, events);
 }
@@ -147,7 +162,7 @@ export function chargeHolds(actor: Combatant, target: Combatant, feet: number): 
 }
 
 function saveFails(target: Combatant, save: { ability: Ability; dc: number }, rng: Rng, events: BattleEvent[], condition: string): boolean {
-  const r = resolveSave({ extra: saveDice(target, save.ability), modifier: target.saves[save.ability], dc: save.dc, mode: saveMode('normal' as RollMode, target, save.ability, undefined, { against: [condition], genis: true }),
+  const r = resolveSave({ extra: saveDice(target, save.ability), modifier: target.saves[save.ability], dc: save.dc, mode: saveMode('normal' as RollMode, target, save.ability, undefined, { against: [condition], genis: true }), ...saveVs(target, [condition]),
     autoFail: (save.ability === 'str' || save.ability === 'dex') && autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
   events.push({ type: 'condition_save', targetId: target.id, condition, ability: save.ability, dc: save.dc, d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { bonusDice: r.extra } : {}) });
   return !r.success;
@@ -160,7 +175,9 @@ function saveFails(target: Combatant, save: { ability: Ability; dc: number }, rn
  */
 export function riderConditionEvents(
   state: BattleState, actor: Combatant, target: Combatant, spec: RiderSpec | undefined, attackName: string, rng: Rng,
-  monsterId: string | undefined = actor.monsterId,
+  // Görev WS92 (92+): Wild Shape/Polymorph biçiminde biçimin kimliği (save'li ve alanlı biçim saldırılarının A2 ekleri;
+  // eskiden biçimde bu yollarda A2 eki aranmıyordu).
+  monsterId: string | undefined = ws92On(state) ? formMonsterId(actor) : actor.monsterId,
 ): BattleEvent[] {
   // Kuyruk A2 (sürüm 30+): veriyle bağlanan ekler (süre, itme/çekme, hız/eylem kısıtı, ikinci aşama, 0 HP…); 0 HP'de de.
   const a2 = a2Events(state, actor, target, attackName, rng, monsterId);

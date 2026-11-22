@@ -1,12 +1,15 @@
 /**
- * Görev SD4: Türkçe açıklama erişimi (`data/aciklamalar-tr.json`). Türkçe arayüzde açıklama; İngilizce arayüzde açıklama
- * varsa ama yalnız Türkçe yazılmışsa kısa "açıklama yalnız Türkçe" notu (kaynak SRD metni gösterilmez). Açıklama hiç yoksa undefined.
+ * Görev SD4 / EN-ACIKLAMA: açıklama erişimi. Türkçe arayüzde `data/aciklamalar-tr.json`; İngilizce arayüzde
+ * `data/aciklamalar-en.json` (SRD 5.2.1 metni ya da çeviri). EN karşılığı yoksa (geriye uyum) kısa "açıklama yalnız
+ * Türkçe" notu. Açıklama hiç yoksa undefined.
  */
-import { trAciklama, type AciklamaTuru } from '../data';
+import { enAciklama, trAciklama, type AciklamaTuru } from '../data';
 import { getLang, t } from '../i18n';
 
 export function describeTr(tur: AciklamaTuru, id: string): string | undefined {
   const text = trAciklama(tur, id);
-  if (!text) return undefined;
-  return getLang() === 'tr' ? text : t().common.descTrOnly;
+  if (getLang() === 'tr') return text;
+  const en = enAciklama(tur, id);
+  if (en) return en;
+  return text ? t().common.descTrOnly : undefined;
 }

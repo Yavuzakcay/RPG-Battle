@@ -1,0 +1,8480 @@
+{
+ "not": "scripts/tiefling-beyaz.py: Tiefling jetonu başına beyaz benek sayısı (oyundaki boyama ve v2 maskeli yeni boyama).",
+ "parametre": {
+  "beyazL": 65,
+  "beyazC": 12,
+  "tonFark": 28,
+  "cAlt": 0.25,
+  "cUst": 2.6,
+  "parlamaL": 78,
+  "parlamaC": 14,
+  "konturL": 25,
+  "minBilesen": 30,
+  "delik": 12,
+  "benek": 12,
+  "halka": 0.75
+ },
+ "toplam": {
+  "oyun": {
+   "abyssal": 340,
+   "chthonic": 340,
+   "winged": 340
+  },
+  "yeni": {
+   "abyssal": 2,
+   "chthonic": 0,
+   "winged": 2
+  }
+ },
+ "beneklijeton": {
+  "oyun": {
+   "abyssal": 45,
+   "chthonic": 45,
+   "winged": 45
+  },
+  "yeni": {
+   "abyssal": 1,
+   "chthonic": 0,
+   "winged": 2
+  }
+ },
+ "ornekler": [
+  "tiefling-erkek-barbarian-ID6",
+  "tiefling-erkek-fighter-ID4",
+  "tiefling-kadin-monk-ID5",
+  "tiefling-erkek-sorcerer-SC-7",
+  "tiefling-erkek-warlock-WL-8",
+  "tiefling-kadin-wizard-WZ-B7"
+ ],
+ "jetonlar": {
+  "tiefling-erkek-barbarian-GR": {
+   "maske": true,
+   "tonH": 4.5,
+   "oyunMaske": 3711,
+   "yeniMaske": 5936,
+   "oyun": {
+    "abyssal": 7,
+    "chthonic": 7,
+    "winged": 7
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-barbarian-ID1": {
+   "maske": true,
+   "tonH": 2.5,
+   "oyunMaske": 2623,
+   "yeniMaske": 3305,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-barbarian-ID2": {
+   "maske": true,
+   "tonH": 2.9,
+   "oyunMaske": 5307,
+   "yeniMaske": 5401,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-barbarian-ID3": {
+   "maske": true,
+   "tonH": 4.4,
+   "oyunMaske": 4148,
+   "yeniMaske": 7064,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 42,
+     "yeni": 5
+    },
+    "chthonic": {
+     "oyun": 42,
+     "yeni": 5
+    },
+    "winged": {
+     "oyun": 42,
+     "yeni": 5
+    }
+   }
+  },
+  "tiefling-erkek-barbarian-ID4": {
+   "maske": true,
+   "tonH": 5.8,
+   "oyunMaske": 3141,
+   "yeniMaske": 6001,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-barbarian-ID5": {
+   "maske": true,
+   "tonH": 5.7,
+   "oyunMaske": 2665,
+   "yeniMaske": 4757,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-barbarian-ID6": {
+   "maske": true,
+   "tonH": 5.1,
+   "oyunMaske": 4097,
+   "yeniMaske": 5462,
+   "oyun": {
+    "abyssal": 60,
+    "chthonic": 60,
+    "winged": 60
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 145,
+     "yeni": 2
+    },
+    "chthonic": {
+     "oyun": 145,
+     "yeni": 2
+    },
+    "winged": {
+     "oyun": 145,
+     "yeni": 2
+    }
+   }
+  },
+  "tiefling-erkek-barbarian-ID7": {
+   "maske": true,
+   "tonH": 5.6,
+   "oyunMaske": 4767,
+   "yeniMaske": 7660,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-barbarian-ID8": {
+   "maske": true,
+   "tonH": 4.4,
+   "oyunMaske": 3456,
+   "yeniMaske": 5206,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 3,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 3,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 3,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-barbarian-ID9": {
+   "maske": true,
+   "tonH": 5.8,
+   "oyunMaske": 2694,
+   "yeniMaske": 3137,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-bard-GR": {
+   "maske": true,
+   "tonH": 6.5,
+   "oyunMaske": 3346,
+   "yeniMaske": 4357,
+   "oyun": {
+    "abyssal": 2,
+    "chthonic": 2,
+    "winged": 2
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-bard-ID1": {
+   "maske": true,
+   "tonH": 6.1,
+   "oyunMaske": 4383,
+   "yeniMaske": 3614,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 63,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 63,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 63,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-bard-ID2": {
+   "maske": true,
+   "tonH": 6.6,
+   "oyunMaske": 2876,
+   "yeniMaske": 3136,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-bard-ID3": {
+   "maske": true,
+   "tonH": 4.8,
+   "oyunMaske": 6777,
+   "yeniMaske": 3856,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-bard-ID4": {
+   "maske": true,
+   "tonH": 7.9,
+   "oyunMaske": 2858,
+   "yeniMaske": 3928,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 45,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 45,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 45,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-bard-ID5": {
+   "maske": true,
+   "tonH": 7.7,
+   "oyunMaske": 3654,
+   "yeniMaske": 5457,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-bard-ID6": {
+   "maske": true,
+   "tonH": 7.8,
+   "oyunMaske": 3409,
+   "yeniMaske": 3431,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 11,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 11,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 11,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-bard-ID7": {
+   "maske": true,
+   "tonH": 8.7,
+   "oyunMaske": 3522,
+   "yeniMaske": 3983,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-bard-ID8": {
+   "maske": true,
+   "tonH": 10.4,
+   "oyunMaske": 2711,
+   "yeniMaske": 3153,
+   "oyun": {
+    "abyssal": 1,
+    "chthonic": 1,
+    "winged": 1
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-bard-ID9": {
+   "maske": true,
+   "tonH": 8.9,
+   "oyunMaske": 4658,
+   "yeniMaske": 4350,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-cleric-GR": {
+   "maske": true,
+   "tonH": 6.2,
+   "oyunMaske": 3408,
+   "yeniMaske": 3574,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-cleric-ID1": {
+   "maske": true,
+   "tonH": 6.3,
+   "oyunMaske": 2360,
+   "yeniMaske": 2682,
+   "oyun": {
+    "abyssal": 1,
+    "chthonic": 1,
+    "winged": 1
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 7,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 7,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 7,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-cleric-ID2": {
+   "maske": true,
+   "tonH": 6.3,
+   "oyunMaske": 1902,
+   "yeniMaske": 2244,
+   "oyun": {
+    "abyssal": 2,
+    "chthonic": 2,
+    "winged": 2
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 36,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 36,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 36,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-cleric-ID3": {
+   "maske": true,
+   "tonH": 6.7,
+   "oyunMaske": 2414,
+   "yeniMaske": 2691,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 18,
+     "yeni": 5
+    },
+    "chthonic": {
+     "oyun": 18,
+     "yeni": 5
+    },
+    "winged": {
+     "oyun": 18,
+     "yeni": 5
+    }
+   }
+  },
+  "tiefling-erkek-cleric-ID4": {
+   "maske": true,
+   "tonH": 9.3,
+   "oyunMaske": 2073,
+   "yeniMaske": 2777,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-cleric-ID5": {
+   "maske": true,
+   "tonH": 10.1,
+   "oyunMaske": 1349,
+   "yeniMaske": 1966,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 64,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 64,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 64,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-cleric-ID6": {
+   "maske": true,
+   "tonH": 9.5,
+   "oyunMaske": 1707,
+   "yeniMaske": 2221,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-cleric-ID7": {
+   "maske": true,
+   "tonH": 9.7,
+   "oyunMaske": 1875,
+   "yeniMaske": 2099,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-cleric-ID8": {
+   "maske": true,
+   "tonH": 9.6,
+   "oyunMaske": 1960,
+   "yeniMaske": 2582,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-cleric-ID9": {
+   "maske": true,
+   "tonH": 11.7,
+   "oyunMaske": 3150,
+   "yeniMaske": 4200,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 31,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 31,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 31,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-druid-GR": {
+   "maske": true,
+   "tonH": 6.0,
+   "oyunMaske": 3972,
+   "yeniMaske": 4302,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-druid-ID1": {
+   "maske": true,
+   "tonH": 5.4,
+   "oyunMaske": 2081,
+   "yeniMaske": 2120,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-druid-ID2": {
+   "maske": true,
+   "tonH": 5.5,
+   "oyunMaske": 3637,
+   "yeniMaske": 2162,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-druid-ID3": {
+   "maske": true,
+   "tonH": 4.0,
+   "oyunMaske": 3445,
+   "yeniMaske": 2359,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-druid-ID4": {
+   "maske": false
+  },
+  "tiefling-erkek-druid-ID5": {
+   "maske": true,
+   "tonH": 7.3,
+   "oyunMaske": 2729,
+   "yeniMaske": 1655,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-druid-ID6": {
+   "maske": true,
+   "tonH": 7.5,
+   "oyunMaske": 3394,
+   "yeniMaske": 1944,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-druid-ID7": {
+   "maske": true,
+   "tonH": 6.3,
+   "oyunMaske": 2817,
+   "yeniMaske": 2205,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-fighter-GR": {
+   "maske": true,
+   "tonH": 7.6,
+   "oyunMaske": 3464,
+   "yeniMaske": 3293,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 1,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 1,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 1,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-fighter-ID1": {
+   "maske": true,
+   "tonH": 4.1,
+   "oyunMaske": 978,
+   "yeniMaske": 1967,
+   "oyun": {
+    "abyssal": 22,
+    "chthonic": 22,
+    "winged": 22
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-fighter-ID10": {
+   "maske": true,
+   "tonH": 8.2,
+   "oyunMaske": 2098,
+   "yeniMaske": 3083,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-fighter-ID11": {
+   "maske": true,
+   "tonH": 6.3,
+   "oyunMaske": 1744,
+   "yeniMaske": 3952,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-fighter-ID2": {
+   "maske": true,
+   "tonH": 290.1,
+   "oyunMaske": 1286,
+   "yeniMaske": 8484,
+   "oyun": {
+    "abyssal": 29,
+    "chthonic": 29,
+    "winged": 29
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 1,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 1,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 1,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-fighter-ID3": {
+   "maske": true,
+   "tonH": 356.9,
+   "oyunMaske": 727,
+   "yeniMaske": 1848,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 4,
+     "yeni": 2
+    },
+    "chthonic": {
+     "oyun": 4,
+     "yeni": 2
+    },
+    "winged": {
+     "oyun": 4,
+     "yeni": 2
+    }
+   }
+  },
+  "tiefling-erkek-fighter-ID4": {
+   "maske": true,
+   "tonH": 9.9,
+   "oyunMaske": 3072,
+   "yeniMaske": 6656,
+   "oyun": {
+    "abyssal": 34,
+    "chthonic": 34,
+    "winged": 34
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 24,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 24,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 24,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-fighter-ID5": {
+   "maske": true,
+   "tonH": 23.4,
+   "oyunMaske": 3147,
+   "yeniMaske": 6627,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 1,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 1,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 1,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-fighter-ID6": {
+   "maske": true,
+   "tonH": 2.1,
+   "oyunMaske": 1325,
+   "yeniMaske": 1144,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-fighter-ID7": {
+   "maske": true,
+   "tonH": 7.9,
+   "oyunMaske": 2303,
+   "yeniMaske": 3345,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-fighter-ID8": {
+   "maske": true,
+   "tonH": 9.8,
+   "oyunMaske": 664,
+   "yeniMaske": 2247,
+   "oyun": {
+    "abyssal": 6,
+    "chthonic": 6,
+    "winged": 6
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-fighter-ID9": {
+   "maske": true,
+   "tonH": 9.4,
+   "oyunMaske": 570,
+   "yeniMaske": 3078,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-monk-GR": {
+   "maske": true,
+   "tonH": 8.3,
+   "oyunMaske": 3851,
+   "yeniMaske": 4388,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-monk-ID1": {
+   "maske": true,
+   "tonH": 12.8,
+   "oyunMaske": 3904,
+   "yeniMaske": 3981,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-monk-ID10": {
+   "maske": true,
+   "tonH": 14.6,
+   "oyunMaske": 769,
+   "yeniMaske": 670,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-monk-ID11": {
+   "maske": true,
+   "tonH": 25.5,
+   "oyunMaske": 619,
+   "yeniMaske": 4761,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-monk-ID2": {
+   "maske": true,
+   "tonH": 13.3,
+   "oyunMaske": 2814,
+   "yeniMaske": 2683,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-monk-ID3": {
+   "maske": true,
+   "tonH": 16.6,
+   "oyunMaske": 1312,
+   "yeniMaske": 2512,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-monk-ID4": {
+   "maske": true,
+   "tonH": 13.4,
+   "oyunMaske": 4388,
+   "yeniMaske": 5050,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 1,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 1,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 1,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-monk-ID5": {
+   "maske": true,
+   "tonH": 23.2,
+   "oyunMaske": 1640,
+   "yeniMaske": 3114,
+   "oyun": {
+    "abyssal": 8,
+    "chthonic": 8,
+    "winged": 8
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 166,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 166,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 166,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-monk-ID6": {
+   "maske": true,
+   "tonH": 13.6,
+   "oyunMaske": 3650,
+   "yeniMaske": 4113,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-monk-ID7": {
+   "maske": true,
+   "tonH": 14.5,
+   "oyunMaske": 3093,
+   "yeniMaske": 3585,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-monk-ID8": {
+   "maske": true,
+   "tonH": 13.6,
+   "oyunMaske": 2169,
+   "yeniMaske": 1780,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-monk-ID9": {
+   "maske": true,
+   "tonH": 18.4,
+   "oyunMaske": 1419,
+   "yeniMaske": 2446,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-paladin-GR": {
+   "maske": true,
+   "tonH": 8.0,
+   "oyunMaske": 1289,
+   "yeniMaske": 1783,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-paladin-ID1": {
+   "maske": true,
+   "tonH": 4.2,
+   "oyunMaske": 2116,
+   "yeniMaske": 1882,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-paladin-ID10": {
+   "maske": true,
+   "tonH": 14.2,
+   "oyunMaske": 3382,
+   "yeniMaske": 2008,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 73,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 73,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 73,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-paladin-ID2": {
+   "maske": true,
+   "tonH": 4.0,
+   "oyunMaske": 2419,
+   "yeniMaske": 1794,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-paladin-ID3": {
+   "maske": true,
+   "tonH": 0.6,
+   "oyunMaske": 1163,
+   "yeniMaske": 1025,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-paladin-ID4": {
+   "maske": true,
+   "tonH": 3.2,
+   "oyunMaske": 3313,
+   "yeniMaske": 2348,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-paladin-ID5": {
+   "maske": true,
+   "tonH": 4.8,
+   "oyunMaske": 2834,
+   "yeniMaske": 4120,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-paladin-ID6": {
+   "maske": true,
+   "tonH": 4.5,
+   "oyunMaske": 3385,
+   "yeniMaske": 3034,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-paladin-ID7": {
+   "maske": true,
+   "tonH": 3.7,
+   "oyunMaske": 3647,
+   "yeniMaske": 2499,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-paladin-ID8": {
+   "maske": true,
+   "tonH": 2.5,
+   "oyunMaske": 1258,
+   "yeniMaske": 874,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-paladin-ID9": {
+   "maske": true,
+   "tonH": 3.4,
+   "oyunMaske": 3000,
+   "yeniMaske": 4678,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-ranger-GR": {
+   "maske": true,
+   "tonH": 8.1,
+   "oyunMaske": 2130,
+   "yeniMaske": 2201,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-ranger-ID1": {
+   "maske": true,
+   "tonH": 5.0,
+   "oyunMaske": 2133,
+   "yeniMaske": 2628,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 62,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 62,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 62,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-ranger-ID2": {
+   "maske": true,
+   "tonH": 4.5,
+   "oyunMaske": 2348,
+   "yeniMaske": 2321,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 26,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 26,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 26,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-ranger-ID3": {
+   "maske": true,
+   "tonH": 6.2,
+   "oyunMaske": 2013,
+   "yeniMaske": 3385,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-ranger-ID4": {
+   "maske": true,
+   "tonH": 7.5,
+   "oyunMaske": 2914,
+   "yeniMaske": 3206,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-ranger-ID5": {
+   "maske": true,
+   "tonH": 6.7,
+   "oyunMaske": 3232,
+   "yeniMaske": 2816,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 26,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 26,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 26,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-ranger-ID6": {
+   "maske": true,
+   "tonH": 7.5,
+   "oyunMaske": 2807,
+   "yeniMaske": 3108,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-ranger-ID7": {
+   "maske": true,
+   "tonH": 7.8,
+   "oyunMaske": 1697,
+   "yeniMaske": 2493,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 57,
+     "yeni": 2
+    },
+    "chthonic": {
+     "oyun": 57,
+     "yeni": 2
+    },
+    "winged": {
+     "oyun": 57,
+     "yeni": 2
+    }
+   }
+  },
+  "tiefling-erkek-ranger-ID8": {
+   "maske": true,
+   "tonH": 6.9,
+   "oyunMaske": 2348,
+   "yeniMaske": 3162,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 76,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 76,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 76,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-ranger-ID9": {
+   "maske": true,
+   "tonH": 24.1,
+   "oyunMaske": 3387,
+   "yeniMaske": 5073,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-rogue-GR": {
+   "maske": true,
+   "tonH": 7.6,
+   "oyunMaske": 1578,
+   "yeniMaske": 1153,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 3,
+     "yeni": 2
+    },
+    "chthonic": {
+     "oyun": 3,
+     "yeni": 2
+    },
+    "winged": {
+     "oyun": 3,
+     "yeni": 2
+    }
+   }
+  },
+  "tiefling-erkek-rogue-ID1": {
+   "maske": true,
+   "tonH": 2.3,
+   "oyunMaske": 3769,
+   "yeniMaske": 2949,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-rogue-ID10": {
+   "maske": true,
+   "tonH": 4.4,
+   "oyunMaske": 3913,
+   "yeniMaske": 4730,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-rogue-ID2": {
+   "maske": true,
+   "tonH": 2.1,
+   "oyunMaske": 3866,
+   "yeniMaske": 3283,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-rogue-ID3": {
+   "maske": true,
+   "tonH": 6.7,
+   "oyunMaske": 8204,
+   "yeniMaske": 3445,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-rogue-ID4": {
+   "maske": true,
+   "tonH": 2.9,
+   "oyunMaske": 3673,
+   "yeniMaske": 2716,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-rogue-ID5": {
+   "maske": true,
+   "tonH": 4.5,
+   "oyunMaske": 2699,
+   "yeniMaske": 3013,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-rogue-ID6": {
+   "maske": true,
+   "tonH": 4.2,
+   "oyunMaske": 4194,
+   "yeniMaske": 4782,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-rogue-ID7": {
+   "maske": true,
+   "tonH": 3.5,
+   "oyunMaske": 1446,
+   "yeniMaske": 1275,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-rogue-ID8": {
+   "maske": true,
+   "tonH": 6.1,
+   "oyunMaske": 4057,
+   "yeniMaske": 3681,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-rogue-ID9": {
+   "maske": true,
+   "tonH": 5.4,
+   "oyunMaske": 3145,
+   "yeniMaske": 3933,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-sorcerer-GR": {
+   "maske": true,
+   "tonH": 8.1,
+   "oyunMaske": 4312,
+   "yeniMaske": 4260,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 5,
+     "yeni": 3
+    },
+    "chthonic": {
+     "oyun": 5,
+     "yeni": 3
+    },
+    "winged": {
+     "oyun": 5,
+     "yeni": 3
+    }
+   }
+  },
+  "tiefling-erkek-sorcerer-SC-1": {
+   "maske": true,
+   "tonH": 3.6,
+   "oyunMaske": 2954,
+   "yeniMaske": 4548,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-sorcerer-SC-2": {
+   "maske": true,
+   "tonH": 35.9,
+   "oyunMaske": 1951,
+   "yeniMaske": 3268,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-sorcerer-SC-3": {
+   "maske": true,
+   "tonH": 9.0,
+   "oyunMaske": 1049,
+   "yeniMaske": 4461,
+   "oyun": {
+    "abyssal": 15,
+    "chthonic": 15,
+    "winged": 15
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-sorcerer-SC-4": {
+   "maske": true,
+   "tonH": 8.3,
+   "oyunMaske": 2779,
+   "yeniMaske": 2928,
+   "oyun": {
+    "abyssal": 1,
+    "chthonic": 1,
+    "winged": 1
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 49,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 49,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 49,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-sorcerer-SC-5": {
+   "maske": false
+  },
+  "tiefling-erkek-sorcerer-SC-6": {
+   "maske": true,
+   "tonH": 6.1,
+   "oyunMaske": 3417,
+   "yeniMaske": 3137,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-sorcerer-SC-7": {
+   "maske": true,
+   "tonH": 9.9,
+   "oyunMaske": 2328,
+   "yeniMaske": 3968,
+   "oyun": {
+    "abyssal": 25,
+    "chthonic": 25,
+    "winged": 25
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 5,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 5,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 5,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-sorcerer-SC-8": {
+   "maske": true,
+   "tonH": 10.0,
+   "oyunMaske": 1989,
+   "yeniMaske": 3666,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-sorcerer-SC-9": {
+   "maske": true,
+   "tonH": 8.2,
+   "oyunMaske": 2886,
+   "yeniMaske": 3072,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 54,
+     "yeni": 54
+    },
+    "chthonic": {
+     "oyun": 54,
+     "yeni": 54
+    },
+    "winged": {
+     "oyun": 54,
+     "yeni": 54
+    }
+   }
+  },
+  "tiefling-erkek-warlock-GR": {
+   "maske": true,
+   "tonH": 8.7,
+   "oyunMaske": 4340,
+   "yeniMaske": 3658,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 1,
+     "yeni": 1
+    },
+    "chthonic": {
+     "oyun": 1,
+     "yeni": 1
+    },
+    "winged": {
+     "oyun": 1,
+     "yeni": 1
+    }
+   }
+  },
+  "tiefling-erkek-warlock-WL-1": {
+   "maske": true,
+   "tonH": 7.0,
+   "oyunMaske": 2702,
+   "yeniMaske": 4463,
+   "oyun": {
+    "abyssal": 2,
+    "chthonic": 2,
+    "winged": 2
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 33,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 33,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 33,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-warlock-WL-10": {
+   "maske": true,
+   "tonH": 292.9,
+   "oyunMaske": 735,
+   "yeniMaske": 2142,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 45,
+     "yeni": 45
+    },
+    "chthonic": {
+     "oyun": 45,
+     "yeni": 45
+    },
+    "winged": {
+     "oyun": 45,
+     "yeni": 45
+    }
+   }
+  },
+  "tiefling-erkek-warlock-WL-11": {
+   "maske": true,
+   "tonH": 5.3,
+   "oyunMaske": 3167,
+   "yeniMaske": 3661,
+   "oyun": {
+    "abyssal": 3,
+    "chthonic": 3,
+    "winged": 3
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 23,
+     "yeni": 1
+    },
+    "chthonic": {
+     "oyun": 23,
+     "yeni": 1
+    },
+    "winged": {
+     "oyun": 23,
+     "yeni": 1
+    }
+   }
+  },
+  "tiefling-erkek-warlock-WL-2": {
+   "maske": true,
+   "tonH": 4.1,
+   "oyunMaske": 3410,
+   "yeniMaske": 5130,
+   "oyun": {
+    "abyssal": 4,
+    "chthonic": 4,
+    "winged": 4
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 131,
+     "yeni": 1
+    },
+    "chthonic": {
+     "oyun": 131,
+     "yeni": 1
+    },
+    "winged": {
+     "oyun": 131,
+     "yeni": 1
+    }
+   }
+  },
+  "tiefling-erkek-warlock-WL-3": {
+   "maske": true,
+   "tonH": 7.0,
+   "oyunMaske": 1933,
+   "yeniMaske": 2760,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-warlock-WL-4": {
+   "maske": true,
+   "tonH": 350.7,
+   "oyunMaske": 2541,
+   "yeniMaske": 5436,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-warlock-WL-5": {
+   "maske": true,
+   "tonH": 6.2,
+   "oyunMaske": 3138,
+   "yeniMaske": 3833,
+   "oyun": {
+    "abyssal": 6,
+    "chthonic": 6,
+    "winged": 6
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-warlock-WL-6": {
+   "maske": true,
+   "tonH": 359.4,
+   "oyunMaske": 544,
+   "yeniMaske": 2683,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-warlock-WL-7": {
+   "maske": true,
+   "tonH": 6.3,
+   "oyunMaske": 2871,
+   "yeniMaske": 2987,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-warlock-WL-8": {
+   "maske": true,
+   "tonH": 7.7,
+   "oyunMaske": 586,
+   "yeniMaske": 5748,
+   "oyun": {
+    "abyssal": 10,
+    "chthonic": 10,
+    "winged": 10
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-warlock-WL-9": {
+   "maske": true,
+   "tonH": 6.1,
+   "oyunMaske": 3362,
+   "yeniMaske": 4159,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 175,
+     "yeni": 1
+    },
+    "chthonic": {
+     "oyun": 175,
+     "yeni": 1
+    },
+    "winged": {
+     "oyun": 175,
+     "yeni": 1
+    }
+   }
+  },
+  "tiefling-erkek-wizard-GR": {
+   "maske": true,
+   "tonH": 332.4,
+   "oyunMaske": 9174,
+   "yeniMaske": 9765,
+   "oyun": {
+    "abyssal": 4,
+    "chthonic": 4,
+    "winged": 4
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 1
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-wizard-WZ-A1": {
+   "maske": true,
+   "tonH": 8.6,
+   "oyunMaske": 3900,
+   "yeniMaske": 2781,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-wizard-WZ-A2": {
+   "maske": true,
+   "tonH": 8.3,
+   "oyunMaske": 4369,
+   "yeniMaske": 7800,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-wizard-WZ-A3": {
+   "maske": true,
+   "tonH": 9.7,
+   "oyunMaske": 3592,
+   "yeniMaske": 3094,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-wizard-WZ-A4": {
+   "maske": true,
+   "tonH": 8.7,
+   "oyunMaske": 3116,
+   "yeniMaske": 2814,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-wizard-WZ-A5": {
+   "maske": true,
+   "tonH": 10.0,
+   "oyunMaske": 3604,
+   "yeniMaske": 2714,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-wizard-WZ-A6": {
+   "maske": true,
+   "tonH": 10.0,
+   "oyunMaske": 3489,
+   "yeniMaske": 2762,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-wizard-WZ-A7": {
+   "maske": true,
+   "tonH": 10.1,
+   "oyunMaske": 3986,
+   "yeniMaske": 2915,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-wizard-WZ-A8": {
+   "maske": true,
+   "tonH": 8.0,
+   "oyunMaske": 3619,
+   "yeniMaske": 2624,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-wizard-WZ-B1": {
+   "maske": true,
+   "tonH": 7.2,
+   "oyunMaske": 3084,
+   "yeniMaske": 6627,
+   "oyun": {
+    "abyssal": 2,
+    "chthonic": 2,
+    "winged": 2
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-wizard-WZ-B2": {
+   "maske": true,
+   "tonH": 7.3,
+   "oyunMaske": 2723,
+   "yeniMaske": 3577,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-wizard-WZ-B3": {
+   "maske": true,
+   "tonH": 6.7,
+   "oyunMaske": 3568,
+   "yeniMaske": 6596,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-wizard-WZ-B4": {
+   "maske": true,
+   "tonH": 6.8,
+   "oyunMaske": 3187,
+   "yeniMaske": 5670,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-wizard-WZ-B5": {
+   "maske": true,
+   "tonH": 11.5,
+   "oyunMaske": 2693,
+   "yeniMaske": 3099,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-wizard-WZ-B6": {
+   "maske": true,
+   "tonH": 11.3,
+   "oyunMaske": 2819,
+   "yeniMaske": 3311,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-erkek-wizard-WZ-B7": {
+   "maske": true,
+   "tonH": 10.1,
+   "oyunMaske": 3440,
+   "yeniMaske": 3031,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-female-barbarian": {
+   "maske": true,
+   "tonH": 3.4,
+   "oyunMaske": 4272,
+   "yeniMaske": 5479,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 2,
+     "yeni": 1
+    },
+    "chthonic": {
+     "oyun": 2,
+     "yeni": 1
+    },
+    "winged": {
+     "oyun": 2,
+     "yeni": 1
+    }
+   }
+  },
+  "tiefling-female-bard": {
+   "maske": true,
+   "tonH": 2.9,
+   "oyunMaske": 1536,
+   "yeniMaske": 3637,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-female-cleric": {
+   "maske": true,
+   "tonH": 3.9,
+   "oyunMaske": 1704,
+   "yeniMaske": 2807,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-female-druid": {
+   "maske": true,
+   "tonH": 3.7,
+   "oyunMaske": 1972,
+   "yeniMaske": 3207,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-female-fighter": {
+   "maske": true,
+   "tonH": 2.1,
+   "oyunMaske": 1515,
+   "yeniMaske": 3081,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-female-monk": {
+   "maske": true,
+   "tonH": 4.3,
+   "oyunMaske": 3336,
+   "yeniMaske": 5374,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-female-paladin": {
+   "maske": true,
+   "tonH": 4.1,
+   "oyunMaske": 2343,
+   "yeniMaske": 3077,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-female-ranger": {
+   "maske": true,
+   "tonH": 4.5,
+   "oyunMaske": 1705,
+   "yeniMaske": 2634,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-female-rogue": {
+   "maske": true,
+   "tonH": 359.9,
+   "oyunMaske": 2416,
+   "yeniMaske": 2513,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-female-sorcerer": {
+   "maske": true,
+   "tonH": 2.0,
+   "oyunMaske": 2838,
+   "yeniMaske": 5713,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-female-warlock": {
+   "maske": true,
+   "tonH": 1.7,
+   "oyunMaske": 2673,
+   "yeniMaske": 3280,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 1,
+     "yeni": 1
+    },
+    "chthonic": {
+     "oyun": 1,
+     "yeni": 1
+    },
+    "winged": {
+     "oyun": 1,
+     "yeni": 1
+    }
+   }
+  },
+  "tiefling-female-wizard": {
+   "maske": true,
+   "tonH": 1.7,
+   "oyunMaske": 1396,
+   "yeniMaske": 4187,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-barbarian-GR": {
+   "maske": true,
+   "tonH": 6.4,
+   "oyunMaske": 3205,
+   "yeniMaske": 4152,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 65,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 65,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 65,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-barbarian-ID1": {
+   "maske": true,
+   "tonH": 4.9,
+   "oyunMaske": 2763,
+   "yeniMaske": 3406,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-barbarian-ID2": {
+   "maske": true,
+   "tonH": 5.4,
+   "oyunMaske": 2853,
+   "yeniMaske": 3729,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-barbarian-ID3": {
+   "maske": true,
+   "tonH": 359.2,
+   "oyunMaske": 3392,
+   "yeniMaske": 5941,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 1
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 47,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 47,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 47,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-barbarian-ID4": {
+   "maske": true,
+   "tonH": 2.5,
+   "oyunMaske": 2294,
+   "yeniMaske": 3870,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-barbarian-ID5": {
+   "maske": true,
+   "tonH": 5.7,
+   "oyunMaske": 3338,
+   "yeniMaske": 5418,
+   "oyun": {
+    "abyssal": 10,
+    "chthonic": 10,
+    "winged": 10
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 1,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 1,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 1,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-barbarian-ID6": {
+   "maske": true,
+   "tonH": 5.0,
+   "oyunMaske": 2352,
+   "yeniMaske": 4343,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 80,
+     "yeni": 19
+    },
+    "chthonic": {
+     "oyun": 80,
+     "yeni": 19
+    },
+    "winged": {
+     "oyun": 80,
+     "yeni": 19
+    }
+   }
+  },
+  "tiefling-kadin-barbarian-ID7": {
+   "maske": true,
+   "tonH": 3.3,
+   "oyunMaske": 1957,
+   "yeniMaske": 3531,
+   "oyun": {
+    "abyssal": 5,
+    "chthonic": 5,
+    "winged": 5
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 4,
+     "yeni": 2
+    },
+    "chthonic": {
+     "oyun": 4,
+     "yeni": 2
+    },
+    "winged": {
+     "oyun": 4,
+     "yeni": 2
+    }
+   }
+  },
+  "tiefling-kadin-barbarian-ID8": {
+   "maske": true,
+   "tonH": 5.2,
+   "oyunMaske": 2836,
+   "yeniMaske": 4850,
+   "oyun": {
+    "abyssal": 1,
+    "chthonic": 1,
+    "winged": 1
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-barbarian-ID9": {
+   "maske": true,
+   "tonH": 5.8,
+   "oyunMaske": 3061,
+   "yeniMaske": 3622,
+   "oyun": {
+    "abyssal": 1,
+    "chthonic": 1,
+    "winged": 1
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 2,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 2,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 2,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-bard-GR": {
+   "maske": true,
+   "tonH": 6.2,
+   "oyunMaske": 2350,
+   "yeniMaske": 3390,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-bard-ID1": {
+   "maske": true,
+   "tonH": 6.4,
+   "oyunMaske": 2930,
+   "yeniMaske": 3614,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 6,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 6,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 6,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-bard-ID2": {
+   "maske": true,
+   "tonH": 6.0,
+   "oyunMaske": 2573,
+   "yeniMaske": 3038,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 5,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 5,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 5,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-bard-ID3": {
+   "maske": true,
+   "tonH": 10.5,
+   "oyunMaske": 6852,
+   "yeniMaske": 3274,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 6,
+     "yeni": 4
+    },
+    "chthonic": {
+     "oyun": 6,
+     "yeni": 4
+    },
+    "winged": {
+     "oyun": 6,
+     "yeni": 4
+    }
+   }
+  },
+  "tiefling-kadin-bard-ID4": {
+   "maske": true,
+   "tonH": 6.7,
+   "oyunMaske": 2256,
+   "yeniMaske": 3981,
+   "oyun": {
+    "abyssal": 2,
+    "chthonic": 2,
+    "winged": 2
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 27,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 27,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 27,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-bard-ID5": {
+   "maske": true,
+   "tonH": 6.1,
+   "oyunMaske": 2158,
+   "yeniMaske": 5086,
+   "oyun": {
+    "abyssal": 1,
+    "chthonic": 1,
+    "winged": 1
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 18,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 18,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 18,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-bard-ID6": {
+   "maske": true,
+   "tonH": 7.0,
+   "oyunMaske": 2145,
+   "yeniMaske": 2961,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 5,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 5,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 5,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-bard-ID7": {
+   "maske": true,
+   "tonH": 5.0,
+   "oyunMaske": 3157,
+   "yeniMaske": 3478,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-bard-ID8": {
+   "maske": true,
+   "tonH": 7.3,
+   "oyunMaske": 2026,
+   "yeniMaske": 2724,
+   "oyun": {
+    "abyssal": 1,
+    "chthonic": 1,
+    "winged": 1
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-bard-ID9": {
+   "maske": true,
+   "tonH": 7.4,
+   "oyunMaske": 2818,
+   "yeniMaske": 3325,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 3,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 3,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 3,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-cleric-GR": {
+   "maske": true,
+   "tonH": 6.9,
+   "oyunMaske": 2424,
+   "yeniMaske": 2949,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-cleric-ID1": {
+   "maske": true,
+   "tonH": 3.9,
+   "oyunMaske": 2660,
+   "yeniMaske": 2833,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 4,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 4,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 4,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-cleric-ID2": {
+   "maske": true,
+   "tonH": 4.1,
+   "oyunMaske": 2656,
+   "yeniMaske": 2593,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 2,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 2,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 2,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-cleric-ID3": {
+   "maske": true,
+   "tonH": 4.4,
+   "oyunMaske": 3019,
+   "yeniMaske": 3199,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 4,
+     "yeni": 1
+    },
+    "chthonic": {
+     "oyun": 4,
+     "yeni": 1
+    },
+    "winged": {
+     "oyun": 4,
+     "yeni": 1
+    }
+   }
+  },
+  "tiefling-kadin-cleric-ID4": {
+   "maske": true,
+   "tonH": 7.1,
+   "oyunMaske": 2341,
+   "yeniMaske": 2847,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-cleric-ID5": {
+   "maske": true,
+   "tonH": 6.7,
+   "oyunMaske": 2252,
+   "yeniMaske": 2757,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 66,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 66,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 66,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-cleric-ID6": {
+   "maske": true,
+   "tonH": 6.6,
+   "oyunMaske": 1979,
+   "yeniMaske": 2136,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-cleric-ID7": {
+   "maske": true,
+   "tonH": 7.4,
+   "oyunMaske": 2353,
+   "yeniMaske": 2351,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-cleric-ID8": {
+   "maske": true,
+   "tonH": 7.0,
+   "oyunMaske": 2538,
+   "yeniMaske": 2733,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-cleric-ID9": {
+   "maske": true,
+   "tonH": 12.1,
+   "oyunMaske": 2574,
+   "yeniMaske": 4718,
+   "oyun": {
+    "abyssal": 2,
+    "chthonic": 2,
+    "winged": 2
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 21,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 21,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 21,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-druid-GR": {
+   "maske": true,
+   "tonH": 5.9,
+   "oyunMaske": 2447,
+   "yeniMaske": 2823,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-druid-ID1": {
+   "maske": true,
+   "tonH": 2.5,
+   "oyunMaske": 1606,
+   "yeniMaske": 2710,
+   "oyun": {
+    "abyssal": 1,
+    "chthonic": 1,
+    "winged": 1
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-druid-ID2": {
+   "maske": true,
+   "tonH": 2.4,
+   "oyunMaske": 1743,
+   "yeniMaske": 2947,
+   "oyun": {
+    "abyssal": 1,
+    "chthonic": 1,
+    "winged": 1
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 2,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 2,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 2,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-druid-ID3": {
+   "maske": true,
+   "tonH": 2.2,
+   "oyunMaske": 2061,
+   "yeniMaske": 3160,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-druid-ID4": {
+   "maske": false
+  },
+  "tiefling-kadin-druid-ID5": {
+   "maske": true,
+   "tonH": 3.8,
+   "oyunMaske": 1453,
+   "yeniMaske": 2093,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-druid-ID6": {
+   "maske": true,
+   "tonH": 2.3,
+   "oyunMaske": 2007,
+   "yeniMaske": 3273,
+   "oyun": {
+    "abyssal": 2,
+    "chthonic": 2,
+    "winged": 2
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 6,
+     "yeni": 6
+    },
+    "chthonic": {
+     "oyun": 6,
+     "yeni": 6
+    },
+    "winged": {
+     "oyun": 6,
+     "yeni": 6
+    }
+   }
+  },
+  "tiefling-kadin-druid-ID7": {
+   "maske": true,
+   "tonH": 3.3,
+   "oyunMaske": 2569,
+   "yeniMaske": 2680,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 7,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 7,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 7,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-druid-ID8": {
+   "maske": true,
+   "tonH": 2.5,
+   "oyunMaske": 3703,
+   "yeniMaske": 4472,
+   "oyun": {
+    "abyssal": 1,
+    "chthonic": 1,
+    "winged": 1
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 3,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 3,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 3,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-fighter-GR": {
+   "maske": true,
+   "tonH": 6.6,
+   "oyunMaske": 2830,
+   "yeniMaske": 2756,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-fighter-ID1": {
+   "maske": true,
+   "tonH": 3.6,
+   "oyunMaske": 1959,
+   "yeniMaske": 3752,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-fighter-ID10": {
+   "maske": true,
+   "tonH": 4.0,
+   "oyunMaske": 1972,
+   "yeniMaske": 3207,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-fighter-ID2": {
+   "maske": true,
+   "tonH": 9.0,
+   "oyunMaske": 1675,
+   "yeniMaske": 4072,
+   "oyun": {
+    "abyssal": 1,
+    "chthonic": 1,
+    "winged": 1
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 6,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 6,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 6,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-fighter-ID3": {
+   "maske": true,
+   "tonH": 338.8,
+   "oyunMaske": 736,
+   "yeniMaske": 10722,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-fighter-ID4": {
+   "maske": true,
+   "tonH": 3.5,
+   "oyunMaske": 1691,
+   "yeniMaske": 6918,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-fighter-ID5": {
+   "maske": true,
+   "tonH": 2.1,
+   "oyunMaske": 1992,
+   "yeniMaske": 7841,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-fighter-ID6": {
+   "maske": true,
+   "tonH": 1.0,
+   "oyunMaske": 1516,
+   "yeniMaske": 2627,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-fighter-ID7": {
+   "maske": true,
+   "tonH": 348.4,
+   "oyunMaske": 2843,
+   "yeniMaske": 3722,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-fighter-ID8": {
+   "maske": true,
+   "tonH": 2.2,
+   "oyunMaske": 941,
+   "yeniMaske": 2369,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-fighter-ID9": {
+   "maske": true,
+   "tonH": 2.3,
+   "oyunMaske": 1978,
+   "yeniMaske": 3776,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-monk-GR": {
+   "maske": true,
+   "tonH": 7.0,
+   "oyunMaske": 3509,
+   "yeniMaske": 3808,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-monk-ID1": {
+   "maske": true,
+   "tonH": 7.4,
+   "oyunMaske": 3008,
+   "yeniMaske": 3940,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-monk-ID10": {
+   "maske": true,
+   "ornekYok": true
+  },
+  "tiefling-kadin-monk-ID11": {
+   "maske": true,
+   "tonH": 12.5,
+   "oyunMaske": 2781,
+   "yeniMaske": 5333,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 69,
+     "yeni": 3
+    },
+    "chthonic": {
+     "oyun": 69,
+     "yeni": 3
+    },
+    "winged": {
+     "oyun": 69,
+     "yeni": 3
+    }
+   }
+  },
+  "tiefling-kadin-monk-ID2": {
+   "maske": true,
+   "tonH": 7.3,
+   "oyunMaske": 2661,
+   "yeniMaske": 3074,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-monk-ID3": {
+   "maske": true,
+   "tonH": 8.6,
+   "oyunMaske": 3129,
+   "yeniMaske": 3685,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-monk-ID4": {
+   "maske": true,
+   "tonH": 7.8,
+   "oyunMaske": 4562,
+   "yeniMaske": 5363,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-monk-ID5": {
+   "maske": true,
+   "tonH": 7.7,
+   "oyunMaske": 3034,
+   "yeniMaske": 4985,
+   "oyun": {
+    "abyssal": 28,
+    "chthonic": 28,
+    "winged": 28
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-monk-ID6": {
+   "maske": true,
+   "tonH": 7.2,
+   "oyunMaske": 3373,
+   "yeniMaske": 3743,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-monk-ID7": {
+   "maske": true,
+   "tonH": 8.2,
+   "oyunMaske": 2969,
+   "yeniMaske": 4640,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-monk-ID8": {
+   "maske": true,
+   "tonH": 5.5,
+   "oyunMaske": 2514,
+   "yeniMaske": 2102,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-monk-ID9": {
+   "maske": true,
+   "tonH": 6.2,
+   "oyunMaske": 2821,
+   "yeniMaske": 4675,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-paladin-GR": {
+   "maske": true,
+   "tonH": 5.4,
+   "oyunMaske": 1596,
+   "yeniMaske": 1774,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-paladin-ID1": {
+   "maske": true,
+   "tonH": 5.5,
+   "oyunMaske": 1533,
+   "yeniMaske": 1729,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-paladin-ID10": {
+   "maske": true,
+   "tonH": 12.8,
+   "oyunMaske": 3512,
+   "yeniMaske": 1962,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 75,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 75,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 75,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-paladin-ID2": {
+   "maske": true,
+   "tonH": 4.3,
+   "oyunMaske": 1719,
+   "yeniMaske": 1678,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-paladin-ID3": {
+   "maske": true,
+   "tonH": 2.5,
+   "oyunMaske": 4146,
+   "yeniMaske": 1667,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 17,
+     "yeni": 17
+    },
+    "chthonic": {
+     "oyun": 17,
+     "yeni": 17
+    },
+    "winged": {
+     "oyun": 17,
+     "yeni": 17
+    }
+   }
+  },
+  "tiefling-kadin-paladin-ID4": {
+   "maske": true,
+   "tonH": 3.9,
+   "oyunMaske": 2298,
+   "yeniMaske": 2074,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-paladin-ID5": {
+   "maske": true,
+   "tonH": 5.6,
+   "oyunMaske": 2658,
+   "yeniMaske": 4208,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-paladin-ID6": {
+   "maske": true,
+   "tonH": 5.5,
+   "oyunMaske": 2470,
+   "yeniMaske": 2889,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-paladin-ID7": {
+   "maske": true,
+   "tonH": 5.9,
+   "oyunMaske": 2453,
+   "yeniMaske": 2262,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-paladin-ID8": {
+   "maske": true,
+   "tonH": 3.8,
+   "oyunMaske": 1334,
+   "yeniMaske": 847,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-paladin-ID9": {
+   "maske": true,
+   "tonH": 5.6,
+   "oyunMaske": 2203,
+   "yeniMaske": 4439,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-ranger-GR": {
+   "maske": true,
+   "tonH": 7.3,
+   "oyunMaske": 1753,
+   "yeniMaske": 2453,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-ranger-ID1": {
+   "maske": true,
+   "tonH": 2.7,
+   "oyunMaske": 1370,
+   "yeniMaske": 2068,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-ranger-ID2": {
+   "maske": true,
+   "tonH": 2.2,
+   "oyunMaske": 1713,
+   "yeniMaske": 2441,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-ranger-ID3": {
+   "maske": true,
+   "tonH": 2.1,
+   "oyunMaske": 2259,
+   "yeniMaske": 2844,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 2,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 2,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 2,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-ranger-ID4": {
+   "maske": true,
+   "tonH": 4.7,
+   "oyunMaske": 2946,
+   "yeniMaske": 2961,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-ranger-ID5": {
+   "maske": true,
+   "tonH": 4.5,
+   "oyunMaske": 2006,
+   "yeniMaske": 2876,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-ranger-ID6": {
+   "maske": true,
+   "tonH": 4.0,
+   "oyunMaske": 2616,
+   "yeniMaske": 2714,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-ranger-ID7": {
+   "maske": true,
+   "tonH": 7.0,
+   "oyunMaske": 1616,
+   "yeniMaske": 2440,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 25,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 25,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 25,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-ranger-ID8": {
+   "maske": true,
+   "tonH": 7.2,
+   "oyunMaske": 2150,
+   "yeniMaske": 3522,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-ranger-ID9": {
+   "maske": true,
+   "tonH": 7.2,
+   "oyunMaske": 1546,
+   "yeniMaske": 3583,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-rogue-GR": {
+   "maske": true,
+   "tonH": 5.0,
+   "oyunMaske": 1945,
+   "yeniMaske": 1442,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-rogue-ID1": {
+   "maske": true,
+   "tonH": 1.6,
+   "oyunMaske": 2477,
+   "yeniMaske": 3247,
+   "oyun": {
+    "abyssal": 2,
+    "chthonic": 2,
+    "winged": 2
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-rogue-ID10": {
+   "maske": true,
+   "tonH": 3.1,
+   "oyunMaske": 2661,
+   "yeniMaske": 4821,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-rogue-ID2": {
+   "maske": true,
+   "tonH": 3.1,
+   "oyunMaske": 2928,
+   "yeniMaske": 3527,
+   "oyun": {
+    "abyssal": 1,
+    "chthonic": 1,
+    "winged": 1
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 23,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 23,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 23,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-rogue-ID3": {
+   "maske": true,
+   "ornekYok": true
+  },
+  "tiefling-kadin-rogue-ID4": {
+   "maske": true,
+   "tonH": 7.5,
+   "oyunMaske": 1299,
+   "yeniMaske": 1974,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 3,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 3,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 3,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-rogue-ID5": {
+   "maske": true,
+   "tonH": 4.7,
+   "oyunMaske": 1695,
+   "yeniMaske": 2253,
+   "oyun": {
+    "abyssal": 4,
+    "chthonic": 4,
+    "winged": 4
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-rogue-ID6": {
+   "maske": true,
+   "tonH": 5.2,
+   "oyunMaske": 3006,
+   "yeniMaske": 4008,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 9,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 9,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 9,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-rogue-ID7": {
+   "maske": true,
+   "tonH": 3.5,
+   "oyunMaske": 1394,
+   "yeniMaske": 1354,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 3,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 3,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 3,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-rogue-ID8": {
+   "maske": true,
+   "tonH": 7.1,
+   "oyunMaske": 3396,
+   "yeniMaske": 3311,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-rogue-ID9": {
+   "maske": true,
+   "tonH": 4.6,
+   "oyunMaske": 2677,
+   "yeniMaske": 4671,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-sorcerer-GR": {
+   "maske": true,
+   "tonH": 6.7,
+   "oyunMaske": 2950,
+   "yeniMaske": 3025,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-sorcerer-SC-1": {
+   "maske": true,
+   "tonH": 1.4,
+   "oyunMaske": 2986,
+   "yeniMaske": 6024,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-sorcerer-SC-2": {
+   "maske": true,
+   "tonH": 1.7,
+   "oyunMaske": 1991,
+   "yeniMaske": 3046,
+   "oyun": {
+    "abyssal": 1,
+    "chthonic": 1,
+    "winged": 1
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 38,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 38,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 38,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-sorcerer-SC-3": {
+   "maske": true,
+   "tonH": 2.9,
+   "oyunMaske": 1776,
+   "yeniMaske": 2037,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-sorcerer-SC-4": {
+   "maske": true,
+   "tonH": 3.5,
+   "oyunMaske": 2483,
+   "yeniMaske": 2623,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 19,
+     "yeni": 1
+    },
+    "chthonic": {
+     "oyun": 19,
+     "yeni": 1
+    },
+    "winged": {
+     "oyun": 19,
+     "yeni": 1
+    }
+   }
+  },
+  "tiefling-kadin-sorcerer-SC-5": {
+   "maske": true,
+   "ornekYok": true
+  },
+  "tiefling-kadin-sorcerer-SC-6": {
+   "maske": true,
+   "tonH": 1.2,
+   "oyunMaske": 3608,
+   "yeniMaske": 3284,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-sorcerer-SC-7": {
+   "maske": true,
+   "tonH": 5.8,
+   "oyunMaske": 2008,
+   "yeniMaske": 3006,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 15,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 15,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 15,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-sorcerer-SC-8": {
+   "maske": true,
+   "tonH": 3.1,
+   "oyunMaske": 2733,
+   "yeniMaske": 3661,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 41,
+     "yeni": 2
+    },
+    "chthonic": {
+     "oyun": 41,
+     "yeni": 2
+    },
+    "winged": {
+     "oyun": 41,
+     "yeni": 2
+    }
+   }
+  },
+  "tiefling-kadin-sorcerer-SC-9": {
+   "maske": true,
+   "tonH": 7.4,
+   "oyunMaske": 891,
+   "yeniMaske": 2625,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-warlock-GR": {
+   "maske": true,
+   "tonH": 7.1,
+   "oyunMaske": 2598,
+   "yeniMaske": 3104,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-warlock-WL-1": {
+   "maske": true,
+   "tonH": 6.2,
+   "oyunMaske": 2963,
+   "yeniMaske": 4451,
+   "oyun": {
+    "abyssal": 2,
+    "chthonic": 2,
+    "winged": 2
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-warlock-WL-10": {
+   "maske": true,
+   "tonH": 293.4,
+   "oyunMaske": 646,
+   "yeniMaske": 1930,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 31,
+     "yeni": 31
+    },
+    "chthonic": {
+     "oyun": 31,
+     "yeni": 31
+    },
+    "winged": {
+     "oyun": 31,
+     "yeni": 31
+    }
+   }
+  },
+  "tiefling-kadin-warlock-WL-11": {
+   "maske": true,
+   "tonH": 6.0,
+   "oyunMaske": 3533,
+   "yeniMaske": 4531,
+   "oyun": {
+    "abyssal": 10,
+    "chthonic": 10,
+    "winged": 10
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 38,
+     "yeni": 5
+    },
+    "chthonic": {
+     "oyun": 38,
+     "yeni": 5
+    },
+    "winged": {
+     "oyun": 38,
+     "yeni": 5
+    }
+   }
+  },
+  "tiefling-kadin-warlock-WL-2": {
+   "maske": true,
+   "tonH": 5.3,
+   "oyunMaske": 3449,
+   "yeniMaske": 4469,
+   "oyun": {
+    "abyssal": 1,
+    "chthonic": 1,
+    "winged": 1
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 127,
+     "yeni": 11
+    },
+    "chthonic": {
+     "oyun": 127,
+     "yeni": 11
+    },
+    "winged": {
+     "oyun": 127,
+     "yeni": 11
+    }
+   }
+  },
+  "tiefling-kadin-warlock-WL-3": {
+   "maske": true,
+   "tonH": 358.5,
+   "oyunMaske": 3810,
+   "yeniMaske": 2802,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-warlock-WL-4": {
+   "maske": true,
+   "ornekYok": true
+  },
+  "tiefling-kadin-warlock-WL-5": {
+   "maske": true,
+   "tonH": 7.2,
+   "oyunMaske": 3019,
+   "yeniMaske": 4560,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 57,
+     "yeni": 2
+    },
+    "chthonic": {
+     "oyun": 57,
+     "yeni": 2
+    },
+    "winged": {
+     "oyun": 57,
+     "yeni": 2
+    }
+   }
+  },
+  "tiefling-kadin-warlock-WL-6": {
+   "maske": true,
+   "tonH": 327.9,
+   "oyunMaske": 550,
+   "yeniMaske": 2907,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-warlock-WL-7": {
+   "maske": true,
+   "tonH": 4.5,
+   "oyunMaske": 2685,
+   "yeniMaske": 4436,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 6,
+     "yeni": 6
+    },
+    "chthonic": {
+     "oyun": 6,
+     "yeni": 6
+    },
+    "winged": {
+     "oyun": 6,
+     "yeni": 6
+    }
+   }
+  },
+  "tiefling-kadin-warlock-WL-8": {
+   "maske": true,
+   "ornekYok": true
+  },
+  "tiefling-kadin-warlock-WL-9": {
+   "maske": true,
+   "tonH": 6.5,
+   "oyunMaske": 3449,
+   "yeniMaske": 4141,
+   "oyun": {
+    "abyssal": 9,
+    "chthonic": 9,
+    "winged": 9
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 65,
+     "yeni": 1
+    },
+    "chthonic": {
+     "oyun": 65,
+     "yeni": 1
+    },
+    "winged": {
+     "oyun": 65,
+     "yeni": 1
+    }
+   }
+  },
+  "tiefling-kadin-wizard-GR": {
+   "maske": true,
+   "tonH": 6.8,
+   "oyunMaske": 1607,
+   "yeniMaske": 2679,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-wizard-WZ-A1": {
+   "maske": true,
+   "tonH": 5.2,
+   "oyunMaske": 2812,
+   "yeniMaske": 3550,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-wizard-WZ-A2": {
+   "maske": true,
+   "tonH": 4.7,
+   "oyunMaske": 3418,
+   "yeniMaske": 7355,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-wizard-WZ-A3": {
+   "maske": true,
+   "tonH": 10.4,
+   "oyunMaske": 2692,
+   "yeniMaske": 3584,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-wizard-WZ-A4": {
+   "maske": true,
+   "tonH": 4.5,
+   "oyunMaske": 2983,
+   "yeniMaske": 3068,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-wizard-WZ-A5": {
+   "maske": true,
+   "tonH": 6.8,
+   "oyunMaske": 2911,
+   "yeniMaske": 2916,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 1,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 1,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 1,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-wizard-WZ-A6": {
+   "maske": true,
+   "tonH": 6.8,
+   "oyunMaske": 2796,
+   "yeniMaske": 2948,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 1,
+     "yeni": 1
+    },
+    "chthonic": {
+     "oyun": 1,
+     "yeni": 1
+    },
+    "winged": {
+     "oyun": 1,
+     "yeni": 1
+    }
+   }
+  },
+  "tiefling-kadin-wizard-WZ-A7": {
+   "maske": true,
+   "tonH": 7.0,
+   "oyunMaske": 2066,
+   "yeniMaske": 2642,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-wizard-WZ-A8": {
+   "maske": true,
+   "tonH": 6.6,
+   "oyunMaske": 2895,
+   "yeniMaske": 2889,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-wizard-WZ-B1": {
+   "maske": true,
+   "tonH": 6.1,
+   "oyunMaske": 2615,
+   "yeniMaske": 5741,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-wizard-WZ-B2": {
+   "maske": true,
+   "tonH": 6.1,
+   "oyunMaske": 2105,
+   "yeniMaske": 2536,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-wizard-WZ-B3": {
+   "maske": true,
+   "tonH": 5.7,
+   "oyunMaske": 2673,
+   "yeniMaske": 5115,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-wizard-WZ-B4": {
+   "maske": true,
+   "tonH": 5.6,
+   "oyunMaske": 2844,
+   "yeniMaske": 4970,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-wizard-WZ-B5": {
+   "maske": true,
+   "tonH": 5.4,
+   "oyunMaske": 3126,
+   "yeniMaske": 3774,
+   "oyun": {
+    "abyssal": 3,
+    "chthonic": 3,
+    "winged": 3
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 10,
+     "yeni": 1
+    },
+    "chthonic": {
+     "oyun": 10,
+     "yeni": 1
+    },
+    "winged": {
+     "oyun": 10,
+     "yeni": 1
+    }
+   }
+  },
+  "tiefling-kadin-wizard-WZ-B6": {
+   "maske": true,
+   "tonH": 5.3,
+   "oyunMaske": 3031,
+   "yeniMaske": 3474,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 2,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 2,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 2,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-kadin-wizard-WZ-B7": {
+   "maske": true,
+   "tonH": 4.8,
+   "oyunMaske": 2991,
+   "yeniMaske": 3110,
+   "oyun": {
+    "abyssal": 6,
+    "chthonic": 6,
+    "winged": 6
+   },
+   "yeni": {
+    "abyssal": 2,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 4,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 4,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 4,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-male-barbarian": {
+   "maske": true,
+   "tonH": 2.7,
+   "oyunMaske": 5025,
+   "yeniMaske": 5597,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-male-bard": {
+   "maske": true,
+   "tonH": 2.0,
+   "oyunMaske": 1625,
+   "yeniMaske": 2864,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-male-cleric": {
+   "maske": true,
+   "tonH": 2.4,
+   "oyunMaske": 1834,
+   "yeniMaske": 2249,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-male-druid": {
+   "maske": true,
+   "tonH": 2.6,
+   "oyunMaske": 2452,
+   "yeniMaske": 3011,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-male-fighter": {
+   "maske": true,
+   "tonH": 2.3,
+   "oyunMaske": 1647,
+   "yeniMaske": 2064,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-male-monk": {
+   "maske": true,
+   "tonH": 2.6,
+   "oyunMaske": 3914,
+   "yeniMaske": 5041,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-male-paladin": {
+   "maske": true,
+   "tonH": 2.3,
+   "oyunMaske": 2300,
+   "yeniMaske": 2556,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-male-ranger": {
+   "maske": true,
+   "tonH": 3.1,
+   "oyunMaske": 1917,
+   "yeniMaske": 2315,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-male-rogue": {
+   "maske": true,
+   "tonH": 2.9,
+   "oyunMaske": 3566,
+   "yeniMaske": 3725,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-male-sorcerer": {
+   "maske": true,
+   "tonH": 3.9,
+   "oyunMaske": 2617,
+   "yeniMaske": 5058,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-male-warlock": {
+   "maske": true,
+   "tonH": 3.1,
+   "oyunMaske": 2950,
+   "yeniMaske": 3415,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  },
+  "tiefling-male-wizard": {
+   "maske": true,
+   "tonH": 1.6,
+   "oyunMaske": 1928,
+   "yeniMaske": 2318,
+   "oyun": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "yeni": {
+    "abyssal": 0,
+    "chthonic": 0,
+    "winged": 0
+   },
+   "buyukAcik": {
+    "abyssal": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "chthonic": {
+     "oyun": 0,
+     "yeni": 0
+    },
+    "winged": {
+     "oyun": 0,
+     "yeni": 0
+    }
+   }
+  }
+ }
+}

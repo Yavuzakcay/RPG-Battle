@@ -5,6 +5,7 @@ import { saveDice } from './effectDice';
 import { applyDamage } from '../rules/damage';
 import type { Combatant, DamageEffect } from './types';
 import { spells } from '../data';
+import { stoneEnduranceFx } from './karar101';
 
 export function damageEffects(
   target: Combatant,
@@ -31,6 +32,9 @@ export function damageEffects(
     effects.push({ kind: 'reduced', label: red.name, effectId: red.id, roll, amount });
     applied -= amount;
   }
+  // KARAR101 (sürüm 101+; SRD 5.2.1 s. 85): Stone's Endurance her hasarda tepki (işaret `anyDamage` yalnız 101+ savaşta).
+  const stone = stoneEnduranceFx(target, applied, rng);
+  if (stone) { effects.push(stone); applied -= stone.amount; }
   // Geçici HP önce harcanır (Heroism; Görev R2). Konsantrasyon DC'si alınan hasarın tamamıyla.
   const temp = Math.min(target.tempHp ?? 0, applied);
   if (temp > 0) effects.push({ kind: 'temp_absorbed', amount: temp, left: (target.tempHp ?? 0) - temp });
@@ -60,7 +64,9 @@ export function damageEffects(
 
   // Kuyruk 19: Relentless Rage (Barbarian 11): öfkedeyken 0 HP'ye düşen CON save (DC 10, her kullanımda +5; dinlenmede 10'a
   // döner: kaynak `relentlessRage` kalan kullanım, DC = 10 + 5 × harcanan). Başarıda HP 2 × Barbarian seviyesi.
-  if (hpAfter === 0 && target.hp > 0 && applied > 0 && target.rage && target.traits?.includes('relentless-rage')) {
+  // Görev B95-B (97+, SRD 5.2.1 s. 30 "…and don't die outright"): kalan HP'yi en büyük HP kadar aşan hasarda (anında ölüm) çalışmaz.
+  const outright = !!target.sinif97 && applied - target.hp >= target.maxHp;
+  if (hpAfter === 0 && target.hp > 0 && applied > 0 && target.rage && target.traits?.includes('relentless-rage') && !outright) {
     const used = 10 - Math.min(10, target.resources.relentlessRage ?? 10);
     const dc = 10 + 5 * used;
     // Kuyruk 19: Cloud of Insects (efsanevi eylem): konsantrasyon save'ine dezavantaj.

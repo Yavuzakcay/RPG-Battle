@@ -3,6 +3,7 @@
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
 import { executeJumpDown } from './drop';
+import { annotateSaveWhy } from './saveWhy';
 import { executeAirMove } from './airMove';
 import { beadAfterEvents, beadTurnEndEvents, executeBeadTouch } from './bead';
 import { distance } from '../rules/hex';
@@ -30,6 +31,10 @@ import { selfRestorationEvents } from './classTraits';
 import { executeHighlandsUse, highlandsAfterEvents, highlandsRoundEvents } from './highlands';
 import { desertRoundEvents } from './desert';
 import { lairEvents, legendaryEvents, legendaryRefreshEvents, registerLegendaryCaster } from './boss';
+import { swallowBlockedAttack } from './swallow92';
+import { ws92On } from './ws92Surum';
+import { karar101On } from './karar101Surum';
+import { dropProneEvents, grappleHands, releaseGrappleEvents, shieldToggleProblem } from './karar101';
 import { anyTurnEndEvents, reactionTurnEndEvents, executeMonsterAbility, monsterAfterEvents, monsterTurnEvents, abilitiesOf } from './monsterAbilities';
 import { concealed } from './hiddenObjects';
 import { waterDecayEvents } from './waterDecay';
@@ -39,7 +44,7 @@ import { quakeTurnEndEvents } from './quake';
 import { dragEvents, executeEscapeGrapple, executeStandUp, grappleCleanup, needsStand, standUpEvents } from './grapple';
 import { DODGE, dotEvents, executeDodge, executeHelp, timedCondition, timerEvents } from './durations';
 import { MOVE_ONLY_COMMANDS, speedZero, type Height } from '../rules/conditions';
-import { ruleVersion, srdConditions } from './ruleVersion';
+import { checkBase, ruleVersion, srdConditions } from './ruleVersion';
 import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import { civilianLook } from './civilianLooks';
 import { playerThrowObject, throwObject } from './objectMotion';
@@ -50,11 +55,11 @@ import {
 } from './features';
 import { executeMonsterAttack, executeMultiattack } from './monsters';
 import { executeJump, executeMove, executePlace, executeStartBattle } from './movement';
-import { executeHide, executeSearch, noticeEvents, revealEvent } from './stealth';
+import { executeHide, executeSearch, noticeEvents, revealEvent, attackRevealEvents } from './stealth';
 import { executeDistract } from './distract';
 import { executeUseItem } from './items';
 import { executeSkillCheck } from './checks';
-import { economyCost, isReactionSpell, turnKey } from './economy';
+import { economyCost, isReactionSpell, turnKey, oneEconomyText, oneEconomyUsed } from './economy';
 import { MAX_EXHAUSTION, exhaustionD20Penalty } from '../rules/exhaustion';
 import { cunningProblem, hasTrait, hordeProblem } from './classTraits';
 import { executeMapTrigger, roundStartMapEvents, turnEndMapEvents, turnStartMapEvents } from './maprules';
@@ -72,7 +77,7 @@ import { effectTurnEndEvents, effectTurnStartEvents } from './effects';
 import { soyTurnStartEvents } from './soyEtki';
 import { celestialTurnEndEvents, celestialTurnStartEvents } from './celestial';
 import { glideTurnEndEvents, glideTurnStartEvents } from './flightPrim';
-import { casterEndZoneEvents, casterTurnZoneEvents, movableZoneOf, repelPushEvents, zoneDriftEvents, zoneTurnEvents } from './zones';
+import { casterEndZoneEvents, casterTurnZoneEvents, movableZoneOf, repelPushEvents, zoneDriftEnterEvents, zoneDriftEvents, zoneTurnEvents } from './zones';
 import { bondEvents, curseSpellEvents, sanctuaryCheck } from './wards';
 import { askChoice } from '../rules/choice';
 // Kuyruk S1: büyücüye bağlı alanlar (komut sonu kancası).
@@ -94,6 +99,7 @@ import { evergreenEvents, executeWildResurgence, executeWildShape, shapeCleanup 
 import { executePossessionLeave, executeSetupWard, hallowSyncEvents, possessionCleanup, possessionCommandProblem, setupWardOf, wardTeleportEvents } from './possession';
 import { poolCreateEvents, poolSyncEvents } from './hpPool';
 import { executeSetupSummon, executeSummonMove, summonCleanup } from './summons';
+import { carryCleanupEvents, executeSetObjectWeight } from './nesneAgirlik';
 import { executeBreathWeapon } from './areaAttack';
 import { SURFACES, surfaceEvent, surfaceReactionEvents } from './surfaces';
 import { globalRule } from './ruleControl';
@@ -106,11 +112,17 @@ import { executeAttackObject, executeObjectUse, executePlaceObject, objectAreaEv
 import { caveDiscoveryEvents, executeForestUse, forestAfterEvents, forestRoundEvents } from './forest';
 import { greaseAfterEvents } from './ignite';
 import { hexResolverOn, resolveCommandEffects } from './hexResolver';
-import { applyEvents } from './reduce';
+import { applyEvents, speedHexes } from './reduce';
 import { goalEvents } from './goals';
 import { executeRally, moraleAfterEvents, moraleStartEvents } from './morale';
 import { alarmEvents, executeAlarmGroup, formGroupsEvent, patrolEvents, patrolOf } from './alarm';
-import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
+import { resourceLeft, type BattleEvent, type BattleState, type Combatant, type Command, type CommandContext } from './types';
+import type { RolledExtra } from '../rules/attack';
+import { executeReady, registerReadyCast } from './ready';
+import { finishCheck } from './effectDice';
+import { checkMode } from '../rules/skills';
+import { genel96On } from './genel96Surum';
+import { te99On } from './te99Surum';
 
 export type { CommandResult } from './common';
 export { canControl, currentActorId } from './common';
@@ -130,9 +142,23 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
     // Beacon of Hope (Görev B1): ölüm save'i avantajlı.
     const survivor = hasTrait(c, 'survivor');
     // Kuyruk K53 S5: aura ölüm save dezavantajı; avantajla birlikte normal.
-    const dsAdv = survivor || !!c.effects?.some((e) => e.deathSaveAdv) || !!c.auraDeathAdv;
-    const rolledSave = rollD20(dsAdv && c.auraDeathDis ? 'normal' : dsAdv ? 'advantage' : c.auraDeathDis ? 'disadvantage' : 'normal', rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
-    const natural = survivor && rolledSave >= 18 ? 20 : rolledSave;
+    // Mekanik matris B13 (sürüm 83+): Holy Aura "Advantage on all saving throws" ölüm save'ini de kapsar.
+    const dsAdv = survivor || !!c.effects?.some((e) => e.deathSaveAdv) || !!c.auraDeathAdv || !!c.allyAura?.saveAdvAll;
+    const dsMode = dsAdv && c.auraDeathDis ? 'normal' : dsAdv ? 'advantage' : c.auraDeathDis ? 'disadvantage' : 'normal';
+    const rolledSave = rollD20(dsMode, rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
+    let natural = survivor && rolledSave >= 18 ? 20 : rolledSave;
+    // Bitkinlik (Görev S1): ölüm save'i de d20 Testi, −2 × seviye (doğal 20 ve 1 değişmez).
+    let bonus = -exhaustionD20Penalty(c.exhaustion);
+    // Görev B95-B (97+, SRD 5.2.1 s. 48 Indomitable "If you fail a saving throw"; ölüm save'i de save, s. 18): başarısız ölüm
+    // save'i Fighter seviyesi eklenerek yeniden atılır (kaynak `indomitable`; olayda `bonusDice` harcar).
+    let bonusDice: RolledExtra[] | undefined;
+    if (natural !== 20 && (natural === 1 || natural + bonus < 10) && c.sinif97 && c.traits?.includes('indomitable') && resourceLeft(c, 'indomitable') > 0) {
+      const again = rollD20(dsMode, rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
+      const nat2 = survivor && again >= 18 ? 20 : again;
+      bonusDice = [{ label: 'Indomitable', die: 'd20', value: nat2 + c.level - natural, resource: 'indomitable', holderId: c.id }];
+      natural = nat2;
+      bonus += c.level;
+    }
     let successes = c.deathSaves.successes;
     let failures = c.deathSaves.failures;
     let outcome: 'success' | 'failure' | 'stable' | 'dead' | 'revived';
@@ -140,14 +166,13 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
       outcome = 'revived';
     } else {
       if (natural === 1) failures += 2;
-      // Bitkinlik (Görev S1): ölüm save'i de d20 Testi, −2 × seviye (doğal 20 ve 1 değişmez).
-      else if (natural - exhaustionD20Penalty(c.exhaustion) >= 10) successes += 1;
+      else if (natural + bonus >= 10) successes += 1;
       else failures += 1;
-      outcome = failures >= 3 ? 'dead' : successes >= 3 ? 'stable' : natural !== 1 && natural - exhaustionD20Penalty(c.exhaustion) >= 10 ? 'success' : 'failure';
+      outcome = failures >= 3 ? 'dead' : successes >= 3 ? 'stable' : natural !== 1 && natural + bonus >= 10 ? 'success' : 'failure';
     }
     events.push({
       type: 'death_save', actorId: c.id, natural,
-      successes: Math.min(3, successes), failures: Math.min(3, failures), outcome,
+      successes: Math.min(3, successes), failures: Math.min(3, failures), outcome, ...(bonusDice ? { bonusDice } : {}),
     });
   }
   // Heroic Rally (Survivor; Görev F): Bloodied (HP yarı ya da altı) ve ayaktaysa tur başında 5 + CON HP.
@@ -177,6 +202,8 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
 /** Komutu çözer; komutu veren gizlenmişse ve komut onu ortaya çıkarıyorsa bunu da ekler. */
 export function execute(state: BattleState, cmd: Command, ctx: CommandContext, rng: Rng): CommandResult {
   // Kuyruk S1: haritadan ayrılma, büyünün yapımıyla aynı yol (eylem, slot, hedef denetimi).
+  // Hazırla (Ready): tutulan büyünün salınması yalnız motorun iç komutu (tepkiyle; `ready.ts`).
+  if (cmd.type === 'cast_spell' && cmd.fromReady) return fail('Hazırlanan büyü yalnız tetikle salınır.');
   if (cmd.type === 'retreat') return execute(state, { type: 'cast_spell', actorId: cmd.actorId, spellName: cmd.spellName, targetIds: cmd.targetIds, ...(cmd.slotLevel ? { slotLevel: cmd.slotLevel } : {}) }, ctx, rng);
   // Eylem ekonomisi: komut çalışmadan önce harcanabilir mi bakılır, başarılıysa harcanır
   // (olay, komutun olaylarının ardına eklenir; ikisi farklı alanları değiştirir).
@@ -276,6 +303,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
   const vanished = summonCleanup(next);
   if (vanished.length) { next = applyEvents(next, vanished); events = [...events, ...vanished]; }
+  // Kuyruk KQ3 NA1 (sürüm 80): taşıyan düştü/Incapacitated/Prone ya da ağırlık kapasiteyi aştı: nesne düşer / yük kalanlara geçer.
+  const dropped = carryCleanupEvents(next);
+  if (dropped.length) { next = applyEvents(next, dropped); events = [...events, ...dropped]; }
   // Kuyruk K67b (sürüm 51): büyücünün menzilinden çıkan Dancing Lights ışığı söner.
   const dimmed = danceCleanupEvents(next);
   if (dimmed.length) { next = applyEvents(next, dimmed); events = [...events, ...dimmed]; }
@@ -299,6 +329,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (morale.length) { next = applyEvents(next, morale); events = [...events, ...morale]; }
   const reveal = revealEvent(state, next, cmd);
   if (reveal) { next = applyEvents(next, [reveal]); events = [...events, reveal]; }
+  // GENEL96 C12 (sürüm 96+): saldırı zarı atan başka gizlenmişler (bonus vuruş, tepki, Ready, takip saldırısı).
+  const attackRevealed = attackRevealEvents(state, next, events, reveal ? (reveal as { actorId: string }).actorId : undefined);
+  if (attackRevealed.length) { next = applyEvents(next, attackRevealed); events = [...events, ...attackRevealed]; }
   // Kuyruk K54b: kayıtlı komut sonu kancaları (imza: Ortak Şifa, Peşini Bırakmayan).
   const hookedEnd = commandEndHookEvents(state, next, events, cmd, rng, applyEvents);
   if (hookedEnd.length) { next = applyEvents(next, hookedEnd); events = [...events, ...hookedEnd]; }
@@ -328,6 +361,8 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     const won = moraleAfterEvents(state, next, events);
     if (won.length) { next = applyEvents(next, won); events = [...events, ...won]; }
   }
+  // G01 (yalnız görünüm): save olaylarına kipin kaynakları (`modeWhy`; reducer yok sayar, replay ve kayıt sürümü aynı).
+  events = annotateSaveWhy(state, next, events);
   return { ok: true, state: next, events };
 }
 
@@ -417,6 +452,18 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (!a) return fail('Savaşçı bulunamadı.');
     return cmd.type === 'mount' ? executeMount(state, a, cmd.mountId) : executeDismount(state, a, cmd.to, cmd.toFt);
   }
+  // Görev OD1C: Game Master kurulumda da nesne yerleştirir (hedef nesnesi savaş öncesi haritaya konur; yeni olay yok).
+  if (cmd.type === 'place_object' && state.status === 'setup') return executePlaceObject(state, cmd, ctx.isGm);
+  if (cmd.type === 'set_object_weight' && state.status === 'setup') return executeSetObjectWeight(state, cmd, ctx.isGm);
+  // Görev WS92 (92+): kurulumda "biçimde başla": Wild Shape kullanımı harcanır, geçici HP (SRD biçim saatlerce sürer; savaştan
+  // önce girilmiş sayılır). Kurulumda biçimden çıkılmaz (kullanım iadesi yok); savaşta bonus eylemle çıkılır.
+  if (cmd.type === 'wild_shape' && state.status === 'setup' && ws92On(state)) {
+    const a = state.combatants[cmd.actorId];
+    if (!a) return fail('Savaşçı bulunamadı.');
+    if (!canControl(a, ctx)) return fail('Bu savaşçıyı yönetme yetkin yok.');
+    if (!cmd.form) return fail('Kurulumda biçimden çıkılmaz; savaşta bonus eylemle.');
+    return executeWildShape(state, a, cmd.form);
+  }
   if (state.status === 'setup') return fail('Savaş henüz başlamadı: önce herkes yerleşmeli ve GM başlatmalı.');
 
   if (cmd.type === 'set_condition') {
@@ -484,6 +531,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
   // Görev S2: Game Master nesne yerleştirir/kaldırır.
   if (cmd.type === 'place_object') return executePlaceObject(state, cmd, ctx.isGm);
+  if (cmd.type === 'set_object_weight') return executeSetObjectWeight(state, cmd, ctx.isGm);
   if (cmd.type === 'reveal_object') {
     if (!ctx.isGm) return fail('Yalnızca Game Master gizli nesneyi açığa çıkarır.');
     const ob = state.map?.objects?.find((o) => o.id === cmd.objectId);
@@ -512,7 +560,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const steed = controlledMountOf(state, state.combatants[cmd.actorId]);
     if (steed && state.order[state.turnIndex] === cmd.actorId) return executeCommand(state, { ...cmd, actorId: steed.id }, ctx, rng);
   }
-  const outOfTurn0 = (cmd.type === 'cast_spell' && isReactionSpell(cmd.spellName)) || cmd.type === 'initiative_swap';
+  const outOfTurn0 = (cmd.type === 'cast_spell' && (isReactionSpell(cmd.spellName) || !!cmd.fromReady)) || cmd.type === 'initiative_swap';
   // Kuyruk MB2 (74+): kontrollü binek binicisinin turunda, binicinin kararıyla oynar (yalnız hareket, Dash, Disengage, Dodge).
   const ctrl = controlledGate(state, cmd, ctx, outOfTurn0);
   if (ctrl && 'error' in ctrl) return fail(ctrl.error);
@@ -522,6 +570,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (!checked.ok) return checked;
   const actor = checked.actor;
   // Kuyruk K64a: ele geçirilmiş beden yalnızca ele geçirenin eylemlerini yapar; bedendeki ele geçiren yalnızca bırakır.
+  // Görev B94 (Abjure Foes): eylem ya da bonus eylem kullanılmışsa hareket yok.
+  if (['move', 'jump', 'climb', 'shift_move', 'vertical_move', 'jump_down'].includes(cmd.type) && oneEconomyUsed(actor, 'move')) return fail(oneEconomyText);
   const possBlock = possessionCommandProblem(actor, cmd.type);
   if (possBlock) return fail(possBlock);
   if (cmd.type === 'possession_leave') return executePossessionLeave(state, actor.id, false, ctx);
@@ -543,6 +593,17 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (dropped && (((cmd.type === 'attack' || cmd.type === 'offhand_attack') && !('option' in cmd && cmd.option?.weaponId === 'unarmed-strike')) || cmd.type === 'monster_attack' || cmd.type === 'multiattack')) return fail(`${dropped.name}: silahını bıraktı, silahla saldıramaz.`);
   // Kuyruk MB1 (68+, B23; SRD Lance "Two-Handed (unless mounted)"): binekte değilken diğer el doluysa (kalkan, yan el) kullanılamaz.
   if (cmd.type === 'attack' && cmd.option?.unlessMounted && cmd.option.handBusy && !actor.riding && binekOn(state)) return fail(`${cmd.option.label}: binekte değilken iki el ister (kalkan ya da yan el silahıyla kullanılamaz).`);
+  // KARAR101 (101+, SRD 5.2.1 s. 182 + s. 90): yakalama tutarken Two-Handed silahla saldırı yok.
+  if ((cmd.type === 'attack' || cmd.type === 'horde_breaker' || cmd.type === 'attack_object' || cmd.type === 'attack_gate') && 'option' in cmd && cmd.option) {
+    const hands = grappleHands(state, actor, cmd.option);
+    if ('problem' in hands) return fail(hands.problem);
+  }
+  // Görev TE99 (99+, SRD 5.2.1 s. 90 Two-Handed): kalkan takılıyken iki elli silahla saldırı yok (KARAR101: `shield_toggle`).
+  if ((cmd.type === 'attack' || cmd.type === 'horde_breaker' || cmd.type === 'attack_object' || cmd.type === 'attack_gate') && 'option' in cmd && cmd.option?.shieldBusy && te99On(state)) return fail(`${cmd.option.label}: kalkan takılıyken iki elli silah kullanılamaz.`);
+  // Görev WS92 (92+): yutan midesinde yaratık varken Bite'ı kullanamaz (Giant Frog/Toad; biçimde de).
+  const swBlock = cmd.type === 'attack' ? swallowBlockedAttack(state, actor, cmd.option?.beast?.attack ?? cmd.option?.label)
+    : cmd.type === 'monster_attack' ? swallowBlockedAttack(state, actor, actor.attacks[cmd.attackIndex]?.name) : null;
+  if (swBlock) return fail(swBlock);
   const events: BattleEvent[] = [];
 
   if (cmd.type === 'end_turn') {
@@ -646,11 +707,29 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Kuyruk K64a: bedenin Multiattack'ı ele geçirenin saldırılarıyla (ev sahibinin SRD planı geçmez).
   if (cmd.type === 'multiattack') return executeMultiattack(state, actor, cmd.targetId, rng, actor.shape?.possession ? undefined : cmd.plan);
 
+  // KARAR101 (101+; SRD 5.2.1 s. 14 Dropping Prone): eylemsiz, hızsız; hız 0 iken olmaz.
+  if (cmd.type === 'drop_prone') {
+    const r = dropProneEvents(state, actor, speedHexes(actor));
+    return r.ok ? finish(state, r.events) : fail(r.error);
+  }
+  // KARAR101 (101+; SRD 5.2.1 s. 182): yakalamayı bırakmak eylemsiz.
+  if (cmd.type === 'release_grapple') {
+    const r = releaseGrappleEvents(state, actor, cmd.targetId);
+    return r.ok ? finish(state, r.events) : fail(r.error);
+  }
+  // KARAR101 (101+; SRD 5.2.1 s. 92): kalkan tak/çıkar (Utilize eylemi; ekonomi `economy.ts`).
+  if (cmd.type === 'shield_toggle') {
+    const why = shieldToggleProblem(state, actor);
+    if (why) return fail(why);
+    return finish(state, [{ type: 'shield_changed', actorId: actor.id, on: !!actor.shieldOff }]);
+  }
   if (cmd.type === 'stabilize') {
     const target = state.combatants[cmd.targetId];
     if (!target) return fail('Hedef bulunamadı.');
     if (target.id === actor.id) return fail('Kendini stabilize edemezsin.');
-    if (target.life !== 'dying') return fail('Hedef ölmekte değil.');
+    // KARAR101 (101+, SRD Knocking Out): bayıltılana ilk yardım (eylem, DC 10 WIS (Medicine)) Unconscious'ı bitirir.
+    const firstAid = !!target.knockedOut && karar101On(state);
+    if (target.life !== 'dying' && !firstAid) return fail('Hedef ölmekte değil.');
     // Kuyruk 19 (SRD Healer's Kit): kitle zarsız stabilize; kitsiz WIS (Medicine) DC 10 (`srdK19`; eskide yalnızca WIS).
     const k19s = !!globalRule(state, 'srdK19');
     if (k19s && actor.traits?.includes('healers-kit')) {
@@ -658,6 +737,15 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       return { ok: true, state: applyEvents(state, events), events };
     }
     const med = k19s ? actor.skills?.medicine ?? actor.modifiers.wis : actor.modifiers.wis;
+    // GENEL96 A16/F2/F12/B16 (sürüm 96+; SRD 5.2.1 s. 7: doğal 20/1 yalnız saldırı zarında otomatik; s. 18 Stabilizing DC 10
+    // WIS (Medicine)): ortak kontrol yolu (Frightened/Poisoned/alt soy kipi, Exhaustion ve eklenti zarları, ikinci şans).
+    if (genel96On(state)) {
+      const mode = checkMode(actor, 'medicine', checkBase(state, actor, 'normal', 'medicine'));
+      const r = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus: med }));
+      const fin = finishCheck(actor, 'medicine', r.kept, med, 10, mode, rng);
+      events.push({ type: 'stabilized', actorId: actor.id, targetId: target.id, natural: r.kept, success: fin.total >= 10 });
+      return { ok: true, state: applyEvents(state, events), events };
+    }
     const roll = rollD20('normal', rollTag(rng, { kind: 'check', by: actor.id, bonus: med }));
     const success = roll.kept === 20 || (roll.kept !== 1 && roll.kept + med >= 10);
     events.push({ type: 'stabilized', actorId: actor.id, targetId: target.id, natural: roll.kept, success });
@@ -767,6 +855,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
   if (cmd.type === 'attack_gate') return executeAttackGate(state, actor, cmd.at, cmd.option, rng);
   if (cmd.type === 'dodge') return executeDodge(state, actor);
+  // Hazırla (Ready, sürüm 90; SRD 5.2.1 s.186–187).
+  if (cmd.type === 'ready') return executeReady(state, actor, cmd);
   if (cmd.type === 'help') return executeHelp(state, actor, cmd.targetId, rng);
   if (cmd.type === 'distract') return executeDistract(state, actor, cmd.at);
   if (cmd.type === 'use_item') return executeUseItem(state, actor, cmd.itemId, cmd.targetId, rng);
@@ -793,9 +883,12 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       change = { type: 'height_changed', actorId: actor.id, from, to, moved: true, check: null };
     } else {
       const dc = 12 + 3 * (to - from - 1);
-      const roll = rollD20('normal', rollTag(rng, { kind: 'check', by: actor.id, bonus: actor.climbMod }));
-      const total = roll.kept + actor.climbMod;
-      const success = roll.kept === 20 || (roll.kept !== 1 && total >= dc);
+      // GENEL96 F2 (sürüm 96+; SRD 5.2.1 s. 7): yetenek kontrolünde doğal 20/1 otomatik değil; ortak kontrol kipi ve zarları.
+      const g96 = genel96On(state);
+      const mode = g96 ? checkMode(actor, 'athletics', checkBase(state, actor, 'normal', 'athletics')) : 'normal';
+      const roll = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus: actor.climbMod }));
+      const total = g96 ? finishCheck(actor, 'athletics', roll.kept, actor.climbMod, dc, mode, rng).total : roll.kept + actor.climbMod;
+      const success = g96 ? total >= dc : roll.kept === 20 || (roll.kept !== 1 && total >= dc);
       change = { type: 'height_changed', actorId: actor.id, from, to, moved: success, check: { natural: roll.kept, total, dc } };
     }
     if (change.type === 'height_changed' && change.moved) {
@@ -812,7 +905,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     return finish(state, events);
   }
 
-  if (cmd.type === 'offhand_attack') return executeOffhandAttack(state, actor, cmd.targetId, rng);
+  if (cmd.type === 'offhand_attack') return executeOffhandAttack(state, actor, cmd.targetId, rng, cmd.cunning);
   // Görev F: Steady Aim ve Horde Breaker.
   if (cmd.type === 'steady_aim') {
     if (!hasTrait(actor, 'steady-aim')) return fail('Steady Aim yok.');
@@ -822,7 +915,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'horde_breaker') {
     const t = state.combatants[cmd.targetId];
     if (!t) return fail('Hedef bulunamadı.');
-    const why = hordeProblem(state, actor, t);
+    const why = hordeProblem(state, actor, t, cmd.option);
     if (why) return fail(why);
     const r = weaponAttackEvents(state, actor, t, cmd.option, rng, false, false, { traitTurns: { 'horde-breaker': turnKey(state) } });
     return r.ok ? finish(state, r.events) : r;
@@ -1012,8 +1105,11 @@ function turnStartChain(state: BattleState, id: string, rng: Rng): { events: Bat
   // Süren etkiler (Görev R2): geçici HP (Heroism), süregelen hasar ve save (Searing Smite), Command.
   // Büyü alanında tur başlatmak (Görev B2: Web, Sleet Storm, Stinking Cloud).
   // Kuyruk 19: büyücünün turunun başında ondan uzaklaşan bulut (Cloudkill).
+  const preDrift = cur;
   const drift = [...zoneDriftEvents(cur, id)];
   push(drift);
+  // Mekanik matris B21 (sürüm 83): kayan bulut yeni kapladığı yaratığa save attırır ("when the Sphere moves into its space").
+  push(zoneDriftEnterEvents(preDrift, cur, drift, rng));
   // Kuyruk 19: büyücünün tur başı alanı (Faithful Hound ısırığı).
   const bite = casterTurnZoneEvents(cur, id, rng);
   push(bite);
@@ -1054,3 +1150,5 @@ function controlledGate(state: BattleState, cmd: Command, ctx: CommandContext, o
   return { ctx: m.side === 'enemies' || m.civilian ? { ...ctx, isGm: true } : { ...ctx, playerId: m.ownerId ?? ctx.playerId } };
 }
 
+// Hazırla (Ready, sürüm 90): tutulan büyü salınırken iç komut (sıra ve eylem ekonomisi dışında; slot hazırlarken harcandı).
+registerReadyCast((s, cmd, rng) => executeCommand(s, cmd, { isGm: true, playerId: s.combatants[cmd.actorId]?.ownerId ?? null }, rng));

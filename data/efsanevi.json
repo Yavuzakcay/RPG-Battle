@@ -913,7 +913,7 @@
    "uses": 3,
    "k19": true,
    "srd": "SRD 5.2.1 s. 327 (Sphinx of Lore): Legendary Action Uses 3",
-   "actions": [
+   "actions": [{"id": "weight-of-years", "tr": "Yılların Ağırlığı", "en": "Weight of Years", "kind": "save", "oncePerTurn": true, "save": "con", "dc": 16, "rangeFt": 120, "exhaustion": 1, "surum": 103, "srd": "SRD 5.2.1 s. 327 Weight of Years: CON DC 16, 120 ft, 1 Exhaustion; sonraki turunun başına dek bir kez"}, 
     {
      "id": "arcane-prowl",
      "tr": "Gizemli Sinsilik",
@@ -932,7 +932,7 @@
    "uses": 3,
    "k19": true,
    "srd": "SRD 5.2.1 s. 328 (Sphinx of Valor): Legendary Action Uses 3",
-   "actions": [
+   "actions": [{"id": "weight-of-years", "tr": "Yılların Ağırlığı", "en": "Weight of Years", "kind": "save", "oncePerTurn": true, "save": "con", "dc": 16, "rangeFt": 120, "exhaustion": 1, "surum": 103, "srd": "SRD 5.2.1 s. 328 Weight of Years: CON DC 16, 120 ft, 1 Exhaustion; sonraki turunun başına dek bir kez"}, 
     {
      "id": "arcane-prowl",
      "tr": "Gizemli Sinsilik",

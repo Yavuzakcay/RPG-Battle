@@ -1,5 +1,5 @@
 {
-  "note": "Görev K8b, K15: soy (alt ırk) renkleri. K15: jetonun yalnızca ten/pul bölgesi boyanır; maske sprite'ın gerçek ten paletinden çevrimdışı üretilir (npm run soy-maske → public/characters/maske/; `mask`: ırkın gevşek aday rengi Lab'da L/C/h aralığı, `bright` palete giren en parlak kümelerin açıklık aralığı, `th` paletten ΔE eşiği; `maskFix` sprite başına dışlanan/eklenen dikdörtgenler, 256 px). Soy hedefi: `lch` (Lab tonu h, kroma c, orijinal sapmanın korunan payı hueKeep/chromaKeep, açıklık L' = L·gain + dL: gölge-ışık farkları korunur) ya da `gradient` (ten açıklığı gölge→orta→vurgu Lab duraklarına; Drow). `null`: boyama yok (Wood Elf: klasik elf). High Elf eski K8b yolu (`select` ton aralığı + HSL h/s/l), dokunulmadı. K19: `byGender.<male|female>` cinsiyete özel `lineages` (ortak kaydın önüne geçer; erkek Dragonborn Blue/Brass/Bronze/Copper/Gold/Red/Silver ve (Z1) White eski K8b HSL yolunda); `mask.fill` (kapatma + delik doldurma + sınırlı büyütme, Dragonborn kadın), `mask.byGender` (cinsiyete göre aday aralığı); `lch.contrast` açıklığın ten ortalamasından sapmasını büyütür (Goliath kadın Cloud dövmeleri). K21: Drow dört duraklı soğuk mavi-gri skala (gölge siyaha yakın mavi-indigo, orta koyu mavi-gri, en açık L 46; mor yok); duraklar [L, a, b], değiştirilebilir. Elle maske önceliği: assets/soy-maske-el/ (docs/soy-maske-el.md). K22: `basKaplama` ({ ırk: { siniflar, govdeBoya } }): bu jetonlarda kafa, assets/soy-bas/<ırk>-<kadin|erkek>.png temiz kafa görseliyle değiştirilip soy rengiyle boyanır (npm run soy-bas; data/soy-bas.json). Z1: kafa görselinin opak boyutu kafa kutusuyla ±`basOlcekToleransPx` (2) içinde eşleşirse ölçeklenmez (×1); değilse kutuyu örtecek ölçek + uyarı. K23: `govdeBoya: false` kafa kaplaması dışında soy rengi uygulanmaz (gövde, eller, boyun orijinal; boyun geçişi 2 piksel yumuşatılır); jeton başına açmak için `govdeBoya: { \"<jeton>\": true }` biçimi de okunur (verilmeyen jeton false). DROW-PALET: Drow rengi seçilebilir paletten: `elf.drowPalet` (A kömür-mavi, B mor-mavi, C kül-gri, D gece-mavi; Z1: varsayılan D; geçersizse `paletler.drow.varsayilan`, uyarıyla); her palet 7 duraklı parçalı doğrusal gradyan (en açık L ≤ 60), `contrast` orta tonlarda S-eğrisi, `chromaKeep` orijinal ten pikselinin a/b sapmasının korunan payı. Değeri değiştirince oyun ve inceleme sayfası (npm run soy-maske && npm run soy-incele) değişir. R1: soy rozetleri (K13/K19/K22 `badges`) kullanıcı kararıyla kaldırıldı; soylar yalnızca renkle ayrışır (ΔE ≥ 15 testi).",
+  "note": "Görev K8b, K15: soy (alt ırk) renkleri. K15: jetonun yalnızca ten/pul bölgesi boyanır; maske sprite'ın gerçek ten paletinden çevrimdışı üretilir (npm run soy-maske → public/characters/maske/; `mask`: ırkın gevşek aday rengi Lab'da L/C/h aralığı, `bright` palete giren en parlak kümelerin açıklık aralığı, `th` paletten ΔE eşiği; `maskFix` sprite başına dışlanan/eklenen dikdörtgenler, 256 px). Soy hedefi: `lch` (Lab tonu h, kroma c, orijinal sapmanın korunan payı hueKeep/chromaKeep, açıklık L' = L·gain + dL: gölge-ışık farkları korunur) ya da `gradient` (ten açıklığı gölge→orta→vurgu Lab duraklarına; Drow). `null`: boyama yok (Wood Elf: klasik elf). High Elf eski K8b yolu (`select` ton aralığı + HSL h/s/l), dokunulmadı. K19: `byGender.<male|female>` cinsiyete özel `lineages` (ortak kaydın önüne geçer; erkek Dragonborn Blue/Brass/Bronze/Copper/Gold/Red/Silver ve (Z1) White eski K8b HSL yolunda); `mask.fill` (kapatma + delik doldurma + sınırlı büyütme, Dragonborn kadın), `mask.byGender` (cinsiyete göre aday aralığı); `lch.contrast` açıklığın ten ortalamasından sapmasını büyütür (Goliath kadın Cloud dövmeleri). K21: Drow dört duraklı soğuk mavi-gri skala (gölge siyaha yakın mavi-indigo, orta koyu mavi-gri, en açık L 46; mor yok); duraklar [L, a, b], değiştirilebilir. Elle maske önceliği: assets/soy-maske-el/ (docs/soy-maske-el.md). K22: `basKaplama` ({ ırk: { siniflar, govdeBoya } }): bu jetonlarda kafa, assets/soy-bas/<ırk>-<kadin|erkek>.png temiz kafa görseliyle değiştirilip soy rengiyle boyanır (npm run soy-bas; data/soy-bas.json). Z1: kafa görselinin opak boyutu kafa kutusuyla ±`basOlcekToleransPx` (2) içinde eşleşirse ölçeklenmez (×1); değilse kutuyu örtecek ölçek + uyarı. K23: `govdeBoya: false` kafa kaplaması dışında soy rengi uygulanmaz (gövde, eller, boyun orijinal; boyun geçişi 2 piksel yumuşatılır); jeton başına açmak için `govdeBoya: { \"<jeton>\": true }` biçimi de okunur (verilmeyen jeton false). DROW-PALET: Drow rengi seçilebilir paletten: `elf.drowPalet` (A kömür-mavi, B mor-mavi, C kül-gri, D gece-mavi; Z1: varsayılan D; geçersizse `paletler.drow.varsayilan`, uyarıyla); her palet 7 duraklı parçalı doğrusal gradyan (en açık L ≤ 60), `contrast` orta tonlarda S-eğrisi, `chromaKeep` orijinal ten pikselinin a/b sapmasının korunan payı. Değeri değiştirince oyun ve inceleme sayfası (npm run soy-maske && npm run soy-incele) değişir. R1: soy rozetleri (K13/K19/K22 `badges`) kullanıcı kararıyla kaldırıldı; soylar yalnızca renkle ayrışır (ΔE ≥ 15 testi). SD8: Dark Elf paleti mor-gri (DECISIONS.md).",
   "races": {
     "human": {
       "select": { "hMin": 0, "hMax": 45, "sMin": 0.25, "lMin": 0.5, "lMax": 0.95 },
@@ -88,6 +88,19 @@
           }
         }
       },
+      "lineagesAlt": {
+          "black": { "pul": { "soy": "black" } },
+          "blue": { "pul": { "soy": "blue" } },
+          "brass": { "pul": { "soy": "brass" } },
+          "bronze": { "pul": { "soy": "bronze" } },
+          "copper": { "pul": { "soy": "copper" } },
+          "gold": { "pul": { "soy": "gold" } },
+          "green": { "pul": { "soy": "green" } },
+          "red": { "pul": { "soy": "red" } },
+          "silver": { "pul": { "soy": "silver" } },
+          "white": { "pul": { "soy": "white" } }
+        },
+        "maskAlt": { "L": [58, 100], "C": [0, 30], "h": [[0, 360]], "bright": 10, "th": 5.5 },
       "mask": {
         "L": [
           30,
@@ -232,6 +245,12 @@
         ],
         "bright": 20,
         "th": 7
+      },
+      "temizlik": {
+        "referans": 256,
+        "delik": { "kapama": 1, "enCok": 80, "ekleOrani": 0.5 },
+        "golge": { "ton": 26, "tonKomsu": 12, "kroma": [15, 70], "Lalt": 18, "Lust": 6, "kalinlik": 8, "temas": 3, "kontur": 0.6, "enCok": 900, "kromaKomsu": 32 },
+        "vurgu": { "L": 70, "boyut": 3, "cevre": 0.95 }
       }
     },
     "elf": {
@@ -258,171 +277,171 @@
         "drow": {
           "varsayilan": "D",
           "secenekler": {
-            "A": {
-              "gradient": [
-                [
-                  3,
-                  3,
-                  -10
+              "A": {
+                "gradient": [
+                  [
+                    26,
+                    10,
+                    -21
+                  ],
+                  [
+                    34,
+                    16,
+                    -28
+                  ],
+                  [
+                    40,
+                    18,
+                    -31
+                  ],
+                  [
+                    45,
+                    19,
+                    -32
+                  ],
+                  [
+                    49,
+                    18,
+                    -31
+                  ],
+                  [
+                    53,
+                    17,
+                    -29
+                  ],
+                  [
+                    56,
+                    16,
+                    -27
+                  ]
                 ],
-                [
-                  8,
-                  4,
-                  -16
+                "contrast": 0.12,
+                "chromaKeep": 0.12
+              },
+              "B": {
+                "gradient": [
+                  [
+                    18,
+                    10,
+                    -21
+                  ],
+                  [
+                    26,
+                    16,
+                    -28
+                  ],
+                  [
+                    32,
+                    18,
+                    -31
+                  ],
+                  [
+                    37,
+                    19,
+                    -32
+                  ],
+                  [
+                    41,
+                    18,
+                    -31
+                  ],
+                  [
+                    45,
+                    17,
+                    -29
+                  ],
+                  [
+                    48,
+                    16,
+                    -27
+                  ]
                 ],
-                [
-                  14,
-                  1,
-                  -18
+                "contrast": 0.12,
+                "chromaKeep": 0.12
+              },
+              "C": {
+                "gradient": [
+                  [
+                    24,
+                    12,
+                    -24
+                  ],
+                  [
+                    32,
+                    18,
+                    -32
+                  ],
+                  [
+                    38,
+                    21,
+                    -36
+                  ],
+                  [
+                    43,
+                    22,
+                    -37
+                  ],
+                  [
+                    47,
+                    21,
+                    -36
+                  ],
+                  [
+                    51,
+                    20,
+                    -33
+                  ],
+                  [
+                    54,
+                    18,
+                    -31
+                  ]
                 ],
-                [
-                  21,
-                  -2,
-                  -17
+                "contrast": 0.12,
+                "chromaKeep": 0.12
+              },
+              "D": {
+                "gradient": [
+                  [
+                    22,
+                    10,
+                    -21
+                  ],
+                  [
+                    30,
+                    16,
+                    -28
+                  ],
+                  [
+                    36,
+                    18,
+                    -31
+                  ],
+                  [
+                    41,
+                    19,
+                    -32
+                  ],
+                  [
+                    45,
+                    18,
+                    -31
+                  ],
+                  [
+                    49,
+                    17,
+                    -29
+                  ],
+                  [
+                    52,
+                    16,
+                    -27
+                  ]
                 ],
-                [
-                  29,
-                  -4,
-                  -14
-                ],
-                [
-                  40,
-                  -5,
-                  -10
-                ],
-                [
-                  56,
-                  -4,
-                  -7
-                ]
-              ],
-              "contrast": 0.35,
-              "chromaKeep": 0.35
-            },
-            "B": {
-              "gradient": [
-                [
-                  3,
-                  8,
-                  -10
-                ],
-                [
-                  8,
-                  12,
-                  -18
-                ],
-                [
-                  14,
-                  13,
-                  -22
-                ],
-                [
-                  21,
-                  11,
-                  -22
-                ],
-                [
-                  29,
-                  9,
-                  -19
-                ],
-                [
-                  40,
-                  7,
-                  -14
-                ],
-                [
-                  56,
-                  5,
-                  -9
-                ]
-              ],
-              "contrast": 0.35,
-              "chromaKeep": 0.35
-            },
-            "C": {
-              "gradient": [
-                [
-                  3,
-                  1,
-                  -5
-                ],
-                [
-                  8,
-                  1,
-                  -6
-                ],
-                [
-                  14,
-                  0,
-                  -5
-                ],
-                [
-                  21,
-                  0,
-                  -4
-                ],
-                [
-                  29,
-                  0,
-                  -3
-                ],
-                [
-                  40,
-                  0,
-                  -3
-                ],
-                [
-                  56,
-                  0,
-                  -2
-                ]
-              ],
-              "contrast": 0.35,
-              "chromaKeep": 0.35
-            },
-            "D": {
-              "gradient": [
-                [
-                  3,
-                  4,
-                  -14
-                ],
-                [
-                  8,
-                  6,
-                  -24
-                ],
-                [
-                  14,
-                  4,
-                  -30
-                ],
-                [
-                  21,
-                  0,
-                  -32
-                ],
-                [
-                  29,
-                  -3,
-                  -30
-                ],
-                [
-                  40,
-                  -6,
-                  -24
-                ],
-                [
-                  56,
-                  -6,
-                  -16
-                ]
-              ],
-              "contrast": 0.35,
-              "chromaKeep": 0.35
+                "contrast": 0.12,
+                "chromaKeep": 0.12
+              }
             }
-          }
         }
       },
       "mask": {
@@ -453,13 +472,7 @@
         "lMax": 0.95
       },
       "lineages": {
-        "forest-gnome": {
-          "lch": {
-            "h": 105,
-            "c": 25,
-            "dL": -6
-          }
-        },
+        "forest-gnome": null,
         "rock-gnome": null,
         "subterranean": {
           "lch": {
@@ -496,6 +509,8 @@
         "lMin": 0.3,
         "lMax": 0.85
       },
+      "otoMaske": false,
+      "otoMaskeNot": "2026-11-22 (kullanıcı): otomatik ten maskesi yalnız başı kapsıyordu (maskAlt.headOnly); Goliath jetonu boyanmaz, bütün jetona soyun yedek CSS filtresi uygulanır (data/soy-filtre-yedek.json; seçim npm run dev → /onizleme-filtre.html). Elle maske (assets/soy-maske-el/) eklenen jetonda önce maske. Maske dosyaları, maskAlt ve temizlik ayarları durur. Hill/Stone hedefleri yalnız aday üretimi için (toprak, arduvaz).",
       "lineages": {
         "cloud": {
           "lch": {
@@ -519,12 +534,18 @@
             "dL": 8
           }
         },
-        "hill": null,
+        "hill": {
+          "lch": {
+            "h": 70,
+            "c": 30,
+            "dL": -6
+          }
+        },
         "stone": {
           "lch": {
-            "h": 85,
+            "h": 245,
             "c": 6,
-            "dL": -10
+            "dL": -12
           }
         },
         "storm": {
@@ -535,6 +556,7 @@
           }
         }
       },
+      "maskAlt": { "L": [18, 96], "C": [3, 14], "h": [[160, 320]], "bright": 35, "th": 8, "headOnly": true },
       "mask": {
         "L": [
           18,
@@ -552,6 +574,11 @@
         ],
         "bright": 35,
         "th": 8
+      },
+      "temizlik": {
+        "referans": 256,
+        "kutu": { "L": [28, 72], "C": [3, 14], "h": [[160, 320]] },
+        "delik": { "kapama": 1, "enCok": 12, "ekleOrani": 0.5 }
       },
       "byGender": {
         "female": {
@@ -572,6 +599,17 @@
     }
   },
   "maskFix": {
+    "goliath-erkek-ranger-ID4": {
+      "not": "Ranger Ejder Muhafızı: maske yoldaş ejderin kanadına (sol) ve gövdesine (sağ) taşıyordu, yüz baş çizgisinde (opak kutunun üst %30'u) kesiliyordu; kanat ve yoldaş dışlanır, baş kutusu (çene dahil) ten adaylarıyla doldurulur (include, baş çizgisinin altında korunur); erkek jetonun teni nötr gri (kroma < 3): kutuda aday açıklık 35–86, kroma 0–14 (`aday`; göz akı ve kontur dışarıda).",
+      "exclude": [[0, 0, 89, 140], [165, 0, 255, 62], [161, 62, 255, 140]],
+      "include": [[91, 22, 160, 92], [97, 92, 152, 107]],
+      "aday": { "L": [35, 86], "C": [0, 14] }
+    },
+    "goliath-kadin-ranger-ID4": {
+      "not": "Ranger Ejder Muhafızı: erkekteki gibi (kanat ve yoldaş dışlanır, yüz çeneye dek).",
+      "exclude": [[0, 0, 85, 140], [165, 0, 255, 62], [160, 62, 255, 140]],
+      "include": [[86, 22, 158, 92], [95, 92, 150, 106]]
+    },
     "goliath-female-barbarian": {
       "exclude": [
         [
@@ -673,150 +711,6 @@
         140,
         95
       ]
-    },
-    "dragonborn-male-druid": {
-      "seed": [
-        95,
-        30,
-        140,
-        90
-      ],
-      "exclude": [
-        [
-          195,
-          30,
-          245,
-          245
-        ]
-      ]
-    },
-    "dragonborn-male-bard": {
-      "seed": [
-        100,
-        35,
-        150,
-        85
-      ],
-      "exclude": [
-        [
-          150,
-          95,
-          240,
-          175
-        ]
-      ]
-    },
-    "dragonborn-female-druid": {
-      "exclude": [
-        [
-          180,
-          15,
-          250,
-          245
-        ],
-        [
-          55,
-          20,
-          97,
-          200
-        ],
-        [
-          150,
-          20,
-          172,
-          130
-        ]
-      ]
-    },
-    "dragonborn-female-fighter": {
-      "exclude": [
-        [
-          172,
-          108,
-          248,
-          208
-        ]
-      ]
-    },
-    "dragonborn-female-wizard": {
-      "exclude": [
-        [
-          208,
-          60,
-          245,
-          245
-        ]
-      ]
-    },
-    "dragonborn-male-wizard": {
-      "exclude": [
-        [
-          196,
-          60,
-          240,
-          250
-        ]
-      ]
-    },
-    "dragonborn-male-ranger": {
-      "exclude": [
-        [
-          170,
-          55,
-          252,
-          245
-        ]
-      ]
-    },
-    "dragonborn-female-bard": {
-      "exclude": [
-        [
-          112,
-          168,
-          195,
-          202
-        ],
-        [
-          205,
-          108,
-          235,
-          135
-        ],
-        [
-          85,
-          115,
-          118,
-          150
-        ],
-        [
-          160,
-          118,
-          182,
-          145
-        ],
-        [
-          45,
-          8,
-          105,
-          34
-        ]
-      ]
-    },
-    "dragonborn-female-monk": {
-      "exclude": [
-        [
-          112,
-          115,
-          175,
-          170
-        ],
-        [
-          95,
-          170,
-          190,
-          218
-        ]
-      ]
     }
   },
   "basOlcekToleransPx": 2,
@@ -827,7 +721,9 @@
         "fighter",
         "cleric"
       ],
-      "govdeBoya": false
+      "govdeBoya": false,
+      "kapali": true,
+      "kapaliNot": "2026-11-22 (kullanıcı): Goliath kafa kaplaması kapalı (bütün jetona soy filtresi); veri ve bas/ görselleri durur."
     }
   }
 }

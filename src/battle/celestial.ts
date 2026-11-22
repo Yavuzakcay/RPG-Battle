@@ -2,7 +2,7 @@
  * Kuyruk K20: Celestial (Düşmüş) oynanabilir ırkı, EV KURALI (SRD 5.2.1 dışı; `data/celestial.json`, ev kuralı
  * `celestialIrki`, varsayılan kapalı; kural sürümü 18+). Karanlık görüş ve ışıltı/ölümsüz direnci tür verisinde (eski
  * davranış, kural kapalıyken de). Kural açıkken savaş başında (`withCelestial`):
- * - Işık Hilesi: Light küçük hilesi bilinenlere eklenir (slotsuz).
+ * - Işık Cantrip'i: Light cantrip'i bilinenlere eklenir (slotsuz).
  * - Şifa Eli (`ev:celestial/healing-touch`, eylem): dokunulan dost PB × d4 iyileşir; kaynak `celestialHeal` (uzun dinlenme).
  * - Göksel Uyanış (`ev:celestial/awakening`, bonus eylem, 3. seviye, 10 tur; kaynak `celestialAwakening`): seçilen biçim
  *   (karakterde `celestialAwakening`): her biçimde kendi turunda bir kez saldırı isabetine +PB (`celestialStrike`).

@@ -483,6 +483,7 @@
     "rangeFt": 60,
     "text": "6 hedefe kadar 5d8 + değiştirici HP",
     "mechanics": {
+      "b102": {"healSphereFt": 30},
       "kind": "heal",
       "damage": "5d8",
       "addCastingMod": true,
@@ -611,6 +612,7 @@
     },
     "text": "30 ft, WIS save; başarısız düşman her tur uzaklaşır (tur sonu save)",
     "mechanics": {
+      "m83": {"area83": {"shape": "emanation", "sizeFt": 30, "origin": "self", "targets": "enemies"}},
       "kind": "save",
       "save": "wis",
       "conditions": [
@@ -669,6 +671,7 @@
     },
     "text": "10 ft küre, WIS save; başarısız hedef davranış tablosu (yaklaşık: turunu kaybeder), tur sonu save",
     "mechanics": {
+      "b102": {"upcast": {"radiusFt": 5, "applied": true}},
       "kind": "save",
       "save": "wis",
       "failEffect": {
@@ -1611,6 +1614,7 @@
     "concentration": true,
     "text": "Dokunulamaz element ruhu (seçilen hasar türü); yanına giren ya da yanında tur başlayan düşman DEX save, 8d8 hasar + Restrained (+1d8/slot); sahibi bonus eylemle 30 ft taşır",
     "mechanics": {
+      "b102": {"zone": {"captive": {"repeatDice": "4d8"}, "rounds": 100, "on": ["enter", "start"], "once": true, "save": "dex", "damage": "8d8", "damageType": "force", "conditions": ["Restrained"], "hold": "spell", "escape": "dex", "targets": "enemies", "color": "#8fb3d9", "icon": "🌀"}},
       "kind": "summon",
       "k19": "Kuyruk 19: ruh dokunulamaz (SRD: intangible); ruhun bir tutsağı varken başka yaratık save atmaz (tek tutsak); tutsak büyü süresince Restrained, kendi turunun başında DEX save: başarısızsa 4d8 ruh türünde hasar, başarılıysa kurtulur (anahtar spellsK19). Element seçimi hasar türünü belirler.",
       "zone": {
@@ -1729,7 +1733,17 @@
           "icon": "🌀"
         }
       },
-      "k19": "Kuyruk 19 (spellsK19): savaş yönü uygulandı"
+      "k19": "Kuyruk 19 (spellsK19): savaş yönü uygulandı",
+      "k84": {
+        "whirlpool": true,
+        "offCombat": false,
+        "gmNoted": true,
+        "gmNote": "Savaşta yalnız girdap (hedef yaratığın altıgeninde, su gerekmez); taşkın, hendek ve akış yönlendirme savaş dışı, Game Master anlatır.",
+        "save": "str",
+        "damage": "2d8",
+        "damageType": "bludgeoning",
+        "upcast": { "dice": "1d8", "radiusFt": 5, "applied": true }
+      }
     },
     "school": "Transmutation",
     "srdPage": 119

@@ -2,8 +2,12 @@
  * Olayları duruma uygular. Saf fonksiyondur: aynı olaylar aynı sırayla uygulanınca
  * her cihazda ve sunucuda tamamen aynı durum çıkar.
  */
+import { b94On, weaponBase } from './b94Surum';
+import { sourceDown } from './sourceDown';
+import nesneAgirlik from '../../data/nesne-agirlik.json';
 import { BOON_TURN_REFILL } from './boons';
 import { syncRiders } from './mounted';
+import { syncSwallowed } from './swallow92';
 import { binekOn } from './binekSurum';
 import { binekMb2On } from './binekMb2Surum';
 import { controlledNow } from './binekMb2';
@@ -21,11 +25,22 @@ import { terrainOf } from '../map/terrain';
 import { defaultCivilianLook, withCivilianLook } from './civilianLooks';
 import { slowFeet, tickMarks } from './marks';
 import { wardedFrom } from './mind';
+import { effectImmune, grantsAfterImmunity } from './srdD3';
+import { srdD3On } from './srdD3Surum';
 import { k75On } from './k75Surum';
 import { FRESH_ECONOMY, resourceLeft, type ActiveEffect, type BattleEvent, type BattleState, type Combatant, type ConditionTimer, type DamageEffect } from './types';
 import { effectSpeedZero, flySpeed } from './flight';
+import { yuzmeOn } from './yuzmeSurum';
+import { waterHexAt } from './yuzme';
 import { exhaustionSpeedFt } from '../rules/exhaustion';
 import { soyTeleportEnds } from './altSoySurum';
+import { sinif97On } from './sinif97Surum';
+import { monsterPrevOf, withMonsterPart, withoutMonsterPart } from './shapeMonsterCore';
+import { genel96On } from './genel96Surum';
+import { helpOnlySelf } from './genel96';
+import { te99On } from './te99Surum';
+import { karar101On } from './karar101Surum';
+import { syncKarar101 } from './karar101';
 
 /** Yürüyüşün sonundaki düz koşuyu bulur; önceki koşu aynı yönde sürüyorsa üstüne ekler. */
 function runAfter(start: Offset, path: Offset[], before: Combatant['run']): Combatant['run'] {
@@ -58,12 +73,38 @@ export function speedHexes(c: Combatant): number {
   const mult = free ? Math.max(1, mult0) : mult0;
   const bonus = (c.effects ?? []).reduce((n, e) => n + (free ? Math.max(0, e.speedFt ?? 0) : e.speedFt ?? 0), 0);
   // Kuyruk K73c (sürüm 64+): yer altındaki (kazan) yaratık kazma hızıyla ilerler (işaret yalnız 64+ komutlarından gelir).
-  const base = c.burrowed && c.burrowFt ? c.burrowFt : fly > 0 ? fly : c.speed;
-  const ft = Math.floor(Math.max(0, base + bonus - slowFeet(c) - exhaustionSpeedFt(c.exhaustion)) * mult);
+  const base = c.burrowed && c.burrowFt ? c.burrowFt : fly > 0 ? fly : c.inWater && c.swimFt ? Math.max(c.speed, c.swimFt) : c.speed; // KQ6-8: suda yüzme hızı
+  // Kuyruk KQ3 NA1: ortak taşımada (iki ya da daha çok taşıyıcı) hız yarıya (`data/nesne-agirlik.json`).
+  const groupMult = c.groupCarry ? nesneAgirlik.grupHizCarpani : 1;
+  const ft = Math.floor(Math.max(0, base + bonus - slowFeet(c) - exhaustionSpeedFt(c.exhaustion)) * mult * groupMult);
+  // KARAR101 (sürüm 101+; SRD 5.2.1 s. 188 Speed "Whenever you switch, subtract the distance already moved from the new speed";
+  // s. 180 Dash "The increase equals your Speed … If you have a special speed … you can use that speed instead"): bütçe şimdiki
+  // hızın (yürüme, uçuş, yüzme, kazma) kendisi + Dash'lerin Dash anında sabitlenen eki (`economy.dashFt`); harcanan hareket
+  // (`movementUsed`) ortak düşer. Alan yalnız 101+ savaşın `dashed` olayıyla oluşur; 100 ve altı şimdiki hız × (1 + Dash).
+  if (c.economy.dashFt !== undefined) return Math.floor(ft / 5) + Math.floor(c.economy.dashFt / 5);
   return Math.floor(ft / 5) * (1 + c.economy.dashes);
 }
 
+/** KARAR101: Dash'siz hız bütçesi (altıgen): Dash katı (100-) ya da Dash eki (101+) düşülmüş. */
+export function speedHexesNoDash(c: Combatant): number {
+  return speedHexes({ ...c, economy: { ...c.economy, dashes: 0, dashFt: undefined } });
+}
+
+/** KARAR101: Dash anında eklenecek hareket (ft): şimdiki hızın Dash'siz değeri. */
+function dashGainFt(c: Combatant): number {
+  const plain = speedHexes({ ...c, economy: { ...c.economy, dashes: 0, dashFt: undefined } });
+  return plain * 5;
+}
+
 const sameAt = (a: Offset, b: Offset) => a.col === b.col && a.row === b.row;
+
+/** KQ6-8 (sürüm 82): yüzücü canavarın "suda" işareti konumundan türetilir (olaylar aynı → replay aynı). */
+function syncWater(state: BattleState, id: string): BattleState {
+  const c = state.combatants[id];
+  if (!c || !c.swimFt || !yuzmeOn(state)) return state;
+  const w = !!c.pos && waterHexAt(state, c.pos);
+  return (c.inWater ?? false) === w ? state : { ...state, combatants: { ...state.combatants, [id]: { ...c, inWater: w } } };
+}
 
 function withCombatant(state: BattleState, id: string, patch: Partial<Combatant>): BattleState {
   const current = state.combatants[id];
@@ -143,9 +184,12 @@ function dropBrokenConcentration(state: BattleState): BattleState {
 }
 
 /** Etkiyle bu duruma bağışık mı (Heroism: Frightened; Görev R2). */
-const immuneTo = (c: Combatant, condition: string, state?: BattleState) => (c.effects ?? []).some((e) => e.immune?.includes(condition))
+// Görev D3 (89+): kaynak verilirse efendi istisnası (Vampire Familiar; `srdD3.ts`); istisnasız bağışıklıkta aynı sonuç.
+const immuneTo = (c: Combatant, condition: string, state?: BattleState, sourceId?: string) => effectImmune(state, c, condition, sourceId)
   // Kuyruk 18 H3: Nature's Ward (Circle of the Land 10): Poisoned bağışıklığı (anahtar naturesWard, kural sürümü 14).
-  || (condition === 'Poisoned' && !!c.traits?.includes('natures-ward') && !!state && !!globalRule(state, 'naturesWard'));
+  || (condition === 'Poisoned' && !!c.traits?.includes('natures-ward') && !!state && !!globalRule(state, 'naturesWard'))
+  // GENEL96 B29 (sürüm 96+; SRD 5.2.1 s. 186 Petrified "Poison Immunity. You have Immunity to the Poisoned condition").
+  || (condition === 'Poisoned' && !!state && genel96On(state) && c.conditions.includes('Petrified'));
 
 /**
  * Süren etkilerin bitişi (Görev R2): kaynağın o büyüdeki konsantrasyonu bittiyse, süresi geçtiyse (`until` < tur),
@@ -211,6 +255,9 @@ function pruneEffects(state: BattleState): BattleState {
       if (e.whileGrappledBy && c.grapple?.by !== e.whileGrappledBy) return false;
       // Kuyruk 19: Incapacitated olunca biten etki (Superior Defense).
       if (e.breakOnIncapacitated && c.conditions.some((x) => ['Incapacitated', 'Stunned', 'Paralyzed', 'Unconscious', 'Petrified'].includes(x))) return false;
+      // Görev B93 (Turn Undead): kaynak Incapacitated, 0 HP ya da ölü.
+      // Görev B94 (A2): tek yardımcı `sourceDown` (aynı koşul).
+      if (e.endsIfSourceDown && sourceDown(state.combatants[e.sourceId])) return false;
       if (e.concentration && state.combatants[e.sourceId]?.concentration?.spell !== e.concentration) return false;
       return true;
     });
@@ -239,6 +286,10 @@ function consumeSingles(state: BattleState, event: BattleEvent): BattleState {
   if ((event.type === 'save_resolved' || event.type === 'condition_save') && next.combatants[event.targetId]?.effects?.some((e) => e.saveDisAll)) {
     next = dropEffects(next, event.targetId, (e) => !!e.saveDisAll);
   }
+  // Görev B95-B (97+, SRD 5.2.1 s. 30 Staggering Blow "the next saving throw it makes"): dezavantajlı atılan tur sonu tekrar
+  // save'i (`effect_tick`) ve ustalık save'i (Topple) de harcar.
+  const saver97 = sinif97On(state) && (event.type === 'effect_tick' || event.type === 'mastery_applied') && event.save ? event.targetId : undefined;
+  if (saver97 && next.combatants[saver97]?.effects?.some((e) => e.saveDisAll)) next = dropEffects(next, saver97, (e) => !!e.saveDisAll);
   // Kuyruk K54c: ilk zar etkisi (Yıldız Falı, Ölümsüz Taht) atılınca biter.
   if (event.type === 'attack_resolved' && next.combatants[event.actorId]?.effects?.some((e) => e.firstRoll?.on.includes('attack'))) {
     next = dropEffects(next, event.actorId, (e) => !!e.firstRoll?.on.includes('attack'));
@@ -306,6 +357,17 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
       else if (h && Object.keys(e.effect).length) next = withCombatant(next, id, { effects: [...(h.effects ?? []).filter((x) => x.id !== `srd19:${id}:fx:${e.name}`),
         { ...e.effect, id: `srd19:${id}:fx:${e.name}`, name: e.name, sourceId: id, until: next.round + 1 } as ActiveEffect] });
     }
+    // KARAR101 (101+, SRD Knocking Out): 1 HP (olayın `targetHpAfter`'ı) + Unconscious; savaş sonunda yenilmiş sayılır.
+    if (e.kind === 'knocked_out') {
+      const h = next.combatants[id];
+      if (h) next = withCombatant(next, id, { knockedOut: true, conditions: h.conditions.includes('Unconscious') ? h.conditions : [...h.conditions, 'Unconscious'] });
+    }
+    // KARAR101 (101+): Stone's Endurance tepkisi ve kaynağı harcandı.
+    if (e.kind === 'stone_endurance') {
+      const h = next.combatants[id];
+      if (h) next = withCombatant(next, id, { economy: { ...h.economy, reaction: true },
+        ...(e.resource ? { resources: { ...h.resources, [e.resource]: Math.max(0, (h.resources[e.resource] ?? 0) - 1) } } : {}) });
+    }
     if (e.kind === 'relentless_endurance') {
       const h = next.combatants[id];
       if (h) next = withCombatant(next, id, { resources: { ...h.resources, relentlessEndurance: 0 } });
@@ -334,8 +396,51 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
   return next;
 }
 
+/**
+ * Kuyruk KQ3 NA1: ortak taşıma işareti. İki ya da daha çok taşıyıcılı nesnenin taşıyıcıları `groupCarry` alır (hız yarıya,
+ * `speedHexes`); tek taşıyıcıda ya da bırakınca işaret kalkar. Yalnız taşıyıcı değişen olaylardan sonra.
+ */
+function syncGroupCarry(state: BattleState, event: BattleEvent): BattleState {
+  if (event.type !== 'object_changed' || (event.carriedBy === undefined && event.carriers === undefined)) return state;
+  const group = new Set<string>();
+  for (const o of state.map?.objects ?? []) if (o.carriedBy && (o.carriers?.length ?? 0) > 0) { group.add(o.carriedBy); for (const id of o.carriers ?? []) group.add(id); }
+  let changed = false;
+  const combatants = { ...state.combatants };
+  for (const c of Object.values(state.combatants)) {
+    if (group.has(c.id) === !!c.groupCarry) continue;
+    const { groupCarry: _g, ...rest } = c;
+    combatants[c.id] = group.has(c.id) ? { ...rest, groupCarry: true } : rest;
+    changed = true;
+  }
+  return changed ? { ...state, combatants } : state;
+}
+
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
-  return syncAuthority(syncRiders(syncDominatedReactions(syncAuras(syncAllegiance(trackPools(state, pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event)), event), event), event)))))), event)))), state));
+  return syncKarar101(state, syncGroupCarry(syncUnconsciousProne(state, applyEventCore(state, event)), event), event);
+}
+
+/**
+ * GENEL96 A2 (kural sürümü 96; SRD 5.2.1 s. 191 Unconscious "Inert. You have the Incapacitated and Prone conditions …
+ * When this condition ends, you remain Prone"): yeni Unconscious olan (ölmemiş) yaratık Prone da olur; Unconscious bitince
+ * Prone kalır. Prone'a bağışık olan hariç. "Elindekini düşür" kolu ertelendi (yapay zekâ yerden silah almıyor; DECISIONS GENEL96).
+ * 95 ve altı aynen.
+ */
+function syncUnconsciousProne(prev: BattleState, next: BattleState): BattleState {
+  if (prev.combatants === next.combatants || !genel96On(next)) return next;
+  let out = next;
+  for (const [id, c] of Object.entries(next.combatants)) {
+    if (c.life === 'dead' || c.conditions.includes('Prone') || !c.conditions.includes('Unconscious')) continue;
+    const before = prev.combatants[id];
+    if (before && before.conditions === c.conditions) continue;
+    if (before?.conditions.includes('Unconscious')) continue;
+    if (immuneTo(c, 'Prone', next)) continue;
+    out = withCombatant(out, id, { conditions: [...c.conditions, 'Prone'] });
+  }
+  return out;
+}
+
+function applyEventCore(state: BattleState, event: BattleEvent): BattleState {
+  return syncSwallowed(syncAuthority(syncRiders(syncDominatedReactions(syncAuras(syncAllegiance(trackPools(state, pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event)), event), event), event)))))), event)))), state)), state);
 }
 
 /**
@@ -353,6 +458,8 @@ function pruneZones(state: BattleState): BattleState {
     if (z.until !== undefined && z.until < state.round) return false;
     const caster = state.combatants[z.casterId];
     if (z.concentration && caster?.concentration?.spell !== z.concentration) return false;
+    // Görev B94 (A2, sürüm 94+): büyücüsü Incapacitated olunca ya da ölünce biten alan (Nature's Sanctuary).
+    if (z.endsIfCasterDown && sourceDown(caster)) return false;
     if (z.anchorId) {
       const a = state.combatants[z.anchorId];
       if (!a || a.summon?.gone || a.hp <= 0 || !a.pos) return false;
@@ -438,7 +545,8 @@ function markDeaths(before: BattleState, after: BattleState): BattleState {
  * (Incapacitated verir, hız 0). Ölen ya da düşmüş yaratığa uygulanmaz.
  */
 function lethargyAfter(state: BattleState, c: Combatant, lost: ActiveEffect[]): BattleState {
-  const h = lost.find((e) => e.lethargy);
+  // Görev TE99 (99+, SRD 5.2.1 s. 236 Potion of Speed "without suffering the wave of lethargy"): eşyanın Haste etkisi uyuşukluk vermez.
+  const h = lost.find((e) => e.lethargy && !(te99On(state) && e.id.startsWith('item:')));
   if (!h || c.hp <= 0 || c.life === 'dead') return state;
   const cur = state.combatants[c.id] as Combatant;
   const effect: ActiveEffect = { id: `${h.id}/lethargy`, name: `${h.name}: uyuşukluk`, sourceId: h.sourceId, until: state.round + 1, speedZero: true, grants: ['Incapacitated'] };
@@ -483,7 +591,9 @@ function endRage(state: BattleState, id: string): BattleState {
 function dropBrokenRage(state: BattleState): BattleState {
   let next = state;
   for (const c of Object.values(state.combatants)) {
-    if (c.rage && (c.hp <= 0 || isIncapacitated(c.conditions))) next = endRage(next, c.id);
+    // Görev B95-B (97+): Persistent Rage (SRD 5.2.1 s. 30) yalnız Unconscious ile biter ("not just the Incapacitated condition").
+    const persistent = sinif97On(state) && !!c.traits?.includes('persistent-rage');
+    if (c.rage && (c.hp <= 0 || (persistent ? c.conditions.includes('Unconscious') : isIncapacitated(c.conditions)))) next = endRage(next, c.id);
   }
   return next;
 }
@@ -493,6 +603,9 @@ function refreshRage(state: BattleState, actorId: string, targetId: string): Bat
   const a = state.combatants[actorId];
   const t = state.combatants[targetId];
   if (!a?.rage || a.rage.refreshed || !t || t.side === a.side) return state;
+  // Görev B95-B (97+): SRD 5.2.1 s. 29 "If your Rage is still active on your next turn": yalnız Barbarian'ın kendi turunda
+  // (başkasının turundaki fırsat saldırısı, Retaliation uzatmaz).
+  if (sinif97On(state) && state.order[state.turnIndex] !== actorId) return state;
   return withCombatant(state, actorId, { rage: { ...a.rage, refreshed: true } });
 }
 
@@ -526,14 +639,16 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         next = withCombatant(next, att.id, {
           ...(event.traitTurns ? { traitTurns: { ...att.traitTurns, ...event.traitTurns } } : {}),
           ...(event.steadyAim ? { steadyAim: undefined } : {}),
-          ...(!event.opportunity && state.order[state.turnIndex] === att.id ? { economy: { ...att.economy, lastTargetId: event.targetId } } : {}),
+          ...(!event.opportunity && state.order[state.turnIndex] === att.id ? { economy: { ...att.economy, lastTargetId: event.targetId,
+            // Görev B94 (94+): Horde Breaker'ın "bu tur saldırmadığın" ve "aynı silah" şartları.
+            ...(b94On(state) ? { attackedIds: [...new Set([...(att.economy.attackedIds ?? []), event.targetId])], lastWeapon: weaponBase(event.label) } : {}) } } : {}),
         });
       }
       next = refreshRage(next, event.actorId, event.targetId);
       // Yakın dövüş silah isabeti: bu tur smite büyüleri bu hedefe yapılabilir.
       const hitter = next.combatants[event.actorId];
-      if (event.melee && event.hit && hitter) {
-        next = withCombatant(next, hitter.id, { economy: { ...hitter.economy, meleeHit: { targetId: event.targetId, critical: event.critical, ...(event.martialArts ? { martialArts: true } : {}), ...(event.pact ? { pact: true } : {}) } } });
+      if ((event.melee || event.meleeWeapon) && event.hit && hitter) {
+        next = withCombatant(next, hitter.id, { economy: { ...hitter.economy, meleeHit: { targetId: event.targetId, critical: event.critical, ...(event.martialArts ? { martialArts: true } : {}), ...(event.pact ? { pact: true } : {}), ...(event.unarmed ? { unarmed: true } : {}), ...(event.monkWeapon ? { monkWeapon: true } : {}) } } });
       }
       // Deflect Attacks: tepki harcandı.
       const deflector = next.combatants[event.targetId];
@@ -542,7 +657,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const side = state.combatants[event.actorId]?.side;
       const target = next.combatants[event.targetId];
       const mark = side ? `Help:${side}` : '';
-      if (target && side && target.conditions.includes(mark)) {
+      // GENEL96 A13 (sürüm 96+): yardım edenin kendi saldırısı işareti harcamaz (yararlanmaz da).
+      const helper = state.combatants[event.actorId];
+      if (target && side && target.conditions.includes(mark) && !(helper && helpOnlySelf(state, helper, target))) {
         next = withCombatant(next, target.id, { conditions: target.conditions.filter((x) => x !== mark) });
       }
       return withEffects(withCombatant(next, event.targetId, { hp: event.targetHpAfter }), event.targetId, event.effects);
@@ -597,7 +714,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return binekMb2On(started) ? refreshControlledMounts(started, event.nextActorId, event.round) : started;
     }
     case 'placed':
-      return withCombatant(state, event.actorId, { pos: event.at });
+      return syncWater(withCombatant(state, event.actorId, { pos: event.at }), event.actorId);
     case 'dice_rolled':
     case 'distracted':
       return state;
@@ -612,8 +729,17 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
       return { ...state, combatants: { ...state.combatants, [c.id]: withCivilianLook(c, event.gorselId) } };
     }
-    case 'combat_started':
-      return { ...state, status: 'active' };
+    case 'combat_started': {
+      let st: BattleState = { ...state, status: 'active' };
+      for (const c of Object.values(st.combatants)) if (c.swimFt) st = syncWater(st, c.id);
+      // Görev B95-B (97+): Heroic Warrior (Champion, bizim sürüm: "tur başında") inisiyatifte ilk sıradakine 1. turunda da gelir
+      // (tur başı yenilemesi yalnız `turn_ended`'deydi).
+      const first = sinif97On(st) ? st.combatants[st.order[st.turnIndex] ?? ''] : undefined;
+      if (first?.traits?.includes('heroic-warrior') && globalRule(st, 'heroicWarrior') && resourceLeft(first, 'heroicInspiration') < 1) {
+        st = withCombatant(st, first.id, { resources: { ...first.resources, heroicInspiration: 1 } });
+      }
+      return st;
+    }
     case 'moved': {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
@@ -621,7 +747,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const run = c.pos ? runAfter(c.pos, event.path, c.run) : null;
       let moved = withCombatant(state, event.actorId, event.free
         ? { pos: last ?? c.pos, run, economy: { ...c.economy, shiftLeft: Math.max(0, (c.economy.shiftLeft ?? 0) - event.cost) } }
-        : { pos: last ?? c.pos, movementUsed: c.movementUsed + event.cost, run });
+        // Hazırla (Ready, sürüm 90): tepkiyle hareket turun hareketinden düşmez.
+        : event.reaction ? { pos: last ?? c.pos, run } : { pos: last ?? c.pos, movementUsed: c.movementUsed + event.cost, run });
+      moved = syncWater(moved, event.actorId);
       // Kuyruk 19: Resilient Sphere: taşınan küre taşıyanın bir arkasındaki altıgende kalır.
       const behind = event.path.length > 1 ? event.path[event.path.length - 2] : c.pos;
       for (const o of Object.values(state.combatants)) {
@@ -651,6 +779,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.attacksLeft !== undefined) economy.attacksLeft = event.attacksLeft;
       else if (event.kind === 'action') economy.attacksLeft = 0;
       if (event.slotTurn !== undefined) economy.slotTurn = event.slotTurn;
+      if (event.leveled) economy.leveledCast = true;
+      if (event.quickened) economy.quickened = true;
       if (event.light) economy.lightAttack = true;
       if (event.offhand) economy.offhandUsed = true;
       if (event.flurryLeft !== undefined) economy.flurryLeft = event.flurryLeft;
@@ -661,8 +791,17 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.fleet) economy.fleetUsed = true;
       if (event.apotheosis) economy.apotheosisUsed = true;
       if (event.loadingFired) economy.loadingFired = true;
+      // Görev KALAN100: serbest nesne etkileşimi (aç/kapa, al, bırak) bu tur kullanıldı.
+      if (event.interaction) economy.interacted = true;
+      // Görev TE99: Loading silah başına (yeni eylemde liste yeniden başlar).
+      if (event.loadingId) economy.loadingIds = [...(event.kind === 'action' ? [] : economy.loadingIds ?? []), event.loadingId];
+      // Görev TE99: bu turun eylemi Attack ya da Magic mi (Blink Steps; 99+ kullanılır, eski kayıtta okunmaz).
+      if (event.kind === 'action') economy.attackOrMagic = event.what === 'Attack' || !!event.magic;
       // Yeni eylem (Attack): önceki eylemin Loading atışı sayılmaz.
-      if (event.kind === 'action' && !event.loadingFired) economy.loadingFired = false;
+      if (event.kind === 'action' && !event.loadingFired) { economy.loadingFired = false; delete economy.loadingIds; }
+      // Görev WS92 (92+): biçim Multiattack bileşimi: yeni eylemde sayaç sıfırlanır, saldırının adı sayılır.
+      if (event.kind === 'action') delete economy.beastUsed;
+      if (event.beast) economy.beastUsed = { ...(economy.beastUsed ?? {}), [event.beast]: (economy.beastUsed?.[event.beast] ?? 0) + 1 };
       // Kuyruk A6: önce alınan Haste eylemi kullanıldı: asıl eylem geri gelir (kısıtsız).
       if (event.kind === 'action' && economy.hasteFirst) { economy.action = false; economy.attacksLeft = 0; economy.hasted = false; economy.hasteFirst = false; }
       return withCombatant(state, event.actorId, { economy });
@@ -681,6 +820,20 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         ...(once ? { effects: (c.effects ?? []).filter((e) => !e.extraActionOnce) } : {}) });
       return withCombatant(state, c.id, { economy: { ...c.economy, action: false, attacksLeft: 0, hasted: true, hasteUsed: true },
         ...(once ? { effects: (c.effects ?? []).filter((e) => !e.extraActionOnce) } : {}) });
+    }
+    case 'readied': {
+      // Hazırla (Ready, sürüm 90): hazırlık kurulur (bir anda bir tane).
+      if (!state.combatants[event.actorId]) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      return withCombatant(state, event.actorId, { readied: event.readied });
+    }
+    case 'ready_released':
+    case 'ready_lapsed': {
+      // Hazırlık biter; tutulan büyünün konsantrasyonu (`ready:<büyü>`) da (salınan konsantrasyonlu büyü kendi konsantrasyonunu
+      // ardından kurar: tek konsantrasyon).
+      const c = state.combatants[event.actorId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      const held = c.concentration?.spell.startsWith('ready:') ? endConcentration(state, c.id) : state;
+      return withCombatant(held, c.id, { readied: undefined });
     }
     case 'reaction_used': {
       // Tepki hakkı harcanır (Görev R1): kendi turunun başında yenilenir (turn_ended).
@@ -703,9 +856,16 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       // Görev B3: Protection from Evil and Good: korunan türlerden gelen Charmed/Frightened veren etki tutmaz.
       if ((event.effect.grants ?? []).some((g) => wardedFrom(state, c.id, event.effect.sourceId, g))) return state;
-      const effects = [...(c.effects ?? []).filter((e) => e.id !== event.effect.id), event.effect];
+      // Görev D3 (89+): verdiği durum bağışıklığa takılır (taşıyıcı Charmed/Frightened ya da hepsi bağışıksa etki tutmaz).
+      let effect = event.effect;
+      if (srdD3On(state) && effect.grants?.length) {
+        const kept = grantsAfterImmunity(effect.grants, (g) => immuneTo(c, g, state, effect.sourceId));
+        if (!kept) return state;
+        if (kept !== effect.grants) effect = { ...effect, grants: kept };
+      }
+      const effects = [...(c.effects ?? []).filter((e) => e.id !== effect.id), effect];
       // Görev S1: etkinin verdiği durumlar (Invisibility → Invisible) etki sürdükçe.
-      const grants = (event.effect.grants ?? []).filter((g) => !c.conditions.includes(g));
+      const grants = (effect.grants ?? []).filter((g) => !c.conditions.includes(g));
       return withCombatant(state, c.id, { effects, ...(grants.length ? { conditions: [...c.conditions, ...grants] } : {}) });
     }
     case 'effect_ended': {
@@ -822,7 +982,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'dashed': {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
-      return withCombatant(state, event.actorId, { economy: { ...c.economy, dashes: c.economy.dashes + 1 } });
+      // KARAR101 (101+): Dash'in eki Dash anındaki hızdan sabitlenir (sonra hız değişse de ek aynı kalır).
+      const dashFt = karar101On(state) ? { dashFt: (c.economy.dashFt ?? 0) + dashGainFt(c) } : {};
+      return withCombatant(state, event.actorId, { economy: { ...c.economy, dashes: c.economy.dashes + 1, ...dashFt } });
     }
     case 'initiative_swapped': {
       const a = state.combatants[event.actorId];
@@ -857,17 +1019,33 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const base = c.shape?.prev ?? { ac: c.ac, speed: c.speed, fly: c.fly, size: c.size, modifiers: c.modifiers, saves: c.saves,
         weaponOptions: c.weaponOptions, attacksPerAction: c.attacksPerAction, avatar: c.avatar,
         // Kuyruk 18 H2: Polymorph canavar saldırılarını da değiştirir.
-        ...(event.stats?.attacks ? { attacks: c.attacks, multiattack: c.multiattack } : {}) };
+        ...(event.stats?.attacks ? { attacks: c.attacks, multiattack: c.multiattack } : {}),
+        // Kural sürümü 87 (`bicimYuzme`): biçimin yüzme hızı; bırakınca eski yüzme hızı.
+        ...(event.stats && 'swimFt' in event.stats ? { swimFt: c.swimFt } : {}),
+        // Görev D3 (89+): biçimin beceri bonusları; bırakınca eskileri.
+        ...(event.stats?.skills ? { skills: c.skills } : {}),
+        // Görev WS92 (92+): biçimin STR/DEX skoru ve taşıma kapasitesi (biçimde STR × 15 × boyuttan); bırakınca eskileri.
+        ...(event.stats?.scores ? { strScore: c.strScore, dexScore: c.dexScore, carryCapLb: c.carryCapLb } : {}) };
+      // Görev WS91 (91+): önceki biçimin canavar parçası kaldırılır (asıl değerler `prev.mon`'dan), yenisi aşağıda uygulanır.
+      const monPrev = c.shape?.prev.mon;
+      const bare = c.shape?.monster && monPrev ? withoutMonsterPart(c, c.shape.monster, monPrev) : c;
       if (!event.stats) {
-        // Kuyruk K48: Örümcek Biçimi bitince biçim canı (geçici HP) da gider.
-        const { shape: _s, ...rest0 } = c;
-        const rest = c.shape?.spider ? { ...rest0, tempHp: 0 } : rest0;
-        return withCombatant({ ...state, combatants: { ...state.combatants, [c.id]: rest as Combatant } }, c.id, base);
+        // Kuyruk K48: Örümcek Biçimi bitince biçim canı (geçici HP) da gider. Görev WS91 (s.153): Polymorph bitince kalan geçici HP gider.
+        const { shape: _s, ...rest0 } = bare;
+        const rest = c.shape?.spider || (c.shape?.polymorph && c.shape.monster) ? { ...rest0, tempHp: 0 } : rest0;
+        const { mon: _m, ...back } = base as typeof base & { mon?: unknown };
+        return withCombatant({ ...state, combatants: { ...state.combatants, [c.id]: rest as Combatant } }, c.id, back);
       }
       const s = event.stats;
-      return withCombatant(state, c.id, { shape: { ...s, prev: base }, ac: s.ac, speed: s.speed, fly: s.fly, size: s.size, modifiers: s.modifiers,
+      const mon = s.monster ? monsterPrevOf(bare, s.monster, monPrev) : undefined;
+      const state1 = s.monster || bare !== c ? { ...state, combatants: { ...state.combatants, [c.id]: s.monster ? withMonsterPart(bare, s.monster) : bare } } : state;
+      const shaped = withCombatant(state1, c.id, { shape: { ...s, prev: mon ? { ...base, mon } : base }, ac: s.ac, speed: s.speed, fly: s.fly, size: s.size, modifiers: s.modifiers,
         saves: s.saves, weaponOptions: s.weaponOptions, attacksPerAction: s.attacksPerAction, avatar: s.avatar,
-        ...(s.attacks ? { attacks: s.attacks, multiattack: !!s.multiattack } : {}) });
+        ...(s.attacks ? { attacks: s.attacks, multiattack: !!s.multiattack } : {}),
+        ...('swimFt' in s ? { swimFt: s.swimFt || undefined } : {}), ...(s.skills ? { skills: s.skills } : {}),
+        ...(s.scores ? { strScore: s.scores.str, dexScore: s.scores.dex, carryCapLb: undefined } : {}) });
+      // Kural sürümü 87: yüzen biçim sudaysa "suda" işareti hemen (yüzme hızı ve çok derin su).
+      return 'swimFt' in s ? syncWater(shaped, c.id) : shaped;
     }
     case 'trait_turn': {
       const c = state.combatants[event.actorId];
@@ -878,7 +1056,11 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (!c) return state;
       const slots = [...c.spellSlots];
       slots[event.level - 1] = (slots[event.level - 1] ?? 0) + 1;
-      return withCombatant(state, event.actorId, { spellSlots: slots });
+      // Görev B93: yaratılan slotlar sayılır (savaş sonunda tablonun üstüne çıkabilir; uzun dinlenmede kaybolur).
+      if (!event.extra) return withCombatant(state, event.actorId, { spellSlots: slots });
+      const created = [...(c.createdSlots ?? [])];
+      created[event.level - 1] = (created[event.level - 1] ?? 0) + 1;
+      return withCombatant(state, event.actorId, { spellSlots: slots, createdSlots: created });
     }
     case 'slot_spent': {
       const c = state.combatants[event.actorId];
@@ -890,8 +1072,10 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'save_resolved': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
-      const conditions = [...c.conditions, ...event.conditionsAdded.filter((x) => !c.conditions.includes(x) && !immuneTo(c, x, state) && !wardedFrom(state, c.id, event.actorId, x))];
+      const conditions = [...c.conditions, ...event.conditionsAdded.filter((x) => !c.conditions.includes(x) && !immuneTo(c, x, state, event.actorId) && !wardedFrom(state, c.id, event.actorId, x))];
       let next = withCombatant(state, event.targetId, { hp: event.targetHpAfter, conditions });
+      // Görev B95-B (97+): düşmana save yaptırmak (Intimidating Presence…) Rage'i uzatır (SRD 5.2.1 s. 29).
+      if (sinif97On(state)) next = refreshRage(next, event.actorId, event.targetId);
       for (const x of event.conditionsAdded) next = linkCondition(next, event.actorId, event.label, event.targetId, x);
       const caster = next.combatants[event.actorId];
       if (event.aura && caster?.concentration) {
@@ -967,21 +1151,49 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
           conditions: c.conditions.filter((x) => x !== 'Unconscious'),
         });
       }
+      // GENEL96 A1 (sürüm 96; SRD 5.2.1 s. 17 "When you become Stable or regain any Hit Points, reset both counts to zero"):
+      // ölüm save'iyle stabil olunca sayaçlar sıfırlanır; stabilken hasar alan 1 başarısızlıkla yeniden ölmekte (s. 18).
+      // 95 ve altı: sayaçlar olduğu gibi kalır.
+      const reset = event.outcome === 'stable' && genel96On(state);
       return withCombatant(state, event.actorId, {
-        deathSaves: { successes: event.successes, failures: event.failures },
+        deathSaves: reset ? { successes: 0, failures: 0 } : { successes: event.successes, failures: event.failures },
         life: event.outcome === 'dead' ? 'dead' : event.outcome === 'stable' ? 'stable' : 'dying',
       });
     }
-    case 'stabilized':
+    case 'stabilized': {
+      // KARAR101 (101+, SRD Knocking Out "until someone uses an action to administer first aid to it … DC 10 Wisdom (Medicine)"):
+      // bayıltılanda ilk yardım Unconscious'ı bitirir (Prone kalır).
+      const ko = state.combatants[event.targetId];
+      if (ko?.knockedOut) {
+        if (!event.success) return state;
+        const { knockedOut: _k, ...rest } = ko;
+        return { ...state, combatants: { ...state.combatants, [ko.id]: { ...rest, conditions: ko.conditions.filter((x) => x !== 'Unconscious') } } };
+      }
       return event.success
         ? withCombatant(state, event.targetId, { life: 'stable', deathSaves: { successes: 0, failures: 0 } })
         : state;
+    }
+    case 'shield_changed': {
+      // KARAR101 (101+, SRD Shield "Utilize Action to Don or Doff"): AC kalkan katkısı kadar; Two-Handed seçenekleri açılır/kapanır.
+      const c = state.combatants[event.actorId];
+      if (!c || c.shieldAc === undefined || !!c.shieldOff === !event.on) return state;
+      const d = event.on ? c.shieldAc : -c.shieldAc;
+      const acExtra = c.acExtra !== undefined || d > 0 ? { acExtra: (c.acExtra ?? 0) + d } : {};
+      const { shieldOff: _o, shieldHeld: _h, ...rest } = c;
+      const opts = event.on
+        ? { weaponOptions: c.weaponOptions.filter((o) => !o.shieldBusy), shieldBlocked: [...(c.shieldBlocked ?? []), ...c.weaponOptions.filter((o) => o.shieldBusy)] }
+        : { weaponOptions: [...c.weaponOptions, ...(c.shieldBlocked ?? [])], shieldBlocked: [] as typeof c.weaponOptions };
+      const blocked = opts.shieldBlocked.length ? { shieldBlocked: opts.shieldBlocked } : {};
+      const { shieldBlocked: _sb, ...base } = rest;
+      return { ...state, combatants: { ...state.combatants, [c.id]: { ...base, ...blocked, weaponOptions: opts.weaponOptions, ac: c.ac + d, ...acExtra,
+        ...(event.on ? { shieldHeld: true } : { shieldOff: true }) } as Combatant } };
+    }
     case 'condition_changed': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       const has = c.conditions.includes(event.condition);
       // Bağışıklık (Heroism: Frightened): durum eklenmez.
-      if (event.present && !has && immuneTo(c, event.condition, state)) return state;
+      if (event.present && !has && immuneTo(c, event.condition, state, event.sourceId ?? event.timer?.sourceId)) return state;
       // Kuyruk K75 (79+): süreli Charmed/Frightened da korumaya (Protection from Evil and Good, Magic Circle, Hallow, aura) takılır.
       if (event.present && !has && k75On(state) && wardedFrom(state, c.id, event.sourceId ?? event.timer?.sourceId, event.condition)) return state;
       const conditions = event.present
@@ -998,7 +1210,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       const next = refreshRage(state, event.actorId, event.targetId);
-      return !event.success && event.effect === 'prone' && !c.conditions.includes('Prone')
+      // GENEL96 B4 (sürüm 96+; s. 184 Immunity): Prone'a bağışık hedef Shove ile yere düşmez.
+      const proneImmune = genel96On(state) && immuneTo(c, 'Prone', state, event.actorId);
+      return !event.success && event.effect === 'prone' && !c.conditions.includes('Prone') && !proneImmune
         ? withCombatant(next, event.targetId, { conditions: [...c.conditions, 'Prone'] })
         : next;
     }
@@ -1053,7 +1267,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
       // Hız 0: bu tur hareket kalmaz (Dash dahil; tur başında sıfırlanır).
-      return withCombatant(state, c.id, { steadyAim: event.turn, movementUsed: Math.max(c.movementUsed, 999) });
+      // Görev B95-B (97+, SRD 5.2.1 s. 62 "your Speed is 0 until the end of the current turn"): ekonomide işaret (kayma yarı hız = 0).
+      return withCombatant(state, c.id, { steadyAim: event.turn, movementUsed: Math.max(c.movementUsed, 999), ...(sinif97On(state) ? { economy: { ...c.economy, speedZero: true } } : {}) });
     }
     case 'extra_damage': {
       const c = state.combatants[event.actorId];
@@ -1075,7 +1290,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return withCombatant(state, event.actorId, { resources, economy });
     }
     case 'area_used':
-      return state;
+      // Görev B95-B (97+): düşmana save yaptıran alan (Dragonborn nefesi…) Rage'i uzatır (SRD 5.2.1 s. 29).
+      return sinif97On(state) ? event.targetIds.reduce((s, id) => refreshRage(s, event.actorId, id), state) : state;
     case 'surface_reacted': {
       // Kuyruk K55: zincirle çalışan ikililer turda bir kez (çözücü okur).
       if (!event.pairs?.length) return state;
@@ -1092,7 +1308,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return state.map ? { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => (o.id === event.objectId ? { ...o, hp: event.hpAfter } : o)) } } : state;
     case 'object_changed':
       if (!state.map || (!event.state && event.carriedBy === undefined && !event.at && !event.found && event.light === undefined && event.outlined === undefined
-        && event.altitudeFt === undefined && event.levitatedBy === undefined && event.resized === undefined && event.hp === undefined)) return state;
+        && event.altitudeFt === undefined && event.levitatedBy === undefined && event.resized === undefined && event.hp === undefined
+        && event.carriers === undefined && event.agirlikLb === undefined)) return state;
       return { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => {
         if (o.id !== event.objectId) return o;
         // Görev S3: taşıma (retrieve): `carriedBy` null bırakır, `at` düştüğü yer.
@@ -1101,7 +1318,11 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         const { light: _l, lightSpell: _ls, lightBy: _lb, ...bare } = rest0;
         const rest = event.light === undefined ? rest0 : event.light === null ? bare : { ...bare, light: event.light.r, lightSpell: event.light.spell, lightBy: event.light.by };
         const carried = event.carriedBy === undefined ? o.carriedBy : event.carriedBy ?? undefined;
-        const base = { ...rest, ...(event.state ? { state: event.state } : {}), ...(event.at ? { at: event.at } : {}), ...(carried ? { carriedBy: carried } : {}), ...(event.found ? { found: true } : {}), ...(event.outlined !== undefined ? { outlined: event.outlined } : {}),
+        // Kuyruk KQ3 NA1: ek taşıyıcılar (taşıyan yoksa hiç) ve ağırlık ezmesi.
+        const { carriers: _cs, agirlikLb: _ag, ...rest1 } = rest;
+        const carriers = !carried ? undefined : event.carriers === undefined ? o.carriers : event.carriers ?? undefined;
+        const agirlik = event.agirlikLb === undefined ? o.agirlikLb : event.agirlikLb ?? undefined;
+        const base = { ...rest1, ...(carriers?.length ? { carriers } : {}), ...(agirlik !== undefined ? { agirlikLb: agirlik } : {}), ...(event.state ? { state: event.state } : {}), ...(event.at ? { at: event.at } : {}), ...(carried ? { carriedBy: carried } : {}), ...(event.found ? { found: true } : {}), ...(event.outlined !== undefined ? { outlined: event.outlined } : {}),
           ...(event.altitudeFt !== undefined ? { altitudeFt: event.altitudeFt } : {}), ...(event.hp !== undefined ? { hp: event.hp } : {}) };
         // Kuyruk S2: Levitate ve boyut büyüsü (null kaldırır).
         const { levitatedBy: _lv, ...noLev } = base;
@@ -1153,7 +1374,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return state.map ? { ...state, map: { ...state.map, zones: [...(state.map.zones ?? []).filter((z) => z.id !== event.zone.id), event.zone] } } : state;
     case 'explore_step': {
       const c = state.combatants[event.actorId];
-      return c ? { ...state, combatants: { ...state.combatants, [c.id]: { ...c, movementUsed: 0, economy: { ...c.economy, dashes: 0 } } } } : state;
+      return c ? { ...state, combatants: { ...state.combatants, [c.id]: { ...c, movementUsed: 0, economy: { ...c.economy, dashes: 0, ...(c.economy.dashFt !== undefined ? { dashFt: 0 } : {}) } } } } : state;
     }
     case 'floor_changed':
       return applyFloorChange(state, event);
@@ -1180,6 +1401,14 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       // Kaybolan yaratık savaşçılarda kalır (günlük adları), sırada atlanır (0 HP, ölü), haritadan kalkar.
       const c = state.combatants[event.actorId];
       if (!c) return state;
+      // HATA-FAMILIAR: savaş öncesi (kurulum) kaybolan yaratığın kaydı tamamen silinir (yeniden çağrı = biçim değişimi; artık kayıt
+      // "Henüz yerleşmeyenler var" diye başlatmayı kilitlemez). Savaşta günlük adları için kayıt kalır.
+      if (state.status === 'setup') {
+        const { [c.id]: _gone, ...rest } = state.combatants;
+        // Kaldırılan kaydı binek olarak gösteren binici bağı da temizlenir (artık kayıt "binekten indi" gürültüsü üretmesin).
+        for (const [id, x] of Object.entries(rest)) if (x.riding === c.id) { const { riding: _r, ...nx } = x; rest[id] = nx as typeof x; }
+        return { ...state, combatants: rest, order: state.order.filter((id) => id !== c.id) };
+      }
       return withCombatant(state, c.id, {
         hp: 0, pos: null, life: 'dead', conditions: [], concentration: null, effects: [], tempHp: 0,
         ...(c.summon ? { summon: { ...c.summon, gone: true } } : {}),
@@ -1267,10 +1496,10 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'teleported': {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
-      return withCombatant(state, c.id, { pos: event.to, ...(event.cost ? { movementUsed: c.movementUsed + event.cost } : {}),
+      return syncWater(withCombatant(state, c.id, { pos: event.to, ...(event.cost ? { movementUsed: c.movementUsed + event.cost } : {}),
         // Kuyruk AS1b (alt soy etkisi `teleportEnds`, Cloud): ışınlanınca turun kalan hareketi biter.
         ...(soyTeleportEnds(c) ? { movementUsed: Math.max(c.movementUsed + (event.cost ?? 0), speedHexes(c)) } : {}),
-        ...(event.stride ? { economy: { ...c.economy, treeStride: true } } : {}) });
+        ...(event.stride ? { economy: { ...c.economy, treeStride: true } } : {}) }), c.id);
     }
     case 'ability_recharge': {
       const c = state.combatants[event.actorId];
@@ -1299,6 +1528,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'exhaustion_changed': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      // GENEL96 B3 (sürüm 96+; SRD 5.2.1 s. 184 Immunity "it doesn't affect you in any way"): Exhaustion'a bağışık olan
+      // (ör. Zombie) seviye kazanmaz; azalma serbest. 95 ve altı: bağışıklığa bakılmaz.
+      if (genel96On(state) && event.level > (c.exhaustion ?? 0) && immuneTo(c, 'Exhaustion', state)) return state;
       // SRD 5.2.1: 6. seviyede ölür.
       if (event.level >= 6) return withCombatant(state, c.id, { exhaustion: event.level, hp: 0, life: 'dead', concentration: null });
       return withCombatant(state, c.id, { exhaustion: event.level });
@@ -1306,7 +1538,11 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'item_dropped': {
       const c = state.combatants[event.actorId];
       if (!c) return state;
-      const next = withCombatant(state, c.id, { dropped: [...new Set([...(c.dropped ?? []), event.item])], weaponOptions: c.weaponOptions.filter((o) => o.weaponId !== event.item) });
+      // Görev B94 (Sacred Weapon): bırakılan silaha bağlı güçlendirme ve ışığı biter (yalnız 94+'ta yazılan `endsOnDrop`).
+      const gone = (c.buffs ?? []).filter((b) => b.endsOnDrop && b.enchantBy === event.item);
+      const lights = new Set(gone.map((b) => b.endsOnDrop?.lightId).filter(Boolean));
+      const next = withCombatant(state, c.id, { dropped: [...new Set([...(c.dropped ?? []), event.item])], weaponOptions: c.weaponOptions.filter((o) => o.weaponId !== event.item),
+        ...(gone.length ? { buffs: (c.buffs ?? []).filter((b) => !gone.includes(b)), ...(lights.size ? { effects: (c.effects ?? []).filter((e) => !lights.has(e.id)) } : {}) } : {}) });
       if (!event.objectId || !event.at || !next.map) return next;
       return { ...next, map: { ...next.map, objects: [...(next.map.objects ?? []), { id: event.objectId, kind: 'droppedItem', at: event.at, hp: 5, item: event.item, options: event.options ?? [] }] } };
     }
@@ -1389,7 +1625,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return withCombatant(state, c.id, { conditionTimers: (c.conditionTimers ?? []).map((t) => (t.condition === event.condition ? { ...t, count: event.count } : t)) });
     }
     case 'condition_save':
-      return state;
+      // Görev B95-B (97+): Grapple save'i yaptıran Rage'i uzatır (SRD 5.2.1 s. 29 "Force an enemy to make a saving throw").
+      return event.by && sinif97On(state) ? refreshRage(state, event.by, event.targetId) : state;
     case 'stood_up': {
       const c = state.combatants[event.actorId];
       if (!c) return state;

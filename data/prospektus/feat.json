@@ -1,0 +1,116 @@
+{
+ "_aciklama": "Dungeondex prospektüsü, feat'ler. ne/nasil/risk/kimler SRD 5.2.1'den Türkçe özet; kategori ve tekrar data/srd/feats.json'dan (test denetler).",
+ "kayitlar": {
+  "alert": {
+   "ne": "İnisiyatif atarken Proficiency Bonus'unu zara eklersin. Ayrıca inisiyatif attıktan hemen sonra sıranı aynı savaştaki gönüllü bir dostunla değiş tokuş edebilirsin.",
+   "nasil": "Köken feat'idir. Değiş tokuş inisiyatif atıldığı anda yapılır; dost gönüllü olmalıdır. Oyunda değiş tokuş savaşta bir kez, ilk turda, ikiniz de sıranızı oynamamışken yapılır.",
+   "risk": "Sen ya da dostun Incapacitated durumundaysanız sıra değiştirilemez.",
+   "kategori": "Origin"
+  },
+  "magic-initiate": {
+   "ne": "Cleric, Druid ya da Wizard listelerinden birinden iki cantrip ve bir 1. seviye büyü öğrenirsin. 1. seviye büyü hep hazırdır; günde bir kez slotsuz yapılır, slotun varsa onunla da yapılır.",
+   "nasil": "Feat'i alırken listeyi ve büyü yeteneğini (INT, WIS ya da CHA) seçersin. Slotsuz kullanım Long Rest'te yenilenir. Her seviye atladığında bu feat'in büyülerinden birini aynı listeden aynı seviyede başka bir büyüyle değiştirebilirsin.",
+   "risk": "Birden çok kez alınabilir, ama her seferinde farklı bir büyü listesi seçilmelidir.",
+   "kategori": "Origin",
+   "tekrar": true
+  },
+  "savage-attacker": {
+   "ne": "Silahla vurduğunda silahın hasar zarlarını iki kez atar, iki sonuçtan birini kullanırsın; ağır vuruşlar için eğitilmişsindir.",
+   "nasil": "Köken feat'idir. Turda bir kez, silahla bir hedefi vurduğunda kullanılır. Oyunda iki atış da zar defterine yazılır ve yüksek olan alınır.",
+   "risk": "Turda yalnızca bir kez; yalnız silah isabetlerinde işler.",
+   "kategori": "Origin"
+  },
+  "skilled": {
+   "ne": "Seçtiğin üç beceri ya da aletin herhangi bir bileşiminde yetkinlik kazanırsın.",
+   "nasil": "Köken feat'idir. Birden çok kez alınabilir.",
+   "kategori": "Origin",
+   "tekrar": true
+  },
+  "ability-score-improvement": {
+   "ne": "Bir yetenek puanını 2 ya da iki yetenek puanını 1'er artırırsın.",
+   "nasil": "Seçimi feat'i aldığında yaparsın. Birden çok kez alınabilir.",
+   "risk": "Bu feat bir yetenek puanını 20'nin üstüne çıkaramaz.",
+   "kimler": "Ön koşul: 4. seviye ve üstü (genel feat).",
+   "kategori": "General",
+   "tekrar": true
+  },
+  "grappler": {
+   "ne": "STR ya da DEX'in 1 artar. Unarmed Strike ile vurunca hem hasar verip hem yakalayabilir, yakaladığın yaratığa avantajla saldırır, kendi boyunda ya da küçük bir yaratığı ek hareket harcamadan sürüklersin.",
+   "nasil": "Punch and Grab: kendi turunda Attack eyleminin parçası olan Unarmed Strike isabetinde Damage ve Grapple seçeneklerinin ikisini birden kullanırsın; turda bir kez.",
+   "risk": "Yetenek artışı en çok 20'ye kadar. Ek hareketsiz sürükleme yalnızca senin boyunda ya da daha küçük yaratıkta geçerli.",
+   "kimler": "Ön koşul: 4. seviye ve üstü, STR ya da DEX 13 ve üstü.",
+   "kategori": "General"
+  },
+  "archery": {
+   "ne": "Menzilli (Ranged) silahlarla yaptığın saldırı zarlarına +2 eklersin.",
+   "kimler": "Ön koşul: Fighting Style özelliği (Fighting Style feat'i).",
+   "kategori": "Fighting Style"
+  },
+  "defense": {
+   "ne": "Light, Medium ya da Heavy zırh giydiğin sürece Armor Class'ına +1 eklersin.",
+   "risk": "Zırhsızken işe yaramaz.",
+   "kimler": "Ön koşul: Fighting Style özelliği (Fighting Style feat'i).",
+   "kategori": "Fighting Style"
+  },
+  "great-weapon-fighting": {
+   "ne": "İki elle tuttuğun yakın dövüş silahıyla yaptığın saldırının hasarında, hasar zarında gelen 1 ve 2'yi 3 sayabilirsin.",
+   "risk": "Silah Two-Handed ya da Versatile özelliğinde olmalı ve iki elle tutulmalıdır; menzilli silahlarda işlemez.",
+   "kimler": "Ön koşul: Fighting Style özelliği (Fighting Style feat'i).",
+   "kategori": "Fighting Style"
+  },
+  "two-weapon-fighting": {
+   "ne": "Light özellikli bir silahın verdiği ek saldırının hasarına, zaten eklemiyorsan yetenek değiştiricini eklersin.",
+   "nasil": "Oyunda yan el (Light ek saldırısı) hasarına yetenek değiştiricisi kendiliğinden eklenir.",
+   "kimler": "Ön koşul: Fighting Style özelliği (Fighting Style feat'i).",
+   "kategori": "Fighting Style"
+  },
+  "boon-of-combat-prowess": {
+   "ne": "Seçtiğin bir yetenek puanı 1 artar. Bir saldırı zarında ıskaladığında bunun yerine isabet ettirebilirsin.",
+   "nasil": "Peerless Aim bir kez kullanıldıktan sonra bir sonraki turunun başına dek yeniden kullanılamaz.",
+   "risk": "Yetenek artışı en çok 30'a kadar. Oyunda doğal 1 için kullanılmaz.",
+   "kimler": "Ön koşul: 19. seviye ve üstü (Epic Boon).",
+   "kategori": "Epic Boon"
+  },
+  "boon-of-dimensional-travel": {
+   "ne": "Seçtiğin bir yetenek puanı 1 artar. Attack ya da Magic eylemini kullandıktan hemen sonra görebildiğin boş bir yere 30 ft'e kadar ışınlanabilirsin.",
+   "nasil": "Blink Steps eylemin hemen ardından, ek eylem harcamadan yapılır.",
+   "risk": "Yetenek artışı en çok 30'a kadar. Varış yeri boş olmalı ve görülebilmelidir.",
+   "kimler": "Ön koşul: 19. seviye ve üstü (Epic Boon).",
+   "kategori": "Epic Boon"
+  },
+  "boon-of-fate": {
+   "ne": "Seçtiğin bir yetenek puanı 1 artar. Sen ya da 60 ft içindeki bir yaratık bir D20 Testinde başarılı ya da başarısız olunca 2d4 atar, toplamı d20 sonucuna bonus ya da ceza olarak uygularsın.",
+   "nasil": "Improve Fate bir kez kullanılınca inisiyatif atana ya da Short veya Long Rest bitirene dek yeniden kullanılamaz. Oyunda dostun başarısız testine eklenir, düşmanın başarılı testinden düşülür; yalnızca sonucu değiştirebilecekse kullanılır.",
+   "risk": "Yetenek artışı en çok 30'a kadar.",
+   "kimler": "Ön koşul: 19. seviye ve üstü (Epic Boon).",
+   "kategori": "Epic Boon"
+  },
+  "boon-of-irresistible-offense": {
+   "ne": "STR ya da DEX'in 1 artar. Verdiğin ezici, delici ve kesici hasar dirençleri her zaman yok sayar. Saldırı zarında d20'de 20 gelince, bu feat'le artırdığın yetenek puanı kadar ek hasar verebilirsin.",
+   "nasil": "Ek hasarın türü saldırınınkiyle aynıdır.",
+   "risk": "Yetenek artışı en çok 30'a kadar. Direnci aşma yalnız ezici, delici ve kesici hasarda geçerlidir.",
+   "kimler": "Ön koşul: 19. seviye ve üstü (Epic Boon).",
+   "kategori": "Epic Boon"
+  },
+  "boon-of-spell-recall": {
+   "ne": "INT, WIS ya da CHA'n 1 artar. 1.–4. seviye bir slotla büyü yaptığında 1d4 atarsın; sonuç slotun seviyesine eşitse slot harcanmaz.",
+   "risk": "Yetenek artışı en çok 30'a kadar. 5. seviye ve üstü slotlarda işlemez.",
+   "kimler": "Ön koşul: 19. seviye ve üstü, Spellcasting özelliği (Epic Boon).",
+   "kategori": "Epic Boon"
+  },
+  "boon-of-the-night-spirit": {
+   "ne": "Seçtiğin bir yetenek puanı 1 artar. Loş ışıkta ya da karanlıkta bonus eylemle kendini Invisible yapabilirsin; oradayken Psychic ve Radiant dışındaki bütün hasarlara direncin olur.",
+   "nasil": "Merge with Shadows bonus eylemdir; Invisible durumu bir eylem, bonus eylem ya da tepki kullandığın anda biter.",
+   "risk": "Yetenek artışı en çok 30'a kadar. İki fayda da yalnızca loş ışıkta ya da karanlıktayken işler; parlak ışıkta yoktur.",
+   "kimler": "Ön koşul: 19. seviye ve üstü (Epic Boon).",
+   "kategori": "Epic Boon"
+  },
+  "boon-of-truesight": {
+   "ne": "Seçtiğin bir yetenek puanı 1 artar ve 60 ft menzilli Truesight kazanırsın.",
+   "nasil": "Oyunda Truesight görünmezliği ve büyülü karanlığı görmeni sağlar.",
+   "risk": "Yetenek artışı en çok 30'a kadar.",
+   "kimler": "Ön koşul: 19. seviye ve üstü (Epic Boon).",
+   "kategori": "Epic Boon"
+  }
+ }
+}

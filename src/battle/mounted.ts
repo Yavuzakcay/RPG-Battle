@@ -28,6 +28,7 @@ import { distance, neighbors, sameHex, type Offset } from '../rules/hex';
 import { fail, finish, type CommandResult } from './common';
 import { saveDice } from './effectDice';
 import { saveMode } from './durations';
+import { walkBudgetHexes } from './karar101Surum';
 import { sizeRank } from './forced';
 import { globalRule } from './ruleControl';
 import { binekOn } from './binekSurum';
@@ -90,7 +91,7 @@ export function mountProblem(state: BattleState, actor: Combatant, mountId: stri
     const ceil = ceilingOver(state, m);
     if (ceil !== null && (m.altitudeFt ?? 0) + bodyHeightFt(m) + bodyHeightFt(actor) > ceil) return `Tavan alçak (${ceil} ft): binekle birlikte sığmazsın.`;
   }
-  if (actor.movementUsed + halfSpeed(state, actor) > Math.floor(actor.speed / 5) * (1 + actor.economy.dashes)) return 'Binmek için hızının yarısı kadar hareketin kalmalı.';
+  if (actor.movementUsed + halfSpeed(state, actor) > walkBudgetHexes(actor)) return 'Binmek için hızının yarısı kadar hareketin kalmalı.';
   return null;
 }
 
@@ -107,7 +108,7 @@ export function executeDismount(state: BattleState, actor: Combatant, to?: Offse
   if (binekMb3On(state)) return dismount69(state, actor, to, toFt);
   const at = to ?? (actor.pos ? freeNeighbor(state, actor.pos) : null);
   if (!at || (actor.pos && distance(actor.pos, at) > 1) || occupied(state, at)) return fail('İnmek için bitişik boş bir altıgen seç.');
-  if (actor.movementUsed + halfSpeed(state, actor) > Math.floor(actor.speed / 5) * (1 + actor.economy.dashes)) return fail('İnmek için hızının yarısı kadar hareketin kalmalı.');
+  if (actor.movementUsed + halfSpeed(state, actor) > walkBudgetHexes(actor)) return fail('İnmek için hızının yarısı kadar hareketin kalmalı.');
   return finish(state, [{ type: 'dismounted', actorId: actor.id, at, cost: halfSpeed(state, actor) }]);
 }
 
@@ -144,7 +145,7 @@ function dismount69(state: BattleState, actor: Combatant, to?: Offset, toFt?: nu
 
 function dismountTail(state: BattleState, actor: Combatant, at: Offset, ft: number, alt: number): CommandResult {
   if (ft > 0 && ft > altitudeCapFt(state, { ...actor, pos: at })) return fail('Tavan alçak: o irtifada inilmez.');
-  if (actor.movementUsed + halfSpeed(state, actor) > Math.floor(actor.speed / 5) * (1 + actor.economy.dashes)) return fail('İnmek için hızının yarısı kadar hareketin kalmalı.');
+  if (actor.movementUsed + halfSpeed(state, actor) > walkBudgetHexes(actor)) return fail('İnmek için hızının yarısı kadar hareketin kalmalı.');
   return finish(state, [{ type: 'dismounted', actorId: actor.id, at, cost: halfSpeed(state, actor), ...(ft !== alt ? { toFt: ft } : {}) }]);
 }
 

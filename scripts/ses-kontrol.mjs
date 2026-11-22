@@ -68,7 +68,15 @@ async function pickMap(page, id) {
   }
   await page.click(`[data-map="${id}"]`);
 }
-await page.click('button.role >> nth=1');
+// Görev D3: OD1'den beri Game Master kartı "Oda kur"u açar. ANA-MENU-SADELESTIR: Hızlı savaş kartı kalktı; harita seçiciye
+// Oda kur → yeni oda yoluyla (KH1 `check:harita` gibi).
+await page.click('[data-testid="home-room-create"]');
+await page.click('[data-testid="oda-create"]');
+// Partiye ilk dört karakter (eski Hızlı savaş varsayılanı; check:harita `kara-ekran.mjs` ile aynı). Parti boşken "Savaşı kur" kapalı kalır.
+await page.waitForSelector('[data-testid="map-region"]');
+const partyChips = page.locator('[data-testid="party-chip"] input');
+const nParty = Math.min(4, await partyChips.count());
+for (let i = 0; i < nParty; i++) await partyChips.nth(i).check();
 await wait(1500);
 d = await debug();
 check('Game Master kurulumunda yalnızca menü müziği', d.playing.join() === 'menu:menu-dark', d);

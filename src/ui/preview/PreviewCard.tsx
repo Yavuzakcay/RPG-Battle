@@ -5,17 +5,22 @@
  * "?" ipucu). Ayrıntı Kısa: hedef başına tek satır; Tam: kaynaklar ve durumlar da.
  */
 import { useMemo } from 'react';
-import { t } from '../../i18n';
+import { getLang, t } from '../../i18n';
+import { completeReason } from '../reasons';
 import { hexText } from '../log';
 import type { BattleState, Command, CommandContext } from '../../battle/types';
 import type { DiscoveryStore, PreviewSettings } from '../../app/discovery';
 import { movePreview, pct, rangeText } from './movePreview';
 
+import { hpModeFor } from '../hpVisibility';
+import { DamageChip } from '../glyph/Glyph';
+import { glyphLabel } from '../glyph/glyphs';
+
 export default function PreviewCard(props: { state: BattleState; cmd: Command | null; ctx: CommandContext; disc: DiscoveryStore; settings: PreviewSettings }) {
   const P = t().battle.preview;
   const mp = useMemo(() => (props.cmd ? movePreview(props.state, props.cmd, props.ctx, props.disc, props.settings) : null), [props.state, props.cmd, props.ctx, props.disc, props.settings]);
   if (!mp) return null;
-  if (!mp.ok) return <div className="preview-card bad"><small>{P.error(mp.error ?? '')}</small></div>;
+  if (!mp.ok) return <div className="preview-card bad"><small>{P.error(completeReason(mp.error ?? '', getLang()))}</small></div>;
   const full = props.settings.detail === 'tam';
   const name = (id: string) => props.state.combatants[id]?.name ?? id;
   return (
@@ -25,9 +30,9 @@ export default function PreviewCard(props: { state: BattleState; cmd: Command | 
           <b>{l.name}</b>
           {l.hitP !== undefined && <span>{P.hit(pct(l.hitP))}{l.critP ? ` · ${P.crit(pct(l.critP))}` : ''}</span>}
           {l.dc !== undefined && <span>{P.save(l.ability ?? '', l.dc, pct(l.saveP))}</span>}
-          {l.damage.max > 0 && <span>{P.dmg(rangeText(l.damage))}</span>}
+          {l.damage.max > 0 && <span>{P.dmg(rangeText(l.damage))}{l.dtypes.map((d) => <DamageChip key={d} type={d} label={glyphLabel(d, getLang())} />)}</span>}
           {l.healing.max > 0 && <span>{P.heal(rangeText(l.healing))}</span>}
-          {l.killP > 0.01 && <span>{P.kill(pct(l.killP))}</span>}
+          {l.killP > 0.01 && !hpModeFor(props.state.combatants[l.id]) && <span>{P.kill(pct(l.killP))}</span>}
           {l.movedTo && <span>{P.moved(hexText(l.movedTo))}</span>}
           {l.teleportedTo && <span>{P.teleport(hexText(l.teleportedTo))}</span>}
           {full && l.conditions.length > 0 && <small>{P.conditions}: {l.conditions.join(', ')}</small>}

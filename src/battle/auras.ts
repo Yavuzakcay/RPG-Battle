@@ -17,7 +17,13 @@ import { isIncapacitated } from '../rules/conditions';
 import { auraDist, gap64, rangeGap } from './adjacency';
 import { gap } from './body';
 import { globalRule } from './ruleControl';
+import { b94On } from './b94Surum';
+import { b98On } from './b98Surum';
+import { te99On } from './te99Surum';
+import { sourceDown } from './sourceDown';
 import { ruleVersion } from './ruleVersion';
+import { matrisOn } from './matrisSurum';
+import { genel96On } from './genel96Surum';
 import { silencedAt, zoneSpecOf } from './zones';
 import { fateHolder, shadowyFormResist } from './boons';
 import type { BattleState, Combatant } from './types';
@@ -28,8 +34,26 @@ const K19_SYNC = ['peerless-skill', 'improved-primal-strike', 'improved-blessed-
 const radiusOf = (p: Combatant): number => ((p.level ?? 0) >= 18 ? 6 : 2);
 const bonusOf = (p: Combatant): number => Math.max(1, p.modifiers.cha);
 
+/**
+ * Görev B94 (A2, sürüm 94+): Paladin'in kendi aurası (save'lere yazılmadıysa, `auraOwnLive`): Incapacitated/0 HP iken 0
+ * (`sourceDown`). Sürüm < 94'te işaretli savaşçıda eski davranış (her zaman).
+ */
+export function ownAuraOf(state: BattleState, c: Combatant): number {
+  if (!c.auraOwnLive || !c.traits?.includes(TRAIT)) return 0;
+  return b94On(state) && sourceDown(c) ? 0 : bonusOf(c);
+}
+
 /** Savaşçının bu durumdaki aura bonusu (kendi bonusu sheet'te sayılan Paladin için yalnızca fazlası). */
 export function auraSaveOf(state: BattleState, c: Combatant): number {
+  // Görev B94: kendi bonusu save'lerde yazılı değilse burada (dostların aurasıyla en büyüğü).
+  if (c.auraOwnLive) return Math.max(ownAuraOf(state, c), othersAura(state, c));
+  if (c.hp <= 0 || !c.pos) return 0;
+  const own = c.traits?.includes(TRAIT) ? bonusOf(c) : 0;
+  return Math.max(0, othersAura(state, c) - own);
+}
+
+/** Başka Paladin'lerin aurasından gelen en büyük bonus. */
+function othersAura(state: BattleState, c: Combatant): number {
   if (c.hp <= 0 || !c.pos) return 0;
   let best = 0;
   for (const p of Object.values(state.combatants)) {
@@ -38,8 +62,7 @@ export function auraSaveOf(state: BattleState, c: Combatant): number {
     if (auraDist(state, p, c) > radiusOf(p)) continue;
     best = Math.max(best, bonusOf(p));
   }
-  const own = c.traits?.includes(TRAIT) ? bonusOf(c) : 0;
-  return Math.max(0, best - own);
+  return best;
 }
 
 /**
@@ -85,6 +108,28 @@ export function burstOf(state: BattleState, c: Combatant): Combatant['burstBy'] 
   return undefined;
 }
 
+/**
+ * Mekanik matris B13 (sürüm 83+): Holy Aura (SRD 5.2.1: "you emit an aura in a 30-foot Emanation. While in the aura,
+ * creatures of your choice have Advantage on all saving throws, and other creatures have Disadvantage on attack rolls
+ * against them"). "Seçtiğin yaratıklar" = büyücünün dostları (kendisi dahil); yayılım büyücüyle yürür, çıkan yararını
+ * yitirir. Birden çok yayılımda en yüksek DC'li (yararlar aynı).
+ */
+export function allyAuraOf(state: BattleState, c: Combatant): Combatant['allyAura'] {
+  if (!c.pos) return undefined;
+  let best: Combatant['allyAura'];
+  for (const p of Object.values(state.combatants)) {
+    if (p.side !== c.side || !p.pos || p.hp <= 0) continue;
+    for (const e of p.effects ?? []) {
+      const a = e.allyAura;
+      if (!a || (p.id !== c.id && auraDist(state, p, c) * 5 > a.radiusFt)) continue;
+      if (best && (best.blindRetort?.dc ?? 0) >= (a.blindRetort?.dc ?? 0)) continue;
+      best = { by: p.id, srd: e.id, name: e.name, ...(a.saveAdvAll ? { saveAdvAll: true as const } : {}), ...(a.attackedDis ? { attackedDis: true as const } : {}),
+        ...(a.blindRetort ? { blindRetort: a.blindRetort } : {}) };
+    }
+  }
+  return best;
+}
+
 export function syncAuras(state: BattleState): BattleState {
   const on = !!globalRule(state, 'auraOfProtection');
   const charmOn = !!globalRule(state, 'countercharm');
@@ -111,12 +156,23 @@ export function syncAuras(state: BattleState): BattleState {
   // Kuyruk A6 (sürüm 35): Silence içindeki yaratık Deafened sayılır, sözlü tepki büyüsü yapamaz (`silenced`).
   const anyPack = Object.values(state.combatants).some((p) => p.summon?.withOwner && !p.summon.gone);
   const anySilence = ruleVersion(state) >= 35 && !!state.map?.zones?.some((z) => zoneSpecOf(z)?.silence);
+  // Mekanik matris (sürüm 83+): durum bilmeyen save yolları için sürüm işareti (Restrained DEX dezavantajı, B01).
+  const m83 = matrisOn(state);
+  // GENEL96 (sürüm 96+): durum bilmeyen hasar profili yolu için sürüm işareti (direnç/zayıflık sırası, Petrified direnci).
+  const g96 = genel96On(state);
+  // Mekanik matris B13 (sürüm 83+): Holy Aura dost yayılımı.
+  const anyAllyAura = m83 && Object.values(state.combatants).some((c) => c.effects?.some((e) => e.allyAura));
+  const v98 = b98On(state);
+  const t99 = te99On(state);
   for (const c of Object.values(state.combatants)) {
+    const aa = anyAllyAura ? allyAuraOf(state, c) : undefined;
     const pkSans = anyPk ? paketSansOf(state, c) : [];
     const hush = anySilence && !!c.pos && !!silencedAt(state, c.pos);
     const pack = anyPack && Object.values(state.combatants).some((p) => p.summon?.withOwner && p.summon.by === c.id && !p.summon.gone && p.hp > 0 && gap(state, p, c) <= 1);
     const core = anyCore ? passiveAuraOf(state, c) : null;
-    const want = Math.max(on ? auraSaveOf(state, c) : 0, core?.saveBonus ?? 0);
+    // Görev B94: save'lere yazılmamış kendi aurası anahtar kapalıyken de (eskiden sheet'te; kapalıyken yalnız kendi bonusu).
+    const mine = ownAuraOf(state, c);
+    const want = mine > 0 ? mine + Math.max(on ? auraSaveOf(state, c) - mine : 0, core?.saveBonus ?? 0) : Math.max(on ? auraSaveOf(state, c) : 0, core?.saveBonus ?? 0);
     const throne = anyImza ? imzaAuraBonus(state, c, 'wis') : 0;
     // Kuyruk K54b: Mevzi İşareti altıgeninde kurtulma bonusu.
     const ward = anyWard ? groundWardSave(state, c) : 0;
@@ -125,19 +181,22 @@ export function syncAuras(state: BattleState): BattleState {
     const by = charmOn ? countercharmOf(state, c) : undefined;
     const fix = inspireOn && !!c.traits?.length && (c.effects ?? []).some((e) => e.inspire);
     const chain = chainOn && (c.effects ?? []).some((e) => e.inspire);
+    // Görev B98 (sürüm 98+): Bardic Inspiration zarını taşıyan kullanmadan önce karar verir.
+    const ask = v98 && (c.effects ?? []).some((e) => e.inspire);
     const life = [...new Set([...(anyLife ? auraResistOf(state, c) : []), ...(core?.resist ?? [])])];
     const sdis = !!core?.saveDis;
     const k19 = k19On && !!c.traits?.some((x) => K19_SYNC.includes(x));
     const fateBy = anyFate ? fateHolder(state, c, true) : undefined;
     const fateFoe = anyFate ? fateHolder(state, c, false) : undefined;
     const burst = anyBurst ? burstOf(state, c) : undefined;
-    if (JSON.stringify(c.burstBy) === JSON.stringify(burst) && (c.auraSave ?? 0) === want && c.countercharmBy === by && !!c.inspireFix === fix && !!c.inspireChain === chain && (c.auraResist ?? []).join() === life.join() && !!c.k19Traits === k19
+    if (JSON.stringify(c.burstBy) === JSON.stringify(burst) && (c.auraSave ?? 0) === want && c.countercharmBy === by && !!c.inspireFix === fix && !!c.inspireChain === chain && !!c.inspireAsk === ask && (c.auraResist ?? []).join() === life.join() && !!c.k19Traits === k19
       && c.fateBy === fateBy && c.fateFoe === fateFoe && (c.imzaWisSave ?? 0) === throne && (c.wardSave ?? 0) === ward && JSON.stringify(c.shoulderBy) === JSON.stringify(shoulder)
       && (c.auraImmune ?? []).join() === (core?.immune ?? []).join() && !!c.auraNoHeal === !!core?.noHeal && !!c.auraDeathDis === !!core?.deathDis && !!c.auraDeathAdv === !!core?.deathAdv
-      && JSON.stringify(c.pkSans ?? []) === JSON.stringify(pkSans) && !!c.auraSaveDis === sdis && !!c.silenced === hush && !!c.packStrAdv === pack) continue;
-    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, inspireChain: _i, auraResist: _d, k19Traits: _e, fateBy: _f, fateFoe: _g, burstBy: _h, imzaWisSave: _j, auraImmune: _k, auraNoHeal: _l, auraDeathDis: _m, auraDeathAdv: _n, wardSave: _w, shoulderBy: _s, pkSans: _pk, auraSaveDis: _sd, silenced: _hu, packStrAdv: _pa, ...rest } = next.combatants[c.id] as Combatant;
-    next = { ...next, combatants: { ...next.combatants, [c.id]: { ...rest, ...(want > 0 ? { auraSave: want } : {}), ...(by ? { countercharmBy: by } : {}),
-      ...(fix ? { inspireFix: true } : {}), ...(chain ? { inspireChain: true } : {}), ...(life.length ? { auraResist: life } : {}), ...(k19 ? { k19Traits: true } : {}),
+      && JSON.stringify(c.pkSans ?? []) === JSON.stringify(pkSans) && !!c.auraSaveDis === sdis && !!c.silenced === hush && !!c.packStrAdv === pack && !!c.srd83 === m83 && !!c.srd96 === g96 && !!c.te99 === t99
+      && JSON.stringify(c.allyAura) === JSON.stringify(aa)) continue;
+    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, inspireChain: _i, inspireAsk: _ia, auraResist: _d, k19Traits: _e, fateBy: _f, fateFoe: _g, burstBy: _h, imzaWisSave: _j, auraImmune: _k, auraNoHeal: _l, auraDeathDis: _m, auraDeathAdv: _n, wardSave: _w, shoulderBy: _s, pkSans: _pk, auraSaveDis: _sd, silenced: _hu, packStrAdv: _pa, srd83: _m83, srd96: _g96, te99: _t99, allyAura: _aa, ...rest } = next.combatants[c.id] as Combatant;
+    next = { ...next, combatants: { ...next.combatants, [c.id]: { ...rest, ...(m83 ? { srd83: true } : {}), ...(g96 ? { srd96: true } : {}), ...(t99 ? { te99: true } : {}), ...(aa ? { allyAura: aa } : {}), ...(want > 0 ? { auraSave: want } : {}), ...(by ? { countercharmBy: by } : {}),
+      ...(fix ? { inspireFix: true } : {}), ...(chain ? { inspireChain: true } : {}), ...(ask ? { inspireAsk: true } : {}), ...(life.length ? { auraResist: life } : {}), ...(k19 ? { k19Traits: true } : {}),
       ...(fateBy ? { fateBy } : {}), ...(fateFoe ? { fateFoe } : {}), ...(burst ? { burstBy: burst } : {}), ...(throne > 0 ? { imzaWisSave: throne } : {}), ...(ward > 0 ? { wardSave: ward } : {}), ...(shoulder ? { shoulderBy: shoulder } : {}), ...(pkSans.length ? { pkSans } : {}),
       ...(core?.immune.length ? { auraImmune: core.immune } : {}), ...(sdis ? { auraSaveDis: true } : {}), ...(hush ? { silenced: true } : {}), ...(pack ? { packStrAdv: true } : {}), ...(core?.noHeal ? { auraNoHeal: true } : {}), ...(core?.deathDis ? { auraDeathDis: true } : {}), ...(core?.deathAdv ? { auraDeathAdv: true } : {}) } as Combatant } };
   }

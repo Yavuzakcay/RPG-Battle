@@ -12,19 +12,19 @@ import { storedCarryRule } from '../ui/carrySetting';
 import { sheetAvatar } from '../battle/avatar';
 import { newCharacter, characterProblems, type SavedCharacter } from '../rules/builder';
 import { deriveStats } from '../rules/stats';
-import { currentStatus, fullStatus, isRested, longRestStatus, magicalCunningStatus, shortRestStatus } from '../rules/characterRest';
+import { currentStatus, fontOfMagicStatus, fullStatus, isRested, longRestStatus, magicalCunningStatus, recoveryOptions, shortRestStatus } from '../rules/characterRest';
 import { subclassMissing } from '../rules/subclasses';
 import { resourceDef } from '../rules/classFeatures';
 import { masteryOptions, masteryRight, masterySwapLimit, masterySwapProblem, masteryText, masteryWorks, weaponMasteryId } from '../rules/mastery';
 import { newId } from '../app/storage';
-import { alignmentEnabled } from '../app/features';
+import { alignmentEnabled, seruvenMenuEnabled } from '../app/features';
 // Kuyruk K51: hizalanma etiketi tembel (ana parça sınırı).
 const AlignmentBadge = lazy(() => import('../ui/AlignmentBadge'));
 import { MAX_PARTY } from '../app/limits';
 import { CharacterFigure } from '../ui/Avatar';
 import { useTheme } from '../ui/theme';
 import { SoundPanel } from '../ui/SoundPanel';
-import { IconAuto, IconGear, IconHexDie, IconMoon, IconPlay, IconSound, IconSun, IconUser } from '../ui/icons';
+import { IconAuto, IconBook, IconDoorEnter, IconGear, IconHexDie, IconMoon, IconPlay, IconSound, IconSun, IconUser } from '../ui/icons';
 import { savedBattleSummary, type SaveSummary } from '../app/saveKey';
 import { version as appVersion } from '../../package.json';
 import { LANGS, setLang, t, useLang } from '../i18n';
@@ -88,11 +88,11 @@ function HomeSound() {
 }
 
 /**
- * Giriş ekranı (Görev M1 tasarımı): masaüstünde solda logo, başlık ve açıklama, sağ üstte tema/ses/dil çipleri, sağda
+ * Giriş ekranı (Görev M1 tasarımı): masaüstünde solda logo ve başlık (ANA-MENU-SADELESTIR: açıklama kutusu kalktı), sağ üstte tema/ses/dil çipleri, sağda
  * cam panel (kayıtlı savaş, Oyuncu, Game Master, Ayarlar; Kuyruk 18 H10: Durum düğmesi kaldırıldı); dar ekranda üst çubuk ve alta yapışık panel. Arka
  * plan görseline karartma ya da filtre konmaz; okunabilirlik cam panel ve metin gölgesiyle.
  */
-export function Home(props: { onPlayer: () => void; onGm: () => void; /** Kuyruk 18 H10: giriş ekranında Durum düğmesi yok (kullanılmaz). */ onStatus?: () => void; onSettings?: () => void; onResume?: () => void; onJourney?: () => void; onSeruven?: () => void; resumeError?: string | null }) {
+export function Home(props: { onPlayer: () => void; /** Hızlı savaş (Görev OD1: eski Game Master kurulumu, sade; ANA-MENU-SADELESTIR: menüde kart yok, yalnız `onRoomCreate` verilmezse Oda kur kartı buna gider). */ onGm: () => void; /** Oda kur (Game Master); yoksa onGm. */ onRoomCreate?: () => void; onRoomJoin?: () => void; /** Kuyruk 18 H10: giriş ekranında Durum düğmesi yok (kullanılmaz). */ onStatus?: () => void; onSettings?: () => void; onResume?: () => void; onJourney?: () => void; onSeruven?: () => void; /** Dungeondex (tembel ekran). */ onDex?: () => void; resumeError?: string | null }) {
   const lang = useLang();
   const L = t();
   const H = L.home;
@@ -115,11 +115,10 @@ export function Home(props: { onPlayer: () => void; onGm: () => void; /** Kuyruk
           <h1 className="brand-title" lang="en" aria-label={APP_NAME}>
             {name2 !== undefined ? <>{name1}<span className="amp">&amp;</span>{name2}</> : APP_NAME}
           </h1>
-          <p className="intro">{H.intro}</p>
         </header>
         <nav className="home2-panel" aria-label={H.actions}>
           {props.onResume && (
-            <button type="button" className="home-card resume" onClick={props.onResume}>
+            <button type="button" className="home-card resume" data-testid="home-resume" onClick={props.onResume}>
               <span className="home-icon"><IconPlay size={26} /></span>
               <span className="home-card-text"><strong>{H.resume}</strong>{summary && <span>{resumeLine(summary, mapName, lang)}</span>}</span>
             </button>
@@ -129,13 +128,20 @@ export function Home(props: { onPlayer: () => void; onGm: () => void; /** Kuyruk
               <span className="home-icon teal"><IconUser size={26} /></span>
               <span className="home-card-text"><strong>{H.player}</strong><span>{H.playerDesc}</span></span>
             </button>
-            <button type="button" className="role home-card gm" onClick={props.onGm}>
+            <button type="button" className="role home-card gm" data-testid="home-room-create" onClick={props.onRoomCreate ?? props.onGm}>
               <span className="home-icon orange"><IconHexDie size={26} /></span>
-              <span className="home-card-text"><strong>{L.common.gm}</strong><span>{H.gmDesc}</span></span>
+              <span className="home-card-text"><strong>{H.roomCreate}</strong><span>{H.roomCreateDesc}</span></span>
             </button>
           </div>
-          {/* Kuyruk 31: Serüven (kıta sayfaları; Game Master gerekmez). */}
-          {props.onSeruven && (
+          {/* Görev OD1: Odaya katıl (oyuncu). ANA-MENU-SADELESTIR: Hızlı savaş kartı kalktı (Oda kur kapsıyor; `onGm` rotası ve kayıt aynı). */}
+          {props.onRoomJoin && (
+            <button type="button" className="home-card join" onClick={props.onRoomJoin}>
+              <span className="home-icon teal"><IconDoorEnter size={22} /></span>
+              <span className="home-card-text"><strong>{H.roomJoin}</strong><span>{H.roomJoinDesc}</span></span>
+            </button>
+          )}
+          {/* Kuyruk 31: Serüven (kıta sayfaları; Game Master gerekmez). ANA-MENU-SADELESTIR: yalnız `seruvenMenu` bayrağı açıkken (varsayılan gizli, iz bırakmaz). */}
+          {props.onSeruven && seruvenMenuEnabled() && (
             <button type="button" className="home-card journey seruven" onClick={props.onSeruven}>
               <span className="home-icon"><IconPlay size={22} /></span>
               <span className="home-card-text"><strong>{L.seruven.menu}</strong><span>{L.seruven.menuDesc}</span></span>
@@ -149,6 +155,7 @@ export function Home(props: { onPlayer: () => void; onGm: () => void; /** Kuyruk
             </button>
           )}
           <div className="home2-secondary">
+            {props.onDex && <button type="button" className="home-sec" data-testid="home-dex" onClick={props.onDex} title={H.dexDesc}><IconBook size={20} />{H.dex}</button>}
             {props.onSettings && <button type="button" className="home-sec" onClick={props.onSettings}><IconGear size={20} />{H.settings}</button>}
           </div>
           {props.resumeError && <p className="error">{props.resumeError}</p>}
@@ -194,6 +201,7 @@ function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode; r
         {problems.length > 0 && <small className="error">{t().common.problems(problems.length)}</small>}
         {subclassMissing(sheet.classId, sheet.subclassId) && <small className="error">{t().content.missing(sheet.subclassId ?? '')}</small>}
         {alignmentEnabled() && <Suspense fallback={null}><AlignmentBadge value={props.c.hizalanma} /></Suspense>}
+        {/* SD8 eki: zar seçimi karakter oluşturucunun son ekranında (karakter kaydında `zar`). */}
         {props.rest}
       </div>
       <div className="card-actions">{props.children}</div>
@@ -210,6 +218,8 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
   const { sheet } = props.c;
   const [dice, setDice] = useState(1);
   const [note, setNote] = useState<string | null>(null);
+  // Görev B93: Arcane Recovery / Natural Recovery seçimi ('' otomatik, 'skip' kullanma, '3,2' slot seviyeleri).
+  const [recoverPick, setRecoverPick] = useState<Record<string, string>>({});
   /** Uzun dinlenmeden önceki ustalık seçimleri: dinlenmeden sonra silah talimiyle değiştirilebilir (SRD Weapon Mastery). */
   const [drills, setDrills] = useState<string[] | null>(null);
   let s;
@@ -243,11 +253,35 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
               <button aria-label="+" disabled={dice >= left} onClick={() => setDice(dice + 1)}>+</button>
             </span>
           </label>
+          {(['arcaneRecovery', 'naturalRecovery'] as const).map((id) => {
+            const opts = recoveryOptions(sheet, props.c.status, id);
+            if (!opts.length) return null;
+            return <label key={id} className="rest-recovery">{R.recovery(resourceDef(id)?.name ?? id)}
+              <select value={recoverPick[id] ?? ''} onChange={(e: { target: { value: string } }) => setRecoverPick((m) => ({ ...m, [id]: e.target.value }))}>
+                <option value="">{R.recoveryAuto}</option>
+                <option value="skip">{R.recoverySkip}</option>
+                {opts.map((o) => <option key={o.join(',')} value={o.join(',')}>{R.recoveryPick(o.join(' + '))}</option>)}
+              </select></label>;
+          })}
           <button onClick={() => {
-            const r = shortRestStatus(sheet, props.c.status, Math.min(dice, left), Math.random);
+            const recover = Object.fromEntries(Object.entries(recoverPick).filter(([, v]) => v !== '').map(([k, v]) => [k, v === 'skip' ? null : v.split(',').map(Number)]));
+            const r = shortRestStatus(sheet, props.c.status, Math.min(dice, left), Math.random, recover);
             setNote(R.shortDone(r.rolls.join(' + '), r.healed));
             props.onUpdate({ ...props.c, status: r.status });
-          }}>{R.short}</button>
+          }} disabled={s.hp < 1} title={s.hp < 1 ? R.shortNeedsHp : undefined}>{R.short}</button>
+          {((): JSX.Element | null => {
+            // Görev B93: Font of Magic savaş dışında (slot ↔ Sorcery Point; SRD 5.2.1 s. 66).
+            if (s.resources.sorceryPoints === undefined) return null;
+            const lv = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+            const toP = lv.filter((l) => fontOfMagicStatus(sheet, props.c.status, 'toPoints', l));
+            const toS = lv.filter((l) => fontOfMagicStatus(sheet, props.c.status, 'toSlot', l));
+            if (!toP.length && !toS.length) return null;
+            const use = (mode: 'toPoints' | 'toSlot', l: number) => { const st = fontOfMagicStatus(sheet, props.c.status, mode, l); if (st) { setNote(R.fontDone); props.onUpdate({ ...props.c, status: st }); } };
+            return <span className="rest-font">{R.font}
+              {toP.map((l) => <button key={`p${l}`} className="ghost" onClick={() => use('toPoints', l)}>{R.fontToPoints(l)}</button>)}
+              {toS.map((l) => <button key={`s${l}`} className="ghost" onClick={() => use('toSlot', l)}>{R.fontToSlot(l)}</button>)}
+            </span>;
+          })()}
           {((): JSX.Element | null => {
             // Görev WARLOCK: Magical Cunning (savaş dışı ayin; veride kaynak varsa).
             const mc = magicalCunningStatus(sheet, props.c.status);
@@ -305,8 +339,11 @@ function MasteryDrills(props: { c: SavedCharacter; before: string[]; onUpdate: (
 export function PlayerScreen(props: {
   characters: SavedCharacter[]; onEdit: (c: SavedCharacter) => void; onDelete: (id: string) => void;
   onBack: () => void; onUpdate?: (c: SavedCharacter) => void;
+  /** Kuyruk KQ4 CK1: notlar, karakter kâğıdı ve JSON içe aktarma (listeyi günceller). */
+  onNotes?: (c: SavedCharacter) => void; onSheet?: (c: SavedCharacter) => void; onAdd?: (list: SavedCharacter[]) => void;
 }) {
   const full = props.characters.length >= MAX_PARTY;
+  const [imp, setImp] = useState<{ pending?: SavedCharacter; msg: string | null }>({ msg: null });
   const L = t();
   const [confirm, setConfirm] = useState<string | null>(null);
   return (
@@ -320,11 +357,37 @@ export function PlayerScreen(props: {
           <div className="gm-row">
             <button disabled={full} onClick={() => props.onEdit(newCharacter(newId()))}>{L.player.newCharacter}</button>
             <span className={`mute party-limit${full ? ' full' : ''}`}>{L.player.limit(props.characters.length, MAX_PARTY)}</span>
+            {props.onAdd && (
+              <label className="file-btn ghost">{L.sheet.importJson}
+                <input type="file" accept=".json,application/json" onChange={(e: { target: HTMLInputElement }) => {
+                  const f = e.target.files?.[0]; e.target.value = '';
+                  if (!f) return;
+                  void Promise.all([f.text(), import('./sheet/io')]).then(([text, io]) => {
+                    const r = io.parseCharacterFile(text);
+                    if (!r.ok) { setImp({ msg: L.sheet.importErrors[r.error] ?? r.error }); return; }
+                    const a = io.addImported(props.characters, r.character, false, newId);
+                    if (a.ok) { props.onAdd?.(a.list); setImp({ msg: L.sheet.importOk(a.added.sheet.name) }); }
+                    else if (a.error === 'full') setImp({ msg: L.sheet.importFull(MAX_PARTY) });
+                    else setImp({ pending: r.character, msg: L.sheet.importTitle });
+                  });
+                }} />
+              </label>
+            )}
           </div>
+          {imp.pending && (
+            <p className="warn" role="alert">{imp.pending.sheet.name}: ID
+              {' '}<button type="button" onClick={() => {
+                const p = imp.pending as SavedCharacter;
+                void import('./sheet/io').then((io) => { const a = io.addImported(props.characters, p, true, newId); if (a.ok) { props.onAdd?.(a.list); setImp({ msg: L.sheet.importOk(a.added.sheet.name) }); } else setImp({ msg: L.sheet.importFull(MAX_PARTY) }); });
+              }}>{L.sheet.importCopy}</button></p>
+          )}
+          {imp.msg && !imp.pending && <p className="mute" role="status">{imp.msg}</p>}
           {props.characters.length === 0 && <p className="empty-state">{L.player.empty}</p>}
           {props.characters.map((c) => (
             <CharacterCard key={c.id} c={c} rest={props.onUpdate ? <RestPanel c={c} onUpdate={props.onUpdate} /> : null}>
               <button onClick={() => props.onEdit(c)}>{L.common.edit}</button>
+              {props.onNotes && <button className="ghost" onClick={() => props.onNotes?.(c)}>{L.story.notes}</button>}
+              {props.onSheet && <button className="ghost" onClick={() => props.onSheet?.(c)}>{L.sheet.button}</button>}
               {confirm === c.id
                 ? <button className="danger" onClick={() => { props.onDelete(c.id); setConfirm(null); }}>{L.common.confirmDelete}</button>
                 : <button className="ghost" onClick={() => setConfirm(c.id)}>{L.common.delete}</button>}

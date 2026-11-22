@@ -1,0 +1,59 @@
+{
+ "note": "TOPLU-KESIM bağlaması: alt sınıf kimliği → hücre (jeton <irk>-<cinsiyet>-cleric-<hücre>.webp). Hücre adları data/jeton-hucre-sirasi.json. maskeHazir false iken boyası gereken karakter sınıf-genel jetonda kalır. `formlar` = seviyeye göre ikinci jeton formu (fighter-jeton.json ile aynı biçim: `esik` seviye ve üzeri `ikinci` hücre; `ikinciYok`: 'ırk-cinsiyet' listesi → 1. form). Birlik Manastırı (2026-11-19, kullanıcı kararı): seviye 3–16 hücre 3 (güvercinli genç rahip), 17+ hücre 9 (yaşlı çay ustası). Yaşam Manastırı (`life-domain`) hücre 1 (ID1): 2026-11-21'deki kaldırma (47dab278) 98504837 ile geri alındı, life-domain listede ve ID1 onun jetonu.",
+ "sinif": "cleric",
+ "irklar": {
+    "dragonborn": ["erkek", "kadin"],
+  "human": [
+   "erkek",
+   "kadin"
+  ],
+  "elf": [
+   "erkek",
+   "kadin"
+  ],
+  "dwarf": [
+   "erkek",
+   "kadin"
+  ],
+  "halfling": [
+   "erkek",
+   "kadin"
+  ],
+  "gnome": [
+   "erkek",
+   "kadin"
+  ],
+  "orc": [
+   "erkek",
+   "kadin"
+  ],
+  "tiefling": [
+   "erkek",
+   "kadin"
+  ],
+  "goliath": [
+   "erkek",
+   "kadin"
+  ],
+  "celestial": [
+   "erkek",
+   "kadin"
+  ]
+ },
+ "altSiniflar": {
+  "life-domain": "ID1",
+  "aydin-alani": "ID2",
+  "demirci-alani": "ID4",
+  "firtina-alani": "ID5",
+  "mezar-alani": "ID6",
+  "savas-alani": "ID7",
+  "yakamoz-alani": "ID8",
+  "imza_birlik": "ID3",
+  "baris-alani": "ID3"
+ },
+ "formlar": {
+  "imza_birlik": { "esik": 17, "ikinci": "ID9", "ikinciYok": [] },
+  "baris-alani": { "esik": 17, "ikinci": "ID9", "ikinciYok": [] }
+ },
+ "cozulemeyen": []
+}

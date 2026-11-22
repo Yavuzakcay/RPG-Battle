@@ -5,6 +5,7 @@
  * (kullanım sayısı + yenilenme), eylem, bonus eylem, tepki ve eylemsiz (Action Surge).
  * Saf fonksiyonlar; veri `loadClassData()` ile yüklenmiş olmalı.
  */
+import featureIdTraits from '../../data/ozellik-isaret.json';
 import { classData, getProgression, type FeatureAlternative, type FeatureEffect, type FeatureMechanic, type FocusAction, type ReactionMechanic, type ResourceDef, type SubclassFeatureDef } from '../data';
 import type { Ability } from './abilities';
 import { defaultSubclassId, findSubclass, subclassMechanic, visibleSubclasses } from './subclasses';
@@ -30,6 +31,7 @@ export function subclassesOf(classId: string) {
  * Eski kayıtlarda boş kalan alt sınıfa atanacak alt sınıf (Görev AS2: `data/alt-sinif-gorunum.json` `varsayilan`; eskiden
  * SRD'deki tek alt sınıf, kimlikler aynı, artık dış pakette). Motor bunu varsaymaz.
  */
+const FEATURE_ID_TRAITS = featureIdTraits.isaretler;
 export const defaultSubclass = (classId: string): string | undefined => defaultSubclassId(classId);
 /** Alt sınıfın seçildiği seviye (SRD: 3). */
 export const subclassLevel = (classId: string): number | null => getProgression(classId).subclassLevel;
@@ -60,7 +62,8 @@ export function gainedFeatures(classId: string, level: number, subclassId?: stri
       const at = Math.max(f.level, p.subclassLevel);
       if (at > level) continue;
       const key = `${classId}/${sub.id}:${f.id}`;
-      out.push({ key, id: f.id, name: f.name.en, level: at, from: 'subclass', mechanic: packMechanic(f, at) });
+      // Görev B93: paket metni hikâye olup motorun veriyle uyguladığı alt sınıf özelliği (`data/class-features.json` anahtarı).
+      out.push({ key, id: f.id, name: f.name.en, level: at, from: 'subclass', mechanic: classData.mechanics.features[key] ?? packMechanic(f, at) });
     }
     // Kuyruk K48: alt sınıfın yerini aldığı sınıf özellikleri (Karadul: Wild Shape) ve onların kaynakları düşer.
     if (sub.replaces?.length) return out.filter((f) => !sub.replaces?.includes(f.key)).sort((a, b) => a.level - b.level);
@@ -233,6 +236,9 @@ export function classKit(classId: string, level: number, subclassId?: string, ch
     if (m.trait && m.status !== 'none' && !kit.traits.includes(m.trait)) kit.traits.push(m.trait);
     // Kuyruk 19: bir özellik birden çok işaret verebilir (Archdruid: Evergreen Wild Shape + Nature Magician).
     for (const x of m.traits ?? []) if (m.status !== 'none' && !kit.traits.includes(x)) kit.traits.push(x);
+    // Görev B95-B: özellik kimliğinden ek işaret (`data/ozellik-isaret.json`; etkisi kural sürümüyle kapılı).
+    const idTrait = (FEATURE_ID_TRAITS as Record<string, string | undefined>)[f.key.split(':').pop() ?? ''];
+    if (idTrait && m.status !== 'none' && !kit.traits.includes(idTrait)) kit.traits.push(idTrait);
     if (m.options && m.status !== 'none') {
       const pick = m.options.find((o) => o.id === choices[f.key]) ?? m.options.find((o) => o.id === m.default) ?? m.options[0];
       if (pick && !kit.traits.includes(pick.trait)) kit.traits.push(pick.trait);
@@ -358,7 +364,7 @@ export function classResources(classId: string, level: number, mods: Partial<Rec
 /** Kaynak savaşta bir eylemle kullanılabiliyor mu (özelliği uygulanıyor). */
 export function resourceUsable(id: string): boolean {
   const d = resourceDef(id);
-  if (!d) return false;
+  if (!d || d.outOfCombat) return false;
   if (d.race || d.feat) return true;
   return featureList(d).some((k) => {
     const m = classData.mechanics.features[k] ?? subclassMechanic(k);

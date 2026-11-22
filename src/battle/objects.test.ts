@@ -93,8 +93,10 @@ describe('kırma ve tepkimeler', () => {
 });
 
 describe('kullanım', () => {
-  it('kapı: kilitliyken açılmaz; kilit DEX (Sleight of Hand) DC 15; açılınca geçilir; kırılır', () => {
+  it('kapı: kilitliyken açılmaz; kilit DEX (Thieves Tools) DC 15; açılınca geçilir; kırılır', () => {
+    // Görev TE99 (99+, SRD 5.2.1 s. 93): kilit Thieves' Tools ister; açan alet yetkin (aletsiz ret te99.test.ts'te).
     let s = put(arena(), 'door', o(4, 3), 'locked');
+    s = { ...s, combatants: { ...s.combatants, A: { ...(s.combatants.A as Combatant), toolProfs: ['thieves-tools'] } } };
     expect(execute(fresh(s), { type: 'object_use', actorId: 'A', objectId: objectAt(s, o(4, 3))!.id, action: 'open' }, P1, high).ok).toBe(false);
     const fail = run(fresh(s), { type: 'object_use', actorId: 'A', objectId: objectAt(s, o(4, 3))!.id, action: 'unlock' }, low);
     expect(objectAt(fail.state, o(4, 3))?.state).toBe('locked');

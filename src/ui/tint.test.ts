@@ -15,7 +15,8 @@ import gorunum from '../../data/alt-soy-gorunum.json';
 import { isOriginalLineage } from './lineageLook';
 
 const files = new Set(Object.keys(import.meta.glob('/public/characters/*.webp')).map((f) => f.replace('/public/', '')));
-const masks = new Set(Object.keys(import.meta.glob('/public/characters/maske/*.png')).map((f) => f.replace('/public/', '')));
+// KJ2: ten maskesi = `maske/` (otomatik) ya da Dragonborn beyaz taban pul maskesi `maske-pul/` (eski `maske/dragonborn-<erkek|kadin>-*` yedekleri silindi).
+const masks = new Set(Object.keys({ ...import.meta.glob('/public/characters/maske/*.png'), ...import.meta.glob('/public/characters/maske-pul/*.png') }).map((f) => f.replace('/public/', '')));
 /** Görev K15: soy çiftleri arası en küçük ten rengi farkı (CIE76 ΔE, ortalama Lab). */
 const MIN_DELTA_E = 15;
 /**
@@ -23,7 +24,7 @@ const MIN_DELTA_E = 15;
  * Goliath Hill orijinal teni Cloud (ΔE 6,0–14,7) ve Stone (14,6–14,7) boyamalarına yakın. Bu çiftlerde alt sınır düşürüldü
  * (diğer bütün çiftler 15); ayrışma karar bekliyor (Cloud/Stone boyaması değişirse bu istisna kalkar).
  */
-const ORIGINAL_PAIR_MIN: Record<string, number> = { 'goliath:cloud/hill': 5.5, 'goliath:hill/stone': 14 };
+const ORIGINAL_PAIR_MIN: Record<string, number> = { 'goliath:cloud/hill': 5.5, 'goliath:cloud/stone': 5.5 };
 
 describe('soy → renk', () => {
   it('soyu olan her ırkın her soyu tabloda; Wood Elf boyamasız (klasik elf), diğerleri boyalı', () => {
@@ -44,10 +45,15 @@ describe('soy → renk', () => {
       for (const k of classes) for (const gender of ['erkek', 'kadin'] as const) {
         const a = sheetAvatar({ ...blankCharacter('t').sheet, raceId: r.id, classId: k.id, gender, ...(lineageId ? { lineageId } : {}) });
         expect(files.has(a.src), a.src).toBe(true);
-        if (lineageId && !gorunum.maskesizIrklar.includes(r.id)) expect(masks.has(maskUrlFor(a.src) ?? ''), `${a.src} maske`).toBe(true);
+        // Oyunun gerçekte isteyeceği maske: boyama türüne göre (`pul` → `maske-pul/`, diğerleri `maske/`). 2026-11-22: otomatik maskesi ırkta
+        // kapalı (`otoMaske: false`, Goliath) jetonda maske adresi yok (bütün jetona soyun yedek filtresi; elle maske eklenirse o).
+        const otoKapali = (soyRenkleri.races as unknown as Record<string, { otoMaske?: false }>)[r.id]?.otoMaske === false;
+        if (lineageId && otoKapali) expect(maskUrlFor(a.src, a.tint), `${a.src} otomatik maske kapalı`).toBeNull();
+        else if (lineageId && !gorunum.maskesizIrklar.includes(r.id)) expect(masks.has(maskUrlFor(a.src, a.tint) ?? ''), `${a.src} maske`).toBe(true);
       }
     }
-    expect(maskUrlFor('/base/characters/kucuk/goliath-male-fighter.webp')).toBe('/base/characters/maske/goliath-male-fighter.png');
+    expect(maskUrlFor('/base/characters/kucuk/tiefling-male-fighter.webp')).toBe('/base/characters/maske/tiefling-male-fighter.png');
+    expect(maskUrlFor('/base/characters/kucuk/goliath-male-fighter.webp')).toBeNull();
   });
   it('maskeli dönüşüm: yalnızca maskedeki pikseller, açıklık sırası korunur; Goliath erkek gri teni de boyanır', () => {
     // Goliath gri-mavi ten (kroma ≈5; K8b'de doygunluk eşiğinin altında kaldığı için erkek jetonlar boyanmıyordu) ve aynı tonda metal.
@@ -64,10 +70,11 @@ describe('soy → renk', () => {
     // b < 0). En açık sınırı 55 → 60: yeni 7 duraklı skalanın vurgusu L 56 (K19 kuralı L ≈ 60).
     const drow = new Uint8ClampedArray([90, 60, 40, 255, 240, 200, 180, 255]);
     tintPixels(drow, lineageTint('elf', 'drow')!, new Uint8Array([1, 1]));
-    expect(rgbToLab(drow[0]!, drow[1]!, drow[2]!)[0]).toBeLessThan(20);
+    expect(rgbToLab(drow[0]!, drow[1]!, drow[2]!)[0]).toBeLessThan(30); // Drow yoğunluğu Tenhausser'a çekildi: en koyu durak L 22
     const hi = rgbToLab(drow[4]!, drow[5]!, drow[6]!);
-    expect(hi[0]).toBeLessThanOrEqual(60);
-    expect(hi[1]).toBeLessThanOrEqual(1);
+    // SD8 (kullanıcı kararı): Dark Elf teni koyu mor-gri (D: koyu #4A4577, orta #7B72A8, açık #A79BC7); vurgu artık mor (a > 0, b < 0).
+    expect(hi[0]).toBeLessThanOrEqual(76);
+    expect(hi[1]).toBeGreaterThan(0); expect(hi[2]).toBeLessThan(0);
     expect(hi[2]).toBeLessThan(-4);
     // Dragonborn Black: en koyu ten düz siyahın üstünde, hafif soğuk.
     const black = new Uint8ClampedArray([110, 80, 60, 255, 230, 190, 160, 255]);
@@ -84,11 +91,15 @@ describe('soy → renk', () => {
     const R = olcum.races as Record<string, Record<string, Record<string, number[]>>>;
     const low: string[] = [];
     for (const [race, rows] of Object.entries(R)) {
+      // 2026-11-22: otomatik maskesi kapalı ırk (Goliath) ten boyası kullanmaz (bütün jetona yedek filtre, seçim /onizleme-filtre.html): ölçüm dışı.
+      if ((soyRenkleri.races as unknown as Record<string, { otoMaske?: false }>)[race]?.otoMaske === false) continue;
       expect(Object.keys(rows).length, race).toBe(24);
       for (const [name, lins] of Object.entries(rows)) {
         const ids = Object.keys(lins);
         for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
           const d = deltaE(lins[ids[i]!]!, lins[ids[j]!]!);
+          // Alt soy görünüm kararı: iki orijinal alt soy (Goliath Hill/Stone, Gnome Rock/Forest) aynı boyasız jetondur: ΔE 0 kararlıdır.
+          if (isOriginalLineage(`${race}/${ids[i]}`) && isOriginalLineage(`${race}/${ids[j]}`)) continue;
           const floor = ORIGINAL_PAIR_MIN[`${race}:${[ids[i], ids[j]].sort().join('/')}`] ?? MIN_DELTA_E;
           if (d < floor) low.push(`${name} ${ids[i]}/${ids[j]} ${d.toFixed(1)}`);
         }
@@ -182,21 +193,21 @@ describe('K19: cinsiyete göre soy boyaması', () => {
   });
   // DROW-PALET: ortalama sınırı 33 → 40: 7 duraklı skala, S-eğrisi ve korunan kroma sapması gölge/ışık detayını geri
   // getirdi (eski 4 duraklı skala düz ve mat görünüyordu); en açık durak sınırı (L ≤ 60, K19) aynı.
-  it('Drow koyu: her palette ten ortalama açıklığı ≤ 40, en açık durak L ≤ 60, en az 6 durak; High ve Wood Elf aynı', () => {
+  it('Drow mor-gri (SD8): her palette ten ortalama açıklığı ≤ 62, en açık durak L ≤ 80, en az 6 durak; High ve Wood Elf aynı', () => {
     const E = (olcum.races as Record<string, Record<string, Record<string, number[]>>>).elf!;
     const Ls = Object.values(E).map((r) => r.drow![0]!);
-    expect(Ls.reduce((a, b) => a + b, 0) / Ls.length).toBeLessThanOrEqual(40);
+    expect(Ls.reduce((a, b) => a + b, 0) / Ls.length).toBeLessThanOrEqual(62);
     const P = (olcum as unknown as { paletler: Record<string, Record<string, Record<string, number[]>>> }).paletler['elf/drow']!;
     expect(Object.keys(P).sort()).toEqual(['A', 'B', 'C', 'D']);
     for (const [k, rows] of Object.entries(P)) {
       const m = Object.values(rows).reduce((a, v) => a + v[0]!, 0) / Object.keys(rows).length;
-      expect(m, k).toBeLessThanOrEqual(40);
+      expect(m, k).toBeLessThanOrEqual(62);
       const g = (paletteTint('elf', 'drow', k)?.to as { gradient: number[][] }).gradient;
       expect(g.length, k).toBeGreaterThanOrEqual(6);
-      expect(Math.max(...g.map((s) => s[0]!)), k).toBeLessThanOrEqual(60);
+      expect(Math.max(...g.map((s) => s[0]!)), k).toBeLessThanOrEqual(80);
     }
     const g = (lineageTint('elf', 'drow')?.to as { gradient: number[][] }).gradient;
-    expect(Math.max(...g.map((s) => s[0]!))).toBeLessThanOrEqual(60);
+    expect(Math.max(...g.map((s) => s[0]!))).toBeLessThanOrEqual(80);
     expect(lineageTint('elf', 'high-elf', 'kadin')?.to).toEqual({ h: 30, s: 0.7, l: 1.08 });
     expect(lineageTint('elf', 'wood-elf', 'kadin')).toBeUndefined();
   });

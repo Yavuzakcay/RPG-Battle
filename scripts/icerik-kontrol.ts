@@ -6,7 +6,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import { STRINGS_TR } from '../src/i18n/strings';
+import { loadTrExtra, t } from '../src/i18n';
 import { classData, loadClassData, loadMonsters, monsters, spells } from '../src/data';
 import { validateDescriptions } from '../src/data/betimleme';
 import { parsePack, partialWarnings, readablePath, summarize } from '../src/content/schema';
@@ -19,7 +19,9 @@ for (const e of betimleme.errors) console.log(`      ${e}`);
 for (const w of betimleme.warnings) console.log(`      uyarı ${w}`);
 if (betimleme.errors.length) process.exitCode = 1;
 const dir = path.resolve(process.argv.slice(2).find((a) => !a.startsWith('-')) ?? 'icerik');
-const T = STRINGS_TR.content;
+// `content` metinleri tembel TR parçasında (strings.tr2.ts, Kuyruk 34a); ana tabloda yok.
+await loadTrExtra();
+const T = t().content;
 if (!fs.existsSync(dir)) {
   console.log(`Klasör yok: ${dir} (içerik paketlerini buraya koy; depoya girmez).`);
   process.exit(process.exitCode ?? 0);

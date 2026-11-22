@@ -21,6 +21,7 @@ import { P12_VERSION } from './p12surum';
 import { BOOK, vertigoRow } from './p12core';
 import { castOrigins } from './p11cast';
 import { actionDescriptors } from '../ai/actions';
+import { nameWithBadges } from '../../ui/glyph/badgeMatch';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Builder } from '../../screens/Builder';
 import type { BattleEvent, Combatant, Command } from '../types';
@@ -137,7 +138,7 @@ describe('P12 G1: güç deposu (kaynak, karşı büyü, büyü hasarı)', () => 
   });
 });
 
-describe('P12 G2: rastgele büyü listesi (Sınırlı Dilek)', () => {
+describe('P12 G2: rastgele büyü listesi (Dile Benden Ne Dilersen)', () => {
   const pick = (names: string[]) => Object.fromEntries(names.map((n, i) => [`warlock/sans-cini:sans/dilek${i + 1}`, n]));
   it('dN listeden seçer; geçersiz hedefli büyü yeniden atılır; büyü slotsuz bir kez; zar defterine yazılır; replay aynı', () => {
     const r = arena('warlock', 'sans-cini', 5, undefined, { featureChoices: pick(['Cure Wounds', 'Magic Missile', 'Cure Wounds', 'Cure Wounds', 'Cure Wounds', 'Cure Wounds', 'Cure Wounds', 'Cure Wounds']) });
@@ -225,7 +226,7 @@ describe('P12 G3: vertigo (Kaos Yolu S3/S10/S14 yolu)', () => {
     expect(r.c('A').effects?.find((e) => e.pkVertigo)?.pkVertigo?.face).toBe(8);
     same(r);
   });
-  it('Kontrol Sağlama (S14): iki zar atılır, satır seçilir (öneri: alanda düşman yokken AC)', () => {
+  it('Kaosa Dizgin (S14): iki zar atılır, satır seçilir (öneri: alanda düşman yokken AC)', () => {
     const r = arena('barbarian', 'girdap-yolu', 14);
     patch(r, 'B', { pos: o(12, 3) }); rebase(r);
     const ev = r.do({ type: 'rage', actorId: 'A' }, seqRng([face(1, 8), face(7, 8)]));
@@ -260,7 +261,7 @@ describe('P12 G4: patlayan havuz zarı ve havuz kademeleri', () => {
   });
 });
 
-describe('P12 G5: okul ikiz büyüsü (İkiz Büyüleme)', () => {
+describe('P12 G5: okul ikiz büyüsü (Çift Tılsım)', () => {
   it('Enchantment tek hedefli büyü iki hedefe (slot, konsantrasyon bir kez); başka okul ve 44 ve 42\'de iki hedef olmaz', () => {
     const two = (r: Run, spell: string) => r.try({ type: 'cast_spell', actorId: 'A', spellName: spell, targetIds: ['B', 'E'], slotLevel: 2 } as Command, fixed(0.01));
     for (const v of [45, 44, 42]) {
@@ -338,7 +339,8 @@ describe('P12 G8/G2: oluşturucu çizimi', () => {
   it('hikâye özelliği satırında "Hikâye" etiketi (eksik değil)', () => {
     const m = draw('rogue', 'masal-yolu', 3);
     // SD3: ad + seviye etiketi; "Hikâye" türü etiketi kalır, geliştirici durum metni (hikâye: savaş dışı) gösterilmez.
-    expect(m).toMatch(/anlati<\/b> <small class="feature-lv">3\. seviye<\/small><span class="feature-tag">Hikâye<\/span>/);
+    // Glif rozeti `<b>` içinde, addan sonra durabilir (tek kalıp `nameWithBadges`): yalnız ad, seviye ve Hikâye etiketi sınanır.
+    expect(m).toMatch(new RegExp(`<b>${nameWithBadges('anlati')}</b> <small class="feature-lv">3\\. seviye</small><span class="feature-tag">Hikâye</span>`));
     expect(m).not.toContain('hikâye: savaş dışı');
   });
   it('rastgele liste: 8 seçim kutusu, seçilen sayısı', () => {

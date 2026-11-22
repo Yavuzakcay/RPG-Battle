@@ -6,8 +6,10 @@
 import { describe, expect, it } from 'vitest';
 import { checkHandMask, maskSources } from './handMask';
 import { handMasked, maskUrlFor, tintPixels } from './tint';
-import { lineageTint } from '../battle/avatar';
+import { genericTokenRetired, lineageTint } from '../battle/avatar';
 import rapor from '../../data/soy-maske-rapor.json';
+import soyRenkleri from '../../data/soy-renkleri.json';
+import { classes } from '../data';
 import yollar from '../../scripts/soy-maske-yollar.ts?raw';
 import maskeBetik from '../../scripts/soy-maske.ts?raw';
 import elBetik from '../../scripts/soy-maske-el.ts?raw';
@@ -31,10 +33,21 @@ describe('elle maske', () => {
   it('öncelik: geçerli elle maske varsa el, yoksa otomatik; çalışma anı yolu buna göre', () => {
     expect(maskSources(['a-male-x', 'b-female-y'], ['b-female-y'])).toEqual({ 'a-male-x': 'oto', 'b-female-y': 'el' });
     const sprites = (rapor as { sprites: Record<string, string> }).sprites;
-    expect(Object.keys(sprites)).toHaveLength(120);
+    // KJ4: rapor kapsamı veriden (sabit sayı yok): `npm run soy-maske` ana döngüsüyle aynı küme = soy-renkleri.json'daki her ırk
+    // (Human dahil: AS1c ten maskesi, 2026-11-12) × cinsiyet × sınıf. Eski sabit 120, Human eklenmeden önceki raporun sayısıydı (6 × 2 × 12 = 144).
+    // DRAGONBORN-ESKI-JETON-KALDIR (2026-11-22): sınıf-genel jetonu kaldırılmış ırk (`data/jeton-genel.json`, Dragonborn) raporda yok (`soy-maske.ts` `GENEL_IRKLAR`).
+    const beklenen = Object.keys(soyRenkleri.races).filter((r) => !genericTokenRetired(r)).flatMap((r) => ['female', 'male'].flatMap((g) => classes.map((c) => `${r}-${g}-${c.id}`)));
+    // GORSEL-DUZELTME: ayrıca elle maskesi olan alt sınıf/Gariban jetonları (`<ırk>-<erkek|kadin>-<sınıf>-<kod>`), yalnız 'el' olarak.
+    const ek = Object.keys(sprites).filter((k) => !beklenen.includes(k));
+    expect(Object.keys(sprites).filter((k) => beklenen.includes(k)).sort()).toEqual(beklenen.sort());
+    expect(ek.every((k) => /^[a-z]+-(erkek|kadin)-[a-z]+-[A-Za-z0-9-]+$/.test(k) && sprites[k] === 'el')).toBe(true);
+    expect(checkHandMask({ file: 'human-erkek-sorcerer-SC-9.png', width: 256, height: 256, colored: 0 }, (n) => (n === 'human-erkek-sorcerer-SC-9' ? { w: 256, h: 256 } : undefined)))
+      .toEqual({ ok: true, name: 'human-erkek-sorcerer-SC-9' });
     for (const [name, src] of Object.entries(sprites)) {
       expect(handMasked(name)).toBe(src === 'el');
-      expect(maskUrlFor(`characters/${name}.webp`)).toBe(`characters/${src === 'el' ? 'maske-el' : 'maske'}/${name}.png`);
+      // 2026-11-22: otomatik maskesi ırkta kapalıysa (`otoMaske: false`, Goliath) yalnız elle maske; yoksa adres yok (yedek filtre).
+      const oto = (soyRenkleri.races as unknown as Record<string, { otoMaske?: false }>)[name.split('-')[0] ?? '']?.otoMaske !== false;
+      expect(maskUrlFor(`characters/${name}.webp`)).toBe(src === 'el' ? `characters/maske-el/${name}.png` : oto ? `characters/maske/${name}.png` : null);
     }
   });
   it('kısmi ağırlık: 255 tam boya (ikili maskeyle bit bit aynı), 0 dokunulmaz, arası karışım', () => {

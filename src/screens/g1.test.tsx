@@ -73,7 +73,8 @@ describe('köken feat\'i ve beceriler', () => {
     expect(deriveStats(c.sheet).initiative).toBe(deriveStats(char({ originFeat: 'alert' }).sheet).initiative);
     const m = html(c, 'progress');
     expect(m).toContain('Geçmişinden gelen başlangıç yeteneği: Alert');
-    expect(m).not.toContain('<option value="skilled"');
+    // Görev TE99: Human Versatile seçicisi aynı kutuda (ek köken feat'i); geçmişin feat'i için serbest seçim yine yok.
+    expect(m.split('form-row versatile')[0]).not.toContain('<option value="skilled"');
   });
   it('iki beceri kilitli ve becerilere eklenir; serbest hak 3 − 2', () => {
     const c = char({ backgroundId: 'soldier' }, { classSkills: ['perception', 'survival'], otherSkills: ['insight', 'athletics', 'history'] });
@@ -131,7 +132,7 @@ describe('eski kayıt (geçmişsiz)', () => {
 
 describe('kayıt sürümü', () => {
   it('savaş kaydı sürüm 20 (savaşçıda geçmiş); 19 ve öncesi yüklenmeye devam eder', () => {
-    expect(SAVE_VERSION).toBe(22); // Kuyruk 43: eşya kullanımı ve dikkat dağıtma olayları (item_used, distracted) için 22
+    expect(SAVE_VERSION).toBe(25); // KARAR101 shield_changed, knocked_out/stone_endurance için 25 (Ready 24; Kuyruk 43: 22–23)
     expect(LOADABLE_VERSIONS).toEqual(expect.arrayContaining([3, 19, 20, 21]));
     // Eski karakter (geçmişsiz) savaşçısında geçmiş alanı yok; davranış eskisi gibi.
     const cb = combatantFromSheet(withSkills(char({ originFeat: 'alert' })).sheet, { id: 'a', ownerId: 'o' });

@@ -103,11 +103,16 @@ describe('menüde çıkan her özelliğin Türkçe adı var (ham İngilizce kura
     }
     setLang('tr');
   });
-  it('TR adlarda ham İngilizce kural adı kalmaz (yalnız özel ad olan çeviri dışı kayıtlar hariç)', () => {
+  // Görev B98 (kullanıcı kararı, SD4 hizalaması): SRD kaynaklı özellik adları TR arayüzde de İngilizce (eski SD2 kısa Türkçe
+  // adların tersi); yalnız ev kuralı içerik (ev:, alt:) Türkçe adla. EN ve TR featureName SRD kayıtlarında aynı.
+  it('SD4: SRD kaynaklı özellik adları TR\'de de SRD İngilizce adı; ev kuralı içerik Türkçe kalır', () => {
+    setLang('en');
+    const en = { ...t().battle.label.featureName };
     setLang('tr');
     const L = t().battle.label;
-    const raw = /Wild Shape|Wild Resurgence|Nature Magician|Sorcery Point|Superior Defense|Channel Divinity|Divine Spark|Stonecunning|Adrenaline|Draconic Flight|Lay On Hands/;
-    for (const v of Object.values(L.featureName)) expect(v).not.toMatch(raw);
-    for (const s of [L.natureMagician(1, 2), L.resurgeShape, L.resurgeSlot, L.fontToPoints(1), L.fontToSlot(5), L.shapeOn('Bear', '1'), L.shapeOff('Bear'), L.superiorDefense, L.iswap, L.gaze, L.eldritchSmite]) expect(s).not.toMatch(raw);
+    for (const [k, v] of Object.entries(L.featureName)) if (!k.startsWith('ev:') && !k.startsWith('alt:')) expect(v, k).toBe(en[k]);
+    expect(L.featureName['paladin:lay-on-hands']).toBe('Lay On Hands');
+    expect(L.featureName['ev:celestial/healing-touch']).toBe('Şifa Eli');
+    for (const [s, w] of [[L.resurgeShape, 'Wild Resurgence'], [L.fontToPoints(1), 'Font of Magic'], [L.shapeOn('Bear', '1'), 'Wild Shape'], [L.superiorDefense, 'Superior Defense'], [L.eldritchSmite, 'Eldritch Smite']] as const) expect(s).toContain(w);
   });
 });

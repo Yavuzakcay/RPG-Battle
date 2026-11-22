@@ -1,0 +1,40 @@
+yeni_sayfa,yeni_hucre,dosya,eski_sayfa,eski_hucre,durum,kaynak,not
+01,1,celestial-erkek-barbarian-ID3.webp,01,4,haleli,git:2151397,"mavi gözler kalsın, alına yıldız eklensin; kaynak kenara değmiyor, ölçekli yerleşim (alt %6, yan/üst %4)"
+01,2,celestial-erkek-monk-ID11.webp,14,5,haleli,git:2151397,"kaynak kenara değmiyor, ölçekli yerleşim (alt %6, yan/üst %4)"
+01,3,celestial-kadin-monk-ID3.webp,15,1,haleli,git:2151397,"kaynak kenara değmiyor, ölçekli yerleşim (alt %6, yan/üst %4)"
+01,4,celestial-kadin-paladin-ID1.webp,17,6,haleli,git:2151397,"kaynak kenara değmiyor, ölçekli yerleşim (alt %6, yan/üst %4)"
+01,5,celestial-erkek-rogue-ID5.webp,21,8,haleli,git:2151397,"kaynak kenara değmiyor, ölçekli yerleşim (alt %6, yan/üst %4)"
+01,6,celestial-kadin-warlock-WL-10.webp,28,9,haleli,git:2151397,"kaynak kenara değmiyor, ölçekli yerleşim (alt %6, yan/üst %4)"
+01,7,celestial-kadin-warlock-WL-4.webp,28,3,haleli,git:2151397,"kaynak kenara değmiyor, ölçekli yerleşim (alt %6, yan/üst %4)"
+02,1,celestial-erkek-barbarian-ID8.webp,01,9,haleli,git:2151397,"kırmızı aura tam olsun; kaynak kenara değmiyor, ölçekli yerleşim (alt %6, yan/üst %4)"
+02,2,celestial-erkek-monk-ID9.webp,14,3,haleli,git:2151397,"kaynak kenara değmiyor, ölçekli yerleşim (alt %6, yan/üst %4)"
+02,3,celestial-kadin-monk-ID5.webp,15,3,haleli,git:2151397,"kaynak kenara değmiyor, ölçekli yerleşim (alt %6, yan/üst %4)"
+02,4,celestial-erkek-rogue-ID10.webp,22,4,haleli,git:2151397,"kaynak kenara değmiyor, ölçekli yerleşim (alt %6, yan/üst %4)"
+02,5,celestial-erkek-rogue-ID7.webp,22,1,haleli,git:2151397,"kaynak kenara değmiyor, ölçekli yerleşim (alt %6, yan/üst %4)"
+02,6,celestial-kadin-warlock-WL-2.webp,28,1,haleli,git:2151397,"kaynak kenara değmiyor, ölçekli yerleşim (alt %6, yan/üst %4)"
+03,1,celestial-erkek-fighter-ID10.webp,11,6,haleli,git:2151397,"kaynak kenara değmiyor, ölçekli yerleşim (alt %6, yan/üst %4)"
+03,2,celestial-kadin-monk-ID10.webp,15,8,haleli,git:2151397,"kaynak kenara değmiyor, ölçekli yerleşim (alt %6, yan/üst %4)"
+03,3,celestial-erkek-paladin-ID8.webp,17,1,haleli,git:2151397,"kaynak kenara değmiyor, ölçekli yerleşim (alt %6, yan/üst %4)"
+03,4,celestial-erkek-rogue-ID3.webp,21,6,haleli,git:2151397,"kaynak kenara değmiyor, ölçekli yerleşim (alt %6, yan/üst %4)"
+03,5,celestial-erkek-rogue-ID9.webp,22,3,haleli,git:2151397,"kaynak kenara değmiyor, ölçekli yerleşim (alt %6, yan/üst %4)"
+03,6,celestial-kadin-warlock-WL-3.webp,28,2,haleli,git:2151397,"kaynak kenara değmiyor, ölçekli yerleşim (alt %6, yan/üst %4)"
+,,celestial-kadin-rogue-ID3.webp,22,9,halesiz-doğrulandı,git:2151397,şimdiki dosya halesiz (hale px ölçümü + görsel); eski sayfadaki halka kaynak orijinaldeydi; pakete konmadı
+,,celestial-erkek-warlock-WL-1.webp,26,5,baştan-warlock,git:2151397,"baştan yapılacak, halka düzeltmesine girmez"
+,,celestial-erkek-warlock-WL-2.webp,26,6,baştan-warlock,git:2151397,"baştan yapılacak, halka düzeltmesine girmez"
+,,celestial-erkek-warlock-WL-3.webp,26,7,baştan-warlock,git:2151397,"baştan yapılacak, halka düzeltmesine girmez"
+,,celestial-erkek-warlock-WL-4.webp,26,8,baştan-warlock,git:2151397,"baştan yapılacak, halka düzeltmesine girmez"
+,,celestial-erkek-warlock-WL-5.webp,26,9,baştan-warlock,git:2151397,"baştan yapılacak, halka düzeltmesine girmez"
+,,celestial-erkek-warlock-WL-6.webp,27,1,baştan-warlock,git:2151397,"baştan yapılacak, halka düzeltmesine girmez"
+,,celestial-erkek-warlock-WL-7.webp,27,2,baştan-warlock,git:2151397,"baştan yapılacak, halka düzeltmesine girmez"
+,,celestial-erkek-warlock-WL-9.webp,27,4,baştan-warlock,git:2151397,"baştan yapılacak, halka düzeltmesine girmez"
+,,celestial-erkek-warlock-WL-10.webp,27,5,baştan-warlock,git:2151397,"baştan yapılacak, halka düzeltmesine girmez"
+,,celestial-erkek-warlock-WL-11.webp,27,6,baştan-warlock,git:2151397,"baştan yapılacak, halka düzeltmesine girmez"
+,,celestial-kadin-warlock-WL-8.webp,28,7,halesiz-doğrulandı,git:2151397,şimdiki dosya halesiz (hale px ölçümü + görsel); eski sayfadaki halka kaynak orijinaldeydi; pakete konmadı
+,,celestial-kadin-wizard-WZ-A8.webp,32,1,halesiz-doğrulandı,git:2151397,şimdiki dosya halesiz (hale px ölçümü + görsel); eski sayfadaki halka kaynak orijinaldeydi; pakete konmadı
+,,celestial-kadin-wizard-WZ-B1.webp,32,2,halesiz-doğrulandı,git:2151397,şimdiki dosya halesiz (hale px ölçümü + görsel); eski sayfadaki halka kaynak orijinaldeydi; pakete konmadı
+,,celestial-kadin-wizard-WZ-B2.webp,32,3,halesiz-doğrulandı,git:2151397,şimdiki dosya halesiz (hale px ölçümü + görsel); eski sayfadaki halka kaynak orijinaldeydi; pakete konmadı
+,,celestial-kadin-wizard-WZ-B3.webp,32,4,halesiz-doğrulandı,git:2151397,şimdiki dosya halesiz (hale px ölçümü + görsel); eski sayfadaki halka kaynak orijinaldeydi; pakete konmadı
+,,celestial-kadin-wizard-WZ-B4.webp,32,5,halesiz-doğrulandı,git:2151397,şimdiki dosya halesiz (hale px ölçümü + görsel); eski sayfadaki halka kaynak orijinaldeydi; pakete konmadı
+,,celestial-kadin-wizard-WZ-B5.webp,32,6,halesiz-doğrulandı,git:2151397,şimdiki dosya halesiz (hale px ölçümü + görsel); eski sayfadaki halka kaynak orijinaldeydi; pakete konmadı
+,,celestial-kadin-wizard-WZ-B6.webp,32,7,halesiz-doğrulandı,git:2151397,şimdiki dosya halesiz (hale px ölçümü + görsel); eski sayfadaki halka kaynak orijinaldeydi; pakete konmadı
+,,celestial-kadin-wizard-WZ-B7.webp,32,8,halesiz-doğrulandı,git:2151397,şimdiki dosya halesiz (hale px ölçümü + görsel); eski sayfadaki halka kaynak orijinaldeydi; pakete konmadı

@@ -13,6 +13,8 @@ import { gainedFeatures } from '../rules/classFeatures';
 import { findSubclass, genderVisible } from '../rules/subclasses';
 import { deriveStats, type CharacterSheet } from '../rules/stats';
 import { GAZE_KEY, KARADUL_ID, SPIDER_KEY, karadulDc } from './karadul';
+import { availableForms, wildShapeFeature } from './druid';
+import { monsters } from '../data';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
 
@@ -79,6 +81,40 @@ describe('Karadul: oluşturucu ve sınıf özellikleri', () => {
     expect(a.features?.some((f) => f.effect.kind === 'wildShape')).toBe(false);
     expect(a.resources.wildShape).toBeUndefined();
     expect(a.resources.karadulSpider).toBe(a.proficiency);
+  });
+  it('Wild Shape SRD tablosundan etkilenmez (kural sürümü 87, WS87): 3/4/8. seviyede Wild Shape ve biçim yok; örümcek biçimi 86 ve 87\'de aynı', () => {
+    for (const level of [3, 4, 8]) {
+      expect(gainedFeatures('druid', level, KARADUL_ID).some((f) => f.key === 'druid:wild-shape'), String(level)).toBe(false);
+      const c = widow({ level, wildShapeForms: ['wolf', 'giant-eagle'] });
+      expect(wildShapeFeature(c)).toBeUndefined();
+      expect(availableForms(monsters, c, 87)).toEqual([]);
+      expect(availableForms(monsters, c, 86)).toEqual([]);
+    }
+    // Örümcek biçimi `spiderStats` ile (WS87 `shapeStats` aktarımı ve yüzme hızı ona girmez): olay iki sürümde aynı.
+    const shapeEv = (v: number) => {
+      const r = arena(widow({ level: 8 }), { kuralSurumu: v });
+      return r.do({ type: 'use_feature', actorId: 'A', feature: SPIDER_KEY }).find((e) => e.type === 'shape_changed');
+    };
+    const e86 = shapeEv(86), e87 = shapeEv(87);
+    expect(e87).toBeDefined();
+    expect(e87).toEqual(e86);
+    expect(e87 && e87.type === 'shape_changed' && e87.stats && 'swimFt' in e87.stats).toBe(false);
+    // Görev WS91: biçim aktarımı yalnız Wild Shape ve Polymorph'ta; örümcek biçimi 86–89 ile aynı (canavar parçası yok),
+    // girip bırakınca savaşçı 89'dakiyle aynı.
+    for (const v of [88, 89, 91]) expect(shapeEv(v), String(v)).toEqual(e86);
+    const cycle = (v: number) => {
+      const r = arena(widow({ level: 8 }), { kuralSurumu: v });
+      r.do({ type: 'use_feature', actorId: 'A', feature: SPIDER_KEY });
+      const inForm = r.c('A');
+      r.fresh();
+      r.do({ type: 'use_feature', actorId: 'A', feature: SPIDER_KEY });
+      const { economy: _e, ...back } = r.c('A');
+      const { economy: _f, ...form } = inForm;
+      return { form, back };
+    };
+    const c89 = cycle(89), c91 = cycle(91);
+    expect(c91.form.shape?.monster).toBeUndefined();
+    expect(c91).toEqual(c89);
   });
 });
 

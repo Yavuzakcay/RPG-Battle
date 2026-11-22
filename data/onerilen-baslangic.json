@@ -28,7 +28,8 @@
       "zirh": "Leather Armor",
       "kalkan": true,
       "silahlar": [
-        "Quarterstaff"
+        "Quarterstaff",
+        "Sickle"
       ]
     },
     "fighter": {
@@ -263,7 +264,6 @@
       "Magic Circle"
     ],
     "ranger": [
-      "Hunter's Mark",
       "Cure Wounds",
       "Ensnaring Strike",
       "Entangle",

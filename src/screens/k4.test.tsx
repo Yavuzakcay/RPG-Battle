@@ -94,13 +94,14 @@ describe('özet ve adlar', () => {
     const given = html(ch({ backgroundBonuses: { str: 2, con: 1 } }), 'summary');
     expect(given).not.toContain('soft-warn');
   });
-  it('beceri adları Türkçe (İngilizce adı yanında); alt sınıf "Evokasyon Ustası (Evoker)"', () => {
+  it('beceri adları Türkçe (İngilizce adı yanında); alt sınıf "Azap Öğretisi (Torment Doctrine)"', () => {
     const m = html(ch(), 'skills');
     // SD3: beceri adı yalnız Türkçe (İngilizce adı yanında gösterilmez).
     expect(m).toContain('Atletizm');
     expect(m).not.toContain('skill-en');
     const evoker = classData.subclasses.find((x) => x.id === 'evoker');
-    expect(evoker && subclassLabel(evoker.name, 'tr')).toBe('Evokasyon Ustası (Evoker)');
-    expect(evoker && subclassLabel(evoker.name, 'en')).toBe('Evoker');
+    // Fikstür paketteki adı taşır: Türkçe ad + birebir İngilizce çevirisi (SRD adı değil; 2026-11-21 kural).
+    expect(evoker && subclassLabel(evoker.name, 'tr')).toBe('Azap Öğretisi (Torment Doctrine)');
+    expect(evoker && subclassLabel(evoker.name, 'en')).toBe('Torment Doctrine');
   });
 });

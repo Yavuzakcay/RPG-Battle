@@ -7,6 +7,10 @@
  * oyuncusu yönetir (düşman tarafında Game Master). Kaybolma `summonCleanup` ile her komuttan sonra olay olarak yazılır:
  * 0 HP, konsantrasyonun bitmesi, sahibin ölümü (at), süre; aynı büyü yeniden yapılınca önceki yaratık gider.
  */
+import { b94On } from './b94Surum';
+import { ws92On } from './ws92Surum';
+import { charmedAgainst } from './range';
+import { matrisOn } from './matrisSurum';
 import { mechanicsAt } from './spellVersion';
 import { OBJECTS } from './objectData';
 import { surfaceEvent } from './surfaces';
@@ -34,6 +38,8 @@ import type { BattleEvent, BattleState, Combatant, Command, CommandContext, Summ
 import { binekMb7On } from './binekSurum';
 import { binekMb2On } from './binekMb2Surum';
 import { mountRuleOf } from './riderCore';
+import { srdKayit } from './srdD1';
+import { lateSummonEvents } from './monsterSetup';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 
@@ -89,6 +95,11 @@ interface CreatureDef {
   multiattack?: boolean;
   attacks: CreatureAttack[];
   unsupported?: string[];
+  /** Görev D2 (88+): yüzme hızı (ft) ve hasar bağışıklıkları (Draconic Spirit, Animated Object). */
+  swimFt?: number;
+  immunities?: string[];
+  /** Görev D3 (89+): Shared Resistances (Draconic Spirit, SRD s. 166): büyücü seçilen hasar türüne direnç kazanır. */
+  sharedResistance?: boolean;
 }
 export interface SummonDef {
   srd: string;
@@ -136,9 +147,9 @@ export interface SummonDef {
 
 const DATA = summonData as unknown as { summons: Record<string, SummonDef>; creatures: Record<string, CreatureDef> };
 
-/** Büyünün çağırma tanımı (büyü kimliğiyle). */
-export const summonDef = (spellId: string): SummonDef | undefined => DATA.summons[spellId];
-export const summonCreature = (id: string): CreatureDef | undefined => DATA.creatures[id];
+/** Büyünün çağırma tanımı (büyü kimliğiyle). Görev D2: `v` kural sürümü (< 88: SRD düzeltmesi öncesi; yoksa güncel). */
+export const summonDef = (spellId: string, v?: number): SummonDef | undefined => srdKayit('data/summons.json', `summons/${spellId}`, DATA.summons[spellId], v);
+export const summonCreature = (id: string, v?: number): CreatureDef | undefined => srdKayit('data/summons.json', `creatures/${id}`, DATA.creatures[id], v);
 export const isSummonSpell = (s: Pick<Spell, 'mechanics'>): boolean => s.mechanics.kind === 'summon';
 
 const scaled = (s: Scaled, level: number) => s.base + (s.perLevel ?? 0) * (level - (s.fromLevel ?? 0));
@@ -177,6 +188,7 @@ function creatureMonster(id: string, def0: CreatureDef, owner: Combatant, level:
     ...(def.darkvision ? { darkvision: def.darkvision } : {}),
     abilities: def.abilities, cr: '0', attacks, traits: '', multiattack: def.multiattack ?? false,
     ...(def.resistances ? { resistances: def.resistances } : {}),
+    ...(def.immunities ? { immunities: def.immunities } : {}),
     ...(def.unsupported ? { unsupported: def.unsupported } : {}),
   };
 }
@@ -271,15 +283,20 @@ function newId(state: BattleState, owner: Combatant): string {
  * önceki yaratığı kaybolur, yaratık seçilen (ya da sahibine en yakın uygun) altıgende belirir.
  */
 export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
-  const def = summonDef(spell.id);
+  const def = summonDef(spell.id, state.kuralSurumu ?? 1);
   if (!def) return fail(`${spell.name}: çağırma verisi yok.`);
   // Kuyruk 19 (featuresK19): Wild Companion: Find Familiar savaşta Magic eylemiyle, slot ya da Wild Shape harcayarak.
   const companion = spell.id === 'find-familiar' && !!actor.traits?.includes('wild-companion') && !!globalRule(state, 'featuresK19');
   if (def.setup && state.status !== 'setup' && !companion) return fail(`${spell.name} savaştan önce (kurulumda) yapılır.`);
   if (!def.setup && state.status !== 'active') return fail('Savaş henüz başlamadı.');
   if (state.map && !actor.pos) return fail('Önce çağıranı yerleştir.');
-  const choice = cmd.choice ?? def.choice?.options[0];
+  // Görev B94 (sürüm 94+, SRD 5.2.1 s. 43 Wild Companion "the familiar is Fey"): Wild Companion yolunda tür Fey.
+  const wildFey = companion && b94On(state) && (state.status === 'active' || !!actor.traits?.includes('wild-companion-only')) && !!def.choice?.options.includes('fey');
+  const choice = wildFey ? 'fey' : cmd.choice ?? def.choice?.options[0];
   if (def.choice && choice && !def.choice.options.includes(choice)) return fail(`Geçersiz seçim: ${choice}.`);
+  // Mekanik matris B22 (sürüm 83): yapımda Clenched Fist büyüleyene yöneltilemez (SRD Charmed "You can't attack the charmer").
+  const fistAt = def.handK19 && cmd.choice === 'fist' && cmd.targetId ? state.combatants[cmd.targetId] : undefined;
+  if (fistAt && matrisOn(state) && charmedAgainst(state, actor, fistAt)) return fail(`${actor.name} büyülenmiş (Charmed): ${fistAt.name} hedef alınamaz.`);
   const form = def.forms ? cmd.form ?? def.forms[0] : undefined;
   const chain = spell.id === 'find-familiar' && chainOn(state) && !!actor.traits?.includes('pact-of-the-chain');
   if (def.forms && form && !def.forms.includes(form) && !(chain && CHAIN_FORMS.includes(form))) return fail(`Geçersiz familiar biçimi: ${form}.`);
@@ -320,9 +337,12 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
   for (let k = 0; k < sizes.length; k++) {
     const place = k === 0 ? at : summonHexNear(cur, actor, def, state.multiHex && ruleVersion(state) >= 53 ? summonSizeOf(cur, def, form, sizes[k]) : undefined);
     if (state.map && !place) break;
-    const ev = summonedEvent(cur, actor, spell, def, level, choice, form, place, rng, sizes[k], companionFree);
-    events.push(ev);
-    cur = applyEvents(cur, [ev]);
+    const evs0 = summonedEvent(cur, actor, spell, def, level, choice, form, place, rng, sizes[k], companionFree);
+    // Görev WS92 (92+; SRD s. 42 Wild Companion): Wild Companion'la (slot ya da Wild Shape kullanımı) çağrılan familiar Fey.
+    const evs = paid && ws92On(state) ? evs0.map((e) => (e.type === 'summoned' ? { ...e, combatant: { ...e.combatant, creatureType: 'fey' } } : e)) : evs0;
+    const ev = evs[0] as BattleEvent;
+    events.push(...evs);
+    cur = applyEvents(cur, evs);
     // Görev B2: yaratıkla yürüyen alan (Flaming Sphere: bitişikte tur sonu; ruh sürüsü: 10 ft).
     // Kuyruk 19: Arcane Hand: yapımda da etki seçilebilir (hedef elin 5 ft içinde).
     if (k === 0 && ev.type === 'summoned' && ev.combatant.summon?.hand && cmd.choice && (HAND_EFFECTS as string[]).includes(cmd.choice)) {
@@ -335,7 +355,25 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
       cur = applyEvents(cur, [zone]);
     }
   }
+  events.push(...sharedResistanceEvents(state, actor, spell, def, choice, companionFree, events));
   return finish(state, events);
+}
+
+/**
+ * Görev D3 (sürüm 89): Shared Resistances (SRD s. 166): "choose one of its Resistances. You have Resistance to the chosen
+ * damage type until the spell ends." Büyünün tek hasar türü seçimi (nefesle aynı, ⚠ SRD iki ayrı seçim) büyücüye direnç
+ * olur; büyü bitene dek: konsantrasyonla (Dragon Companion'da konsantrasyonsuz 1 dakika). Veri sürüme göre
+ * (`sharedResistance` 89'da eklendi), 88 ve altı aynen.
+ */
+function sharedResistanceEvents(state: BattleState, actor: Combatant, spell: Spell, def: SummonDef, choice: string | undefined,
+  companionFree: boolean, events: BattleEvent[]): BattleEvent[] {
+  const creature = def.creature ? summonCreature(def.creature, state.kuralSurumu ?? 1) : undefined;
+  if (!creature?.sharedResistance || def.choice?.kind !== 'damageType' || !choice) return [];
+  if (!events.some((e) => e.type === 'summoned')) return [];
+  return [{ type: 'effect_added', targetId: actor.id, effect: {
+    id: `shared-resistance:${spell.id}`, name: 'Shared Resistances', sourceId: actor.id, resist: [choice], icon: '🐉',
+    ...(companionFree ? { until: state.round + 9 } : spell.concentration ? { concentration: spell.name } : {}),
+  } }];
 }
 
 /** Kuyruk 19: Animate Objects: seçilen boyuttan en çok, kalan bütçe Medium. */
@@ -359,17 +397,18 @@ export function executeCommandSummons(state: BattleState, actor: Combatant): Com
 
 /** Tek yaratığın `summoned` olayı (stat bloğu ya da biçim, inisiyatif, sıradaki yeri). */
 function summonedEvent(current: BattleState, actor: Combatant, spell: Spell, def: SummonDef, level: number, choice: string | undefined,
-  form: string | undefined, at: Offset | null | undefined, rng: Rng, sizeKey?: string, companionFree = false): BattleEvent {
+  form: string | undefined, at: Offset | null | undefined, rng: Rng, sizeKey?: string, companionFree = false): BattleEvent[] {
   const id = newId(current, actor);
   const k19 = !!globalRule(current, 'spellsK19');
-  const monster = form ? getMonster(form) : creatureMonster(def.creature ?? spell.id, summonCreature(def.creature ?? '') as CreatureDef, actor, level, choice, k19, sizeKey);
+  const v = current.kuralSurumu ?? 1;
+  const monster = form ? getMonster(form) : creatureMonster(def.creature ?? spell.id, summonCreature(def.creature ?? '', v) as CreatureDef, actor, level, choice, k19, sizeKey);
   // Tepkileri alınmaz (hayvan biçiminin ya da canavar verisinin tepkisi yok sayılır).
-  const { reactions: _r, reactionUses: _u, ...base } = combatantFromMonster(monster, { id, name: `${monster.name} (${actor.name})`, height: actor.height });
+  const { reactions: _r, reactionUses: _u, ...base } = combatantFromMonster(monster, { id, name: `${monster.name} (${actor.name})`, height: actor.height, kuralSurumu: current.kuralSurumu ?? 1 });
   const own = def.turn === 'own';
   const initiative = own
     ? rollDie(20, rollTag(rng, { kind: 'initiative', by: id, bonus: abilityModifier(monster.abilities.dex) })) + abilityModifier(monster.abilities.dex)
     : actor.initiative;
-  const creature = summonCreature(def.creature ?? '');
+  const creature = summonCreature(def.creature ?? '', v);
   const typeOf = def.choice?.kind === 'creatureType' ? choice : creature?.creatureType;
   const summon: SummonInfo = {
     by: actor.id, spellId: spell.id, spell: spell.name, turn: def.turn, level,
@@ -393,6 +432,8 @@ function summonedEvent(current: BattleState, actor: Combatant, spell: Spell, def
     side: actor.side, ownerId: actor.ownerId, initiative, pos: current.map && at ? at : null,
     ...(def.speedFt && binekMb7On(current) ? { speed: def.speedFt } : {}),
     avatar: { ...base.avatar, bg: actor.avatar.bg, ...(creature?.ringByChoice?.[choice ?? ''] ? { ring: creature.ringByChoice[choice ?? ''] } : {}) },
+    // Görev D2 (88+): blokta yüzme hızı (Draconic Spirit; çağrı verisi sürüme göre).
+    ...(creature?.swimFt ? { swimFt: creature.swimFt } : {}),
     ...(typeOf ? { creatureType: typeOf } : {}),
     ...(k19 && creature?.traits?.length ? { traits: [...(base.traits ?? []), ...creature.traits] } : {}),
     // Familiar saldıramaz (SRD); başka eylemleri yapar (Kaçın, Yardım, Atıl…).
@@ -407,10 +448,11 @@ function summonedEvent(current: BattleState, actor: Combatant, spell: Spell, def
     ...(def.creature ? { proficiency: actor.proficiency } : {}),
     summon,
   };
-  return {
+  // Görev D2 (88+): savaş başındaki gibi canavar özellikleri ve yetenekleri (biçimde `monsters.json`, blokta çağrı verisi).
+  return lateSummonEvents(current, {
     type: 'summoned', ownerId: actor.id, spell: spell.name, combatant,
     index: orderIndex(current, actor, def.turn, initiative),
-  };
+  }, monster);
 }
 
 /** Kurulumda ritüel çağırma (Find Familiar): sahibini yöneten yapar; savaş öncesi, slotsuz. */
@@ -451,9 +493,9 @@ export function summonCleanup(state: BattleState): BattleEvent[] {
 }
 
 /** Arayüz: büyünün çağırma tanımı adıyla (menü). */
-export function summonDefByName(name: string): SummonDef | undefined {
+export function summonDefByName(name: string, v?: number): SummonDef | undefined {
   const s = spells.find((x) => x.name === name);
-  return s ? summonDef(s.id) : undefined;
+  return s ? summonDef(s.id, v) : undefined;
 }
 
 // ---------------------------------------------------------------- CILA: sahibinin bonus eylemiyle taşınan çağrı

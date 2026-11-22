@@ -29,6 +29,21 @@ export function genderVisible(sub: Pick<SubclassDef, 'id' | 'cinsiyet'>, sheet: 
   return !sub.cinsiyet || sub.id === sheet.subclassId || sub.cinsiyet === sheet.gender;
 }
 
+/**
+ * GORSEL-DUZELTME: oluşturucuda cinsiyet DEĞİŞTİRİLİRKEN seçili alt sınıfın cinsiyet kuralı (`cinsiyet`) yeni cinsiyete uymuyorsa
+ * yerine geçecek alt sınıf: sınıfın varsayılanı (`alt-sinif-gorunum.json` `varsayilan`; sihirbaz önerisi) yeni cinsiyete uyuyorsa o,
+ * yoksa listede yeni cinsiyete uyan ilk alt sınıf (hiçbiri yoksa `to` boş). Kısıt yoksa ya da uyuyorsa null. Yalnız cinsiyet
+ * değişiminde çağrılır: kayıtlı karakter açılırken uygulanmaz ("mevcut seçim hep görünür", `genderVisible`).
+ */
+export function subclassForGender(classId: string, subclassId: string | undefined, gender: 'erkek' | 'kadin'): { from: string; to: string | undefined } | null {
+  const cur = subclassId ? findSubclass(classId, subclassId) : undefined;
+  if (!cur?.cinsiyet || cur.cinsiyet === gender) return null;
+  const fits = (s: Pick<SubclassDef, 'cinsiyet'> | undefined) => !!s && (!s.cinsiyet || s.cinsiyet === gender);
+  const list = visibleSubclasses(classId);
+  const def = list.find((s) => s.id === defaultSubclassId(classId));
+  return { from: cur.id, to: (fits(def) ? def : list.find(fits))?.id };
+}
+
 /** Görev P0: tam çalışmayan (kısmi/planlı/çalışmıyor özelliği olan) paket alt sınıfı "Deneysel" (seçilebilir). */
 export const packExperimental = (s: SubclassDef): boolean => !!s.pack && s.features.some((f) => f.status !== 'calisir' && f.status !== 'hikaye');
 /** Görev AS2: alt sınıfın savaşta çalışmayan (planlı/çalışmıyor) özellik sayısı (kartta etiket; alt sınıf yine seçilir). */
@@ -102,3 +117,6 @@ export const subclassLabel = (name0: LocalText, lang: 'tr' | 'en', classId?: str
   const name = displayName(name0, classId);
   return lang === 'tr' && name.tr && name.en && name.tr !== name.en ? `${name.tr} (${name.en})` : textOf(name, lang);
 };
+
+/** SD5: oyuncu ekranında alt sınıf adı, parantezli ek (İngilizce ad, durum etiketi) olmadan. */
+export const subclassPlainName = (name0: LocalText, lang: 'tr' | 'en', classId?: string): string => textOf(displayName(name0, classId), lang);

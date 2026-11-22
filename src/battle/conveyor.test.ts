@@ -28,17 +28,17 @@ const slides = (ev: BattleEvent[]) => ev.filter((e) => e.type === 'pushed' && e.
 const CONV = [o(12, 3), o(13, 3), o(12, 4), o(13, 4)];
 
 describe('yürüyen merdiven (Kuyruk 21 D2b)', () => {
-  it('varyant yalnızca kısa kolu geçersiz kılar; eski merdiven varyantı aynı', () => {
-    const old = getMap('dungeon', { variantId: 'merdiven' }).tiles;
+  it('varyant yalnızca kısa kolu geçersiz kılar (HS1: düz Merdiven varyantı silindi; Y yalnız yürüyen basamak altıgenlerinde, geri kalan zemin Y içermez)', () => {
     const neu = getMap('dungeon', { variantId: 'merdiven-yuruyen' }).tiles;
-    for (let r = 0; r < old.length; r++) for (let c = 0; c < 15; c++) {
+    for (let r = 0; r < neu.length; r++) for (let c = 0; c < 15; c++) {
       const isConv = CONV.some((h) => h.col === c && h.row === r);
-      expect(neu[r]![c], `${c},${r}`).toBe(isConv ? 'Y' : old[r]![c]);
+      expect(neu[r]![c] === 'Y', `${c},${r}`).toBe(isConv);
     }
-    expect(old.join('')).not.toContain('Y');
     const raw = RAW_MAPS.find((m) => m.id === 'dungeon')!;
-    expect(raw.variants.find((v) => v.id === 'merdiven')?.objects).toBeUndefined();
-    expect(getMap('dungeon', { variantId: 'merdiven' }).objects).toEqual([]);
+    expect(raw.variants.find((v) => v.id === 'merdiven')).toBeUndefined();
+    expect(raw.variants.find((v) => v.id === 'mesale')?.objects).toBeUndefined();
+    // Eski kayıt: variantId 'merdiven' Yürüyen merdiven'e eşlenir.
+    expect(getMap('dungeon', { variantId: 'merdiven' }).variantId).toBe('merdiven-yuruyen');
     expect(getMap('dungeon', { variantId: 'merdiven-yuruyen' }).objects.map((x) => x.kind)).toEqual(['lever']);
   });
   it('yokuş yukarı adım bir altıgen geri kayar; hareket harcanır', () => {
@@ -91,7 +91,7 @@ describe('yürüyen merdiven (Kuyruk 21 D2b)', () => {
   });
   it('kural yoksa Y sıradan basamak (eski davranış)', () => {
     const s = field({ A: o(12, 5), B: o(2, 4) });
-    const noRule = { ...s, map: { ...s.map!, variantId: 'merdiven' } };
+    const noRule = { ...s, map: { ...s.map!, variantId: 'mesale' } }; // conveyor kuralı olmayan varyant
     expect(conveyorFlow(noRule)).toBeNull();
   });
 });

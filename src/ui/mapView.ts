@@ -4,6 +4,8 @@
  * yürüme ve atlama komutları zar atmadığı için motor üzerinde denenerek bulunur, saldırı
  * önizlemesi motorun menzil/siper/görüş denetimini kullanır.
  */
+import { nesneOn } from '../battle/nesneSurum';
+import { objectWeightLb, weightClassOf } from '../battle/nesneAgirlik';
 import { climbOn, surfaceAt } from '../battle/climbing';
 import { heightAt, isRamp, levelFeet } from '../battle/heights';
 import { OBJECTS, objectAt } from '../battle/objectData';
@@ -177,6 +179,8 @@ export function attackChoices(state: BattleState, actorId: string, targetId: str
   };
   actor.weaponOptions.forEach((o, i) =>
     add(`w${i}`, o.label, optionReach(o), { type: 'attack', actorId, targetId, option: o }));
+  // Görev TE99 (99+): kalkanla kullanılamayan iki elli silah kapalı, nedeniyle.
+  (actor.shieldBlocked ?? []).forEach((o, i) => out.push({ id: `wb${i}`, label: o.label, command: null, detail: t().view.shieldTwoHanded }));
   actor.attacks.forEach((a, i) => {
     // Haritalı savaşta alanlı saldırı (nefes, koni, çizgi) hedefle değil "Nefes / alan" menüsünden, önizlemeyle (Görev R4).
     if (state.map && a.area) return;
@@ -256,6 +260,9 @@ export function terrainInfo(state: BattleState, o: Offset, actor?: Combatant): s
     const def = OBJECTS[ob.kind];
     const st = ob.kind === 'lever' ? V.leverState(ob.state === 'tipped') : ob.state ? (V.objectState[ob.state] ?? '') : '';
     parts.push(V.object(getLang() === 'en' ? def.en : def.tr, ob.hp, def.hp, def.ac, st));
+    // Kuyruk KQ3 NA1: ağırlık oyuncuya da görünür (sürüm 80+).
+    const lb = objectWeightLb(ob);
+    if (nesneOn(state) && lb > 0) parts.push(t().na1.info(lb, t().na1.cls[weightClassOf(lb)] ?? ''));
   }
   return parts.join(' · ');
 }
