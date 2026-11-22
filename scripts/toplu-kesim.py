@@ -416,15 +416,23 @@ def drop_lines(fg):
     return ln
 
 def trim_lines(rgba):
-    """Kutunun dış bandına (14 px) değen koyu ince uzun şeritler (ızgara çizgisi artığı) silinir."""
+    """Kutunun dış bandında (16 px) kutu kenarı boyunca uzanan koyu ince uzun şeritler (ızgara çizgisi artığı) silinir: YATAY şerit yalnız
+    üst/alt bantta, DİKEY şerit yalnız sol/sağ bantta. 2026-11-22: eskiden her yöndeki şerit herhangi bir banda değince siliniyordu; kutu
+    figürün kendi sınırı olduğundan kenara değen koyu yatay figür parçası (kabza, bilek, manşet, zincir) yarık bırakıyordu
+    (human-erkek-fighter-GR; tarama `python scripts/kesim-yarik-tara.py`)."""
     a = rgba.copy(); al = a[..., 3] > 0; dk = al & (a[..., :3].max(axis=2) < 80)
-    ln = ndi.binary_opening(dk, structure=np.ones((1, 40), bool)) | ndi.binary_opening(dk, structure=np.ones((40, 1), bool))
-    ln &= ~ndi.binary_dilation(ndi.binary_opening(dk, structure=np.ones((14, 14), bool)), iterations=3)
-    if not ln.any(): return a
-    lab, n = ndi.label(ln, structure=np.ones((3, 3)))
-    band = np.zeros_like(ln); band[:16] = band[-16:] = True; band[:, :16] = band[:, -16:] = True
-    hit = set(np.unique(lab[band & (lab > 0)]))
-    if hit: a[ndi.binary_dilation(np.isin(lab, list(hit)), iterations=2), 3] = 0
+    solid = ndi.binary_dilation(ndi.binary_opening(dk, structure=np.ones((14, 14), bool)), iterations=3)
+    lh = ndi.binary_opening(dk, structure=np.ones((1, 40), bool)) & ~solid
+    lv = ndi.binary_opening(dk, structure=np.ones((40, 1), bool)) & ~solid
+    tb = np.zeros_like(dk); tb[:16] = tb[-16:] = True
+    lr = np.zeros_like(dk); lr[:, :16] = lr[:, -16:] = True
+    kill = np.zeros_like(dk)
+    for ln, band in ((lh, tb), (lv, lr)):
+        if not ln.any(): continue
+        lab, n = ndi.label(ln, structure=np.ones((3, 3)))
+        hit = set(np.unique(lab[band & (lab > 0)])) - {0}
+        if hit: kill |= np.isin(lab, list(hit))
+    if kill.any(): a[ndi.binary_dilation(kill, iterations=2), 3] = 0
     return a
 
 def sheet_kind(img, box, fg):

@@ -2,6 +2,19 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Kesim yarığı: `trim_lines` düzeltmesi ve human-erkek-fighter-GR yeniden kesimi (2026-11-22; yalnız görünüm)
+
+- Kök neden: `scripts/toplu-kesim.py` `trim_lines` kutunun dış bandına değen HER koyu ince şeridi (yatay ya da dikey) ızgara artığı sayıp
+  siliyordu; kutu figürün kendi sınırı olduğundan kenara değen koyu yatay figür parçası (kabza, bilek, manşet, zincir) düz bir yarık
+  bırakıyordu (human-erkek-fighter-GR: kabza ile bilek arası, topuz kopuk). Kural: yatay şerit yalnız üst/alt bantta, dikey şerit yalnız
+  sol/sağ bantta silinir (`drop_lines` ve ızgara çizgisi koruması sorumlu değildi; ölçüldü).
+- `python scripts/cc-kesim.py hucre gariban-male-human.jpg gariban 5 human-erkek-fighter-GR`: tek hücre, eski jetonun yerleşimiyle
+  (`align_or_height`), defterde `duzeltme`. Eski dosya `public/characters/_yedek-human-fighter-2026-11-22/` (gitignore).
+- Tarama `python scripts/kesim-yarik-tara.py` → `harita/belgeler/KESIM-YARIK-TARAMA.md`: figür içinde 2–6 px kalın, kenarları cetvel
+  düzü saydam yarık. 2900 jetonda 729 aday (223'ü kopuk parçalı); doğal boşluklar da giriyor, karar görselle
+  (`gorsel-dokum/kesim-yarik/en-yuksek.png`). Gariban bilekleri, Warlock WL-1/WL-2/WL-4 gibi gerçek görünen yarıklar var; toplu yeniden
+  kesim kullanıcı onayı bekliyor.
+
 ## Goliath: bütün jetona soy filtresi, kafa kaplaması kapalı (2026-11-22; kullanıcı kararı, yalnız görünüm)
 
 - Otomatik ten maskesi Goliath'ta yalnız başı kapsıyordu (`maskAlt.headOnly`): ırk kaydında `otoMaske: false` (`data/soy-renkleri.json`);

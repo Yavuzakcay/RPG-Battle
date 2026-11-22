@@ -5881,6 +5881,21 @@
     "dosya": "clerik-male-celestial.jpg",
     "hucre": 8
    }
+  },
+  "human-erkek-fighter-GR": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "gariban-male-human.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "gariban-male-human.jpg",
+    "hucre": 5
+   }
   }
  }
 }
