@@ -8,7 +8,6 @@ import { journeyEnabled } from './app/features';
 import type { BattleState } from './battle/types';
 import { applyBattleResult } from './app/partyStatus';
 import { migrateSubclasses, newCharacter, type SavedCharacter } from './rules/builder';
-import { findSubclass, subclassPlainName } from './rules/subclasses';
 import { migrateLineages } from './rules/lineage';
 import { newPendingLineages } from './app/lineageNotice';
 import { repairSlots } from './rules/characterRest';
@@ -18,7 +17,7 @@ import { WingFilterHost } from './ui/WingFilter';
 import { removeStaticSplash, splashEnabled, watchResume, type SplashKind } from './ui/splashBoot';
 import { badgeChain, preloadImages } from './ui/Avatar';
 import { sheetAvatar } from './battle/avatar';
-import { getLang, t, useLang } from './i18n';
+import { t, useLang } from './i18n';
 import type { GoalsDraft } from './oda/hedef';
 import { setBattleHpVis, setRoomOverlay, type HpVis, type RoomOverlay } from './oda/active';
 import { useResolvedTheme } from './ui/theme';
@@ -180,8 +179,6 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
   useEffect(() => {
     if (screen.name === 'player' && classInfo.ready) void importBuilder().catch(() => { /* Sihirbaza girilince yeniden denenir. */ });
   }, [screen.name, classInfo.ready]);
-  /** Bildirimde alt sınıfın görünen adı (dile göre; bulunamazsa kimlik). */
-  const subclassName = (classId: string, id: string): string => { const s = findSubclass(classId, id); return s ? subclassPlainName(s.name, getLang() === 'en' ? 'en' : 'tr', classId) : id; };
   const store = (list: SavedCharacter[]) => { setCharacters(list); saveCharacters(list); };
   // Kuyruk KQ4 CK1: karakter kâğıdı penceresi (listeden).
   const [sheetFor, setSheetFor] = useState<SavedCharacter | null>(null);
@@ -198,12 +195,11 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
     const r = repairSlots(g.list);
     // Kuyruk AS1a: soyu isteğe bağlı türdeki eski kayıtlar soysuz kalır; her karakter için yalnızca bir kez bildirilir.
     const pick = newPendingLineages(g.pending);
-    if (m.assigned.length === 0 && m.renamed.length === 0 && g.assigned.length === 0 && r.list === g.list && pick.length === 0) return;
+    if (m.assigned.length === 0 && g.assigned.length === 0 && r.list === g.list && pick.length === 0) return;
     store(r.list);
-    if (m.assigned.length === 0 && m.renamed.length === 0 && g.assigned.length === 0 && r.repaired.length === 0 && pick.length === 0) return;
+    if (m.assigned.length === 0 && g.assigned.length === 0 && r.repaired.length === 0 && pick.length === 0) return;
     setSubclassNotice([
       m.assigned.length ? t().common.subclassAssigned(m.assigned.map((a) => `${a.name}: ${a.subclass}`).join(', ')) : '',
-      m.renamed.length ? t().common.subclassRenamed(m.renamed.map((a) => `${a.name}: ${subclassName(a.classId, a.subclassId)}`).join(', ')) : '',
       g.assigned.length ? t().common.lineageAssigned(g.assigned.map((a) => `${a.name}: ${a.lineage}`).join(', ')) : '',
       r.repaired.length ? t().common.slotsRepaired(r.repaired.join(', ')) : '',
       pick.length ? t().common.lineagePick(pick.map((p) => `${p.name} (${p.race})`).join(', ')) : '',

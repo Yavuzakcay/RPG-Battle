@@ -1,19 +1,15 @@
 {
-  "note": "Kuyruk K49 B4/B5/B7: alt sınıfların seçimde görünümü (veri değişmez; kimlikler ve kayıtlı karakterler aynı). kaldirilan: listeden çıkan alt sınıflar (kimlik ya da EN ad). Görev AS2: alt sınıflar hep seçilebilir; görünen 119 = 107 paket + 12 bizim (11 imza + Karadul). Listede Barış Alanı (paketten çıktı, kimliği eskiKimlik ile Birlik Manastırı'na yönlenir) ve Yaşam Manastırı (life-domain; kullanıcı kararı 2026-11-21: paketten silindi, kimliği yedekKimlik ile Birlik Manastırı'na yönlenir). varsayilan: alt sınıf seviyesindeki eski kayıtta alt sınıf boşsa atanan ve sihirbazın önerdiği alt sınıf (eskiden SRD'nin tek alt sınıfı; aynı kimlikler artık dış pakette; Cleric'te life-domain kalkınca Birlik Manastırı). adKurallari: TR görünen ad dönüşümleri (Cleric '... Alanı' → '... Manastırı'); istisnalar sonra uygulanır. Parantezli takma ad (ör. 'Uzun Ad (Kirpi)') yalnızca takma adla görünür.",
+  "note": "Kuyruk K49 B4/B5/B7: alt sınıfların seçimde görünümü (veri değişmez; kimlikler ve kayıtlı karakterler aynı). kaldirilan: listeden çıkan alt sınıflar (kimlik ya da EN ad). Görev AS2: alt sınıflar hep seçilebilir; görünen 120 = 108 paket + 12 bizim (11 imza + Karadul). Listede yalnız Barış Alanı (paketten çıktı, kimliği eskiKimlik ile Birlik Manastırı'na yönlenir); Yaşam Manastırı (life-domain) kalır, Birlik Manastırı onun yanında (kullanıcı kararı 2026-11-22). varsayilan: alt sınıf seviyesindeki eski kayıtta alt sınıf boşsa atanan ve sihirbazın önerdiği alt sınıf (eskiden SRD'nin tek alt sınıfı; aynı kimlikler artık dış pakette). adKurallari: TR görünen ad dönüşümleri (Cleric '... Alanı' → '... Manastırı'); istisnalar sonra uygulanır. Parantezli takma ad (ör. 'Uzun Ad (Kirpi)') yalnızca takma adla görünür.",
   "kaldirilan": [
     {
       "id": "baris-alani",
-      "en": ""
-    },
-    {
-      "id": "life-domain",
       "en": ""
     }
   ],
   "varsayilan": {
     "barbarian": "path-of-the-berserker",
     "bard": "college-of-lore",
-    "cleric": "imza_birlik",
+    "cleric": "life-domain",
     "druid": "circle-of-the-land",
     "fighter": "champion",
     "monk": "warrior-of-the-open-hand",
@@ -44,9 +40,5 @@
   "eskiKimlik": {
     "baris-alani": "imza_birlik"
   },
-  "yedekKimlik": {
-    "life-domain": "imza_birlik"
-  },
-  "not_eskiKimlik": "K50: Barış Alanı (dış paket) yerine Birlik Manastırı (imza alt sınıfı, data/imza.json); eski kayıt yeni kimlikle açılır.",
-  "not_yedekKimlik": "2026-11-21: life-domain (Yaşam Manastırı) paketten silindi; kimlik kayıtta yoksa (uygulamada hep) Birlik Manastırı'na yönlenir (findSubclass, savaş kurulumunda effectiveSubclassId). Kayıtlı karakterde kimlik açılışta bir kez yeniden yazılır ve bildirilir (migrateSubclasses). Mekaniği yalnız test fikstüründe (src/rules/fixtures/srd-alt-siniflar.json) yüklü kalır. Savaş kayıtları etkilenmez (savaşçı özellikleri battle_started içinde)."
+  "not_eskiKimlik": "K50: Barış Alanı (dış paket) yerine Birlik Manastırı (imza alt sınıfı, data/imza.json); eski kayıt yeni kimlikle açılır."
 }

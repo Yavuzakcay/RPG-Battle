@@ -40,6 +40,26 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   maske raporu kapsamı kaldırılmış ırksız (`handMask.test.ts`).
 - **Belgeler:** üretilmiş eski raporlar (`docs/VARLIK-ENVANTERI.md`, `harita/belgeler/GORSEL-DOKUM.md` mahkûm satırları, `KANAT-BIRLESTIRME.md`)
   bir sonraki üretimlerine dek eski dosya adlarını anar; elle değiştirilmedi.
+## Yaşam Manastırı geri alındı; yalnız Barış Alanı kaldırıldı (2026-11-22, kullanıcı kararı; kural/kayıt sürümü ve mekanik değişmedi)
+
+- **Gerekçe:** kullanıcı yalnız Barış Alanı'nı (`baris-alani`) kaldırmıştı. 2026-11-21'deki "Yaşam Manastırı (`life-domain`) kaldırıldı,
+  Birlik Manastırı yerini alır" değişikliği (commit 47dab278, birleşimi d8d86b21) kullanıcı kararı değildi; geri alındı (ters commit).
+  Yaşam Manastırı (SRD'nin Cleric alt sınıfı) kalır, Birlik Manastırı (`imza_birlik`) onun yerine değil yanında.
+- **Sayılar:** paket 108, görünen 120 (108 + 12 bizim), Cleric 8 (7 paket: Yaşam, Demirci, Fırtına, Aydın, Yakamoz, Mezar, Savaş + Birlik).
+- **Veri:** `data/alt-sinif-gorunum.json` `kaldirilan` yalnız `baris-alani`; `yedekKimlik` (`life-domain` → `imza_birlik`) kalktı,
+  `eskiKimlik` (`baris-alani` → `imza_birlik`) kalır; Cleric `varsayilan` yeniden `life-domain` (sihirbaz önerisi ve eski kayıt ataması).
+- **Kod:** `legacySubclassTarget`, `effectiveSubclassId`, `create.ts` `imzaSheet`, `migrateSubclasses` `renamed` ve `subclassRenamed`
+  bildirimi kaldırıldı; eski kayıtta `life-domain` olduğu gibi kalır. `srd12-paket` `isRemovedFromPack` kalktı (`AD_TR`'de yeniden
+  `life-domain` → "Yaşam Manastırı"); `loadSimContent` eski `findSubclass` denetimine döndü.
+- **Testler:** `as2.test` 108 paket / 120 görünür / Cleric 7 + 1 ve `life-domain` pakette; `seciciDenetimi`, `srd12Paket`, `classFeatures`,
+  `galeri`, `gorselEsleme`, `buyu-efekt-tablosu` sayıları 47dab278 öncesine (12 SRD, 120); `lifeDomainYonlendirme.test.ts` →
+  `altSinifYonlendirme.test.ts` (Barış yönlenir, Yaşam yönlenmez, eski kayıt yeniden yazılmaz, savaşçı Yaşam mekaniğiyle).
+- **Üretilen:** `dungeondex-gorsel-esleme.json` ve `GORSEL-ENVANTER.md` yerel `icerik/` olmadan yeniden üretilemedi (bulut); `life-domain`
+  satırı ve sayılar (120, 1534, 1383) elle eklendi; yerelde `npm run dd-gorsel` aynı sonucu vermeli. Jeton dosyaları
+  (`data/cleric-jeton.json`, `data/jeton-hucre-sirasi.json`, `scripts/toplu-kesim.py`) başka oturumun işi sürdüğü için bu committe
+  değişmedi; "ID1 kullanılmıyor" notları eskidi, ID1 yeniden Yaşam Manastırı'nın hücresi.
+- **Depo dışı:** yerel `icerik/ek-cleric.json`'a Yaşam Manastırı kaydı geri konmalı (yedek `icerik/_yedek-metin-20261122-enad/`,
+  fikstür `life-domain`; EN-AD adlarıyla); `check:icerik` 12 paket, 108 alt sınıf.
 
 ## EN-AD: onaylı İngilizce alt sınıf ve özellik adları (2026-11-22, kullanıcı kararı; kural/kayıt sürümü ve mekanik değişmedi)
 

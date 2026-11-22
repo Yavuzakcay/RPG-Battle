@@ -59,7 +59,7 @@ describe('Dungeondex görsel eşlemesi', () => {
     for (const id of CONDITION_IDS) has('durum', id);
     for (const c of classes) has('sinif', c.id);
     for (const c of classes) for (const s of subclassesOf(c.id)) has('altsinif', s.id);
-    expect(Object.keys(E.kategoriler.altsinif)).toHaveLength(119); // 2026-11-21: life-domain kaldırıldı (120 → 119)
+    expect(Object.keys(E.kategoriler.altsinif)).toHaveLength(120);
     expect(classData.feats.every((f) => E.kategoriler.feat[f.id])).toBe(true);
   });
 

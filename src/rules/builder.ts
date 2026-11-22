@@ -16,7 +16,6 @@ import { SKILL_IDS, SKILLS, type Skill } from './skills';
 import { backgroundById, backgroundOf, backgroundSkills, bonusesOf, magicInitiateProblems, otherSkillMax, speciesSkillChoice } from './backgrounds';
 import { MAX_ATTUNED, classSkillProblem, deriveStats, finalScores, spellSlotsFor, type CharacterSheet, type Scores } from './stats';
 import { advancementProblems, casterCtx, featEffects, sheetFeats } from './advancement';
-import { legacySubclassTarget } from './subclasses';
 import { classKit, defaultSubclass, gainedFeatures, optionTraining, subclassLevel, subclassesOf, tableValue } from './classFeatures';
 import { masteryProblems } from './mastery';
 import { carryLoad, type CarryRule } from './carry';
@@ -530,24 +529,16 @@ export function needsSubclass(s: Pick<CharacterSheet, 'classId' | 'level'>): boo
  * Eski kayıtlar (Görev P-Paladin): alt sınıf seviyesine ulaşmış ama alt sınıfı boş karakterlere SRD'deki tek alt
  * sınıf atanır; kimlere atandığı döner (kullanıcıya bildirilir). Değişiklik yoksa aynı liste.
  */
-export function migrateSubclasses(list: SavedCharacter[]): { list: SavedCharacter[]; assigned: Array<{ name: string; subclass: string }>; renamed: Array<{ name: string; classId: string; subclassId: string }> } {
+export function migrateSubclasses(list: SavedCharacter[]): { list: SavedCharacter[]; assigned: Array<{ name: string; subclass: string }> } {
   const assigned: Array<{ name: string; subclass: string }> = [];
-  const renamed: Array<{ name: string; classId: string; subclassId: string }> = [];
   const out = list.map((c) => {
-    // 2026-11-21: paketten silinen alt sınıfın kimliği (`yedekKimlik`: Yaşam Manastırı) yeni kimliğe bir kez
-    // yazılır ve bildirilir. Savaş kayıtları etkilenmez (savaşçının özellikleri `battle_started` içinde).
-    const to = legacySubclassTarget(c.sheet.subclassId);
-    if (to) {
-      renamed.push({ name: c.sheet.name, classId: c.sheet.classId, subclassId: to });
-      return { ...c, sheet: { ...c.sheet, subclassId: to } };
-    }
     if (c.sheet.subclassId || !needsSubclass(c.sheet)) return c;
     const id = defaultSubclass(c.sheet.classId);
     if (!id) return c;
     assigned.push({ name: c.sheet.name, subclass: subclassesOf(c.sheet.classId).find((x) => x.id === id)?.name.en ?? id });
     return { ...c, sheet: { ...c.sheet, subclassId: id } };
   });
-  return { list: assigned.length > 0 || renamed.length > 0 ? out : list, assigned, renamed };
+  return { list: assigned.length > 0 ? out : list, assigned };
 }
 
 /** Oluşturucunun formu kayıtlı karaktere çevirmesi: beceri listesi sınıf + diğerleri. */

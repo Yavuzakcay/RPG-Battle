@@ -50,8 +50,8 @@ export const packExperimental = (s: SubclassDef): boolean => !!s.pack && s.featu
 export const notWorkingCount = (s: SubclassDef): number => s.features.filter((f) => f.status === 'planli' || f.status === 'calismiyor').length;
 
 /**
- * Seçimde görünen alt sınıflar (Görev AS2: tek liste, hepsi her zaman seçilebilir; yalnız `kaldirilan` (Barış Alanı, Yaşam
- * Manastırı) çıkar). Kaynak: imza + Karadul (`classData.subclasses`) ve dış paket (`setExternalSubclasses`). Aç/kapa, kopya
+ * Seçimde görünen alt sınıflar (Görev AS2: tek liste, hepsi her zaman seçilebilir; yalnız `kaldirilan` (Barış Alanı)
+ * çıkar). Kaynak: imza + Karadul (`classData.subclasses`) ve dış paket (`setExternalSubclasses`). Aç/kapa, kopya
  * politikası ve "çalışan özelliği yoksa gizle" ayrımı yok.
  */
 export function visibleSubclasses(classId: string): SubclassDef[] {
@@ -85,27 +85,10 @@ export function displayName(name: LocalText, classId?: string): LocalText {
   return ex ? { tr: ex.tr, en: ex.en } : { tr, en };
 }
 
-/**
- * 2026-11-21: paketten silinen alt sınıfın yedek karşılığı (`data/alt-sinif-gorunum.json` `yedekKimlik`: Yaşam Manastırı
- * `life-domain` → Birlik Manastırı). Kayıtlı karakter açılışta bir kez yeni kimliğe yazılır (`migrateSubclasses`). Yedek değilse undefined.
- */
-export const legacySubclassTarget = (id: string | undefined): string | undefined =>
-  id ? (view.yedekKimlik as Record<string, string | undefined>)[id] : undefined;
-
-/**
- * Etkin alt sınıf kimliği: `yedekKimlik`teki kimlik kayıtta yoksa (uygulamada hep; test fikstüründe mekanik yüklü kalır)
- * yeni karşılığına yönlenir. Savaş kurulumu (`create.ts`) imza denetimini bununla yapar.
- */
-export const effectiveSubclassId = (classId: string, id: string | undefined): string | undefined => {
-  const to = legacySubclassTarget(id);
-  return to && !subclassDefs(classId).some((s) => s.id === id) ? to : id;
-};
-
 /** Kimlikle alt sınıf (görünen liste önce, sonra bütün kayıt). */
 export const findSubclass = (classId: string, id0: string | undefined): SubclassDef | undefined => {
-  // Kuyruk K50: eski kimlik (dış paketin Barış Alanı) imza alt sınıfına (Birlik Manastırı) her zaman yönlenir;
-  // 2026-11-21 Yaşam Manastırı kayıtta yoksa (`effectiveSubclassId`).
-  const id = id0 ? (view.eskiKimlik as Record<string, string>)[id0] ?? effectiveSubclassId(classId, id0) : undefined;
+  // Kuyruk K50: eski kimlik (dış paketin Barış Alanı) imza alt sınıfına (Birlik Manastırı) yönlenir.
+  const id = id0 ? (view.eskiKimlik as Record<string, string>)[id0] ?? id0 : undefined;
   return id ? visibleSubclasses(classId).find((s) => s.id === id) ?? subclassDefs(classId).find((s) => s.id === id) : undefined;
 };
 
