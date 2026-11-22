@@ -21,13 +21,15 @@ if MODE == 'onizleme': os.environ['CC_KURU'] = ONIZ
 
 def load_cc():
     s = importlib.util.spec_from_file_location('cc', 'scripts/cc-kesim.py'); m = importlib.util.module_from_spec(s); s.loader.exec_module(m)
-    m.SECIM = lambda n: n.startswith('celestial-')
+    m.SECIM = lambda n: n.startswith('celestial-') and n not in HARIC
     m.TABAN_DURUM = ('haleli', 'halesiz-supheli', 'halesiz-temiz')
-    m.TABAN_DOGRULANDI_ATLA = False
+    m.TABAN_DOGRULANDI_ATLA = True    # sayfa 32 (kadın Wizard A8, B1–B7) ve kadın WL-8: Gemini hücresinde hale duruyor, oyundaki halesiz esas
     m.TABAN_SAYFA_ATLA = {'06'}
     m.CLERIC_CELESTIAL_HUCRE = list(range(1, 10))
     return m
 
+# Ön kesim denetiminde (2026-11-22) yazılmayan jetonlar: oyundaki kalır.
+HARIC = {'celestial-kadin-fighter-ID3': 'sayfa 12 hücre 3: mor kristaller macenta zeminle birlikte siliniyor (oyundaki kristalli)'}
 ESLESME = 'docs/sabah/hale-gemini-eslesme.csv'
 DUZ = 'assets-ham/eksikler/hale-gemini-duzeltme-eslesme.csv'
 ERKEK_WL = {('26', str(c)) for c in range(5, 10)} | {('27', str(c)) for c in range(1, 7)}
@@ -49,6 +51,9 @@ def hedef():
     t['celestial-kadin-sorcerer-SC-3'] = ('diger', 'sorcerer-duzelt-B-sonuc.jpg', 1)
     for r in csv.DictReader(open(DUZ, encoding='utf-8-sig')):
         if r['yeni_sayfa']: t[r['dosya'][:-5]] = ('duzeltme', f"hale-gemini-duzeltme-sayfa-{r['yeni_sayfa']}.jpg", int(r['yeni_hucre']))
+    for r in csv.DictReader(open(DUZ, encoding='utf-8-sig')):
+        if r['durum'] == 'halesiz-doğrulandı': t[r['dosya'][:-5]] = ('kalır', 'halesiz-doğrulandı: Gemini hücresinde hale var', 0)
+    for n, why in HARIC.items(): t[n] = ('kalır', why, 0)
     t['celestial-erkek-wizard-WZ-B5'] = ('duzeltme', 'hale-gemini-duzeltme-sayfa-03.jpg', 7)
     t['celestial-kadin-rogue-ID3'] = ('duzeltme', 'celestial-kadin-rogue-ID3-duzeltme.jpg', 1)
     return t
@@ -78,6 +83,7 @@ def envanter():
         tg = T.get(n)
         if tg is None: durum = 'hedef yok'
         elif tg[0] == 'ham yok': durum = 'eski (ham sayfa yok)'
+        elif tg[0] == 'kalır': durum = 'eski (bilerek kalır)'
         elif cur == (tg[1], tg[2]): durum = 'güncel'
         else: durum = 'eski kalan'
         rows.append({'jeton': n, 'sinif': cls_of(n), 'cinsiyet': gen_of(n), 'kod': code_of(n), 'simdiki': f"{w['kaynak']}: {w['dosya']} #{w['hucre']}" if w else 'eski kesim (cc-kesim dışı)',
@@ -114,8 +120,12 @@ def temas(cc=None):
     from PIL import Image, ImageDraw
     cc = cc or load_cc()
     L = json.load(open(f'{ONIZ}/kaynak.json'))['jetonlar']
+    # yalnız değişecekler: envanterde 'eski kalan' (zaten güncel kaynaktan kesilmiş jetonlar yeniden yazılmaz: hat parametreleri
+    # 2026-11-19'dan beri değiştiği için aynı sayfadan yeniden kesim birkaç piksel kayar)
+    deg = {r['jeton'] for r in json.load(open(f'{ONIZ}/envanter.json')) if r['durum'] == 'eski kalan'}
     by = defaultdict(list)
-    for n in tokens(): by[cls_of(n)].append(n)
+    for n in tokens():
+        if n in deg: by[cls_of(n)].append(n)
     order = lambda n: (gen_of(n), int(re.sub(r'\D', '', code_of(n)) or 0) if code_of(n) not in ('GR', 'genel') else 99, code_of(n))
     paths, ozet = [], Counter()
     px, cols = 112, 5
