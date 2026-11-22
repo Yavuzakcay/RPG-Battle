@@ -37,11 +37,12 @@ export function LookFrame(props: { sheet: LookSheet; size: number; flying?: bool
     '--look-filter': look.filter || 'none', '--look-sx': look.scaleX, '--look-sy': look.scaleY, '--look-foot': `${FOOT_FRAC * 100}%`,
   } as CSSProperties;
   // KW1: tek kanatlı slot (Dragonborn) kanadı rozetin içinde çizer (zemin dairesi ile figür arası): burada ayrı katman yok, görünüm bağlamla iner.
+  // ROZET-CERCEVE-KIRPMA: görünüm her zaman bağlamla iner (rozet sığdırması alt soy oranını bilmeli); rozet kanadı yalnız `ayna` slotunda çizer.
   const inside = !!look.wing?.ayna;
   return (
     <span className="look-frame" style={style}>
       {look.wing && !inside && <WingLayer wing={look.wing} size={props.size} />}
-      {inside ? <LookContext.Provider value={look}>{props.children}</LookContext.Provider> : props.children}
+      <LookContext.Provider value={look}>{props.children}</LookContext.Provider>
     </span>
   );
 }

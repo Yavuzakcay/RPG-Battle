@@ -16,6 +16,8 @@ import type { Avatar as AvatarData } from '../battle';
 import type { TintSpec } from '../battle/types';
 import { fallbackFilterFor, tintedReady, tintedUrl } from './tint';
 import { naturalLeft } from './tokenMirror';
+import { badgeFit, fitCss } from './badgeFit';
+import { knownHull, measureHull, tryHull } from './badgeHull';
 import { useWingData } from './wingData';
 
 /**
@@ -116,6 +118,22 @@ export function preloadImages(srcs: string[]): void {
 const preloading = new Set<string>();
 
 /**
+ * ROZET-CERCEVE-KIRPMA: rozetin sığdırma CSS'i (`badgeFit.ts`): kemer kırpması her zaman, gerekirse ölçek + kaydırma. Zarf bilinmiyorsa
+ * (görsel henüz ölçülmedi, test ortamı) yalnız kemer. Görsel yolu, boy, oran ve ayna başına önbellek.
+ */
+const fitCache = new Map<string, { fit?: string; clip: string }>();
+function badgeFitCss(src: string, size: number, sx: number, sy: number, mirror: 1 | -1, measured: boolean): { fit?: string; clip: string } {
+  const hull = knownHull(src) ?? (measured ? tryHull(src, assetSrc(src)) : undefined);
+  const key = `${hull ? src : '-'}|${size}|${sx}|${sy}|${mirror}`;
+  const have = fitCache.get(key);
+  if (have) return have;
+  const input = { hull: hull ?? [], size, sx, sy, mirror, foot: FOOT_FRAC };
+  const css = fitCss(input, badgeFit(input));
+  fitCache.set(key, css);
+  return css;
+}
+
+/**
  * HTML avatar (sıra şeridi, karakter çekmecesi, karakter listesi, oluşturucu). Görsel doğrudan `<img>`
  * ile yüklenir (`lazy`: ekran dışındakiler beklenir; `eager`: ilk ekranda hemen); yüklenene dek iskelet
  * (yanıp sönen zemin), yüklenemezse zincirdeki sıradaki görsel, hiçbiri yoksa baş harfler.
@@ -141,15 +159,19 @@ export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: st
   const look = useContext(LookContext);
   // Kuyruk A İş 2: kendi çiziminde kanatlı jetonda ejderha kanadı yok.
   const wing = src && look?.wing?.ayna && !ownWingToken(look.wing, src) ? look.wing : null;
+  // ROZET-CERCEVE-KIRPMA: figür kemere (üst yarı daire, alt yarı dik kenar) sığar; oran yalnız `LookFrame` içinde (CSS de orada uygular).
+  const mirror = naturalLeft(src) ? -1 : 1;
+  const fit = src ? badgeFitCss(src, size, look?.scaleX ?? 1, look?.scaleY ?? 1, mirror, loaded) : null;
   return (
-    <span className={`avatar${src && !loaded ? ' skeleton' : ''}${crown ? ' has-crown' : ''}${wing ? ' has-wing' : ''}`} title={title}
-      style={{ width: size, height: size, background: avatar.bg, borderColor: ring ?? avatar.ring ?? 'transparent', fontSize: size * 0.4, ...(naturalLeft(src) ? { '--mirror': -1 } : {}) } as CSSProperties}>
+    <span className={`avatar${src && !loaded ? ' skeleton' : ''}${src ? ' fit' : ''}${crown ? ' has-crown' : ''}${wing ? ' has-wing' : ''}`} title={title}
+      style={{ width: size, height: size, background: avatar.bg, borderColor: ring ?? avatar.ring ?? 'transparent', fontSize: size * 0.4, ...(mirror < 0 ? { '--mirror': -1 } : {}),
+        ...(fit ? { '--look-foot': `${FOOT_FRAC * 100}%`, '--fit-clip': fit.clip, ...(fit.fit ? { '--fit': fit.fit } : {}) } : {}) } as CSSProperties}>
       {wing && <svg className="badge-wings" viewBox={`0 0 ${TOKEN_SPACE} ${TOKEN_SPACE}`} aria-hidden="true"><WingPairImage wing={wing} cx={TOKEN_SPACE / 2} cy={TOKEN_SPACE / 2} w={TOKEN_SPACE} root={wingRoot(src, avatar.look)} /></svg>}
       {src ? (
         <>
           <img key={src} src={shown ?? assetSrc(src)} alt="" width={size} height={size} loading={props.eager ? 'eager' : 'lazy'} decoding="async"
             className={loaded ? undefined : 'pending'} style={imgFilter ? { filter: imgFilter } : undefined}
-            onLoad={() => { cache.set(src, true); setState({ key, i, loaded: true }); }}
+            onLoad={(e) => { measureHull(src, e.currentTarget); cache.set(src, true); setState({ key, i, loaded: true }); }}
             onError={() => { cache.set(src, false); setState({ key, i: i + 1, loaded: false }); }} />
           {/* KQ6-19: Celestial yıldız tacı (savaş jetonuyla aynı çözücü `crownSpec` + aynı çizim `StarCrownShape`) */}
           {crown && loaded && <StarCrownLayer crown={crown} />}
