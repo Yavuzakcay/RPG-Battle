@@ -73,6 +73,8 @@ const tr = {
     editing: (name: string) => `${name} düzenleniyor`, newTitle: 'Yeni karakter',
     limitNote: (max: number) => `Partiye en fazla ${max} karakter katılır.`,
     identity: 'Kimlik', name: 'Ad', level: 'Seviye', avatar: 'Görünüm', male: 'Erkek', female: 'Kadın',
+    /** GORSEL-DUZELTME: cinsiyet değişince cinsiyet kısıtlı alt sınıf (Karadul, İmparator) önerilene çevrilir; tek satır bildirim. */
+    genderSubclass: (from: string, to: string | null) => `“${from}” bu cinsiyete açık değil; alt sınıf ${to ? `“${to}” yapıldı` : 'boşaltıldı'}.`,
     raceClass: 'Tür ve sınıf', race: 'Tür', lineage: 'Soy', cls: 'Sınıf',
     raceLine: (race: string, speed: number, darkvision: number) => `${race}: hız ${speed} ft${darkvision ? `, karanlık görüş ${darkvision} ft` : ''}.`,
     abilities: 'Yetenek skorları', standard: 'Standart dizi', pointBuy: 'Puan satın alma (point buy)',

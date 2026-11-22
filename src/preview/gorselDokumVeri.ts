@@ -13,7 +13,7 @@
  */
 import { items, races, type SubclassDef } from '../data';
 import { blankCharacter } from '../rules/builder';
-import { defaultSubclassId, displayName, genderVisible, visibleSubclasses } from '../rules/subclasses';
+import { defaultSubclassId, displayName, genderVisible, subclassForGender, visibleSubclasses } from '../rules/subclasses';
 import { sheetAvatar } from '../battle/avatar';
 import { CULTURE_SKIN, EXILE, SKIN_TONES, cultureSkinTone, exileOptions } from '../ui/lineageLook';
 import { wingTable } from '../ui/wingData';
@@ -148,8 +148,9 @@ export function classCombos(cls: string): Combo[] {
   const out: Combo[] = [];
   for (const row of classRows(cls)) for (const gender of GENDERS) for (const v of classVariants()) {
     const reach: Combo['reach'] = row.cinsiyet && row.cinsiyet !== gender ? 'cinsiyet-sonra' : 'normal';
-    // genderVisible: kısıtlı alt sınıf yeni seçimde görünmez; mevcut seçim (subclassId aynı) görünür.
-    if (row.subId && reach === 'cinsiyet-sonra' && !genderVisible({ id: row.subId, cinsiyet: row.cinsiyet }, { subclassId: row.subId, gender })) continue;
+    // genderVisible: kısıtlı alt sınıf yeni seçimde görünmez; mevcut seçim (subclassId aynı) görünür. GORSEL-DUZELTME: oluşturucu
+    // cinsiyet değişiminde kısıtlı alt sınıfı önerilene çevirir (`subclassForGender`); öyleyse bu görünüş arayüzde ulaşılamaz.
+    if (row.subId && reach === 'cinsiyet-sonra' && (!genderVisible({ id: row.subId, cinsiyet: row.cinsiyet }, { subclassId: row.subId, gender }) || subclassForGender(cls, row.subId, gender))) continue;
     const sheet = sheetFor({ race: v.race, cls, gender, level: row.level, ...(v.lineage ? { lineage: v.lineage } : {}), ...(v.awakening ? { awakening: v.awakening } : {}),
       ...(v.skinTone ? { skinTone: v.skinTone } : {}), ...(v.exile ? { exile: v.exile } : {}), ...(row.subId ? { subId: row.subId } : {}) });
     const avatar = sheetAvatar(sheet);

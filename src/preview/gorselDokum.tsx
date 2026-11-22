@@ -2,7 +2,7 @@
  * Görsel döküm sayfası (yalnız geliştirme; `npm run dev` → /onizleme-dokum.html, `npm run gorsel-dokum` sürer; build girdisi değil).
  * Oyuncunun ulaşabildiği her karakter görünüşünü oyunun KENDİ bileşenleriyle çizer:
  * - karakter ekranı: `CharacterFigure` (karakter listesi kartı / sihirbaz önizlemesi; uçma yeteneği → kanat), savaş çekmecesi ve
- *   sıra şeridi rozeti (`LookFrame` + `AvatarBadge`, 56 ve 30 px; 30 px küçük kopyayı kullanır), karakter sayfası portresi (`AvatarBadge` 84),
+ *   sıra şeridi rozeti (`LookFrame` + `AvatarBadge`, 56 ve 30 px; 30 px küçük kopyayı kullanır), karakter sayfası portresi (`SheetPortrait`),
  * - savaş: `AvatarCircle` (`MapBattle` jeton yolu: `.token` sınıfları, `tokenFilters`/`filterStyle`, `tokenScale`, `TOKEN_R`), harita zemini
  *   üstünde altıgende (`hexPoints`), gerçek boyda (dünya birimi = 1280 px genişlikte sahne) ve büyük boyda.
  * Kombinasyonlar `gorselDokumVeri.ts`'ten (veriden), kusur taraması `gorselDokumTarama.ts`'ten. `window.__dokum` betiğe açılır:
@@ -13,6 +13,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import '../styles.css';
 import { AvatarBadge, AvatarCircle, CharacterFigure, preloadImages, thumbOf, useTinted } from '../ui/Avatar';
 import { LookFrame } from '../ui/LookFrame';
+import { SheetPortrait } from '../screens/sheet/SheetView';
 import { WingFilterHost } from '../ui/WingFilter';
 import { removeStaticSplash } from '../ui/splashBoot';
 import { filterStyle, outlineColor, tokenFilters, type TokenFilter } from '../ui/statusFx';
@@ -346,7 +347,7 @@ function maskPage(): PageDef {
     view: (it, m) => <MaskTriple it={it} marks={m} />,
   });
 }
-/** Karakter sayfası portresi (SheetView: `AvatarBadge` 84, `LookFrame` yok) ile çekmece rozeti (LookFrame) yan yana. */
+/** Karakter sayfası portresi (SheetView'in `SheetPortrait`'i) ile çekmece rozeti (LookFrame) yan yana. */
 function portrePage(): PageDef {
   const L = subclassRowLevel();
   const vs = classVariants().filter((v) => {
@@ -355,7 +356,7 @@ function portrePage(): PageDef {
   });
   const rows: RowH[] = vs.map((v) => ({ key: v.key, label: v.key }));
   return simplePage({
-    id: 'ozel-portre', grup: 'ozel', bolum: 'ozel', baslik: 'Görünüm çerçeveli soylar: çekmece rozeti (LookFrame) | karakter sayfası portresi (AvatarBadge 84, çerçevesiz)',
+    id: 'ozel-portre', grup: 'ozel', bolum: 'ozel', baslik: 'Görünüm çerçeveli soylar: çekmece rozeti (LookFrame) | karakter sayfası portresi (SheetPortrait 84)',
     aciklama: `Satır: filtre/oran/kanat/hale gizleme taşıyan soy; sütun: sınıf × cinsiyet (örnek alt sınıf, seviye ${L}). Portre karakter sayfasındaki çizimdir (SheetView).`,
     cols: CLS_COLS, rows,
     at: (r, c) => {
@@ -363,11 +364,11 @@ function portrePage(): PageDef {
       const { cls, gender } = splitCol(c.key);
       const sub = sampleSub(cls);
       const sheet = sheetFor({ race: v.race, cls, gender, level: L, ...(v.lineage ? { lineage: v.lineage } : {}), ...(v.awakening ? { awakening: v.awakening } : {}), ...(sub ? { subId: sub } : {}) });
-      return itemOf(`ozel/portre/${r.key}/${cls}/${G1[gender]}`, 'ozel', sheetAvatar(sheet), `${v.label} ${G1[gender]}`, { race: v.race, portre: true });
+      return itemOf(`ozel/portre/${r.key}/${cls}/${G1[gender]}`, 'ozel', sheetAvatar(sheet), `${v.label} ${G1[gender]}`, { race: v.race, portre: sheet });
     },
     view: (it, m) => (
       <div className={`dk-cell${markCls(m, it.id)}`}>
-        <div className="dk-views"><Badge avatar={it.avatar} size={56} /><AvatarBadge avatar={it.avatar} size={84} ring="#444" eager /></div>
+        <div className="dk-views"><Badge avatar={it.avatar} size={56} />{it.ctx.portre ? <SheetPortrait sheet={it.ctx.portre} /> : null}</div>
         <Label it={it} marks={m} />
       </div>
     ),

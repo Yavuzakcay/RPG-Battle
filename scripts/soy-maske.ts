@@ -15,7 +15,7 @@ import soy from '../data/soy-renkleri.json';
 import type { TintSpec } from '../src/battle/types';
 import { lineageTint, paletteKeys, paletteTint } from '../src/battle/avatar';
 
-import { CHAR, OTO as OUT, ROOT } from './soy-maske-yollar';
+import { CHAR, ELLE, OTO as OUT, ROOT } from './soy-maske-yollar';
 import { applyHandMasks } from './soy-maske-el';
 import { basOverlay, buildHeads } from './soy-bas';
 import { applyHeadOverlay } from '../src/ui/headOverlay';
@@ -244,7 +244,12 @@ if (args.includes('--alt')) {
   process.exit(0);
 }
 // Görev K21: elle maskeler (assets/soy-maske-el/; yalnızca okunur) önce; ölçüm ve önizleme onları kullanır.
-const hand = await applyHandMasks(Object.keys(RACES).flatMap((r) => ['female', 'male'].flatMap((g) => CLASSES.map((c) => `${r}-${g}-${c}`))));
+// GORSEL-DUZELTME: elle maskesi olan alt sınıf/Gariban jetonları da (raporda yalnız bunlar; sınıf-genel jetonların hepsi).
+const SUB_EL = new RegExp(`^(${Object.keys(RACES).join('|')})-(erkek|kadin)-(${CLASSES.join('|')})-.+$`);
+const elleSub = fs.existsSync(ELLE) ? fs.readdirSync(ELLE).map((f) => f.replace(/\.png$/i, '')).filter((n) => SUB_EL.test(n) && fs.existsSync(path.join(CHAR, `${n}.webp`))) : [];
+const hand = await applyHandMasks([...Object.keys(RACES).flatMap((r) => ['female', 'male'].flatMap((g) => CLASSES.map((c) => `${r}-${g}-${c}`))), ...elleSub]);
+// GORSEL-DUZELTME `--el`: yalnız elle maskeler (doğrulama, public/characters/maske-el/ kopyası, data/soy-maske-rapor.json); otomatik maske ve ölçüm yok.
+if (args.includes('--el')) process.exit(0);
 // Görev K22: kafa kaplaması (kapsam veride); ölçüm kaplanmış kafayla yapılır.
 await buildHeads();
 const report: Record<string, unknown> = {};

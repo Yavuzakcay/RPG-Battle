@@ -36,7 +36,12 @@ describe('elle maske', () => {
     // KJ4: rapor kapsamı veriden (sabit sayı yok): `npm run soy-maske` ana döngüsüyle aynı küme = soy-renkleri.json'daki her ırk
     // (Human dahil: AS1c ten maskesi, 2026-11-12) × cinsiyet × sınıf. Eski sabit 120, Human eklenmeden önceki raporun sayısıydı (6 × 2 × 12 = 144).
     const beklenen = Object.keys(soyRenkleri.races).flatMap((r) => ['female', 'male'].flatMap((g) => classes.map((c) => `${r}-${g}-${c.id}`)));
-    expect(Object.keys(sprites).sort()).toEqual(beklenen.sort());
+    // GORSEL-DUZELTME: ayrıca elle maskesi olan alt sınıf/Gariban jetonları (`<ırk>-<erkek|kadin>-<sınıf>-<kod>`), yalnız 'el' olarak.
+    const ek = Object.keys(sprites).filter((k) => !beklenen.includes(k));
+    expect(Object.keys(sprites).filter((k) => beklenen.includes(k)).sort()).toEqual(beklenen.sort());
+    expect(ek.every((k) => /^[a-z]+-(erkek|kadin)-[a-z]+-[A-Za-z0-9-]+$/.test(k) && sprites[k] === 'el')).toBe(true);
+    expect(checkHandMask({ file: 'human-erkek-sorcerer-SC-9.png', width: 256, height: 256, colored: 0 }, (n) => (n === 'human-erkek-sorcerer-SC-9' ? { w: 256, h: 256 } : undefined)))
+      .toEqual({ ok: true, name: 'human-erkek-sorcerer-SC-9' });
     for (const [name, src] of Object.entries(sprites)) {
       expect(handMasked(name)).toBe(src === 'el');
       expect(maskUrlFor(`characters/${name}.webp`)).toBe(`characters/${src === 'el' ? 'maske-el' : 'maske'}/${name}.png`);

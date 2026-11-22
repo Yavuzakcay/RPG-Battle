@@ -6,7 +6,7 @@ Soy boyaması yalnızca jetonun **ten maskesindeki** pikselleri boyar. Otomatik 
 
 1. Şablonu üret: `npm run soy-incele` → `docs/sabah/soy-inceleme/sablon/<jeton>.png` (siyah zemin, %35 saydam jeton). Sayfada (`docs/sabah/soy-inceleme/index.html`) hangi jetonun maskesinin bozuk olduğuna bak.
 2. Şablonu Gemini'ye ver ve aşağıdaki yönergeyle maskeyi iste.
-3. Çıktıyı **jetonun adıyla** kaydet: `assets/soy-maske-ham/<jeton>.png` (JPG de olur). Ad birebir jeton adı: `<ırk>-<male|female>-<sınıf>`, örnek `goliath-male-barbarian.png`, `dragonborn-female-paladin.jpg`. Boyut ve biçim serbest.
+3. Çıktıyı **jetonun adıyla** kaydet: `assets/soy-maske-ham/<jeton>.png` (JPG de olur). Ad birebir jeton adı: `<ırk>-<male|female>-<sınıf>`, örnek `goliath-male-barbarian.png`, `dragonborn-female-paladin.jpg`. Boyut ve biçim serbest. GORSEL-DUZELTME'den beri alt sınıf ve Gariban jetonları da: `<ırk>-<erkek|kadin>-<sınıf>-<kod>`, örnek `human-erkek-sorcerer-SC-9.png`; bunlar `npm run soy-maske -- --el` ile (yalnız elle maskeler, otomatik maske ve ölçüm yok) oyuna alınır. Yapay zekâ yerine tekrarlanabilir elle çizim: `python scripts/soy-maske-ciz.py` (tanım `data/soy-maske-ciz.json`, kontrol görseli `docs/sabah/maske-kontrol/`).
 4. İçe aktar:
    ```powershell
    npm run soy-maske-ice

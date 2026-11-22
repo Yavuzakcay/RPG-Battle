@@ -13,12 +13,16 @@
  * - `kanat-dosya-null`: kanat slotu ve seviye uyuyor ama açık kanat görseli `dosya: null`. `kanat-404`: kanat (ya da katman) görseli yok.
  *   `kanat-slot-yok`: görünüm verisi bir slota bağlı ama `kanat-esleme.json`'da slot yok.
  * - `bos-seffaf`: çizilen görselin opak payı < %2.
- * - `portre-cercevesiz`: karakter sayfası portresi (SheetView) soyun görünüm çerçevesini (filtre/oran/kanat) çizmiyor.
+ * - `portre-cercevesiz`: karakter sayfası portresi (`SheetPortrait`, gerçek çıktısı denetlenir) soyun görünüm çerçevesini (filtre/oran/kanat) çizmiyor.
  * - `kucuk-farkli` (betik türetir): rozet küçük kopyası asıl jetonun küçültülmüş hâlinden belirgin farklı (eski kopya).
  */
 import { lineageLook, ownWingToken, wingSlotOfSubclass, type LookSheet } from '../ui/lineageLook';
 import { thumbOf } from '../ui/Avatar';
 import { crownSpec } from '../ui/haloCrown';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { SheetPortrait } from '../screens/sheet/SheetView';
+import type { CharacterSheet } from '../rules/stats';
 import { basUrlFor, maskUrlFor, maskedTint, tintedUrl } from '../ui/tint';
 import { wingTable } from '../ui/wingData';
 import { findSubclass } from '../rules/subclasses';
@@ -151,8 +155,8 @@ export interface ScanCtx {
   cls?: string; race?: string; gender?: Gender; subId?: string; level?: number; reach?: 'normal' | 'cinsiyet-sonra';
   /** Karakter ekranında uçma yeteneği (kanat) denetlensin. */
   wingCheck?: boolean;
-  /** Karakter sayfası portresi (SheetView: `AvatarBadge` 84, `LookFrame` yok): soy görünümü kayboluyor mu. */
-  portre?: boolean;
+  /** Karakter sayfası portresi: bu sheet'in gerçek `SheetPortrait` çıktısında soy görünümü (filtre/oran/kanat) var mı. */
+  portre?: CharacterSheet;
 }
 
 /** Bir görünüşü tarar; kusurları `out`'a ekler. */
@@ -220,10 +224,16 @@ export async function scanAvatar(av: Avatar, ctx: ScanCtx, out: Kusur[]): Promis
   }
   const lk0 = av.look ? lineageLook(av.look, { ability: true }) : null;
   if (ctx.portre && av.look && lk0) {
-    // SheetView portresi LookFrame'siz: filtre (--look-filter), oran (--look-sx/sy) ve kanat katmanı çizilmez; taç `crownSpec` ile doğru.
-    const lost = [lk0.filter ? `filtre (${lk0.filter})` : '', lk0.scaleX !== 1 || lk0.scaleY !== 1 ? `oran ${lk0.scaleX}×${lk0.scaleY}` : '', lk0.wing && !(src && ownWingToken(lk0.wing, src)) ? `kanat ${lk0.wing.id}` : ''].filter(Boolean);
+    // Gerçek bileşenin çıktısı (SheetView `SheetPortrait`): LookFrame CSS değişkenleri ve kanat katmanı yerinde mi.
+    const html = renderToStaticMarkup(createElement(SheetPortrait, { sheet: ctx.portre }));
+    const hasWing = /class="look-wing|class="badge-wings/.test(html);
+    const lost = [
+      lk0.filter && !html.includes(`--look-filter:${lk0.filter}`) ? `filtre (${lk0.filter})` : '',
+      (lk0.scaleX !== 1 || lk0.scaleY !== 1) && !html.includes(`--look-sx:${lk0.scaleX}`) ? `oran ${lk0.scaleX}×${lk0.scaleY}` : '',
+      lk0.wing && !(src && ownWingToken(lk0.wing, src)) && !hasWing ? `kanat ${lk0.wing.id}` : '',
+    ].filter(Boolean);
     const who = `${av.look.raceId}/${av.look.lineageId ?? av.look.celestialAwakening ?? '—'}`;
-    if (lost.length) add('portre-cercevesiz', who, `${who}: karakter sayfası portresinde yok: ${lost.join(', ')} (SheetView AvatarBadge 84, LookFrame yok)`);
+    if (lost.length) add('portre-cercevesiz', who, `${who}: karakter sayfası portresinde yok: ${lost.join(', ')} (SheetPortrait)`);
   }
   const srcStat = src ? await imgStat(src) : null;
   return { id: ctx.id, grup: ctx.grup, src, code: src ? tokenCode(src) : '—', chainIdx: idx, tinted, changed, wing, srcHash: srcStat?.hash ?? null,

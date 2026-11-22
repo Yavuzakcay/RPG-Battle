@@ -1,6 +1,7 @@
 /**
  * Görev K21: elle çizilmiş ten maskesi doğrulaması (saf; `scripts/soy-maske-el.ts` sharp ile okuyup bunu çağırır).
- * Kural: dosya adı bir soylu jetonla aynı (`<ırk>-<male|female>-<sınıf>.png`), boyutu jetonla aynı, gri tonlu (renkli
+ * Kural: dosya adı bir soylu jetonla aynı (`<ırk>-<male|female>-<sınıf>.png`; GORSEL-DUZELTME: alt sınıf/Gariban jetonu
+ * `<ırk>-<erkek|kadin>-<sınıf>-<kod>.png` de), boyutu jetonla aynı, gri tonlu (renkli
  * piksel yok; saydam pikseller siyah sayılır). Beyaz = boyanır, siyah = dokunulmaz, gri = kısmi ağırlık.
  */
 export interface HandMaskInfo {
@@ -17,8 +18,9 @@ export type HandMaskCheck = { ok: true; name: string } | { ok: false; file: stri
 export const GRAY_TOLERANCE = 8;
 
 export function checkHandMask(info: HandMaskInfo, spriteSize: (name: string) => { w: number; h: number } | undefined): HandMaskCheck {
-  const m = info.file.match(/^([a-z-]+-(?:male|female)-[a-z]+)\.png$/);
-  if (!m) return { ok: false, file: info.file, warning: 'ad kurala uymuyor (<ırk>-<male|female>-<sınıf>.png bekleniyor)' };
+  // GORSEL-DUZELTME: alt sınıf ve Gariban jetonları da (`<ırk>-<erkek|kadin>-<sınıf>-<kod>.png`).
+  const m = info.file.match(/^([a-z-]+-(?:male|female)-[a-z]+|[a-z]+-(?:erkek|kadin)-[a-z]+-[A-Za-z0-9-]+)\.png$/);
+  if (!m) return { ok: false, file: info.file, warning: 'ad kurala uymuyor (<ırk>-<male|female>-<sınıf>.png ya da <ırk>-<erkek|kadin>-<sınıf>-<kod>.png bekleniyor)' };
   const name = m[1] as string;
   const size = spriteSize(name);
   if (!size) return { ok: false, file: info.file, warning: `"${name}" adlı soylu jeton yok` };

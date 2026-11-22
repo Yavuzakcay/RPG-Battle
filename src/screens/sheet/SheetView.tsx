@@ -5,12 +5,26 @@
 import type { SavedCharacter } from '../../rules/builder';
 import { sheetAvatar } from '../../battle/avatar';
 import { AvatarBadge } from '../../ui/Avatar';
+import { LookFrame } from '../../ui/LookFrame';
+import type { CharacterSheet } from '../../rules/stats';
 import { getLang, t } from '../../i18n';
 import { sheetModel, signed, type SheetModel } from './sheetModel';
 import { GlyphText } from '../../ui/glyph/Glyph';
 import { alignmentEnabled } from '../../app/features';
 import { storedCarryRule } from '../../ui/carrySetting';
 import './sheet.css';
+
+/**
+ * GORSEL-DUZELTME: karakter kâğıdının portresi. Görünümü olan karakterde (alt soy filtresi/oranı, Celestial uyanışı, kanat) rozet ve
+ * savaş jetonuyla aynı tek çözücüden (`lineageLook`) `LookFrame` ile; karakter ekranı olduğu için uçma yeteneği olan kanatlı çizilir
+ * (`ability`, karakter listesi ve oluşturucu figürü gibi).
+ */
+export function SheetPortrait(props: { sheet: CharacterSheet; size?: number }) {
+  const size = props.size ?? 84;
+  const avatar = sheetAvatar(props.sheet);
+  const badge = <AvatarBadge avatar={avatar} size={size} ring="#444" />;
+  return avatar.look ? <LookFrame sheet={avatar.look} size={size} ability>{badge}</LookFrame> : badge;
+}
 
 export function SheetView(props: { c: SavedCharacter; model?: SheetModel }) {
   const S = t().sheet;
@@ -22,7 +36,7 @@ export function SheetView(props: { c: SavedCharacter; model?: SheetModel }) {
     <article className="sheet-paper" lang={lang}>
       <section className="sheet-page" data-page="1">
         <header className="sheet-head">
-          <div className="sheet-token"><AvatarBadge avatar={sheetAvatar(props.c.sheet)} size={84} ring="#444" /></div>
+          <div className="sheet-token"><SheetPortrait sheet={props.c.sheet} /></div>
           <div className="sheet-title">
             <h1>{m.name || '—'}</h1>
             <p>{m.race} · {m.klass}{m.subclass ? ` (${m.subclass})` : ''} · {S.level(m.level)}{m.background ? ` · ${m.background}` : ''}</p>

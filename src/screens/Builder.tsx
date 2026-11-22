@@ -39,7 +39,7 @@ import '../app/alignDiceHook';
 import { KATKI_CARPANI, newAlignment, newAlignmentAt, onSubclassChange, squareOf, startContributions, startValue, type Alignment, type Bucket } from '../rules/alignment';
 import { AWAKENING_OPTIONS, CELESTIAL, type AwakeningOption } from '../rules/celestialData';
 import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLevel, subclassesOf } from '../rules/classFeatures';
-import { findSubclass, genderVisible, isOtherClassSubclass, subclassMissing, subclassPlainName } from '../rules/subclasses';
+import { findSubclass, genderVisible, isOtherClassSubclass, subclassForGender, subclassMissing, subclassPlainName } from '../rules/subclasses';
 import { wishPickKey } from '../battle/paket/bag';
 import {
   ASI_FEAT, advancementSlots, casterCtx, asiCanRaise, asiPointsLeft, asiStep, scoresBeforeSlot, featById, featMechanic, featOptions, featEffects, featProblem, isStyleChoice, slotAlternativeById,
@@ -438,6 +438,14 @@ function CharacterStep(props: StepProps) {
 function IdentityStep({ c, setC, set, suggest }: StepProps) {
   const T = t().builder;
   const s = c.sheet;
+  // GORSEL-DUZELTME: cinsiyet değişiminde kısıtlı alt sınıf önerilene çevrildiyse tek satır bildirim (yalnız bu oturumda).
+  const [genderNote, setGenderNote] = useState<string | null>(null);
+  const subName = (id: string) => subclassPlainName(findSubclass(s.classId, id)?.name ?? { tr: id, en: id }, getLang(), s.classId);
+  const pickGender = (g: 'erkek' | 'kadin') => {
+    const r = g === (s.gender ?? 'erkek') ? null : subclassForGender(s.classId, s.subclassId, g);
+    set({ gender: g, ...(r ? { subclassId: r.to } : {}) });
+    setGenderNote(r ? T.genderSubclass(subName(r.from), r.to ? subName(r.to) : null) : null);
+  };
   const setLevel = (level: number) => setC((x) => {
     const nextKit = classKit(x.sheet.classId, level, x.sheet.subclassId);
     const next: SavedCharacter = {
@@ -467,9 +475,10 @@ function IdentityStep({ c, setC, set, suggest }: StepProps) {
       <span className="seg" role="radiogroup" aria-label={T.avatar}>
         {(['erkek', 'kadin'] as const).map((g) => (
           <button key={g} role="radio" aria-checked={(s.gender ?? 'erkek') === g} className={(s.gender ?? 'erkek') === g ? 'on' : ''}
-            onClick={() => set({ gender: g })}>{g === 'erkek' ? T.male : T.female}</button>
+            onClick={() => pickGender(g)}>{g === 'erkek' ? T.male : T.female}</button>
         ))}
       </span>
+      {genderNote && <p className="soft-warn gender-subclass-note" role="status">{genderNote}</p>}
       {s.level >= experimentalFrom(s.classId, s.subclassId) && <p className="warn">{T.experimental(experimentalFrom(s.classId, s.subclassId))}</p>}
       {/* Kuyruk K49: 11+ seviyede henüz olmayan özellikler küçük notla (seçim kısıtlanmaz). */}
       {s.level >= 11 && missingFeatures(s.classId, s.level, s.subclassId).filter((f) => f.level >= 11).length > 0 && (

@@ -404,6 +404,7 @@ export const en: Strings = {
     editing: (name: string) => `Editing ${name}`, newTitle: 'New character',
     limitNote: (max: number) => `At most ${max} characters join a party.`,
     identity: 'Identity', name: 'Name', level: 'Level', avatar: 'Look', male: 'Male', female: 'Female',
+    genderSubclass: (from: string, to: string | null) => `“${from}” isn't available for this gender; subclass ${to ? `set to “${to}”` : 'cleared'}.`,
     raceClass: 'Species and class', race: 'Species', lineage: 'Lineage', cls: 'Class',
     raceLine: (race: string, speed: number, darkvision: number) => `${race}: speed ${speed} ft${darkvision ? `, darkvision ${darkvision} ft` : ''}.`,
     abilities: 'Ability scores', standard: 'Standard array', pointBuy: 'Point buy',
