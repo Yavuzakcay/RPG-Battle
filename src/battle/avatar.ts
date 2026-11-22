@@ -18,6 +18,7 @@ import monkJeton from '../../data/monk-jeton.json';
 import paladinJeton from '../../data/paladin-jeton.json';
 import rangerJeton from '../../data/ranger-jeton.json';
 import rogueJeton from '../../data/rogue-jeton.json';
+import genelJeton from '../../data/jeton-genel.json';
 import { cultureSkinTone, hasSubclassWing, skinTint } from '../ui/lineageLook';
 
 /** DROW-PALET: `{ palet: "<anahtar>" }` soyun rengi ırk kaydındaki `paletler.<soy>`'dan, seçim `<anahtar>` alanından. */
@@ -96,9 +97,16 @@ const CLASS_LABEL: Record<string, string> = {
 const GENDER_FILE: Record<'erkek' | 'kadin', 'male' | 'female'> = { erkek: 'male', kadin: 'female' };
 
 /**
+ * DRAGONBORN-ESKI-JETON-KALDIR: sınıf-genel jetonu oyunda hiç kullanılmayan ırk (`data/jeton-genel.json` `kaldirilan`; kodda ırk adı yok).
+ * Bu ırkta `characterTokenFile` adı çözücüde kullanılmaz: jeton Gariban ya da alt sınıf jetonu (`sheetAvatar`, `classBaseTokenFile`).
+ */
+const NO_GENERIC = new Set<string>((genelJeton as { kaldirilan: string[] }).kaldirilan);
+export const genericTokenRetired = (raceId: string): boolean => NO_GENERIC.has(raceId);
+
+/**
  * Karakter jetonunun dosya adı (tek yer; başka biçimde kurulmaz): `<ırk>-<male|female>-<sınıf>.webp`.
- * Irk ve sınıf kimlikleri zaten İngilizce (celestial, dragonborn... / barbarian, bard...);
- * cinsiyet erkek→male, kadin→female; cinsiyetsiz eski kayıt male.
+ * Irk ve sınıf kimlikleri zaten İngilizce (celestial, dwarf... / barbarian, bard...);
+ * cinsiyet erkek→male, kadin→female; cinsiyetsiz eski kayıt male. Sınıf-genel jetonu kaldırılmış ırkta (`genericTokenRetired`) dosya yok.
  */
 export function characterTokenFile(raceId: string, gender: 'erkek' | 'kadin' | undefined, classId: string): string {
   return `${raceId}-${GENDER_FILE[gender ?? 'erkek']}-${classId}.webp`;
@@ -163,22 +171,33 @@ export function garibanTokenFile(classId: string, raceId: string, gender: 'erkek
 export const wizardSubclassFile = (raceId: string, gender: 'erkek' | 'kadin', subclassId: string | undefined) => subclassTokenFile('wizard', raceId, gender, subclassId);
 
 /**
+ * Sınıf-genel jetonu kaldırılmış ırkın (`genericTokenRetired`) taban jetonu: sınıfın Gariban (GR) jetonu (beyaz taban, düz kıyafet,
+ * pul maskeli); seviyeden bağımsız. Diğer ırklarda undefined.
+ */
+const retiredBaseFile = (classId: string, raceId: string, gender: 'erkek' | 'kadin'): string | undefined =>
+  (genericTokenRetired(raceId) ? garibanTokenFile(classId, raceId, gender, 1) : undefined);
+
+/**
  * Karakter jetonu (pixel art, karşıdan çizili): `characters/` + `characterTokenFile`.
  * Cinsiyeti olmayan eski kayıtlar erkek (male). Yoksa eski `avatars/<ırk>-<sınıf>-<cinsiyet>.webp`,
- * o da yoksa baş harfli rozet (yedek zinciri).
+ * o da yoksa baş harfli rozet (yedek zinciri). Sınıf-genel jetonu kaldırılmış ırkta (Dragonborn) sınıf-genel jeton ne ana görsel
+ * ne yedek: alt sınıf jetonu yoksa Gariban, yedek zincirinde de Gariban.
  */
 export function sheetAvatar(sheet: CharacterSheet): Avatar {
   const gender = sheet.gender ?? 'erkek';
-  const generic = `characters/${characterTokenFile(sheet.raceId, gender, sheet.classId)}`;
+  const legacy = `avatars/${sheet.raceId}-${sheet.classId}-${gender}.webp`;
+  // DRAGONBORN-ESKI-JETON-KALDIR: kaldırılmış ırkta sınıf-genel jetonun yerini sınıfın Gariban jetonu alır (yedek de odur).
+  const base = !sheet.avatar ? retiredBaseFile(sheet.classId, sheet.raceId, gender) : undefined;
+  const generic = genericTokenRetired(sheet.raceId) ? (base ? `characters/${base}` : undefined) : `characters/${characterTokenFile(sheet.raceId, gender, sheet.classId)}`;
   // WZ-BAGLA/BAGLA-3: Wizard/Warlock/Sorcerer alt sınıf jetonu (maske yoksa boyama uygulanmaz, jeton yine çıkar); öncelik özel avatar > alt sınıf jetonu > genel.
-  // KQ6: seviye < 3 Gariban (GR) jetonu; seviye ≥ 3 alt sınıf jetonu; ikisi de yoksa sınıf-genel jeton.
+  // KQ6: seviye < 3 Gariban (GR) jetonu; seviye ≥ 3 alt sınıf jetonu; ikisi de yoksa sınıf-genel jeton (kaldırılmış ırkta Gariban).
   const gr = !sheet.avatar ? garibanTokenFile(sheet.classId, sheet.raceId, gender, sheet.level) : undefined;
-  let wz = gr ?? (!sheet.avatar ? subclassTokenFile(sheet.classId, sheet.raceId, gender, sheet.subclassId, sheet.level) : undefined);
-  // Dragonborn: eski sınıf-genel jeton insansı çizimdir; alt sınıfsız seviye ≥ 3 de beyaz taban Gariban jetonunu kullanır.
-  if (!wz && !sheet.avatar && sheet.raceId === 'dragonborn') wz = garibanTokenFile(sheet.classId, sheet.raceId, gender, 1);
+  const wz = gr ?? (!sheet.avatar ? subclassTokenFile(sheet.classId, sheet.raceId, gender, sheet.subclassId, sheet.level) : undefined) ?? base;
+  // Yazım notu: `wz` kaldırılmış ırkta her zaman tanımlı (12 sınıfın tablosunda ırk × iki cinsiyet; test `dragonbornEskiJeton.test.ts`).
+  const src = sheet.avatar ?? (wz ? `characters/${wz}` : generic ?? legacy);
   return {
-    src: sheet.avatar ?? (wz ? `characters/${wz}` : generic),
-    fallbacks: sheet.avatar ? [] : [...(wz ? [generic] : []), `avatars/${sheet.raceId}-${sheet.classId}-${gender}.webp`],
+    src,
+    fallbacks: sheet.avatar ? [] : [...(generic && generic !== src ? [generic] : []), legacy],
     bg: RACE_COLOR[sheet.raceId] ?? '#4a5560',
     label: CLASS_LABEL[sheet.classId] ?? sheet.classId.slice(0, 2),
     // Kuyruk AS1c: Human ten tonu ten maskesiyle (jetonun yalnız teni); diğer alt soylar soy rengiyle.
@@ -191,6 +210,26 @@ export function sheetAvatar(sheet: CharacterSheet): Avatar {
     ...(!sheet.avatar && (sheet.lineageId || sheet.raceId === 'celestial' || hasSubclassWing(sheet.subclassId))
       ? { look: { raceId: sheet.raceId, ...(hasSubclassWing(sheet.subclassId) ? { classId: sheet.classId, subclassId: sheet.subclassId } : {}), ...(sheet.lineageId ? { lineageId: sheet.lineageId } : {}), ...(sheet.celestialAwakening ? { celestialAwakening: sheet.celestialAwakening } : {}), level: sheet.level } } : {}),
   };
+}
+
+/**
+ * Sınıfın taban jetonu (alt sınıfsız, seviyeden bağımsız; mahkûm kıyafeti ve ırkın temsil jetonu): sınıf-genel jeton; sınıf-genel jetonu
+ * kaldırılmış ırkta (Dragonborn) sınıfın Gariban (GR) jetonu (düz kıyafet, pul maskeli). Bulunamazsa undefined (eski sınıf-genel jetona dönülmez).
+ */
+export function classBaseTokenFile(raceId: string, gender: 'erkek' | 'kadin' | undefined, classId: string): string | undefined {
+  return genericTokenRetired(raceId) ? retiredBaseFile(classId, raceId, gender ?? 'erkek') : characterTokenFile(raceId, gender, classId);
+}
+
+/**
+ * Mahkûm kıyafeti (Hapishane, `data/hapishane.json` `kostum.sinif`; tek kural: `seruvenBattle.ts` ve görsel döküm): sınıfın yerine kostüm
+ * jetonu (`classBaseTokenFile`), soy rengi ve görünüm karakterden, asıl jeton yedek; turuncu hale (`outfit: 'mahkum'`). Özel avatarda ya da
+ * kostüm jetonu yoksa yalnız hale.
+ */
+export function prisonerOutfit(avatar: Avatar, sheet: Pick<CharacterSheet, 'raceId' | 'gender' | 'avatar'>, costumeClass: string): Avatar {
+  const file = sheet.avatar ? undefined : classBaseTokenFile(sheet.raceId, sheet.gender, costumeClass);
+  return file
+    ? { ...avatar, src: `characters/${file}`, fallbacks: [avatar.src, ...(avatar.fallbacks ?? [])], outfit: 'mahkum' }
+    : { ...avatar, outfit: 'mahkum' };
 }
 
 /** Canavar jetonu: `public/monsters/<id>.webp`; uyurken (varsa) `<id>-uyku.webp`. */

@@ -13,7 +13,7 @@ import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 're
 import { armor, classDataLoaded, classes, getClass, items, loadMonsters, monsters, monstersLoaded, races, spells, weapons } from '../data';
 import { classBlurb, featInfo, raceBlurb, raceTraitLines } from '../ui/descriptions';
 import { describeTr } from '../ui/trDesc';
-import { characterTokenFile, monsterAvatar, sheetAvatar } from '../battle/avatar';
+import { monsterAvatar, sheetAvatar } from '../battle/avatar';
 import { offHandAttackOption, weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import {
@@ -47,7 +47,7 @@ import {
 } from '../rules/advancement';
 import { offHandOptionProblem, offHandProblem } from '../rules/hands';
 import { masteryOptions, masteryRight, masteryText, masteryWorks, weaponMasteryId, weaponProficient } from '../rules/mastery';
-import { AvatarBadge, CharacterFigure, preloadImages } from '../ui/Avatar';
+import { AvatarBadge, CharacterFigure, preloadImages, thumbOf } from '../ui/Avatar';
 import { abilityTip, lineageAbilityList, lineageLine } from '../ui/lineageText';
 import { lineageName, lineageOf, lineageSummary, raceDarkvision, raceSpeed, type LineageAbility } from '../rules/lineage';
 import { lineageNotes } from '../ui/lineageNotes';
@@ -202,10 +202,11 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
   const [sheetOpen, setSheetOpen] = useState(false);
   const go = (id: BuilderStep) => { setStepId(id); setVisited((v) => new Set([...v, id])); setMissingOpen(false); setSaveHint(false); };
   const issuesOf = (id: BuilderStep) => issues.filter((x) => x.step === id);
-  // Sınıf değişince avatar beklemeden açılsın: bu tür ve görünümün bütün sınıf jetonları (küçük kopya) boşta indirilir.
+  // Sınıf değişince avatar beklemeden açılsın: bu tür ve görünümün bütün sınıf jetonları (küçük kopya) boşta indirilir. Jeton çözücüden
+  // (`sheetAvatar`, alt sınıfsız: sınıf değişince alt sınıf boşalır): sınıf-genel jetonu kaldırılmış ırkta (Dragonborn) Gariban jetonu.
   useEffect(() => {
-    preloadImages(classes.map((k) => `characters/kucuk/${characterTokenFile(s.raceId, s.gender, k.id)}`));
-  }, [s.raceId, s.gender]);
+    preloadImages(classes.map((k) => thumbOf(sheetAvatar({ ...s, classId: k.id, subclassId: undefined }).src)).filter((x): x is string => !!x));
+  }, [s.raceId, s.gender, s.level, s.avatar]);
   const raceName = `${race?.name ?? s.raceId}${lineageOf(s) ? ` (${lineageName(lineageOf(s)!, getLang())})` : ''}`;
   const stepLabel = (id: BuilderStep) => W.steps[id] ?? id;
 
@@ -397,7 +398,7 @@ function AlignmentStep(props: { c: SavedCharacter; setC: (f: (x: SavedCharacter)
 type StepProps = { c: SavedCharacter; setC: (f: (x: SavedCharacter) => SavedCharacter) => void; set: (patch: Partial<CharacterSheet>) => void; suggest?: boolean };
 
 /**
- * Jeton önizlemesi (Görev K3): jeton tür, görünüm ve sınıftan (`characterTokenFile`); değişince anında yenilenir.
+ * Jeton önizlemesi (Görev K3): jeton tür, görünüm ve sınıftan (`sheetAvatar`); değişince anında yenilenir.
  * Görsel yoksa tür renkli rozet. Altında ad, tür (soy) ve sınıf.
  */
 function TokenPreview(props: { sheet: CharacterSheet; size: number; className: string }) {

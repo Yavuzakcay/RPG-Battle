@@ -18,7 +18,7 @@ import { B, FX, simgeSprite, SPELL_FX, STATUS_ICON_FILES, summonSprite } from '.
 import { STATUS_SPRITES, loopEffectsFor } from '../../src/ui/statusFx';
 import { zoneKey } from '../../src/ui/sprites';
 import { itemKind, itemTier } from '../../src/rules/itemCategory';
-import { lineageTint } from '../../src/battle/avatar';
+import { characterTokenFile, classBaseTokenFile, genericTokenRetired, lineageTint } from '../../src/battle/avatar';
 import { CULTURE_SKIN, SKIN_TONES } from '../../src/ui/lineageLook';
 import { subclassesOf } from '../../src/rules/classFeatures';
 import { displayName } from '../../src/rules/subclasses';
@@ -216,11 +216,13 @@ const LOOK = read<{ altSoylar: Record<string, { orijinal?: boolean; filtre?: str
   celestialUyanis: Record<string, { hale?: boolean; orijinal?: boolean; filtre?: string; kanat?: string }> }>('data/alt-soy-gorunum.json');
 const WINGS = read<{ slotlar: Record<string, { dosya: string | null; altSinif?: string; minSeviye?: number; kanatsiz?: string[] }>; klasor?: string }>('data/kanat-esleme.json');
 const REP_CLASS = 'fighter';
-const raceToken = (raceId: string) => `characters/${raceId}-male-${REP_CLASS}.webp`;
+/** Irkın temsil jetonu: sınıf-genel jeton; sınıf-genel jetonu kaldırılmış ırkta (Dragonborn) temsil sınıfının Gariban jetonu. */
+const raceToken = (raceId: string) => `characters/${classBaseTokenFile(raceId, 'erkek', REP_CLASS) ?? characterTokenFile(raceId, 'erkek', REP_CLASS)}`;
 
 export function speciesRows(): GRow[] {
   return races.map((r): GRow => ({ cat: 'tur', id: r.id, ad: r.name, kaynak: 'jeton', ref: raceToken(r.id), durum: pub(raceToken(r.id)) ? 'var' : 'yedek',
-    gorunum: { raceId: r.id, classId: REP_CLASS, gender: 'erkek' }, tur: `tür (jeton ölçeği ${SCALE.race[r.id] ?? 1})`, not: `24 sınıf-genel jeton (${r.id}-<male|female>-<sınıf>)` }));
+    gorunum: { raceId: r.id, classId: REP_CLASS, gender: 'erkek' }, tur: `tür (jeton ölçeği ${SCALE.race[r.id] ?? 1})`,
+    not: genericTokenRetired(r.id) ? `Gariban + alt sınıf jetonları (${r.id}-<erkek|kadin>-<sınıf>-<hücre>); sınıf-genel jeton yok` : `24 sınıf-genel jeton (${r.id}-<male|female>-<sınıf>)` }));
 }
 
 /** Alt soyun görünüm farkları (boş: ırk tabanıyla aynı). */

@@ -13,7 +13,7 @@ import { linkById, nodeKapiAt, nodeKey, nodeStop, pageById, toggleOn, type Hapis
 import { HAPIS, confiscated, sucById } from '../journey/hapishane';
 import { combatantFromMonster, type Combatant } from '../battle';
 import { getMonster } from '../data';
-import { characterTokenFile } from '../battle/avatar';
+import { prisonerOutfit } from '../battle/avatar';
 import { DEFAULT_LEVEL, SCENARIOS, enemiesAt } from '../sim/balance';
 import { seruvenEnemyPlan } from '../journey/seruvenEnemies';
 import { crXp } from '../journey/encounter';
@@ -265,10 +265,12 @@ export function hapisEnemies(s: SeruvenState, node: SeruvenNode): Record<string,
  */
 export const prisonerLook = (s: Pick<SeruvenState, 'hapis' | 'tasma'>): boolean => !!s.hapis?.kurallar && !s.hapis.iade && !!s.tasma;
 
-/** Mahkûm kıyafeti: sınıfın yerine Keşiş jetonu (aynı tür, cinsiyet ve soy rengi) + turuncu hale. */
+/**
+ * Mahkûm kıyafeti: sınıfın yerine Keşiş jetonu (aynı tür, cinsiyet ve soy rengi) + turuncu hale; kural `avatar.ts` `prisonerOutfit`
+ * (Dragonborn: Keşiş Gariban jetonu, eski sınıf-genel jeton yok).
+ */
 function prisonerAvatar(c: Combatant, sheet: SeruvenState['party'][number]['sheet']): Combatant {
-  if (sheet.avatar) return { ...c, avatar: { ...c.avatar, outfit: 'mahkum' } };
-  return { ...c, avatar: { ...c.avatar, src: `characters/${characterTokenFile(sheet.raceId, sheet.gender, HAPIS.kostum.sinif)}`, fallbacks: [c.avatar.src, ...(c.avatar.fallbacks ?? [])], outfit: 'mahkum' } };
+  return { ...c, avatar: prisonerOutfit(c.avatar, sheet, HAPIS.kostum.sinif) };
 }
 /** Büyü bastırıcı tasma: savaşçının büyüleri yok (sınıf özellikleri, kaynaklar ve silahsız saldırılar kalır). */
 function collared(c: Combatant): Combatant {

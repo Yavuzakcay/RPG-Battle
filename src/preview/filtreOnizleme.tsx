@@ -36,8 +36,7 @@ async function rowOf(key: string): Promise<Row> {
   const hits: string[] = [];
   for (const name of own) {
     if (hits.length >= 4) break;
-    // Dragonborn'da beyaz taban (alt sınıf/Gariban) jetonlar pul yolunda; sınıf-genel jeton yalnız mahkûm kıyafetinde, yine pul boyasıyla.
-    const tint = lineageTint(race, lineage, genderOf(name), true) ?? lineageTint(race, lineage, genderOf(name));
+    const tint = lineageTint(race, lineage, genderOf(name));
     if (!tint) continue;
     const url = `/characters/${name}.webp`;
     if (maskedTint(tint)) {
@@ -74,7 +73,7 @@ function Page() {
   return (
     <div id="sayfa" style={{ background: '#1d2128', color: '#e8e4da', font: '12px system-ui', padding: 12, display: 'inline-block' }}>
       <h1 style={{ fontSize: 18, margin: '0 0 4px' }}>Yedek soy filtresi seçimi (maske yokken bütün jetona)</h1>
-      <p style={{ color: '#9aa3b2', margin: '0 0 8px', maxWidth: 1300 }}>Satır: soy (hedef renk oyunun verisinden). Jetonlar o soyun yedeğe düşen jetonları (oyunun kararıyla: maske yok ya da maskesiz boya etkisiz; Dragonborn'da oyunda yalnız mahkûm kıyafetinin monk jetonları çizilir, diğerleri maskesiz örnek); "örnek" yazanların maskesi var, yedek orada görünmez. Hücreye tıkla: seçim. Sarı çerçeve: seçili; "bekliyor": henüz seçilmedi (geçici olarak 1). Maske eklenince yedek kendiliğinden devre dışı kalır.</p>
+      <p style={{ color: '#9aa3b2', margin: '0 0 8px', maxWidth: 1300 }}>Satır: soy (hedef renk oyunun verisinden). Jetonlar o soyun yedeğe düşen jetonları (oyunun kararıyla: maske yok ya da maskesiz boya etkisiz); "örnek" yazanların maskesi var, yedek orada görünmez. Hücreye tıkla: seçim. Sarı çerçeve: seçili; "bekliyor": henüz seçilmedi (geçici olarak 1). Maske eklenince yedek kendiliğinden devre dışı kalır.</p>
       <table style={{ borderCollapse: 'collapse' }}>
         <tbody>
           {rows.map((r) => {

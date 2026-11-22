@@ -5,20 +5,12 @@
    84,
    165
   ],
-  "barbarian-erkek-genel": [
-   84,
-   146
-  ],
   "barbarian-erkek-gr": [
    81,
    175
   ],
   "barbarian-kadin": [
    91,
-   172
-  ],
-  "barbarian-kadin-genel": [
-   105,
    172
   ],
   "barbarian-kadin-gr": [
@@ -29,10 +21,6 @@
    100,
    165
   ],
-  "bard-erkek-genel": [
-   126,
-   157
-  ],
   "bard-erkek-gr": [
    113,
    180
@@ -40,10 +28,6 @@
   "bard-kadin": [
    109,
    165
-  ],
-  "bard-kadin-genel": [
-   86,
-   173
   ],
   "bard-kadin-gr": [
    106,
@@ -53,10 +37,6 @@
    100,
    166
   ],
-  "cleric-erkek-genel": [
-   84,
-   170
-  ],
   "cleric-erkek-gr": [
    100,
    177
@@ -64,10 +44,6 @@
   "cleric-kadin": [
    106,
    164
-  ],
-  "cleric-kadin-genel": [
-   90,
-   175
   ],
   "cleric-kadin-gr": [
    87,
@@ -77,10 +53,6 @@
    95,
    172
   ],
-  "druid-erkek-genel": [
-   84,
-   154
-  ],
   "druid-erkek-gr": [
    107,
    176
@@ -88,10 +60,6 @@
   "druid-kadin": [
    96,
    160
-  ],
-  "druid-kadin-genel": [
-   84,
-   165
   ],
   "druid-kadin-gr": [
    99,
@@ -101,10 +69,6 @@
    88,
    172
   ],
-  "fighter-erkek-genel": [
-   84,
-   168
-  ],
   "fighter-erkek-gr": [
    115,
    183
@@ -112,10 +76,6 @@
   "fighter-kadin": [
    84,
    172
-  ],
-  "fighter-kadin-genel": [
-   90,
-   173
   ],
   "fighter-kadin-gr": [
    103,
@@ -125,10 +85,6 @@
    98,
    176
   ],
-  "monk-erkek-genel": [
-   91,
-   183
-  ],
   "monk-erkek-gr": [
    121,
    172
@@ -136,10 +92,6 @@
   "monk-kadin": [
    106,
    179
-  ],
-  "monk-kadin-genel": [
-   94,
-   178
   ],
   "monk-kadin-gr": [
    124,
@@ -149,10 +101,6 @@
    93,
    176
   ],
-  "paladin-erkek-genel": [
-   84,
-   174
-  ],
   "paladin-erkek-gr": [
    96,
    171
@@ -160,10 +108,6 @@
   "paladin-kadin": [
    90,
    175
-  ],
-  "paladin-kadin-genel": [
-   100,
-   183
   ],
   "paladin-kadin-gr": [
    88,
@@ -173,10 +117,6 @@
    103,
    172
   ],
-  "ranger-erkek-genel": [
-   84,
-   160
-  ],
   "ranger-erkek-gr": [
    80,
    178
@@ -184,10 +124,6 @@
   "ranger-kadin": [
    99,
    168
-  ],
-  "ranger-kadin-genel": [
-   84,
-   169
   ],
   "ranger-kadin-gr": [
    84,
@@ -197,10 +133,6 @@
    99,
    172
   ],
-  "rogue-erkek-genel": [
-   83,
-   164
-  ],
   "rogue-erkek-gr": [
    97,
    181
@@ -208,10 +140,6 @@
   "rogue-kadin": [
    100,
    174
-  ],
-  "rogue-kadin-genel": [
-   87,
-   175
   ],
   "rogue-kadin-gr": [
    88,
@@ -221,10 +149,6 @@
    103,
    172
   ],
-  "sorcerer-erkek-genel": [
-   101,
-   163
-  ],
   "sorcerer-erkek-gr": [
    118,
    183
@@ -232,10 +156,6 @@
   "sorcerer-kadin": [
    110,
    172
-  ],
-  "sorcerer-kadin-genel": [
-   77,
-   166
   ],
   "sorcerer-kadin-gr": [
    106,
@@ -245,10 +165,6 @@
    98,
    173
   ],
-  "warlock-erkek-genel": [
-   111,
-   142
-  ],
   "warlock-erkek-gr": [
    113,
    172
@@ -256,10 +172,6 @@
   "warlock-kadin": [
    97,
    172
-  ],
-  "warlock-kadin-genel": [
-   84,
-   159
   ],
   "warlock-kadin-gr": [
    96,
@@ -269,10 +181,6 @@
    104,
    171
   ],
-  "wizard-erkek-genel": [
-   92,
-   157
-  ],
   "wizard-erkek-gr": [
    101,
    174
@@ -280,10 +188,6 @@
   "wizard-kadin": [
    103,
    172
-  ],
-  "wizard-kadin-genel": [
-   78,
-   165
   ],
   "wizard-kadin-gr": [
    103,

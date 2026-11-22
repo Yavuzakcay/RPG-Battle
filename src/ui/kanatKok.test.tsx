@@ -27,7 +27,7 @@ const Y = Math.round(SLOT.omuz * TOKEN_SPACE);
 
 describe('KW1 kanat kökü verisi', () => {
   it('her Dragonborn jetonunun kökü çözülür (jeton kaydı ya da sınıf+cinsiyet varsayılanı); sol < sağ, jeton uzayı içinde', () => {
-    expect(NAMES.length).toBe(290); // 266 hücreli + 24 sınıf-genel
+    expect(NAMES.length).toBe(266); // 266 hücreli (DRAGONBORN-ESKI-JETON-KALDIR 2026-11-22: 24 sınıf-genel jeton kaldırıldı, 290 → 266)
     for (const n of NAMES) {
       const r = wingRoot(`characters/dragonborn-${n}.webp`, look());
       expect(r, n).not.toBeNull();

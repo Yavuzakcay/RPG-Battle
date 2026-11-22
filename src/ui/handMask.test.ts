@@ -6,7 +6,7 @@
 import { describe, expect, it } from 'vitest';
 import { checkHandMask, maskSources } from './handMask';
 import { handMasked, maskUrlFor, tintPixels } from './tint';
-import { lineageTint } from '../battle/avatar';
+import { genericTokenRetired, lineageTint } from '../battle/avatar';
 import rapor from '../../data/soy-maske-rapor.json';
 import soyRenkleri from '../../data/soy-renkleri.json';
 import { classes } from '../data';
@@ -35,7 +35,8 @@ describe('elle maske', () => {
     const sprites = (rapor as { sprites: Record<string, string> }).sprites;
     // KJ4: rapor kapsamı veriden (sabit sayı yok): `npm run soy-maske` ana döngüsüyle aynı küme = soy-renkleri.json'daki her ırk
     // (Human dahil: AS1c ten maskesi, 2026-11-12) × cinsiyet × sınıf. Eski sabit 120, Human eklenmeden önceki raporun sayısıydı (6 × 2 × 12 = 144).
-    const beklenen = Object.keys(soyRenkleri.races).flatMap((r) => ['female', 'male'].flatMap((g) => classes.map((c) => `${r}-${g}-${c.id}`)));
+    // DRAGONBORN-ESKI-JETON-KALDIR (2026-11-22): sınıf-genel jetonu kaldırılmış ırk (`data/jeton-genel.json`, Dragonborn) raporda yok (`soy-maske.ts` `GENEL_IRKLAR`).
+    const beklenen = Object.keys(soyRenkleri.races).filter((r) => !genericTokenRetired(r)).flatMap((r) => ['female', 'male'].flatMap((g) => classes.map((c) => `${r}-${g}-${c.id}`)));
     // GORSEL-DUZELTME: ayrıca elle maskesi olan alt sınıf/Gariban jetonları (`<ırk>-<erkek|kadin>-<sınıf>-<kod>`), yalnız 'el' olarak.
     const ek = Object.keys(sprites).filter((k) => !beklenen.includes(k));
     expect(Object.keys(sprites).filter((k) => beklenen.includes(k)).sort()).toEqual(beklenen.sort());

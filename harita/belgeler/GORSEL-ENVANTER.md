@@ -583,7 +583,7 @@ Jeton: `public/monsters/<kimlik>.webp` (256×256; `monsterAvatar`). **330/330 do
 
 ## (d) Tür (10), alt soy (41), sınıf (12), alt sınıf (120)
 
-- **Tür:** 10/10 jeton (`characters/<tür>-<male|female>-<sınıf>.webp`, 240 sınıf-genel jeton = 10 tür × 2 cinsiyet × 12 sınıf; Gariban `-GR` 240). Eşlemede temsilci jeton erkek Fighter; ırk ölçeği `token-sizes.json` `race` (Halfling/Gnome 0,5 … Goliath 1,4).
+- **Tür:** 10/10 jeton (`characters/<tür>-<male|female>-<sınıf>.webp`, 216 sınıf-genel jeton = 9 tür × 2 cinsiyet × 12 sınıf; Dragonborn'da sınıf-genel jeton yok (`data/jeton-genel.json`), temsilci Gariban; Gariban `-GR` 240). Eşlemede temsilci jeton erkek Fighter; ırk ölçeği `token-sizes.json` `race` (Halfling/Gnome 0,5 … Goliath 1,4).
 - **Alt soy:** 41 = 38 tür soyu + 3 Göksel Uyanış; ayrı jeton yok, görünüm ırk jetonuna katman (Kuyruk AS1c: `lineageLook`, `Avatar.look`). Kayda özel görünüm **34**, ırk tabanıyla aynı **7** (hepsi `alt-soy-gorunum.json` `orijinal: true` ya da bilinçli boyasız: `elf/wood-elf`, `gnome/forest-gnome`, `gnome/rock-gnome`, `halfling/slender`, `human/khadyrga`, `orc/wildwood`, `tiefling/infernal`).
   - Human ten tonları (AS1b/AS1c): 3 ton (Orijinal boyasız, Koyu, Altın), kültür eşlemesi Tenhausser → Koyu, Khadyrga → Orijinal, Saf Kent → Altın, Sur Dışı üçü (varsayılan Orijinal) + Sürgün; ten maskesi `public/characters/maske/human-*`.
   - Kanat: `data/kanat-esleme.json` 3 slot (Tiefling Winged, Celestial Kırık Kanat 3+, Dragonborn 5+); Dragonborn kanat sürümü KW2: taban `dragonborn.webp` + zar + pençe katmanı, soy rengine göre palet; 4 jeton kendi çiziminde kanatlı (`kanatsiz`). `public/kanat/` 6 görsel; `melek-acik.webp` hiçbir slota bağlı değil (kullanılmayan).

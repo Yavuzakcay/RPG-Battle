@@ -2,6 +2,7 @@
 import { describe, it, expect } from 'vitest';
 import { races, classes } from '../data';
 import { characterTokenFile, sheetAvatar } from '../battle';
+import { genericTokenRetired } from '../battle/avatar';
 import { blankCharacter } from '../rules/builder';
 import { pickImage } from './Avatar';
 
@@ -43,9 +44,15 @@ describe('karakter jetonları', () => {
   });
   // Kod tarafındaki ırk × cinsiyet × sınıf kombinasyonlarından, jetonun kullandığı fonksiyonla
   // üretilen adlar public/characters/ içinde olmalı. Resimler depoya eklenince etkin; klasör boşsa atlanır.
-  it.skipIf(files.size === 0)('240 resmin hepsi var (10 ırk × 2 cinsiyet × 12 sınıf)', () => {
-    const want = races.flatMap((r) => (['erkek', 'kadin'] as const).flatMap((g) => classes.map((c) => characterTokenFile(r.id, g, c.id))));
-    expect(new Set(want).size).toBe(240);
+  // DRAGONBORN-ESKI-JETON-KALDIR (2026-11-22): Dragonborn'un 24 sınıf-genel jetonu oyunda kullanılmıyor ve kaldırıldı (`data/jeton-genel.json`);
+  // 240 → 216 (9 ırk × 2 cinsiyet × 12 sınıf). Kaldırılan ırkın sınıf-genel dosyası yok.
+  it.skipIf(files.size === 0)('216 resmin hepsi var (9 ırk × 2 cinsiyet × 12 sınıf); kaldırılan ırkta sınıf-genel jeton yok', () => {
+    const live = races.filter((r) => !genericTokenRetired(r.id));
+    expect(live.length).toBe(9);
+    const want = live.flatMap((r) => (['erkek', 'kadin'] as const).flatMap((g) => classes.map((c) => characterTokenFile(r.id, g, c.id))));
+    expect(new Set(want).size).toBe(216);
     expect(want.filter((f) => !files.has(f))).toEqual([]);
+    const gone = races.filter((r) => genericTokenRetired(r.id)).flatMap((r) => (['erkek', 'kadin'] as const).flatMap((g) => classes.map((c) => characterTokenFile(r.id, g, c.id))));
+    expect(gone.filter((f) => files.has(f))).toEqual([]);
   });
 });

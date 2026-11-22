@@ -1,6 +1,7 @@
 // GORSEL-DUZELTME: maskesiz soy boyası için yedek CSS filtresi adayları. Çalıştırma: node scripts/soy-filtre-adaylari.mjs
 // Her boyalı soyun hedef rengi oyunun kendi verisinden: `data/soy-renkleri.json` (`lch` hedefi; Drow seçili paletin orta durağı;
-// High Elf HSL hedefi) ve Dragonborn'da pul `orta` rengi (`data/dragonborn-pul.json`; mahkûm kıyafetinde boya pul yolundandır).
+// High Elf HSL hedefi). DRAGONBORN-ESKI-JETON-KALDIR: sınıf-genel jetonu kaldırılmış ırk (`data/jeton-genel.json`; Dragonborn) yok:
+// kalan bütün jetonları pul maskeli (maskesiz jeton yok), yedek filtreye düşmez.
 // Hedefin HSL tonu/doygunluğu/açıklığından 8 farklı filtre (sepia + hue-rotate + saturate + brightness + contrast bileşimleri;
 // akromatik hedefte (gümüş, beyaz, bulut) hafif tema tonu korunur). Çıktı data/soy-filtre-adaylari.json (yalnız önizleme sayfası
 // `onizleme-filtre.html` okur). Seçim data/soy-filtre-yedek.json'da (oyun okur); yoksa bu betik ilk adayı "seçim bekliyor" diye yazar,
@@ -8,7 +9,7 @@
 import fs from 'node:fs';
 
 const soy = JSON.parse(fs.readFileSync('data/soy-renkleri.json', 'utf8')).races;
-const pul = JSON.parse(fs.readFileSync('data/dragonborn-pul.json', 'utf8')).soylar;
+const kaldirilan = new Set(JSON.parse(fs.readFileSync('data/jeton-genel.json', 'utf8')).kaldirilan);
 
 const lab2rgb = (L, a, b) => {
   const fy = (L + 16) / 116, fx = fy + a / 500, fz = fy - b / 200;
@@ -17,7 +18,6 @@ const lab2rgb = (L, a, b) => {
   const lin = [3.2404542 * x - 1.5371385 * y - 0.4985314 * z, -0.969266 * x + 1.8760108 * y + 0.041556 * z, 0.0556434 * x - 0.2040259 * y + 1.0572252 * z];
   return lin.map((c) => Math.round(Math.max(0, Math.min(1, c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055)) * 255));
 };
-const hex2rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
 const rgb2hsl = ([r, g, b]) => {
   r /= 255; g /= 255; b /= 255;
   const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2;
@@ -32,10 +32,10 @@ const hex = (rgb) => `#${rgb.map((c) => c.toString(16).padStart(2, '0')).join(''
 const hedef = {};
 for (const [race, r] of Object.entries(soy)) {
   if (race === 'human') continue; // ten tonları maskeli (GORSEL-DUZELTME); yedek yok
+  if (kaldirilan.has(race)) continue; // sınıf-genel jetonu kaldırılmış ırk: bütün jetonları pul maskeli; yedek yok
   for (const [lin, to] of Object.entries(r.lineages ?? {})) {
     if (!to) continue;
     const key = `${race}/${lin}`;
-    if (race === 'dragonborn' && pul[lin]) { hedef[key] = { rgb: hex2rgb(pul[lin].orta), kaynak: `dragonborn-pul.json soylar.${lin}.orta` }; continue; }
     if ('palet' in to) {
       const pal = r.paletler?.[lin]; const k = r[to.palet] ?? pal?.varsayilan; const g = pal?.secenekler?.[k]?.gradient;
       if (!g) continue;

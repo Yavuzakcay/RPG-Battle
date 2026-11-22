@@ -246,7 +246,7 @@ describe('TG1: Goliath (dar renk kutusu, vurgu ve gölge yok)', () => {
     expect(skinFixFor('tiefling-erkek-barbarian-ID1')!.temizlik).toEqual(soy.races.tiefling.temizlik);
     expect(skinFixFor('goliath-kadin-druid-ID3')!.temizlik).toEqual(soy.races.goliath.temizlik);
     expect(skinFixFor('goliath-kadin-druid-ID3')!.mask).toEqual(soy.races.goliath.mask);
-    for (const n of ['human-male-bard', 'elf-female-wizard', 'dragonborn-male-fighter', 'gnome-male-rogue', 'orc-male-fighter', 'halfling-male-rogue', '']) expect(skinFixFor(n), n).toBeUndefined();
+    for (const n of ['human-male-bard', 'elf-female-wizard', 'dragonborn-erkek-fighter-GR', 'gnome-male-rogue', 'orc-male-fighter', 'halfling-male-rogue', '']) expect(skinFixFor(n), n).toBeUndefined();
     const t = skinFixFor('goliath-male-cleric')!.temizlik;
     expect(skinFixParams(t, 256)).toEqual({ kapama: 1, enCok: 12, ekleOrani: 0.5, golge: undefined, vurgu: undefined });
     expect(skinFixParams(t, 96)).toEqual({ kapama: 1, enCok: 2, ekleOrani: 0.5, golge: undefined, vurgu: undefined });

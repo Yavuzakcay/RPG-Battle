@@ -25,7 +25,7 @@ describe('kafa kaplaması', () => {
     expect(names.every((n) => /^goliath-(female|male)-(paladin|fighter|cleric)$/.test(n))).toBe(true);
     for (const n of names) expect(files.has(`characters/bas/${n}.png`)).toBe(true);
     expect(headEntry('goliath-male-barbarian')).toBeUndefined();
-    expect(headEntry('dragonborn-female-paladin')).toBeUndefined();
+    expect(headEntry('dragonborn-kadin-paladin-GR')).toBeUndefined();
     expect(basUrlFor('characters/goliath-male-barbarian.webp')).toBeNull();
     if (headEntry('goliath-male-fighter')) expect(basUrlFor('characters/kucuk/goliath-male-fighter.webp')).toBe('characters/bas/goliath-male-fighter.png');
   });

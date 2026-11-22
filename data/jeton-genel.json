@@ -1,0 +1,4 @@
+{
+ "not": "DRAGONBORN-ESKI-JETON-KALDIR (kullanıcı kararı 2026-11-22): sınıf-genel jetonu (<ırk>-<male|female>-<sınıf>.webp) oyunda hiç kullanılmayan ırklar. Bu ırkta karakter jetonu yalnız Gariban (<ırk>-<erkek|kadin>-<sınıf>-GR) ve alt sınıf jetonlarından; alt sınıf jetonu yoksa (seviye ≥ 3 alt sınıfsız, cinsiyet kısıtı) Gariban, mahkûm kıyafeti kostüm sınıfının Gariban jetonu. Çözücü src/battle/avatar.ts (genericTokenRetired, sheetAvatar, classBaseTokenFile, prisonerOutfit); eski dosyalar public/characters/_yedek-dragonborn-eski-2026-11-22/ (git dışı).",
+ "kaldirilan": ["dragonborn"]
+}

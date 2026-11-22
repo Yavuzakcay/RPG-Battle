@@ -21,7 +21,7 @@ const token = (name: string) => renderToStaticMarkup(<svg><AvatarCircle avatar={
 describe('Dragonborn: kendi çiziminde kanatlı jeton', () => {
   it('liste veride; her kayıt var olan bir Dragonborn jetonu; Cleric Yaşam (ID1) iki cinsiyette de listede', () => {
     expect(LIST.length).toBeGreaterThan(0);
-    expect(TOKENS.size).toBe(290);
+    expect(TOKENS.size).toBe(266); // DRAGONBORN-ESKI-JETON-KALDIR (2026-11-22): 24 sınıf-genel jeton kaldırıldı (290 → 266)
     for (const n of LIST) expect(TOKENS.has(n), n).toBe(true);
     expect(LIST).toEqual(expect.arrayContaining(['dragonborn-erkek-cleric-ID1', 'dragonborn-kadin-cleric-ID1']));
   });

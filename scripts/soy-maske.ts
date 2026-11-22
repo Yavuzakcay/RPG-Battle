@@ -13,7 +13,7 @@ import { rgbToLab, deltaE } from '../src/ui/color';
 import { tintPixels } from '../src/ui/tint';
 import soy from '../data/soy-renkleri.json';
 import type { TintSpec } from '../src/battle/types';
-import { lineageTint, paletteKeys, paletteTint } from '../src/battle/avatar';
+import { genericTokenRetired, lineageTint, paletteKeys, paletteTint } from '../src/battle/avatar';
 
 import { CHAR, ELLE, OTO as OUT, ROOT } from './soy-maske-yollar';
 import { applyHandMasks } from './soy-maske-el';
@@ -247,7 +247,9 @@ if (args.includes('--alt')) {
 // GORSEL-DUZELTME: elle maskesi olan alt sınıf/Gariban jetonları da (raporda yalnız bunlar; sınıf-genel jetonların hepsi).
 const SUB_EL = new RegExp(`^(${Object.keys(RACES).join('|')})-(erkek|kadin)-(${CLASSES.join('|')})-.+$`);
 const elleSub = fs.existsSync(ELLE) ? fs.readdirSync(ELLE).map((f) => f.replace(/\.png$/i, '')).filter((n) => SUB_EL.test(n) && fs.existsSync(path.join(CHAR, `${n}.webp`))) : [];
-const hand = await applyHandMasks([...Object.keys(RACES).flatMap((r) => ['female', 'male'].flatMap((g) => CLASSES.map((c) => `${r}-${g}-${c}`))), ...elleSub]);
+// DRAGONBORN-ESKI-JETON-KALDIR: sınıf-genel jetonu kaldırılmış ırk (`data/jeton-genel.json`) sınıf-genel maske/ölçüm döngüsünde yok.
+const GENEL_IRKLAR = Object.keys(RACES).filter((r) => !genericTokenRetired(r));
+const hand = await applyHandMasks([...GENEL_IRKLAR.flatMap((r) => ['female', 'male'].flatMap((g) => CLASSES.map((c) => `${r}-${g}-${c}`))), ...elleSub]);
 // GORSEL-DUZELTME `--el`: yalnız elle maskeler (doğrulama, public/characters/maske-el/ kopyası, data/soy-maske-rapor.json); otomatik maske ve ölçüm yok.
 if (args.includes('--el')) process.exit(0);
 // Görev K22: kafa kaplaması (kapsam veride); ölçüm kaplanmış kafayla yapılır.
@@ -257,6 +259,7 @@ const report: Record<string, unknown> = {};
 const paletRows: Record<string, Record<string, Record<string, number[]>>> = {};
 for (const [race, r] of Object.entries(RACES)) {
   if (only && only !== race) continue;
+  if (!GENEL_IRKLAR.includes(race)) continue;
   const rows: Record<string, Record<string, number[]>> = {};
   const tiles: Array<{ input: Buffer; left: number; top: number }> = [];
   let n = 0;

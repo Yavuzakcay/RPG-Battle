@@ -2,6 +2,45 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Hafif doğrulama modu: görev sonunda tam `npm test` yok (2026-11-22, kullanıcı kararı)
+
+- Her görevde yalnız `npm run typecheck`, o görevin dokunduğu dosyalarla ilgili testler, `npm run build`, `npm run check:harita` ve
+  `npm run check:ses`. Görev sonunda tam `npm test` çalıştırılmaz.
+- Tam `npm test` günde bir kez, akşam en sonda, kullanıcı istediğinde ayrı görev olarak. Önceki kural (görev sonunda bir kez tam paket;
+  ortak motor/şema değişince ya da birlesik→main PR öncesi tam paket) bununla değişti. CLAUDE.md "Hafif doğrulama modu" güncellendi.
+
+## DRAGONBORN-ESKI-JETON-KALDIR: Dragonborn sınıf-genel jetonları oyundan çıktı (2026-11-22, kullanıcı kararı; yalnız görünüm, kural/kayıt sürümü değişmedi)
+
+- **Karar:** Dragonborn'un eski sınıf-genel jetonları (`dragonborn-<male|female>-<sınıf>.webp`, 24 insansı çizim) oyunda hiç kullanılmaz;
+  güncel Gariban (`-GR`) ve alt sınıf jetonları (266, hepsi pul maskeli) kalır.
+- **Veri:** `data/jeton-genel.json` `kaldirilan: ["dragonborn"]` (adı `*-jeton.json` sınıf tablolarının glob'una düşmesin diye `jeton-` önekli);
+  `avatar.ts` `genericTokenRetired` okur, kodda ırk adı yok.
+- **Çözücü (`src/battle/avatar.ts`):** `sheetAvatar` kaldırılmış ırkta sınıf-genel jetonu ne ana görsel ne yedek yapar: alt sınıf jetonu
+  yoksa (seviye ≥ 3 alt sınıfsız, tabloda olmayan alt sınıf, cinsiyet kısıtı: erkek Karadul, kadın İmparator) sınıfın Gariban jetonu,
+  alt sınıf jetonunun yedeği de Gariban. Diğer ırklarda davranış aynen. `classBaseTokenFile` sınıfın taban jetonu (sınıf-genel; kaldırılmış
+  ırkta Gariban); `prisonerOutfit` mahkûm kıyafetinin tek kuralı (`seruvenBattle.ts` ve görsel döküm aynı işlevi çağırır).
+- **Mahkûm kıyafeti:** Dragonborn'da Keşiş Gariban jetonu (`dragonborn-<erkek|kadin>-monk-GR`; düz kıyafet, pul maskeli, soy rengi
+  karakterden). Önceden eski `dragonborn-<male|female>-monk` jetonu pul maskesi olmadığı için yedek CSS filtresiyle çiziliyordu
+  (GORSEL-DOKUM "maske yok (pul)" satırları). Maskesiz Dragonborn jetonu kalmadı; yapılacak maske işi yok.
+- **Oluşturucu:** sınıf jetonu önyüklemesi `characterTokenFile` yerine çözücüden (`sheetAvatar`, alt sınıfsız; Dragonborn'da 404 yok).
+- **Dosyalar:** 24 jeton, 24 küçük kopya (`kucuk/`), 24 eski otomatik maske (`maske/`) `public/characters/_yedek-dragonborn-eski-2026-11-22/`
+  altına taşındı (git dışı, `.gitignore` `public/characters/_yedek-*/`); depoda silinmiş görünür, geçmişten geri alınabilir.
+- **Veriden çıkan satırlar:** yedek soy filtresi ve adayları (`soy-filtre-yedek.json`, `soy-filtre-adaylari.json`: 10 `dragonborn/*` satırı;
+  üretici `scripts/soy-filtre-adaylari.mjs` kaldırılmış ırkı atlar, `/onizleme-filtre.html`'de Dragonborn satırı yok), `soy-maske-rapor.json`
+  24 satır, `soy-olcum.json` `races.dragonborn`, `soy-renkleri.json` `maskFix` 9 satır, `dragonborn-kanat-kok.json` 24 `-genel` grubu,
+  `dungeondex-gorsel-esleme.json` Dragonborn tür/soy temsilcisi `dragonborn-erkek-fighter-GR` (üretici `gorsel-envanter.ts` `raceToken`).
+- **Betikler:** `soy-maske.ts`, `soy-incele.ts`, `soy-onizleme.ts` sınıf-genel döngüde kaldırılmış ırkı atlar (taşınan dosyalarda çökmesin,
+  satırları geri yazmasın). Bu görevde `npm run soy-maske` çalıştırılmadı (yasak: Goliath kafa kaplaması ve Dragonborn maskeleri).
+- **`npm run karakter-kucuk`:** bu bulut ortamında (sharp 0.33.5 / libvips 8.15.3) 2675 küçük kopyayı farklı baytlarla yeniden kodladı
+  (piksel farkı ortalama ≈ 2 seviye, bayat kopya yok); kodlama gürültüsü commit'e alınmadı, yalnız 24 eski kopyanın silinmesi girdi.
+  Her büyük jetonun küçük kopyası var (2876 = 2876, `loading.test.ts`).
+- **Test:** `src/app/dragonbornEskiJeton.test.ts` (12 sınıf × cinsiyet (cinsiyetsiz dahil) × alt sınıf (yok, bilinmeyen, tablodakiler) ×
+  seviye eşikleri × 10 soy; mahkûm kıyafeti, Hapishane oturumu uçtan uca; eski dosya/veri yokluğu). Sayı testleri gerekçeyle güncellendi:
+  sınıf-genel 240 → 216 (`avatar.test.ts`), Dragonborn jetonu 290 → 266 (`kanatKok`, `kanatKendi`), toplam 2900 → 2876 (`loading.test.ts`),
+  maske raporu kapsamı kaldırılmış ırksız (`handMask.test.ts`).
+- **Belgeler:** üretilmiş eski raporlar (`docs/VARLIK-ENVANTERI.md`, `harita/belgeler/GORSEL-DOKUM.md` mahkûm satırları, `KANAT-BIRLESTIRME.md`)
+  bir sonraki üretimlerine dek eski dosya adlarını anar; elle değiştirilmedi.
+
 ## EN-AD: onaylı İngilizce alt sınıf ve özellik adları (2026-11-22, kullanıcı kararı; kural/kayıt sürümü ve mekanik değişmedi)
 
 - **Kural:** yerelleştirdiğimiz bütün alt sınıf ve alt sınıf özelliği adlarının İngilizcesi Türkçe adın birebir çevirisidir (SRD'nin

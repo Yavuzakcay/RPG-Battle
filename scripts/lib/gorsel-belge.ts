@@ -132,9 +132,10 @@ export function belge(x: BelgeIn): string {
   const chars = ls('public/characters');
   const generic = chars.filter((f) => /^[a-z]+-(male|female)-[a-z]+\.webp$/.test(f));
   const gr = chars.filter((f) => f.endsWith('-GR.webp'));
+  const genelIrk = new Set(generic.map((f) => f.split('-')[0])).size;
   const lin = cats.altsoy!;
   o.push('## (d) Tür (10), alt soy (41), sınıf (12), alt sınıf (120)', '',
-    `- **Tür:** 10/10 jeton (\`characters/<tür>-<male|female>-<sınıf>.webp\`, ${generic.length} sınıf-genel jeton = 10 tür × 2 cinsiyet × 12 sınıf; Gariban \`-GR\` ${gr.length}). Eşlemede temsilci jeton erkek Fighter; ırk ölçeği \`token-sizes.json\` \`race\` (Halfling/Gnome 0,5 … Goliath 1,4).`,
+    `- **Tür:** 10/10 jeton (\`characters/<tür>-<male|female>-<sınıf>.webp\`, ${generic.length} sınıf-genel jeton = ${genelIrk} tür × 2 cinsiyet × 12 sınıf; Dragonborn'da sınıf-genel jeton yok (\`data/jeton-genel.json\`), temsilci Gariban; Gariban \`-GR\` ${gr.length}). Eşlemede temsilci jeton erkek Fighter; ırk ölçeği \`token-sizes.json\` \`race\` (Halfling/Gnome 0,5 … Goliath 1,4).`,
     `- **Alt soy:** ${lin.length} = 38 tür soyu + 3 Göksel Uyanış; ayrı jeton yok, görünüm ırk jetonuna katman (Kuyruk AS1c: \`lineageLook\`, \`Avatar.look\`). Kayda özel görünüm **${cnt(lin, 'var')}**, ırk tabanıyla aynı **${cnt(lin, 'genel')}** (hepsi \`alt-soy-gorunum.json\` \`orijinal: true\` ya da bilinçli boyasız: ${list(lin.filter((r) => r.durum === 'genel').map((r) => r.id))}).`,
     '  - Human ten tonları (AS1b/AS1c): 3 ton (Orijinal boyasız, Koyu, Altın), kültür eşlemesi Tenhausser → Koyu, Khadyrga → Orijinal, Saf Kent → Altın, Sur Dışı üçü (varsayılan Orijinal) + Sürgün; ten maskesi `public/characters/maske/human-*`.',
     `  - Kanat: \`data/kanat-esleme.json\` 3 slot (Tiefling Winged, Celestial Kırık Kanat 3+, Dragonborn 5+); Dragonborn kanat sürümü KW2: taban \`dragonborn.webp\` + zar + pençe katmanı, soy rengine göre palet; 4 jeton kendi çiziminde kanatlı (\`kanatsiz\`). \`public/kanat/\` ${ls('public/kanat').filter((f) => f.endsWith('.webp')).length} görsel; \`melek-acik.webp\` hiçbir slota bağlı değil (kullanılmayan).`,

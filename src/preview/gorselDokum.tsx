@@ -23,7 +23,7 @@ import { loadWingData } from '../ui/wingData';
 import { lineageLook, type LookSheet } from '../ui/lineageLook';
 import { maskUrlFor, maskedTint, tintedUrl } from '../ui/tint';
 import { classDataLoaded, getMonster, loadClassData, loadMonsters, monsters, races, type Monster } from '../data';
-import { characterTokenFile, lineageTint, monsterAvatar, paletteKeys, paletteTint, sheetAvatar } from '../battle/avatar';
+import { lineageTint, monsterAvatar, paletteKeys, paletteTint, prisonerOutfit, sheetAvatar } from '../battle/avatar';
 import { CIVILIAN_LOOKS } from '../battle/civilianLooks';
 import { creatureTypeAt } from '../battle/srdD1';
 import { visibleSubclasses } from '../rules/subclasses';
@@ -510,7 +510,7 @@ function prisonerPage(): PageDef {
   const L = subclassRowLevel();
   return simplePage({
     id: 'ek-mahkum', grup: 'ek', bolum: 'ek', baslik: `Mahkûm kıyafeti: ${kostum} jetonu + turuncu hale (soy rengi ve görünüm karakterden)`,
-    aciklama: `Kaynak karakter fighter, örnek alt sınıf, seviye ${L}. Avatar: src = characterTokenFile(ırk, cinsiyet, ${kostum}), fallbacks = asıl jeton, outfit = mahkum.`,
+    aciklama: `Kaynak karakter fighter, örnek alt sınıf, seviye ${L}. Avatar: prisonerOutfit (src = classBaseTokenFile(ırk, cinsiyet, ${kostum}); Dragonborn: ${kostum} Gariban jetonu), fallbacks = asıl jeton, outfit = mahkum.`,
     cols: variantCols(['erkek']).map((c) => ({ ...c, key: c.key.replace(/\/E$/, ''), label: c.label.replace(/ E$/, ''), group: c.group?.replace(/ · erkek$/, '') })), rows: GENDERS.map((g) => ({ key: g, label: g })),
     at: (r, c) => {
       const v = classVariants().find((x) => x.key === c.key)!;
@@ -518,7 +518,7 @@ function prisonerPage(): PageDef {
       const sub = sampleSub('fighter');
       const sheet = sheetFor({ race: v.race, cls: 'fighter', gender, level: L, ...(v.lineage ? { lineage: v.lineage } : {}), ...(v.awakening ? { awakening: v.awakening } : {}), ...(v.skinTone ? { skinTone: v.skinTone } : {}), ...(sub ? { subId: sub } : {}) });
       const a = sheetAvatar(sheet);
-      const av: Avatar = { ...a, src: `characters/${characterTokenFile(v.race, gender, kostum)}`, fallbacks: [a.src, ...(a.fallbacks ?? [])], outfit: 'mahkum' };
+      const av: Avatar = prisonerOutfit(a, sheet, kostum);
       return itemOf(`ek/mahkum/${c.key}/${G1[gender]}`, 'ek', av, `${v.label} ${G1[gender]}`, { race: v.race });
     },
     view: (it, m) => <JetonCell it={it} marks={m} />,
