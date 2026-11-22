@@ -17,14 +17,14 @@ import { subclassMissing } from '../rules/subclasses';
 import { resourceDef } from '../rules/classFeatures';
 import { masteryOptions, masteryRight, masterySwapLimit, masterySwapProblem, masteryText, masteryWorks, weaponMasteryId } from '../rules/mastery';
 import { newId } from '../app/storage';
-import { alignmentEnabled } from '../app/features';
+import { alignmentEnabled, seruvenMenuEnabled } from '../app/features';
 // Kuyruk K51: hizalanma etiketi tembel (ana parça sınırı).
 const AlignmentBadge = lazy(() => import('../ui/AlignmentBadge'));
 import { MAX_PARTY } from '../app/limits';
 import { CharacterFigure } from '../ui/Avatar';
 import { useTheme } from '../ui/theme';
 import { SoundPanel } from '../ui/SoundPanel';
-import { IconAuto, IconBook, IconGear, IconHexDie, IconMoon, IconPlay, IconSound, IconSun, IconUser } from '../ui/icons';
+import { IconAuto, IconBook, IconDoorEnter, IconGear, IconHexDie, IconMoon, IconPlay, IconSound, IconSun, IconUser } from '../ui/icons';
 import { savedBattleSummary, type SaveSummary } from '../app/saveKey';
 import { version as appVersion } from '../../package.json';
 import { LANGS, setLang, t, useLang } from '../i18n';
@@ -88,11 +88,11 @@ function HomeSound() {
 }
 
 /**
- * Giriş ekranı (Görev M1 tasarımı): masaüstünde solda logo, başlık ve açıklama, sağ üstte tema/ses/dil çipleri, sağda
+ * Giriş ekranı (Görev M1 tasarımı): masaüstünde solda logo ve başlık (ANA-MENU-SADELESTIR: açıklama kutusu kalktı), sağ üstte tema/ses/dil çipleri, sağda
  * cam panel (kayıtlı savaş, Oyuncu, Game Master, Ayarlar; Kuyruk 18 H10: Durum düğmesi kaldırıldı); dar ekranda üst çubuk ve alta yapışık panel. Arka
  * plan görseline karartma ya da filtre konmaz; okunabilirlik cam panel ve metin gölgesiyle.
  */
-export function Home(props: { onPlayer: () => void; /** Hızlı savaş (Görev OD1: eski Game Master kurulumu, sade). */ onGm: () => void; /** Oda kur (Game Master); yoksa onGm. */ onRoomCreate?: () => void; onRoomJoin?: () => void; /** Kuyruk 18 H10: giriş ekranında Durum düğmesi yok (kullanılmaz). */ onStatus?: () => void; onSettings?: () => void; onResume?: () => void; onJourney?: () => void; onSeruven?: () => void; /** Dungeondex (tembel ekran). */ onDex?: () => void; resumeError?: string | null }) {
+export function Home(props: { onPlayer: () => void; /** Hızlı savaş (Görev OD1: eski Game Master kurulumu, sade; ANA-MENU-SADELESTIR: menüde kart yok, yalnız `onRoomCreate` verilmezse Oda kur kartı buna gider). */ onGm: () => void; /** Oda kur (Game Master); yoksa onGm. */ onRoomCreate?: () => void; onRoomJoin?: () => void; /** Kuyruk 18 H10: giriş ekranında Durum düğmesi yok (kullanılmaz). */ onStatus?: () => void; onSettings?: () => void; onResume?: () => void; onJourney?: () => void; onSeruven?: () => void; /** Dungeondex (tembel ekran). */ onDex?: () => void; resumeError?: string | null }) {
   const lang = useLang();
   const L = t();
   const H = L.home;
@@ -115,7 +115,6 @@ export function Home(props: { onPlayer: () => void; /** Hızlı savaş (Görev O
           <h1 className="brand-title" lang="en" aria-label={APP_NAME}>
             {name2 !== undefined ? <>{name1}<span className="amp">&amp;</span>{name2}</> : APP_NAME}
           </h1>
-          <p className="intro">{H.intro}</p>
         </header>
         <nav className="home2-panel" aria-label={H.actions}>
           {props.onResume && (
@@ -129,26 +128,20 @@ export function Home(props: { onPlayer: () => void; /** Hızlı savaş (Görev O
               <span className="home-icon teal"><IconUser size={26} /></span>
               <span className="home-card-text"><strong>{H.player}</strong><span>{H.playerDesc}</span></span>
             </button>
-            <button type="button" className="role home-card gm" onClick={props.onRoomCreate ?? props.onGm}>
+            <button type="button" className="role home-card gm" data-testid="home-room-create" onClick={props.onRoomCreate ?? props.onGm}>
               <span className="home-icon orange"><IconHexDie size={26} /></span>
               <span className="home-card-text"><strong>{H.roomCreate}</strong><span>{H.roomCreateDesc}</span></span>
             </button>
           </div>
-          {/* Görev OD1: Odaya katıl (oyuncu) ve Hızlı savaş (girişsiz, tek cihaz). */}
+          {/* Görev OD1: Odaya katıl (oyuncu). ANA-MENU-SADELESTIR: Hızlı savaş kartı kalktı (Oda kur kapsıyor; `onGm` rotası ve kayıt aynı). */}
           {props.onRoomJoin && (
             <button type="button" className="home-card join" onClick={props.onRoomJoin}>
-              <span className="home-icon teal"><IconUser size={22} /></span>
+              <span className="home-icon teal"><IconDoorEnter size={22} /></span>
               <span className="home-card-text"><strong>{H.roomJoin}</strong><span>{H.roomJoinDesc}</span></span>
             </button>
           )}
-          {props.onRoomCreate && (
-            <button type="button" className="home-card quick" data-testid="home-quick" onClick={props.onGm}>
-              <span className="home-icon"><IconPlay size={22} /></span>
-              <span className="home-card-text"><strong>{H.quick}</strong><span>{H.quickDesc}</span></span>
-            </button>
-          )}
-          {/* Kuyruk 31: Serüven (kıta sayfaları; Game Master gerekmez). */}
-          {props.onSeruven && (
+          {/* Kuyruk 31: Serüven (kıta sayfaları; Game Master gerekmez). ANA-MENU-SADELESTIR: yalnız `seruvenMenu` bayrağı açıkken (varsayılan gizli, iz bırakmaz). */}
+          {props.onSeruven && seruvenMenuEnabled() && (
             <button type="button" className="home-card journey seruven" onClick={props.onSeruven}>
               <span className="home-icon"><IconPlay size={22} /></span>
               <span className="home-card-text"><strong>{L.seruven.menu}</strong><span>{L.seruven.menuDesc}</span></span>

@@ -114,6 +114,8 @@ export function OdaKur(props: {
   onUpdateCharacters?: (list: SavedCharacter[]) => void; onSefer?: (id: string) => void;
   /** Kayıtlı savaşa bu odadan dön (App kaydı yükler). */
   onResume?: (odaId: string) => void; roomId?: string;
+  /** ANA-MENU-SADELESTIR: odaya bağlı olmayan kayıtlı savaşı aç (eski Hızlı savaş kaydı; App yükler). */
+  onResumeUnbound?: () => void;
 }) {
   const O = t().oda, C = t().common;
   const [rooms, commit] = useRooms();
@@ -144,12 +146,17 @@ export function OdaKur(props: {
     <div className="menu-screen">
       <main className="app wide">
         <header><h1>{O.createTitle}</h1><button className="ghost" onClick={props.onBack}>{C.home}</button></header>
+        {props.onResumeUnbound && hasSavedBattle() && !rooms.some((r) => r.kilit !== null) && (
+          <section className="panel oda-unbound">
+            <div className="set-btns"><button type="button" className="cta" data-testid="oda-resume-unbound" onClick={props.onResumeUnbound}>{O.quickResume}</button><small className="mute">{O.quickResumeHelp}</small></div>
+          </section>
+        )}
         <section className="panel">
           <h2>{O.newRoom}</h2>
           <div className="oda-name">
             <label>{O.roomName} <input value={name} maxLength={ODA_AD_MAX} placeholder={O.defaultName} aria-label={O.roomName} onChange={(e: { target: { value: string } }) => setName(e.target.value)} /></label>
             <label>{O.gmName} <input value={gm} maxLength={ODA_AD_MAX} placeholder={O.gmNamePlaceholder} aria-label={O.gmName} onChange={(e: { target: { value: string } }) => setGm(e.target.value)} /></label>
-            <button type="button" className="cta" onClick={() => {
+            <button type="button" className="cta" data-testid="oda-create" onClick={() => {
               const made = createRoom(rooms, name || O.defaultName, globalRules(), new Date().toISOString(), gm);
               commit(() => made.list); setName(''); setGm(''); setSel(made.room.id);
             }}>{O.create}</button>

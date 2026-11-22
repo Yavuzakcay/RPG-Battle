@@ -25,6 +25,15 @@ export function setJourneyEnabled(on: boolean): void {
   try { localStorage.setItem(KEY, JSON.stringify({ ...stored(), yolculuk: on })); } catch { /* depolama yok */ }
 }
 
+/**
+ * ANA-MENU-SADELESTIR: Serüven ana menüde (varsayılan kapalı; Ayarlar ▸ Gelişmiş ▸ Geliştirici). Yalnız menü kartını
+ * gösterir; Serüven ekranı, kayıtları, `#dunya` ve düğüm araçları bayraktan bağımsız çalışır (ileride ayrı oyun).
+ */
+export const seruvenMenuEnabled = (): boolean => stored().seruvenMenu === true;
+export function setSeruvenMenuEnabled(on: boolean): void {
+  try { localStorage.setItem(KEY, JSON.stringify({ ...stored(), seruvenMenu: on })); } catch { /* depolama yok */ }
+}
+
 /** Kuyruk K20: Celestial (Düşmüş) ırkı ev kuralı (Game Master; varsayılan kapalı): oluşturucuda seçilir, yeni savaşlarda `celestialIrki` açık gelir. */
 export const celestialEnabled = (): boolean => read().celestial === true;
 

@@ -11,6 +11,8 @@ export const IconGear = ({ size = 24 }: P) => svg(size, <><circle cx="12" cy="12
 export const IconSun = ({ size = 24 }: P) => svg(size, <><circle cx="12" cy="12" r="4" /><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" /></>);
 export const IconMoon = ({ size = 24 }: P) => svg(size, <path d="M19.5 14.5A7.5 7.5 0 0 1 9.5 4.5a7.5 7.5 0 1 0 10 10z" />);
 export const IconAuto = ({ size = 24 }: P) => svg(size, <><circle cx="12" cy="12" r="8" /><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none" /></>);
+/** Odaya katıl (ANA-MENU-SADELESTIR): açık kapı çerçevesine giren ok (Karakterlerim'in kişi simgesinden ayrı). */
+export const IconDoorEnter = ({ size = 24 }: P) => svg(size, <><path d="M13 3.5h6.5v17H13" /><path d="M3.5 12h11" /><path d="M11 8.2l3.8 3.8-3.8 3.8" /></>);
 /** Dungeondex: açık kitap. */
 export const IconBook = ({ size = 24 }: P) => svg(size, <><path d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5z" /><path d="M12 6.5v13" /></>);
 export const IconSound = ({ size = 24 }: P) => svg(size, <><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" /><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" /></>);

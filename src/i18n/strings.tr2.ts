@@ -34,6 +34,7 @@ export const TR_EXTRA = {
     backup: 'Keşif Defteri yedeği',
     /** Görsel envanter: geliştirici aracı (#galeri). */
     dev: 'Geliştirici', gallery: 'Görsel galerisi', galleryHelp: 'Efekt, jeton ve ikonların envanteri; eksikler kırmızı çerçeveli.', galleryOpen: 'Aç',
+    seruvenMenu: 'Serüven ana menüde', seruvenMenuHelp: 'Ana menüde Serüven kartını gösterir (test ve geliştirme). Kayıtlar ve Serüven ekranı her iki durumda da yerinde kalır.',
   },
   /** Görsel envanter galerisi (#galeri; geliştirici aracı, tembel parça `src/ui/galeri/`). */
   galeri: {
@@ -197,13 +198,14 @@ export const TR_EXTRA = {
     hpLog: { hurt: 'yaralandı', down: 'düştü', healed: 'iyileşti', status: (b: string): string => `durumu: ${b}`, percent: (n: number): string => `kalan can %${n}`, buff: 'canı arttı' },
     locked: 'Bu savaş için kilitli', lockedHelp: 'Savaş sürerken oda ayarları değişmez. Savaş bitince açılır.', unlock: 'Yeni savaş için aç', backToBattle: 'Savaşa dön',
     unlockWarn: 'Kayıtlı savaş yeni savaşla yer değiştirir.',
-    partyHelp: 'Odaya katılan karakterler. Oyuncular Odaya katıl ekranından kendi karakterini seçer.',
+    partyHelp: 'Odaya katılan karakterler. Oyuncular Odaya katıl ekranından kendi karakterini seçer; tek cihazda buradan da işaretleyebilirsin.',
+    quickResume: 'Kayıtlı savaşa devam et', quickResumeHelp: 'Bir odaya bağlı olmayan kayıtlı savaş (eski Hızlı savaş).',
     partyEmpty: 'Henüz kimse katılmadı.', addChar: 'Ekle', removeChar: 'Çıkar',
     gmDiceNote: 'Zar modu ve yapay zekâ zorluğu bu odanın her savaşında kullanılır.',
     startLocked: 'Savaş sürerken yeni savaş kurulamaz. Önce "Yeni savaş için aç".',
     joinPick: 'Odanı seç', joinChars: 'Karakterini seç', joinReady: 'Hazır', joinLeave: 'Ayrıl', joinAdd: 'Katıl',
     joinBuild: 'Karakter oluştur', joinBuildHelp: 'Odanın kuralları oluşturucuda geçerli olur.',
-    joinNoChars: 'Kayıtlı karakter yok. Önce Oyuncu ekranından bir karakter oluştur.',
+    joinNoChars: 'Kayıtlı karakter yok. Önce Karakterlerim ekranından bir karakter oluştur.',
     joinFull: (max: number): string => `Parti dolu (${max}).`, joinCount: (n: number, max: number): string => `Hazır: ${n}/${max}`,
     joinRules: 'Oda kuralları (yalnız okunur)', joinWait: 'Savaşı Game Master kurar.',
     ruleOn: 'açık', ruleOff: 'kapalı', back: 'Odalar',

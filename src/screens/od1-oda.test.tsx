@@ -149,9 +149,12 @@ describe('OD1 ekranlar', () => {
     for (const s of ['Oda kuralları (yalnız okunur)', 'Alignment', 'açık', 'Karakterini seç', 'Hazır', 'Ayrıl', 'Katıl']) expect(html).toContain(s);
     expect(html).not.toContain('role="radiogroup"'); // oyuncu kural değiştiremez
   });
-  it('Ana menü: Oda kur, Odaya katıl, Hızlı savaş', () => {
+  // ANA-MENU-SADELESTIR: Hızlı savaş kartı kalktı (Oda kur girişsiz, tek cihazda kapsıyor).
+  it('Ana menü: Oda kur, Odaya katıl; Hızlı savaş kartı yok', () => {
     const html = renderToStaticMarkup(<Home onPlayer={() => {}} onGm={() => {}} onRoomCreate={() => {}} onRoomJoin={() => {}} />);
-    for (const s of ['Oda kur', 'Odaya katıl', 'Hızlı savaş']) expect(html).toContain(s);
+    for (const s of ['Oda kur', 'Odaya katıl']) expect(html).toContain(s);
+    expect(html).not.toContain('Hızlı savaş');
+    expect(html).not.toContain('home-quick');
     expect(html).not.toContain('>Game Master</strong>');
   });
   it('Ana menü: yalnız Hızlı savaş yolu (eski çağrı) Oda kur kartı olarak onGm', () => {
@@ -162,7 +165,7 @@ describe('OD1 ekranlar', () => {
     const { setLang } = await import('../i18n');
     await setLang('en');
     expect(t().oda.createTitle).toBe('Create room');
-    expect(t().home.quick).toBe('Quick battle');
+    expect(t().home.player).toBe('My Characters'); // ANA-MENU-SADELESTIR: home.quick kalktı
     await setLang('tr');
   });
   it('varsayılan ayar fabrikası', () => {

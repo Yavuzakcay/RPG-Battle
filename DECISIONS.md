@@ -2,6 +2,35 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## ANA-MENU-SADELESTIR: ana menü sadeleşti (2026-11-22, kullanıcı kararı; yalnız arayüz, kural/kayıt sürümü değişmedi)
+
+- **Hızlı savaş kartı kalktı.** İnceleme (kod değişmeden önce):
+
+  | Konu | Hızlı savaş | Oda kur |
+  |---|---|---|
+  | Giriş/hesap | yok | yok (oda yerel, `kod` boş; çevrimiçi aşama yok) |
+  | Partiye karakter koyma | ilk 4 hazır karakter kendiliğinden, işaretle değiştir | Game Master aynı listeden işaretler (`joinRoom`); oluşturucu ikisinde de yok |
+  | Kalıcılık | ayarlar ekran durumunda, kalıcı değil | oda `rpg-battle-oda`'da kalıcı; savaş sürerken kilitli |
+  | Savaş kaydı | ortak `SAVE_KEY` | ortak `SAVE_KEY` (odaya bağ yalnız odanın `kilit`inde) |
+  | Kendine özgü | `gm` rotası, başlık `oda.quickTitle`, çıkışta `gm` | — |
+
+  Oda kur Hızlı savaşın yaptığı her şeyi kapsıyor (tek fark: oda adı için bir dokunuş ve partinin elle işaretlenmesi), kart menüden çıktı.
+  `gm` rotası, `onGm` prop'u, `oda.quickTitle`, kayıt anahtarı ve savaş çıkışı aynı kaldı. Odasız kayıtlı savaş (eski Hızlı savaş kaydı) ana
+  menüdeki "Kayıtlı savaşa devam et" kartından ve ayrıca Oda kur listesinden açılır (`OdaKur` `onResumeUnbound`: kayıt var ve hiçbir oda
+  kilitli değilse). Oda kur açıklaması tek cihazda hemen savaşı da anlatır; `home.quick`/`quickDesc` silindi.
+- **"Oyuncu" → "Karakterlerim"** (EN "My Characters"); Game Master kurulumundaki "ana ekrandan Oyuncu ile…" ve Odaya katıl'daki "Oyuncu
+  ekranından" metinleri aynı ada çevrildi. Oyuncu rolünü anlatan metinler değişmedi.
+- **Odaya katıl** kendi simgesini aldı (`IconDoorEnter`: kapı çerçevesine giren ok). Karakter seçimi zaten var (OdaKatil: oda seç →
+  geçerli karakterler listesi, Katıl/Ayrıl, parti dolu uyarısı, "Karakter oluştur" odanın kurallarıyla); eksik karakter (`characterProblems`)
+  listede görünmez (mevcut davranış, değişmedi).
+- **Serüven ana menüde gizli:** `src/app/features.ts` `seruvenMenuEnabled` (cihaz bayrağı `rpg-battle-deneysel.seruvenMenu`, varsayılan
+  kapalı; oda örtüsü etkilemez), Ayarlar ▸ Gelişmiş ▸ Geliştirici'de "Serüven ana menüde". Yalnız kart gizlenir; Serüven ekranı, kıta,
+  Dünya haritası, yerleşimler, Hapishane, `#dugum`, `#dunya`, kayıtlar ve testler yerinde (ileride ayrı oyun olacak). Denetim `Home`'da
+  (App `onSeruven`'i hep verir), test edilebilir olsun diye.
+- **Sol açıklama kutusu kalktı** (`home.intro` TR/EN ve `.intro` CSS'i silindi); logo ve ad kalır, masaüstünde blok dikey ortada.
+  Sürüm/SRD satırı kalır.
+- Ana parça ≈+0,2 kB (ikon ve bayrak); testler `src/screens/anaMenu.test.tsx`.
+
 ## Hafif doğrulama modu: görev sonunda tam `npm test` yok (2026-11-22, kullanıcı kararı)
 
 - Her görevde yalnız `npm run typecheck`, o görevin dokunduğu dosyalarla ilgili testler, `npm run build`, `npm run check:harita` ve

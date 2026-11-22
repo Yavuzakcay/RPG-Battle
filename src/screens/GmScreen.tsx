@@ -259,7 +259,7 @@ export function GmScreen(props: {
           <p className={`mute party-limit${partyFull ? ' full' : ''}`}>{G.partyLimit(MAX_PARTY, partyFull)}</p>
           <div className="chips">
             {ready.map((c) => (
-              <label key={c.id} className={`chip${party.includes(c.id) ? ' on' : ''}${partyFull && !party.includes(c.id) ? ' off' : ''}`}>
+              <label key={c.id} data-testid="party-chip" className={`chip${party.includes(c.id) ? ' on' : ''}${partyFull && !party.includes(c.id) ? ' off' : ''}`}>
                 <input type="checkbox" checked={party.includes(c.id)} disabled={partyFull && !party.includes(c.id)}
                   onChange={(e: { target: { checked: boolean } }) => (room
                     ? rm((o) => (e.target.checked ? joinRoom(o, c.id) : leaveRoom(o, c.id)))

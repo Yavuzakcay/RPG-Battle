@@ -20,6 +20,7 @@ import { SoundPanel } from '../ui/SoundPanel';
 import { useEffectsSetting, useSpriteAnimSetting } from '../ui/effectsSetting';
 import { Fold, OnOffRow, SegRow } from '../ui/settings/SegRow';
 import { DiceAllOpenToggle } from '../ui/DiceThemePicker';
+import { seruvenMenuEnabled, setSeruvenMenuEnabled } from '../app/features';
 import { type ContentError } from '../content/schema';
 import { applyStoredContent, folderSupported, importTexts, readFiles, readFolder, type ImportResult, type PackRow } from '../content/store';
 
@@ -37,6 +38,7 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
   const [rows, setRows] = useState<PackRow[]>(() => applyStoredContent());
   const [results, setResults] = useState<ImportResult[]>([]);
   const [video, setVideo] = useState<boolean>(storedEndVideo);
+  const [seruvenMenu, setSeruvenMenu] = useState<boolean>(seruvenMenuEnabled);
   const [tint, setTint] = useState<boolean>(storedMapTint);
   const [city, setCity] = useState<boolean>(storedCityView);
   const [glyphs, setGlyphs] = useState<boolean>(storedGlyphs);
@@ -128,6 +130,8 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
             <div className="set-text"><strong>{U.gallery}</strong><p className="mute">{U.galleryHelp}</p></div>
             <div className="set-seg"><button type="button" className="ghost" onClick={() => { window.location.hash = '#galeri'; }}>{U.galleryOpen}</button></div>
           </div>
+          {/* ANA-MENU-SADELESTIR: Serüven ana menüde varsayılan gizli; test ve geliştirme için buradan açılır. */}
+          <OnOffRow label={U.seruvenMenu} help={U.seruvenMenuHelp} value={seruvenMenu} on={U.on} off={U.off} onChange={(on) => { setSeruvenMenuEnabled(on); setSeruvenMenu(on); }} />
         </Fold>
       </main>
     </div>

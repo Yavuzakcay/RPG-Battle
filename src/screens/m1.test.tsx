@@ -1,6 +1,6 @@
 /**
  * Görev M1: ana menü. Kayıtlı savaş varken "devam et" kartı ve kayıt özeti, yokken kart yok; başlık APP_NAME'den,
- * işlevler (Oyuncu, Game Master, Durum, Ayarlar, dil) aynen; simgeler SVG (emoji yok); sürüm package.json'dan.
+ * işlevler (Karakterlerim, Game Master, Durum, Ayarlar, dil) aynen; simgeler SVG (emoji yok); sürüm package.json'dan.
  */
 import { afterEach, describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -21,11 +21,12 @@ afterEach(() => { mem.clear(); });
 
 describe('ana menü', () => {
   // Kuyruk 18 H10: giriş ekranındaki Durum düğmesi kaldırıldı.
-  it('kayıtlı savaş yok: devam kartı yok; Oyuncu, Game Master, Ayarlar ve dil anahtarı var, Durum yok', () => {
+  it('kayıtlı savaş yok: devam kartı yok; Karakterlerim, Game Master, Ayarlar ve dil anahtarı var, Durum yok', () => {
     const html = renderToStaticMarkup(<Home onPlayer={() => {}} onGm={() => {}} onStatus={() => {}} onSettings={() => {}} />);
     expect(html).not.toContain('home-card resume');
     expect(html).not.toContain('Kayıtlı savaşa devam et');
-    for (const s of ['Oyuncu', 'Game Master', 'Ayarlar', 'role="radiogroup"', 'home2-panel']) expect(html).toContain(s);
+    // ANA-MENU-SADELESTIR: "Oyuncu" kartının adı "Karakterlerim".
+    for (const s of ['Karakterlerim', 'Game Master', 'Ayarlar', 'role="radiogroup"', 'home2-panel']) expect(html).toContain(s);
     expect(html).not.toContain('>Durum<');
     expect((html.match(/class="role home-card/g) ?? []).length).toBe(2);
     expect(html).toContain(`Sürüm ${pkg.version.split('.').slice(0, 2).join('.')} · SRD 5.2.1`);

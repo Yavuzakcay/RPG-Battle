@@ -260,6 +260,13 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
             const r = loadBattle();
             if (r.ok) { setResumeError(null); setScreen({ name: 'battle', session: r.session, restored: true, oda, hp: r.hp }); } else setResumeError(r.error);
           });
+        }}
+        onResumeUnbound={() => {
+          // ANA-MENU-SADELESTIR: Hızlı savaş kartı kalktı; odasız kayıtlı savaş Oda kur'dan da açılır (çıkış eskisi gibi kurulum ekranına).
+          void import('./app/battleSave').then(({ loadBattle }) => {
+            const r = loadBattle();
+            if (r.ok) { setResumeError(null); setScreen({ name: 'battle', session: r.session, restored: true, hp: r.hp }); } else setResumeError(r.error);
+          });
         }} />;
     case 'katil':
       return <OdaKatil characters={characters} onBack={home} roomId={screen.roomId}

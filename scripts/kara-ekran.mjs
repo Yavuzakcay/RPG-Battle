@@ -71,10 +71,17 @@ export async function pickMap(page, id) {
   await page.click(`[data-map="${id}"]`);
 }
 
-/** KH1: OD1'den beri ana menüde Game Master girişi yok; girişsiz tek cihaz yolu "Hızlı savaş" (eski `button.role >> nth=1` artık "Oda kur"). */
+/**
+ * KH1: OD1'den beri ana menüde Game Master girişi yok. ANA-MENU-SADELESTIR: "Hızlı savaş" kartı da kalktı; girişsiz tek cihaz yolu
+ * Oda kur: yeni oda (her sayfa yeni bağlam, depo boş) → kurulum, partiye ilk dört hazır karakter işaretlenir (eski Hızlı savaşın varsayılanı).
+ */
 async function openQuick(page) {
-  await page.click('[data-testid="home-quick"]');
+  await page.click('[data-testid="home-room-create"]');
+  await page.click('[data-testid="oda-create"]');
   await page.waitForSelector('[data-testid="map-region"]');
+  const chips = page.locator('[data-testid="party-chip"] input');
+  const n = Math.min(4, await chips.count());
+  for (let i = 0; i < n; i++) await chips.nth(i).check();
 }
 
 /** Kuyruk 19 (-2): her denetimde sayfa en çok bu kadar beklenir (ilk yükleme Windows'ta yavaş olabiliyor). */
