@@ -7764,6 +7764,17 @@
    "yerlesim": "eski",
    "cizgiSuz": true,
    "not": "KESIM-TEPE 2026-11-23: üst kontur/tepe geri (107 px; iou 0.9711)"
+  },
+  {
+   "jeton": "goliath-kadin-cleric-ID7",
+   "grup": "tepe",
+   "kesici": "sayfa",
+   "sayfa": "cleric-female-goliath.jpg",
+   "hucre": 7,
+   "duzen": "cleric",
+   "yerlesim": "eski",
+   "cizgiSuz": true,
+   "not": "KESIM-TEPE-SON 2026-11-23: sol kol/pelerin dikey kesik (tepe +3046, iou 0,86 büyük ekleme yüzünden); gözle kontrol edildi"
   }
  ],
  "kapsamDisi": [

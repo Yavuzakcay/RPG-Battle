@@ -15903,6 +15903,22 @@
     "dosya": "gariban-female-tiefling.jpg",
     "hucre": 12
    }
+  },
+  "goliath-kadin-cleric-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-female-goliath.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı",
+     "not": "KESIM-TEPE 2026-11-23 (eski)"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "cleric-female-goliath.jpg",
+    "hucre": 7
+   }
   }
  }
 }

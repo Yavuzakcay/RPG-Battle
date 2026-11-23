@@ -5387,6 +5387,28 @@
      18
     ]
    ]
+  },
+  "dwarf-erkek-paladin-ID10": {
+   "neden": "ten4",
+   "include": [
+    [
+     100,
+     50,
+     162,
+     92
+    ]
+   ],
+   "not": "KESIM-TEPE-SON 2026-11-23: Hızır; göz çevresi ve yanak kenarındaki pembe/kırmızı ten maskede değildi (boyalı yüzde kırmızı kenar): yüz kutusu include, ton aralığı 340–85 (kırmızı yüz kenarı ton 0–25)",
+   "h": [
+    [
+     340,
+     360
+    ],
+    [
+     0,
+     85
+    ]
+   ]
   }
  },
  "ayri": [
