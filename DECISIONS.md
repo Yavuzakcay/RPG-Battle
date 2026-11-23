@@ -19,6 +19,11 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   doğru (yüz ve eller boyalı; denetim ölçüsü yanlış pozitif): değiştirilmedi. Bırakılan (hafif): Druid ID8 kadın, Paladin ID2 e/k,
   Warlock WL-8 kadın. `soy-maske-ice` uyarıları (otomatik maskeyle IoU < 0,3; Paladin ID8 beyaz oranı < %2) beklenen: eski otomatik
   maske yanlış yerdeydi; Paladin ID8'de görünür ten zaten küçük.
+- **B. Maskesiz 9 jeton (yedek filtre kalktı):** yüzü görünen elle maske: Monk ID10 e/k (Solgun Gezgin: gri-mavi yüz, kulak, eller;
+  sargılar ve palto dışarıda), `elf-erkek-sorcerer-SC-9` (soluk yüz, kulak, eller; göz akı hariç). Bilerek boş maske (`bos: true`,
+  Human ID3/SC-5/WL-10 gibi; boyanacak ten yok, jeton kendi renginde): Paladin ID3 e/k (kapalı miğferli tam zırh), Sorcerer SC-5 e/k
+  (gölge varlığı), Warlock WL-10 e/k (hayalet). Boş maske "maske var" sayılır (`tint.ts`): yedek CSS filtresi (bütün jetonu, ay ve
+  zinciri de renklendiriyordu) uygulanmaz.
 - **Kanıt:** `npx vite-node scripts/drow-maske-cizim.ts -- --etiket once|sonra <jetonlar>` (oyunun kendi çizimi: JETON-DENETIM sayfası,
   Dark Elf savaş jetonu ve boyalı rozet; `scripts/jeton-denetim-sayfa.tsx` hücrede `boyali` seçeneği) + `python scripts/drow-maske-sayfa.py
   <grup> <jetonlar>` → `gorsel-dokum/drow-maske-toplu/` (git dışı). Kontrol görselleri `docs/sabah/maske-kontrol/elf-*.png`.

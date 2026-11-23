@@ -163,6 +163,40 @@
       "bolgeler": [
         { "cokgen": [[130, 54], [176, 54], [180, 74], [176, 96], [164, 108], [144, 110], [132, 100], [126, 78]], "L": [18, 62], "C": [6, 30], "h": [[30, 90]] }
       ]
-    }
+    },
+    "elf-erkek-monk-ID10": {
+      "bolgeler": [
+        { "cokgen": [[118, 42], [168, 40], [172, 60], [170, 86], [160, 100], [144, 104], [128, 100], [118, 86], [115, 60]], "L": [45, 82], "C": [0, 14], "h": [[200, 300]] },
+        { "kutu": [90, 50, 119, 84], "L": [45, 82], "C": [0, 14], "h": [[200, 300]] },
+        { "kutu": [72, 148, 102, 194], "L": [50, 96], "C": [0, 14] },
+        { "kutu": [168, 152, 192, 190], "L": [50, 96], "C": [0, 14] }
+      ]
+    },
+    "elf-kadin-monk-ID10": {
+      "bolgeler": [
+        { "cokgen": [[120, 56], [168, 54], [172, 72], [170, 92], [160, 104], [144, 108], [128, 104], [120, 92], [118, 72]], "L": [45, 82], "C": [0, 14], "h": [[200, 300]] },
+        { "kutu": [84, 46, 114, 82], "L": [45, 82], "C": [0, 14], "h": [[200, 300]] },
+        { "kutu": [70, 156, 100, 196], "L": [50, 96], "C": [0, 14] },
+        { "kutu": [168, 158, 190, 194], "L": [50, 96], "C": [0, 14] }
+      ]
+    },
+    "elf-erkek-sorcerer-SC-9": {
+      "bolgeler": [
+        { "cokgen": [[124, 76], [176, 76], [178, 96], [172, 110], [160, 120], [142, 124], [130, 118], [124, 104], [122, 90]], "L": [40, 94], "C": [0, 17] },
+        { "kutu": [93, 66, 119, 93], "L": [50, 94], "C": [0, 17] },
+        { "kutu": [88, 174, 120, 216], "L": [40, 94], "C": [0, 16] },
+        { "kutu": [190, 150, 222, 180], "L": [40, 94], "C": [0, 16] }
+      ],
+      "haric": [
+        { "kutu": [127, 83, 145, 101], "not": "sol göz akı" },
+        { "kutu": [160, 83, 175, 101], "not": "sağ göz akı" }
+      ]
+    },
+    "elf-erkek-paladin-ID3": { "bos": true, "neden": "kapalı miğferli tam zırh; çıplak ten yok" },
+    "elf-kadin-paladin-ID3": { "bos": true, "neden": "kapalı miğferli tam zırh; çıplak ten yok" },
+    "elf-erkek-sorcerer-SC-5": { "bos": true, "neden": "gölge varlığı; ten yok" },
+    "elf-kadin-sorcerer-SC-5": { "bos": true, "neden": "gölge varlığı; ten yok" },
+    "elf-erkek-warlock-WL-10": { "bos": true, "neden": "hayalet: yüz, saç ve cüppe aynı tayfsal renk; ten yok" },
+    "elf-kadin-warlock-WL-10": { "bos": true, "neden": "hayalet: yüz, saç ve cüppe aynı tayfsal renk; ten yok" }
   }
 }

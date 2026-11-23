@@ -405,6 +405,153 @@
     "otomatik maskeyle IoU 0.00 (< 0.3): büyük olasılıkla hizasız"
    ],
    "sha1": "2062d09ee9e1409281afe3d4897097a375608b09"
+  },
+  "elf-erkek-monk-ID10": {
+   "kaynak": "assets/soy-maske-ham/elf-erkek-monk-ID10.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0.079,
+    "spill": 0,
+    "removed": 20,
+    "filled": 1
+   },
+   "uyarilar": [],
+   "sha1": "1a92d5986e1bcdcf66f28ce143a9d9205949eca4"
+  },
+  "elf-erkek-paladin-ID3": {
+   "kaynak": "assets/soy-maske-ham/elf-erkek-paladin-ID3.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
+   ],
+   "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
+  },
+  "elf-erkek-sorcerer-SC-5": {
+   "kaynak": "assets/soy-maske-ham/elf-erkek-sorcerer-SC-5.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
+   ],
+   "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
+  },
+  "elf-erkek-sorcerer-SC-9": {
+   "kaynak": "assets/soy-maske-ham/elf-erkek-sorcerer-SC-9.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0.06,
+    "spill": 0,
+    "removed": 17,
+    "filled": 15
+   },
+   "uyarilar": [],
+   "sha1": "21b0976aefec414d775aa6e6eb692576cf97bdfb"
+  },
+  "elf-erkek-warlock-WL-10": {
+   "kaynak": "assets/soy-maske-ham/elf-erkek-warlock-WL-10.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
+   ],
+   "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
+  },
+  "elf-kadin-monk-ID10": {
+   "kaynak": "assets/soy-maske-ham/elf-kadin-monk-ID10.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0.072,
+    "spill": 0,
+    "removed": 21,
+    "filled": 4
+   },
+   "uyarilar": [],
+   "sha1": "dd0ddf81afc72d83388a9d8fb29acbab3f68eb3b"
+  },
+  "elf-kadin-paladin-ID3": {
+   "kaynak": "assets/soy-maske-ham/elf-kadin-paladin-ID3.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
+   ],
+   "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
+  },
+  "elf-kadin-sorcerer-SC-5": {
+   "kaynak": "assets/soy-maske-ham/elf-kadin-sorcerer-SC-5.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
+   ],
+   "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
+  },
+  "elf-kadin-warlock-WL-10": {
+   "kaynak": "assets/soy-maske-ham/elf-kadin-warlock-WL-10.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
+   ],
+   "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
   }
  },
  "atlanan": []
