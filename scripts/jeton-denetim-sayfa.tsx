@@ -76,7 +76,8 @@ async function tint(src: string, t: TintSpec, look: LookSheet | undefined) {
 }
 
 /* ---------- Izgara çizimi (sürücü ekran görüntüsü alır) ---------- */
-export interface Cell { key: string; view: 'jeton' | 'jeton-kanat' | 'rozet'; avatar: Avatar; href?: string; fb?: string }
+/** `boyali`: rozet oyundaki gibi soy boyasıyla (DROW-MASKE-TOPLU önce/sonra); yoksa kırpma ölçüsü için boyasız. */
+export interface Cell { key: string; view: 'jeton' | 'jeton-kanat' | 'rozet'; avatar: Avatar; href?: string; fb?: string; boyali?: boolean }
 /** Savaş jetonu hücresinin boyalı adresi ve yedek filtresi (oyundaki `useTinted` + `tintFallbackOf` ile aynı karar). */
 async function resolveCell(c: Cell): Promise<Cell> {
   if (c.view === 'rozet' || !c.avatar.tint) return c;
@@ -91,7 +92,7 @@ function Grid(p: { cells: Cell[]; cols: number }) {
       {p.cells.map((c, i) => {
         const w = cellW(p.cells), x = (i % p.cols) * w, y = Math.floor(i / p.cols) * w;
         if (c.view === 'rozet') {
-          const av = { ...c.avatar, bg: 'transparent' } as Avatar; delete (av as { tint?: unknown }).tint;
+          const av = { ...c.avatar, bg: 'transparent' } as Avatar; if (!c.boyali) delete (av as { tint?: unknown }).tint;
           const node = <AvatarBadge avatar={av} size={ROZ} ring="transparent" eager />;
           return <div key={c.key} data-k={c.key} style={{ position: 'absolute', left: x + PADR, top: y + PADR, width: ROZ, height: ROZ }}>
             {av.look ? <LookFrame sheet={av.look} size={ROZ} ability>{node}</LookFrame> : node}</div>;
