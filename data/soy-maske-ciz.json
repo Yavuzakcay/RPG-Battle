@@ -197,6 +197,17 @@
     "elf-erkek-sorcerer-SC-5": { "bos": true, "neden": "gölge varlığı; ten yok" },
     "elf-kadin-sorcerer-SC-5": { "bos": true, "neden": "gölge varlığı; ten yok" },
     "elf-erkek-warlock-WL-10": { "bos": true, "neden": "hayalet: yüz, saç ve cüppe aynı tayfsal renk; ten yok" },
-    "elf-kadin-warlock-WL-10": { "bos": true, "neden": "hayalet: yüz, saç ve cüppe aynı tayfsal renk; ten yok" }
+    "elf-kadin-warlock-WL-10": { "bos": true, "neden": "hayalet: yüz, saç ve cüppe aynı tayfsal renk; ten yok" },
+    "elf-kadin-warlock-WL-4": {
+      "bolgeler": [
+        { "kutu": [110, 42, 172, 110], "L": [30, 76], "C": [0, 13] },
+        { "kutu": [60, 44, 106, 84], "L": [30, 76], "C": [0, 13] },
+        { "kutu": [176, 48, 192, 78], "L": [30, 76], "C": [0, 13] },
+        { "kutu": [46, 150, 90, 204], "L": [28, 74], "C": [0, 13] },
+        { "kutu": [172, 150, 204, 186], "L": [24, 70], "C": [0, 13] },
+        { "kutu": [76, 212, 104, 248], "L": [28, 74], "C": [0, 13] },
+        { "kutu": [140, 212, 170, 248], "L": [28, 74], "C": [0, 13] }
+      ]
+    }
   }
 }

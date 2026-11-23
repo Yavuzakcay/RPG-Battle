@@ -24,6 +24,11 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   Human ID3/SC-5/WL-10 gibi; boyanacak ten yok, jeton kendi renginde): Paladin ID3 e/k (kapalı miğferli tam zırh), Sorcerer SC-5 e/k
   (gölge varlığı), Warlock WL-10 e/k (hayalet). Boş maske "maske var" sayılır (`tint.ts`): yedek CSS filtresi (bütün jetonu, ay ve
   zinciri de renklendiriyordu) uygulanmaz.
+- **C. Kesimi yenilenip maskesi eski kalanlar (11):** `npm run soy-maske -- elf --alt` (yalnız elf; öteki bütün elf maskeleri bit bit
+  aynı çıktı). Tutulan: Barbarian ID3, Fighter GR e/k, Monk GR, Paladin GR, Warlock WL-1/2/6 erkek, WL-2/6 kadın, WL-4 kadın
+  (`data/soy-maske-alt-rapor.json` sayıları güncel). `elf-kadin-druid-ID7` gerekmediği için eski maske ve rapor değeri geri konuldu.
+  Fighter GR'lerde eller eldivenli: bilekte boyanacak ten yok (doğru). `elf-kadin-warlock-WL-4` yenilenince de otomatik maske saçı
+  boyuyordu, gri ölü yüz boyasızdı: erkek WL-4 gibi elle maske (yüz, kulak, el, bacak; saç ve cüppe dışarıda).
 - **Kanıt:** `npx vite-node scripts/drow-maske-cizim.ts -- --etiket once|sonra <jetonlar>` (oyunun kendi çizimi: JETON-DENETIM sayfası,
   Dark Elf savaş jetonu ve boyalı rozet; `scripts/jeton-denetim-sayfa.tsx` hücrede `boyali` seçeneği) + `python scripts/drow-maske-sayfa.py
   <grup> <jetonlar>` → `gorsel-dokum/drow-maske-toplu/` (git dışı). Kontrol görselleri `docs/sabah/maske-kontrol/elf-*.png`.

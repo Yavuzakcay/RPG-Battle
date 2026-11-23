@@ -552,6 +552,23 @@
     "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
    ],
    "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
+  },
+  "elf-kadin-warlock-WL-4": {
+   "kaynak": "assets/soy-maske-ham/elf-kadin-warlock-WL-4.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0,
+    "white": 0.146,
+    "spill": 0,
+    "removed": 40,
+    "filled": 13
+   },
+   "uyarilar": [
+    "otomatik maskeyle IoU 0.00 (< 0.3): büyük olasılıkla hizasız"
+   ],
+   "sha1": "b1103d1b60e4cd3762a216d2ba8c018217d1b051"
   }
  },
  "atlanan": []
