@@ -233,7 +233,10 @@ describe('görünüm verisi', () => {
     const sp = (gorunum.celestialUyanis as Record<string, { sepya?: Sepya }>)['kirik-kanat']!.sepya!;
     const kk = at('kirik-kanat', 5, true);
     expect(kk.filter).toBe(sp.acik ? sepyaFilter(sp) : '');
-    if (sp.acik) { expect(kk.filter).toMatch(/^grayscale\(1\) sepia\(/); expect(kk.wing?.filtre).toContain(kk.filter); expect(kk.wing?.palet).toBeUndefined(); }
+    if (sp.acik) expect(kk.filter).toMatch(/^grayscale\(1\) sepia\(/);
+    // CELESTIAL-KIRIK-KANAT-YENI: `kanat: false` → kanat kendi renginde (filtre yok); aksi halde kanada da aynı sepya.
+    if (sp.acik && sp.kanat === false) expect(kk.wing?.filtre ?? '').not.toContain('sepia');
+    else if (sp.acik) { expect(kk.wing?.filtre).toContain(kk.filter); expect(kk.wing?.palet).toBeUndefined(); }
     expect(sepyaFilter({ ...sp, acik: false })).toBe('');
     expect(at('parlayan-ruh').filter).toBe('');
     expect(at('gece-gozyasi').filter).not.toContain('sepia');

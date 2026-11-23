@@ -44,8 +44,11 @@ const D = data as unknown as {
   ten: { varsayilan: string; filtreUygula: boolean; tonlar: SkinTone[]; kulturTen: Record<string, string[]>;
     surgun: { kultur: string; secenekler: string[]; ad: Record<string, { tr: string; en: string }> } };
 };
-/** CELESTIAL-KIRIK-KANAT-SEPYA: uyanışın sepya tonu (veride `celestialUyanis.<uyanış>.sepya`); `acik: false` kapatır. */
-export interface Sepya { acik: boolean; gri: number; sepya: number; doygunluk: number; parlaklik: number; ton: number }
+/**
+ * CELESTIAL-KIRIK-KANAT-SEPYA: uyanışın sepya tonu (veride `celestialUyanis.<uyanış>.sepya`); `acik: false` kapatır.
+ * CELESTIAL-KIRIK-KANAT-YENI: `kanat: false` yalnız gövdeye (kanat katmanı kendi renginde); alan yoksa kanada da.
+ */
+export interface Sepya { acik: boolean; gri: number; sepya: number; doygunluk: number; parlaklik: number; ton: number; kanat?: boolean }
 /** Sepya ayarı → CSS filtresi (jeton gövdesi ve kanat katmanı aynı dizgeyi alır; `url(#…)` değil: WingFilterHost/Firefox kimlik tuzağı yok). */
 export const sepyaFilter = (s: Sepya | undefined): string =>
   s?.acik ? `grayscale(${s.gri}) sepia(${s.sepya}) saturate(${s.doygunluk}) brightness(${s.parlaklik})${s.ton ? ` hue-rotate(${s.ton}deg)` : ''}` : '';
@@ -217,6 +220,7 @@ export function lineageLook(sheet: LookSheet, opts: { flying?: boolean; ability?
   let scaleX = 1, scaleY = 1, hideHalo = false;
   let wingId: string | undefined;
   let tone = '';
+  let wingTone = true;
   const level = sheet.level ?? 1;
   if (sheet.raceId === 'celestial') {
     const aw = D.celestialUyanis[sheet.celestialAwakening ?? AWAKENING_DEFAULT];
@@ -225,6 +229,7 @@ export function lineageLook(sheet: LookSheet, opts: { flying?: boolean; ability?
       if (aw.filtre) filters.push(aw.filtre);
       tone = sepyaFilter(aw.sepya);
       if (tone) filters.push(tone);
+      wingTone = aw.sepya?.kanat !== false;
       wingId = aw.kanat;
     }
   } else {
@@ -237,8 +242,8 @@ export function lineageLook(sheet: LookSheet, opts: { flying?: boolean; ability?
   wingId = subclassWingId(sheet) ?? wingId;
   if (!wingId && sheet.raceId === 'dragonborn') wingId = 'dragonborn';
   const raw = wingId ? wingLayer(wingId, level, !!(opts.flying || opts.ability), sheet.lineageId) : null;
-  // Sepya kanada da aynı CSS filtresiyle (kanat ayrıca renk almaz: palet/katman yerine sepya; Kırık Kanat'ın paleti yok).
-  const wing = raw && tone ? (({ palet: _p, katmanlar: _k, ...w }) => ({ ...w, filtre: [w.filtre, tone].filter(Boolean).join(' ') }))(raw) : raw;
+  // Sepya kanada da aynı CSS filtresiyle (kanat ayrıca renk almaz: palet/katman yerine sepya), veride `kanat: false` değilse.
+  const wing = raw && tone && wingTone ? (({ palet: _p, katmanlar: _k, ...w }) => ({ ...w, filtre: [w.filtre, tone].filter(Boolean).join(' ') }))(raw) : raw;
   return { filter: filters.join(' '), scaleX, scaleY, wing, hideHalo };
 }
 

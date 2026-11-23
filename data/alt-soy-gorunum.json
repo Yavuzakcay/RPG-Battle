@@ -80,6 +80,8 @@
     "doygunluk": 1.1,
     "parlaklik": 1.0,
     "ton": 0,
+    "kanat": false,
+    "kanatNot": "CELESTIAL-KIRIK-KANAT-YENI (2026-11-23, kullanıcı): kanat: false → sepya filtresi yalnız karakter gövdesine; kanat katmanı kendi sepya renginde (filtresiz). true ya da alan yoksa kanada da uygulanır.",
     "not": "CELESTIAL-KIRIK-KANAT-SEPYA (2026-11-23, kullanıcı): jeton gövdesi ve kanat katmanı aynı CSS filtresiyle sepya: grayscale(gri) sepia(sepya) saturate(doygunluk) brightness(parlaklik) hue-rotate(ton deg). acik false: kapalı (eski görünüm)."
    }
   }

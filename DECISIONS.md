@@ -2,6 +2,18 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## CELESTIAL-KIRIK-KANAT-YENI: Kırık Kanat'ın yeni sepya kanadı (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
+
+- **Görsel:** `public/kanat/celestial-kirik-kanat.webp` (dosya adı ve veri bağı aynı; eskisi git geçmişinde) macenta zeminli
+  `assets-ham/kanat/celestial-kirik-kanat-yeni.jpg`'den `python -X utf8 scripts/celestial-kirik-kanat.py` ile: renk anahtarı
+  (min(R, B) − G), yırtık delikler de şeffaf, kenar despill'i en yakın temiz sepya pikselin rengiyle, 768×458 kayıpsız WebP.
+- **Yerleşim:** `data/kanat-esleme.json` `olcek` 1,45 → 1,15 (jeton karesinden daha az taşar), `capa` iki kanat kökünün ortası
+  [0,5428, 0,4437], `omuz` 0,46 aynı; kanat figürün arkasında.
+- **Renk:** kanat kendi sepyasında, filtre/palet yok. Kırık Kanat sepyası veride ayrıldı: `alt-soy-gorunum.json`
+  `celestialUyanis.kirik-kanat.sepya.kanat: false` → filtre yalnız gövdeye (`lineageLook`); alan yoksa ya da `true` ise kanada da.
+- **Karşılaştırma:** `docs/sabah/celestial-kirik-kanat-yeni/karsilastirma.png` (eski kanat + sepya ↔ yeni; `onizleme-kanat.html?m=kirik`).
+  Rozette kanat dairenin arkasında kalır (önceki gibi); küçülen kanat rozette yalnız kenarlardan görünür.
+
 ## KESIM-TEPE: 590 jetonun silinmiş tepe konturu geri kondu (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
 
 - **Kök neden:** KESIM-DUZELT (102538ec) öncesi `toplu-kesim.py` şerit silmesi figürün üst kenarındaki koyu konturu (saç/kapüşon/şapka
