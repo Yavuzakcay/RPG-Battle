@@ -360,7 +360,10 @@
     [49, 143, 84, 190],
     [59, 113, 84, 121]
    ],
-   "neden": "omuzluk, kolluk, dizlik, kemer ve çekiç başı; baş, çıplak göğüs, sağ kol ve el, kuyruk, ayak"
+   "ekle": [
+    [[138, 215], [171, 215], [171, 231], [183, 231], [183, 241], [138, 241]]
+   ],
+   "neden": "omuzluk, kolluk, dizlik, kemer ve çekiç başı; baş, çıplak göğüs, sağ kol ve el, kuyruk, ayaklar (ön ayak `ekle`: çekiç sapı ucu dışarıda)"
   },
   "dragonborn-kadin-barbarian-ID1": {
    "yalniz": [
