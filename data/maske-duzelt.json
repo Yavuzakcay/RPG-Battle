@@ -995,9 +995,65 @@
    "neden": "kesim:kismen"
   },
   "elf-kadin-warlock-WL-8": {
-   "neden": "denetim:supheli",
-   "bos": true,
-   "not": "hortlak: soluk ölü ten, elbise boyanıyordu"
+   "neden": "kalan:drow",
+   "not": "JETON-KALAN-TOPLU: ghoul (MASKE-EK WL-8 kararı, human-kadin-warlock-WL-8 ile aynı çizim): gri ölü ten; yüz, kulaklar ve eller boyanır, elbise ve saç dışarıda (eskiden bilerek boş: Drow'da kardeş WL-8'ler mor, bu soluk kalıyordu)",
+   "seed": [
+    90,
+    20,
+    105,
+    50
+   ],
+   "yalniz": [
+    [
+     72,
+     12,
+     142,
+     52
+    ],
+    [
+     68,
+     162,
+     96,
+     208
+    ],
+    [
+     162,
+     162,
+     190,
+     208
+    ]
+   ],
+   "h": [
+    [
+     0,
+     360
+    ]
+   ],
+   "C": [
+    0,
+    16
+   ],
+   "L": [
+    45,
+    98
+   ],
+   "th": 16,
+   "ton": 180,
+   "kroma": 0,
+   "include": [
+    [
+     74,
+     24,
+     90,
+     42
+    ],
+    [
+     124,
+     20,
+     142,
+     40
+    ]
+   ]
   },
   "gnome-erkek-barbarian-ID4": {
    "neden": "ten4",
@@ -8305,8 +8361,13 @@
    "px": 1391
   },
   "elf-kadin-warlock-WL-8": {
-   "bos": true,
-   "px": 0
+   "ref": [
+    75.2,
+    2.5,
+    3.9
+   ],
+   "tohum": 287,
+   "px": 777
   },
   "gnome-erkek-barbarian-GR": {
    "ref": [
