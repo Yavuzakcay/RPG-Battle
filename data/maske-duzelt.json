@@ -1932,15 +1932,7 @@
   },
   "human-erkek-fighter-GR": {
    "neden": "denetim:ten (eller maskesiz)",
-   "include": [
-    [
-     62,
-     171,
-     90,
-     196
-    ]
-   ],
-   "not": "sol el maskede (JETON-DENETIM 3); sağ yumruk kalkan ahşabıyla aynı renkte ve kalkana konturuyla bitişik: otomatik ayrılamadı (kutu boyası kalkanda dikdörtgen bıraktı), Gemini listesinde"
+   "not": "2026-11-23 (kullanıcı): eller eldiven (kemer/çizme tonunda), boyanmaz: maske yalnız yüz (eski otomatik maskenin yüzüyle aynı; MASKE-DUZELT sol el include kutusu kalktı). Oyun bu jetonda elle maskeyi kullanıyorsa (assets/soy-maske-el/) aynı yüz maskesi."
   },
   "human-erkek-fighter-ID10": {
    "neden": "denetim:supheli",
@@ -10602,7 +10594,7 @@
     27.1
    ],
    "tohum": 1975,
-   "px": 1904
+   "px": 1603
   },
   "human-erkek-fighter-ID10": {
    "ref": [

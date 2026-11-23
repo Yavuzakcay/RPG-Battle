@@ -3,12 +3,13 @@
  * Satır = soy (`data/soy-ten-renkleri.json`); ırk başına 3 temsilci jeton (çıplak kollu, düz kıyafetli, zırhlı; efektsiz). HEX kutusu ya da renk
  * seçici değişince jetonlar oyunun kendi boyama yoluyla (`hexTint` → `tintedUrl`: ten maskesi, çalışma anı onarımı, LCh; açıklık farkları
  * korunur) yeniden çizilir. "Boyasız (orijinal)" o soyu boyamaz. "Dışa aktar" `data/soy-ten-renkleri.json` içeriğini üretir (pano + indirme).
+ * Tek jeton denetimi: `?jeton=<ad>` (isteğe bağlı `&renk=#RRGGBB,#RRGGBB`; yoksa Human ten tonları) sayfanın başında o jetonu aynı yolla çizer.
  */
 import { createRoot } from 'react-dom/client';
 import { useEffect, useMemo, useState } from 'react';
 import '../styles.css';
 import { removeStaticSplash } from '../ui/splashBoot';
-import { hexTint } from '../ui/lineageLook';
+import { hexTint, SKIN_TONES } from '../ui/lineageLook';
 import { tintedUrl } from '../ui/tint';
 import { loadClassData, races } from '../data';
 import ten from '../../data/soy-ten-renkleri.json';
@@ -37,6 +38,21 @@ function Tok({ name, hex }: { name: string; hex: string | null }) {
   );
 }
 
+/** `?jeton=` denetimi: jeton orijinal + verilen renklerde (oyunun boyama yolu; elle maske varsa o). */
+function TekJeton({ name }: { name: string }) {
+  const q = new URLSearchParams(location.search).get('renk');
+  const renkler = q ? q.split(',').filter((h) => HEX.test(h)) : SKIN_TONES.map((t) => t.renk).filter((h): h is string => !!h);
+  return (
+    <section id="tek-jeton" style={{ marginBottom: 14 }}>
+      <h2 style={{ fontSize: 15, margin: '8px 0 4px' }}>{name}</h2>
+      <div style={{ display: 'flex', gap: 4 }}>
+        <div style={{ textAlign: 'center' }}><Tok name={name} hex={null} /><div>orijinal</div></div>
+        {renkler.map((h) => <div key={h} style={{ textAlign: 'center' }}><Tok name={name} hex={h} /><div>{h}</div></div>)}
+      </div>
+    </section>
+  );
+}
+
 function Page() {
   // Son geçerli renk soy başına (boyasız işaretlenip geri alınınca kaybolmasın).
   const [renk, setRenk] = useState<Record<string, string>>(() => Object.fromEntries(Object.entries(T.soylar).map(([k, v]) => [k, v ?? '#808080'])));
@@ -57,6 +73,7 @@ function Page() {
       <h1 style={{ fontSize: 18, margin: '0 0 4px' }}>Soy ten rengi (Orc, Goliath, Dwarf, Gnome)</h1>
       <p style={{ color: '#9aa3b2', margin: '0 0 8px', maxWidth: 1100 }}>Renk yalnız ten maskesine (yüz, boyun, kol, el, görünen bacak) uygulanır; kıyafet, zırh, silah, saç ve sakal aynen kalır.
         Açıklık hedef rengin açıklığına taşınır, gölge ve çizgi farkları korunur. Seçimi "Dışa aktar" ile <code>data/soy-ten-renkleri.json</code> olarak kaydet; oyun bu dosyadan çizer.</p>
+      {new URLSearchParams(location.search).get('jeton') && <TekJeton name={new URLSearchParams(location.search).get('jeton')!} />}
       {RACES.map((race) => (
         <section key={race} style={{ marginBottom: 14 }}>
           <h2 style={{ fontSize: 15, margin: '8px 0 4px', textTransform: 'capitalize' }}>{race}</h2>

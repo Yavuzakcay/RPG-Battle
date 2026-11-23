@@ -14,7 +14,7 @@ Yöntem (jeton başına, 256 px ham jeton):
      (yüzü olmayan çizim: maske dosyası yazılmaz, eski dosya silinir).
   5. Güvenlik: maske opak alanın %40'ını aşarsa yazılmaz (rapora "aşırı").
 
-Çalıştırma:  python scripts/maske-duzelt.py [--kuru] [ad ...]   (PYTHONUTF8=1)
+Çalıştırma:  python scripts/maske-duzelt.py [--kuru] [--el-de] [ad ...]   (PYTHONUTF8=1; --el-de: elle maskesi olanı da üret)
 TEN-MASKE-4-IRK: `irkTum` ırklarının (Orc, Goliath, Dwarf, Gnome) bütün jetonları: --irk <ırk> (ya da argümansız: liste + irkTum);
   --kontak <klasör> --irk <ırk> inceleme sayfaları; --gemini <klasör> [--irk a,b] Gemini sayfaları. Ayarlar harita/belgeler/TEN-MASKE-4-IRK.md.
 Çıktı: public/characters/maske/<ad>.png (iki renkli palet PNG, soy-maske.ts ile aynı biçim), data/maske-duzelt.json `sonuc` (piksel sayıları).
@@ -242,7 +242,8 @@ def main():
         cfg = jet.get(nm, {})
         race = nm.split('-')[0]
         if race not in races: print('atla (ırk kapsam dışı):', nm); continue
-        if os.path.exists(f'{PUB}/maske-el/{nm}.png'): print('atla (elle maske):', nm); continue
+        # `--el-de`: elle maskesi olan jetonu da üret (maske/ çıktısı; elle maskenin yerine konacaksa elle kopyalanır, betik maske-el'e yazmaz)
+        if os.path.exists(f'{PUB}/maske-el/{nm}.png') and '--el-de' not in sys.argv: print('atla (elle maske):', nm); continue
         m, info = make_mask(nm, cfg, races[race])
         im = np.asarray(Image.open(f'{PUB}/{nm}.webp').convert('RGBA')); opq = int((im[..., 3] >= 128).sum())
         n = int(m.sum())
