@@ -101,7 +101,12 @@ export function pickCulture(sheet: { lineageId?: string; exileCulture?: string; 
 /** Kuyruk AS1a-2: boyasız ORİJİNAL jetonla gelen alt soylar (`<ırk>/<alt soy>`; filtre/tint/maske yok, yalnız oran). */
 export const ORIGINAL_LINEAGES: string[] = D.orijinal;
 export const isOriginalLineage = (key: string): boolean => D.orijinal.includes(key);
-export type WingSlotData = { altSinif?: string; /** Kuyruk A İş 2: kendi çiziminde kanadı olan jetonlar (dosya adı, uzantısız); bu slotun kanadı çizilmez. */ kanatsiz?: string[]; ayna?: WingMirror; /** KW2: tek kanat görselinin üstüne çizilen katmanlar (dosya aynı klasörde, aynı boyutta). `zar.etkin: false` pembe karışımlı zar katmanını kapatır (karşılaştırma); pençe her zaman. */ katmanlar?: { zar?: { dosya: string; etkin?: boolean }; pence?: { dosya: string; palet: WingPalet } }; palet?: WingPalet; renkPaletleri?: Record<string, WingPalet & { zar?: WingPalet }>; esnet?: boolean; sprite?: WingSprite & { klasor?: string }; dosya: string | null; dosyaKapali: string | null; minSeviye?: number; herZaman?: boolean; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre?: string; renkFiltreleri?: Record<string, string> };
+/** KIRIK-KANAT-TON: kanat görselinin ton kaydırması (veride slotun `ton` alanı); `acik: false` ya da alan yoksa şimdiki hâl. */
+export interface WingTone { acik: boolean; hue: number; doygunluk: number; parlaklik: number }
+/** Kanat ton ayarı → CSS filtresi (`hue-rotate → saturate → brightness`; `url(#…)` değil). */
+export const wingToneFilter = (t: WingTone | undefined): string =>
+  t?.acik ? [t.hue ? `hue-rotate(${t.hue}deg)` : '', t.doygunluk !== 1 ? `saturate(${t.doygunluk})` : '', t.parlaklik !== 1 ? `brightness(${t.parlaklik})` : ''].filter(Boolean).join(' ') : '';
+export type WingSlotData = { altSinif?: string; /** Kuyruk A İş 2: kendi çiziminde kanadı olan jetonlar (dosya adı, uzantısız); bu slotun kanadı çizilmez. */ kanatsiz?: string[]; ayna?: WingMirror; /** KW2: tek kanat görselinin üstüne çizilen katmanlar (dosya aynı klasörde, aynı boyutta). `zar.etkin: false` pembe karışımlı zar katmanını kapatır (karşılaştırma); pençe her zaman. */ katmanlar?: { zar?: { dosya: string; etkin?: boolean }; pence?: { dosya: string; palet: WingPalet } }; palet?: WingPalet; renkPaletleri?: Record<string, WingPalet & { zar?: WingPalet }>; esnet?: boolean; sprite?: WingSprite & { klasor?: string }; dosya: string | null; dosyaKapali: string | null; minSeviye?: number; herZaman?: boolean; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre?: string; renkFiltreleri?: Record<string, string>; /** KIRIK-KANAT-TON: kanadın kendi ton ayarı (dosyayı değiştirmeden). */ ton?: WingTone };
 /** Paket: kanat verisi tembel (`wingData.ts` `loadWingData`); yüklenene dek boş (kanat yok). */
 export { WING_SLOTS };
 /** Jeton yolundan dosya adı (klasör ve uzantı olmadan; `characters/kucuk/x.webp` → `x`). */
@@ -156,7 +161,7 @@ function wingLayer(id: string, level: number, flying: boolean, lineageId?: strin
   const open = flying || !!w.herZaman;
   const file = open ? w.dosya : w.dosyaKapali;
   if (!file) return null;
-  const filtre = [w.filtre, lineageId ? w.renkFiltreleri?.[lineageId] : undefined].filter(Boolean).join(' ');
+  const filtre = [w.filtre, lineageId ? w.renkFiltreleri?.[lineageId] : undefined, wingToneFilter(w.ton)].filter(Boolean).join(' ');
   const { klasor: sk, ...sprite } = w.sprite ?? ({} as { klasor?: string });
   const lp = lineageId ? w.renkPaletleri?.[lineageId] : undefined;
   const palet: WingPalet | undefined = lp ? { golge: lp.golge, isik: lp.isik, ...(lp.esik ? { esik: lp.esik } : {}) } : w.palet;

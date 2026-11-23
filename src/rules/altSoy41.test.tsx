@@ -13,8 +13,9 @@ import { lineageNotes as notesOf } from '../ui/lineageNotes';
 import { races } from '../data';
 import { AWAKENING_OPTIONS, CELESTIAL } from './celestialData';
 import { newPendingLineages, LINEAGE_NOTICE_KEY } from '../app/lineageNotice';
-import { cultureSkinTone, sepyaFilter, type Sepya, skinTint, tintFallbackFilter, LINEAGE_SKIN, ORIGINAL_LINEAGES, isOriginalLineage, AWAKENING_DEFAULT, AWAKENING_FROM, CULTURE_SKIN, SKIN_TONES, WING_SLOTS, awakeningLookIds, lineageLook, lookEntries } from '../ui/lineageLook';
+import { cultureSkinTone, wingToneFilter, sepyaFilter, type Sepya, skinTint, tintFallbackFilter, LINEAGE_SKIN, ORIGINAL_LINEAGES, isOriginalLineage, AWAKENING_DEFAULT, AWAKENING_FROM, CULTURE_SKIN, SKIN_TONES, WING_SLOTS, awakeningLookIds, lineageLook, lookEntries } from '../ui/lineageLook';
 import { LookFrame } from '../ui/LookFrame';
+import { wingTable as WING_DATA } from '../ui/wingData';
 import { lineageTint, sheetAvatar } from '../battle/avatar';
 import hizalanma from '../../data/hizalanma-baslangic.json';
 import gorunum from '../../data/alt-soy-gorunum.json';
@@ -236,6 +237,11 @@ describe('görünüm verisi', () => {
     if (sp.acik) expect(kk.filter).toMatch(/^grayscale\(1\) sepia\(/);
     // CELESTIAL-KIRIK-KANAT-YENI: `kanat: false` → kanat kendi renginde (filtre yok); aksi halde kanada da aynı sepya.
     if (sp.acik && sp.kanat === false) expect(kk.wing?.filtre ?? '').not.toContain('sepia');
+    // KIRIK-KANAT-TON: kanadın kendi ton ayarı veriden (kapalıyken filtre yok, şimdiki hâl).
+    const ton = WING_DATA.slotlar['celestial-kirik-kanat']!.ton;
+    expect(kk.wing?.filtre ?? '').toContain(wingToneFilter(ton));
+    expect(wingToneFilter(ton && { ...ton, acik: false })).toBe('');
+    if (ton?.acik) expect(wingToneFilter(ton)).toMatch(/^hue-rotate\(/);
     else if (sp.acik) { expect(kk.wing?.filtre).toContain(kk.filter); expect(kk.wing?.palet).toBeUndefined(); }
     expect(sepyaFilter({ ...sp, acik: false })).toBe('');
     expect(at('parlayan-ruh').filter).toBe('');

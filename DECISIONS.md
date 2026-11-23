@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## KIRIK-KANAT-TON: Kırık Kanat kanadına veriyle ton ayarı (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
+
+- Yeni kanat gövde sepyasından kırmızı/turuncu duruyordu (kanat ton ≈24°, HSV doygunluk 0,60; gövde sepyası ≈39°, 0,29). Dosya
+  değişmedi; `data/kanat-esleme.json` slotunda `ton` ({acik, hue, doygunluk, parlaklik}) → CSS `hue-rotate saturate brightness`
+  (`lineageLook.ts` `wingToneFilter`, `wingLayer` filtresine eklenir): 16°, 0,7, 1,08 → ≈36°, 0,49 (biraz sarı, nötr kahverengi).
+  `acik: false` ya da alan yoksa önceki hâl. Gövde sepyası (`alt-soy-gorunum.json`) değişmedi.
+- Görsel `docs/sabah/celestial-kirik-kanat-yeni/ton-karsilastirma.png` (`onizleme-kanat.html?m=kirik&set=ton&kisi=bard&tur=jeton`).
+
 ## CELESTIAL-KIRIK-KANAT-YENI: Kırık Kanat'ın yeni sepya kanadı (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
 
 - **Görsel:** `public/kanat/celestial-kirik-kanat.webp` (dosya adı ve veri bağı aynı; eskisi git geçmişinde) macenta zeminli
