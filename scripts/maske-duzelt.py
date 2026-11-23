@@ -16,7 +16,8 @@ Yöntem (jeton başına, 256 px ham jeton):
 
 Çalıştırma:  python scripts/maske-duzelt.py [--kuru] [--el-de] [ad ...]   (PYTHONUTF8=1; --el-de: elle maskesi olanı da üret)
 TEN-MASKE-4-IRK: `irkTum` ırklarının (Orc, Goliath, Dwarf, Gnome) bütün jetonları: --irk <ırk> (ya da argümansız: liste + irkTum);
-  --kontak <klasör> --irk <ırk> inceleme sayfaları; --gemini <klasör> [--irk a,b] Gemini sayfaları. Ayarlar harita/belgeler/TEN-MASKE-4-IRK.md.
+  --kontak <klasör> --irk <ırk> inceleme sayfaları; --gemini <klasör> [--irk a,b] [--jeton ad,…] Gemini sayfaları. MASKE-EK: --sonuc (adla
+  çalıştırmada `sonuc` birleştirilir), `tenTon`; tarama scripts/maske-tarama.py, belge harita/belgeler/MASKE-EK.md. Ayarlar harita/belgeler/TEN-MASKE-4-IRK.md.
 Çıktı: public/characters/maske/<ad>.png (iki renkli palet PNG, soy-maske.ts ile aynı biçim), data/maske-duzelt.json `sonuc` (piksel sayıları).
 """
 import os, sys, json
@@ -27,7 +28,7 @@ from scipy import ndimage as ndi
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); os.chdir(ROOT)
 PUB = 'public/characters'
 VERI = 'data/maske-duzelt.json'
-VALFLAGS = ('--gemini', '--irk', '--kontak')  # değer alan bayraklar
+VALFLAGS = ('--gemini', '--irk', '--kontak', '--jeton')  # değer alan bayraklar
 ARG = [a for i, a in enumerate(sys.argv[1:], 1) if not a.startswith('--') and sys.argv[i - 1] not in VALFLAGS]
 FLAG = lambda f: sys.argv[sys.argv.index(f) + 1] if f in sys.argv else None
 import glob as _glob
@@ -96,6 +97,9 @@ def make_mask(nm, cfg, race_cfg):
         shade = (dh <= p['ton']) & (C >= refC * p['kroma']) & Lband
     if 'kromaUst' in p: shade &= C <= max(refC * p['kromaUst'], refC + 6)  # sakal/saç (aynı ton ailesi, daha doygun) dışarıda
     skin = a & ((dE <= p['th']) | shade)
+    # MASKE-EK `tenTon`: ten pikselinin tonu da bu aralıklarda olmalı (Tiefling: mor saç 250°–318°, turuncu-kırmızı kumaş 20°+ dışarıda).
+    # Yoksa eski davranış (ton yalnız tohum adayında, `h`).
+    if 'tenTon' in p: skin &= hue_in(h, p['tenTon'])
     # kutu sınırları (yalniz/basKutu/exclude); TEN-MASKE-4-IRK: büyüme ve delik doldurmadan sonra da geçerli (`limit`)
     limit = np.ones_like(a)
     if cfg.get('yalniz'):
@@ -162,8 +166,10 @@ def gemini(out):
     os.makedirs(out, exist_ok=True)
     S = 768
     irk = FLAG('--irk')  # TEN-MASKE-4-IRK: virgüllü ırk süzgeci (yoksa hepsi)
+    jet = FLAG('--jeton')  # MASKE-EK: virgüllü jeton adı süzgeci (yoksa hepsi)
     for nm in veri.get('gemini', {}):
         if irk and nm.split('-')[0] not in irk.split(','): continue
+        if jet and nm not in jet.split(','): continue
         im = Image.open(f'{PUB}/{nm}.webp').convert('RGBA')
         sab = Image.new('RGBA', im.size, (0, 0, 0, 255))
         ghost = im.copy(); ghost.putalpha(ghost.getchannel('A').point(lambda v: int(v * 0.35)))
@@ -259,7 +265,7 @@ def main():
         # < 30 px: bilerek boş maske (dosya kalır, tümü 0): jeton boyanmaz, yedek filtre de uygulanmaz (tint.ts: maske var sayılır).
         if n < 30: m = np.zeros_like(m)
         Image.fromarray((m * 255).astype(np.uint8), 'L').convert('P', palette=Image.ADAPTIVE, colors=2).save(out, optimize=True)
-    if not KURU and not ARG:
+    if not KURU and (not ARG or '--sonuc' in sys.argv):  # MASKE-EK: adla çalıştırmada da `--sonuc` ile birleştirir
         veri['sonuc'] = {k: sonuc[k] for k in sorted(sonuc)}
         open(VERI, 'w', encoding='utf-8').write(json.dumps(veri, ensure_ascii=False, indent=1) + '\n')
     print('maske:', len(names))

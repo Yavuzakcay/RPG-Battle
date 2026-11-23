@@ -55,8 +55,11 @@ describe('KQ6 bağlama', () => {
     // oyunun hiç istemediği eski `maske/dragonborn-<erkek|kadin>-*` yedek maskeleri silindi. Diğer ırklar: `maske/` + rapor piksel sayısı.
     // TEN-MASKE-4-IRK: `irkTum` ırklarının (Gnome, Goliath; Orc/Dwarf raporda yok) maskesi maske-duzelt.py'den: her jetonda dosya var
     // (çıplak teni olmayan çizimde bilerek boş maske, boyanmaz); rapordaki eski piksel sayısı bunlar için geçerli değil.
+    // MASKE-EK: maske-duzelt.py'nin `jetonlar` listesindekilerde de dosya var (bilerek boşta tümü 0; eskiden 12 Elf/Tiefling jetonunda dosya
+    // yoktu, soyun yedek filtresi bütün jetonu boyuyordu); rapordaki eski piksel sayısı bunlar için de geçerli değil.
     const tum = new Set<string>(duzelt.irkTum);
-    for (const [name, n] of Object.entries(rep)) expect(name.startsWith('dragonborn-') ? PUL.has(name) : MASKS.has(name), name).toBe(name.startsWith('dragonborn-') || tum.has(name.split('-')[0]!) ? true : n >= 30);
+    const liste = new Set(Object.keys(duzelt.jetonlar));
+    for (const [name, n] of Object.entries(rep)) expect(name.startsWith('dragonborn-') ? PUL.has(name) : MASKS.has(name), name).toBe(name.startsWith('dragonborn-') || tum.has(name.split('-')[0]!) || liste.has(name) ? true : n >= 30);
     expect(Object.values(rep).filter((n) => n < 30).length).toBeLessThan(60);
   });
   it('Dragonborn beyaz taban: 10 renk pul deseni v2 (pul maskesi; eski çarpma filtresi ve eski maske yedeği yok), birbirinden ayrı', () => {

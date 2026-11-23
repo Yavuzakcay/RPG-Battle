@@ -99,7 +99,7 @@ Elle maske (`maske-el/`) otomatik maskenin önüne geçer; `data/maske-duzelt.js
 - Ölçü: denetimin "baş teni" referansı krem kapüşonu/sancağı/altın zırhı ten sayabildiğinden otomatik sınıflama bu jetonlarda ters sonuç
   verir (örnek: Rogue ID8 eskiden kapüşon boyalıyken "temiz", şimdi yüz boyalıyken "bozuk"). Sonuç gözle verildi.
 - Gnome Yeraltı ve Orc/Goliath/Dwarf/Gnome/Dragonborn ayrı görevde.
-- **Liste dışı, boya sayfalarında görülen (dokunulmadı):** Warlock WL-8 ghoul (`elf-erkek`, `human-erkek`/`kadin`, `tiefling-erkek`/`kadin`):
-  bütün figür boyanıyor; `tiefling-kadin-sorcerer-SC-5` (gölge) bütünüyle boyanıyor; `tiefling-kadin-barbarian-ID3` kıyafet boyalı.
-  Aynı yöntemle (`bos` ya da kutu) sonraki görevde düzeltilebilir.
+- **Liste dışı, boya sayfalarında görülen:** Warlock WL-8 ghoul (`elf-erkek`, `human-erkek`/`kadin`, `tiefling-erkek`/`kadin`),
+  `tiefling-kadin-sorcerer-SC-5`, `tiefling-kadin-barbarian-ID3`: MASKE-EK'te düzeltildi (`harita/belgeler/MASKE-EK.md`; orada 7 ırk
+  taraması ve 92 jetonluk ek düzeltme).
 - High Elf maskesiz HSL yolunda (soy-renkleri.json); bu görev onu değiştirmedi.

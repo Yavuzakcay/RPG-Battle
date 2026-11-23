@@ -2,6 +2,27 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## MASKE-EK: liste dışı boyama hataları ve 7 ırk maske taraması (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
+
+- **Liste (7):** Warlock WL-8 ghoul (Elf e, Human e/k, Tiefling e/k) MASKE-DUZELT'in kadın SC-9 kararıyla yalnız yüz, kulak, eller
+  (Tiefling'de + boynuz); `tiefling-kadin-sorcerer-SC-5` bilerek boş; `tiefling-kadin-barbarian-ID3` saç dışarıda.
+- **Tarama:** `scripts/maske-tarama.py` (ten referansı yüzden; alan aykırılığı, ten dışı renk, yüz boyasız, tensiz çizim kalıbı) 2030
+  jetonda 224 şüpheli; en kötü 120'ye ve Tiefling saç ölçüsünün 63 jetonuna tek tek bakıldı. 92 gerçekten bozuk düzeltildi (Elf 13,
+  Human 8, Tiefling 70, Orc 1), 61 kabul. Ayrıntı ve sayılar `harita/belgeler/MASKE-EK.md`.
+- **Karar: maskesiz Elf/Tiefling jetonu bilerek boş dosya alır.** 12 tensiz çizimde maske dosyası yoktu; Drow/Tiefling soyunda yedek CSS
+  filtresi bütün jetonu boyuyordu. Diğer ırklardaki "bilerek boş" kararıyla aynı: tümü 0 maske, boyanmaz. Tensiz çizim kalıpları (azrail
+  Cleric ID6, hayalet WL-10, zombi WL-4, ölü Monk ID10, ağaç Druid ID4, gölge SC-5, zombi çocuk SC-3) bu üç ırkta da boş; Tiefling kapalı
+  miğfer Paladin ID3'te yalnız boynuz.
+- **Tiefling saçı:** eski otomatik maske 60 jetonda koyu mor saçı boyuyordu. `scripts/maske-duzelt.py`'ye `tenTon` (ten pikselinin ton
+  aralığı; yoksa eski davranış) eklendi: 318°–18°. Betik ayrıca `--sonuc` (adla çalıştırmada `sonuc` birleştirme) ve `--gemini … --jeton`
+  süzgeci aldı.
+- **Test (gerekçe: veri değişti):** `baglamaKq6` "maskeler" testi, rapordaki eski piksel sayısı < 30 olan jetonda maske dosyası olmamasını
+  bekliyordu; `data/maske-duzelt.json` `jetonlar` listesindeki jetonlar (bilerek boş dahil) artık dosya taşır, test bunları `irkTum` gibi
+  sayar.
+- **Kanıt:** HEAD'e karşı tarayıcı boya dökümü: hedef dışı 7587 görünüş birebir aynı; hedeflerde maske dışı değişim yalnız çalışma anı
+  onarımı (Tiefling gölge bandı). Kalan: 4 jeton Gemini'ye; kadın Rogue ID4 macenta kesim artığı yalnız raporlandı (anahtarlamanın
+  kapalı delik eşiği; öneri belgede); `human-kadin-monk-ID10` elle maskesi yüzü boyuyor (diğer ırklarda boş), karar kullanıcıda.
+
 ## TEN-MASKE-4-IRK: Orc, Goliath, Dwarf, Gnome bütün-jeton filtresi yerine ten maskesi (2026-11-23; kullanıcı kararı, yalnız görünüm, kural/kayıt sürümü değişmedi)
 
 - **Karar:** dört ırkın soy rengi yalnız çıplak tene (yüz, boyun, kol, el, görünen bacak); kıyafet, zırh, silah, kalkan, saç, sakal aynen.
