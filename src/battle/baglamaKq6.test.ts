@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { blankCharacter } from '../rules/builder';
 import { garibanTokenFile, lineageTint, sheetAvatar, subclassTokenFile } from './avatar';
-import { crownSpec } from '../ui/haloCrown';
+import { CROWN_ON, crownSpec } from '../ui/haloCrown';
 import { naturalLeft } from '../ui/tokenMirror';
 import { maskedTint, maskUrlFor, scaleTinted, tintPixels } from '../ui/tint';
 import { scaleLineages, scaleMaskless, scalePixels } from '../ui/scaleTint';
@@ -32,7 +32,8 @@ describe('KQ6 bağlama', () => {
         const f = garibanTokenFile(c, 'celestial', g, 1)!;
         expect(FILES.has(f.replace('.webp', '')), f).toBe(true);
         expect(sheetAvatar(sheet({ raceId: 'celestial', classId: c, gender: g, level: 2 })).src).toBe(`characters/${f}`);
-        expect(crownSpec(`characters/${f}`, { raceId: 'celestial', level: 1 } as never), f).not.toBeNull();
+        // CELESTIAL-TAC-KALDIR: taç bayrakla kapalıyken hiç çizilmez (`hale-konum.json` `tac.acik`).
+        expect(crownSpec(`characters/${f}`, { raceId: 'celestial', level: 1 } as never) !== null, f).toBe(CROWN_ON);
       }
     expect(garibanTokenFile('fighter', 'elf', 'kadin', 3)).toBeUndefined();
     expect(sheetAvatar(sheet({ raceId: 'dragonborn', classId: 'monk', gender: 'erkek', level: 1 })).src).toBe('characters/dragonborn-erkek-monk-GR.webp');

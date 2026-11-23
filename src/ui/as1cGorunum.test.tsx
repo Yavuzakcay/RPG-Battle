@@ -8,7 +8,7 @@ import sharp from 'sharp';
 import { AvatarCircle, CharacterFigure, TokenFigure } from './Avatar';
 import { hasSubclassWing, lineageLook, skinTint, wingBox, wingSlotOfSubclass } from './lineageLook';
 import { tintPixels } from './tint';
-import { crownBox, crownSpec } from './haloCrown';
+import { CROWN_ON, crownBox, crownSpec } from './haloCrown';
 import { lineageTint, sheetAvatar } from '../battle/avatar';
 import { blankCharacter } from '../rules/builder';
 import { rgbToLab } from './color';
@@ -265,6 +265,8 @@ describe('KG1: karakter ekranı jetonu savaşla aynı çizim yolu, çerçevesiz'
     const sh = sheet({ raceId: 'celestial', classId: 'cleric', subclassId: 'imza_birlik', level: 9, gender: 'erkek' });
     const av = sheetAvatar(sh);
     expect(av.src).toBe('characters/celestial-erkek-cleric-ID3.webp');
+    // CELESTIAL-TAC-KALDIR: taç veri bayrağıyla kapalı (`hale-konum.json` `tac.acik`): figürde taç yok; açıkken eski denetim aynen.
+    if (!CROWN_ON) { expect(crownSpec(av.src, av.look)).toBeNull(); expect(fig(sh)).not.toContain('star-crown-g'); return; }
     const c = crownSpec(av.src, av.look)!;
     expect(c).toBeTruthy();
     const b = crownBox(c), k = 48 / 256;
@@ -356,8 +358,9 @@ describe('KQ6-19: Celestial yıldız tacı', () => {
     const { crownSpec } = await import('./haloCrown');
     const src = 'characters/celestial-erkek-fighter-ID1.webp';
     const mk = (aw: string | undefined, level: number) => ({ raceId: 'celestial', celestialAwakening: aw, level } as never);
-    expect(crownSpec(src, mk('parlayan-ruh', 3))).not.toBeNull();
-    expect(crownSpec(src, mk(undefined, 2))).not.toBeNull();
+    // CELESTIAL-TAC-KALDIR: bayrak kapalıyken taç hiçbir uyanışta yok; açıkken hale gösteren uyanışlarda var.
+    expect(crownSpec(src, mk('parlayan-ruh', 3)) !== null).toBe(CROWN_ON);
+    expect(crownSpec(src, mk(undefined, 2)) !== null).toBe(CROWN_ON);
     expect(crownSpec(src, mk('gece-gozyasi', 3))).toBeNull();
     expect(crownSpec(src, mk('kirik-kanat', 3))).toBeNull();
     expect(crownSpec('characters/kucuk/celestial-erkek-fighter-ID1.webp', mk('parlayan-ruh', 3))).toEqual(crownSpec(src, mk('parlayan-ruh', 3)));
@@ -369,11 +372,14 @@ describe('KQ6-19: Celestial yıldız tacı', () => {
     const { StarCrownShape } = await import('./StarCrown');
     const { AvatarBadge, AvatarCircle } = await import('./Avatar');
     const a = sheetAvatar(sheet({ raceId: 'celestial', lineageId: undefined, level: 3, celestialAwakening: 'parlayan-ruh', classId: 'fighter', gender: 'erkek' }));
-    const spec = crownSpec(a.src, a.look); expect(spec).not.toBeNull();
+    const spec = crownSpec(a.src, a.look); expect(spec !== null).toBe(CROWN_ON);
     const body = renderToStaticMarkup(<svg><StarCrownShape /></svg>);
     expect(body).toContain('sc-star'); expect((body.match(/<path/g) ?? []).length).toBe(10);        // 5 yıldız × (dış + iç)
     const circle = renderToStaticMarkup(<svg><AvatarCircle avatar={a} cx={50} cy={50} r={30} eager /></svg>);
-    expect(circle).toContain('star-crown-g');
+    // CELESTIAL-TAC-KALDIR: savaş jetonu ve rozet tacı yalnız bayrak açıkken çizer.
+    if (CROWN_ON) expect(circle).toContain('star-crown-g'); else expect(circle).not.toContain('star-crown-g');
+    const badge = renderToStaticMarkup(<AvatarBadge avatar={a} size={48} eager />);
+    if (!CROWN_ON) expect(badge).not.toContain('star-crown');   // açıkken rozet tacı görsel yüklenince çizer (statik çizimde yok)
     // @ts-expect-error uygulama tsconfig'inde node tipleri yok (testte dosya okunur)
     const css = (await import('node:fs')).readFileSync('src/styles.css', 'utf8') as string;
     expect(css).toMatch(/prefers-reduced-motion: reduce\) \{ \.sc-star \{ animation: none; \} \}/);
