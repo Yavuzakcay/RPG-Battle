@@ -2918,7 +2918,7 @@
   },
   "orc-kadin-monk-GR": {
    "neden": "ek:tarama",
-   "not": "MASKE-EK: gri-yeşil keikogi tenle aynı renkte: yalnız baş, kulak, boyun ve üst kollar",
+   "not": "MASKE-EK: gri-yeşil keikogi tenle aynı renkte (otomatik maske yalnız baş, boyun ve üst kol, omuzlarda kare yama). 2026-11-23: Gemini maskesi (`ham`): yüz, kulak, boyun, kollar, eller, ayak parmakları; otomatik maske (yalniz kutuları) yalnız IoU denetimi için",
    "yalniz": [
     [
      60,
@@ -2938,7 +2938,8 @@
      192,
      126
     ]
-   ]
+   ],
+   "ham": "assets/soy-maske-ham/orc-kadin-monk-GR.jpg"
   },
   "orc-kadin-monk-ID10": {
    "neden": "ten4",
@@ -15351,13 +15352,11 @@
    "px": 2271
   },
   "orc-kadin-monk-GR": {
-   "ref": [
-    58.8,
-    -7.7,
-    8.0
-   ],
-   "tohum": 1918,
-   "px": 2499
+   "ham": "assets/soy-maske-ham/orc-kadin-monk-GR.jpg",
+   "iou": 0.439,
+   "oto": 2482,
+   "tasan": 0,
+   "px": 5117
   },
   "orc-kadin-monk-ID1": {
    "ref": [
@@ -17112,7 +17111,6 @@
   "goliath-male-rogue": "gri deri/bıçaklar: baş, boyun ve açık kollar beyaz; giysi ve bıçaklar siyah",
   "goliath-female-rogue": "gri deri/bıçaklar: baş ve boyun beyaz (maske siyah); giysi ve bıçaklar siyah",
   "gnome-male-warlock": "mor tenli çizim (şimdi boş): yüz, kulaklar ve eller beyaz; saç ve cüppe siyah",
-  "orc-kadin-monk-GR": "gri-yeşil keikogi tenle aynı renkte (otomatik maske yalnız baş ve üst kol): yüz, kulaklar, boyun, kollar ve bandaj aralarındaki parmaklar beyaz; keikogi, bandaj, saç siyah",
   "human-kadin-monk-ID8": "ninja (otomatik maske göz bandının yarısı): maske ile saç arasındaki göz bandının teni (göz akı ve bebek hariç) ve görünen parmaklar beyaz; saç, maske, kıyafet siyah",
   "human-erkek-monk-ID3": "gri-kahve sakal/saç tenle yakın (otomatik maske yüzün bir kısmı): alın, yanaklar, burun (sakalın üstü), kulak, kollar ve eller beyaz; sakal, saç, kapüşon, tunik siyah",
   "tiefling-erkek-fighter-ID3": "kristal zırh (otomatik maske yalnız yüz): yüz, kulak, boynuzlar ve kuyruk beyaz; miğfer, zırh, kristaller siyah"

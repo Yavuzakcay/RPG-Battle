@@ -17,7 +17,7 @@ Yöntem (jeton başına, 256 px ham jeton):
 Çalıştırma:  python scripts/maske-duzelt.py [--kuru] [--el-de] [ad ...]   (PYTHONUTF8=1; --el-de: elle maskesi olanı da üret)
 TEN-MASKE-4-IRK: `irkTum` ırklarının (Orc, Goliath, Dwarf, Gnome) bütün jetonları: --irk <ırk> (ya da argümansız: liste + irkTum);
   --kontak <klasör> --irk <ırk> inceleme sayfaları; --gemini <klasör> [--irk a,b] [--jeton ad,…] Gemini sayfaları. MASKE-EK: --sonuc (adla
-  çalıştırmada `sonuc` birleştirilir), `tenTon`; tarama scripts/maske-tarama.py, belge harita/belgeler/MASKE-EK.md. Ayarlar harita/belgeler/TEN-MASKE-4-IRK.md.
+  çalıştırmada `sonuc` birleştirilir), `tenTon`; `ham: <assets/soy-maske-ham/…>` Gemini maskesi (rawMask.ts kuralları; IoU < 0,3 yazılmaz); tarama scripts/maske-tarama.py, belge harita/belgeler/MASKE-EK.md. Ayarlar harita/belgeler/TEN-MASKE-4-IRK.md.
 Çıktı: public/characters/maske/<ad>.png (iki renkli palet PNG, soy-maske.ts ile aynı biçim), data/maske-duzelt.json `sonuc` (piksel sayıları).
 """
 import os, sys, json
@@ -54,10 +54,34 @@ def hue_in(h, ranges):
 def box_mask(shape, b):
     m = np.zeros(shape, bool); m[max(0, int(b[1])):int(b[3]) + 1, max(0, int(b[0])):int(b[2]) + 1] = True; return m  # eksi köşe kırpılır (dilim sarmasın)
 
+HAM_ESIK, HAM_MIN_IOU = 128, 0.3  # src/ui/rawMask.ts RAW_MASK.threshold / minIoU ile aynı
+
+def ham_mask(path, alpha):
+    """Gemini ham maskesi (`ham`, kare, jeton tuvaliyle aynı hizada): `src/ui/rawMask.ts` `importRawMask` tuval yolunun aynısı:
+    en yakın komşu, eşik ≥ 128, yalnız opak (alfa > 127) piksel, < 4 px beyaz bileşen (4 komşuluk) silinir, tek piksellik delik dolar.
+    Döner: maske, jeton dışına taşan beyaz piksel sayısı."""
+    g = np.asarray(Image.open(path).convert('L')); gh, gw = g.shape; H, W = alpha.shape
+    ys = np.minimum(gh - 1, ((np.arange(H) + 0.5) * gh / H).astype(int)); xs = np.minimum(gw - 1, ((np.arange(W) + 0.5) * gw / W).astype(int))
+    white = g[np.ix_(ys, xs)] >= HAM_ESIK
+    op = alpha > 127
+    m = white & op
+    lb, n = ndi.label(m)  # 4 komşuluk
+    if n:
+        sz = ndi.sum(np.ones_like(lb), lb, range(1, n + 1)); m &= ~np.isin(lb, 1 + np.where(sz < 4)[0])
+    p = np.pad(m, 1); hole = ~p[1:-1, 1:-1] & p[:-2, 1:-1] & p[2:, 1:-1] & p[1:-1, :-2] & p[1:-1, 2:]
+    hole[0, :] = hole[-1, :] = hole[:, 0] = hole[:, -1] = False
+    return m | hole, int((white & ~op).sum())
+
 def make_mask(nm, cfg, race_cfg):
     im = np.asarray(Image.open(f'{PUB}/{nm}.webp').convert('RGBA'))
     H, W = im.shape[:2]
     a = im[..., 3] >= 128
+    if cfg.get('ham'):
+        # Gemini ham maskesi (kullanıcının içe aktardığı): otomatik maskeyle IoU < 0,3 ise hizasız sayılır, yazılmaz (`main`).
+        oto, _ = make_mask(nm, {k: v for k, v in cfg.items() if k != 'ham'}, race_cfg)
+        m, spill = ham_mask(cfg['ham'], im[..., 3])
+        iou = float((m & oto).sum() / max((m | oto).sum(), 1))
+        return m, dict(ham=cfg['ham'], iou=round(iou, 3), oto=int(oto.sum()), tasan=spill)
     lab = srgb_to_lab(im[..., :3])
     L, A, B = lab[..., 0], lab[..., 1], lab[..., 2]
     C = np.hypot(A, B); h = (np.degrees(np.arctan2(B, A)) + 360) % 360
@@ -254,6 +278,8 @@ def main():
         im = np.asarray(Image.open(f'{PUB}/{nm}.webp').convert('RGBA')); opq = int((im[..., 3] >= 128).sum())
         n = int(m.sum())
         out = f'{OUTDIR}/{nm}.png'
+        if 'ham' in info and info['iou'] < HAM_MIN_IOU:
+            print(f"ham maske hizasız (IoU {info['iou']} < {HAM_MIN_IOU}), yazılmadı:", nm); continue
         if n > opq * races[race].get('asiri', 0.4):
             info['asiri'] = True; print('aşırı, yazılmadı:', nm, n, opq); sonuc[nm] = {**info, 'px': n}
             # TEN-MASKE-4-IRK: bütün jetonları bu betikle üretilen ırkta eski (baş) maske kalmasın: bilerek boş maske (boyanmaz)
