@@ -362,9 +362,10 @@
    ],
    "ekle": [
     [[138, 215], [171, 215], [171, 231], [183, 231], [183, 241], [138, 241]],
-    [[64, 168], [82, 168], [82, 178], [80, 178], [80, 190], [52, 190], [52, 172], [64, 172]]
+    [[64, 168], [82, 168], [82, 178], [80, 178], [80, 190], [52, 190], [52, 172], [64, 172]],
+    [[54, 122], [58, 118], [62, 118], [66, 119], [70, 121], [74, 122], [78, 124], [84, 123], [84, 131], [78, 133], [74, 137], [70, 137], [66, 135], [62, 135], [58, 133], [54, 133]]
    ],
-   "neden": "omuzluk, kolluk, dizlik, kemer ve çekiç başı; baş, çıplak göğüs, sağ kol ve el, kuyruk, ayaklar (ön ayak `ekle`: çekiç sapı ucu dışarıda), kolluk altındaki yumruk (`ekle`; `haric` kolluk kutusu onu da kesiyordu)"
+   "neden": "omuzluk, kolluk, dizlik, kemer ve çekiç başı; baş, çıplak göğüs, sağ kol ve el, kuyruk, ayaklar (ön ayak `ekle`: çekiç sapı ucu dışarıda), kolluk altındaki yumruk ve omuzluk–kolluk arası pazu (`ekle`; `haric` kolluk kutuları onları da kesiyordu)"
   },
   "dragonborn-kadin-barbarian-ID1": {
    "yalniz": [
