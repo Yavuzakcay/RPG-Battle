@@ -2462,6 +2462,12 @@
   "human-kadin-monk-GR": {
    "neden": "kesim:kismen"
   },
+  "human-kadin-monk-ID10": {
+   "neden": "kalan:ID10",
+   "not": "JETON-KALAN-TOPLU: Solgun Gezgin (ölü Monk ID10): çıplak teni olmayan çizim; diğer bütün ırklarda bilerek boş. Elle (Gemini) maske yüzü/elleri boyuyordu: elIptal ile yok sayılır (assets/soy-maske-el dosyasına dokunulmadı), otomatik maske tümü 0.",
+   "bos": true,
+   "elIptal": true
+  },
   "human-kadin-monk-ID8": {
    "neden": "ek:tarama",
    "not": "MASKE-EK: ninja: saç boyanıyordu: göz bandı ve eller",
@@ -13544,6 +13550,10 @@
    ],
    "tohum": 1979,
    "px": 2855
+  },
+  "human-kadin-monk-ID10": {
+   "bos": true,
+   "px": 0
   },
   "human-kadin-monk-ID8": {
    "ref": [
