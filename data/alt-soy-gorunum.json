@@ -72,7 +72,16 @@
   },
   "kirik-kanat": {
    "hale": false,
-   "kanat": "celestial-kirik-kanat"
+   "kanat": "celestial-kirik-kanat",
+   "sepya": {
+    "acik": true,
+    "gri": 1,
+    "sepya": 0.85,
+    "doygunluk": 1.1,
+    "parlaklik": 1.0,
+    "ton": 0,
+    "not": "CELESTIAL-KIRIK-KANAT-SEPYA (2026-11-23, kullanıcı): jeton gövdesi ve kanat katmanı aynı CSS filtresiyle sepya: grayscale(gri) sepia(sepya) saturate(doygunluk) brightness(parlaklik) hue-rotate(ton deg). acik false: kapalı (eski görünüm)."
+   }
   }
  },
  "hale": {

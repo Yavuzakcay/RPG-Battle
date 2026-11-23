@@ -13,7 +13,7 @@ import { lineageNotes as notesOf } from '../ui/lineageNotes';
 import { races } from '../data';
 import { AWAKENING_OPTIONS, CELESTIAL } from './celestialData';
 import { newPendingLineages, LINEAGE_NOTICE_KEY } from '../app/lineageNotice';
-import { cultureSkinTone, skinTint, tintFallbackFilter, LINEAGE_SKIN, ORIGINAL_LINEAGES, isOriginalLineage, AWAKENING_DEFAULT, AWAKENING_FROM, CULTURE_SKIN, SKIN_TONES, WING_SLOTS, awakeningLookIds, lineageLook, lookEntries } from '../ui/lineageLook';
+import { cultureSkinTone, sepyaFilter, type Sepya, skinTint, tintFallbackFilter, LINEAGE_SKIN, ORIGINAL_LINEAGES, isOriginalLineage, AWAKENING_DEFAULT, AWAKENING_FROM, CULTURE_SKIN, SKIN_TONES, WING_SLOTS, awakeningLookIds, lineageLook, lookEntries } from '../ui/lineageLook';
 import { LookFrame } from '../ui/LookFrame';
 import { lineageTint, sheetAvatar } from '../battle/avatar';
 import hizalanma from '../../data/hizalanma-baslangic.json';
@@ -224,11 +224,19 @@ describe('görünüm verisi', () => {
     }
   });
   it('Celestial: Parlayan Ruh haleli; Kırık Kanat halesiz + kanat; Gece Gözyaşı halesiz + koyu filtre; 3. seviyeden', () => {
-    const at = (a: string, level = 3) => lineageLook({ raceId: 'celestial', celestialAwakening: a, level });
+    const at = (a: string, level = 3, ability = false) => lineageLook({ raceId: 'celestial', celestialAwakening: a, level }, { ability });
     expect(at('parlayan-ruh')).toMatchObject({ hideHalo: false, wing: null, filter: '' });
     expect(at('kirik-kanat')).toMatchObject({ hideHalo: true, wing: { id: 'celestial-kirik-kanat' } });
     expect(at('gece-gozyasi').hideHalo).toBe(true);
     expect(at('gece-gozyasi').filter).toContain('grayscale(1)'); // tam gri tonlu: ten, kıyafet, saç
+    // CELESTIAL-KIRIK-KANAT-SEPYA: Kırık Kanat gövde ve kanadı aynı sepya filtresinde (veriden; kapalıyken filtre yok); diğer iki uyanış aynı.
+    const sp = (gorunum.celestialUyanis as Record<string, { sepya?: Sepya }>)['kirik-kanat']!.sepya!;
+    const kk = at('kirik-kanat', 5, true);
+    expect(kk.filter).toBe(sp.acik ? sepyaFilter(sp) : '');
+    if (sp.acik) { expect(kk.filter).toMatch(/^grayscale\(1\) sepia\(/); expect(kk.wing?.filtre).toContain(kk.filter); expect(kk.wing?.palet).toBeUndefined(); }
+    expect(sepyaFilter({ ...sp, acik: false })).toBe('');
+    expect(at('parlayan-ruh').filter).toBe('');
+    expect(at('gece-gozyasi').filter).not.toContain('sepia');
     expect(at('kirik-kanat', 2)).toMatchObject({ hideHalo: false, wing: null });
     expect(awakeningLookIds().sort()).toEqual([...AWAKENING_OPTIONS].sort());
     expect(AWAKENING_FROM).toBe(CELESTIAL.awakening.minLevel);
