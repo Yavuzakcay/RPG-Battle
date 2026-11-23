@@ -5471,6 +5471,102 @@
      85
     ]
    ]
+  },
+  "dwarf-erkek-sorcerer-SC-4": {
+   "neden": "kalan:ws",
+   "not": "JETON-KALAN-TOPLU: cüppenin turuncu alev deseni ve göğüs kıvrımı boyanıyordu: yalnız yüz, kulak ve eller",
+   "yalniz": [
+    [
+     96,
+     48,
+     156,
+     100
+    ],
+    [
+     80,
+     144,
+     120,
+     178
+    ],
+    [
+     208,
+     112,
+     252,
+     162
+    ]
+   ]
+  },
+  "goliath-kadin-sorcerer-SC-4": {
+   "neden": "kalan:ws",
+   "not": "JETON-KALAN-TOPLU: beyaz cüppe (sol etek, göğüs) boyanıyordu: yalnız baş ve eller",
+   "yalniz": [
+    [
+     104,
+     28,
+     160,
+     96
+    ],
+    [
+     36,
+     104,
+     80,
+     138
+    ],
+    [
+     180,
+     88,
+     236,
+     134
+    ]
+   ]
+  },
+  "dwarf-erkek-wizard-WZ-A6": {
+   "neden": "kalan:ws",
+   "not": "JETON-KALAN-TOPLU: uçan parşömenler (ten renginde) boyanıyordu: yalnız yüz, kulak ve eller",
+   "yalniz": [
+    [
+     94,
+     60,
+     168,
+     106
+    ],
+    [
+     76,
+     144,
+     114,
+     178
+    ],
+    [
+     178,
+     108,
+     212,
+     148
+    ]
+   ]
+  },
+  "gnome-erkek-wizard-WZ-A6": {
+   "neden": "kalan:ws",
+   "not": "JETON-KALAN-TOPLU: uçan parşömenler (ten renginde) boyanıyordu: yalnız yüz, kulaklar ve eller",
+   "yalniz": [
+    [
+     80,
+     64,
+     182,
+     128
+    ],
+    [
+     76,
+     148,
+     114,
+     182
+    ],
+    [
+     176,
+     110,
+     212,
+     150
+    ]
+   ]
   }
  },
  "ayri": [
@@ -6385,7 +6481,7 @@
     33.3
    ],
    "tohum": 694,
-   "px": 2378
+   "px": 1516
   },
   "dwarf-erkek-sorcerer-SC-5": {
    "bos": true,
@@ -6576,7 +6672,7 @@
     32.0
    ],
    "tohum": 883,
-   "px": 2328
+   "px": 1126
   },
   "dwarf-erkek-wizard-WZ-A7": {
    "ref": [
@@ -9428,7 +9524,7 @@
     32.9
    ],
    "tohum": 1506,
-   "px": 4426
+   "px": 1769
   },
   "gnome-erkek-wizard-WZ-A7": {
    "ref": [
@@ -12977,7 +13073,7 @@
     -9.4
    ],
    "tohum": 1322,
-   "px": 2303
+   "px": 1659
   },
   "goliath-kadin-sorcerer-SC-5": {
    "bos": true,
