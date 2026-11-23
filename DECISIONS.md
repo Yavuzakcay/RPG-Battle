@@ -2,6 +2,17 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## KESIM-TEPE: 590 jetonun silinmiş tepe konturu geri kondu (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
+
+- **Kök neden:** KESIM-DUZELT (102538ec) öncesi `toplu-kesim.py` şerit silmesi figürün üst kenarındaki koyu konturu (saç/kapüşon/şapka
+  tepesi; kalkan, kanat kenarı) ızgara çizgisi sanıp siliyordu; ham sayfada içerik hücrenin içinde. Kod düzeltilmişti, jetonların çoğu
+  yeniden kesilmemişti. 11-19 koduyla yeniden kesim mevcut jetonu alfada birebir üretiyor.
+- **Karar:** yeniden kesim KESIM-DUZELT'in "eski" yerleşimiyle (`kesim-yenile.py`): eski pikseller ve yerleşim aynı, yalnız geri gelen
+  pikseller eklenir; ten maskesi hizası bozulmadığı için maske yeniden üretilmedi (`npm run soy-maske` çalıştırılmadı). Figüre değmeyen
+  ince/koyu eklemeler alınmaz (`drop_detached_lines`, `cizgiSuz` işi). Celestial (sınıf sayfası haleli, jeton halesiz), Hızır Paladin ID10
+  ve kaydı güvenilmez (iou < 0,97) 158 jeton düzeltilmedi; Wizard WZ ve sınıf-genel kapsam dışı.
+- Tarama/iş üretici `scripts/kesim-tepe.py`, kare kenarı taraması `scripts/kesim-tepe-tara.py`; sayılar ve liste `harita/belgeler/KESIM-TEPE.md`.
+
 ## MASKE-EK: liste dışı boyama hataları ve 7 ırk maske taraması (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
 
 - **Liste (7):** Warlock WL-8 ghoul (Elf e, Human e/k, Tiefling e/k) MASKE-DUZELT'in kadın SC-9 kararıyla yalnız yüz, kulak, eller

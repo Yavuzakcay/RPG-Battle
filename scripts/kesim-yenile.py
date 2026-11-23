@@ -171,6 +171,25 @@ def merge_restore(old, new, grow=2, lo=32, hi=128, min_px=4):
     out[reg] = cl[reg]   # zemin renkli kenar pikseli (eklenen bölgede) temizlenir
     return out, int(add.sum())
 
+def drop_detached_lines(old, out, lo=32):
+    """KESIM-TEPE (`cizgiSuz` işi): eklenen piksellerden eski siluete DEĞMEYEN (1 px komşulukta) parçalar geri alınır, eğer
+    ince ve uzunsa (ızgara/çerçeve çizgisi artığı, renk fark etmez: kalınlık ≤ 10 px, uzunluk ≥ 12 px, en/boy ≥ 3) ya da küçük
+    (< 120 px) ve koyuysa (çizgi kırıntısı: ortalama en parlak kanal < 90). Siluete bağlı kontur (saç tepesi, kalkan kenarı) ve kopuk
+    parlak parçalar (kıvılcım, yıldız) kalır. → (sonuç, silinen px)."""
+    added = (out[..., 3] >= lo) & (old[..., 3] < lo)
+    if not added.any(): return out, 0
+    touch = ndi.binary_dilation(old[..., 3] >= lo, structure=np.ones((3, 3)))
+    lab, n = ndi.label(added, structure=np.ones((3, 3))); res = out.copy(); gone = 0
+    for i, sl in enumerate(ndi.find_objects(lab), 1):
+        m = lab[sl] == i
+        if (touch[sl] & m).any(): continue
+        h, w = sl[0].stop - sl[0].start, sl[1].stop - sl[1].start
+        px = out[sl][m][:, :3].astype(int)
+        thin = min(h, w) <= 10 and max(h, w) >= 12 and max(h, w) >= 3 * min(h, w)
+        if thin or (int(m.sum()) < 120 and px.max(1).mean() < 90):
+            res[sl][m] = old[sl][m]; gone += int(m.sum())
+    return res, gone
+
 def lost_gain(old, new, lo=32, hi=128, min_px=4):
     """Eski opak (≥ hi) → yeni saydam (< lo) çekirdek (kayıp) ve tersi (kazanç); ≥ min_px bağlı bileşenler (1 px kenar gürültüsü sayılmaz)."""
     def core(m):
@@ -334,6 +353,7 @@ def place(j, crop, old, new_toks, skip):
     if mode == 'eski':
         reg = register(crop, old); full = render_map(crop, *reg[:4])
         tok, added = merge_restore(old, full); info.update(kayit=[round(float(v), 4) for v in reg], eklenen=added)
+        if j.get('cizgiSuz'): tok, info['cizgiSilinen'] = drop_detached_lines(old, tok)
         return tok, info
     if mode == 'sayfa':
         if j.get('olcekHedef') == 'irk':
@@ -414,7 +434,7 @@ def uygula():
             for src, dst in ((f'public/characters/{name}.webp', f'{YEDEK}/{name}.webp'), (f'public/characters/kucuk/{name}.webp', f'{YEDEK}/kucuk/{name}.webp')):
                 if os.path.exists(src) and not os.path.exists(dst): shutil.copy2(src, dst)
             if cc.write_token(L, name, Image.fromarray(tok, 'RGBA'), 'duzeltme', j['sayfa'], j['hucre'], rep):
-                L['jetonlar'][name]['gecmis'][-1]['not'] = f"KESIM-DUZELT 2026-11-22 ({j['grup']}, {j['yerlesim']})"
+                L['jetonlar'][name]['gecmis'][-1]['not'] = (f"KESIM-TEPE 2026-11-23 ({j['yerlesim']})" if j['grup'] == 'tepe' else f"KESIM-DUZELT 2026-11-22 ({j['grup']}, {j['yerlesim']})")
         print(name, note)
     _cache.clear()
     os.makedirs(OUT, exist_ok=True)
