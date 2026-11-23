@@ -115,6 +115,156 @@
     "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
    ],
    "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
+  },
+  "elf-erkek-barbarian-ID4": {
+   "kaynak": "assets\\soy-maske-ham\\elf-erkek-barbarian-ID4.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.573,
+    "white": 0.122,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "89c8a12701b133f2d59873a82f2997aa012fb446"
+  },
+  "elf-erkek-rogue-ID4": {
+   "kaynak": "assets\\soy-maske-ham\\elf-erkek-rogue-ID4.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.339,
+    "white": 0.109,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "08ff963e1009d831f79ff4d2208ea1d4252eccee"
+  },
+  "elf-kadin-barbarian-ID4": {
+   "kaynak": "assets\\soy-maske-ham\\elf-kadin-barbarian-ID4.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.585,
+    "white": 0.105,
+    "spill": 0,
+    "removed": 0,
+    "filled": 1
+   },
+   "uyarilar": [],
+   "sha1": "2beed2ec70c21a4faf05336655950347e0c2cc7e"
+  },
+  "elf-kadin-rogue-ID4": {
+   "kaynak": "assets\\soy-maske-ham\\elf-kadin-rogue-ID4.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.343,
+    "white": 0.112,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "91b3ad88dd4c3fb29a4ecf11b59bf8e25f8f445a"
+  },
+  "human-erkek-barbarian-ID4": {
+   "kaynak": "assets\\soy-maske-ham\\human-erkek-barbarian-ID4.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.448,
+    "white": 0.147,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "17f8d3e6a57cdf2968fe3fa657e8d7799208dd00"
+  },
+  "human-erkek-fighter-GR": {
+   "kaynak": "assets\\soy-maske-ham\\human-erkek-fighter-GR.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.598,
+    "white": 0.133,
+    "spill": 0,
+    "removed": 1,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "fba8ef3452ef3a249a765dc4f0eab77db0ca2ac1"
+  },
+  "human-erkek-rogue-ID4": {
+   "kaynak": "assets\\soy-maske-ham\\human-erkek-rogue-ID4.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.359,
+    "white": 0.139,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "da66a31883a78449b88ba7d70ec550247a1c88b8"
+  },
+  "human-kadin-barbarian-ID4": {
+   "kaynak": "assets\\soy-maske-ham\\human-kadin-barbarian-ID4.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.342,
+    "white": 0.12,
+    "spill": 0,
+    "removed": 0,
+    "filled": 1
+   },
+   "uyarilar": [],
+   "sha1": "7ede12e3e962ef23c0d6900972dec3095ced31bc"
+  },
+  "human-kadin-rogue-ID4": {
+   "kaynak": "assets\\soy-maske-ham\\human-kadin-rogue-ID4.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.312,
+    "white": 0.132,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "4509abece48410c44ad1900ff39586b7c8ee94e1"
+  },
+  "tiefling-erkek-sorcerer-SC-2": {
+   "kaynak": "assets\\soy-maske-ham\\tiefling-erkek-sorcerer-SC-2.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.535,
+    "white": 0.2,
+    "spill": 0,
+    "removed": 2,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "d494812834d9c1b95634702803dabdffdae0f5e0"
   }
  },
  "atlanan": []
