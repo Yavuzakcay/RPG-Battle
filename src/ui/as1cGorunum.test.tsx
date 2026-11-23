@@ -74,12 +74,12 @@ describe('kanat katmanı (bağlı)', () => {
   const svgOf = (raceId: string, lineageId: string | undefined, level: number, flying: boolean, awakening?: string) =>
     renderToStaticMarkup(<svg><TokenFigure href="x.webp" cx={50} cy={50} w={40} look={sheetAvatar(sheet({ raceId, lineageId, level, ...(awakening ? { celestialAwakening: awakening } : {}) })).look} flying={flying} /></svg>);
   it('eşleme: üç slot (Anka ve Melek bağlaması KQ6-3 ile kaldırıldı), dosyalar bağlı ve gerçekten var, çapa/oran/omuz veride, Dragonborn 10 renk filtresi', async () => {
-    expect(Object.keys(s).sort()).toEqual(['celestial-kirik-kanat', 'dragonborn', 'tiefling-kanatli']);
+    expect(Object.keys(s).sort()).toEqual(['celestial-kirik-kanat', 'celestial-kirik-kanat-iyi', 'dragonborn', 'tiefling-kanatli']);
     // KW1: Dragonborn görseli TEK (sağ) kanat (`ayna`: iki yana ayna, kök gövdeye bağlı): çapa kanadın kökü (omuz eklemi), `olcek` tek kanadın jeton genişliğine oranı,
     // `omuz` kökün jeton yüksekliğindeki yeri (omuz–dirsek bandı). Diğer iki slot kanat çifti: çapa jetonun yatay merkezinde, çift genişliği 1.45 (Kırık Kanat 1.15: CELESTIAL-KIRIK-KANAT-YENI), omuz 0.46.
-    const capa = { 'tiefling-kanatli': [0.501, 0.708], 'celestial-kirik-kanat': [0.5428, 0.4437], dragonborn: [0.0577, 0.448] };
-    const olcek = { 'tiefling-kanatli': 1.45, 'celestial-kirik-kanat': 1.15, dragonborn: 0.6 } as Record<string, number>;
-    const omuz = { 'tiefling-kanatli': 0.46, 'celestial-kirik-kanat': 0.46, dragonborn: 0.4 } as Record<string, number>;
+    const capa = { 'tiefling-kanatli': [0.501, 0.708], 'celestial-kirik-kanat': [0.5428, 0.4437], 'celestial-kirik-kanat-iyi': [0.568, 0.438], dragonborn: [0.0577, 0.448] };
+    const olcek = { 'tiefling-kanatli': 1.45, 'celestial-kirik-kanat': 1.15, 'celestial-kirik-kanat-iyi': 1.45, dragonborn: 0.6 } as Record<string, number>;
+    const omuz = { 'tiefling-kanatli': 0.46, 'celestial-kirik-kanat': 0.46, 'celestial-kirik-kanat-iyi': 0.46, dragonborn: 0.4 } as Record<string, number>;
     for (const [id, w] of Object.entries(s)) {
       expect(w.dosya, id).toBe(`${id}.webp`);
       const meta = await sharp(`public/kanat/${w.dosya}`).metadata();

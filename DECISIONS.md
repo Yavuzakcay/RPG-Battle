@@ -2,6 +2,17 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## CELESTIAL-KANAT-IYILESME: Kırık Kanat uçuşu iyileşince kanat ve gövde görünümü (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
+
+- **Eşik veriden:** `data/celestial.json` `kirik-kanat.ucus.seviyeEsigi` (13; normal uçuş). Kodda sabit yok. `celestial.json` ana parçaya
+  girmesin diye kanat verisiyle birlikte tembel yüklenir (`wingData.ts` `celestialThresholds` → `wingTable.iyilesmeEsigi`); veri
+  yüklenmeden iyileşme yok (bileşenler `useWingData` ile yeniden çizilir).
+- **Görünüm:** seviye < eşik şimdiki hâl (küçük sepya kırık kanat + gövde sepyası); seviye ≥ eşik iyileşmiş beyaz bütün kanat (yeni slot
+  `celestial-kirik-kanat-iyi`, CELESTIAL-KIRIK-KANAT-YENI öncesi görsel ve yerleşim: olcek 1,45, capa [0,568, 0,438]) ve renkli gövde.
+- **Bayraklar:** `alt-soy-gorunum.json` `celestialUyanis.kirik-kanat.iyilesme` `kanat`, `govdeSepyasiKalkar` (varsayılan true), `iyiKanat`;
+  ikisi kapalıyken 3. seviyeden itibaren hep kırık + sepya. Rozet ve savaş jetonu aynı çözücüden (`lineageLook`). Parlayan Ruh ve Gece
+  Gözyaşı değişmedi. Görsel `docs/sabah/celestial-kirik-kanat-yeni/iyilesme-5-13.png`.
+
 ## KIRIK-KANAT-TON: Kırık Kanat kanadına veriyle ton ayarı (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
 
 - Yeni kanat gövde sepyasından kırmızı/turuncu duruyordu (kanat ton ≈24°, HSV doygunluk 0,60; gövde sepyası ≈39°, 0,29). Dosya

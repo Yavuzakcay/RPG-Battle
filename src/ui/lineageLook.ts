@@ -39,7 +39,7 @@ export interface LineageLook {
 const D = data as unknown as {
   altSoylar: Record<string, { filtre?: string; oran?: { en: number; boy: number }; kanat?: string; orijinal?: true }>;
   orijinal: string[];
-  celestialUyanis: Record<string, { hale: boolean; filtre?: string; kanat?: string; sepya?: Sepya }>;
+  celestialUyanis: Record<string, { hale: boolean; filtre?: string; kanat?: string; sepya?: Sepya; iyilesme?: Iyilesme }>;
   hale: { gizleUstYuzde: number };
   ten: { varsayilan: string; filtreUygula: boolean; tonlar: SkinTone[]; kulturTen: Record<string, string[]>;
     surgun: { kultur: string; secenekler: string[]; ad: Record<string, { tr: string; en: string }> } };
@@ -52,6 +52,17 @@ export interface Sepya { acik: boolean; gri: number; sepya: number; doygunluk: n
 /** Sepya ayarı → CSS filtresi (jeton gövdesi ve kanat katmanı aynı dizgeyi alır; `url(#…)` değil: WingFilterHost/Firefox kimlik tuzağı yok). */
 export const sepyaFilter = (s: Sepya | undefined): string =>
   s?.acik ? `grayscale(${s.gri}) sepia(${s.sepya}) saturate(${s.doygunluk}) brightness(${s.parlaklik})${s.ton ? ` hue-rotate(${s.ton}deg)` : ''}` : '';
+/**
+ * CELESTIAL-KANAT-IYILESME: uyanışın uçuşu iyileşince (eşik `data/celestial.json` `ucus.seviyeEsigi`, kanat verisiyle tembel) görünüm:
+ * `kanat` iyileşmiş kanat slotuna (`iyiKanat`) geçer, `govdeSepyasiKalkar` gövde sepyasını kaldırır. Bayrak yoksa varsayılan true;
+ * `iyilesme` alanı yoksa ya da iki bayrak kapalıysa eşikten sonra da kırık görünüm.
+ */
+export interface Iyilesme { kanat?: boolean; govdeSepyasiKalkar?: boolean; iyiKanat: string }
+/** Bu seviyede uyanışın kanadı iyileşmiş mi (eşik veriden; veri yüklenmemişse hayır). */
+export function awakeningHealed(awakening: string, level: number): boolean {
+  const esik = W.iyilesmeEsigi[awakening];
+  return esik !== undefined && level >= esik;
+}
 /** Celestial Göksel Uyanış 3. seviyeden etkin (`data/celestial.json` `awakening.minLevel`; test eşitliği denetler). */
 export const AWAKENING_FROM = 3;
 export const AWAKENING_DEFAULT = 'parlayan-ruh';
@@ -228,14 +239,19 @@ export function lineageLook(sheet: LookSheet, opts: { flying?: boolean; ability?
   let wingTone = true;
   const level = sheet.level ?? 1;
   if (sheet.raceId === 'celestial') {
-    const aw = D.celestialUyanis[sheet.celestialAwakening ?? AWAKENING_DEFAULT];
+    const awId = sheet.celestialAwakening ?? AWAKENING_DEFAULT;
+    const aw = D.celestialUyanis[awId];
     if (aw && level >= AWAKENING_FROM) {
+      // CELESTIAL-KANAT-IYILESME: eşikten sonra iyileşmiş kanat ve (bayrakla) sepyasız gövde.
+      const healed = !!aw.iyilesme && awakeningHealed(awId, level);
+      const healWing = healed && aw.iyilesme!.kanat !== false;
+      const healBody = healed && aw.iyilesme!.govdeSepyasiKalkar !== false;
       hideHalo = !aw.hale;
       if (aw.filtre) filters.push(aw.filtre);
-      tone = sepyaFilter(aw.sepya);
+      tone = healBody ? '' : sepyaFilter(aw.sepya);
       if (tone) filters.push(tone);
       wingTone = aw.sepya?.kanat !== false;
-      wingId = aw.kanat;
+      wingId = healWing ? aw.iyilesme!.iyiKanat : aw.kanat;
     }
   } else {
     const entry = sheet.lineageId ? D.altSoylar[`${sheet.raceId}/${sheet.lineageId}`] : undefined;

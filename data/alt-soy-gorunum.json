@@ -83,6 +83,12 @@
     "kanat": false,
     "kanatNot": "CELESTIAL-KIRIK-KANAT-YENI (2026-11-23, kullanıcı): kanat: false → sepya filtresi yalnız karakter gövdesine; kanat katmanı kendi sepya renginde (filtresiz). true ya da alan yoksa kanada da uygulanır.",
     "not": "CELESTIAL-KIRIK-KANAT-SEPYA (2026-11-23, kullanıcı): jeton gövdesi ve kanat katmanı aynı CSS filtresiyle sepya: grayscale(gri) sepia(sepya) saturate(doygunluk) brightness(parlaklik) hue-rotate(ton deg). acik false: kapalı (eski görünüm)."
+   },
+   "iyilesme": {
+    "kanat": true,
+    "govdeSepyasiKalkar": true,
+    "iyiKanat": "celestial-kirik-kanat-iyi",
+    "not": "CELESTIAL-KANAT-IYILESME (2026-11-23, kullanıcı): uyanışın uçuşu iyileşince (seviye ≥ data/celestial.json `kirik-kanat.ucus.seviyeEsigi`, şu an 13) kanat: true → iyileşmiş beyaz bütün kanat (`iyiKanat` slotu), govdeSepyasiKalkar: true → gövde sepyası kalkar (renkli jeton). İkisi de false: 3. seviyeden itibaren hep kırık kanat + sepya. Alan yoksa varsayılan true."
    }
   }
  },

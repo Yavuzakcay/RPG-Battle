@@ -47,6 +47,25 @@
    "omuz": 0.46,
    "herZaman": true
   },
+  "celestial-kirik-kanat-iyi": {
+   "ad": {
+    "tr": "Celestial Kırık Kanat (iyileşmiş)",
+    "en": "Celestial Broken Wing (healed)"
+   },
+   "not": "CELESTIAL-KANAT-IYILESME (2026-11-23): uçuşu iyileşen Kırık Kanat'ın beyaz bütün kanadı (CELESTIAL-KIRIK-KANAT-YENI öncesi görsel ve yerleşim; git e9dbaf48^:public/kanat/celestial-kirik-kanat.webp). Slot alt-soy-gorunum.json `celestialUyanis.kirik-kanat.iyilesme.iyiKanat` ile seçilir.",
+   "dosya": "celestial-kirik-kanat-iyi.webp",
+   "dosyaKapali": null,
+   "minSeviye": 3,
+   "olcek": 1.45,
+   "filtre": "",
+   "capa": [
+    0.568,
+    0.438
+   ],
+   "enBoy": 0.734,
+   "omuz": 0.46,
+   "herZaman": true
+  },
   "dragonborn": {
    "ad": {
     "tr": "Dragonborn Draconic Flight kanadı",
