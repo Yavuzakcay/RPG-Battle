@@ -265,7 +265,56 @@
    },
    "uyarilar": [],
    "sha1": "d494812834d9c1b95634702803dabdffdae0f5e0"
+  },
+  "human-erkek-monk-ID3": {
+   "kaynak": "assets\\soy-maske-ham\\human-erkek-monk-ID3.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.322,
+    "white": 0.091,
+    "spill": 0,
+    "removed": 1,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "319a50a4cdf44299742df079c1ecf8f3ddda044c"
+  },
+  "tiefling-erkek-fighter-ID3": {
+   "kaynak": "assets\\soy-maske-ham\\tiefling-erkek-fighter-ID3.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.393,
+    "white": 0.18,
+    "spill": 1,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "4e160e041044751bf459ce9826dad83b69bd5308"
+  },
+  "human-kadin-monk-ID8": {
+   "kaynak": "assets\\soy-maske-ham\\human-kadin-monk-ID8.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.172,
+    "white": 0.061,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "otomatik maskeyle IoU 0.17 (< 0.3): büyük olasılıkla hizasız"
+   ],
+   "sha1": "70be2ddd0367b0d01e7fc556e1902bea4e92bb3b"
   }
  },
- "atlanan": []
+ "atlanan": [
+  "orc-kadin-monk-GR.jpg: ad bir soylu jetonla eşleşmiyor (<ırk>-<male|female>-<sınıf> ya da <ırk>-<erkek|kadin>-<sınıf>-<kod>, .png|jpg)"
+ ]
 }

@@ -127,6 +127,7 @@
   "elf-kadin-rogue-ID4": "el",
   "human-erkek-barbarian-ID4": "el",
   "human-erkek-fighter-GR": "el",
+  "human-erkek-monk-ID3": "el",
   "human-erkek-paladin-ID3": "el",
   "human-erkek-rogue-ID4": "el",
   "human-erkek-sorcerer-SC-5": "el",
@@ -134,9 +135,11 @@
   "human-erkek-warlock-WL-10": "el",
   "human-kadin-barbarian-ID4": "el",
   "human-kadin-monk-ID10": "el",
+  "human-kadin-monk-ID8": "el",
   "human-kadin-paladin-ID3": "el",
   "human-kadin-rogue-ID4": "el",
   "human-kadin-warlock-WL-10": "el",
+  "tiefling-erkek-fighter-ID3": "el",
   "tiefling-erkek-sorcerer-SC-2": "el"
  },
  "uyarilar": []
