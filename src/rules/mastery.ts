@@ -8,6 +8,7 @@ import { classData, getClass, weapons, type MasteryId, type MasteryMechanic, typ
 import { classKit, optionTraining, packTraining } from './classFeatures';
 import type { CharacterSheet } from './stats';
 import { I } from './issueText';
+import { classesOf, isMulticlass, multiclassInfo } from './multiclass';
 
 /** Sınıf bu silahta yetkin mi (Simple hep; Martial sınıfa ya da Finesse/Light özelliğine göre). */
 export function weaponProficient(classId: string, weapon: Weapon, choices?: Record<string, string>, who?: { subclassId?: string; level?: number }): boolean {
@@ -15,6 +16,19 @@ export function weaponProficient(classId: string, weapon: Weapon, choices?: Reco
   return weapon.category === 'simple' || cls.weaponProficiency === 'martial'
     || cls.martialWeaponProperties.some((p) => weapon[p]) || optionTraining(classId, choices).martialWeapons
     || (!!who && packTraining(classId, who).martialWeapons);
+}
+
+/**
+ * Görev MC2: karakter bu silahta yetkin mi. Tek sınıfta `weaponProficient` aynen. Çoklu sınıfta (SRD 5.2.1 s. 25): ilk
+ * sınıfın bütün silah yetkinliği; sonraki sınıflardan yalnız "As a Multiclass Character" kutusundaki Martial silahlar
+ * (`data/cok-sinif.json` `ek.silah`) ve o sınıfın kazanılmış özelliklerinden gelenler (seçenekli özellik, paket ilkeli).
+ */
+export function sheetWeaponProficient(sheet: Pick<CharacterSheet, 'classId' | 'level' | 'subclassId' | 'classes' | 'featureChoices'>, weapon: Weapon): boolean {
+  if (!isMulticlass(sheet)) return weaponProficient(sheet.classId, weapon, sheet.featureChoices, sheet);
+  return classesOf(sheet).some((e, i) => i === 0
+    ? weaponProficient(e.classId, weapon, sheet.featureChoices, { subclassId: e.subclassId, level: e.level })
+    : weapon.category === 'simple' || ((multiclassInfo(e.classId)?.ek.silah ?? []).includes('martial') && weapon.category === 'martial')
+      || optionTraining(e.classId, sheet.featureChoices).martialWeapons || packTraining(e.classId, { subclassId: e.subclassId, level: e.level }).martialWeapons);
 }
 
 /** Silahın SRD ustalığı (silah kimliği `data/weapons.json` = `data/srd/weapons.json`). */
@@ -39,7 +53,7 @@ export const masteryRight = (sheet: CharacterSheet) => classKit(sheet.classId, s
 export function masteryOptions(sheet: CharacterSheet): Weapon[] {
   const right = masteryRight(sheet);
   if (!right) return [];
-  return weapons.filter((w) => weaponProficient(sheet.classId, w, sheet.featureChoices, sheet) && (!right.melee || !w.ranged) && !!weaponMasteryId(w.id));
+  return weapons.filter((w) => sheetWeaponProficient(sheet, w) && (!right.melee || !w.ranged) && !!weaponMasteryId(w.id));
 }
 
 /** Seçim sorunları: hak yok, fazla seçim, uygun olmayan silah. Boşsa geçerli. */

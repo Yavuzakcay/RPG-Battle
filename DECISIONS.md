@@ -2,6 +2,53 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev MC2: çoklu sınıf türetmesi; sürüm numarası ayrımı (2026-11-24; kural ve savaş kaydı sürümü değişmedi, karakter kayıt sürümü 4)
+
+**Sürüm numaraları (kullanıcı kararı, 2026-11-24).** Kural sürümü **104 KARAR104 işine** verildi. Çoklu sınıfın savaşa
+dokunan ilk adımı MC3 (büyü yuvası + ayrı Pact havuzu) **105'i alacak**; savaş kaydı sürümü de buna göre: KARAR104 savaş
+kaydını artırırsa o 26 olur ve MC3 27'yi alır, artırmazsa MC3 26. MC3 başlarken numaralar birlesik'in o günkü hâline
+bakılarak alınır (çakıştırılmaz). Bu notun yazıldığı an birlesik `d8c8ef78`: kural sürümü 103, `SAVE_VERSION` 25.
+`harita/belgeler/MULTICLASS-PLAN.md`'deki "kural 104 / savaş 26" yazımı bu kararla geçersiz.
+
+**MC2 (bu commit; SRD 5.2.1 s. 24–26).** Çoklu sınıflı karakterin türetmesi; tek sınıflı karakterde her sonuç MC2 öncesiyle
+aynı (test aşağıda). Savaş kurulumu (`combatantFromSheet`) ve sınıf başına büyü yeteneği/sayı sınırları kapsam dışı (MC3–MC4);
+çoklu sınıflı karakter oluşturucudan henüz kurulamıyor (MC5).
+
+- **Can:** 1. seviye canı yalnız ilk sınıfın 1. seviyesinde (tam zar + CON); sonraki her seviye o seviyenin sınıfının
+  "1. seviye sonrası" değeri (zar/2 + 1 + CON, en az 1). Draconic Resilience gibi seviye başı ekler o sınıfın seviyesiyle.
+- **Can zarı:** havuz zar türüne göre (`hitDicePool`; aynı türler birleşir), durumda `hitDiceSpentBy` (yalnız çoklu sınıfta,
+  harcanmışsa). Kısa dinlenmede zarlar **büyük zardan başlayarak** harcanır: SRD oyuncunun türü seçmesine izin verir, bu
+  yalnız varsayılan sıra; seçim arayüzü MC5. Tek sınıftan çoklu sınıfa geçen kayıtta türü bilinmeyen harcanmış zarlar
+  büyük zardan düşülür (havuz şişmez). Uzun dinlenme hepsini geri verir.
+- **Kurtarma yetkinliği:** temel kurtarmalar yalnız ilk sınıftan (ek sınıf kutularında kurtarma yok); özellikten gelenler
+  (Slippery Mind vb.) her sınıfın kendi seviyesinden.
+- **Zırh/silah eğitimi:** ilk sınıfın bütün eğitimi; sonraki sınıftan kutudakiler (`data/cok-sinif.json` `ek`) ve o sınıfın
+  kazanılmış özelliklerinden gelenler. SRD kutusu "Gain the <Class>'s level 1 features" dediği için 1. seviye seçenekli
+  özellikler de eğitim verir: ek sınıf Druid'de Primal Order Warden Medium zırh + Martial silah, Cleric'te Divine Order
+  Protector Heavy zırh getirir (SRD metniyle doğrulandı). İlk sınıfa özgü "Martial silahlardan Finesse/Light olanlar"
+  (Rogue'un çekirdek yetkinliği) ek sınıfa gelmez. Sarmalayıcılar `sheetArmorProficient` (`stats.ts`), `sheetWeaponProficient`
+  (`mastery.ts`); savaş içi çağrılar MC4'te.
+- **AC (K8):** geçerli zırhsız AC hesaplarından en yüksek olanı, eşitlikte sınıf sırasıyla ilki. **Hız (K7):** sınıfların hız
+  bonusları toplanır.
+- **Büyü yuvası (`sheetSpellcasting`):** Spellcasting tek sınıftan geliyorsa o sınıfın tablosu; iki ve daha çok Spellcasting
+  sınıfında Multiclass Spellcaster tablosu. Pact Magic Spellcasting sayılmaz: tek büyücü Warlock'sa onun Pact slotları dizide
+  (tek sınıflı Warlock gibi, kısa dinlenmede dolar); başka Spellcasting sınıfı varken Pact havuzu MC3'e kadar yok. Büyü
+  DC'si/saldırısı ilk Spellcasting sınıfının yeteneğiyle (sınıf başına yetenek MC3).
+- **Seviye yuvaları:** sınıf başına, sınıf seviyesiyle (`sheetAdvancementSlots`, yuvada `classId`); seçim yuvaya
+  `Advancement.classId` ile eşlenir (yoksa ilk sınıf). Aynı Fighting Style ikinci kez alınamaz (mevcut "bir kez" kuralı).
+  Feat bağlamı `sheetCasterCtx` (herhangi bir sınıfın Spellcasting'i ya da Fighting Style'ı).
+- **Oluşturucu denetimi (`characterIssues`):** ön koşul, en çok 3 sınıf, tekrar, toplam seviye, ek beceri listesi ve sınıf
+  başına alt sınıf (o sınıfın alt sınıf seviyesinde) TR/EN metinle (`issues.mc*`); Metamagic, Invocation ve uzmanlık o
+  özelliği veren sınıfın seviyesiyle; büyü listesi her sınıfın kendi seviyesiyle (sınıf başına sayı sınırları MC3).
+  `classScoped` çoklu sınıfta bütün sınıfların seçimlerini tutar.
+- **Test:** `src/rules/mc2.test.ts`. "Eski = yeni": 362 tek sınıflı durum (sim partilerinin bütün üyeleri 1, 3, 5, 11, 20 ve
+  her parti seviyesinde; örnek karakterler; 12 sınıf × 5 seviye yeni karakter) için türetme, skorlar, slotlar, tam/kısa/uzun
+  dinlenme durumu, seviye yuvaları ve sorunları, `classScoped`, ustalık seçenekleri ve `characterIssues` çıktılarının özeti
+  MC2 öncesi commit'te (`cdc8c2a0`) üretildi (`src/rules/fixtures/mc2-eski-yeni.json`, yardımcı `mc2EskiYeni.ts`, betik
+  `scripts/mc2-eski-yeni.ts`); bugünkü kod aynı özetleri veriyor. Ayrıca yeni sarmalayıcılar tek sınıfta eski işlevlerle
+  birebir, SRD örnekleri (Fighter 3 / Rogue 2 +3; Fighter 5 / Paladin 5 10d10; Cleric 5 / Paladin 5 5d8 + 5d10; Ranger 4 /
+  Sorcerer 3 → 5. seviye slotları).
+
 ## Görev MC1: çoklu sınıf veri modeli ve çoklu sınıf kararları (2026-11-24, kullanıcı kararı; karakter kayıt sürümü 4, kural ve savaş kaydı sürümü değişmedi)
 
 Plan `harita/belgeler/MULTICLASS-PLAN.md` (MC1–MC8). SRD 5.2.1 çoklu sınıf kuralları (s. 24–26 ve sınıf sayfalarındaki

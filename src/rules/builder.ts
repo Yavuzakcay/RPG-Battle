@@ -15,7 +15,8 @@ import { rollDice, rollTag, type Rng } from './dice';
 import { SKILL_IDS, SKILLS, type Skill } from './skills';
 import { backgroundById, backgroundOf, backgroundSkills, bonusesOf, magicInitiateProblems, otherSkillMax, speciesSkillChoice } from './backgrounds';
 import { MAX_ATTUNED, classSkillProblem, deriveStats, finalScores, spellSlotsFor, type CharacterSheet, type Scores } from './stats';
-import { advancementProblems, casterCtx, featEffects, sheetFeats } from './advancement';
+import { advancementProblems, featEffects, sheetCasterCtx, sheetFeats } from './advancement';
+import { classesOf, isMulticlass, multiclassProblems, type MulticlassProblem } from './multiclass';
 import { classKit, defaultSubclass, gainedFeatures, optionTraining, subclassLevel, subclassesOf, tableValue } from './classFeatures';
 import { masteryProblems } from './mastery';
 import { carryLoad, type CarryRule } from './carry';
@@ -272,16 +273,19 @@ const choiceClass = (key: string): string | null => {
  */
 export function classScoped(s: CharacterSheet): CharacterSheet {
   if (!classes.some((k) => k.id === s.classId)) return s;
-  const own = new Set([...spellOptions(s.classId, 20, s.subclassId), ...alternativeCantrips(s).options, ...tomeCantrips(s).options]);
+  // Görev MC2: çoklu sınıfta "aktif sınıf" karakterin bütün sınıfları (her sınıfın seçimleri kalır).
+  const own0 = isMulticlass(s) ? classesOf(s).filter((e) => classes.some((k) => k.id === e.classId)) : [{ classId: s.classId, subclassId: s.subclassId }];
+  const ids = new Set(own0.map((e) => e.classId));
+  const own = new Set([...own0.flatMap((e) => spellOptions(e.classId, 20, e.subclassId)), ...alternativeCantrips(s).options, ...tomeCantrips(s).options]);
   const out: CharacterSheet = { ...s };
   if (s.spellNames) out.spellNames = s.spellNames.filter((n) => own.has(n));
   if (s.spellbook) out.spellbook = s.spellbook.filter((n) => own.has(n));
-  const invocations = !!invocationSlots(s.classId, 20);
+  const invocations = own0.some((e) => !!invocationSlots(e.classId, 20));
   if (!invocations) { delete out.invocations; delete out.pactWeapon; }
-  if (!classKit(s.classId, 20, s.subclassId).metamagic) delete out.metamagic;
-  if (!gainedFeatures(s.classId, 20).some((f) => f.mechanic?.effect?.kind === 'wildShape')) delete out.wildShapeForms;
+  if (!own0.some((e) => classKit(e.classId, 20, e.subclassId).metamagic)) delete out.metamagic;
+  if (!own0.some((e) => gainedFeatures(e.classId, 20).some((f) => f.mechanic?.effect?.kind === 'wildShape'))) delete out.wildShapeForms;
   if (s.featureChoices) {
-    const kept = Object.entries(s.featureChoices).filter(([k]) => { const c = choiceClass(k); return c === null || c === s.classId; });
+    const kept = Object.entries(s.featureChoices).filter(([k]) => { const c = choiceClass(k); return c === null || ids.has(c); });
     if (kept.length) out.featureChoices = Object.fromEntries(kept); else delete out.featureChoices;
   }
   return out;
@@ -360,11 +364,32 @@ export type BuilderStep = 'character' | 'scores' | 'skills' | 'progress' | 'equi
 export interface CharacterIssue { step: BuilderStep; text: string }
 
 /** Karakterin sorunları (kaydetmeyi engeller), her biri ilgili sihirbaz adımıyla. Kurallar `characterProblems` ile aynı. */
+const className = (id: string): string => classes.find((k) => k.id === id)?.name ?? id;
+
+/** Görev MC2: çoklu sınıf sorunlarının metni (TR/EN `issues`; kural modülü yapılandırılmış sorun döner). */
+export function multiclassIssueTexts(s: CharacterSheet, scores: Scores): string[] {
+  const text = (p: MulticlassProblem): string => {
+    switch (p.kind) {
+      case 'cok': return I().mcTooMany(p.max, p.count);
+      case 'tekrar': return I().mcDuplicate(className(p.classId));
+      case 'bilinmeyen': return I().classMissing;
+      case 'seviye': return I().mcLevel(className(p.classId), p.level);
+      case 'toplam': return I().mcTotal(p.total, p.max);
+      case 'onKosul': return I().mcPrereq(className(p.classId), p.abilities.map((a) => a.toUpperCase()), p.any);
+      case 'ekBeceri': return I().mcSkill(className(p.classId), SKILLS[p.skill]?.name ?? p.skill);
+    }
+  };
+  return multiclassProblems(s, scores, (id) => getClass(id).skillChoices.from).map(text);
+}
+
 export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRule } = {}): CharacterIssue[] {
   // Görev K20: eski kayıtta Skilled becerileri diğer becerilerin içinde.
   const c = normalizeFeatSkills(c0);
   // Görev K17: başka sınıfa ait seçimler sessizce yok sayılır.
   const s = classScoped(c.sheet);
+  // Görev MC2: çoklu sınıf (tek sınıfta `entries` tek öğe, aşağıdaki denetimler eskisi gibi).
+  const multi = isMulticlass(s);
+  const entries = classesOf(s);
   const out: CharacterIssue[] = [];
   let step: BuilderStep = 'character';
   const push = (text: string) => out.push({ step, text });
@@ -421,8 +446,11 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
     const alt = alternativeCantrips(s);
     const own = new Set(spellOptions(s.classId, s.level));
     const tome = tomeCantrips(s);
-    const allowed = new Set([...spellOptions(s.classId, s.level, s.subclassId), ...alt.options, ...tome.options]);
+    // Görev MC2: çoklu sınıfta her sınıfın listesi kendi seviyesiyle; sınıf başına sayı sınırları MC3'te (aşağıdaki sınır
+    // denetimleri tek sınıf içindir).
+    const allowed = new Set([...(multi ? entries.flatMap((e) => spellOptions(e.classId, e.level, e.subclassId)) : spellOptions(s.classId, s.level, s.subclassId)), ...alt.options, ...tome.options]);
     for (const sp of s.spellNames ?? []) if (!allowed.has(sp)) push(I().spellNotAllowed(sp));
+    if (!multi) {
     // Kuyruk 18 H3: Magical Discoveries sınırı (başka listelerden en çok N büyü).
     const cap = discoveryCap(s.classId, s.level, s.subclassId);
     // Görev B94: Magical Secrets (10+) varken başka listeden hazırlanan büyü serbest (sayıya girer); sınır yalnız cantrip'te.
@@ -459,20 +487,30 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
         if ((spells.find((x) => x.name === n)?.level ?? 0) > 0 && !cnt.book.includes(n)) push(I().notInBook(n));
       }
     }
+    }
     // Alt sınıf, seviye yuvaları (ASI/feat), uzmanlık hakkı (Görev N).
     // Kayıtta olmayan alt sınıf (dış içerik silindi ya da kapalı; Görev E1) sorun sayılmaz: karakter bozulmaz, alt sınıf
     // özellikleri olmadan oynar, listede "içerik eksik" görünür (`subclassMissing`).
     step = 'character';
-    if (!s.subclassId && needsSubclass(s)) push(I().subclassNeeded(subclassLevel(s.classId) ?? 0));
+    // Görev MC2: çoklu sınıfta alt sınıf her sınıfın kendi seviyesine göre (o sınıfın alt sınıf seviyesinde).
+    if (!multi && !s.subclassId && needsSubclass(s)) push(I().subclassNeeded(subclassLevel(s.classId) ?? 0));
+    if (multi) {
+      for (const e of entries) if (!e.subclassId && needsSubclass(e)) push(I().mcSubclass(className(e.classId), subclassLevel(e.classId) ?? 0));
+      try { multiclassIssueTexts(s, finalScores(s)).forEach(push); } catch (e) { push(e instanceof Error ? e.message : String(e)); }
+    }
+    // Görev MC2: sınıfa bağlı seçimler, o özelliği veren sınıfın kendi seviyesiyle (Metamagic, Invocation, uzmanlık).
+    const of = (has: (e: { classId: string; level: number; subclassId?: string }) => boolean) => entries.find(has) ?? entries[0]!;
     // Görev SORCERER: Metamagic seçenekleri (sayı sınıf verisinden).
-    const mm = classKit(s.classId, s.level, s.subclassId).metamagic;
+    const mmE = multi ? of((e) => !!classKit(e.classId, e.level, e.subclassId).metamagic) : s;
+    const mm = classKit(mmE.classId, mmE.level, mmE.subclassId).metamagic;
     const picked = s.metamagic ?? [];
     if (mm && mm.count > 0 && picked.length !== mm.count) push(I().metamagicCount(mm.count, picked.length));
     if (mm && picked.some((id) => mm.costs[id] === undefined)) push(I().metamagicUnknown);
     // Görev WARLOCK: Eldritch Invocations (sayı SRD tablosundan) ve pact silahı.
-    invocationProblems(s.classId, s.level, s.invocations, s.spellNames ?? []).forEach(push);
+    const invE = multi ? of((e) => !!invocationSlots(e.classId, e.level)) : s;
+    invocationProblems(invE.classId, invE.level, s.invocations, s.spellNames ?? []).forEach(push);
     // Görev B93 (SRD 5.2.1 s. 74): pact silahı Simple ya da Martial Melee silah olmalı (menzilli silah uyarılır).
-    if (invocationKit(s.classId, s.level, s.invocations).pactWeapon && (!(s.weapons ?? []).some((w) => w.name === s.pactWeapon)
+    if (invocationKit(invE.classId, invE.level, s.invocations).pactWeapon && (!(s.weapons ?? []).some((w) => w.name === s.pactWeapon)
       || !!weapons.find((w) => w.name === s.pactWeapon)?.ranged)) {
       push(I().pactBlade);
     }
@@ -481,12 +519,14 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
     // Görev G1: Magic Initiate (Acolyte, Sage) iki cantrip ve bir 1. seviye büyü.
     magicInitiateProblems(s).forEach(push);
     try {
-      advancementProblems(s, { scores: finalScores({ ...s, advancements: [] }), ...casterCtx(s.classId, s.level, s.subclassId) }).forEach(push);
+      advancementProblems(s, { scores: finalScores({ ...s, advancements: [] }), ...sheetCasterCtx(s) }).forEach(push);
     } catch (e) {
       push(e instanceof Error ? e.message : String(e));
     }
     step = 'skills';
-    const ekit = classKit(s.classId, s.level, s.subclassId);
+    // Görev MC2: çoklu sınıfta uzmanlık hakları sınıfların toplamı (her biri kendi seviyesiyle).
+    const ekits = multi ? entries.map((e) => classKit(e.classId, e.level, e.subclassId)) : [classKit(s.classId, s.level, s.subclassId)];
+    const ekit = { expertise: ekits.reduce((n, k) => n + k.expertise, 0), expertiseLimited: ekits.flatMap((k) => k.expertiseLimited) };
     const allowedExpertise = ekit.expertise;
     const chosen = s.expertise ?? [];
     if (chosen.length > allowedExpertise) push(I().expertiseMax(allowedExpertise, chosen.length));

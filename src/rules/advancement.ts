@@ -12,6 +12,8 @@ import { ABILITIES, type Ability } from './abilities';
 import { classKit } from './classFeatures';
 import { originFeatOf, speciesFeatOf } from './backgrounds';
 import { I } from './issueText';
+import { classesOf, isMulticlass } from './multiclass';
+import type { ClassEntry } from './stats';
 
 export type Scores = Record<Ability, number>;
 
@@ -30,7 +32,8 @@ export interface Advancement {
 }
 
 export type SlotKind = 'asi' | 'epic' | 'style';
-export interface AdvancementSlot { level: number; kind: SlotKind; category: string }
+/** `classId`: Görev MC2, çoklu sınıfta yuvanın sınıfı (`sheetAdvancementSlots`); tek sınıfta yok. */
+export interface AdvancementSlot { level: number; kind: SlotKind; category: string; classId?: string }
 
 /** Sınıf ve seviyede açılan yuvalar (SRD tablosundaki ASI ve Epic Boon satırları, Fighting Style özelliği). */
 export function advancementSlots(classId: string, level: number, subclassId?: string): AdvancementSlot[] {
@@ -40,6 +43,15 @@ export function advancementSlots(classId: string, level: number, subclassId?: st
   for (const l of p.asiLevels) if (l <= level) out.push({ level: l, kind: 'asi', category: 'General' });
   for (const l of p.epicBoonLevels) if (l <= level) out.push({ level: l, kind: 'epic', category: 'Epic Boon' });
   return out.sort((a, b) => a.level - b.level || a.kind.localeCompare(b.kind));
+}
+
+/**
+ * Görev MC2: karakterin bütün seviye yuvaları. Tek sınıfta `advancementSlots` aynen. Çoklu sınıfta her sınıfın yuvaları
+ * kendi sınıf seviyesiyle ve `classId` ile (ASI 4, 8… sınıf seviyesi; iki sınıfın 4. seviye yuvaları ayrı).
+ */
+export function sheetAdvancementSlots(sheet: { classId: string; level: number; subclassId?: string; classes?: ClassEntry[] }): AdvancementSlot[] {
+  if (!isMulticlass(sheet)) return advancementSlots(sheet.classId, sheet.level, sheet.subclassId);
+  return classesOf(sheet).flatMap((e) => advancementSlots(e.classId, e.level, e.subclassId).map((x) => ({ ...x, classId: e.classId })));
 }
 
 export const allFeats = (): SrdFeat[] => classData.feats;
@@ -91,6 +103,15 @@ export interface FeatCtx { scores: Scores; casterClass: boolean; hasStyle?: bool
 export function casterCtx(classId: string, level: number, subclassId?: string): Pick<FeatCtx, 'casterClass' | 'hasStyle'> {
   const casting = getClass(classId).casting;
   return { casterClass: !!casting && casting.type !== 'pact', hasStyle: advancementSlots(classId, level, subclassId).some((s) => s.kind === 'style') };
+}
+/**
+ * Görev MC2: karakterin feat bağlamı. Tek sınıfta `casterCtx` aynen; çoklu sınıfta herhangi bir sınıfın Spellcasting'i ya da
+ * Fighting Style özelliği (sınıf seviyesiyle).
+ */
+export function sheetCasterCtx(sheet: { classId: string; level: number; subclassId?: string; classes?: ClassEntry[] }): Pick<FeatCtx, 'casterClass' | 'hasStyle'> {
+  if (!isMulticlass(sheet)) return casterCtx(sheet.classId, sheet.level, sheet.subclassId);
+  const all = classesOf(sheet).map((e) => casterCtx(e.classId, e.level, e.subclassId));
+  return { casterClass: all.some((x) => x.casterClass), hasStyle: all.some((x) => x.hasStyle) };
 }
 export function featOptions(slot: AdvancementSlot, ctx: FeatCtx): SrdFeat[] {
   return allFeats().filter((f) => featProblem(f, slot, ctx) === null);
@@ -242,7 +263,7 @@ export function featEffects(featIds: string[]): {
 
 /** Seçimlerin kurala uygunluğu (oluşturucu): sorun listesi. Boş yuva sorun değildir. */
 export function advancementProblems(
-  sheet: { classId: string; level: number; subclassId?: string; originFeat?: string; backgroundId?: string; advancements?: Advancement[]; raceId?: string; speciesFeat?: string },
+  sheet: { classId: string; level: number; subclassId?: string; originFeat?: string; backgroundId?: string; advancements?: Advancement[]; raceId?: string; speciesFeat?: string; classes?: ClassEntry[] },
   ctx: FeatCtx,
 ): string[] {
   const out: string[] = [];
@@ -260,23 +281,27 @@ export function advancementProblems(
     else if (f.category !== 'Origin') out.push(I().originNot(f.name));
     else if (species === origin && !f.repeatable) out.push(I().featOnce(f.name));
   }
-  const slots = advancementSlots(sheet.classId, sheet.level, sheet.subclassId);
+  // Görev MC2: çoklu sınıfta yuva sınıfıyla eşleşir (`Advancement.classId`, yoksa ilk sınıf); tek sınıfta eskisi gibi.
+  const slots = sheetAdvancementSlots(sheet);
+  const slotKey = (s: AdvancementSlot) => `${s.classId ? `${s.classId}/` : ''}${s.level}:${s.kind}`;
+  const ofClass = (s: AdvancementSlot, a: Advancement) => !s.classId || s.classId === (a.classId ?? sheet.classId);
   const used = new Set<string>();
   const taken: string[] = [...(origin ? [origin] : []), ...(species ? [species] : [])];
   for (const a of sheet.advancements ?? []) {
-    const slot = slots.find((s) => s.level === a.level && !used.has(`${s.level}:${s.kind}`)
+    const slot = slots.find((s) => s.level === a.level && ofClass(s, a) && !used.has(slotKey(s))
       && (s.kind === 'style' ? isStyleChoice(a.featId) : true));
     // Yuvanın seçeneği (Blessed Warrior): yalnızca o sınıfın Fighting Style yuvasında.
     if (slotAlternativeById(a.featId)) {
-      const own = classKit(sheet.classId, sheet.level, sheet.subclassId).slotAlternatives.some((x) => x.id === a.featId && x.level === a.level);
+      const e = slot?.classId ? classesOf(sheet).find((x) => x.classId === slot.classId) : undefined;
+      const own = (e ? classKit(e.classId, e.level, e.subclassId) : classKit(sheet.classId, sheet.level, sheet.subclassId)).slotAlternatives.some((x) => x.id === a.featId && x.level === a.level);
       if (!slot || slot.kind !== 'style' || !own) { out.push(I().noSlotAlt(a.level, slotAlternativeById(a.featId)?.name ?? a.featId)); continue; }
-      used.add(`${slot.level}:${slot.kind}`);
+      used.add(slotKey(slot));
       continue;
     }
     const f = featById(a.featId);
     if (!f) { out.push(I().featUnknown(a.featId)); continue; }
     if (!slot) { out.push(I().noSlotAlt(a.level, f.name)); continue; }
-    used.add(`${slot.level}:${slot.kind}`);
+    used.add(slotKey(slot));
     const p = featProblem(f, slot, ctx);
     if (p) out.push(p);
     if (taken.includes(f.id) && !f.repeatable) out.push(I().featOnce(f.name));

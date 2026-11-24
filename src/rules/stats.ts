@@ -5,12 +5,13 @@
 import { SHIELD, armor as armorList, getClass, getRace, items as itemList, spellSlots } from '../data';
 import { ABILITIES, abilityModifier, proficiencyBonus, type Ability } from './abilities';
 import { isSkill, SKILLS, skillTable, type Skill } from './skills';
-import { classKit, gainedFeatures, optionTraining, packTraining, speedBonus } from './classFeatures';
+import { classKit, gainedFeatures, optionTraining, packTraining, speedBonus, type ClassKit } from './classFeatures';
 import { applyIncreases, featEffects, sheetFeats, type Advancement } from './advancement';
 import { lineageEtki, raceSpeed } from './lineage';
 import { findSubclass } from './subclasses';
 import { bonusesOf, type MagicInitiatePick } from './backgrounds';
 import { I } from './issueText';
+import { classesOf, isMulticlass, multiclassInfo } from './multiclass';
 
 export type Scores = Record<Ability, number>;
 
@@ -151,6 +152,21 @@ export function armorProficient(classId: string, type: 'none' | 'light' | 'mediu
     || (!!who && packTraining(classId, who).armor.includes(type));
 }
 
+/**
+ * Görev MC2: karakter bu zırh türünde (ya da kalkanda) eğitimli mi. Tek sınıfta `armorProficient` aynen. Çoklu sınıfta
+ * (SRD 5.2.1 s. 25 "Proficiencies"): ilk sınıfın bütün eğitimi; sonraki sınıflardan yalnız "As a Multiclass Character"
+ * kutusundakiler (`data/cok-sinif.json` `ek.zirh`) ve o sınıfın kazanılmış özelliklerinden gelenler (seçenekli özellik,
+ * paket `yetkinlik` ilkeli; sınıf seviyesiyle).
+ */
+export function sheetArmorProficient(sheet: Pick<CharacterSheet, 'classId' | 'level' | 'subclassId' | 'classes' | 'featureChoices'>, type: 'none' | 'light' | 'medium' | 'heavy' | 'shield' | undefined): boolean {
+  if (!isMulticlass(sheet)) return armorProficient(sheet.classId, type, sheet.featureChoices, sheet);
+  if (!type || type === 'none') return true;
+  return classesOf(sheet).some((e, i) => i === 0
+    ? armorProficient(e.classId, type, sheet.featureChoices, { subclassId: e.subclassId, level: e.level })
+    : (multiclassInfo(e.classId)?.ek.zirh ?? []).includes(type) || optionTraining(e.classId, sheet.featureChoices).armor.includes(type)
+      || packTraining(e.classId, { subclassId: e.subclassId, level: e.level }).armor.includes(type));
+}
+
 /** SRD 5.2.1 "Attunement": bir yaratık aynı anda en çok 3 eşyaya uyumlu olabilir. */
 export const MAX_ATTUNED = 3;
 
@@ -193,7 +209,10 @@ export function finalScores(sheet: CharacterSheet): Scores {
   // Seviye yuvalarındaki yetenek artışları (ASI +2/+1, feat'lerin +1'i; tavan feat'e göre).
   const s = applyIncreases(base, sheet.advancements);
   // Kuyruk 19: sınıf özelliğinden yetenek artışı (Primal Champion, Body and Mind: +4, en çok 25).
-  for (const b of classKit(sheet.classId, sheet.level, sheet.subclassId).scoreBonus) for (const a of b.abilities) s[a] = Math.max(s[a], Math.min(b.max, s[a] + b.value));
+  // Görev MC2: çoklu sınıfta her sınıfın kendi seviyesiyle.
+  const scoreBonus = isMulticlass(sheet) ? classesOf(sheet).flatMap((e) => classKit(e.classId, e.level, e.subclassId).scoreBonus)
+    : classKit(sheet.classId, sheet.level, sheet.subclassId).scoreBonus;
+  for (const b of scoreBonus) for (const a of b.abilities) s[a] = Math.max(s[a], Math.min(b.max, s[a] + b.value));
   // "Skoru en az X yap" etkisi olan itemler (sınır 20'yi aşabilir).
   for (const name of activeItemNames(sheet)) {
     const set = findItem(name).effects.setAbility;
@@ -236,6 +255,27 @@ export function spellSlotsFor(classId: string, level: number): number[] {
     slots[slotLevel - 1] = count;
   }
   return slots;
+}
+
+/**
+ * Görev MC2: karakterin büyü slotları ve büyü yeteneği sınıfı (SRD 5.2.1 s. 25–26). Tek sınıfta `spellSlotsFor` aynen.
+ * Çoklu sınıfta: Spellcasting yalnız bir sınıftan geliyorsa o sınıfın kendi tablosu; iki ve daha çok Spellcasting sınıfında
+ * Multiclass Spellcaster tablosu (Bard/Cleric/Druid/Sorcerer/Wizard seviyelerinin tamamı + Paladin/Ranger seviyelerinin
+ * yarısı, yukarı yuvarlanır; tablo `spellSlots.full` ile aynı). Pact Magic Spellcasting sayılmaz: tek büyücü Warlock'sa
+ * onun Pact slotları bu dizide (tek sınıflı Warlock gibi); başka Spellcasting sınıfı varken Pact havuzu MC3'te ayrı gelir.
+ * Büyü yeteneği: ilk Spellcasting sınıfı (yoksa Pact sınıfı); sınıf başına yetenek MC3.
+ */
+export function sheetSpellcasting(sheet: Pick<CharacterSheet, 'classId' | 'level' | 'subclassId' | 'classes'>): { slots: number[]; castClass: string | null } {
+  if (!isMulticlass(sheet)) return { slots: spellSlotsFor(sheet.classId, sheet.level), castClass: getClass(sheet.classId).casting ? sheet.classId : null };
+  const list = classesOf(sheet);
+  const casters = list.filter((e) => { const y = multiclassInfo(e.classId)?.yuva; return y === 'tam' || y === 'yari'; });
+  const pact = list.find((e) => multiclassInfo(e.classId)?.yuva === 'pact');
+  if (casters.length === 0) return pact ? { slots: spellSlotsFor(pact.classId, pact.level), castClass: pact.classId } : { slots: [0, 0, 0, 0, 0, 0, 0, 0, 0], castClass: null };
+  if (casters.length === 1) return { slots: spellSlotsFor(casters[0]!.classId, casters[0]!.level), castClass: casters[0]!.classId };
+  const casterLevel = casters.reduce((n, e) => n + (multiclassInfo(e.classId)?.yuva === 'tam' ? e.level : Math.ceil(e.level / 2)), 0);
+  const slots = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+  (spellSlots.full[Math.min(20, casterLevel) - 1] ?? []).forEach((n, i) => { slots[i] = n; });
+  return { slots, castClass: casters[0]!.classId };
 }
 
 /** Kuyruk K48: alt sınıfın ek beceri yetkinlikleri (alt sınıf seviyesinden; Karadul: Persuasion, Deception). */
@@ -299,11 +339,21 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
 
   // AC (bileşenleriyle)
   const acParts: DerivedStats['acParts'] = [];
-  const kit = classKit(cls.id, level, sheet.subclassId, sheet.featureChoices);
+  // Görev MC2: çoklu sınıfta her sınıfın kiti kendi sınıf seviyesiyle (SRD 5.2.1 s. 25 "Class Features"); tek sınıfta
+  // `kits` tek öğe ve `kit` eskisiyle aynı çağrı.
+  const multi = isMulticlass(sheet);
+  const entries = classesOf(sheet);
+  const kits = multi ? entries.map((e) => ({ e, kit: classKit(e.classId, e.level, e.subclassId, sheet.featureChoices) })) : null;
+  const kit = kits ? kits[0]!.kit : classKit(cls.id, level, sheet.subclassId, sheet.featureChoices);
   if (ar.type === 'none') {
     acParts.push({ kind: 'base', value: 10 }, { kind: 'dex', value: modifiers.dex });
     // Unarmored Defense (veriden): yetenek değiştiricileri; bazı sınıflarda kalkanla geçmez.
-    const ud = kit.unarmoredDefense;
+    // Görev MC2 (SRD 5.2.1 s. 25 "Armor Class": aynı anda yalnız bir hesap; kullanıcı kararı K8): çoklu sınıfta
+    // geçerli zırhsız AC hesaplarından en yüksek olanı (eşitlikte sınıf sırasıyla ilki).
+    const fits = (u: ClassKit['unarmoredDefense']) => !!u && (u.shield || !sheet.shield);
+    const udValue = (u: NonNullable<ClassKit['unarmoredDefense']>) => u.abilities.filter((a) => a !== 'dex').reduce((n, a) => n + modifiers[a], 0);
+    const ud = !kits ? kit.unarmoredDefense
+      : kits.map((k) => k.kit.unarmoredDefense).filter(fits).reduce<ClassKit['unarmoredDefense']>((best, u) => (!best || udValue(u!) > udValue(best) ? u : best), null);
     if (ud && (ud.shield || !sheet.shield)) {
       for (const a of ud.abilities) if (a !== 'dex') acParts.push({ kind: a, value: modifiers[a] });
     }
@@ -316,7 +366,7 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     if (ar.type !== 'heavy') acParts.push({ kind: 'dex', value: dexPart });
   }
   // Görev K9d: kalkanın AC'si yalnızca eğitimle (SRD 5.2.1 Armor Training: Shield).
-  if (sheet.shield && armorProficient(cls.id, 'shield', sheet.featureChoices, sheet)) acParts.push({ kind: 'shield', value: SHIELD.baseAc });
+  if (sheet.shield && (multi ? sheetArmorProficient(sheet, 'shield') : armorProficient(cls.id, 'shield', sheet.featureChoices, sheet))) acParts.push({ kind: 'shield', value: SHIELD.baseAc });
   const feats = featEffects(sheetFeats(sheet));
   // Defense (Fighting Style): zırh giyerken +1.
   if (feats.armoredAcBonus && ar.type !== 'none') acParts.push({ kind: 'feat', value: feats.armoredAcBonus, name: 'Defense' });
@@ -335,8 +385,13 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
   // HP
   const hd = cls.hitDie;
   const con = modifiers.con;
-  const maxHp =
-    Math.max(1, hd + con) +
+  // Görev MC2 (SRD 5.2.1 s. 25 "Hit Points and Hit Point Dice"): 1. seviye canı yalnız toplam seviye 1'de (ilk sınıf);
+  // sonraki her seviye o seviyenin sınıfının "1. seviye sonrası" değeri. Draconic Resilience o sınıfın seviyesiyle.
+  const maxHp = kits
+    ? Math.max(1, hd + con)
+      + kits.reduce((n, { e, kit: k }, i) => n + (i === 0 ? e.level - 1 : e.level) * Math.max(1, getClass(e.classId).hitDie / 2 + 1 + con) + k.hpPerLevel * e.level, 0)
+      + (race.hpPerLevel ?? 0) * level
+    : Math.max(1, hd + con) +
     (level - 1) * Math.max(1, hd / 2 + 1 + con) +
     (race.hpPerLevel ?? 0) * level +
     // Görev SORCERER: Draconic Resilience (veriden: seviye başına +1).
@@ -349,19 +404,29 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
   // Kuyruk AS1b: Dağ alt soyu ağır zırhın Güç şartı hız cezasını yok sayar.
   if (armorStrengthShort !== undefined && !(ar.type === 'heavy' && lineageEtki(sheet)?.agirZirhHizCezasiYok)) speed -= 10;
   // Fast Movement, Unarmored Movement (veriden).
-  speed += speedBonus(cls.id, level, { type: ar.type, shield: sheet.shield }, sheet.subclassId);
+  // Görev MC2 (kullanıcı kararı K7): çoklu sınıfta hız bonusları (Fast Movement, Unarmored Movement) toplanır.
+  speed += kits ? kits.reduce((n, { e }) => n + speedBonus(e.classId, e.level, { type: ar.type, shield: sheet.shield }, e.subclassId), 0)
+    : speedBonus(cls.id, level, { type: ar.type, shield: sheet.shield }, sheet.subclassId);
 
   // Save'ler
   const soyEtki = lineageEtki(sheet);
   const saveBonus = sum((e) => e.saveBonus);
+  // Görev MC2 (SRD 5.2.1 s. 25): temel kurtarma yetkinliği yalnız ilk sınıftan (ek sınıf kutularında kurtarma yok);
+  // özellikten gelen kurtarma yetkinliği (Slippery Mind, Disciplined Survivor…) her sınıfın kendi seviyesinden.
+  const kitSaves = kits ? [...new Set(kits.flatMap((k) => k.kit.saveProficiencies))] : kit.saveProficiencies;
   const saves = {} as Scores;
   for (const a of ABILITIES) {
-    saves[a] = modifiers[a] + saveBonus + (soyEtki?.kurtarma?.[a] ?? 0) + (cls.saves.includes(a) || kit.saveProficiencies.includes(a) ? prof : 0);
+    saves[a] = modifiers[a] + saveBonus + (soyEtki?.kurtarma?.[a] ?? 0) + (cls.saves.includes(a) || kitSaves.includes(a) ? prof : 0);
   }
 
-  const castMod = cls.casting ? modifiers[cls.casting.ability] : 0;
+  // Görev MC2: büyü yeteneği ve slotlar `sheetSpellcasting` (tek sınıfta eskisiyle aynı: sınıfın kendisi).
+  const casting = multi ? sheetSpellcasting(sheet) : null;
+  const castCls = casting ? (casting.castClass ? getClass(casting.castClass) : null) : cls;
+  const castMod = castCls?.casting ? modifiers[castCls.casting.ability] : 0;
   // Görev BARD: Jack of All Trades (veriden: `stat: jackOfAllTrades`).
-  const jack = gainedFeatures(cls.id, level, sheet.subclassId).some((f) => f.mechanic?.stat === 'jackOfAllTrades' && f.mechanic.status !== 'none') ? Math.floor(prof / 2) : 0;
+  // Görev MC2: çoklu sınıfta herhangi bir sınıfın kazanılmış özelliğinden (sınıf seviyesiyle).
+  const jackOf = (id: string, lv: number, sub?: string) => gainedFeatures(id, lv, sub).some((f) => f.mechanic?.stat === 'jackOfAllTrades' && f.mechanic.status !== 'none');
+  const jack = (kits ? kits.some(({ e }) => jackOf(e.classId, e.level, e.subclassId)) : jackOf(cls.id, level, sheet.subclassId)) ? Math.floor(prof / 2) : 0;
   return {
     scores,
     modifiers,
@@ -378,10 +443,10 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     jack,
     saves,
     ...(saveBonus ? { itemSaveBonus: saveBonus } : {}),
-    saveProficiencies: [...cls.saves, ...kit.saveProficiencies.filter((a) => !cls.saves.includes(a))],
+    saveProficiencies: [...cls.saves, ...kitSaves.filter((a) => !cls.saves.includes(a))],
     skills: withSoySkills(skillTable(modifiers, prof, subclassSkills(sheet), sheet.expertise ?? []), modifiers, jack, soyEtki?.beceri),
-    spellSaveDc: cls.casting ? 8 + prof + castMod : null,
-    spellAttack: cls.casting ? prof + castMod : null,
-    spellSlots: spellSlotsFor(cls.id, level),
+    spellSaveDc: castCls?.casting ? 8 + prof + castMod : null,
+    spellAttack: castCls?.casting ? prof + castMod : null,
+    spellSlots: casting ? casting.slots : spellSlotsFor(cls.id, level),
   };
 }
