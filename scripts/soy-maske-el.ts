@@ -5,9 +5,18 @@ import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 import { checkHandMask, GRAY_TOLERANCE, maskSources } from '../src/ui/handMask';
-import { CHAR, EL_KOPYA, ELLE, RAPOR } from './soy-maske-yollar';
+import { CHAR, EL_KOPYA, ELLE, RAPOR, ROOT } from './soy-maske-yollar';
 
 export interface HandMasks { weights: Map<string, Uint8Array>; sources: Record<string, 'el' | 'oto'>; warnings: string[] }
+
+/**
+ * JETON-KALAN-TOPLU: `data/maske-duzelt.json` `jetonlar.<ad>.elIptal` (bilerek boş maske kararı) elle maskeyi yok sayar; dosyaya
+ * dokunulmaz (ELLE yalnızca okunur), jeton otomatik maskeye (maske-duzelt.py `bos`: tümü 0) düşer.
+ */
+export function handMaskCancelled(): Set<string> {
+  const duzelt = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/maske-duzelt.json'), 'utf8')) as { jetonlar?: Record<string, { elIptal?: boolean }> };
+  return new Set(Object.entries(duzelt.jetonlar ?? {}).filter(([, v]) => v.elIptal).map(([k]) => k));
+}
 
 export async function applyHandMasks(sprites: string[]): Promise<HandMasks> {
   const weights = new Map<string, Uint8Array>();
@@ -17,7 +26,9 @@ export async function applyHandMasks(sprites: string[]): Promise<HandMasks> {
     const m = await sharp(path.join(CHAR, `${s}.webp`)).metadata();
     sizes.set(s, { w: m.width ?? 0, h: m.height ?? 0 });
   }
-  const files = fs.existsSync(ELLE) ? fs.readdirSync(ELLE).filter((f) => !f.startsWith('.') && f.toLowerCase() !== 'readme.md') : [];
+  const iptal = new Set([...handMaskCancelled()].map((k) => `${k}.png`));
+  const files = fs.existsSync(ELLE) ? fs.readdirSync(ELLE).filter((f) => !f.startsWith('.') && f.toLowerCase() !== 'readme.md' && !iptal.has(f)) : [];
+  if (iptal.size) console.log(`elle maske yok sayıldı (elIptal): ${[...iptal].join(', ')}`);
   for (const file of files) {
     try {
       const { data, info } = await sharp(path.join(ELLE, file)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });

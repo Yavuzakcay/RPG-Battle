@@ -16,7 +16,7 @@ import type { TintSpec } from '../src/battle/types';
 import { genericTokenRetired, lineageTint, paletteKeys, paletteTint } from '../src/battle/avatar';
 
 import { CHAR, ELLE, OTO as OUT, ROOT } from './soy-maske-yollar';
-import { applyHandMasks } from './soy-maske-el';
+import { applyHandMasks, handMaskCancelled } from './soy-maske-el';
 import { basOverlay, buildHeads } from './soy-bas';
 import { applyHeadOverlay } from '../src/ui/headOverlay';
 const CLASSES = ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard'];
@@ -252,7 +252,9 @@ if (args.includes('--alt')) {
 // Görev K21: elle maskeler (assets/soy-maske-el/; yalnızca okunur) önce; ölçüm ve önizleme onları kullanır.
 // GORSEL-DUZELTME: elle maskesi olan alt sınıf/Gariban jetonları da (raporda yalnız bunlar; sınıf-genel jetonların hepsi).
 const SUB_EL = new RegExp(`^(${Object.keys(RACES).join('|')})-(erkek|kadin)-(${CLASSES.join('|')})-.+$`);
-const elleSub = fs.existsSync(ELLE) ? fs.readdirSync(ELLE).map((f) => f.replace(/\.png$/i, '')).filter((n) => SUB_EL.test(n) && fs.existsSync(path.join(CHAR, `${n}.webp`))) : [];
+// JETON-KALAN-TOPLU: `elIptal` jetonları (elle maske yok sayılır) raporda yok (alt sınıf satırları yalnız 'el').
+const elIptal = handMaskCancelled();
+const elleSub = fs.existsSync(ELLE) ? fs.readdirSync(ELLE).map((f) => f.replace(/\.png$/i, '')).filter((n) => SUB_EL.test(n) && !elIptal.has(n) && fs.existsSync(path.join(CHAR, `${n}.webp`))) : [];
 // DRAGONBORN-ESKI-JETON-KALDIR: sınıf-genel jetonu kaldırılmış ırk (`data/jeton-genel.json`) sınıf-genel maske/ölçüm döngüsünde yok.
 const GENEL_IRKLAR = Object.keys(RACES).filter((r) => !genericTokenRetired(r));
 const hand = await applyHandMasks([...GENEL_IRKLAR.flatMap((r) => ['female', 'male'].flatMap((g) => CLASSES.map((c) => `${r}-${g}-${c}`))), ...elleSub]);

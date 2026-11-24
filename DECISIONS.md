@@ -2,7 +2,7 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
-## BIRLESTIR-DROW: quirky-bell (DROW-MASKE-TOPLU) birlesik'e birleşti (2026-11-24; yalnız maske ve veri)
+## BIRLESTIR-DROW-VE-TOPLU: quirky-bell (DROW-MASKE-TOPLU) ve quirky-brown (JETON-KALAN-TOPLU) birlesik'e birleşti (2026-11-24; yalnız maske ve veri)
 
 - Dal `main`'den çıkmıştı; `birlesik`'in MASKE-DUZELT/MASKE-EK/KESIM-TEPE maskeleriyle 21 dosyada çakıştı (ikili maske ve iki veri
   dosyası). Görsel karşılaştırmayla dosya başına seçim:
@@ -16,6 +16,8 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - Bilinen çelişki: DROW Monk ID10 e/k, WL-4 e/k ve WL-3 erkeğe elle maske (yüz boyalı) verdi; MASKE-EK bunların bir kısmını
   (Monk ID10, WL-4) "tensiz çizim, bilerek boş" saymıştı. Elle maske öncelikli olduğundan DROW kararı geçerli; JETON-KALAN-TOPLU'nun
   human-kadin-monk-ID10 boş kararıyla tutarsız (rapor kullanıcıya).
+- Ardından quirky-brown (JETON-KALAN-TOPLU) çakışmasız birleşti; `soy-maske -- --el` yeniden çalıştı (42 elle maske, `elIptal`
+  human-kadin-monk-ID10), rapor değişmedi.
 
 ## DROW-MASKE-TOPLU: Dark Elf (Drow) maske düzeltmeleri (2026-11-23; yalnız maske ve veri, jeton resmi/kural/kayıt sürümü değişmedi)
 
@@ -47,6 +49,25 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Kanıt:** `npx vite-node scripts/drow-maske-cizim.ts -- --etiket once|sonra <jetonlar>` (oyunun kendi çizimi: JETON-DENETIM sayfası,
   Dark Elf savaş jetonu ve boyalı rozet; `scripts/jeton-denetim-sayfa.tsx` hücrede `boyali` seçeneği) + `python scripts/drow-maske-sayfa.py
   <grup> <jetonlar>` → `gorsel-dokum/drow-maske-toplu/` (git dışı). Kontrol görselleri `docs/sabah/maske-kontrol/elf-*.png`.
+## JETON-KALAN-TOPLU: ertelenmiş küçük jeton/maske işleri (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
+
+- **Kapsam ve yöntem:** yalnız maske/veri; jeton görseline ve `assets/soy-maske-el/`'e dokunulmadı. Ten maskeleri `scripts/maske-duzelt.py`
+  (`data/maske-duzelt.json`, neden `kalan:*`), Dragonborn pul maskesi `data/dragonborn-pul-duzeltme.json` + `dragonborn-pul-maske.py --jeton`.
+  Önce/sonra oyunun `tintedUrl` çizimiyle (git dışı `gorsel-dokum/jeton-kalan-toplu/`).
+- **Karar: elle maskeyi veriyle iptal (`elIptal`).** `human-kadin-monk-ID10` (Solgun Gezgin, ölü Monk) bütün ırklarda bilerek boş; Human'ın
+  Gemini elle maskesi yüzü boyuyordu (MASKE-EK'te karar kullanıcıya kalmıştı). Elle maske klasörü yalnız okunur olduğundan dosya silinmedi:
+  `jetonlar.<ad>.elIptal: true` → `scripts/soy-maske-el.ts` o dosyayı yok sayar (rapor `oto`, `maske-el/` kopyası kalkar), otomatik maske `bos`.
+- **Drow:** JETON-DENETIM bölüm 4 (23), MASKE-EK `ek:*` (14) ve `maske-tarama.py` şüphelileri (30) birleşimi 61 jeton gözle: yalnız
+  `elf-kadin-warlock-WL-8` (hortlak; bilerek boştu, kardeş WL-8 kararlarına uyduruldu: yüz, kulak, eller). Barbarian ID4 Gemini maskeleri
+  taramada "yüz boyasız" çıkıyor ama doğru (kafatası maske); büyük alanlı çıplak gövdeli jetonlar doğru.
+- **Wizard/Sorcerer:** 7 ırkın 358 maskeli jetonu tek tek: cüppe/parşömen taşması 4 jetonda (`dwarf-erkek-sorcerer-SC-4`,
+  `goliath-kadin-sorcerer-SC-4`, `dwarf-erkek-wizard-WZ-A6`, `gnome-erkek-wizard-WZ-A6`) yalnız yüz ve ellere indirildi.
+- **Dragonborn:** pul maskesi dışındaki lavanta ten bileşeni taraması (266 jeton, 96 aday, hepsi gözle): 7 jetonda boyasız el/kol/kuyruk
+  maskeye (Barbarian ID7 k, Paladin ID8 e/k, Bard ID5 e/k, Monk ID7 e/k). Belirsiz bırakılanlar: Rogue GR e/k ve Cleric ID6 e/k kuyruğun
+  açık kenar şeridi (renk eşiği gevşeyince kukuleta/gagaya taşıyor), Warlock WL-7/WL-10, Sorcerer SC-3/SC-6, Wizard WZ-A1/A6, Paladin ID10,
+  Cleric ID5, Druid ID5, Ranger ID4 adaylarının çoğu bilerek dışarıda bırakılmış lavanta kıyafet/efekt.
+- **"51 küçük kalıntı" (KESIM-TEPE):** sayı belgede var, adlar yalnız git dışı ölçüde; yeniden üretim ham sayfa dalı ister ve bunlar kesim
+  artığı (jeton görseli, 6–25 px). Dokunulmadı.
 
 ## KESIM-TEPE: 590 jetonun silinmiş tepe konturu geri kondu (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
 
