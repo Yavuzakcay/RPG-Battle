@@ -5,7 +5,7 @@ Savaş jetonunun ARKASINDA çizilen kanat katmanı (yalnız görünüm; kural s�
 | Slot | Dosya | Çapa (x / y, görsel oranı) | Görünürlük | Başlangıç rengi |
 |---|---|---|---|---|
 | `tiefling-kanatli` | `tiefling-kanatli.webp` | 0.501 / 0.708 | yalnız havada (Kanat Süzülüşü) | koyu kırmızı-mor |
-| `celestial-kirik-kanat` | `celestial-kirik-kanat.webp` | 0.568 / 0.438 (asimetrik, AYNALAMA YOK) | HER ZAMAN (`herZaman: true`) | beyaz |
+| `celestial-kirik-kanat` | `celestial-kirik-kanat.webp` (768×458; `scripts/celestial-kirik-kanat.py`) | 0.543 / 0.444 (iki kökün ortası, asimetrik, AYNALAMA YOK; `olcek` 1,15) | HER ZAMAN (`herZaman: true`) | kendi sepyası, filtresiz (uyanış sepyası yalnız gövdeye: `sepya.kanat: false`) |
 | `dragonborn` | `dragonborn.webp` (TEK sağ kanat, 364×279; KW1) + `dragonborn-zar.webp`, `dragonborn-pence.webp` (aynı boyutta saydam katmanlar; KW2/KW3) | 0.058 / 0.448 (kök = omuz eklemi) | yalnız havada (Draconic Flight), 5+ seviye | 10 soy paleti (`renkPaletleri`: gövdeye uyumlu, eşikli) |
 | `melek-acik` (`altSinif: "melek"`) | `melek-acik.webp` (768×209) | 0.500 / 0.383 | yalnız havada; jetonun kapalı kanatları boyalı kalır | filtre yok |
 

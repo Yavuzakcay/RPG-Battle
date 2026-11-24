@@ -1,0 +1,20 @@
+{
+ "not": "TEN-MASKE-4-IRK (2026-11-23): Orc, Goliath, Dwarf, Gnome soylarının ten rengi (anahtar <ırk>/<soy>; hex ya da null = boyasız orijinal). Oyun bu dosyadan çizer (src/battle/avatar.ts lineageTint → src/ui/lineageLook.ts hexTint: ten maskesiyle yalnız ten, ton/kroma hedefe, ortalama açıklık hedefe, gölge/çizgi farkları korunur). Değerler başlangıç önerisi; seçim npm run dev → /onizleme-ten.html → Dışa aktar (bu dosyanın içeriği). Maske python scripts/maske-duzelt.py --irk <ırk>.",
+ "soylar": {
+  "orc/glacier": "#C3D6E0",
+  "orc/fen": "#5E5538",
+  "orc/wildwood": null,
+  "goliath/cloud": "#D8DEE6",
+  "goliath/fire": "#C4573B",
+  "goliath/frost": "#8EC5E6",
+  "goliath/hill": "#7F7A45",
+  "goliath/stone": null,
+  "goliath/storm": "#4A4E9A",
+  "dwarf/crag": "#A9B7C4",
+  "dwarf/undervault": "#6A5F78",
+  "dwarf/knoll": null,
+  "gnome/rock-gnome": "#C98A5A",
+  "gnome/subterranean": "#A39AB0",
+  "gnome/forest-gnome": null
+ }
+}

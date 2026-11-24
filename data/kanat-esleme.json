@@ -26,18 +26,37 @@
     "tr": "Celestial Kırık Kanat",
     "en": "Celestial Broken Wing"
    },
+   "not": "CELESTIAL-KIRIK-KANAT-YENI (2026-11-23): sepya kanat (kendi rengi; filtre/palet yok), iki ayrı kanat tek görselde (768×458, python -X utf8 scripts/celestial-kirik-kanat.py ← assets-ham/kanat/celestial-kirik-kanat-yeni.jpg). capa = iki kanat kökünün (omuz düğümü) ortası; olcek eskisinden (1,45) küçük: jeton karesinden daha az taşar.",
    "dosya": "celestial-kirik-kanat.webp",
    "dosyaKapali": null,
    "minSeviye": 3,
-   "olcek": 1.45,
+   "olcek": 1.15,
    "filtre": "",
    "capa": [
-    0.568,
-    0.438
+    0.5428,
+    0.4437
    ],
-   "enBoy": 0.734,
+   "enBoy": 0.5964,
+   "ton": {
+    "acik": true,
+    "hue": 16,
+    "doygunluk": 0.7,
+    "parlaklik": 1.08,
+    "not": "KIRIK-KANAT-TON (2026-11-23, kullanıcı): kanat gövde sepyasından kırmızı/turuncu duruyordu (ton ≈24°, doygunluk 0,60; gövde ≈39°, 0,29). CSS filtresi hue-rotate(hue deg) saturate(doygunluk) brightness(parlaklik): ≈36°, 0,49 (biraz sarı, nötr kahverengi). Dosya aynı; acik false: şimdiki hâl. Gövde sepyası ayrı (alt-soy-gorunum.json)."
+   },
    "omuz": 0.46,
-   "herZaman": true
+   "herZaman": true,
+   "iyilesme": {
+    "dosya": "celestial-kirik-kanat-iyi.webp",
+    "olcek": 1.15,
+    "kok": [
+     0.5,
+     0.7839
+    ],
+    "enBoy": 0.3907,
+    "govdeSepyasiKalkar": true,
+    "not": "CELESTIAL-KANAT-IYILESME (2026-11-23, kullanıcı): uyanışın uçuşu iyileşince (seviye ≥ data/celestial.json `kirik-kanat.ucus.seviyeEsigi`, şu an 13; eşik kanat verisiyle tembel okunur) bu kanat çizilir: melek efekt sayfasının (public/efekt/efekt-kanat-melek.webp, dokunulmaz) en opak karesi, 151×59 → ×4 en yakın komşu (python -X utf8 scripts/celestial-kanat-iyilesme.py). olcek kırık kanatla aynı görsel genişlik (1,15), kok iki kanadın iç kökünün ortası (omuz yüksekliği `omuz`'dan), enBoy görselin oranı. Kırık kanadın `ton`/`filtre`si uygulanmaz. govdeSepyasiKalkar: true gövde sepyasını kaldırır (renkli jeton); false: sepya kalır. Blok yoksa eşikten sonra da kırık kanat."
+   }
   },
   "dragonborn": {
    "ad": {

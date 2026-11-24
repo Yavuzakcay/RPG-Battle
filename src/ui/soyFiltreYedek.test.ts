@@ -7,13 +7,13 @@ import { describe, expect, it } from 'vitest';
 import adaylar from '../../data/soy-filtre-adaylari.json';
 import yedek from '../../data/soy-filtre-yedek.json';
 import soyRenkleri from '../../data/soy-renkleri.json';
-import { tintFallbackFilter } from './lineageLook';
+import { LINEAGE_SKIN, tintFallbackFilter } from './lineageLook';
 import { fallbackFilterFor } from './tint';
 import tintSrc from './tint.ts?raw';
 import lookSrc from './lineageLook.ts?raw';
 
 const A = (adaylar as unknown as { soylar: Record<string, { adaylar: Array<{ id: number; ad: string; filter: string }> }> }).soylar;
-const Y = (yedek as unknown as { soylar: Record<string, { aday: number; filter: string; bekliyor?: true }> }).soylar;
+const Y = (yedek as unknown as { soylar: Record<string, { aday?: number; filter: string; bekliyor?: true; eski?: true }> }).soylar;
 
 describe('yedek soy filtresi (maske yokken)', () => {
   it('her soyda 8 farklı aday; seçim adayların biri (bekliyorsa ilk aday)', () => {
@@ -26,14 +26,16 @@ describe('yedek soy filtresi (maske yokken)', () => {
       expect(a.adaylar.find((x) => x.id === y!.aday)?.filter, k).toBe(y!.filter);
       if (y!.bekliyor) expect(y!.aday).toBe(1);
     }
-    expect(Object.keys(Y).sort()).toEqual(Object.keys(A).sort());
+    // TEN-MASKE-4-IRK: `eski` kayıtlar (Dwarf/Orc'un Kuyruk AS1a bütün-jeton filtresi) adaysız; diğerleri adaylarla birebir.
+    expect(Object.keys(Y).filter((k) => !Y[k]!.eski).sort()).toEqual(Object.keys(A).sort());
   });
   it('anahtarlar boyalı soylar (Human ten tonu maskeli: yedek yok)', () => {
     const races = soyRenkleri.races as unknown as Record<string, { lineages?: Record<string, unknown> }>;
     for (const k of Object.keys(Y)) {
       const [race, lin] = k.split('/');
       expect(race).not.toBe('human');
-      expect(races[race!]?.lineages?.[lin!], k).toBeTruthy();
+      // TEN-MASKE-4-IRK: rengi soy-ten-renkleri.json'da olan soy da boyalı sayılır (null değil).
+      expect(races[race!]?.lineages?.[lin!] || LINEAGE_SKIN[k], k).toBeTruthy();
     }
   });
   it('tintFallbackFilter veriden; soy yoksa boş', () => {

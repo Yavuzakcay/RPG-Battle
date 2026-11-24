@@ -16,7 +16,7 @@ import type { TintSpec } from '../src/battle/types';
 import { genericTokenRetired, lineageTint, paletteKeys, paletteTint } from '../src/battle/avatar';
 
 import { CHAR, ELLE, OTO as OUT, ROOT } from './soy-maske-yollar';
-import { applyHandMasks } from './soy-maske-el';
+import { applyHandMasks, handMaskCancelled } from './soy-maske-el';
 import { basOverlay, buildHeads } from './soy-bas';
 import { applyHeadOverlay } from '../src/ui/headOverlay';
 const CLASSES = ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard'];
@@ -215,9 +215,15 @@ if (args.includes('--alt')) {
   const rep: Record<string, number> = fs.existsSync(repFile) ? JSON.parse(fs.readFileSync(repFile, 'utf8')).jetonlar : {};
   const re = new RegExp(`^(${Object.keys(RACES).join('|')})-(erkek|kadin)-(${CLASSES.join('|')})-(.+)\\.webp$`);
   const names = fs.readdirSync(CHAR).map((f) => re.exec(f)).filter((m): m is RegExpExecArray => !!m);
+  // MASKE-DUZELT: bu jetonların maskesi `python scripts/maske-duzelt.py` ile (yüz tonundan, jeton başına kutular); burada ezilmez.
+  const duzeltFile = path.join(ROOT, 'data/maske-duzelt.json');
+  const duzelt = new Set(fs.existsSync(duzeltFile) ? Object.keys(JSON.parse(fs.readFileSync(duzeltFile, 'utf8')).jetonlar ?? {}) : []);
+  // TEN-MASKE-4-IRK: `irkTum` ırklarının (Orc, Goliath, Dwarf, Gnome) bütün jetonları maske-duzelt.py ile; burada ezilmez.
+  const tumIrk = new Set<string>(fs.existsSync(duzeltFile) ? JSON.parse(fs.readFileSync(duzeltFile, 'utf8')).irkTum ?? [] : []);
   for (const m of names) {
     const name = m[0].replace(/\.webp$/, ''), race = m[1]!, g = m[2] === 'erkek' ? 'male' : 'female';
     if ((only && only !== race) || race === 'dragonborn') continue; // Dragonborn: yalnız pul hattı (scripts/dragonborn-pul-maske.py → maske-pul/); eski yedek maske (KJ2/KJ3) yok
+    if (duzelt.has(name) || tumIrk.has(race)) continue;
     const r = RACES[race]!;
     const base = (r as Race & { maskAlt?: MaskCfg }).maskAlt ?? r.mask;
     const { data, W, H } = await raw(path.join(CHAR, `${name}.webp`));
@@ -246,7 +252,9 @@ if (args.includes('--alt')) {
 // Görev K21: elle maskeler (assets/soy-maske-el/; yalnızca okunur) önce; ölçüm ve önizleme onları kullanır.
 // GORSEL-DUZELTME: elle maskesi olan alt sınıf/Gariban jetonları da (raporda yalnız bunlar; sınıf-genel jetonların hepsi).
 const SUB_EL = new RegExp(`^(${Object.keys(RACES).join('|')})-(erkek|kadin)-(${CLASSES.join('|')})-.+$`);
-const elleSub = fs.existsSync(ELLE) ? fs.readdirSync(ELLE).map((f) => f.replace(/\.png$/i, '')).filter((n) => SUB_EL.test(n) && fs.existsSync(path.join(CHAR, `${n}.webp`))) : [];
+// JETON-KALAN-TOPLU: `elIptal` jetonları (elle maske yok sayılır) raporda yok (alt sınıf satırları yalnız 'el').
+const elIptal = handMaskCancelled();
+const elleSub = fs.existsSync(ELLE) ? fs.readdirSync(ELLE).map((f) => f.replace(/\.png$/i, '')).filter((n) => SUB_EL.test(n) && !elIptal.has(n) && fs.existsSync(path.join(CHAR, `${n}.webp`))) : [];
 // DRAGONBORN-ESKI-JETON-KALDIR: sınıf-genel jetonu kaldırılmış ırk (`data/jeton-genel.json`) sınıf-genel maske/ölçüm döngüsünde yok.
 const GENEL_IRKLAR = Object.keys(RACES).filter((r) => !genericTokenRetired(r));
 const hand = await applyHandMasks([...GENEL_IRKLAR.flatMap((r) => ['female', 'male'].flatMap((g) => CLASSES.map((c) => `${r}-${g}-${c}`))), ...elleSub]);
@@ -257,6 +265,7 @@ await buildHeads();
 const report: Record<string, unknown> = {};
 /** DROW-PALET: paletli soyların her paletinin ölçümü: `ırk/soy` → palet → jeton → Lab. */
 const paletRows: Record<string, Record<string, Record<string, number[]>>> = {};
+const TUM_IRK = new Set<string>(JSON.parse(fs.readFileSync(path.join(ROOT, 'data/maske-duzelt.json'), 'utf8')).irkTum ?? []);
 for (const [race, r] of Object.entries(RACES)) {
   if (only && only !== race) continue;
   if (!GENEL_IRKLAR.includes(race)) continue;
@@ -269,7 +278,8 @@ for (const [race, r] of Object.entries(RACES)) {
     const mask = skinMask(name, { ...r.mask, ...r.mask.byGender?.[g] }, data, W, H);
     const m = Buffer.alloc(W * H);
     for (let i = 0; i < W * H; i++) m[i] = mask[i] ? 255 : 0;
-    await sharp(m, { raw: { width: W, height: H, channels: 1 } }).png({ palette: true, colours: 2, compressionLevel: 9 }).toFile(path.join(OUT, `${name}.png`));
+    // TEN-MASKE-4-IRK: `irkTum` ırklarının sınıf-genel maskesi de maske-duzelt.py'den (yazılmaz; ölçüm bu otomatik maskeyle yapılır).
+    if (!TUM_IRK.has(race)) await sharp(m, { raw: { width: W, height: H, channels: 1 } }).png({ palette: true, colours: 2, compressionLevel: 9 }).toFile(path.join(OUT, `${name}.png`));
     // Ölçüm: her soyun boyaması sonrası ten ortalaması.
     rows[name] = {};
     // DROW-PALET: paletli soyda her palet ayrıca ölçülür (`paletler`; ΔE testi dördü için).

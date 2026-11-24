@@ -10,6 +10,12 @@ import { lineageLook, type LookSheet } from './lineageLook';
 
 /** Taç gövdesinin jeton uzayı çarpanı (`data/hale-konum.json` `tac.katsayi`). */
 export const CROWN_K: number = (konum as unknown as { tac: { katsayi: number } }).tac.katsayi;
+/**
+ * CELESTIAL-TAC-KALDIR (2026-11-23, kullanıcı): taç açık mı (`data/hale-konum.json` `tac.acik`; yoksa açık). Kapalıyken `crownSpec` her
+ * yerde null döner: rozet, savaş jetonu ve karakter figürü tacı çizmez, çerçeve tacın kutusunu hesaba katmaz. Hale gizleme, kanat ve
+ * uyanış görünümleri bundan bağımsız; geri açmak yalnız bu bayrak.
+ */
+export const CROWN_ON: boolean = (konum as unknown as { tac: { acik?: boolean } }).tac.acik !== false;
 export interface CrownSpec { x: number; y: number; olcek: number }
 type Entry = { x: number; y: number; olcek: number };
 const HOLD = new Set<string>(bekleyen.bekleyen);
@@ -43,7 +49,7 @@ export function crownBox(c: CrownSpec): { x0: number; x1: number; y0: number } {
 }
 
 export function crownSpec(src: string | null | undefined, look: LookSheet | undefined | null): CrownSpec | null {
-  if (!look || look.raceId !== 'celestial') return null;
+  if (!CROWN_ON || !look || look.raceId !== 'celestial') return null;
   const name = nameOf(src);
   if (!name || HOLD.has(`celestial-${name}`) || lineageLook(look).hideHalo) return null;
   const k = crownKey(name);

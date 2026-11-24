@@ -14,9 +14,9 @@ const sheet = (x: Partial<CharacterSheet>): CharacterSheet => ({ ...blankCharact
 const html = (s: CharacterSheet) => renderToStaticMarkup(createElement(SheetPortrait, { sheet: s }));
 
 describe('karakter kâğıdı portresi (SheetPortrait)', () => {
-  it('filtreli soy: LookFrame ve --look-filter (Gece Gözyaşı, Dwarf, Orc)', () => {
-    for (const s of [sheet({ raceId: 'celestial', classId: 'wizard', level: 5, celestialAwakening: 'gece-gozyasi' }),
-      sheet({ raceId: 'dwarf', classId: 'fighter', level: 3, lineageId: 'crag' }), sheet({ raceId: 'orc', classId: 'rogue', level: 1, lineageId: 'glacier' })]) {
+  it('filtreli soy: LookFrame ve --look-filter (Gece Gözyaşı); Dwarf/Orc ten maskeli, filtresiz (TEN-MASKE-4-IRK)', () => {
+    for (const r of [{ raceId: 'dwarf', lineageId: 'crag' }, { raceId: 'orc', lineageId: 'glacier' }]) expect(lineageLook({ ...r, level: 3 }).filter, r.raceId).toBe('');
+    for (const s of [sheet({ raceId: 'celestial', classId: 'wizard', level: 5, celestialAwakening: 'gece-gozyasi' })]) {
       const f = lineageLook({ raceId: s.raceId, ...(s.lineageId ? { lineageId: s.lineageId } : {}), ...(s.celestialAwakening ? { celestialAwakening: s.celestialAwakening } : {}), level: s.level }).filter;
       expect(f).not.toBe('');
       const h = html(s);

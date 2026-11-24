@@ -12,28 +12,26 @@ import { deltaE, rgbToLab } from './color';
 import olcum from '../../data/soy-olcum.json';
 import soyRenkleri from '../../data/soy-renkleri.json';
 import gorunum from '../../data/alt-soy-gorunum.json';
-import { isOriginalLineage } from './lineageLook';
+import { LINEAGE_SKIN, hexTint, isOriginalLineage } from './lineageLook';
 
 const files = new Set(Object.keys(import.meta.glob('/public/characters/*.webp')).map((f) => f.replace('/public/', '')));
 // KJ2: ten maskesi = `maske/` (otomatik) ya da Dragonborn beyaz taban pul maskesi `maske-pul/` (eski `maske/dragonborn-<erkek|kadin>-*` yedekleri silindi).
 const masks = new Set(Object.keys({ ...import.meta.glob('/public/characters/maske/*.png'), ...import.meta.glob('/public/characters/maske-pul/*.png') }).map((f) => f.replace('/public/', '')));
 /** Görev K15: soy çiftleri arası en küçük ten rengi farkı (CIE76 ΔE, ortalama Lab). */
 const MIN_DELTA_E = 15;
-/**
- * Kuyruk AS1a-2 İş 3: boyasız ORİJİNAL alt soyun teni sabit çizimdir (ayarlanamaz) ve boyalı soylar değişmeyecek karardı;
- * Goliath Hill orijinal teni Cloud (ΔE 6,0–14,7) ve Stone (14,6–14,7) boyamalarına yakın. Bu çiftlerde alt sınır düşürüldü
- * (diğer bütün çiftler 15); ayrışma karar bekliyor (Cloud/Stone boyaması değişirse bu istisna kalkar).
- */
-const ORIGINAL_PAIR_MIN: Record<string, number> = { 'goliath:cloud/hill': 5.5, 'goliath:cloud/stone': 5.5 };
+// TEN-MASKE-4-IRK: Goliath Hill/Stone ΔE istisnası (ORIGINAL_PAIR_MIN) kalktı: Goliath rengi soy-ten-renkleri.json'dan, ayrışma hex testinde.
 
 describe('soy → renk', () => {
   it('soyu olan her ırkın her soyu tabloda; Wood Elf boyamasız (klasik elf), diğerleri boyalı', () => {
     const table = soyRenkleri.races as Record<string, { lineages: Record<string, unknown> }>;
-    // Kuyruk AS1a: tint/maske tablosunda yeri olmayan ırklar (Dwarf, Halfling, Orc, Human) CSS filtresiyle `alt-soy-gorunum.json`'dan boyanır.
+    // Kuyruk AS1a: maskesiz ırklar (Halfling, Human) `alt-soy-gorunum.json`'dan. TEN-MASKE-4-IRK: Orc ve Dwarf'ın rengi yalnız
+    // `soy-ten-renkleri.json`'da (soy-renkleri kaydı yok); Goliath ve Gnome'un soy-renkleri kaydı durur ama renk ten dosyasından.
     const withLineage = races.filter((r) => (r.lineages ?? []).length > 0 && !gorunum.maskesizIrklar.includes(r.id));
+    const tenOnly = (id: string) => !table[id] && (races.find((x) => x.id === id)?.lineages ?? []).every((l) => `${id}/${l.id}` in LINEAGE_SKIN);
     // Kuyruk AS1c: Human'ın ten maskesi var (ten tonu seçici için); soyları orijinal (null).
-    expect(Object.keys(table).sort()).toEqual([...withLineage.map((r) => r.id), 'human'].sort());
+    expect(Object.keys(table).sort()).toEqual([...withLineage.filter((r) => !tenOnly(r.id)).map((r) => r.id), 'human'].sort());
     for (const r of withLineage) {
+      if (tenOnly(r.id)) continue;
       expect(Object.keys(table[r.id]?.lineages ?? {}).sort(), r.id).toEqual((r.lineages ?? []).map((l) => l.id).sort());
       // Kuyruk AS1a-2: boyasız ORİJİNAL alt soylar (`alt-soy-gorunum.json` `orijinal`) tabloda null; diğerleri boyalı.
       for (const l of r.lineages ?? []) expect(!!lineageTint(r.id, l.id), `${r.id}/${l.id}`).toBe(!isOriginalLineage(`${r.id}/${l.id}`));
@@ -45,15 +43,12 @@ describe('soy → renk', () => {
       for (const k of classes) for (const gender of ['erkek', 'kadin'] as const) {
         const a = sheetAvatar({ ...blankCharacter('t').sheet, raceId: r.id, classId: k.id, gender, ...(lineageId ? { lineageId } : {}) });
         expect(files.has(a.src), a.src).toBe(true);
-        // Oyunun gerçekte isteyeceği maske: boyama türüne göre (`pul` → `maske-pul/`, diğerleri `maske/`). 2026-11-22: otomatik maskesi ırkta
-        // kapalı (`otoMaske: false`, Goliath) jetonda maske adresi yok (bütün jetona soyun yedek filtresi; elle maske eklenirse o).
-        const otoKapali = (soyRenkleri.races as unknown as Record<string, { otoMaske?: false }>)[r.id]?.otoMaske === false;
-        if (lineageId && otoKapali) expect(maskUrlFor(a.src, a.tint), `${a.src} otomatik maske kapalı`).toBeNull();
-        else if (lineageId && !gorunum.maskesizIrklar.includes(r.id)) expect(masks.has(maskUrlFor(a.src, a.tint) ?? ''), `${a.src} maske`).toBe(true);
+        // Oyunun gerçekte isteyeceği maske: boyama türüne göre (`pul` → `maske-pul/`, diğerleri `maske/`).
+        // TEN-MASKE-4-IRK: Goliath yeniden otomatik maskeli (68eace2f'nin `otoMaske: false` istisnası kalktı); Orc ve Dwarf da maskeli.
+        if (lineageId && !gorunum.maskesizIrklar.includes(r.id)) expect(masks.has(maskUrlFor(a.src, a.tint) ?? ''), `${a.src} maske`).toBe(true);
       }
     }
-    expect(maskUrlFor('/base/characters/kucuk/tiefling-male-fighter.webp')).toBe('/base/characters/maske/tiefling-male-fighter.png');
-    expect(maskUrlFor('/base/characters/kucuk/goliath-male-fighter.webp')).toBeNull();
+    expect(maskUrlFor('/base/characters/kucuk/goliath-male-fighter.webp')).toBe('/base/characters/maske/goliath-male-fighter.png');
   });
   it('maskeli dönüşüm: yalnızca maskedeki pikseller, açıklık sırası korunur; Goliath erkek gri teni de boyanır', () => {
     // Goliath gri-mavi ten (kroma ≈5; K8b'de doygunluk eşiğinin altında kaldığı için erkek jetonlar boyanmıyordu) ve aynı tonda metal.
@@ -91,8 +86,9 @@ describe('soy → renk', () => {
     const R = olcum.races as Record<string, Record<string, Record<string, number[]>>>;
     const low: string[] = [];
     for (const [race, rows] of Object.entries(R)) {
-      // 2026-11-22: otomatik maskesi kapalı ırk (Goliath) ten boyası kullanmaz (bütün jetona yedek filtre, seçim /onizleme-filtre.html): ölçüm dışı.
-      if ((soyRenkleri.races as unknown as Record<string, { otoMaske?: false }>)[race]?.otoMaske === false) continue;
+      // TEN-MASKE-4-IRK: rengi `soy-ten-renkleri.json`'dan gelen ırklar (Goliath, Gnome) bu ölçümün dışında: soy-olcum.json eski renk ve
+      // maskeyle ölçüldü (`npm run soy-maske` tam çalıştırılmaz); bu ırklarda ayrışma aşağıdaki hex testinde.
+      if (Object.keys(LINEAGE_SKIN).some((k) => k.startsWith(`${race}/`))) continue;
       expect(Object.keys(rows).length, race).toBe(24);
       for (const [name, lins] of Object.entries(rows)) {
         const ids = Object.keys(lins);
@@ -100,10 +96,24 @@ describe('soy → renk', () => {
           const d = deltaE(lins[ids[i]!]!, lins[ids[j]!]!);
           // Alt soy görünüm kararı: iki orijinal alt soy (Goliath Hill/Stone, Gnome Rock/Forest) aynı boyasız jetondur: ΔE 0 kararlıdır.
           if (isOriginalLineage(`${race}/${ids[i]}`) && isOriginalLineage(`${race}/${ids[j]}`)) continue;
-          const floor = ORIGINAL_PAIR_MIN[`${race}:${[ids[i], ids[j]].sort().join('/')}`] ?? MIN_DELTA_E;
-          if (d < floor) low.push(`${name} ${ids[i]}/${ids[j]} ${d.toFixed(1)}`);
+          if (d < MIN_DELTA_E) low.push(`${name} ${ids[i]}/${ids[j]} ${d.toFixed(1)}`);
         }
       }
+    }
+    expect(low).toEqual([]);
+  });
+  it(`TEN-MASKE-4-IRK: aynı ırkın boyalı soy ten renkleri birbirinden ayrı (hex ΔE ≥ ${MIN_DELTA_E}); renk geçerli hex ya da null`, () => {
+    const by: Record<string, Array<[string, [number, number, number]]>> = {};
+    for (const [k, hex] of Object.entries(LINEAGE_SKIN)) {
+      if (hex === null) continue;
+      expect(hex, k).toMatch(/^#[0-9A-Fa-f]{6}$/);
+      const n = parseInt(hex.slice(1), 16);
+      (by[k.split('/')[0]!] ??= []).push([k, rgbToLab((n >> 16) & 255, (n >> 8) & 255, n & 255)]);
+    }
+    const low: string[] = [];
+    for (const list of Object.values(by)) for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) {
+      const d = deltaE(list[i]![1], list[j]![1]);
+      if (d < MIN_DELTA_E) low.push(`${list[i]![0]}/${list[j]![0]} ${d.toFixed(1)}`);
     }
     expect(low).toEqual([]);
   });
@@ -179,7 +189,8 @@ describe('K19: cinsiyete göre soy boyaması', () => {
     expect(lineageTint('dragonborn', 'blue')).toEqual(lineageTint('dragonborn', 'blue', 'erkek'));
   });
   it('Goliath: yalnızca kadın Cloud değişti (dövme kontrastı); diğer soylar ve erkek Cloud aynı', () => {
-    expect(lineageTint('goliath', 'cloud', 'erkek')?.to).toEqual({ lch: { h: 250, c: 3, gain: 0.6, dL: 38 } });
+    // TEN-MASKE-4-IRK: Goliath rengi soy-ten-renkleri.json'dan (hexTint); K19 kadın Cloud kontrastı korunur.
+    expect(lineageTint('goliath', 'cloud', 'erkek')).toEqual(hexTint(LINEAGE_SKIN['goliath/cloud']!));
     const f = lineageTint('goliath', 'cloud', 'kadin')?.to as { lch: { contrast?: number } };
     expect(f.lch.contrast).toBeGreaterThan(1);
     for (const l of ['fire', 'frost', 'hill', 'stone', 'storm']) expect(lineageTint('goliath', l, 'kadin')).toEqual(lineageTint('goliath', l, 'erkek'));
@@ -189,7 +200,9 @@ describe('K19: cinsiyete göre soy boyaması', () => {
     const m = px(), w = px();
     tintPixels(m, lineageTint('goliath', 'cloud', 'erkek')!, new Uint8Array([1, 1]));
     tintPixels(w, lineageTint('goliath', 'cloud', 'kadin')!, new Uint8Array([1, 1]));
-    expect(L(w, 4) - L(w, 0)).toBeGreaterThan((L(m, 4) - L(m, 0)) * 1.5);
+    // TEN-MASKE-4-IRK: erkek Cloud artık açıklık farkını sıkıştırmıyor (eski gain 0,6 yok; hedef açıklık hex'ten), kadın kontrastı 1,5 açık uçta
+    // L 100'e kırpıldığı için fark ×1,2'nin üstünde kalır (eski ölçü ×1,5, sıkıştırılmış erkek değerine göreydi).
+    expect(L(w, 4) - L(w, 0)).toBeGreaterThan((L(m, 4) - L(m, 0)) * 1.2);
   });
   // DROW-PALET: ortalama sınırı 33 → 40: 7 duraklı skala, S-eğrisi ve korunan kroma sapması gölge/ışık detayını geri
   // getirdi (eski 4 duraklı skala düz ve mat görünüyordu); en açık durak sınırı (L ≤ 60, K19) aynı.

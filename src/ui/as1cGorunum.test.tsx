@@ -8,7 +8,7 @@ import sharp from 'sharp';
 import { AvatarCircle, CharacterFigure, TokenFigure } from './Avatar';
 import { hasSubclassWing, lineageLook, skinTint, wingBox, wingSlotOfSubclass } from './lineageLook';
 import { tintPixels } from './tint';
-import { crownBox, crownSpec } from './haloCrown';
+import { CROWN_ON, crownBox, crownSpec } from './haloCrown';
 import { lineageTint, sheetAvatar } from '../battle/avatar';
 import { blankCharacter } from '../rules/builder';
 import { rgbToLab } from './color';
@@ -76,9 +76,9 @@ describe('kanat katmanı (bağlı)', () => {
   it('eşleme: üç slot (Anka ve Melek bağlaması KQ6-3 ile kaldırıldı), dosyalar bağlı ve gerçekten var, çapa/oran/omuz veride, Dragonborn 10 renk filtresi', async () => {
     expect(Object.keys(s).sort()).toEqual(['celestial-kirik-kanat', 'dragonborn', 'tiefling-kanatli']);
     // KW1: Dragonborn görseli TEK (sağ) kanat (`ayna`: iki yana ayna, kök gövdeye bağlı): çapa kanadın kökü (omuz eklemi), `olcek` tek kanadın jeton genişliğine oranı,
-    // `omuz` kökün jeton yüksekliğindeki yeri (omuz–dirsek bandı). Diğer iki slot kanat çifti: çapa jetonun yatay merkezinde, çift genişliği 1.45, omuz 0.46.
-    const capa = { 'tiefling-kanatli': [0.501, 0.708], 'celestial-kirik-kanat': [0.568, 0.438], dragonborn: [0.0577, 0.448] };
-    const olcek = { 'tiefling-kanatli': 1.45, 'celestial-kirik-kanat': 1.45, dragonborn: 0.6 } as Record<string, number>;
+    // `omuz` kökün jeton yüksekliğindeki yeri (omuz–dirsek bandı). Diğer iki slot kanat çifti: çapa jetonun yatay merkezinde, çift genişliği 1.45 (Kırık Kanat 1.15: CELESTIAL-KIRIK-KANAT-YENI), omuz 0.46.
+    const capa = { 'tiefling-kanatli': [0.501, 0.708], 'celestial-kirik-kanat': [0.5428, 0.4437], dragonborn: [0.0577, 0.448] };
+    const olcek = { 'tiefling-kanatli': 1.45, 'celestial-kirik-kanat': 1.15, dragonborn: 0.6 } as Record<string, number>;
     const omuz = { 'tiefling-kanatli': 0.46, 'celestial-kirik-kanat': 0.46, dragonborn: 0.4 } as Record<string, number>;
     for (const [id, w] of Object.entries(s)) {
       expect(w.dosya, id).toBe(`${id}.webp`);
@@ -88,6 +88,14 @@ describe('kanat katmanı (bağlı)', () => {
       if (!(w as { esnet?: boolean }).esnet) expect(w.enBoy, id).toBeCloseTo(meta.height! / meta.width!, 3);
       expect(w.capa, id).toEqual(capa[id as keyof typeof capa]);
       expect(w.olcek, id).toBeCloseTo(olcek[id]!); expect(w.omuz, id).toBeCloseTo(omuz[id]!); expect(w.enBoy).toBeGreaterThan(0.2);
+      // CELESTIAL-KANAT-IYILESME: iyileşmiş kanadın dosyası var, şeffaf, en-boyu görselinki; kırık kanatla aynı görsel genişlik.
+      const iy = (w as { iyilesme?: { dosya: string; olcek: number; enBoy: number } }).iyilesme;
+      if (iy) {
+        const m = await sharp(`public/kanat/${iy.dosya}`).metadata();
+        expect(m.hasAlpha, iy.dosya).toBe(true);
+        expect(iy.enBoy, iy.dosya).toBeCloseTo(m.height! / m.width!, 3);
+        expect(iy.olcek, iy.dosya).toBeCloseTo(w.olcek);
+      }
     }
     expect((s.dragonborn as unknown as { ayna: unknown }).ayna).toEqual({ dx: 0.15, aci: 20 });
     expect(s['tiefling-kanatli'] as unknown as { ayna?: unknown }).not.toHaveProperty('ayna');
@@ -265,6 +273,8 @@ describe('KG1: karakter ekranı jetonu savaşla aynı çizim yolu, çerçevesiz'
     const sh = sheet({ raceId: 'celestial', classId: 'cleric', subclassId: 'imza_birlik', level: 9, gender: 'erkek' });
     const av = sheetAvatar(sh);
     expect(av.src).toBe('characters/celestial-erkek-cleric-ID3.webp');
+    // CELESTIAL-TAC-KALDIR: taç veri bayrağıyla kapalı (`hale-konum.json` `tac.acik`): figürde taç yok; açıkken eski denetim aynen.
+    if (!CROWN_ON) { expect(crownSpec(av.src, av.look)).toBeNull(); expect(fig(sh)).not.toContain('star-crown-g'); return; }
     const c = crownSpec(av.src, av.look)!;
     expect(c).toBeTruthy();
     const b = crownBox(c), k = 48 / 256;
@@ -356,8 +366,9 @@ describe('KQ6-19: Celestial yıldız tacı', () => {
     const { crownSpec } = await import('./haloCrown');
     const src = 'characters/celestial-erkek-fighter-ID1.webp';
     const mk = (aw: string | undefined, level: number) => ({ raceId: 'celestial', celestialAwakening: aw, level } as never);
-    expect(crownSpec(src, mk('parlayan-ruh', 3))).not.toBeNull();
-    expect(crownSpec(src, mk(undefined, 2))).not.toBeNull();
+    // CELESTIAL-TAC-KALDIR: bayrak kapalıyken taç hiçbir uyanışta yok; açıkken hale gösteren uyanışlarda var.
+    expect(crownSpec(src, mk('parlayan-ruh', 3)) !== null).toBe(CROWN_ON);
+    expect(crownSpec(src, mk(undefined, 2)) !== null).toBe(CROWN_ON);
     expect(crownSpec(src, mk('gece-gozyasi', 3))).toBeNull();
     expect(crownSpec(src, mk('kirik-kanat', 3))).toBeNull();
     expect(crownSpec('characters/kucuk/celestial-erkek-fighter-ID1.webp', mk('parlayan-ruh', 3))).toEqual(crownSpec(src, mk('parlayan-ruh', 3)));
@@ -369,11 +380,14 @@ describe('KQ6-19: Celestial yıldız tacı', () => {
     const { StarCrownShape } = await import('./StarCrown');
     const { AvatarBadge, AvatarCircle } = await import('./Avatar');
     const a = sheetAvatar(sheet({ raceId: 'celestial', lineageId: undefined, level: 3, celestialAwakening: 'parlayan-ruh', classId: 'fighter', gender: 'erkek' }));
-    const spec = crownSpec(a.src, a.look); expect(spec).not.toBeNull();
+    const spec = crownSpec(a.src, a.look); expect(spec !== null).toBe(CROWN_ON);
     const body = renderToStaticMarkup(<svg><StarCrownShape /></svg>);
     expect(body).toContain('sc-star'); expect((body.match(/<path/g) ?? []).length).toBe(10);        // 5 yıldız × (dış + iç)
     const circle = renderToStaticMarkup(<svg><AvatarCircle avatar={a} cx={50} cy={50} r={30} eager /></svg>);
-    expect(circle).toContain('star-crown-g');
+    // CELESTIAL-TAC-KALDIR: savaş jetonu ve rozet tacı yalnız bayrak açıkken çizer.
+    if (CROWN_ON) expect(circle).toContain('star-crown-g'); else expect(circle).not.toContain('star-crown-g');
+    const badge = renderToStaticMarkup(<AvatarBadge avatar={a} size={48} eager />);
+    if (!CROWN_ON) expect(badge).not.toContain('star-crown');   // açıkken rozet tacı görsel yüklenince çizer (statik çizimde yok)
     // @ts-expect-error uygulama tsconfig'inde node tipleri yok (testte dosya okunur)
     const css = (await import('node:fs')).readFileSync('src/styles.css', 'utf8') as string;
     expect(css).toMatch(/prefers-reduced-motion: reduce\) \{ \.sc-star \{ animation: none; \} \}/);

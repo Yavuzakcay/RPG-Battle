@@ -3,6 +3,9 @@
  * ?m=ab: 10 soy × (Erkek Fighter Gladyatör, Kadın Wizard) × (256, 96 px rozet), önce/sonra karşılaştırması için aynı sayfa iki sürümde çekilir.
  * ?m=ozet: Erkek Fighter Gladyatör, 10 soy, 256 px (iki hal karşılaştırması için kompakt; `katmanlar.zar.etkin` açık/kapalı iki kez çekilir).
  * ?m=hepsi: bütün Dragonborn jetonları (savaş jetonu çizimi, havada), kök kontrol sayfası. ?m=kok: 4 farklı sınıf/poz, kök işaretli.
+ * ?m=kirik (CELESTIAL-KIRIK-KANAT-YENI, KIRIK-KANAT-TON, CELESTIAL-KANAT-IYILESME): Celestial Kırık Kanat karşılaştırmaları
+ * (`set=eski|ton|iyi`, ayrıntı `kirikHazirla`); erkek Bard, kadın Rogue, erkek Monk; rozet ve savaş jetonu, 96 px ve 3× (288 px).
+ * `set=eski`te eski görsel geçici olarak public/kanat/ altına konup çekimden sonra silinir.
  */
 import { createRoot } from 'react-dom/client';
 import '../styles.css';
@@ -15,6 +18,8 @@ import { LookFrame } from '../ui/LookFrame';
 import { blankCharacter } from '../rules/builder';
 import { sheetAvatar } from '../battle/avatar';
 import type { CharacterSheet } from '../rules/stats';
+import gorunum from '../../data/alt-soy-gorunum.json';
+import { loadWingData, wingTable } from '../ui/wingData';
 
 const mode = new URLSearchParams(location.search).get('m') ?? 'ab';
 const base = blankCharacter('t').sheet;
@@ -159,10 +164,102 @@ async function renkOlc(adim: number) {
   const pre = document.createElement('pre'); pre.id = 'sayfa'; pre.textContent = JSON.stringify(out); host.appendChild(pre);
 }
 
+/**
+ * Kırık Kanat karşılaştırması (`?m=kirik&set=eski|ton|iyi`, isteğe bağlı `kisi=bard,rogue,monk`, `tur=jeton|rozet`):
+ * - eski: ESKİ beyaz kanat + sepya (sahte uyanış/slot `kk-eski`, dosya `?eski=`) ↔ YENİ kanat.
+ * - ton (KIRIK-KANAT-TON): yeni kanat ton ayarı kapalı (sahte `kk-tonsuz`) ↔ açık.
+ */
+async function kirikHazirla() {
+  await loadWingData();
+  const uy = (gorunum as unknown as { celestialUyanis: Record<string, { sepya?: Record<string, unknown> }> }).celestialUyanis;
+  const yeni = uy['kirik-kanat']!;
+  const slot = wingTable.slotlar['celestial-kirik-kanat']!;
+  uy['kk-eski'] = { ...yeni, kanat: 'kk-eski', sepya: { ...yeni.sepya, kanat: true } } as never;
+  wingTable.slotlar['kk-eski'] = { ...slot, dosya: q.get('eski') ?? '_karsilastirma-eski.webp', olcek: 1.45, capa: [0.568, 0.438], enBoy: 0.734, ton: undefined } as never;
+  uy['kk-tonsuz'] = { ...yeni, kanat: 'kk-tonsuz' } as never;
+  wingTable.slotlar['kk-tonsuz'] = { ...slot, ...(slot.ton ? { ton: { ...slot.ton, acik: false } } : {}) };
+}
+const KIRIK_HEPSI: Array<{ id: string; ad: string; sheet: Partial<CharacterSheet> }> = [
+  { id: 'bard', ad: 'Erkek Bard', sheet: { classId: 'bard', gender: 'erkek' } },
+  { id: 'rogue', ad: 'Kadın Rogue', sheet: { classId: 'rogue', gender: 'kadin' } },
+  { id: 'monk', ad: 'Erkek Monk', sheet: { classId: 'monk', gender: 'erkek' } },
+];
+const KIRIK = KIRIK_HEPSI.filter((c) => !q.get('kisi') || q.get('kisi')!.split(',').includes(c.id));
+type KirikKol = { aw: string; level: number; ad: string };
+const KIRIK_SET: Record<string, KirikKol[]> = {
+  eski: [{ aw: 'kk-eski', level: 5, ad: 'ESKİ kanat + sepya filtresi' }, { aw: 'kirik-kanat', level: 5, ad: 'YENİ kanat (filtresiz)' }],
+  ton: [{ aw: 'kk-tonsuz', level: 5, ad: 'Ton ayarı KAPALI (şimdiki)' }, { aw: 'kirik-kanat', level: 5, ad: 'Ton ayarı AÇIK' }],
+};
+const KIRIK_KOL = KIRIK_SET[q.get('set') ?? 'eski'] ?? KIRIK_SET.eski!;
+const KIRIK_TUR = (['rozet', 'jeton'] as const).filter((t) => !q.get('tur') || q.get('tur') === t);
+function KirikHucre({ ch, k, size, kind }: { ch: (typeof KIRIK)[number]; k: KirikKol; size: number; kind: 'rozet' | 'jeton' }) {
+  const sheet = { ...base, raceId: 'celestial', level: k.level, celestialAwakening: k.aw, ...ch.sheet } as CharacterSheet;
+  const a = sheetAvatar(sheet);
+  const box = Math.round(size * 1.6);
+  if (kind === 'rozet') return (
+    <div style={{ width: box, height: Math.round(size * 1.15), display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+      <LookFrame sheet={{ raceId: 'celestial', celestialAwakening: k.aw, level: k.level }} size={size} ability><AvatarBadge avatar={a} size={size} eager /></LookFrame>
+    </div>
+  );
+  return (
+    <svg width={box} height={Math.round(size * 1.15)} viewBox={`0 0 ${box} ${Math.round(size * 1.15)}`} style={{ background: '#2b3a2a', borderRadius: 6 }}>
+      <AvatarCircle avatar={a} cx={box / 2} cy={Math.round(size * 1.15) / 2} r={size / 2} eager />
+    </svg>
+  );
+}
+function PageKirik() {
+  const satir = (kind: 'rozet' | 'jeton', size: number) => `${kind === 'rozet' ? 'Rozet' : 'Savaş jetonu'} ${size} px`;
+  return (
+    <div id="sayfa" style={{ background: '#1d2128', color: '#e8e4da', font: '13px system-ui', padding: 10, display: 'inline-block' }}>
+      {KIRIK.map((ch) => (
+        <div key={ch.ad} style={{ borderBottom: '1px solid #3a4350', padding: '6px 0' }}>
+          <div style={{ color: '#f5d76e', fontWeight: 700, fontSize: 15 }}>{ch.ad} · Celestial Kırık Kanat</div>
+          <div style={{ display: 'grid', gridTemplateColumns: `90px repeat(${KIRIK_KOL.length}, auto)`, columnGap: 18, alignItems: 'end' }}>
+            <div />{KIRIK_KOL.map((k) => <div key={k.aw + k.level} style={{ ...lab, fontWeight: 700 }}>{k.ad}</div>)}
+            {KIRIK_TUR.flatMap((kind) => [96, 288].map((size) => (
+              <div key={kind + size} style={{ display: 'contents' }}>
+                <div style={{ alignSelf: 'center', color: '#cfd3dc' }}>{satir(kind, size)}</div>
+                {KIRIK_KOL.map((k) => <KirikHucre key={k.aw + k.level} ch={ch} k={k} size={size} kind={kind} />)}
+              </div>
+            )))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * ?m=iyilesme (CELESTIAL-KANAT-IYILESME): Kırık Kanat satırları 3. seviye, eşiğin bir altı, eşik (`celestial.json` `ucus.seviyeEsigi`,
+ * kanat verisinden); sütunlar rozet ve savaş jetonu, 96 px ve 3× (288 px). `kisi=bard|rogue|monk` (varsayılan bard).
+ */
+function PageIyilesme() {
+  const esik = wingTable.iyilesmeEsigi['kirik-kanat'] ?? 13;
+  const ch = KIRIK_HEPSI.find((c) => c.id === (q.get('kisi') ?? 'bard'))!;
+  const satirlar = [{ level: 3, ad: '3. seviye' }, { level: esik - 1, ad: `${esik - 1}. seviye (eşiğin bir altı)` }, { level: esik, ad: `${esik}. seviye (eşik: iyileşmiş)` }];
+  const kol = (['rozet', 'jeton'] as const).flatMap((kind) => [96, 288].map((size) => ({ kind, size })));
+  return (
+    <div id="sayfa" style={{ background: '#1d2128', color: '#e8e4da', font: '13px system-ui', padding: 10, display: 'inline-block' }}>
+      <div style={{ color: '#f5d76e', fontWeight: 700, fontSize: 15 }}>{ch.ad} · Celestial Kırık Kanat · iyileşme eşiği {esik}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: `120px repeat(${kol.length}, auto)`, columnGap: 14, rowGap: 6, alignItems: 'end' }}>
+        <div />{kol.map((k) => <div key={k.kind + k.size} style={{ ...lab, fontWeight: 700 }}>{k.kind === 'rozet' ? 'Rozet' : 'Savaş jetonu'} {k.size} px</div>)}
+        {satirlar.map((r) => (
+          <div key={r.level} style={{ display: 'contents' }}>
+            <div style={{ alignSelf: 'center', color: '#f5d76e', fontWeight: 700 }}>{r.ad}</div>
+            {kol.map((k) => <KirikHucre key={k.kind + k.size} ch={ch} k={{ aw: 'kirik-kanat', level: r.level, ad: '' }} size={k.size} kind={k.kind} />)}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const host = document.createElement('div'); host.style.cssText = 'position:fixed;left:0;top:0;z-index:99999'; document.body.appendChild(host);
 if (mode === 'ab') createRoot(host).render(<PageAb />);
 else if (mode === 'hepsi') createRoot(host).render(<PageHepsi />);
 else if (mode === 'kok') createRoot(host).render(<PageKok />);
 else if (mode === 'ozet') createRoot(host).render(<PageOzet />);
 else if (mode === 'figur') createRoot(host).render(<PageFigur />);
+else if (mode === 'iyilesme') void loadWingData().then(() => createRoot(host).render(<PageIyilesme />));
+else if (mode === 'kirik') void kirikHazirla().then(() => createRoot(host).render(<PageKirik />));
 else if (mode === 'renk') void renkOlc(+(q.get('adim') ?? 5));

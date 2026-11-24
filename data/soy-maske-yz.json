@@ -115,7 +115,592 @@
     "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
    ],
    "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
+  },
+  "elf-erkek-barbarian-ID4": {
+   "kaynak": "assets\\soy-maske-ham\\elf-erkek-barbarian-ID4.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.573,
+    "white": 0.122,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "89c8a12701b133f2d59873a82f2997aa012fb446"
+  },
+  "elf-erkek-rogue-ID4": {
+   "kaynak": "assets\\soy-maske-ham\\elf-erkek-rogue-ID4.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.339,
+    "white": 0.109,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "08ff963e1009d831f79ff4d2208ea1d4252eccee"
+  },
+  "elf-kadin-barbarian-ID4": {
+   "kaynak": "assets\\soy-maske-ham\\elf-kadin-barbarian-ID4.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.585,
+    "white": 0.105,
+    "spill": 0,
+    "removed": 0,
+    "filled": 1
+   },
+   "uyarilar": [],
+   "sha1": "2beed2ec70c21a4faf05336655950347e0c2cc7e"
+  },
+  "elf-kadin-rogue-ID4": {
+   "kaynak": "assets\\soy-maske-ham\\elf-kadin-rogue-ID4.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.343,
+    "white": 0.112,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "91b3ad88dd4c3fb29a4ecf11b59bf8e25f8f445a"
+  },
+  "human-erkek-barbarian-ID4": {
+   "kaynak": "assets\\soy-maske-ham\\human-erkek-barbarian-ID4.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.448,
+    "white": 0.147,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "17f8d3e6a57cdf2968fe3fa657e8d7799208dd00"
+  },
+  "human-erkek-fighter-GR": {
+   "kaynak": "assets\\soy-maske-ham\\human-erkek-fighter-GR.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.598,
+    "white": 0.133,
+    "spill": 0,
+    "removed": 1,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "fba8ef3452ef3a249a765dc4f0eab77db0ca2ac1"
+  },
+  "human-erkek-rogue-ID4": {
+   "kaynak": "assets\\soy-maske-ham\\human-erkek-rogue-ID4.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.359,
+    "white": 0.139,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "da66a31883a78449b88ba7d70ec550247a1c88b8"
+  },
+  "human-kadin-barbarian-ID4": {
+   "kaynak": "assets\\soy-maske-ham\\human-kadin-barbarian-ID4.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.342,
+    "white": 0.12,
+    "spill": 0,
+    "removed": 0,
+    "filled": 1
+   },
+   "uyarilar": [],
+   "sha1": "7ede12e3e962ef23c0d6900972dec3095ced31bc"
+  },
+  "human-kadin-rogue-ID4": {
+   "kaynak": "assets\\soy-maske-ham\\human-kadin-rogue-ID4.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.312,
+    "white": 0.132,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "4509abece48410c44ad1900ff39586b7c8ee94e1"
+  },
+  "tiefling-erkek-sorcerer-SC-2": {
+   "kaynak": "assets\\soy-maske-ham\\tiefling-erkek-sorcerer-SC-2.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.535,
+    "white": 0.2,
+    "spill": 0,
+    "removed": 2,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "d494812834d9c1b95634702803dabdffdae0f5e0"
+  },
+  "human-erkek-monk-ID3": {
+   "kaynak": "assets\\soy-maske-ham\\human-erkek-monk-ID3.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.322,
+    "white": 0.091,
+    "spill": 0,
+    "removed": 1,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "319a50a4cdf44299742df079c1ecf8f3ddda044c"
+  },
+  "tiefling-erkek-fighter-ID3": {
+   "kaynak": "assets\\soy-maske-ham\\tiefling-erkek-fighter-ID3.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.393,
+    "white": 0.18,
+    "spill": 1,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [],
+   "sha1": "4e160e041044751bf459ce9826dad83b69bd5308"
+  },
+  "human-kadin-monk-ID8": {
+   "kaynak": "assets\\soy-maske-ham\\human-kadin-monk-ID8.jpg",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.172,
+    "white": 0.061,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "otomatik maskeyle IoU 0.17 (< 0.3): büyük olasılıkla hizasız"
+   ],
+   "sha1": "70be2ddd0367b0d01e7fc556e1902bea4e92bb3b"
+  },
+  "elf-erkek-bard-ID7": {
+   "kaynak": "assets/soy-maske-ham/elf-erkek-bard-ID7.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.001,
+    "white": 0.06,
+    "spill": 0,
+    "removed": 18,
+    "filled": 3
+   },
+   "uyarilar": [
+    "otomatik maskeyle IoU 0.00 (< 0.3): büyük olasılıkla hizasız"
+   ],
+   "sha1": "88d0ca24cd6f0ab6c3d753cd072996c0c67570a8"
+  },
+  "elf-erkek-druid-ID4": {
+   "kaynak": "assets/soy-maske-ham/elf-erkek-druid-ID4.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.273,
+    "white": 0.046,
+    "spill": 0,
+    "removed": 14,
+    "filled": 1
+   },
+   "uyarilar": [
+    "otomatik maskeyle IoU 0.27 (< 0.3): büyük olasılıkla hizasız"
+   ],
+   "sha1": "07e952c60eb40c262130ee31b6ef7498128c76a1"
+  },
+  "elf-erkek-fighter-ID10": {
+   "kaynak": "assets/soy-maske-ham/elf-erkek-fighter-ID10.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0,
+    "white": 0.056,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "otomatik maskeyle IoU 0.00 (< 0.3): büyük olasılıkla hizasız"
+   ],
+   "sha1": "a414299cb46775f4d709a579fda6e7251a8a6254"
+  },
+  "elf-erkek-paladin-ID8": {
+   "kaynak": "assets/soy-maske-ham/elf-erkek-paladin-ID8.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0,
+    "white": 0.008,
+    "spill": 0,
+    "removed": 13,
+    "filled": 0
+   },
+   "uyarilar": [
+    "beyaz oranı %0.8 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek",
+    "otomatik maskeyle IoU 0.00 (< 0.3): büyük olasılıkla hizasız"
+   ],
+   "sha1": "66e416b06cad3a7f63a8cb761489c873bc675c66"
+  },
+  "elf-erkek-rogue-ID8": {
+   "kaynak": "assets/soy-maske-ham/elf-erkek-rogue-ID8.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0,
+    "white": 0.112,
+    "spill": 0,
+    "removed": 1,
+    "filled": 0
+   },
+   "uyarilar": [
+    "otomatik maskeyle IoU 0.00 (< 0.3): büyük olasılıkla hizasız"
+   ],
+   "sha1": "83270099b492b695b73f1b56638f1a5318fa3df7"
+  },
+  "elf-erkek-warlock-WL-3": {
+   "kaynak": "assets/soy-maske-ham/elf-erkek-warlock-WL-3.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0,
+    "white": 0.075,
+    "spill": 0,
+    "removed": 16,
+    "filled": 1
+   },
+   "uyarilar": [
+    "otomatik maskeyle IoU 0.00 (< 0.3): büyük olasılıkla hizasız"
+   ],
+   "sha1": "5bb6856d9b28637e6cffc6f6535ac0dc718be55f"
+  },
+  "elf-erkek-warlock-WL-4": {
+   "kaynak": "assets/soy-maske-ham/elf-erkek-warlock-WL-4.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.106,
+    "white": 0.174,
+    "spill": 0,
+    "removed": 79,
+    "filled": 14
+   },
+   "uyarilar": [
+    "otomatik maskeyle IoU 0.11 (< 0.3): büyük olasılıkla hizasız"
+   ],
+   "sha1": "dc53b5a7f08569d2c0e3919d925b89fc6edc1914"
+  },
+  "elf-kadin-bard-ID7": {
+   "kaynak": "assets/soy-maske-ham/elf-kadin-bard-ID7.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.01,
+    "white": 0.074,
+    "spill": 0,
+    "removed": 16,
+    "filled": 0
+   },
+   "uyarilar": [
+    "otomatik maskeyle IoU 0.01 (< 0.3): büyük olasılıkla hizasız"
+   ],
+   "sha1": "b5a3d3b12baba269989fd8285a420977fe86d102"
+  },
+  "elf-kadin-druid-ID4": {
+   "kaynak": "assets/soy-maske-ham/elf-kadin-druid-ID4.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.291,
+    "white": 0.054,
+    "spill": 0,
+    "removed": 9,
+    "filled": 1
+   },
+   "uyarilar": [
+    "otomatik maskeyle IoU 0.29 (< 0.3): büyük olasılıkla hizasız"
+   ],
+   "sha1": "92393063cf67e66230eab91a63feeeeaa9306fdc"
+  },
+  "elf-kadin-paladin-ID8": {
+   "kaynak": "assets/soy-maske-ham/elf-kadin-paladin-ID8.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0.365,
+    "white": 0.016,
+    "spill": 0,
+    "removed": 27,
+    "filled": 0
+   },
+   "uyarilar": [
+    "beyaz oranı %1.6 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
+   ],
+   "sha1": "31b036b66c3610afaa199fa4adf2b202f32c9bc2"
+  },
+  "elf-kadin-rogue-ID8": {
+   "kaynak": "assets/soy-maske-ham/elf-kadin-rogue-ID8.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0,
+    "white": 0.085,
+    "spill": 0,
+    "removed": 0,
+    "filled": 1
+   },
+   "uyarilar": [
+    "otomatik maskeyle IoU 0.00 (< 0.3): büyük olasılıkla hizasız"
+   ],
+   "sha1": "d0750f96def46be3067d2caeaa07b325aa010694"
+  },
+  "elf-kadin-sorcerer-SC-3": {
+   "kaynak": "assets/soy-maske-ham/elf-kadin-sorcerer-SC-3.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0,
+    "white": 0.065,
+    "spill": 0,
+    "removed": 35,
+    "filled": 18
+   },
+   "uyarilar": [
+    "otomatik maskeyle IoU 0.00 (< 0.3): büyük olasılıkla hizasız"
+   ],
+   "sha1": "0b7a811ba2c0d064d7fb095c9ad218023c5a9049"
+  },
+  "elf-kadin-sorcerer-SC-9": {
+   "kaynak": "assets/soy-maske-ham/elf-kadin-sorcerer-SC-9.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0,
+    "white": 0.069,
+    "spill": 0,
+    "removed": 8,
+    "filled": 18
+   },
+   "uyarilar": [
+    "otomatik maskeyle IoU 0.00 (< 0.3): büyük olasılıkla hizasız"
+   ],
+   "sha1": "2062d09ee9e1409281afe3d4897097a375608b09"
+  },
+  "elf-erkek-monk-ID10": {
+   "kaynak": "assets/soy-maske-ham/elf-erkek-monk-ID10.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0.079,
+    "spill": 0,
+    "removed": 20,
+    "filled": 1
+   },
+   "uyarilar": [],
+   "sha1": "1a92d5986e1bcdcf66f28ce143a9d9205949eca4"
+  },
+  "elf-erkek-paladin-ID3": {
+   "kaynak": "assets/soy-maske-ham/elf-erkek-paladin-ID3.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
+   ],
+   "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
+  },
+  "elf-erkek-sorcerer-SC-5": {
+   "kaynak": "assets/soy-maske-ham/elf-erkek-sorcerer-SC-5.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
+   ],
+   "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
+  },
+  "elf-erkek-sorcerer-SC-9": {
+   "kaynak": "assets/soy-maske-ham/elf-erkek-sorcerer-SC-9.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0.06,
+    "spill": 0,
+    "removed": 17,
+    "filled": 15
+   },
+   "uyarilar": [],
+   "sha1": "21b0976aefec414d775aa6e6eb692576cf97bdfb"
+  },
+  "elf-erkek-warlock-WL-10": {
+   "kaynak": "assets/soy-maske-ham/elf-erkek-warlock-WL-10.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
+   ],
+   "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
+  },
+  "elf-kadin-monk-ID10": {
+   "kaynak": "assets/soy-maske-ham/elf-kadin-monk-ID10.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0.072,
+    "spill": 0,
+    "removed": 21,
+    "filled": 4
+   },
+   "uyarilar": [],
+   "sha1": "dd0ddf81afc72d83388a9d8fb29acbab3f68eb3b"
+  },
+  "elf-kadin-paladin-ID3": {
+   "kaynak": "assets/soy-maske-ham/elf-kadin-paladin-ID3.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
+   ],
+   "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
+  },
+  "elf-kadin-sorcerer-SC-5": {
+   "kaynak": "assets/soy-maske-ham/elf-kadin-sorcerer-SC-5.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
+   ],
+   "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
+  },
+  "elf-kadin-warlock-WL-10": {
+   "kaynak": "assets/soy-maske-ham/elf-kadin-warlock-WL-10.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": null,
+    "white": 0,
+    "spill": 0,
+    "removed": 0,
+    "filled": 0
+   },
+   "uyarilar": [
+    "beyaz oranı %0.0 (jeton alanının %2'sinden az): maske boş ya da eşik yüksek"
+   ],
+   "sha1": "e6a0a85c55a9a3e285e5248e0d3a54cd82e6fb6d"
+  },
+  "elf-kadin-warlock-WL-4": {
+   "kaynak": "assets/soy-maske-ham/elf-kadin-warlock-WL-4.png",
+   "durum": "yazildi",
+   "fit": "canvas",
+   "olcum": {
+    "aspect": 1,
+    "iou": 0,
+    "white": 0.146,
+    "spill": 0,
+    "removed": 40,
+    "filled": 13
+   },
+   "uyarilar": [
+    "otomatik maskeyle IoU 0.00 (< 0.3): büyük olasılıkla hizasız"
+   ],
+   "sha1": "b1103d1b60e4cd3762a216d2ba8c018217d1b051"
   }
  },
- "atlanan": []
+ "atlanan": [
+  "orc-kadin-monk-GR.jpg: ad bir soylu jetonla eşleşmiyor (<ırk>-<male|female>-<sınıf> ya da <ırk>-<erkek|kadin>-<sınıf>-<kod>, .png|jpg)"
+ ]
 }

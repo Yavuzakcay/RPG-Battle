@@ -1,6 +1,8 @@
 {
  "_not": "KQ6-19: yıldız tacı konumu (jeton 256 px uzayında; x,y = başın/şapkanın üst orta noktası, olcek = tasarım ölçeği oranı). Üretici scripts/hale-konum.py. varsayilan: <sınıf>-<erkek|kadin>[-gr|-genel]; jeton: varsayılandan > 8 px sapanlar için ezme (anahtar = dosya adı, celestial- öneksiz).",
  "tac": {
+  "acik": false,
+  "acikNot": "CELESTIAL-TAC-KALDIR 2026-11-23 (kullanıcı): oyunun çizdiği yıldız tacı kapalı (rozet, savaş jetonu, karakter figürü); geri açmak için true. Konum verisi durur.",
   "katsayi": 2.8
  },
  "varsayilan": {
