@@ -509,7 +509,8 @@
   "elf-erkek-monk-ID10": {
    "neden": "ek:tarama",
    "bos": true,
-   "not": "ölü (MASKE-EK): çıplak ten yok"
+   "not": "ölü (MASKE-EK): çıplak ten yok (BIRLESTIR 2026-11-24, kullanıcı kararı: DROW elle maskesi elIptal ile yok sayılır, bilerek boş)",
+   "elIptal": true
   },
   "elf-erkek-paladin-GR": {
    "neden": "kesim:kismen"
@@ -652,10 +653,8 @@
   "elf-erkek-warlock-WL-4": {
    "neden": "denetim:supheli",
    "bos": true,
-   "not": "zombi: gri ölü ten, saç boyanıyordu"
-  },
-  "elf-erkek-warlock-WL-6": {
-   "neden": "kesim:kismen"
+   "not": "zombi: gri ölü ten, saç boyanıyordu (BIRLESTIR 2026-11-24, kullanıcı kararı: DROW elle maskesi elIptal ile yok sayılır, bilerek boş)",
+   "elIptal": true
   },
   "elf-erkek-warlock-WL-8": {
    "neden": "ek:liste",
@@ -855,7 +854,8 @@
   "elf-kadin-monk-ID10": {
    "neden": "ek:tarama",
    "bos": true,
-   "not": "ölü (MASKE-EK): çıplak ten yok"
+   "not": "ölü (MASKE-EK): çıplak ten yok (BIRLESTIR 2026-11-24, kullanıcı kararı: DROW elle maskesi elIptal ile yok sayılır, bilerek boş)",
+   "elIptal": true
   },
   "elf-kadin-paladin-ID2": {
    "neden": "denetim:supheli"
@@ -983,21 +983,72 @@
    "bos": true,
    "not": "hayalet (MASKE-EK): çıplak ten yok"
   },
-  "elf-kadin-warlock-WL-2": {
-   "neden": "kesim:kismen"
-  },
   "elf-kadin-warlock-WL-4": {
    "neden": "kesim:kismen denetim:supheli",
    "bos": true,
-   "not": "zombi: gri ölü ten, saç boyanıyordu"
-  },
-  "elf-kadin-warlock-WL-6": {
-   "neden": "kesim:kismen"
+   "not": "zombi: gri ölü ten, saç boyanıyordu (BIRLESTIR 2026-11-24, kullanıcı kararı: DROW elle maskesi elIptal ile yok sayılır, bilerek boş)",
+   "elIptal": true
   },
   "elf-kadin-warlock-WL-8": {
-   "neden": "denetim:supheli",
-   "bos": true,
-   "not": "hortlak: soluk ölü ten, elbise boyanıyordu"
+   "neden": "kalan:drow",
+   "not": "JETON-KALAN-TOPLU: ghoul (MASKE-EK WL-8 kararı, human-kadin-warlock-WL-8 ile aynı çizim): gri ölü ten; yüz, kulaklar ve eller boyanır, elbise ve saç dışarıda (eskiden bilerek boş: Drow'da kardeş WL-8'ler mor, bu soluk kalıyordu)",
+   "seed": [
+    90,
+    20,
+    105,
+    50
+   ],
+   "yalniz": [
+    [
+     72,
+     12,
+     142,
+     52
+    ],
+    [
+     68,
+     162,
+     96,
+     208
+    ],
+    [
+     162,
+     162,
+     190,
+     208
+    ]
+   ],
+   "h": [
+    [
+     0,
+     360
+    ]
+   ],
+   "C": [
+    0,
+    16
+   ],
+   "L": [
+    45,
+    98
+   ],
+   "th": 16,
+   "ton": 180,
+   "kroma": 0,
+   "include": [
+    [
+     74,
+     24,
+     90,
+     42
+    ],
+    [
+     124,
+     20,
+     142,
+     40
+    ]
+   ]
   },
   "gnome-erkek-barbarian-ID4": {
    "neden": "ten4",
@@ -2461,6 +2512,12 @@
   },
   "human-kadin-monk-GR": {
    "neden": "kesim:kismen"
+  },
+  "human-kadin-monk-ID10": {
+   "neden": "kalan:ID10",
+   "not": "JETON-KALAN-TOPLU: Solgun Gezgin (ölü Monk ID10): çıplak teni olmayan çizim; diğer bütün ırklarda bilerek boş. Elle (Gemini) maske yüzü/elleri boyuyordu: elIptal ile yok sayılır (assets/soy-maske-el dosyasına dokunulmadı), otomatik maske tümü 0.",
+   "bos": true,
+   "elIptal": true
   },
   "human-kadin-monk-ID8": {
    "neden": "ek:tarama",
@@ -5409,6 +5466,102 @@
      85
     ]
    ]
+  },
+  "dwarf-erkek-sorcerer-SC-4": {
+   "neden": "kalan:ws",
+   "not": "JETON-KALAN-TOPLU: cüppenin turuncu alev deseni ve göğüs kıvrımı boyanıyordu: yalnız yüz, kulak ve eller",
+   "yalniz": [
+    [
+     96,
+     48,
+     156,
+     100
+    ],
+    [
+     80,
+     144,
+     120,
+     178
+    ],
+    [
+     208,
+     112,
+     252,
+     162
+    ]
+   ]
+  },
+  "goliath-kadin-sorcerer-SC-4": {
+   "neden": "kalan:ws",
+   "not": "JETON-KALAN-TOPLU: beyaz cüppe (sol etek, göğüs) boyanıyordu: yalnız baş ve eller",
+   "yalniz": [
+    [
+     104,
+     28,
+     160,
+     96
+    ],
+    [
+     36,
+     104,
+     80,
+     138
+    ],
+    [
+     180,
+     88,
+     236,
+     134
+    ]
+   ]
+  },
+  "dwarf-erkek-wizard-WZ-A6": {
+   "neden": "kalan:ws",
+   "not": "JETON-KALAN-TOPLU: uçan parşömenler (ten renginde) boyanıyordu: yalnız yüz, kulak ve eller",
+   "yalniz": [
+    [
+     94,
+     60,
+     168,
+     106
+    ],
+    [
+     76,
+     144,
+     114,
+     178
+    ],
+    [
+     178,
+     108,
+     212,
+     148
+    ]
+   ]
+  },
+  "gnome-erkek-wizard-WZ-A6": {
+   "neden": "kalan:ws",
+   "not": "JETON-KALAN-TOPLU: uçan parşömenler (ten renginde) boyanıyordu: yalnız yüz, kulaklar ve eller",
+   "yalniz": [
+    [
+     80,
+     64,
+     182,
+     128
+    ],
+    [
+     76,
+     148,
+     114,
+     182
+    ],
+    [
+     176,
+     110,
+     212,
+     150
+    ]
+   ]
   }
  },
  "ayri": [
@@ -6323,7 +6476,7 @@
     33.3
    ],
    "tohum": 694,
-   "px": 2378
+   "px": 1516
   },
   "dwarf-erkek-sorcerer-SC-5": {
    "bos": true,
@@ -6514,7 +6667,7 @@
     32.0
    ],
    "tohum": 883,
-   "px": 2328
+   "px": 1126
   },
   "dwarf-erkek-wizard-WZ-A7": {
    "ref": [
@@ -8122,15 +8275,6 @@
    "bos": true,
    "px": 0
   },
-  "elf-erkek-warlock-WL-6": {
-   "ref": [
-    76.1,
-    21.6,
-    25.9
-   ],
-   "tohum": 1698,
-   "px": 1530
-  },
   "elf-erkek-warlock-WL-8": {
    "ref": [
     91.4,
@@ -8276,31 +8420,18 @@
    "bos": true,
    "px": 0
   },
-  "elf-kadin-warlock-WL-2": {
-   "ref": [
-    78.0,
-    22.5,
-    26.9
-   ],
-   "tohum": 3486,
-   "px": 2367
-  },
   "elf-kadin-warlock-WL-4": {
    "bos": true,
    "px": 0
   },
-  "elf-kadin-warlock-WL-6": {
-   "ref": [
-    72.8,
-    18.4,
-    22.6
-   ],
-   "tohum": 1194,
-   "px": 1391
-  },
   "elf-kadin-warlock-WL-8": {
-   "bos": true,
-   "px": 0
+   "ref": [
+    75.2,
+    2.5,
+    3.9
+   ],
+   "tohum": 287,
+   "px": 777
   },
   "gnome-erkek-barbarian-GR": {
    "ref": [
@@ -9361,7 +9492,7 @@
     32.9
    ],
    "tohum": 1506,
-   "px": 4426
+   "px": 1769
   },
   "gnome-erkek-wizard-WZ-A7": {
    "ref": [
@@ -12910,7 +13041,7 @@
     -9.4
    ],
    "tohum": 1322,
-   "px": 2303
+   "px": 1659
   },
   "goliath-kadin-sorcerer-SC-5": {
    "bos": true,
@@ -13544,6 +13675,10 @@
    ],
    "tohum": 1979,
    "px": 2855
+  },
+  "human-kadin-monk-ID10": {
+   "bos": true,
+   "px": 0
   },
   "human-kadin-monk-ID8": {
    "ref": [

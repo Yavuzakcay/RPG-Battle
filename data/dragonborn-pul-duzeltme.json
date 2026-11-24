@@ -145,10 +145,17 @@
   },
   "dragonborn-kadin-barbarian-ID7": {
    "yalniz": [
-    [93, 32, 186, 108],
-    [42, 134, 103, 213]
+    [93, 32, 186, 118],
+    [[38, 132], [66, 132], [66, 185], [100, 195], [104, 220], [38, 220]],
+    [76, 98, 112, 146],
+    [84, 176, 116, 200],
+    [156, 106, 206, 152]
    ],
-   "neden": "çekiç başı ve zırh; baş ve kuyruk"
+   "ekle": [
+    [[188, 112], [200, 110], [206, 116], [208, 128], [200, 134], [192, 138], [186, 130]],
+    [[164, 122], [176, 122], [178, 140], [172, 156], [164, 156]]
+   ],
+   "neden": "çekiç başı ve zırh; baş ve kuyruk; JETON-KALAN-TOPLU: çıplak sol kol, el ve pazu, sağ el (yumruk), dizlik altı bacak (`yalniz` genişledi, `ekle` iki el)"
   },
   "dragonborn-erkek-warlock-WL-10": {
    "ornek": [
@@ -745,6 +752,63 @@
    "kapi": true,
    "secenek": "a",
    "neden": "kör topal (a): kapılı otomatik maske (gövdenin %30u, %60 sınırının altında); sargılara küçük taşma kabul"
+  },
+  "dragonborn-erkek-paladin-ID8": {
+   "ornek": [
+    [150, 100, 170, 112],
+    [50, 150, 60, 170]
+   ],
+   "renkFark": 18,
+   "parlakFark": 40,
+   "alan": [
+    [132, 92, 190, 128],
+    [[44, 96], [56, 96], [66, 140], [62, 180], [84, 192], [86, 212], [44, 214], [34, 170]]
+   ],
+   "neden": "JETON-KALAN-TOPLU: eski maske boynuzu ve kuyrukta tek şerit boyuyordu: yüz ve kuyruk (ornek)"
+  },
+  "dragonborn-kadin-paladin-ID8": {
+   "ornek": [
+    [150, 92, 168, 104],
+    [24, 170, 34, 190]
+   ],
+   "renkFark": 30,
+   "parlakFark": 55,
+   "alan": [
+    [128, 82, 186, 120],
+    [[16, 114], [50, 114], [54, 160], [62, 188], [76, 196], [76, 224], [30, 222], [12, 170]]
+   ],
+   "neden": "JETON-KALAN-TOPLU: eski maske boynuzu ve kuyrukta tek şerit boyuyordu: yüz ve kuyruk (ornek)"
+  },
+  "dragonborn-erkek-bard-ID5": {
+   "ekle": [
+    [[180, 62], [194, 60], [206, 68], [206, 80], [196, 86], [184, 90], [178, 78]]
+   ],
+   "neden": "JETON-KALAN-TOPLU: kalkık sağ el (tokmak tutan) boyasızdı (`ekle`)"
+  },
+  "dragonborn-kadin-bard-ID5": {
+   "ekle": [
+    [[56, 92], [66, 88], [78, 90], [80, 102], [72, 110], [58, 112], [54, 104]]
+   ],
+   "neden": "JETON-KALAN-TOPLU: kalkık sol el (tokmak tutan) boyasızdı (`ekle`)"
+  },
+  "dragonborn-erkek-monk-ID7": {
+   "yalniz": [
+    [72, 26, 192, 114],
+    [[14, 104], [44, 104], [62, 150], [64, 206], [30, 206], [10, 150]],
+    [90, 222, 150, 246]
+   ],
+   "ekle": [
+    [[64, 96], [84, 92], [90, 110], [88, 124], [84, 138], [72, 140], [64, 128]],
+    [[202, 134], [212, 130], [226, 132], [228, 148], [218, 156], [206, 152]]
+   ],
+   "neden": "JETON-KALAN-TOPLU: iki el boyasızdı (`ekle`); baş, kuyruk, ayaklar (`yalniz`)"
+  },
+  "dragonborn-kadin-monk-ID7": {
+   "ekle": [
+    [[64, 92], [84, 90], [94, 108], [94, 122], [90, 140], [76, 142], [64, 126]],
+    [[200, 130], [218, 126], [230, 132], [232, 148], [222, 158], [202, 156]]
+   ],
+   "neden": "JETON-KALAN-TOPLU: iki el yarı boyalıydı (`ekle`)"
   }
  }
 }

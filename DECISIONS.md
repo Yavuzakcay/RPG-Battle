@@ -38,6 +38,74 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   `celestialUyanis.kirik-kanat.sepya.kanat: false` → filtre yalnız gövdeye (`lineageLook`); alan yoksa ya da `true` ise kanada da.
 - **Karşılaştırma:** `docs/sabah/celestial-kirik-kanat-yeni/karsilastirma.png` (eski kanat + sepya ↔ yeni; `onizleme-kanat.html?m=kirik`).
   Rozette kanat dairenin arkasında kalır (önceki gibi); küçülen kanat rozette yalnız kenarlardan görünür.
+## BIRLESTIR-DROW-VE-TOPLU: quirky-bell (DROW-MASKE-TOPLU) ve quirky-brown (JETON-KALAN-TOPLU) birlesik'e birleşti (2026-11-24; yalnız maske ve veri)
+
+- Dal `main`'den çıkmıştı; `birlesik`'in MASKE-DUZELT/MASKE-EK/KESIM-TEPE maskeleriyle 21 dosyada çakıştı (ikili maske ve iki veri
+  dosyası). Görsel karşılaştırmayla dosya başına seçim:
+  - Elle maske Barbarian ID4 e/k, Rogue ID4 e/k: `birlesik`'in Gemini maskesi (dolu, beneksiz; Rogue'da kulak, boyun ve eller de var).
+    DROW'un aynı jetonlar için çizdiği ham PNG'ler `assets/soy-maske-ham/`'da kalır, elle maskeye dönüştürülmedi.
+  - Otomatik maske: Warlock WL-6 e/k ve kadın WL-2 DROW sürümü (yüz bütünüyle, palto/kol yok); bunlar `data/maske-duzelt.json`
+    `jetonlar`'dan çıkarıldı (yoksa `maske-duzelt.py` eskiyi geri yazardı; artık `soy-maske --alt` kapsamında). Öteki 8'i (Barbarian ID3,
+    Fighter GR e/k, Monk GR, Paladin GR, WL-1, WL-2 erkek, WL-4 kadın) `birlesik` sürümü; WL-4 kadın zaten DROW'un elle maskesiyle çizilir.
+  - `data/soy-maske-yz.json` iki tarafın kayıtlarının birleşimi (ortak jetonda `birlesik`), `data/soy-maske-rapor.json`
+    `npm run soy-maske -- --el` ile yeniden üretildi (43 elle maske).
+- Bilinen çelişki: DROW Monk ID10 e/k, WL-4 e/k ve WL-3 erkeğe elle maske (yüz boyalı) verdi; MASKE-EK bunların bir kısmını
+  (Monk ID10, WL-4) "tensiz çizim, bilerek boş" saymıştı. Elle maske öncelikli olduğundan DROW kararı geçerli; JETON-KALAN-TOPLU'nun
+  human-kadin-monk-ID10 boş kararıyla tutarsız (rapor kullanıcıya).
+- Ardından quirky-brown (JETON-KALAN-TOPLU) çakışmasız birleşti; `soy-maske -- --el` yeniden çalıştı (42 elle maske, `elIptal`
+  human-kadin-monk-ID10), rapor değişmedi.
+- **Karar (kullanıcı, 2026-11-24):** Solgun Gezgin (Monk ID10) bütün ırklarda boş; `elf-erkek/kadin-monk-ID10` ve `elf-erkek/kadin-warlock-WL-4`
+  DROW elle maskeleri `elIptal` ile yok sayılır (MASKE-EK "bilerek boş" kararı geçerli; dosyalar `assets/soy-maske-el/`'de kalır).
+
+## DROW-MASKE-TOPLU: Dark Elf (Drow) maske düzeltmeleri (2026-11-23; yalnız maske ve veri, jeton resmi/kural/kayıt sürümü değişmedi)
+
+- **Kaynak:** `harita/belgeler/JETON-DENETIM.md` bölüm 4 (elf/drow) ve 7, `harita/belgeler/KESIM-DUZELT-MASKE-LISTESI.md`. Maske jeton
+  başına tek dosya olduğundan elf maskesi yalnız Drow boyasında görünür (High Elf maskesiz HSL, Wood Elf boyasız).
+- **A. Elle maske (17 jeton):** `data/soy-maske-ciz.json` bölgeleri (yüz, kulak, el, boyun; kıyafet/şapka/kapüşon/saç/maske dışarıda)
+  → `python scripts/soy-maske-ciz.py` → `npm run soy-maske-ice` → `npm run soy-maske -- --el`. Bozuk: `elf-kadin-barbarian-ID4`
+  (kafatası maske dışındaki ten), Bard ID7 e/k (şapka/tunik yerine yüz, el), Rogue ID4 e/k (kamuflaj: yalnız yüz; beden yaprak/kumaş,
+  eller eldivenli), Rogue ID8 e/k (kapüşon/zırh yerine yüz, el), `elf-kadin-sorcerer-SC-9` (soluk yüz, kulak, eller; göz akı hariç),
+  `elf-erkek-warlock-WL-3` (yüz, kulak, eller; altın kenar hariç). "haric yeter" denenler elle maskeye çevrildi, çünkü otomatik maske
+  yüzü hiç kapsamıyordu: `elf-erkek-fighter-ID10` (maske bayraktaydı), `elf-kadin-sorcerer-SC-3` (maske kitaptaydı; soluk mavi hayalet
+  kız, yüz/kulak/el; ayaklar etek ucuyla aynı renkte, dışarıda). Ağır şüpheli: `elf-erkek-barbarian-ID4` (oyma tahta maske hariç bütün
+  ten), Paladin ID8 e/k (miğfer aralığında görünen yüz; kenar çizgileri hariç), `elf-erkek-warlock-WL-4` (gri ölü teni: yüz, kulak,
+  el, bacak; saç ve cüppe dışarıda). **Karar:** Druid ID4 e/k ağaç adam (yüz ve beden kabuk): beden kabuğundaki dağınık lekeler
+  kaldırıldı, yalnız yüz boyanır (kadında "haric yeter", erkekte aynı tasarım: tutarlı ikili). `elf-kadin-cleric-ID1` oyunda zaten
+  doğru (yüz ve eller boyalı; denetim ölçüsü yanlış pozitif): değiştirilmedi. Bırakılan (hafif): Druid ID8 kadın, Paladin ID2 e/k,
+  Warlock WL-8 kadın. `soy-maske-ice` uyarıları (otomatik maskeyle IoU < 0,3; Paladin ID8 beyaz oranı < %2) beklenen: eski otomatik
+  maske yanlış yerdeydi; Paladin ID8'de görünür ten zaten küçük.
+- **B. Maskesiz 9 jeton (yedek filtre kalktı):** yüzü görünen elle maske: Monk ID10 e/k (Solgun Gezgin: gri-mavi yüz, kulak, eller;
+  sargılar ve palto dışarıda), `elf-erkek-sorcerer-SC-9` (soluk yüz, kulak, eller; göz akı hariç). Bilerek boş maske (`bos: true`,
+  Human ID3/SC-5/WL-10 gibi; boyanacak ten yok, jeton kendi renginde): Paladin ID3 e/k (kapalı miğferli tam zırh), Sorcerer SC-5 e/k
+  (gölge varlığı), Warlock WL-10 e/k (hayalet). Boş maske "maske var" sayılır (`tint.ts`): yedek CSS filtresi (bütün jetonu, ay ve
+  zinciri de renklendiriyordu) uygulanmaz.
+- **C. Kesimi yenilenip maskesi eski kalanlar (11):** `npm run soy-maske -- elf --alt` (yalnız elf; öteki bütün elf maskeleri bit bit
+  aynı çıktı). Tutulan: Barbarian ID3, Fighter GR e/k, Monk GR, Paladin GR, Warlock WL-1/2/6 erkek, WL-2/6 kadın, WL-4 kadın
+  (`data/soy-maske-alt-rapor.json` sayıları güncel). `elf-kadin-druid-ID7` gerekmediği için eski maske ve rapor değeri geri konuldu.
+  Fighter GR'lerde eller eldivenli: bilekte boyanacak ten yok (doğru). `elf-kadin-warlock-WL-4` yenilenince de otomatik maske saçı
+  boyuyordu, gri ölü yüz boyasızdı: erkek WL-4 gibi elle maske (yüz, kulak, el, bacak; saç ve cüppe dışarıda).
+- **Kanıt:** `npx vite-node scripts/drow-maske-cizim.ts -- --etiket once|sonra <jetonlar>` (oyunun kendi çizimi: JETON-DENETIM sayfası,
+  Dark Elf savaş jetonu ve boyalı rozet; `scripts/jeton-denetim-sayfa.tsx` hücrede `boyali` seçeneği) + `python scripts/drow-maske-sayfa.py
+  <grup> <jetonlar>` → `gorsel-dokum/drow-maske-toplu/` (git dışı). Kontrol görselleri `docs/sabah/maske-kontrol/elf-*.png`.
+## JETON-KALAN-TOPLU: ertelenmiş küçük jeton/maske işleri (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
+
+- **Kapsam ve yöntem:** yalnız maske/veri; jeton görseline ve `assets/soy-maske-el/`'e dokunulmadı. Ten maskeleri `scripts/maske-duzelt.py`
+  (`data/maske-duzelt.json`, neden `kalan:*`), Dragonborn pul maskesi `data/dragonborn-pul-duzeltme.json` + `dragonborn-pul-maske.py --jeton`.
+  Önce/sonra oyunun `tintedUrl` çizimiyle (git dışı `gorsel-dokum/jeton-kalan-toplu/`).
+- **Karar: elle maskeyi veriyle iptal (`elIptal`).** `human-kadin-monk-ID10` (Solgun Gezgin, ölü Monk) bütün ırklarda bilerek boş; Human'ın
+  Gemini elle maskesi yüzü boyuyordu (MASKE-EK'te karar kullanıcıya kalmıştı). Elle maske klasörü yalnız okunur olduğundan dosya silinmedi:
+  `jetonlar.<ad>.elIptal: true` → `scripts/soy-maske-el.ts` o dosyayı yok sayar (rapor `oto`, `maske-el/` kopyası kalkar), otomatik maske `bos`.
+- **Drow:** JETON-DENETIM bölüm 4 (23), MASKE-EK `ek:*` (14) ve `maske-tarama.py` şüphelileri (30) birleşimi 61 jeton gözle: yalnız
+  `elf-kadin-warlock-WL-8` (hortlak; bilerek boştu, kardeş WL-8 kararlarına uyduruldu: yüz, kulak, eller). Barbarian ID4 Gemini maskeleri
+  taramada "yüz boyasız" çıkıyor ama doğru (kafatası maske); büyük alanlı çıplak gövdeli jetonlar doğru.
+- **Wizard/Sorcerer:** 7 ırkın 358 maskeli jetonu tek tek: cüppe/parşömen taşması 4 jetonda (`dwarf-erkek-sorcerer-SC-4`,
+  `goliath-kadin-sorcerer-SC-4`, `dwarf-erkek-wizard-WZ-A6`, `gnome-erkek-wizard-WZ-A6`) yalnız yüz ve ellere indirildi.
+- **Dragonborn:** pul maskesi dışındaki lavanta ten bileşeni taraması (266 jeton, 96 aday, hepsi gözle): 7 jetonda boyasız el/kol/kuyruk
+  maskeye (Barbarian ID7 k, Paladin ID8 e/k, Bard ID5 e/k, Monk ID7 e/k). Belirsiz bırakılanlar: Rogue GR e/k ve Cleric ID6 e/k kuyruğun
+  açık kenar şeridi (renk eşiği gevşeyince kukuleta/gagaya taşıyor), Warlock WL-7/WL-10, Sorcerer SC-3/SC-6, Wizard WZ-A1/A6, Paladin ID10,
+  Cleric ID5, Druid ID5, Ranger ID4 adaylarının çoğu bilerek dışarıda bırakılmış lavanta kıyafet/efekt.
+- **"51 küçük kalıntı" (KESIM-TEPE):** sayı belgede var, adlar yalnız git dışı ölçüde; yeniden üretim ham sayfa dalı ister ve bunlar kesim
+  artığı (jeton görseli, 6–25 px). Dokunulmadı.
 
 ## KESIM-TEPE: 590 jetonun silinmiş tepe konturu geri kondu (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
 
