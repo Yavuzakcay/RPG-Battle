@@ -509,7 +509,8 @@
   "elf-erkek-monk-ID10": {
    "neden": "ek:tarama",
    "bos": true,
-   "not": "ölü (MASKE-EK): çıplak ten yok"
+   "not": "ölü (MASKE-EK): çıplak ten yok (BIRLESTIR 2026-11-24, kullanıcı kararı: DROW elle maskesi elIptal ile yok sayılır, bilerek boş)",
+   "elIptal": true
   },
   "elf-erkek-paladin-GR": {
    "neden": "kesim:kismen"
@@ -652,7 +653,8 @@
   "elf-erkek-warlock-WL-4": {
    "neden": "denetim:supheli",
    "bos": true,
-   "not": "zombi: gri ölü ten, saç boyanıyordu"
+   "not": "zombi: gri ölü ten, saç boyanıyordu (BIRLESTIR 2026-11-24, kullanıcı kararı: DROW elle maskesi elIptal ile yok sayılır, bilerek boş)",
+   "elIptal": true
   },
   "elf-erkek-warlock-WL-8": {
    "neden": "ek:liste",
@@ -852,7 +854,8 @@
   "elf-kadin-monk-ID10": {
    "neden": "ek:tarama",
    "bos": true,
-   "not": "ölü (MASKE-EK): çıplak ten yok"
+   "not": "ölü (MASKE-EK): çıplak ten yok (BIRLESTIR 2026-11-24, kullanıcı kararı: DROW elle maskesi elIptal ile yok sayılır, bilerek boş)",
+   "elIptal": true
   },
   "elf-kadin-paladin-ID2": {
    "neden": "denetim:supheli"
@@ -983,7 +986,8 @@
   "elf-kadin-warlock-WL-4": {
    "neden": "kesim:kismen denetim:supheli",
    "bos": true,
-   "not": "zombi: gri ölü ten, saç boyanıyordu"
+   "not": "zombi: gri ölü ten, saç boyanıyordu (BIRLESTIR 2026-11-24, kullanıcı kararı: DROW elle maskesi elIptal ile yok sayılır, bilerek boş)",
+   "elIptal": true
   },
   "elf-kadin-warlock-WL-8": {
    "neden": "kalan:drow",

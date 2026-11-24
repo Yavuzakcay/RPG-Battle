@@ -18,6 +18,8 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   human-kadin-monk-ID10 boş kararıyla tutarsız (rapor kullanıcıya).
 - Ardından quirky-brown (JETON-KALAN-TOPLU) çakışmasız birleşti; `soy-maske -- --el` yeniden çalıştı (42 elle maske, `elIptal`
   human-kadin-monk-ID10), rapor değişmedi.
+- **Karar (kullanıcı, 2026-11-24):** Solgun Gezgin (Monk ID10) bütün ırklarda boş; `elf-erkek/kadin-monk-ID10` ve `elf-erkek/kadin-warlock-WL-4`
+  DROW elle maskeleri `elIptal` ile yok sayılır (MASKE-EK "bilerek boş" kararı geçerli; dosyalar `assets/soy-maske-el/`'de kalır).
 
 ## DROW-MASKE-TOPLU: Dark Elf (Drow) maske düzeltmeleri (2026-11-23; yalnız maske ve veri, jeton resmi/kural/kayıt sürümü değişmedi)
 
