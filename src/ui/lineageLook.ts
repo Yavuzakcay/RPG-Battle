@@ -39,7 +39,7 @@ export interface LineageLook {
 const D = data as unknown as {
   altSoylar: Record<string, { filtre?: string; oran?: { en: number; boy: number }; kanat?: string; orijinal?: true }>;
   orijinal: string[];
-  celestialUyanis: Record<string, { hale: boolean; filtre?: string; kanat?: string; sepya?: Sepya; iyilesme?: Iyilesme }>;
+  celestialUyanis: Record<string, { hale: boolean; filtre?: string; kanat?: string; sepya?: Sepya }>;
   hale: { gizleUstYuzde: number };
   ten: { varsayilan: string; filtreUygula: boolean; tonlar: SkinTone[]; kulturTen: Record<string, string[]>;
     surgun: { kultur: string; secenekler: string[]; ad: Record<string, { tr: string; en: string }> } };
@@ -53,11 +53,11 @@ export interface Sepya { acik: boolean; gri: number; sepya: number; doygunluk: n
 export const sepyaFilter = (s: Sepya | undefined): string =>
   s?.acik ? `grayscale(${s.gri}) sepia(${s.sepya}) saturate(${s.doygunluk}) brightness(${s.parlaklik})${s.ton ? ` hue-rotate(${s.ton}deg)` : ''}` : '';
 /**
- * CELESTIAL-KANAT-IYILESME: uyanışın uçuşu iyileşince (eşik `data/celestial.json` `ucus.seviyeEsigi`, kanat verisiyle tembel) görünüm:
- * `kanat` iyileşmiş kanat slotuna (`iyiKanat`) geçer, `govdeSepyasiKalkar` gövde sepyasını kaldırır. Bayrak yoksa varsayılan true;
- * `iyilesme` alanı yoksa ya da iki bayrak kapalıysa eşikten sonra da kırık görünüm.
+ * CELESTIAL-KANAT-IYILESME: kanat slotunun iyileşmiş hâli (`data/kanat-esleme.json` slotta `iyilesme`): uyanışın uçuşu iyileşince (eşik
+ * `data/celestial.json` `ucus.seviyeEsigi`, kanat verisiyle tembel) `dosya` kanadı `olcek`/`kok`/`enBoy` ile çizilir (slotun `ton`/`filtre`si
+ * yok); `govdeSepyasiKalkar` (varsayılan true) gövde sepyasını kaldırır. Blok yoksa eşikten sonra da kırık kanat.
  */
-export interface Iyilesme { kanat?: boolean; govdeSepyasiKalkar?: boolean; iyiKanat: string }
+export interface WingHeal { dosya: string; olcek: number; kok: [number, number]; enBoy: number; govdeSepyasiKalkar?: boolean }
 /** Bu seviyede uyanışın kanadı iyileşmiş mi (eşik veriden; veri yüklenmemişse hayır). */
 export function awakeningHealed(awakening: string, level: number): boolean {
   const esik = W.iyilesmeEsigi[awakening];
@@ -117,7 +117,7 @@ export interface WingTone { acik: boolean; hue: number; doygunluk: number; parla
 /** Kanat ton ayarı → CSS filtresi (`hue-rotate → saturate → brightness`; `url(#…)` değil). */
 export const wingToneFilter = (t: WingTone | undefined): string =>
   t?.acik ? [t.hue ? `hue-rotate(${t.hue}deg)` : '', t.doygunluk !== 1 ? `saturate(${t.doygunluk})` : '', t.parlaklik !== 1 ? `brightness(${t.parlaklik})` : ''].filter(Boolean).join(' ') : '';
-export type WingSlotData = { altSinif?: string; /** Kuyruk A İş 2: kendi çiziminde kanadı olan jetonlar (dosya adı, uzantısız); bu slotun kanadı çizilmez. */ kanatsiz?: string[]; ayna?: WingMirror; /** KW2: tek kanat görselinin üstüne çizilen katmanlar (dosya aynı klasörde, aynı boyutta). `zar.etkin: false` pembe karışımlı zar katmanını kapatır (karşılaştırma); pençe her zaman. */ katmanlar?: { zar?: { dosya: string; etkin?: boolean }; pence?: { dosya: string; palet: WingPalet } }; palet?: WingPalet; renkPaletleri?: Record<string, WingPalet & { zar?: WingPalet }>; esnet?: boolean; sprite?: WingSprite & { klasor?: string }; dosya: string | null; dosyaKapali: string | null; minSeviye?: number; herZaman?: boolean; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre?: string; renkFiltreleri?: Record<string, string>; /** KIRIK-KANAT-TON: kanadın kendi ton ayarı (dosyayı değiştirmeden). */ ton?: WingTone };
+export type WingSlotData = { altSinif?: string; /** Kuyruk A İş 2: kendi çiziminde kanadı olan jetonlar (dosya adı, uzantısız); bu slotun kanadı çizilmez. */ kanatsiz?: string[]; ayna?: WingMirror; /** KW2: tek kanat görselinin üstüne çizilen katmanlar (dosya aynı klasörde, aynı boyutta). `zar.etkin: false` pembe karışımlı zar katmanını kapatır (karşılaştırma); pençe her zaman. */ katmanlar?: { zar?: { dosya: string; etkin?: boolean }; pence?: { dosya: string; palet: WingPalet } }; palet?: WingPalet; renkPaletleri?: Record<string, WingPalet & { zar?: WingPalet }>; esnet?: boolean; sprite?: WingSprite & { klasor?: string }; dosya: string | null; dosyaKapali: string | null; minSeviye?: number; herZaman?: boolean; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre?: string; renkFiltreleri?: Record<string, string>; /** KIRIK-KANAT-TON: kanadın kendi ton ayarı (dosyayı değiştirmeden). */ ton?: WingTone; /** CELESTIAL-KANAT-IYILESME: iyileşmiş kanat (eşik celestial.json'dan). */ iyilesme?: WingHeal };
 /** Paket: kanat verisi tembel (`wingData.ts` `loadWingData`); yüklenene dek boş (kanat yok). */
 export { WING_SLOTS };
 /** Jeton yolundan dosya adı (klasör ve uzantı olmadan; `characters/kucuk/x.webp` → `x`). */
@@ -237,21 +237,22 @@ export function lineageLook(sheet: LookSheet, opts: { flying?: boolean; ability?
   let wingId: string | undefined;
   let tone = '';
   let wingTone = true;
+  let heal: { slot: string; spec: WingHeal } | null = null;
   const level = sheet.level ?? 1;
   if (sheet.raceId === 'celestial') {
     const awId = sheet.celestialAwakening ?? AWAKENING_DEFAULT;
     const aw = D.celestialUyanis[awId];
     if (aw && level >= AWAKENING_FROM) {
-      // CELESTIAL-KANAT-IYILESME: eşikten sonra iyileşmiş kanat ve (bayrakla) sepyasız gövde.
-      const healed = !!aw.iyilesme && awakeningHealed(awId, level);
-      const healWing = healed && aw.iyilesme!.kanat !== false;
-      const healBody = healed && aw.iyilesme!.govdeSepyasiKalkar !== false;
+      // CELESTIAL-KANAT-IYILESME: eşikten sonra iyileşmiş kanat (slotun `iyilesme`si) ve (bayrakla) sepyasız gövde.
+      const iy = aw.kanat ? W.slotlar[aw.kanat]?.iyilesme : undefined;
+      heal = iy && awakeningHealed(awId, level) ? { slot: aw.kanat!, spec: iy } : null;
+      const healBody = !!heal && heal.spec.govdeSepyasiKalkar !== false;
       hideHalo = !aw.hale;
       if (aw.filtre) filters.push(aw.filtre);
       tone = healBody ? '' : sepyaFilter(aw.sepya);
       if (tone) filters.push(tone);
       wingTone = aw.sepya?.kanat !== false;
-      wingId = healWing ? aw.iyilesme!.iyiKanat : aw.kanat;
+      wingId = aw.kanat;
     }
   } else {
     const entry = sheet.lineageId ? D.altSoylar[`${sheet.raceId}/${sheet.lineageId}`] : undefined;
@@ -262,7 +263,11 @@ export function lineageLook(sheet: LookSheet, opts: { flying?: boolean; ability?
   // Alt sınıfa bağlı slot (örn. Melek) ırk/alt soy kanadının yerine geçer; seçili/yüklü değilse hiçbir şey değişmez.
   wingId = subclassWingId(sheet) ?? wingId;
   if (!wingId && sheet.raceId === 'dragonborn') wingId = 'dragonborn';
-  const raw = wingId ? wingLayer(wingId, level, !!(opts.flying || opts.ability), sheet.lineageId) : null;
+  const layer = wingId ? wingLayer(wingId, level, !!(opts.flying || opts.ability), sheet.lineageId) : null;
+  // İyileşmiş kanat: aynı slot ve görünürlük, başka görsel ve yerleşim; kırık kanadın ton/filtre ayarı taşınmaz.
+  const raw = layer && heal && layer.id === heal.slot
+    ? { ...layer, src: `${W.klasor}/${heal.spec.dosya}`, olcek: heal.spec.olcek, capa: heal.spec.kok, enBoy: heal.spec.enBoy, filtre: W.slotlar[heal.slot]?.filtre ?? '' }
+    : layer;
   // Sepya kanada da aynı CSS filtresiyle (kanat ayrıca renk almaz: palet/katman yerine sepya), veride `kanat: false` değilse.
   const wing = raw && tone && wingTone ? (({ palet: _p, katmanlar: _k, ...w }) => ({ ...w, filtre: [w.filtre, tone].filter(Boolean).join(' ') }))(raw) : raw;
   return { filter: filters.join(' '), scaleX, scaleY, wing, hideHalo };

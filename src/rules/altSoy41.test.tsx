@@ -219,28 +219,33 @@ describe('görünüm verisi', () => {
     expect(tintFallbackFilter({ raceId: 'orc', lineageId: 'glacier' })).toContain('hue-rotate');
   });
   it('kanat slotları (Tiefling Kanatlı, Celestial Kırık Kanat, Dragonborn, alt sınıfa bağlı Melek): sprite bağlı; Tiefling ve Dragonborn yalnız havadayken', () => {
-    expect(WING_SLOTS.sort()).toEqual(['celestial-kirik-kanat', 'celestial-kirik-kanat-iyi', 'dragonborn', 'tiefling-kanatli']); // KQ6-3: Anka ve Melek bağlaması kaldırıldı; CELESTIAL-KANAT-IYILESME iyileşmiş kanat
+    expect(WING_SLOTS.sort()).toEqual(['celestial-kirik-kanat', 'dragonborn', 'tiefling-kanatli']); // KQ6-3: Anka ve Melek bağlaması kaldırıldı
     for (const [race, lin] of [['tiefling', 'winged'], ['dragonborn', 'red']] as const) {
       expect(lineageLook({ raceId: race, lineageId: lin, level: 5 }, { flying: false }).wing).toBeNull();
       expect(lineageLook({ raceId: race, lineageId: lin, level: 5 }, { flying: true }).wing).not.toBeNull();
     }
   });
-  it('CELESTIAL-KANAT-IYILESME: Kırık Kanat eşiği celestial.json ucus.seviyeEsigi; eşikte iyileşmiş kanat + sepyasız gövde, bayraklar veriden', () => {
+  it('CELESTIAL-KANAT-IYILESME: Kırık Kanat eşiği celestial.json ucus.seviyeEsigi; eşikte iyileşmiş kanat + sepyasız gövde, bayrak veriden', () => {
     const esik = (CELESTIAL.awakening.secenekler['kirik-kanat']!.ucus as { seviyeEsigi: number }).seviyeEsigi;
     expect(celestialThresholds(CELESTIAL)).toEqual({ 'kirik-kanat': esik }); // yalnız uçuş eşiği olan uyanış
     expect(WING_DATA.iyilesmeEsigi['kirik-kanat']).toBe(esik);
+    const slot = WING_DATA.slotlar['celestial-kirik-kanat']!;
+    const iy = slot.iyilesme!;
+    expect(iy).toMatchObject({ dosya: 'celestial-kirik-kanat-iyi.webp', govdeSepyasiKalkar: true });
     const at = (level: number, a = 'kirik-kanat') => lineageLook({ raceId: 'celestial', celestialAwakening: a, level }, { ability: true });
-    const iy = (gorunum.celestialUyanis as Record<string, { iyilesme?: { kanat?: boolean; govdeSepyasiKalkar?: boolean; iyiKanat: string } }>)['kirik-kanat']!.iyilesme!;
-    expect(iy).toMatchObject({ kanat: true, govdeSepyasiKalkar: true, iyiKanat: 'celestial-kirik-kanat-iyi' });
-    // Eşiğin bir altı: kırık kanat + gövde sepyası; eşik ve üstü: iyileşmiş kanat, gövde renkli (filtre yok). Hale gizli kalır.
-    for (const l of [AWAKENING_FROM, esik - 1]) expect(at(l)).toMatchObject({ wing: { id: 'celestial-kirik-kanat' }, filter: expect.stringContaining('sepia(') });
-    for (const l of [esik, 20]) expect(at(l)).toMatchObject({ wing: { id: 'celestial-kirik-kanat-iyi', src: 'kanat/celestial-kirik-kanat-iyi.webp', filtre: '' }, filter: '', hideHalo: true });
-    // Bayraklar ayrı ayrı; ikisi kapalıyken eşikten sonra da hep kırık + sepya.
-    const dene = (patch: Partial<typeof iy>) => { const eski = { ...iy }; Object.assign(iy, patch); try { return at(esik); } finally { Object.assign(iy, eski); } };
-    expect(dene({ kanat: false })).toMatchObject({ wing: { id: 'celestial-kirik-kanat' }, filter: '' });
-    expect(dene({ govdeSepyasiKalkar: false })).toMatchObject({ wing: { id: 'celestial-kirik-kanat-iyi' }, filter: expect.stringContaining('sepia(') });
-    expect(dene({ kanat: false, govdeSepyasiKalkar: false })).toEqual(at(esik - 1));
-    // Diğer uyanışlar eşikten etkilenmez.
+    // Eşiğin bir altı (ve 3. seviye): kırık sepya kanat + gövde sepyası; eşik ve üstü: iyileşmiş kanat (kendi yerleşimi, filtresiz), gövde renkli.
+    for (const l of [AWAKENING_FROM, esik - 1]) {
+      expect(at(l)).toMatchObject({ wing: { id: 'celestial-kirik-kanat', src: 'kanat/celestial-kirik-kanat.webp', olcek: slot.olcek, capa: slot.capa }, filter: expect.stringContaining('sepia(') });
+      expect(at(l).wing!.filtre).toBe(wingToneFilter(slot.ton));
+    }
+    for (const l of [esik, 20]) expect(at(l)).toMatchObject({ wing: { id: 'celestial-kirik-kanat', src: 'kanat/celestial-kirik-kanat-iyi.webp', olcek: iy.olcek, capa: iy.kok, enBoy: iy.enBoy, filtre: '' }, filter: '', hideHalo: true });
+    // Bayrak false: iyileşmiş kanat, gövde sepyası kalır (kanat yine filtresiz: sepya.kanat false).
+    const eski = iy.govdeSepyasiKalkar;
+    iy.govdeSepyasiKalkar = false;
+    try { expect(at(esik)).toMatchObject({ wing: { src: 'kanat/celestial-kirik-kanat-iyi.webp', filtre: '' }, filter: at(esik - 1).filter }); } finally { iy.govdeSepyasiKalkar = eski; }
+    // Blok yoksa eşikten sonra da kırık görünüm; diğer uyanışlar eşikten etkilenmez.
+    delete slot.iyilesme;
+    try { expect(at(esik)).toEqual(at(esik - 1)); } finally { slot.iyilesme = iy; }
     expect(at(esik, 'parlayan-ruh')).toEqual(at(esik - 1, 'parlayan-ruh'));
     expect(at(esik, 'gece-gozyasi')).toEqual(at(esik - 1, 'gece-gozyasi'));
     // Rozet (LookFrame) ve savaş jetonu (TokenFigure) aynı çözücüden: aynı kanat dosyası, gövde filtresi aynı.

@@ -2,16 +2,22 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
-## CELESTIAL-KANAT-IYILESME: Kırık Kanat uçuşu iyileşince kanat ve gövde görünümü (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
+## CELESTIAL-KANAT-IYILESME: Kırık Kanat uçuşu iyileşince melek kanadı ve renkli gövde (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
 
 - **Eşik veriden:** `data/celestial.json` `kirik-kanat.ucus.seviyeEsigi` (13; normal uçuş). Kodda sabit yok. `celestial.json` ana parçaya
   girmesin diye kanat verisiyle birlikte tembel yüklenir (`wingData.ts` `celestialThresholds` → `wingTable.iyilesmeEsigi`); veri
   yüklenmeden iyileşme yok (bileşenler `useWingData` ile yeniden çizilir).
-- **Görünüm:** seviye < eşik şimdiki hâl (küçük sepya kırık kanat + gövde sepyası); seviye ≥ eşik iyileşmiş beyaz bütün kanat (yeni slot
-  `celestial-kirik-kanat-iyi`, CELESTIAL-KIRIK-KANAT-YENI öncesi görsel ve yerleşim: olcek 1,45, capa [0,568, 0,438]) ve renkli gövde.
-- **Bayraklar:** `alt-soy-gorunum.json` `celestialUyanis.kirik-kanat.iyilesme` `kanat`, `govdeSepyasiKalkar` (varsayılan true), `iyiKanat`;
-  ikisi kapalıyken 3. seviyeden itibaren hep kırık + sepya. Rozet ve savaş jetonu aynı çözücüden (`lineageLook`). Parlayan Ruh ve Gece
-  Gözyaşı değişmedi. Görsel `docs/sabah/celestial-kirik-kanat-yeni/iyilesme-5-13.png`.
+- **Kanat:** `public/efekt/efekt-kanat-melek.webp` (dokunulmadı; 4 kare × 160 px) en opak karesi (2. kare; kareler neredeyse aynı),
+  sıkı kırpma 151×59 px, ×4 en yakın komşu (yumuşatmasız) → `public/kanat/celestial-kirik-kanat-iyi.webp` 604×236
+  (`python -X utf8 scripts/celestial-kanat-iyilesme.py`). Kaynak düşük çözünürlüklü, yumuşak çizim: büyütme blok blok görünür.
+- **Veri:** `data/kanat-esleme.json` `celestial-kirik-kanat.iyilesme` {dosya, olcek 1,15 (kırık kanatla aynı görsel genişlik), kok
+  [0,5, 0,7839] (iki kanadın iç kökünün ortası; omuz yüksekliği slotun `omuz`u), enBoy, govdeSepyasiKalkar: true}. Kırık kanadın
+  `ton`/`filtre`si taşınmaz. `govdeSepyasiKalkar: false` gövde sepyasını tutar; blok yoksa eşikten sonra da kırık kanat.
+  İlk sürümün (3a3e821a) ayrı slotu `celestial-kirik-kanat-iyi`, eski beyaz kanat görseli ve `alt-soy-gorunum.json` `iyilesme` bayrakları
+  bu tanımla kaldırıldı.
+- Rozet ve savaş jetonu aynı çözücüden (`lineageLook`); eşiğin altı değişmedi; Parlayan Ruh ve Gece Gözyaşı değişmedi. Görsel
+  `docs/sabah/celestial-kanat-iyilesme/karsilastirma.png` (`onizleme-kanat.html?m=iyilesme`). Piksel-art alternatif sütunu yok:
+  `assets-ham/kanat/celestial-kirik-kanat-iyi.jpg` diskte yoktu.
 
 ## KIRIK-KANAT-TON: Kırık Kanat kanadına veriyle ton ayarı (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
 

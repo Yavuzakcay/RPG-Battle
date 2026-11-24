@@ -168,7 +168,6 @@ async function renkOlc(adim: number) {
  * Kırık Kanat karşılaştırması (`?m=kirik&set=eski|ton|iyi`, isteğe bağlı `kisi=bard,rogue,monk`, `tur=jeton|rozet`):
  * - eski: ESKİ beyaz kanat + sepya (sahte uyanış/slot `kk-eski`, dosya `?eski=`) ↔ YENİ kanat.
  * - ton (KIRIK-KANAT-TON): yeni kanat ton ayarı kapalı (sahte `kk-tonsuz`) ↔ açık.
- * - iyi (CELESTIAL-KANAT-IYILESME): aynı uyanış 5. seviye (kırık) ↔ 13. seviye (iyileşme eşiği).
  */
 async function kirikHazirla() {
   await loadWingData();
@@ -190,7 +189,6 @@ type KirikKol = { aw: string; level: number; ad: string };
 const KIRIK_SET: Record<string, KirikKol[]> = {
   eski: [{ aw: 'kk-eski', level: 5, ad: 'ESKİ kanat + sepya filtresi' }, { aw: 'kirik-kanat', level: 5, ad: 'YENİ kanat (filtresiz)' }],
   ton: [{ aw: 'kk-tonsuz', level: 5, ad: 'Ton ayarı KAPALI (şimdiki)' }, { aw: 'kirik-kanat', level: 5, ad: 'Ton ayarı AÇIK' }],
-  iyi: [{ aw: 'kirik-kanat', level: 5, ad: '5. seviye (kırık)' }, { aw: 'kirik-kanat', level: 13, ad: '13. seviye (iyileşmiş)' }],
 };
 const KIRIK_KOL = KIRIK_SET[q.get('set') ?? 'eski'] ?? KIRIK_SET.eski!;
 const KIRIK_TUR = (['rozet', 'jeton'] as const).filter((t) => !q.get('tur') || q.get('tur') === t);
@@ -231,11 +229,37 @@ function PageKirik() {
   );
 }
 
+/**
+ * ?m=iyilesme (CELESTIAL-KANAT-IYILESME): Kırık Kanat satırları 3. seviye, eşiğin bir altı, eşik (`celestial.json` `ucus.seviyeEsigi`,
+ * kanat verisinden); sütunlar rozet ve savaş jetonu, 96 px ve 3× (288 px). `kisi=bard|rogue|monk` (varsayılan bard).
+ */
+function PageIyilesme() {
+  const esik = wingTable.iyilesmeEsigi['kirik-kanat'] ?? 13;
+  const ch = KIRIK_HEPSI.find((c) => c.id === (q.get('kisi') ?? 'bard'))!;
+  const satirlar = [{ level: 3, ad: '3. seviye' }, { level: esik - 1, ad: `${esik - 1}. seviye (eşiğin bir altı)` }, { level: esik, ad: `${esik}. seviye (eşik: iyileşmiş)` }];
+  const kol = (['rozet', 'jeton'] as const).flatMap((kind) => [96, 288].map((size) => ({ kind, size })));
+  return (
+    <div id="sayfa" style={{ background: '#1d2128', color: '#e8e4da', font: '13px system-ui', padding: 10, display: 'inline-block' }}>
+      <div style={{ color: '#f5d76e', fontWeight: 700, fontSize: 15 }}>{ch.ad} · Celestial Kırık Kanat · iyileşme eşiği {esik}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: `120px repeat(${kol.length}, auto)`, columnGap: 14, rowGap: 6, alignItems: 'end' }}>
+        <div />{kol.map((k) => <div key={k.kind + k.size} style={{ ...lab, fontWeight: 700 }}>{k.kind === 'rozet' ? 'Rozet' : 'Savaş jetonu'} {k.size} px</div>)}
+        {satirlar.map((r) => (
+          <div key={r.level} style={{ display: 'contents' }}>
+            <div style={{ alignSelf: 'center', color: '#f5d76e', fontWeight: 700 }}>{r.ad}</div>
+            {kol.map((k) => <KirikHucre key={k.kind + k.size} ch={ch} k={{ aw: 'kirik-kanat', level: r.level, ad: '' }} size={k.size} kind={k.kind} />)}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const host = document.createElement('div'); host.style.cssText = 'position:fixed;left:0;top:0;z-index:99999'; document.body.appendChild(host);
 if (mode === 'ab') createRoot(host).render(<PageAb />);
 else if (mode === 'hepsi') createRoot(host).render(<PageHepsi />);
 else if (mode === 'kok') createRoot(host).render(<PageKok />);
 else if (mode === 'ozet') createRoot(host).render(<PageOzet />);
 else if (mode === 'figur') createRoot(host).render(<PageFigur />);
+else if (mode === 'iyilesme') void loadWingData().then(() => createRoot(host).render(<PageIyilesme />));
 else if (mode === 'kirik') void kirikHazirla().then(() => createRoot(host).render(<PageKirik />));
 else if (mode === 'renk') void renkOlc(+(q.get('adim') ?? 5));
