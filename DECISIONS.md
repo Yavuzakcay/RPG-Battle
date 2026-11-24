@@ -21,6 +21,11 @@ commit: A1, A3, A4, A11, A2, A10, A5. Değişen eski testler: `ruleVersion.test.
   saldırısı yok (saldıran ya da hedef alandaysa otomatik ıska; `zones.ts` `stagedSpec`, `noRangedWeapon`). Hasar aşamada bir kez atılır.
   ⚠ Yıldırımın altı hedefi oyuncuya sorulmuyor: büyücünün düşmanlarından merkeze en yakın altısı; nesneler (asit, yıldırım) hedef
   değil; "strong wind" ayrıca uygulanmadı (menzilli silah saldırısı zaten yok). Yapı: 103'te yalnız yapım turu.
+- **A3 boğulma** (SRD 5.2.1 "is suffocating" + Rules Glossary Suffocation): süren etkide `noBreath` (`true`; Water Elemental Whelm
+  `unlessWater`: su soluyan etkilenmez). Rug of Smothering Smother ve Whelm etkisinde (`data/canavar-ekleri-a2.json` `effect.noBreath`),
+  Gelatinous Cube Engulf yutma yolunda (`swallow.noBreath`); Darkmantle örtmesi A2'de. Nefes sayacı su altıyla aynı yol
+  (`underwater.ts` `smothered` → `holdingBreath`: 1 + CON dakika tutar, sonra her tur sonu 1 Exhaustion; etki bitince nefes alır,
+  boğulmadan gelen Exhaustion gider). 103'te etki `noBreath` taşımaz.
 
 ## CELESTIAL-KANAT-IYILESME: Kırık Kanat uçuşu iyileşince melek kanadı ve renkli gövde (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
 

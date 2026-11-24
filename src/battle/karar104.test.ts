@@ -3,6 +3,8 @@
  */
 import { describe, expect, it } from 'vitest';
 import { execute } from './commands';
+import { combatantFromMonster } from './index';
+import { getMonster } from '../data';
 import { startBattle } from './create';
 import { replay } from './index';
 import { GM, mk, P1 } from './fixtures';
@@ -95,5 +97,39 @@ describe('KARAR104 A1: Storm of Vengeance 2–10. tur aşamaları (SRD 5.2.1 s. 
     const r = rounds(OLD, 4);
     expect(dmgOn(r.events, 'T')).toEqual(['thunder:8']);
     expect(r.state.map?.zones?.[0]?.stage).toBeUndefined();
+  });
+});
+
+describe('KARAR104 A3: boğulma ("is suffocating"; SRD 5.2.1 Suffocation)', () => {
+  const HIGH: Rng = () => 0.99;
+  const LOW: Rng = () => 0.01;
+  const monster = (id: string, cid: string): Combatant => ({ ...combatantFromMonster(getMonster(id), { id: cid }), side: 'enemies', pos: at(3, 5) });
+  const hero = (p: Partial<Combatant> = {}) => mk('H', { ownerId: 'p1', hp: 300, maxHp: 300, ac: 10, pos: at(4, 5), ...p });
+  const attack = (s: BattleState, actorId: string, name: string): Command =>
+    ({ type: 'monster_attack', actorId, targetId: 'H', attackIndex: (s.combatants[actorId] as Combatant).attacks.findIndex((a) => a.name === name) }) as Command;
+  /** Canavar saldırır, iki taraf da turunu bitirir; kahramanın nefes sayacı. */
+  const smother = (v: number, monsterId: string, name: string, rng: Rng, p: Partial<Combatant> = {}) => {
+    const s = scene104(v, [monster(monsterId, 'M'), hero(p)]);
+    const r = play(s, [attack(s, 'M', name), { type: 'end_turn', actorId: 'M' } as Command, { type: 'end_turn', actorId: 'H' } as Command], rng);
+    return r.state.combatants.H as Combatant;
+  };
+  it('104: Rug of Smothering Smother tutarken nefes alamaz (tur sonunda nefes sayacı); 103: sayaç yok', () => {
+    const h = smother(NEW, 'animated-rug-of-smothering', 'Smother', HIGH);
+    expect(h.effects?.some((e) => e.noBreath === true)).toBe(true);
+    expect(h.mapStatus.breath).toBe(1);
+    const o = smother(OLD, 'animated-rug-of-smothering', 'Smother', HIGH);
+    expect(o.effects?.some((e) => e.noBreath)).toBe(false);
+    expect(o.mapStatus.breath ?? 0).toBe(0);
+  });
+  it('104: Gelatinous Cube Engulf içine alınan nefes alamaz', () => {
+    const h = smother(NEW, 'gelatinous-cube', 'Engulf', LOW);
+    expect(h.effects?.find((e) => e.swallowedBy === 'M')?.noBreath).toBe(true);
+    expect(h.mapStatus.breath).toBe(1);
+  });
+  it('104: Water Elemental Whelm su solumayanı boğar; Water Breathing etkisi olan nefes alır', () => {
+    expect(smother(NEW, 'water-elemental', 'Whelm', LOW).mapStatus.breath).toBe(1);
+    const wb = smother(NEW, 'water-elemental', 'Whelm', LOW, { effects: [{ id: 'water-breathing', name: 'Water Breathing', sourceId: 'H', until: 9999 }] });
+    expect(wb.effects?.some((e) => e.noBreath === 'unlessWater')).toBe(true);
+    expect(wb.mapStatus.breath ?? 0).toBe(0);
   });
 });

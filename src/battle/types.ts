@@ -384,6 +384,12 @@ export interface ActiveEffect {
   attackAdv?: boolean;
   berserk?: boolean;
   swallowedBy?: string;
+  /**
+   * Görev KARAR104 (sürüm 104, A3): etki sürerken nefes alamaz (SRD 5.2.1 "is suffocating": Rug of Smothering Smother, Gelatinous
+   * Cube Engulf, Darkmantle örtmesi; `unlessWater` Water Elemental Whelm: su soluyan nefes alır). Nefes sayacı su altıyla aynı
+   * (`underwater.ts` `holdingBreath`).
+   */
+  noBreath?: true | 'unlessWater';
   /** Görev D1 (86+): `at` hasar yutanın tur başında (varsayılan) ya da sonunda; `disgorge` + `since` (Giant Frog): yutulduğu turdan sonraki ilk tur sonunda hasar, ölmezse kusulur. */
   swallow?: { dice: string; type: string; dice2?: string; type2?: string; escapeDamage: number; escapeDc: number; at?: 'start' | 'end'; disgorge?: boolean; since?: number;
     /** Görev WS92 (92+): yutulan midede (konum yutanınki, hücre kaplamaz, dışarıdan Total Cover). */

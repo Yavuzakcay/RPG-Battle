@@ -686,6 +686,7 @@
   "animated-rug-of-smothering:Smother": {
    "effect": {
     "name": "Smother",
+    "noBreath": true,
     "grants": [
      "Blinded",
      "Restrained"
@@ -698,7 +699,7 @@
    },
    "tur": "sure",
    "not_": "Yakalama sürdükçe Blinded ve Restrained, hasar (yaklaşım: halının tur başında; SRD hedefin tur başında).",
-   "kalan": "'hasar yerine yakalama' seçimi ve boğulma yok."
+   "kalan": "'hasar yerine yakalama' seçimi yok (boğulma 104'te, KARAR104 A3)."
   },
   "shambling-mound:Engulf": {
    "push": {
@@ -738,6 +739,7 @@
   "water-elemental:Whelm": {
    "effect": {
     "name": "Whelm",
+    "noBreath": "unlessWater",
     "sourceTurnDamage": {
      "dice": "2d8",
      "type": "bludgeoning"
@@ -746,7 +748,7 @@
    },
    "tur": "surekli",
    "not_": "Yakalama sürdükçe elementalin her tur başında 2d8 bludgeoning.",
-   "kalan": "boğulma yok."
+   "kalan": "boğulma 104'te (KARAR104 A3; su soluyan etkilenmez)."
   },
   "kraken:Swallow": {
    "swallow": {
@@ -767,11 +769,12 @@
     "escapeDamage": 0,
     "escapeDc": 12,
     "maxSize": "L",
-    "escapeCheck": 12
+    "escapeCheck": 12,
+    "noBreath": true
    },
    "tur": "yutma",
    "not_": "İçine alınır (yutma yolu: Restrained, küpün tur başında 3d6 acid); kaçış eylemle STR (Athletics) DC 12.",
-   "kalan": "boğulma, sözlü bileşen yasağı ve küple birlikte taşınma yok (yutulan hedef alınamaz)."
+   "kalan": "sözlü bileşen yasağı ve küple birlikte taşınma yok (yutulan hedef alınamaz); boğulma 104'te (KARAR104 A3)."
   },
   "vampire-familiar:Umbral Dagger": {
    "zeroHp": {

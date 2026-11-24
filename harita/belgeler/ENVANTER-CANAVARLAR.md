@@ -83,11 +83,11 @@ Kısmi bağlananların uygulanmayan kısmı:
 | erinyes:Entangling Rope | ipin AC/HP'si ve bonus eylemle serbest bırakma yok. |
 | death-dog:Bite | Uzun dinlenmede HP maksimumu dönmemesi ve 24 saatte bir tekrar save savaş dışı. |
 | roper:Tentacle | dokunaçların AC/HP'si yok. |
-| animated-rug-of-smothering:Smother | 'hasar yerine yakalama' seçimi ve boğulma yok. |
+| animated-rug-of-smothering:Smother | 'hasar yerine yakalama' seçimi yok (boğulma 104'te, KARAR104 A3). |
 | shambling-mound:Engulf | yığının altıgenine girme ve birlikte taşınma yok (sürükleme mevcut yakalama kuralıyla). |
 | invisible-stalker:Vortex | sözlü bileşenli büyü yasağı yok. |
-| water-elemental:Whelm | boğulma yok. |
-| gelatinous-cube:Engulf | boğulma, sözlü bileşen yasağı ve küple birlikte taşınma yok (yutulan hedef alınamaz). |
+| water-elemental:Whelm | boğulma 104'te (KARAR104 A3). |
+| gelatinous-cube:Engulf | sözlü bileşen yasağı ve küple birlikte taşınma yok (yutulan hedef alınamaz); boğulma 104'te (KARAR104 A3). |
 | mummy:Rotting Fist | 24 saatte bir HP maksimumu azalması savaş dışı. |
 | mummy-lord:Rotting Fist | 24 saatte bir HP maksimumu azalması ve uzun dinlenme yasağı savaş dışı. |
 

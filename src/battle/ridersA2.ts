@@ -7,6 +7,7 @@
  * (`swallowedBy`, monsterAbilities.ts) ve Corrosive Form cezası (`corroded`). Çağrı yeri `riderConditionEvents` (isabet,
  * tek hedefli save ve alan save'i yolları) ve hasar eklentisi için `withA2Extras`/`a2AreaDamage`. Saf.
  */
+import { karar104On } from './karar104Surum';
 import { ws92On } from './ws92Surum';
 import data from '../../data/canavar-ekleri-a2.json';
 import type { Ability } from '../rules/abilities';
@@ -42,7 +43,9 @@ export interface A2Spec {
   areaDamage?: Part;
   kill?: { hpAtMost: number; dies?: boolean; else?: Part & { dice2?: string; type2?: string } };
   zeroHp?: { dies?: boolean; stable?: boolean; conditions?: Array<Spec & { condition: string }> };
-  swallow?: { dice: string; type: string; escapeDamage: number; escapeDc: number; maxSize?: string; grappledOnly?: boolean; escapeCheck?: number };
+  swallow?: { dice: string; type: string; escapeDamage: number; escapeDc: number; maxSize?: string; grappledOnly?: boolean; escapeCheck?: number;
+    /** Görev KARAR104 (sürüm 104, A3): içine alınan nefes alamaz (Gelatinous Cube Engulf). */
+    noBreath?: boolean };
   corrode?: { armor?: boolean; weapon?: boolean };
   tur: string;
   /** Görev WS92: bu kural sürümünden itibaren (yoksa A2'den beri). */
@@ -73,12 +76,13 @@ const PARTY_LIKE = (c: Combatant) => !c.monsterId || c.side === 'party';
 
 /** Süren etki: süre ifadesi `sure` → bitiş alanları. */
 function effectOf(state: BattleState, actor: Combatant, attackName: string, spec: EffectSpec, idFor: string): ActiveEffect {
-  const { sure, unique: _u, replaceOwn: _r, ...rest } = spec;
+  const { sure, unique: _u, replaceOwn: _r, noBreath, ...rest } = spec;
   const dur: Partial<ActiveEffect> = sure === 'ownTurnEnd' ? { untilOwnTurnEnd: true, until: state.round + 2 }
     : sure === 'sourceTurnStart' ? { untilSourceTurn: true, until: state.round + 2 }
       : sure === 'grapple' ? { whileGrappledBy: actor.id, until: state.round + 14400 }
         : { until: state.round + Number(sure.slice(7)) };
-  return { ...rest, id: idFor, sourceId: actor.id, ...dur, name: `${actor.name}: ${spec.name ?? attackName}` } as ActiveEffect;
+  // Görev KARAR104 (sürüm 104, A3): "is suffocating" (Smother, Whelm): nefes alamaz.
+  return { ...rest, ...(noBreath && karar104On(state) ? { noBreath } : {}), id: idFor, sourceId: actor.id, ...dur, name: `${actor.name}: ${spec.name ?? attackName}` } as ActiveEffect;
 }
 
 function saveFails(target: Combatant, save: { ability: Ability; dc: number }, rng: Rng, out: BattleEvent[], condition: string): boolean {
@@ -155,7 +159,8 @@ export function a2Events(state: BattleState, actor: Combatant, target: Combatant
       grants: ['Blinded', 'Restrained'], until: state.round + 6000, swallow: { dice: s.dice, type: s.type, escapeDamage: s.escapeDamage, escapeDc: s.escapeDc,
         // Görev WS92 (92+): yutulan midede (konum yutanınki, Total Cover).
         ...(ws92On(state) ? { inside: true } : {}) },
-      ...(s.escapeCheck ? { escapeCheck: { dc: s.escapeCheck } } : {}) } as ActiveEffect });
+      ...(s.escapeCheck ? { escapeCheck: { dc: s.escapeCheck } } : {}),
+      ...(s.noBreath && karar104On(state) ? { noBreath: true as const } : {}) } as ActiveEffect });
   }
   // Aşındırma: zırh AC −1 (AC 10'a dek) ya da silah saldırısı −1 (−5'e dek; Corrosive Form yolu).
   if (a.corrode) {
