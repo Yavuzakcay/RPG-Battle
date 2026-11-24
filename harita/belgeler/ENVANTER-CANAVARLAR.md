@@ -98,14 +98,14 @@ Hiç bağlanmayanlar (yeni sistem gerektirir ya da savaş dışı):
 | stirge:Proboscis | yapışma (attach) sistemi yok: yapışık kalıp her tur hasar, eylemle sökme | orta |
 | sprite:Heart Sight | savaş dışı (duygu/hizalanma bilgisi) | savaş dışı |
 | darkmantle:Crush | yapışma (attach) sistemi yok: hedefe yapışıp birlikte hareket, avantajla örtme | orta |
-| wererat:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (yeni sistem) | büyük |
-| werewolf:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme | büyük |
+| wererat:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (yeni sistem) (104: lanet işareti, KARAR104 A4; dönüşme yok) | büyük |
+| werewolf:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (104: lanet işareti, KARAR104 A4; dönüşme yok) | büyük |
 | ghost:Possession | **Kuyruk K64a (sürüm 48) uygulandı**: `src/battle/possession.ts`, `data/ele-gecirme.json` (Game Master anahtarı `possession`) | tamam |
 | incubus:Restless Touch | savaş dışı (kısa dinlenme yararı yok) | savaş dışı |
-| wereboar:Gore | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme | büyük |
-| weretiger:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme | büyük |
+| wereboar:Gore | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (104: lanet işareti, KARAR104 A4; dönüşme yok) | büyük |
+| weretiger:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (104: lanet işareti, KARAR104 A4; dönüşme yok) | büyük |
 | barbed-devil:Hurl Flame | yalnızca giyilmeyen yanıcı nesneye; canavar saldırısı nesne hedeflemez | küçük |
-| werebear:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme | büyük |
+| werebear:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (104: lanet işareti, KARAR104 A4; dönüşme yok) | büyük |
 | cloaker:Attach | yapışma (attach) sistemi yok: hasar paylaşımı, birlikte hareket | orta |
 | aboleth:Dominate Mind | kalıcı zihin kontrolü + telepati (allegianceSwap bağlantısı ayrı iş; ölüm/uzaklık koşulu) | büyük |
 | horned-devil:Hurl Flame | yalnızca giyilmeyen yanıcı nesneye; canavar saldırısı nesne hedeflemez | küçük |

@@ -5,6 +5,9 @@ import { describe, expect, it } from 'vitest';
 import { execute } from './commands';
 import { combatantFromMonster } from './index';
 import { getMonster } from '../data';
+import { applyBattleResult } from '../app/partyStatus';
+import { blankCharacter } from '../rules/builder';
+import { fullStatus, longRestStatus } from '../rules/characterRest';
 import { startBattle } from './create';
 import { replay } from './index';
 import { GM, mk, P1 } from './fixtures';
@@ -131,5 +134,44 @@ describe('KARAR104 A3: boğulma ("is suffocating"; SRD 5.2.1 Suffocation)', () =
     const wb = smother(NEW, 'water-elemental', 'Whelm', LOW, { effects: [{ id: 'water-breathing', name: 'Water Breathing', sourceId: 'H', until: 9999 }] });
     expect(wb.effects?.some((e) => e.noBreath === 'unlessWater')).toBe(true);
     expect(wb.mapStatus.breath ?? 0).toBe(0);
+  });
+});
+
+describe('KARAR104 A4: likantrop laneti yalnız işaret (kullanıcı kararı)', () => {
+  /** İlk d20 (saldırı) 20, sonrakiler (save) 1. */
+  const biteRng = (): Rng => {
+    let n = 0;
+    const f = (() => 0.5) as Rng & { dice?: (r: DiceRequest) => number[] };
+    f.dice = (req) => (req.sides === 20 ? Array.from({ length: req.count }, () => (n++ === 0 ? 20 : 1)) : Array.from({ length: req.count }, () => Math.floor(req.sides / 2) + 1));
+    return f;
+  };
+  const wolf = (): Combatant => ({ ...combatantFromMonster(getMonster('werewolf'), { id: 'W' }), side: 'enemies', pos: at(3, 5) });
+  const bite = (v: number, target: Partial<Combatant> = {}) => {
+    const s = scene104(v, [wolf(), mk('H', { ownerId: 'p1', hp: 300, maxHp: 300, ac: 5, pos: at(4, 5), ...target })]);
+    const idx = (s.combatants.W as Combatant).attacks.findIndex((a) => a.name === 'Bite');
+    return play(s, [{ type: 'monster_attack', actorId: 'W', targetId: 'H', attackIndex: idx } as Command], biteRng());
+  };
+  it('104: Humanoid hedef CON save’i başaramazsa lanetli; 103: lanet yok', () => {
+    const r = bite(NEW);
+    const save = r.events.find((e) => e.type === 'condition_save' && e.condition === 'Likantropi') as Extract<BattleEvent, { type: 'condition_save' }>;
+    expect(save).toMatchObject({ ability: 'con', dc: 12, success: false });
+    expect(r.state.combatants.H?.effects?.find((e) => e.lycanthropy)?.lycanthropy).toBe('werewolf');
+    expect(bite(OLD).state.combatants.H?.effects?.some((e) => e.lycanthropy) ?? false).toBe(false);
+  });
+  it('104: Humanoid olmayan (Beast biçimi) lanetlenmez', () => {
+    expect(bite(NEW, { creatureType: 'beast' }).state.combatants.H?.effects?.some((e) => e.lycanthropy) ?? false).toBe(false);
+  });
+  it('savaş sonunda karaktere `lanet` yazılır; uzun dinlenme kaldırmaz; 0 HP’de biçim değişimi yok', () => {
+    const r = bite(NEW);
+    const sh = { ...blankCharacter('p1').sheet, name: 'Kahraman' };
+    const ch = { ...blankCharacter('p1'), id: 'p1', sheet: sh, status: fullStatus(sh) };
+    const fin: BattleState = { ...r.state, status: 'finished' };
+    const st = applyBattleResult([ch], fin)[0]?.status;
+    expect(st?.lanet).toEqual({ likantrop: 'werewolf' });
+    expect(longRestStatus(sh, st).lanet).toEqual({ likantrop: 'werewolf' });
+    // Lanetsiz savaş önceki işareti korur.
+    const clean: BattleState = { ...fin, combatants: { ...fin.combatants, H: { ...(fin.combatants.H as Combatant), effects: [] } } };
+    expect(applyBattleResult([{ ...ch, status: st }], clean)[0]?.status?.lanet).toEqual({ likantrop: 'werewolf' });
+    expect(r.state.combatants.H?.side).toBe('party');
   });
 });

@@ -49,11 +49,18 @@ export interface CharacterStatus {
   moral?: number;
   /** Kuyruk K48: Moral 0'da savaş dışında öldü (diriltilince kalkar). */
   moralOlum?: true;
+  /**
+   * Görev KARAR104 (sürüm 104, A4): savaşta alınan lanet işareti (likantrop: canavar kimliği). Dinlenmeler kaldırmaz; yalnız işaret
+   * (biçim değişimi yok). Remove Curse ile kaldırma savaş dışı (Game Master).
+   */
+  lanet?: { likantrop: string };
 }
 
 /** Kuyruk K48: Moral alanları olduğu gibi taşınır (yoksa yazılmaz; eski kayıt aynı). */
-const moralPart = (s: CharacterStatus): Pick<CharacterStatus, 'moral' | 'moralOlum'> =>
-  ({ ...(s.moral !== undefined ? { moral: s.moral } : {}), ...(s.moralOlum ? { moralOlum: true as const } : {}) });
+const moralPart = (s: CharacterStatus): Pick<CharacterStatus, 'moral' | 'moralOlum' | 'lanet'> =>
+  ({ ...(s.moral !== undefined ? { moral: s.moral } : {}), ...(s.moralOlum ? { moralOlum: true as const } : {}),
+    // Görev KARAR104 (A4): lanet işareti dinlenmelerde kalır.
+    ...(s.lanet ? { lanet: { ...s.lanet } } : {}) });
 
 /** Dinlenmiş (tam) durum. */
 export function fullStatus(sheet: CharacterSheet): CharacterStatus {

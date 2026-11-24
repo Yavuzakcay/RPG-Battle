@@ -47,6 +47,12 @@ export interface A2Spec {
     /** Görev KARAR104 (sürüm 104, A3): içine alınan nefes alamaz (Gelatinous Cube Engulf). */
     noBreath?: boolean };
   corrode?: { armor?: boolean; weapon?: boolean };
+  /**
+   * Görev KARAR104 (sürüm 104, A4; kullanıcı kararı): likantrop laneti yalnız işaret. Humanoid hedef CON save; başarısızsa lanetli
+   * (`lycanthropy` etkisi, savaş sonunda karaktere `lanet` yazılır), başarılıysa bu yaratığın lanetine 24 saat bağışık. 0 HP'de
+   * canavara dönüşme yok (⚠ SRD "becomes a Werewolf under the GM's control").
+   */
+  lanet?: { dc: number; kind: string };
   tur: string;
   /** Görev WS92: bu kural sürümünden itibaren (yoksa A2'den beri). */
   surum?: number;
@@ -92,6 +98,23 @@ function saveFails(target: Combatant, save: { ability: Ability; dc: number }, rn
   return !r.success;
 }
 
+/** Görev KARAR104 (sürüm 104, A4): oyuncu karakteri (türü yazılmamış) ve Humanoid canavar Humanoid sayılır; biçimdeki (Beast) değil. */
+const humanoid = (c: Combatant): boolean => (c.creatureType ? c.creatureType.toLowerCase() === 'humanoid' : !c.monsterId);
+export const LYCANTHROPY_ID = 'likantropi';
+const lycImmuneId = (sourceId: string) => `likantropi-bagisik:${sourceId}`;
+
+function lycanthropyEvents(state: BattleState, actor: Combatant, target: Combatant, lanet: { dc: number; kind: string }, rng: Rng): BattleEvent[] {
+  if (target.life === 'dead' || !humanoid(target) || target.effects?.some((e) => e.lycanthropy || e.id === lycImmuneId(actor.id))) return [];
+  const out: BattleEvent[] = [];
+  if (saveFails(target, { ability: 'con', dc: lanet.dc }, rng, out, 'Likantropi')) {
+    out.push({ type: 'effect_added', targetId: target.id, effect: { id: LYCANTHROPY_ID, name: `Likantropi (${actor.name})`, sourceId: actor.id, until: state.round + 1_000_000, lycanthropy: lanet.kind } });
+  } else {
+    // SRD: "Success: The target is immune to this <kind>'s curse for 24 hours."
+    out.push({ type: 'effect_added', targetId: target.id, effect: { id: lycImmuneId(actor.id), name: `Lanete bağışık (${actor.name})`, sourceId: actor.id, until: state.round + 14400 } });
+  }
+  return out;
+}
+
 /** Zırhlı mı (yaklaşım: canavar giydiği zırh sayılmaz; karakterde AC > 10 + DEX). */
 const armored = (c: Combatant): boolean => PARTY_LIKE(c) && c.ac > 10 + (c.modifiers?.dex ?? 0);
 
@@ -105,6 +128,7 @@ export function a2Events(state: BattleState, actor: Combatant, target: Combatant
   const out: BattleEvent[] = [];
   const label = `${actor.name}: ${attackName}`;
   const key = `a2:${monsterId}:${attackName}:${actor.id}`;
+  if (a.lanet && karar104On(state)) out.push(...lycanthropyEvents(state, actor, target, a.lanet, rng));
   // 0 HP'de tetiklenen (bu saldırı düşürdüyse): ölüm ya da Stable + durumlar.
   if (target.hp <= 0) {
     const z = a.zeroHp;

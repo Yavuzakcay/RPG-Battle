@@ -984,6 +984,41 @@
    "surum": 92,
    "tur": "sureli",
    "not_": "Görev WS92 (92+; SRD s. 362 Swarm of Ravens): \"While Deafened, the target also has Disadvantage on ability checks and attack rolls\"; Deafened'la aynı süre (sürünün sonraki tur başına dek)."
+  },
+  "werewolf:Bite": {
+   "lanet": {"dc": 12, "kind": "werewolf"},
+   "surum": 104,
+   "tur": "lanet",
+   "not_": "Görev KARAR104 A4: Humanoid hedef CON DC 12; başarısızsa lanetli (yalnız işaret, savaş sonunda karaktere), başarılıysa bu yaratığın lanetine 24 saat bağışık.",
+   "kalan": "0 HP'de canavara dönüşme yok (kullanıcı kararı: yalnız işaret)."
+  },
+  "wererat:Bite": {
+   "lanet": {"dc": 11, "kind": "wererat"},
+   "surum": 104,
+   "tur": "lanet",
+   "not_": "Görev KARAR104 A4: Humanoid hedef CON DC 11; başarısızsa lanetli (yalnız işaret, savaş sonunda karaktere), başarılıysa bu yaratığın lanetine 24 saat bağışık.",
+   "kalan": "0 HP'de canavara dönüşme yok (kullanıcı kararı: yalnız işaret)."
+  },
+  "wereboar:Gore": {
+   "lanet": {"dc": 12, "kind": "wereboar"},
+   "surum": 104,
+   "tur": "lanet",
+   "not_": "Görev KARAR104 A4: Humanoid hedef CON DC 12; başarısızsa lanetli (yalnız işaret, savaş sonunda karaktere), başarılıysa bu yaratığın lanetine 24 saat bağışık.",
+   "kalan": "0 HP'de canavara dönüşme yok (kullanıcı kararı: yalnız işaret)."
+  },
+  "weretiger:Bite": {
+   "lanet": {"dc": 13, "kind": "weretiger"},
+   "surum": 104,
+   "tur": "lanet",
+   "not_": "Görev KARAR104 A4: Humanoid hedef CON DC 13; başarısızsa lanetli (yalnız işaret, savaş sonunda karaktere), başarılıysa bu yaratığın lanetine 24 saat bağışık.",
+   "kalan": "0 HP'de canavara dönüşme yok (kullanıcı kararı: yalnız işaret)."
+  },
+  "werebear:Bite": {
+   "lanet": {"dc": 14, "kind": "werebear"},
+   "surum": 104,
+   "tur": "lanet",
+   "not_": "Görev KARAR104 A4: Humanoid hedef CON DC 14; başarısızsa lanetli (yalnız işaret, savaş sonunda karaktere), başarılıysa bu yaratığın lanetine 24 saat bağışık.",
+   "kalan": "0 HP'de canavara dönüşme yok (kullanıcı kararı: yalnız işaret)."
   }
  }
 }

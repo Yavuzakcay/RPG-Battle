@@ -71,6 +71,11 @@ export function applyBattleResult(characters: SavedCharacter[], state: BattleSta
         return Object.keys(w).length ? { waits: w } : {};
       })(),
       ...moralResult(c, prev),
+      // Görev KARAR104 (sürüm 104, A4): savaşta lanetlenen (likantrop) karaktere işaret; önceki işaret kalır.
+      ...((): Partial<CharacterStatus> => {
+        const kind = c.life !== 'dead' ? c.effects?.find((e) => e.lycanthropy)?.lycanthropy : undefined;
+        return kind ? { lanet: { likantrop: kind } } : prev.lanet ? { lanet: { ...prev.lanet } } : {};
+      })(),
     };
     return { ...ch, status: next };
   });

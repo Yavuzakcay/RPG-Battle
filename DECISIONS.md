@@ -26,6 +26,12 @@ commit: A1, A3, A4, A11, A2, A10, A5. Değişen eski testler: `ruleVersion.test.
   Gelatinous Cube Engulf yutma yolunda (`swallow.noBreath`); Darkmantle örtmesi A2'de. Nefes sayacı su altıyla aynı yol
   (`underwater.ts` `smothered` → `holdingBreath`: 1 + CON dakika tutar, sonra her tur sonu 1 Exhaustion; etki bitince nefes alır,
   boğulmadan gelen Exhaustion gider). 103'te etki `noBreath` taşımaz.
+- **A4 likantrop laneti yalnız işaret** (kullanıcı kararı; SRD 5.2.1 Werewolf/Wererat/Wereboar/Weretiger/Werebear ısırığı, CON DC 11–14):
+  `data/canavar-ekleri-a2.json` `lanet` (5 saldırı, `surum` 104), `ridersA2.ts` `lycanthropyEvents`: Humanoid hedef (oyuncu karakteri
+  ya da Humanoid canavar; Beast biçimi değil) save'i başaramazsa süren etki `lycanthropy` (canavar kimliği), başarırsa o yaratığın
+  lanetine 24 saat bağışık. Savaş sonunda karaktere `CharacterStatus.lanet` (`partyStatus.ts`), dinlenmeler kaldırmaz
+  (`characterRest.ts` `moralPart`), karakter listesinde dinlenme panelinde "Lanetli" satırı. ⚠ 0 HP'de canavara dönüşme ve Game
+  Master'ın denetimine geçme yok (bilinçli); Remove Curse ile kaldırma savaş dışı (Game Master kaydı siler).
 
 ## CELESTIAL-KANAT-IYILESME: Kırık Kanat uçuşu iyileşince melek kanadı ve renkli gövde (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
 
