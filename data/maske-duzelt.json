@@ -654,9 +654,6 @@
    "bos": true,
    "not": "zombi: gri ölü ten, saç boyanıyordu"
   },
-  "elf-erkek-warlock-WL-6": {
-   "neden": "kesim:kismen"
-  },
   "elf-erkek-warlock-WL-8": {
    "neden": "ek:liste",
    "not": "ghoul (MASKE-EK): kadın SC-9 ghoul kararı: yüz, kulak ve eller boyanır; peştemal, kürk yaka ve gövde dışarıda",
@@ -983,16 +980,10 @@
    "bos": true,
    "not": "hayalet (MASKE-EK): çıplak ten yok"
   },
-  "elf-kadin-warlock-WL-2": {
-   "neden": "kesim:kismen"
-  },
   "elf-kadin-warlock-WL-4": {
    "neden": "kesim:kismen denetim:supheli",
    "bos": true,
    "not": "zombi: gri ölü ten, saç boyanıyordu"
-  },
-  "elf-kadin-warlock-WL-6": {
-   "neden": "kesim:kismen"
   },
   "elf-kadin-warlock-WL-8": {
    "neden": "denetim:supheli",
@@ -8122,15 +8113,6 @@
    "bos": true,
    "px": 0
   },
-  "elf-erkek-warlock-WL-6": {
-   "ref": [
-    76.1,
-    21.6,
-    25.9
-   ],
-   "tohum": 1698,
-   "px": 1530
-  },
   "elf-erkek-warlock-WL-8": {
    "ref": [
     91.4,
@@ -8276,27 +8258,9 @@
    "bos": true,
    "px": 0
   },
-  "elf-kadin-warlock-WL-2": {
-   "ref": [
-    78.0,
-    22.5,
-    26.9
-   ],
-   "tohum": 3486,
-   "px": 2367
-  },
   "elf-kadin-warlock-WL-4": {
    "bos": true,
    "px": 0
-  },
-  "elf-kadin-warlock-WL-6": {
-   "ref": [
-    72.8,
-    18.4,
-    22.6
-   ],
-   "tohum": 1194,
-   "px": 1391
   },
   "elf-kadin-warlock-WL-8": {
    "bos": true,
