@@ -25,6 +25,8 @@ export interface Advancement {
   abilities?: Partial<Scores>;
   /** F1: Magic Initiate'in büyü listesi (cleric, druid, wizard); seçimler `sheet.magicInitiate[list]`. */
   list?: string;
+  /** Görev MC1: yuvanın sınıfı (çoklu sınıfta iki sınıfın aynı seviyeli yuvaları ayrılır); yoksa ilk sınıf. */
+  classId?: string;
 }
 
 export type SlotKind = 'asi' | 'epic' | 'style';

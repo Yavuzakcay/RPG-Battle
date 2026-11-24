@@ -2,6 +2,40 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev MC1: çoklu sınıf veri modeli ve çoklu sınıf kararları (2026-11-24, kullanıcı kararı; karakter kayıt sürümü 4, kural ve savaş kaydı sürümü değişmedi)
+
+Plan `harita/belgeler/MULTICLASS-PLAN.md` (MC1–MC8). SRD 5.2.1 çoklu sınıf kuralları (s. 24–26 ve sınıf sayfalarındaki
+"As a Multiclass Character" kutuları) oyuncu karakterine eklenir; SRD'de olmayan kural uydurulmaz.
+
+- **K1 seviye:** yan sınıf için seviye kısıtı yok (SRD'de yok); tek kısıt SRD ön koşulu: yeni sınıfın ve mevcut sınıfların
+  ana yeteneği ≥ 13 ("and" hepsi, "or" biri).
+- **K2 bedel:** motorda ek bedel yok. Serüven'de yan sınıf yalnız kutsal aynada açılır (hikâye kuralı).
+- **K3 açıklık:** Dice & Hex (Karakterlerim) çoklu sınıf her zaman açık, Ayarlar anahtarı yok; Serüven'de yalnız aynada.
+- **K4 sınır:** en çok 3 sınıf her yerde, tek sabit `MAX_CLASSES` (`src/app/limits.ts`). SRD'de sınır yok: ev kuralı.
+- **K5 Weapon Mastery: SRD'de açık değil** (birden çok sınıftan gelen hakkın ne olacağı metinde yazmıyor, s. 29, 48, 54,
+  58, 62). Karar: tek havuz; hak sayısı sınıfların en yükseği (toplanmaz); her silah, onu ustalık listesine alabilen bir
+  sınıfın kısıtına uymalı. Uygulama MC4.
+- **K6 Channel Divinity:** sınıfa özgü ayrı havuz (SRD "this class's Channel Divinity", s. 37, 54); kaynak kimliği sınıf
+  önekli (MC4).
+- **K7 hız:** Unarmored Movement + Fast Movement toplanır (SRD'de aksi yazmıyor).
+- **K8 AC:** birden çok AC hesabı varsa en yüksek olan otomatik (SRD s. 25: aynı anda yalnız biri); oyuncu seçimi yok.
+- **K9 kapsam:** ilk sürüm tam SRD (iki büyücü sınıf + Pact). MC1–MC2 önce doğrulanır, yuva + Pact (MC3) ayrı aşama;
+  büyü kısıtı yok.
+- **K10 paket alt sınıfları:** büyü yuvası katkısı şimdilik yok (SRD'de ve veride yok); sonra karar.
+- **K11 jeton:** görünüm sınıfı en yüksek seviyeli sınıf, eşitlikte ilk sınıf; Gariban/alt sınıf jeton eşiği görünüm
+  sınıfının seviyesine göre (MC6).
+- **K12 Serüven seviye atlama:** bekleyen seçim, varsayılan mevcut sınıfta devam; yan sınıf yalnız kutsal ayna yanındayken.
+- **K13 yeniden şekillenme:** ertelendi (MC8).
+
+**MC1 (bu commit):** `CharacterSheet.classes?: ClassEntry[]` (sınıf, sınıf seviyesi, alt sınıf, ek sınıfın SRD beceri/çalgı
+seçimi), `Advancement.classId?`, saf yardımcılar `src/rules/multiclass.ts` (`classesOf`, `classLevel`, `isMulticlass`,
+`totalLevel`, `syncClassFields`, `meetsPrimary`, `multiclassProblems`, `addClassProblems`; sorunlar yapılandırılmış, metin
+MC2'de), veri `data/cok-sinif.json` (ana yetenek, ek sınıf yetkinlikleri, yuva katkısı, SRD sayfası). Kural: `classes`
+yalnız 2+ sınıfta yazılır; varken `classId`/`subclassId` ilk öğeden, `level` toplamdan. Tek sınıflı karakter kaydı sürüm
+3'teki gibi yazılır (yalnız `surum` 4), eski kayıtlar göçsüz yüklenir (test `src/rules/multiclass.test.ts`). Hiçbir hesap
+henüz alanı okumuyor: davranış değişmedi. `src/screens/ck1.test.tsx` kayıt sürümü beklentisi 3 → 4 (sürüm artışı bu görevin
+kendisi).
+
 ## TEMIZLIK-A: eskimiş belge ve not düzeltmeleri (2026-11-22; yalnız metin, kod davranışı/veri/görsel/kural ve kayıt sürümü değişmedi)
 
 - **CLAUDE.md paket sınırı:** başlık ve sınır `data/paket-siniri.json` `anaParcaKb` 500 ile zaten uyumluydu (420 ve ≈370 kalıntısı

@@ -85,6 +85,24 @@ export interface CharacterSheet {
   lineageAbility?: 'int' | 'wis' | 'cha';
   /** Seviye yuvalarındaki seçimler: ASI ya da feat, Fighting Style, Epic Boon (bkz. `rules/advancement.ts`). */
   advancements?: Advancement[];
+  /**
+   * Görev MC1: çoklu sınıf (SRD 5.2.1 s. 24–26). Yalnız 2+ sınıfta yazılır; yoksa tek sınıf (`classId`, `level`,
+   * `subclassId`). Varken `classId`/`subclassId` ilk öğeninkiyle, `level` seviyelerin toplamıyla aynı tutulur
+   * (`syncClassFields`). Kod bu alanı doğrudan okumaz: `classesOf` (`rules/multiclass.ts`).
+   */
+  classes?: ClassEntry[];
+}
+
+/** Görev MC1: karakterin bir sınıfı ve o sınıftaki seviyesi. Sıra alınış sırası; ilk öğe başlangıç sınıfı. */
+export interface ClassEntry {
+  classId: string;
+  /** Bu sınıftaki seviye (≥ 1). */
+  level: number;
+  subclassId?: string;
+  /** Ek sınıfın SRD ilk seviye beceri seçimi (Bard serbest, Ranger/Rogue sınıf listesinden); `skills`'e de yazılır. */
+  ekBeceri?: Skill;
+  /** Ek sınıfın SRD ilk seviye Musical Instrument seçimi (Bard). */
+  ekCalgi?: string;
 }
 
 export interface DerivedStats {

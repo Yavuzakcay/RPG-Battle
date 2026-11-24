@@ -6,8 +6,13 @@ import { cleanStory } from '../rules/story';
 import type { SavedCharacter } from '../rules/builder';
 
 const KEY = 'rpg-battle-characters';
-/** Kuyruk K51: karakter kayıt sürümü (2: hizalanma alanı). Eski kayıtta alan yok = 1; açılış aynı (alan yoksa 0/0). */
-export const CHARACTER_SAVE_VERSION = 3;
+/**
+ * Kuyruk K51: karakter kayıt sürümü (2: hizalanma alanı). Eski kayıtta alan yok = 1; açılış aynı (alan yoksa 0/0).
+ * Görev MC1: 4 = çoklu sınıf alanı `classes` (yalnız 2+ sınıfta yazılır; tek sınıflı karakter 3'tekiyle aynı yazılır,
+ * eski kayıtlar göçsüz yüklenir). Sürüm, yeni kaydı açan eski uygulamanın çoklu sınıfı tek sınıf + toplam seviye
+ * olarak göreceğini işaretler.
+ */
+export const CHARACTER_SAVE_VERSION = 4;
 let memory: SavedCharacter[] | null = null;
 
 export function loadCharacters(): SavedCharacter[] {

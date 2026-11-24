@@ -38,8 +38,8 @@ describe('CK1 hikâye alanı', () => {
     expect(hasStory({ kisilik: ' ' })).toBe(false);
     expect(filledStory({ baglar: 'x', kisilik: 'y' }).map(([k]) => k)).toEqual(['kisilik', 'baglar']); // sabit sıra
   });
-  it('kayıt ve yükleme: dolu alan döner, boş alan yazılmaz; eski kayıt alansız yüklenir; kayıt sürümü 3', () => {
-    expect(CHARACTER_SAVE_VERSION).toBe(3);
+  it('kayıt ve yükleme: dolu alan döner, boş alan yazılmaz; eski kayıt alansız yüklenir; kayıt sürümü 4', () => {
+    expect(CHARACTER_SAVE_VERSION).toBe(4); // MC1: çoklu sınıf alanı (classes)
     const { fighter } = chars();
     saveCharacters([{ ...fighter, hikaye: { kisilik: 'Dürüst', notlar: '  ', gorunum: '' } }]);
     const raw = JSON.parse(localStorage.getItem(STORE_KEY) ?? '[]');

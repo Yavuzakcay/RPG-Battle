@@ -55,7 +55,7 @@ export interface SavedCharacter {
   hizalanmaZarlar?: string[];
   /** Kuyruk KQ4 CK1: isteğe bağlı hikâye metinleri (boş alanlar yazılmaz); yoksa eski kayıt. */
   hikaye?: Hikaye;
-  /** Kuyruk K51: karakter kayıt sürümü (yoksa 1; 2 = hizalanma alanı, 3 = hikâye alanı tanınır). */
+  /** Kuyruk K51: karakter kayıt sürümü (yoksa 1; 2 = hizalanma alanı, 3 = hikâye alanı tanınır, 4 = çoklu sınıf `sheet.classes`, Görev MC1). */
   surum?: number;
   /**
    * Görev K17: oluşturucu taslağı; sınıf değişince eski sınıfın seçimleri burada sınıf kimliğiyle saklanır (eski sınıfa

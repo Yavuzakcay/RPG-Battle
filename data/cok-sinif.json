@@ -1,0 +1,18 @@
+{
+  "_not": "Görev MC1 (harita/belgeler/MULTICLASS-PLAN.md): SRD 5.2.1 çoklu sınıf verisi. `anaYetenek`: sınıfın ana yeteneği (sınıf sayfasındaki 'Core <Sınıf> Traits' tablosu; `hepsi` = 'and', `biri` = 'or'); çoklu sınıf ön koşulu (s. 24): yeni sınıfın ve mevcut sınıfların ana yeteneği en az `onKosul` (13). `ek`: sınıf ilk sınıf değilken ilk seviyesinde gelen yetkinlikler ('As a Multiclass Character' kutusu; hepsinde ayrıca Hit Point Die ve sınıfın 1. seviye özellikleri; kurtarma zarı yetkinliği ve başlangıç donanımı hiçbirinde yok): `silah` silah yetkinliği (martial), `zirh` zırh eğitimi (data/classes.json armorTraining kimlikleri), `beceri` seçilen beceri sayısı ve listesi ('hepsi' serbest, 'sinif' sınıfın beceri listesi), `alet` alet yetkinliği (data/srd/tools.json kimliği), `calgi` seçilen Musical Instrument sayısı. `yuva`: Multiclass Spellcaster tablosuna katkı (s. 25: 'tam' bütün seviyeler, 'yari' seviyelerin yarısı yukarı yuvarlanır, 'pact' ayrı Pact Magic havuzu, null katkı yok). `sayfa`: SRD 5.2.1 sayfası (sınıfın 'As a Multiclass Character' kutusu). Kod sınıf adı içermez; doğrulama src/rules/multiclass.test.ts.",
+  "onKosul": 13,
+  "siniflar": {
+    "barbarian": { "anaYetenek": { "hepsi": ["str"] }, "ek": { "silah": ["martial"], "zirh": ["shield"] }, "yuva": null, "sayfa": 28 },
+    "bard": { "anaYetenek": { "hepsi": ["cha"] }, "ek": { "zirh": ["light"], "beceri": { "sayi": 1, "liste": "hepsi" }, "calgi": 1 }, "yuva": "tam", "sayfa": 31 },
+    "cleric": { "anaYetenek": { "hepsi": ["wis"] }, "ek": { "zirh": ["light", "medium", "shield"] }, "yuva": "tam", "sayfa": 36 },
+    "druid": { "anaYetenek": { "hepsi": ["wis"] }, "ek": { "zirh": ["light", "shield"] }, "yuva": "tam", "sayfa": 41 },
+    "fighter": { "anaYetenek": { "biri": ["str", "dex"] }, "ek": { "silah": ["martial"], "zirh": ["light", "medium", "shield"] }, "yuva": null, "sayfa": 47 },
+    "monk": { "anaYetenek": { "hepsi": ["dex", "wis"] }, "ek": {}, "yuva": null, "sayfa": 49 },
+    "paladin": { "anaYetenek": { "hepsi": ["str", "cha"] }, "ek": { "silah": ["martial"], "zirh": ["light", "medium", "shield"] }, "yuva": "yari", "sayfa": 53 },
+    "ranger": { "anaYetenek": { "hepsi": ["dex", "wis"] }, "ek": { "silah": ["martial"], "zirh": ["light", "medium", "shield"], "beceri": { "sayi": 1, "liste": "sinif" } }, "yuva": "yari", "sayfa": 57 },
+    "rogue": { "anaYetenek": { "hepsi": ["dex"] }, "ek": { "zirh": ["light"], "beceri": { "sayi": 1, "liste": "sinif" }, "alet": ["thieves-tools"] }, "yuva": null, "sayfa": 61 },
+    "sorcerer": { "anaYetenek": { "hepsi": ["cha"] }, "ek": {}, "yuva": "tam", "sayfa": 64 },
+    "warlock": { "anaYetenek": { "hepsi": ["cha"] }, "ek": { "zirh": ["light"] }, "yuva": "pact", "sayfa": 70 },
+    "wizard": { "anaYetenek": { "hepsi": ["int"] }, "ek": {}, "yuva": "tam", "sayfa": 77 }
+  }
+}

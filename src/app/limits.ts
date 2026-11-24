@@ -14,3 +14,9 @@ export const CUSTOM_NAME_MAX = 50;
  * "Üst seviye (6–20)" anahtarı kalktı; oluşturucu ve Serüven seviye atlaması her zaman 1–20.
  */
 export const LEVEL_CAP = 20;
+
+/**
+ * Görev MC1: bir karakterde en çok sınıf sayısı (tek sabit; kullanıcı kararı K4, 2026-11-24). SRD 5.2.1'de sınıf sayısı
+ * sınırı yok: ev kuralı, Dice & Hex ve Serüven'de aynı (harita/belgeler/MULTICLASS-PLAN.md).
+ */
+export const MAX_CLASSES = 3;
