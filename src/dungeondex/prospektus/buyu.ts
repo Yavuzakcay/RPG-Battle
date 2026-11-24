@@ -16,7 +16,7 @@ export interface BuyuKayit extends ProText { yukari?: string; malzeme?: string; 
 export const BUYU_DATA = buyuJson as unknown as { kayitlar: Record<string, BuyuKayit> };
 
 /** Tamamlama blokları (scripts/lib/buyu-durum.mjs `BLOCKS` ile aynı sıra; test eşitliği denetler). */
-export const SPELL_BLOCKS = ['a4', 'a6', 'a7', 'a8', 's1', 's2', 'g6', 'k61', 'k62', 'k63', 'k64', 'k65', 'k66', 'k67', 'k68', 'k70', 'y1', 'k73c', 'b102'];
+export const SPELL_BLOCKS = ['a4', 'a6', 'a7', 'a8', 's1', 's2', 'g6', 'k61', 'k62', 'k63', 'k64', 'k65', 'k66', 'k67', 'k68', 'k70', 'y1', 'k73c', 'b102', 'k104'];
 
 /** Oyundaki durum (BUYU-DURUM ölçütü): ton + not (Türkçe). */
 export function spellStatus(s: Spell): { tone: ProTone; note?: string } {
@@ -34,7 +34,8 @@ export function spellStatus(s: Spell): { tone: ProTone; note?: string } {
  * güncel sürümle aynı sıra; haritaya bağlı `k84` hariç). Eskiden taban `mechanics` okunuyordu (Ice Storm'da 7d6 soğuk gibi).
  * Savaş motoru içe aktarılmaz (Dungeondex parçası hafif kalır).
  */
-const EFFECTIVE_BLOCKS = [...SPELL_BLOCKS, 'mb7', 'm83'];
+// KARAR104: `k104` motorda `m83`'ten sonra birleşir (Storm of Vengeance aşamaları m83 alanının üstüne).
+const EFFECTIVE_BLOCKS = [...SPELL_BLOCKS.filter((k) => k !== 'k104'), 'mb7', 'm83', 'k104'];
 export function effectiveMechanics(s: Spell): Record<string, unknown> {
   const raw = s.mechanics as unknown as Record<string, unknown>;
   return Object.assign({}, raw, ...EFFECTIVE_BLOCKS.map((k) => (raw[k] as object | undefined) ?? {})) as Record<string, unknown>;

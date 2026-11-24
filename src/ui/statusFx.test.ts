@@ -122,7 +122,7 @@ describe('jeton filtreleri', () => {
 
 describe('eski kayıtlar', () => {
   it('kayıt sürümü değişmedi (18); eski kayıttaki durumlar efekt ve filtreye dönüşür', () => {
-    expect(SAVE_VERSION).toBe(25); // KARAR101 shield_changed, knocked_out/stone_endurance için 25 (Ready 24; Kuyruk 43: 22–23)
+    expect(SAVE_VERSION).toBe(26); // KARAR104 zone_stage için 26 (KARAR101 25; Ready 24; Kuyruk 43: 22–23)
     const state = setup('Düz', { A: { conditions: ['Paralyzed', 'Charmed'] }, B: { conditions: ['Petrified'] } });
     const r = restoreSession(JSON.stringify({ version: 12, savedAt: '', events: [{ type: 'battle_started', state }] }));
     expect(r.ok).toBe(true);

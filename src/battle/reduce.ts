@@ -1387,6 +1387,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const k = `${event.hex.col},${event.hex.row}`;
       return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).map((z) => (z.id === event.zoneId ? { ...z, panelDamage: { ...z.panelDamage, [k]: (z.panelDamage?.[k] ?? 0) + event.amount } } : z)) } } : state;
     }
+    case 'zone_stage':
+      return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).map((z) => (z.id === event.zoneId ? { ...z, stage: event.stage } : z)) } } : state;
     case 'zone_dealt':
       return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).map((z) => (z.id === event.zoneId ? { ...z, dealt: (z.dealt ?? 0) + event.amount } : z)) } } : state;
     case 'zone_ended': {

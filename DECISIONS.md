@@ -2,6 +2,26 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev KARAR104: bekleyen kullanıcı kararları SRD 5.2.1'e göre (2026-11-24; kural sürümü 104 `KARAR104_VERSION`, kayıt sürümü 26)
+
+Kapsam kullanıcıyla bu oturumda belirlendi (yol haritası dosyası depoda yoktu); kaynak `harita/belgeler/GECE-KUYRUGU-RAPOR.md`
+"Karar gerekli" ve `harita/belgeler/EKSIK-TARAMA.md`. Tek sabit `src/battle/karar104Surum.ts` (`KARAR104_VERSION` 104, `karar104On`);
+103 ve altı (eski kayıt, replay) aynen. Testler `src/battle/karar104.test.ts` (103 ↔ 104 + replay). Sıra küçükten büyüğe, her madde ayrı
+commit: A1, A3, A4, A11, A2, A10, A5. Değişen eski testler: `ruleVersion.test.ts`, `g6.test.ts` (103 → 104); `SAVE_VERSION` 25 → 26
+(`s1`, `g1`, `areaView`, `statusFx`).
+
+- **Ertelendi (kullanıcı kararı, sonraki tura):** A6 SRD-12 sınıf özelliği sapmaları (Cutting Words ıskada, Quivering Palm vazgeçme,
+  Holy Nimbus/Hurl Through Hell yenilenme, Dark One's Own Luck zamanı, Supreme Sneak siper zamanı), A7 Unconscious eşya düşürme + yapay
+  zekânın yerden silah alması (GENEL-SAVAS B40), A8 Swarm'ın başka yaratığın altıgeninde durması (SWARM95), A9 Ready yanıt listesi
+  (Dash/Disengage/Dodge/Help/Hide/Utilize; GENEL-SAVAS A23). Çoklu sınıf kural sürümü 105'e (başka dal), bu göreve girmedi.
+- **A1 Storm of Vengeance 2–10. tur aşamaları** (SRD 5.2.1 s. 165 "At the start of each of your later turns"): büyü verisinde `k104`
+  bloğu (`zone.stages`: tur, save, hasar, `targets`, `persist`), alan yapımda `stage: 1`, büyücünün her tur başında `zone_stage` olayı
+  (`src/battle/stormStage.ts`, `commands.ts` tur başı zinciri; kayıt sürümü 26). 2. tur 4d6 Acid, 3. tur altı yıldırım (DEX, 10d6
+  Lightning, yarı), 4. tur 2d6 Bludgeoning, 5–10. tur 1d6 Cold; 5. turdan sonra alan zorlu arazi, yoğun örtü ve menzilli silah
+  saldırısı yok (saldıran ya da hedef alandaysa otomatik ıska; `zones.ts` `stagedSpec`, `noRangedWeapon`). Hasar aşamada bir kez atılır.
+  ⚠ Yıldırımın altı hedefi oyuncuya sorulmuyor: büyücünün düşmanlarından merkeze en yakın altısı; nesneler (asit, yıldırım) hedef
+  değil; "strong wind" ayrıca uygulanmadı (menzilli silah saldırısı zaten yok). Yapı: 103'te yalnız yapım turu.
+
 ## CELESTIAL-KANAT-IYILESME: Kırık Kanat uçuşu iyileşince melek kanadı ve renkli gövde (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
 
 - **Eşik veriden:** `data/celestial.json` `kirik-kanat.ucus.seviyeEsigi` (13; normal uçuş). Kodda sabit yok. `celestial.json` ana parçaya

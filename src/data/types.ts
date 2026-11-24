@@ -363,6 +363,8 @@ export interface SpellMechanics {
   m83?: Partial<SpellMechanics>;
   /** Gece kuyruğu Aşama 3 (kural sürümü 102, BUYU-TAM): SRD tam tarama düzeltmeleri (mekaniğin üstüne yazılır). */
   b102?: Partial<SpellMechanics>;
+  /** Görev KARAR104 (kural sürümü 104): bekleyen kararlar (Storm of Vengeance tur aşamaları); mekaniğin üstüne yazılır. */
+  k104?: Partial<SpellMechanics>;
   /** BUYU-TAM (102): çok hedefli iyileştirmede hedefler menzil içinde merkezli bu yarıçaplı kürede (Mass Cure Wounds 30 ft). */
   healSphereFt?: number;
   /** BUYU-TAM (102): büyünün menzili (ft) bu değerle değişir (Etherealness yukarı slot hedefleri "within 10 feet"). */
@@ -574,7 +576,27 @@ export interface SpellMechanics {
  * `turn` o turun sonuna dek, yoksa kalıcı Prone gibi), `dropConcentration`, `targets: enemies` (yalnızca büyücünün
  * düşmanları). `move`: sonraki turlarda alan taşınır (`spell_followup`; maliyet ve ft).
  */
+/**
+ * Görev KARAR104 (sürüm 104, A1 Storm of Vengeance): büyücünün sonraki turlarının başında alanın aşaması. `turn` 2 = yapımdan
+ * sonraki ilk tur başı; `through` varsa o tura dek her tur. Altındakilere save'li ya da save'siz hasar (`targets`: en çok bu kadar
+ * farklı yaratık, büyücünün düşmanlarından); `persist` aşamaya girilince büyü bitene dek alan kuralına eklenir.
+ */
+export interface ZoneStage {
+  turn: number;
+  through?: number;
+  save?: Ability;
+  damage: string;
+  damageType: string;
+  half?: boolean;
+  targets?: number;
+  persist?: Partial<Omit<ZoneSpec, 'stages' | 'castTrigger'>>;
+}
+
 export interface ZoneSpec {
+  /** Görev KARAR104 (sürüm 104): tur aşamaları (Storm of Vengeance); eski veride `true` yalnız işaretti (okunmaz). */
+  stages?: boolean | ZoneStage[];
+  /** Görev KARAR104 (sürüm 104): alandaki saldıranın ya da hedefin menzilli silah saldırısı yapılamaz (Storm of Vengeance 5–10. tur). */
+  noRangedWeapon?: boolean;
   /**
    * Mekanik matris B05 (sürüm 83+): yapım anı (`on: 'cast'`) tetiğinin farkları; alan kuralının üstüne yazılır. Wall of Thorns
    * yapımda Piercing (sonra Slashing), Storm of Vengeance yapımda CON save, 2d6 Thunder ve büyü süresince Deafened.

@@ -1427,6 +1427,8 @@ export interface SpellZone {
    * merkezden aşağı). Yoksa yerden tepeye (`zoneTopFt`).
    */
   air?: { loFt: number; hiFt: number };
+  /** Görev KARAR104 (sürüm 104): aşamalı alanın (`ZoneSpec.stages`) şu anki aşaması; yapımda 1, büyücünün her sonraki tur başında +1 (`zone_stage`). */
+  stage?: number;
 }
 
 /** Görev Y1: yüzey türleri (`src/battle/surfaces.ts`). */
@@ -2367,6 +2369,8 @@ export type BattleEvent =
   | { type: 'zone_triggered'; zoneId: string; targetId: string; turn: string }
   /** Kuyruk 19: alanın verdiği hasar bütçeye yazılır (Guardian of Faith). */
   | { type: 'zone_dealt'; zoneId: string; amount: number }
+  /** Görev KARAR104 (sürüm 104, kayıt sürümü 26): aşamalı alan bir sonraki aşamaya geçti (Storm of Vengeance). */
+  | { type: 'zone_stage'; zoneId: string; stage: number }
   | { type: 'zone_panel_damaged'; zoneId: string; hex: Offset; amount: number }
   | { type: 'zone_ended'; zoneId: string; name: string; reason: 'expired' | 'concentration' | 'replaced' | 'dispelled' | 'reacted' | 'destroyed' }
   | { type: 'concentration_started'; actorId: string; spell: string; slotLevel: number; turn: string; targetId?: string; pos?: Offset }

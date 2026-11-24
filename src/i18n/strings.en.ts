@@ -1084,6 +1084,7 @@ export const en: Strings = {
     zoneCreated: (who: string, spell: string, hexes: number) => `${who}: ${spell} area${hexes ? ` (${hexes} hexes)` : ''} appears.`,
     floorChanged: (who: string, map: string) => `${who} took the stairs: the party is on the other floor (${map}).`,
     zoneMoved: (spell: string) => `${spell} area moved.`,
+    zoneStage: (spell: string, stage: number) => `${spell}: turn ${stage} of the storm.`,
     zoneEnded: (spell: string) => `${spell} area ends.`,
     area: (who: string, label: string, size: number, shape: string, names: string) => `${who}: ${label} — ${size} ft ${shape}; affected: ${names || 'no one'}.`,
     shapeName: { cone: 'cone', line: 'line', sphere: 'sphere', cube: 'cube', emanation: 'emanation', cylinder: 'cylinder', wall: 'wall' } as Record<string, string>,

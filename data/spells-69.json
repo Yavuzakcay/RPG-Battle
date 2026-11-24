@@ -2525,6 +2525,13 @@
   "concentration": true,
   "mechanics": {
    "m83": {"zone": {"rounds": 10, "on": ["cast", "start"], "stages": true, "castTrigger": {"save": "con", "damage": "2d6", "damageType": "thunder", "conditions": ["Deafened"], "hold": "spell"}, "color": "#5a6b8c", "icon": "⛈"}},
+   "k104": {"zone": {"rounds": 10, "on": ["cast"], "castTrigger": {"save": "con", "damage": "2d6", "damageType": "thunder", "conditions": ["Deafened"], "hold": "spell"}, "color": "#5a6b8c", "icon": "⛈",
+    "stages": [
+     {"turn": 2, "damage": "4d6", "damageType": "acid"},
+     {"turn": 3, "save": "dex", "damage": "10d6", "damageType": "lightning", "half": true, "targets": 6},
+     {"turn": 4, "damage": "2d6", "damageType": "bludgeoning"},
+     {"turn": 5, "through": 10, "damage": "1d6", "damageType": "cold", "persist": {"difficult": 2, "obscured": "heavy", "noRangedWeapon": true}}
+    ]}},
    "kind": "save",
    "save": "con",
    "damage": "2d6",
