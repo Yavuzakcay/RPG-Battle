@@ -1050,6 +1050,14 @@ export interface Combatant {
   /** Tırmanma kontrolü bonusu (STR veya DEX modifier'ının yükseği). */
   climbMod: number;
   spellSlots: number[];
+  /**
+   * Görev MC3 (kural sürümü 105; SRD 5.2.1 s. 26 Pact Magic): çoklu sınıfta ayrı Pact havuzu (Warlock'un yanında Spellcasting
+   * sınıfı varken). `cast_spell.pact` bu havuzdan harcar; olay `slot_spent.pact`. Tek sınıfta yok.
+   */
+  pactSlots?: { level: number; max: number; left: number };
+  /** Görev MC3: çoklu sınıfta sınıf başına büyü DC'si/saldırısı/değiştiricisi ve hazırlanan büyünün sınıfı. Tek sınıfta yok. */
+  spellByClass?: Record<string, { dc: number; attack: number; mod: number }>;
+  spellClassOf?: Record<string, string>;
   resistances: string[];
   immunities: string[];
   vulnerabilities: string[];
@@ -1803,6 +1811,8 @@ export type Command =
    */
   | {
       type: 'cast_spell'; actorId: string; spellName: string; targetId?: string; targetHex?: Offset; slotLevel?: number;
+      /** Görev MC3: yuvayı çoklu sınıfın ayrı Pact havuzundan harca (yuva seviyesi Pact seviyesi). */
+      pact?: true;
       /** Çok hedefli etki büyüsü (Bless, Bane, Heroism; Görev R2): hedefler (yoksa `targetId`). */
       targetIds?: string[];
       /** Kuyruk A8: birden çok merkezli alan (Meteor Swarm: dört nokta). Kuyruk S2: Wind Wall serbest duvar yolu. */
@@ -2223,7 +2233,7 @@ export type BattleEvent =
     }
   /** Zorla hareket veya lav yükselmesi: HP 0, ölüm kurtarması yok. */
   | { type: 'fell_into_lava'; actorId: string; at: Offset }
-  | { type: 'slot_spent'; actorId: string; level: number; remaining: number }
+  | { type: 'slot_spent'; actorId: string; level: number; remaining: number; /** Görev MC3: ayrı Pact havuzundan (savaş kaydı 26). */ pact?: true }
   | {
       type: 'save_resolved';
       actorId: string;

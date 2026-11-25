@@ -22,7 +22,9 @@ export function withStatus(c: Combatant, ch: Pick<SavedCharacter, 'sheet' | 'sta
     // Kuyruk K48: kayıtlı Moral (savaş başında kural kapalıysa `withMorale` siler).
     ...(s.moral !== undefined ? { moral: s.moral } : {}),
     // Kuyruk 19: savaşta harcanan HP zarı (Lifedrinker) kayıtlı durumdan.
-    ...(c.hitDice ? { hitDice: { ...c.hitDice, left: Math.max(0, ch.sheet.level - s.hitDiceSpent) } } : {}) };
+    ...(c.hitDice ? { hitDice: { ...c.hitDice, left: Math.max(0, ch.sheet.level - s.hitDiceSpent) } } : {}),
+    // Görev MC3: çoklu sınıfın ayrı Pact havuzu kayıtlı durumdan.
+    ...(c.pactSlots ? { pactSlots: { ...c.pactSlots, left: Math.min(c.pactSlots.max, s.pactSlots ?? c.pactSlots.max) } } : {}) };
 }
 
 /** Savaşa girebilir mi: ölü ya da 0 HP'deki karakter önce dinlenmeli (ölü diriltilmeli). */
@@ -60,6 +62,8 @@ export function applyBattleResult(characters: SavedCharacter[], state: BattleSta
       // Görev B93: Font of Magic ile yaratılan slot (önceden kalan fazla dahil) tablonun üstüne çıkabilir; uzun dinlenmede kaybolur.
       slots: prev.slots.map((n, i) => Math.min((prev.slotMax?.[i] ?? n) + Math.max(0, n - (prev.slotMax?.[i] ?? n)) + (c.createdSlots?.[i] ?? 0), c.spellSlots[i] ?? 0)),
       ...(prev.slotMax ? { slotMax: prev.slotMax } : {}),
+      // Görev MC3: ayrı Pact havuzu (savaşçıda yoksa yazılmaz: `currentStatus` dolu sayar).
+      ...(c.pactSlots ? { pactSlots: c.pactSlots.left } : {}),
       ...(prev.resourceMax ? { resourceMax: prev.resourceMax } : {}),
       ...(prev.hpMax !== undefined ? { hpMax: prev.hpMax } : {}),
       ...(c.life === 'dead' ? { dead: true } : {}),

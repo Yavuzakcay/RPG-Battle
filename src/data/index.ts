@@ -7,6 +7,7 @@ import environmentsJson from '../../data/environments.json';
 import spellSlotsJson from '../../data/spell-slots.json';
 import conditionsJson from '../../data/conditions.json';
 import { betimlemeOf, descriptionShown, type Lang, type SpellDescriptions } from './betimleme';
+import { setMcImpl } from '../rules/mcHook';
 import type {
   Armor, CharacterClass, ClassMechanics, ClassProgression, ConditionList, Environment, Item, Monster, Race, Spell, SpellSlotTables, SrdFeat, SrdMastery, SrdWeapon, SubclassDef, Weapon,
 } from './types';
@@ -114,7 +115,10 @@ export function loadClassData(): Promise<void> {
     import('../../data/items-srd.json'), import('../../data/spells-69.json'), import('../../data/karadul.json'), import('../../data/imza.json'),
     import('../../data/spells.json'), import('../../data/buyu-betimleme.json'), import('../../data/aciklamalar-tr.json'),
     import('../../data/aciklamalar-en.json'),
-  ]).then(([p, m, f, w, sc, s45, isrd, s69, kd, imza, s03, bet, atr, aen]) => {
+    // Görev MC3: çoklu sınıf hesapları ve `data/cok-sinif.json` tembel parçada (ana parça sınırı); tek sınıflı yol çağırmaz.
+    import('../rules/mcImpl'),
+  ]).then(([p, m, f, w, sc, s45, isrd, s69, kd, imza, s03, bet, atr, aen, mci]) => {
+    setMcImpl(mci.MC_IMPL);
     if (classDataLoaded()) return;
     // Kuyruk B2: büyü betimlemeleri (yalnız görünüm; ana parçaya girmez, sınıf verisiyle tembel gelir).
     const { _aciklama: _a, ...descriptions } = bet.default as unknown as SpellDescriptions & { _aciklama?: unknown };

@@ -12,6 +12,7 @@ import type { Ability } from './abilities';
 import type { Skill } from './skills';
 import type { CharacterSheet, ClassEntry, Scores } from './stats';
 import { LEVEL_CAP, MAX_CLASSES } from '../app/limits';
+import { classesOf, isMultiSheet } from './mcHook';
 
 /** Ana yetenek: `hepsi` ("and": hepsi ≥ ön koşul) ya da `biri` ("or": en az biri). */
 export type PrimaryAbility = { hepsi: Ability[]; biri?: never } | { biri: Ability[]; hepsi?: never };
@@ -38,15 +39,12 @@ export const multiclassClassIds = (): string[] => Object.keys(DATA.siniflar);
 
 type ClassFields = Pick<CharacterSheet, 'classId' | 'level' | 'subclassId' | 'classes'>;
 
-/** Karakterin sınıfları; `classes` yoksa (tek sınıf) eski üç alandan tek öğe. */
-export function classesOf(sheet: ClassFields): ClassEntry[] {
-  if (sheet.classes && sheet.classes.length > 0) return sheet.classes;
-  return [{ classId: sheet.classId, level: sheet.level, ...(sheet.subclassId !== undefined ? { subclassId: sheet.subclassId } : {}) }];
-}
+/** Karakterin sınıfları (tek çözücü `mcHook.ts`'te; ana parçada kalır). */
+export { classesOf };
 /** Bu sınıftaki seviye (sınıf karakterde yoksa 0). */
 export const classLevel = (sheet: ClassFields, classId: string): number => classesOf(sheet).find((c) => c.classId === classId)?.level ?? 0;
 /** Karakterin 2+ sınıfı var mı. */
-export const isMulticlass = (sheet: ClassFields): boolean => classesOf(sheet).length > 1;
+export const isMulticlass = (sheet: ClassFields): boolean => isMultiSheet(sheet);
 /** Toplam karakter seviyesi (SRD: XP, yeterlilik bonusu, cantrip gücü bundan). */
 export const totalLevel = (sheet: ClassFields): number => classesOf(sheet).reduce((n, c) => n + c.level, 0);
 

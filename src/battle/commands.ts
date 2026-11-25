@@ -113,6 +113,7 @@ import { caveDiscoveryEvents, executeForestUse, forestAfterEvents, forestRoundEv
 import { greaseAfterEvents } from './ignite';
 import { hexResolverOn, resolveCommandEffects } from './hexResolver';
 import { applyEvents, speedHexes } from './reduce';
+import { mcCastView } from './mc3';
 import { goalEvents } from './goals';
 import { executeRally, moraleAfterEvents, moraleStartEvents } from './morale';
 import { alarmEvents, executeAlarmGroup, formGroupsEvent, patrolEvents, patrolOf } from './alarm';
@@ -201,6 +202,18 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
 
 /** Komutu çözer; komutu veren gizlenmişse ve komut onu ortaya çıkarıyorsa bunu da ekler. */
 export function execute(state: BattleState, cmd: Command, ctx: CommandContext, rng: Rng): CommandResult {
+  // Görev MC3 (kural sürümü 105): çoklu sınıflı büyücünün büyüsü kendi sınıfının DC/saldırısıyla ve (`pact`) ayrı Pact
+  // havuzundan: komut gölge durumda çalışır, olaylar gerçek duruma uygulanır (`mc3.ts`). Tek sınıfta doğrudan.
+  const mc = mcCastView(state, cmd);
+  if (!mc) return executeBase(state, cmd, ctx, rng);
+  if ('error' in mc) return fail(mc.error);
+  const r = executeBase(mc.state, cmd, ctx, rng);
+  if (!r.ok) return r;
+  const events = mc.mapEvents(r.events);
+  return { ok: true, events, state: applyEvents(state, events) };
+}
+
+function executeBase(state: BattleState, cmd: Command, ctx: CommandContext, rng: Rng): CommandResult {
   // Kuyruk S1: haritadan ayrılma, büyünün yapımıyla aynı yol (eylem, slot, hedef denetimi).
   // Hazırla (Ready): tutulan büyünün salınması yalnız motorun iç komutu (tepkiyle; `ready.ts`).
   if (cmd.type === 'cast_spell' && cmd.fromReady) return fail('Hazırlanan büyü yalnız tetikle salınır.');

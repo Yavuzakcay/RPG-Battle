@@ -10,3 +10,9 @@ let provider: () => IssueTexts = () => STRINGS_TR.issues;
 export const setIssueTexts = (f: () => IssueTexts): void => { provider = f; };
 /** Geçerli dilin sorun metinleri. */
 export const I = (): IssueTexts => provider();
+
+/** Görev MC3: çoklu sınıf sorun metinleri (TR'nin tembel bölümünde ve EN'de; yalnız tembel `mcImpl.ts` okur). */
+export type McIssueTexts = (typeof STRINGS_TR)['mcIssues'];
+let mcProvider: () => McIssueTexts = () => STRINGS_TR.mcIssues;
+export const setMcIssueTexts = (f: () => McIssueTexts): void => { mcProvider = f; };
+export const IMc = (): McIssueTexts => mcProvider();

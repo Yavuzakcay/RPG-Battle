@@ -389,8 +389,14 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
 
 /** Kuyruk 43b: slot seçiminde 0 = Divine Intervention ile slotsuz (`cast_spell.free`). */
 const FREE_SLOT = 0;
-const slotFields = (slot: number | null): { slotLevel?: number; free?: true } =>
-  (slot === FREE_SLOT ? { free: true } : slot ? { slotLevel: slot } : {});
+/** Görev MC3: çoklu sınıfın ayrı Pact havuzu (`cast_spell.pact`; yuva seviyesi Pact seviyesi). */
+const PACT_SLOT = -1;
+const slotFields = (slot: number | null): { slotLevel?: number; free?: true; pact?: true } =>
+  (slot === FREE_SLOT ? { free: true } : slot === PACT_SLOT ? { pact: true } : slot ? { slotLevel: slot } : {});
+/** Seçilen slotun büyü seviyesi (Pact: havuzun seviyesi). */
+const pickedLevel = (a: Combatant | undefined, slot: number | null): number | null => (slot === PACT_SLOT ? a?.pactSlots?.level ?? null : slot);
+/** Görev MC3: bu büyü ayrı Pact havuzundan yapılabilir mi (havuzda yuva var, Pact seviyesi büyünün seviyesine yetiyor). */
+const pactUsable = (a: Combatant, spell: Spell): boolean => !!a.pactSlots && a.pactSlots.left > 0 && spell.level > 0 && a.pactSlots.level >= spell.level;
 
 /** Büyü komutuna seçilen slot seviyesi (seçilmediyse komut olduğu gibi: en düşük uygun slot). */
 const withSlot = (cmd: Command, slot: number | null): Command =>
@@ -456,7 +462,7 @@ function MetamagicPicker(props: { actor: Combatant; spell: Spell; value: string[
 
 /** SD7: slot seçicinin (düğmeler + etki satırları) balonda ayıracağı yükseklik; seçici yoksa 0. */
 const pickerHeight = (actor: Combatant, spell: Spell): number =>
-  spell.level > 0 && (slotChoices(actor, spell).length > 1 || !!freeCastResource(actor, spell.name, undefined, true)) ? 250 : 0;
+  spell.level > 0 && (slotChoices(actor, spell).length > 1 || !!freeCastResource(actor, spell.name, undefined, true) || pactUsable(actor, spell)) ? 250 : 0;
 
 /**
  * Slot seçimi (SD7): yalnız şu an kullanılabilen seviyeler (büyü seviyesi ve üstü, kalan slotu > 0), varsayılan en düşük; seçili düğme
@@ -469,10 +475,11 @@ function SlotPicker(props: { actor: Combatant; spell: Spell; value: number | nul
   const levels = pickerLevels(usable, props.spell);
   // Kuyruk 43b: Divine Intervention gibi listeli kaynak kaldıysa "slotsuz" seçeneği (slot kalmış olsa da).
   const freeId = props.spell.level > 0 ? freeCastResource(props.actor, props.spell.name, undefined, true) : null;
-  if (props.spell.level === 0 || (usable.length < 2 && !freeId)) return null;
-  const valid = props.value === FREE_SLOT ? !!freeId : props.value !== null && levels.includes(props.value);
-  const current = valid ? (props.value as number) : (levels[0] ?? FREE_SLOT);
-  const effLevel = current === FREE_SLOT ? props.spell.level : current;
+  const pact = pactUsable(props.actor, props.spell);
+  if (props.spell.level === 0 || (usable.length < 2 && !freeId && !pact)) return null;
+  const valid = props.value === FREE_SLOT ? !!freeId : props.value === PACT_SLOT ? pact : props.value !== null && levels.includes(props.value);
+  const current = valid ? (props.value as number) : (levels[0] ?? (pact ? PACT_SLOT : FREE_SLOT));
+  const effLevel = current === FREE_SLOT ? props.spell.level : current === PACT_SLOT ? props.actor.pactSlots!.level : current;
   return (
     <div className="slot-picker" role="radiogroup" aria-label={B.slotPick}>
       <small>{B.slotPick}</small>
@@ -480,6 +487,10 @@ function SlotPicker(props: { actor: Combatant; spell: Spell; value: number | nul
         <button key={l} role="radio" aria-checked={l === current} className={l === current ? 'on' : 'ghost'}
           onClick={() => props.onChange(l === levels[0] ? null : l)}>{B.slotLevel(l, props.actor.spellSlots[l - 1] ?? 0)}</button>
       ))}
+      {pact && (
+        <button role="radio" aria-checked={current === PACT_SLOT} className={current === PACT_SLOT ? 'on' : 'ghost'}
+          onClick={() => props.onChange(current === PACT_SLOT ? null : PACT_SLOT)}>{B.pactSlot(props.actor.pactSlots!.level, props.actor.pactSlots!.left)}</button>
+      )}
       {freeId && (
         <button role="radio" aria-checked={current === FREE_SLOT} className={current === FREE_SLOT ? 'on' : 'ghost'} title={B.freeCastInfo}
           onClick={() => props.onChange(current === FREE_SLOT ? null : FREE_SLOT)}>{B.freeCast(resourceDef(freeId)?.name ?? freeId, usesShown(resourceLeft(props.actor, freeId)))}</button>
@@ -1477,7 +1488,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     }
     // Etki büyüsü: hedef seçimi açılıp kapanır (kendisi de seçilebilir), en çok hedef sayısı kadar.
     if (mode === 'effect' && spell && glowing.has(c.id)) {
-      const max = effectTargetCount(spell, slotPick ?? spell.level);
+      const max = effectTargetCount(spell, pickedLevel(actor, slotPick) ?? spell.level);
       setPicked((p) => (p.includes(c.id) ? p.filter((x) => x !== c.id) : p.length < max ? [...p, c.id] : p));
       return;
     }
@@ -1935,7 +1946,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     areas: t().area.pickHint,
     ready: t().readyUi.title, readyHex: t().readyUi.pickHint,
     pull: B.hint.pull, help: B.hint.help, stabilize: B.hint.stabilize, distract: B.hint.distract, item: B.hint.item, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
-    effect: spell ? t().effects.hint(spell.name, effectTargetCount(spell, slotPick ?? spell.level)) : '',
+    effect: spell ? t().effects.hint(spell.name, effectTargetCount(spell, pickedLevel(actor, slotPick) ?? spell.level)) : '',
     summon: spell ? t().summons.hint(spell.name) : '',
     teleport: spell ? B.hint.teleport(spell.name, spell.mechanics.teleport?.rangeFt ?? 0)
       : ((f) => (f?.effect.kind === 'teleport' ? B.hint.teleport(f.name, f.effect.rangeFt) : ''))((actor?.features ?? []).find((x) => x.key === featureKey)),
@@ -2887,7 +2898,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
 
           {active && actor && actorPx && mode === 'effect' && spell && (() => {
             const E = t().effects;
-            const max = effectTargetCount(spell, slotPick ?? spell.level);
+            const max = effectTargetCount(spell, pickedLevel(actor, slotPick) ?? spell.level);
             const opts = spell.mechanics.effect?.choices ?? [];
             const size = { w: 250, h: Math.min(box.h - 16, 110 + (opts.length ? 40 : 0) + pickerHeight(actor, spell)) };
             const at = bubbleAt(actorPx, size, box, tokenR + 8);

@@ -5,7 +5,7 @@
  */
 import { useSyncExternalStore } from 'react';
 import { STRINGS_TR, addTrExtra, type Lang, type Strings } from './strings';
-import { setIssueTexts } from '../rules/issueText';
+import { setIssueTexts, setMcIssueTexts } from '../rules/issueText';
 
 export type { Lang, Strings };
 export const LANGS: readonly Lang[] = ['tr', 'en'];
@@ -69,6 +69,7 @@ export function setLang(lang: Lang): void {
 export const t = (): Strings => tables[current] ?? STRINGS_TR;
 // Görev SD4: kural modüllerinin oluşturucu sorun metinleri arayüz diliyle (saf modüller i18n'i içe aktarmaz).
 setIssueTexts(() => t().issues);
+setMcIssueTexts(() => t().mcIssues);
 
 /** Kök bileşen için: dil değişince yeniden çizilir. */
 export function useLang(): Lang {

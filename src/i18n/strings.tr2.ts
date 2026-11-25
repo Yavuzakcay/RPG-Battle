@@ -8,6 +8,18 @@ import { trAciklama } from '../data';
 const OBJ_TR: Record<string, string> = { oilBarrel: 'yağ fıçısı', powderKeg: 'barut fıçısı', chest: 'sandık', table: 'masa', door: 'kapı', brazier: 'mangal' };
 
 export const TR_EXTRA = {
+  /** Görev MC2/MC3: çoklu sınıf oluşturucu sorunları (SRD 5.2.1 s. 24–26; yalnız tembel `rules/mcImpl.ts` okur, `IMc()`). */
+  mcIssues: {
+    mcSubclass: (cls: string, lvl: number) => `${cls} için alt sınıf seçilmeli (${cls} ${lvl}. seviyede).`,
+    mcTooMany: (max: number, n: number) => `En çok ${max} sınıf olabilir (${n} seçili).`,
+    mcDuplicate: (cls: string) => `${cls} iki kez seçilmiş.`,
+    mcLevel: (cls: string, lvl: number) => `${cls} seviyesi en az 1 olmalı (${lvl}).`,
+    mcTotal: (total: number, max: number) => `Toplam seviye en çok ${max} olabilir (${total}).`,
+    mcPrereq: (cls: string, abilities: string[], any: boolean) => `Çoklu sınıf ön koşulu: ${cls} için ${abilities.join(any ? ' ya da ' : ' ve ')} en az 13 olmalı.`,
+    mcSkill: (cls: string, skill: string) => `${cls} sınıfının ek becerisi kurala uymuyor: ${skill}.`,
+    mcSpellClass: (cls: string, text: string) => `${cls}: ${text}`,
+    mcSpellBind: (spell: string, cls: string) => `${spell} ${cls} listesinde değil (büyünün sınıfı).`,
+  },
   /** Hazırla (Ready) paneli (kural sürümü 90; `src/ui/ReadyPanel.tsx`). */
   readyUi: {
     menu: 'Hazırla', title: 'Hazırla (Ready)', trigger: 'Tetik', who: 'Kim tetikler', anyEnemy: 'Herhangi bir düşman',
@@ -551,6 +563,8 @@ export const TR_EXTRA = {
       info: (dc: number, n: number, fall: number) => `Atla: DC ${dc}, ${n} lav hex, doğal 1: %${fall} lava düşme · `, flyInfo: (n: number) => `Atla: ${n} lav hex, zarsız (uçuyor) · ` },
     affected: (list: string) => `Etkilenen: ${list || 'kimse'}`,
     slotPick: 'Slot:', slotLevel: (l: number, left: number) => `${l}. seviye (${left})`,
+    /** Görev MC3: çoklu sınıfın ayrı Pact havuzu. */
+    pactSlot: (level: number, left: number): string => `Pact ${level}. seviye (${left})`,
     freeCast: (name: string, left: number | null): string => (left === null ? `Slotsuz: ${name}` : `Slotsuz: ${name} (${left} hak)`),
     slotEffect: {
       level: (l: number): string => `${l}. seviye: `, base: 'Temel etki', noUpcast: 'Bu büyü yüksek slotla güçlenmez; en düşük slot yeterli', generic: 'yüksek slot etkisi uygulanır',

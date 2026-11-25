@@ -13,9 +13,9 @@ import { getClass } from '../data';
 import { classResources, depotStart, rechargeResources, resourceDef } from './classFeatures';
 import { longRest, shortRest, type RestState } from './rest';
 import { MAX_EXHAUSTION, exhaustionAfterLongRest } from './exhaustion';
-import { deriveStats, sheetSpellcasting, type CharacterSheet } from './stats';
-import { classesOf, isMulticlass } from './multiclass';
-import { rollDie, type Rng } from './dice';
+import { deriveStats, type CharacterSheet } from './stats';
+import { isMultiSheet, mcImpl } from './mcHook';
+import type { Rng } from './dice';
 
 export interface CharacterStatus {
   hp: number;
@@ -30,6 +30,8 @@ export interface CharacterStatus {
   resources: Record<string, number>;
   /** Kalan büyü slotları (1.–9. seviye). */
   slots: number[];
+  /** Görev MC3: çoklu sınıfta ayrı Pact Magic havuzunda kalan yuva (SRD 5.2.1 s. 26). Tek sınıfta ve havuzsuzda yazılmaz. */
+  pactSlots?: number;
   /**
    * H-SLOT: kayıt anındaki en çok slotlar. Harcanan = `slotMax − slots`; seviye ya da sınıf değişince yeni tablodan
    * yalnızca harcanan düşer (kazanılan slotlar dolu gelir). Eski kayıtlarda yok: açılışta `repairSlots` tamamlar.
@@ -62,20 +64,15 @@ const moralPart = (s: CharacterStatus): Pick<CharacterStatus, 'moral' | 'moralOl
   ({ ...(s.moral !== undefined ? { moral: s.moral } : {}), ...(s.moralOlum ? { moralOlum: true as const } : {}) });
 
 /** Görev MC2: çoklu sınıfın can zarı havuzu (zar türü → sayı; aynı türler birleşir). Tek sınıfta null. */
-export function hitDicePool(sheet: CharacterSheet): Partial<Record<6 | 8 | 10 | 12, number>> | null {
-  if (!isMulticlass(sheet)) return null;
-  const pool: Partial<Record<6 | 8 | 10 | 12, number>> = {};
-  for (const e of classesOf(sheet)) { const d = getClass(e.classId).hitDie; pool[d] = (pool[d] ?? 0) + e.level; }
-  return pool;
-}
-/** Görev MC2: harcanan zarlar havuza kırpılır; boşsa yazılmaz (alan yok = hiç harcanmamış). */
-function spentByPart(sheet: CharacterSheet, by: CharacterStatus['hitDiceSpentBy']): Pick<CharacterStatus, 'hitDiceSpentBy'> {
-  const pool = hitDicePool(sheet);
-  if (!pool || !by) return {};
-  const out: Partial<Record<6 | 8 | 10 | 12, number>> = {};
-  for (const [d, n] of Object.entries(by)) { const v = Math.min(pool[Number(d) as 6] ?? 0, Math.max(0, n ?? 0)); if (v > 0) out[Number(d) as 6] = v; }
-  return Object.keys(out).length ? { hitDiceSpentBy: out } : {};
-}
+export const hitDicePool = (sheet: CharacterSheet): Partial<Record<6 | 8 | 10 | 12, number>> | null =>
+  (isMultiSheet(sheet) ? mcImpl().hitDicePool(sheet) : null);
+/** Görev MC2: harcanan zarlar havuza kırpılır; boşsa yazılmaz (alan yok = hiç harcanmamış). Tek sınıfta yok. */
+const spentByPart = (sheet: CharacterSheet, by: CharacterStatus['hitDiceSpentBy']): Pick<CharacterStatus, 'hitDiceSpentBy'> =>
+  (isMultiSheet(sheet) ? mcImpl().spentBy(sheet, by) : {});
+
+/** Görev MC3: ayrı Pact havuzu dinlenmede dolar (çoklu sınıf; havuz yoksa alan yazılmaz). */
+const pactFill = (sheet: CharacterSheet, s: CharacterStatus): Pick<CharacterStatus, 'pactSlots'> =>
+  (s.pactSlots === undefined ? {} : { pactSlots: fullStatus(sheet).pactSlots ?? s.pactSlots });
 
 /** Dinlenmiş (tam) durum. */
 export function fullStatus(sheet: CharacterSheet): CharacterStatus {
@@ -84,7 +81,8 @@ export function fullStatus(sheet: CharacterSheet): CharacterStatus {
   // Görev TE99: yüklü eşyaların yükü de durumda (SRD 5.2.1 s. 206 Charges; yenilenme `itemCharges.ts`).
   const resources = { ...classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineageOf(sheet)?.id, sheet.subclassId), ...featResources(sheet), ...itemResources(sheet) };
   // Kuyruk P12: sayaç kaynağı (paket `yenilenme: depo`) dinlenmiş durumda başlangıç değerinde; en çok değer üst sınır.
-  return { hp: d.maxHp, hitDiceSpent: 0, resources: depotStart(resources), slots: [...d.spellSlots], slotMax: [...d.spellSlots], resourceMax: { ...resources }, hpMax: d.maxHp };
+  return { hp: d.maxHp, hitDiceSpent: 0, resources: depotStart(resources), slots: [...d.spellSlots], slotMax: [...d.spellSlots], resourceMax: { ...resources }, hpMax: d.maxHp,
+    ...(d.pactSlots ? { pactSlots: d.pactSlots.count } : {}) };
 }
 
 /** Kayıtlı durum ya da (yoksa) tam durum; seviye/sınıf değiştiyse en çok değerlere kırpılır. */
@@ -115,6 +113,8 @@ export function currentStatus(sheet: CharacterSheet, status?: CharacterStatus): 
     slotMax: full.slots,
     resourceMax: { ...(full.resourceMax ?? full.resources) },
     hpMax: full.hp,
+    // Görev MC3: ayrı Pact havuzu (çoklu sınıf); yoksa dolu.
+    ...(full.pactSlots !== undefined ? { pactSlots: Math.min(full.pactSlots, Math.max(0, status.pactSlots ?? full.pactSlots)) } : {}),
     ...(status.dead ? { dead: true } : {}),
     ...((status.exhaustion ?? 0) > 0 ? { exhaustion: Math.min(MAX_EXHAUSTION, status.exhaustion ?? 0) } : {}),
     ...(status.waits && Object.keys(status.waits).length ? { waits: { ...status.waits } } : {}),
@@ -138,37 +138,10 @@ function restState(sheet: CharacterSheet, s: CharacterStatus): RestState {
 
 /**
  * Slot dizisi Pact Magic mı (kısa dinlenmede dolar). Tek sınıfta sınıfın kendisi; Görev MC2: çoklu sınıfta dizi yalnız tek
- * büyücü Warlock'sa Pact'tir (başka Spellcasting sınıfı varken Pact havuzu MC3'te ayrı).
+ * büyücü Warlock'sa Pact'tir (başka Spellcasting sınıfı varken Pact ayrı havuzda: `pactSlots`, MC3).
  */
 function pactArray(sheet: CharacterSheet): boolean {
-  if (!isMulticlass(sheet)) return getClass(sheet.classId).casting?.type === 'pact';
-  const c = sheetSpellcasting(sheet).castClass;
-  return !!c && getClass(c).casting?.type === 'pact';
-}
-
-/**
- * Görev MC2 (SRD 5.2.1 s. 25, s. 187): çoklu sınıfta kısa dinlenme. `dice` kadar zar, havuzda kalanlardan büyük zardan
- * başlayarak (oyuncunun tür seçimi arayüzde MC5'te); her biri zar + CON, en az 1. Slotlar tek sınıftaki kuralla (`pactArray`).
- */
-function multiShortRest(sheet: CharacterSheet, s: CharacterStatus, pool: Partial<Record<6 | 8 | 10 | 12, number>>, dice: number, rng: Rng) {
-  const st = restState(sheet, s);
-  const spentBy: Partial<Record<6 | 8 | 10 | 12, number>> = { ...(spentByPart(sheet, s.hitDiceSpentBy).hitDiceSpentBy ?? {}) };
-  const rolls: number[] = [];
-  let hp = st.hp;
-  const order = ([12, 10, 8, 6] as const).filter((d) => pool[d]);
-  // Türü kayıtlı olmayan harcanmış zarlar (tek sınıftan çoklu sınıfa geçen kayıt) büyük zardan düşülür: havuz şişmez.
-  let untracked = Math.max(0, s.hitDiceSpent - Object.values(spentBy).reduce((n, x) => n + (x ?? 0), 0));
-  for (const d of order) { const take = Math.min(untracked, (pool[d] ?? 0) - (spentBy[d] ?? 0)); if (take > 0) { spentBy[d] = (spentBy[d] ?? 0) + take; untracked -= take; } }
-  for (let i = 0; i < dice; i++) {
-    const d = order.find((x) => (pool[x] ?? 0) - (spentBy[x] ?? 0) > 0);
-    if (d === undefined) break;
-    const roll = rollDie(d, rng);
-    rolls.push(roll);
-    hp = Math.min(st.maxHp, hp + Math.max(1, roll + st.conMod));
-    spentBy[d] = (spentBy[d] ?? 0) + 1;
-  }
-  const spent = Object.values(spentBy).reduce((n, x) => n + (x ?? 0), 0);
-  return { state: { ...st, hp, hitDiceLeft: sheet.level - spent, spellSlots: st.pactMagic ? [...st.maxSpellSlots] : [...st.spellSlots] }, rolls, healed: hp - st.hp, spentBy };
+  return isMultiSheet(sheet) ? mcImpl().pactArray(sheet) : getClass(sheet.classId).casting?.type === 'pact';
 }
 
 export interface RestResult { status: CharacterStatus; rolls: number[]; healed: number }
@@ -179,8 +152,7 @@ export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus |
   const s = currentStatus(sheet, status);
   // GENEL-SAVAS-DENETIM G1 (SRD 5.2.1 s. 187): kısa dinlenmeye başlamak için en az 1 HP; 0 HP'de hiçbir kazanç yok.
   if (s.dead || s.hp < 1) return { status: s, rolls: [], healed: 0 };
-  const pool = hitDicePool(sheet);
-  const r0 = pool ? multiShortRest(sheet, s, pool, dice, rng) : { ...shortRest(restState(sheet, s), dice, rng), spentBy: undefined };
+  const r0 = isMultiSheet(sheet) ? mcImpl().shortRest(sheet, s, restState(sheet, s), dice, rng) : { ...shortRest(restState(sheet, s), dice, rng), spentBy: undefined };
   // Görev WIZARD: Arcane Recovery (kaynak `arcaneRecovery`, uzun dinlenmede bir kez): toplamı seviyenin yarısını (yukarı)
   // aşmayan, 6. seviyenin altındaki slotlar en yüksekten başlayarak. Görev B93: oyuncu seçer ya da ertelerse kullanılmaz.
   const recovery = arcaneRecovery(sheet, s.resources, r0.state.spellSlots, 'arcaneRecovery', recover?.arcaneRecovery);
@@ -191,6 +163,8 @@ export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus |
   return {
     status: {
       hp: r.state.hp, hitDiceSpent: sheet.level - r.state.hitDiceLeft, ...spentByPart(sheet, r.spentBy), slots: r.state.spellSlots, slotMax: s.slotMax ?? [], resourceMax: s.resourceMax ?? {}, hpMax: s.hpMax ?? r.state.hp,
+      // Görev MC3 (SRD 5.2.1 s. 70 Pact Magic: kısa ya da uzun dinlenmede dolar): ayrı Pact havuzu.
+      ...pactFill(sheet, s),
       resources: rechargeItems(sheet, sorcerousRestoration(sheet, rechargeResources({ ...s.resources, ...(recovery.used ? { arcaneRecovery: 0 } : {}), ...(natural.used ? { naturalRecovery: 0 } : {}) },
         max, 'short', sheet.level), max), 'short', rng),
       // Kuyruk 18 H3: Tireless (Ranger 10): kısa dinlenme Exhaustion'ı 1 azaltır.
@@ -269,6 +243,8 @@ export function longRestStatus(sheet: CharacterSheet, status: CharacterStatus | 
   const r = longRest(restState(sheet, s));
   return {
     hp: r.hp, hitDiceSpent: sheet.level - r.hitDiceLeft, slots: r.spellSlots, slotMax: s.slotMax ?? [], resourceMax: s.resourceMax ?? {}, hpMax: s.hpMax ?? r.hp,
+    // Görev MC3: ayrı Pact havuzu uzun dinlenmede dolar.
+    ...pactFill(sheet, s),
     // Görev TE99: eşya yükleri "daily at dawn" kuralıyla (veride `recharge`; tek kullanımlık eşya dolmaz).
     ...waitedLongRest(rechargeItems(sheet, rechargeResources(s.resources, fullStatus(sheet).resourceMax ?? fullStatus(sheet).resources, 'long', sheet.level), 'long', rng), s.waits),
     // Bitkinlik (SRD 5.2.1): uzun dinlenme 1 seviye azaltır.

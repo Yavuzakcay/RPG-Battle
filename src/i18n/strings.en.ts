@@ -16,6 +16,17 @@ const GM_OPTION_EN: Record<string, string> = {
 };
 
 export const en: Strings = {
+  mcIssues: {
+    mcSubclass: (cls: string, lvl: number) => `Pick a ${cls} subclass (at ${cls} level ${lvl}).`,
+    mcTooMany: (max: number, n: number) => `At most ${max} classes (${n} chosen).`,
+    mcDuplicate: (cls: string) => `${cls} is chosen twice.`,
+    mcLevel: (cls: string, lvl: number) => `${cls} level must be at least 1 (${lvl}).`,
+    mcTotal: (total: number, max: number) => `Total level can be at most ${max} (${total}).`,
+    mcPrereq: (cls: string, abilities: string[], any: boolean) => `Multiclass prerequisite: ${cls} needs ${abilities.join(any ? ' or ' : ' and ')} of at least 13.`,
+    mcSkill: (cls: string, skill: string) => `${cls} multiclass skill is not allowed: ${skill}.`,
+    mcSpellClass: (cls: string, text: string) => `${cls}: ${text}`,
+    mcSpellBind: (spell: string, cls: string) => `${spell} is not on the ${cls} list (spell's class).`,
+  },
   readyUi: {
     menu: 'Ready', title: 'Ready', trigger: 'Trigger', who: 'Who triggers', anyEnemy: 'Any enemy',
     response: 'Response', attack: 'One attack', move: 'Move', spell: 'Spell', weapon: 'Attack', slot: 'Slot',
@@ -660,13 +671,6 @@ export const en: Strings = {
     bookSchoolLow: (school: string, n: number, lv: number) => `Evocation Savant's first ${n} free spells must be ${school} spells of level ${lv} or lower.`,
     bookOver: (n: number, lim: number) => `Spellbook too big (${n} / ${lim}).`, notInBook: (sp: string) => `${sp} is not in the spellbook.`,
     subclassNeeded: (lvl: number) => `Pick a subclass (at level ${lvl}).`,
-    mcSubclass: (cls: string, lvl: number) => `Pick a ${cls} subclass (at ${cls} level ${lvl}).`,
-    mcTooMany: (max: number, n: number) => `At most ${max} classes (${n} chosen).`,
-    mcDuplicate: (cls: string) => `${cls} is chosen twice.`,
-    mcLevel: (cls: string, lvl: number) => `${cls} level must be at least 1 (${lvl}).`,
-    mcTotal: (total: number, max: number) => `Total level can be at most ${max} (${total}).`,
-    mcPrereq: (cls: string, abilities: string[], any: boolean) => `Multiclass prerequisite: ${cls} needs ${abilities.join(any ? ' or ' : ' and ')} of at least 13.`,
-    mcSkill: (cls: string, skill: string) => `${cls} multiclass skill is not allowed: ${skill}.`,
     metamagicCount: (count: number, n: number) => `Metamagic: pick ${count} options (${n} chosen).`, metamagicUnknown: 'Metamagic: unknown option.',
     pactBlade: 'Pact of the Blade: pick a carried melee weapon as the pact weapon.',
     expertiseMax: (max: number, n: number) => `Expertise in at most ${max} skills (${n} chosen).`,
@@ -1356,6 +1360,7 @@ export const en: Strings = {
       info: (dc: number, n: number, fall: number) => `Jump: DC ${dc}, ${n} lava hexes, natural 1: ${fall}% fall into lava · `, flyInfo: (n: number) => `Jump: ${n} lava hexes, no roll (flying) · ` },
     affected: (list: string) => `Affected: ${list || 'no one'}`,
     slotPick: 'Slot:', slotLevel: (l: number, left: number) => `Level ${l} (${left})`,
+    pactSlot: (level: number, left: number): string => `Pact L${level} (${left})`,
     freeCast: (name: string, left: number | null): string => (left === null ? `No slot: ${name}` : `No slot: ${name} (${left} ${left === 1 ? 'use' : 'uses'})`),
     slotEffect: {
       level: (l: number): string => `Level ${l}: `, base: 'Base effect', noUpcast: 'This spell does not scale with higher slots; the lowest slot is enough', generic: 'higher-slot effect applies',

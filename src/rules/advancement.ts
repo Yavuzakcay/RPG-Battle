@@ -12,7 +12,7 @@ import { ABILITIES, type Ability } from './abilities';
 import { classKit } from './classFeatures';
 import { originFeatOf, speciesFeatOf } from './backgrounds';
 import { I } from './issueText';
-import { classesOf, isMulticlass } from './multiclass';
+import { classesOf, isMultiSheet as isMulticlass, mcImpl } from './mcHook';
 import type { ClassEntry } from './stats';
 
 export type Scores = Record<Ability, number>;
@@ -50,8 +50,7 @@ export function advancementSlots(classId: string, level: number, subclassId?: st
  * kendi sınıf seviyesiyle ve `classId` ile (ASI 4, 8… sınıf seviyesi; iki sınıfın 4. seviye yuvaları ayrı).
  */
 export function sheetAdvancementSlots(sheet: { classId: string; level: number; subclassId?: string; classes?: ClassEntry[] }): AdvancementSlot[] {
-  if (!isMulticlass(sheet)) return advancementSlots(sheet.classId, sheet.level, sheet.subclassId);
-  return classesOf(sheet).flatMap((e) => advancementSlots(e.classId, e.level, e.subclassId).map((x) => ({ ...x, classId: e.classId })));
+  return isMulticlass(sheet) ? mcImpl().advancementSlots(sheet) : advancementSlots(sheet.classId, sheet.level, sheet.subclassId);
 }
 
 export const allFeats = (): SrdFeat[] => classData.feats;
@@ -109,9 +108,7 @@ export function casterCtx(classId: string, level: number, subclassId?: string): 
  * Fighting Style özelliği (sınıf seviyesiyle).
  */
 export function sheetCasterCtx(sheet: { classId: string; level: number; subclassId?: string; classes?: ClassEntry[] }): Pick<FeatCtx, 'casterClass' | 'hasStyle'> {
-  if (!isMulticlass(sheet)) return casterCtx(sheet.classId, sheet.level, sheet.subclassId);
-  const all = classesOf(sheet).map((e) => casterCtx(e.classId, e.level, e.subclassId));
-  return { casterClass: all.some((x) => x.casterClass), hasStyle: all.some((x) => x.hasStyle) };
+  return isMulticlass(sheet) ? mcImpl().casterCtx(sheet) : casterCtx(sheet.classId, sheet.level, sheet.subclassId);
 }
 export function featOptions(slot: AdvancementSlot, ctx: FeatCtx): SrdFeat[] {
   return allFeats().filter((f) => featProblem(f, slot, ctx) === null);
@@ -283,7 +280,7 @@ export function advancementProblems(
   }
   // Görev MC2: çoklu sınıfta yuva sınıfıyla eşleşir (`Advancement.classId`, yoksa ilk sınıf); tek sınıfta eskisi gibi.
   const slots = sheetAdvancementSlots(sheet);
-  const slotKey = (s: AdvancementSlot) => `${s.classId ? `${s.classId}/` : ''}${s.level}:${s.kind}`;
+  const slotKey = (s: AdvancementSlot) => `${s.classId ?? ''}${s.level}${s.kind}`;
   const ofClass = (s: AdvancementSlot, a: Advancement) => !s.classId || s.classId === (a.classId ?? sheet.classId);
   const used = new Set<string>();
   const taken: string[] = [...(origin ? [origin] : []), ...(species ? [species] : [])];
@@ -292,8 +289,8 @@ export function advancementProblems(
       && (s.kind === 'style' ? isStyleChoice(a.featId) : true));
     // Yuvanın seçeneği (Blessed Warrior): yalnızca o sınıfın Fighting Style yuvasında.
     if (slotAlternativeById(a.featId)) {
-      const e = slot?.classId ? classesOf(sheet).find((x) => x.classId === slot.classId) : undefined;
-      const own = (e ? classKit(e.classId, e.level, e.subclassId) : classKit(sheet.classId, sheet.level, sheet.subclassId)).slotAlternatives.some((x) => x.id === a.featId && x.level === a.level);
+      const e = classesOf(sheet).find((x) => x.classId === (slot?.classId ?? sheet.classId)) ?? classesOf(sheet)[0]!;
+      const own = classKit(e.classId, e.level, e.subclassId).slotAlternatives.some((x) => x.id === a.featId && x.level === a.level);
       if (!slot || slot.kind !== 'style' || !own) { out.push(I().noSlotAlt(a.level, slotAlternativeById(a.featId)?.name ?? a.featId)); continue; }
       used.add(slotKey(slot));
       continue;

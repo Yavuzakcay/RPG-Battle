@@ -8,7 +8,7 @@ import { classData, getClass, weapons, type MasteryId, type MasteryMechanic, typ
 import { classKit, optionTraining, packTraining } from './classFeatures';
 import type { CharacterSheet } from './stats';
 import { I } from './issueText';
-import { classesOf, isMulticlass, multiclassInfo } from './multiclass';
+import { isMultiSheet, mcImpl } from './mcHook';
 
 /** Sınıf bu silahta yetkin mi (Simple hep; Martial sınıfa ya da Finesse/Light özelliğine göre). */
 export function weaponProficient(classId: string, weapon: Weapon, choices?: Record<string, string>, who?: { subclassId?: string; level?: number }): boolean {
@@ -24,11 +24,7 @@ export function weaponProficient(classId: string, weapon: Weapon, choices?: Reco
  * (`data/cok-sinif.json` `ek.silah`) ve o sınıfın kazanılmış özelliklerinden gelenler (seçenekli özellik, paket ilkeli).
  */
 export function sheetWeaponProficient(sheet: Pick<CharacterSheet, 'classId' | 'level' | 'subclassId' | 'classes' | 'featureChoices'>, weapon: Weapon): boolean {
-  if (!isMulticlass(sheet)) return weaponProficient(sheet.classId, weapon, sheet.featureChoices, sheet);
-  return classesOf(sheet).some((e, i) => i === 0
-    ? weaponProficient(e.classId, weapon, sheet.featureChoices, { subclassId: e.subclassId, level: e.level })
-    : weapon.category === 'simple' || ((multiclassInfo(e.classId)?.ek.silah ?? []).includes('martial') && weapon.category === 'martial')
-      || optionTraining(e.classId, sheet.featureChoices).martialWeapons || packTraining(e.classId, { subclassId: e.subclassId, level: e.level }).martialWeapons);
+  return isMultiSheet(sheet) ? mcImpl().weaponProficient(sheet, weapon) : weaponProficient(sheet.classId, weapon, sheet.featureChoices, sheet);
 }
 
 /** Silahın SRD ustalığı (silah kimliği `data/weapons.json` = `data/srd/weapons.json`). */

@@ -57,6 +57,9 @@ import { environmentFor, getMap, resolveMapChoice } from '../map/maps';
 import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type AttackOption, type UsableFeature, type Avatar, type BattleEvent, type BattleState, type ActiveEffect, type Combatant, type DragonWakeMode, type Goals, type GroupState, type MapState, type SleepGroup, type SpellZone, type SurfaceKind } from './types';
 import { civilianLook, defaultCivilianLook } from './civilianLooks';
 import { exhaustionD20Penalty } from '../rules/exhaustion';
+import { isMultiSheet } from '../rules/mcHook';
+import { MC3_VERSION } from './mc3Surum';
+import { mcCombatant } from './mc3';
 
 /**
  * Karakterin tepkileri (Görev R1): sınıf özellikleri (veriden) ve bildiği tepki büyüleri (`mechanics.reaction`;
@@ -172,6 +175,16 @@ const armorStealthDisadvantage = (name: string): boolean =>
  * etkiler, isabet ekleri, silah ve büyü bonusu, yüklü büyüler (slotsuz, kaynak `item:<id>`).
  */
 export function combatantFromSheet(
+  sheet: CharacterSheet,
+  opts: { id: string; ownerId: string; height?: Height; carryRule?: CarryRule },
+): Combatant {
+  if (!isMultiSheet(sheet)) return combatantFromSheet0(sheet, opts);
+  // Görev MC3: kural sürümü 104 ve altında çoklu sınıflı sayfa MC öncesi gibi (ilk sınıf + toplam seviye); 105+ büyü parçaları.
+  if (defaultRuleVersion() < MC3_VERSION) { const { classes: _c, spellClass: _s, ...old } = sheet; return combatantFromSheet0(old, opts); }
+  return mcCombatant(combatantFromSheet0(sheet, opts), sheet);
+}
+
+function combatantFromSheet0(
   sheet: CharacterSheet,
   opts: { id: string; ownerId: string; height?: Height; carryRule?: CarryRule },
 ): Combatant {

@@ -1065,6 +1065,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'slot_spent': {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      // Görev MC3: çoklu sınıfın ayrı Pact havuzu.
+      if (event.pact) return c.pactSlots ? withCombatant(state, event.actorId, { pactSlots: { ...c.pactSlots, left: event.remaining } }) : state;
       const slots = [...c.spellSlots];
       slots[event.level - 1] = event.remaining;
       return withCombatant(state, event.actorId, { spellSlots: slots });

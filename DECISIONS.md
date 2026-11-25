@@ -2,6 +2,49 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev MC3: ortak büyü yuvası, ayrı Pact havuzu, sınıf başına büyü; çoklu sınıf tembel parçada (2026-11-25; kural sürümü 105, savaş kaydı 26)
+
+**Sürüm numaraları.** Başlarken `origin/birlesik` hâlâ `d8c8ef78`'deydi (yeni commit yok; zaten birleşmişti): kural sürümü 103,
+`SAVE_VERSION` 25; KARAR104 girmemiş. Karara göre (MC2 kaydı) MC3 **105**'i aldı, **104 KARAR104'e ayrılmış** boş kalır (85
+"boş" örneği gibi; sürüm denetimleri "≥ N" olduğundan aradaki boşluk bir şey değiştirmez). Savaş kaydı **26**: KARAR104 henüz
+yokken MC3'ün olay biçimi (`slot_spent.pact`) değişti; **KARAR104 savaş kaydını artırırsa 27'yi alır**. KARAR104 birleşirken
+`data/kural-surumu.json` `surum` 105'te kalmalı (104 değil), not satırı ikisini birlikte anlatır.
+
+**Paket boyutu (kullanıcı şartı: ana parça ≤ 455 kB).** MC2'de ana parça 461,08 kB'tı. Çoklu sınıfın bütün hesapları ve
+`data/cok-sinif.json` tembel `src/rules/mcImpl.ts`'e taşındı; `loadClassData()` sınıf verisiyle birlikte yükleyip
+`src/rules/mcHook.ts`'e kaydeder (`setMcImpl`). Ana parçada yalnız kanca kaldı (`isMultiSheet`, `classesOf`, `mcImpl()`); tek
+sınıflı yol bu modülü hiç çağırmaz (`isMultiSheet` yanlışsa eski kod). Çoklu sınıf sorun metinleri TR'nin tembel bölümünde
+(`strings.tr2.ts` `mcIssues`) ve EN'de; yalnız tembel modül okur (`issueText.ts` `IMc()`). Sonuç **454,97 kB**.
+
+**Kural (sürümsüz, karakter tarafı).**
+- `DerivedStats.pactSlots`: Warlock'un yanında Spellcasting sınıfı varken ayrı Pact havuzu (SRD 5.2.1 s. 26); tek büyücü
+  Warlock'ta Pact yuvaları eskisi gibi dizide. `DerivedStats.spellByClass`: 2+ büyücü sınıfta sınıf başına DC/saldırı.
+- `CharacterStatus.pactSlots` (kalan): kısa ve uzun dinlenmede dolar (Pact Magic), Spellcasting yuvaları yalnız uzunda.
+- `CharacterSheet.spellClass`: hazırlanan büyünün sınıfı (SRD s. 25 "associated with one of your classes"); yoksa listesinde
+  olduğu ilk büyücü sınıf. Sınıf başına hazırlama (s. 25 "as if you were a single-classed member"): cantrip, hazır büyü ve
+  büyü kitabı sınırı her sınıfın kendi seviyesiyle; bağlı sınıfın listesinde olmayan büyü sorun (`issues` TR/EN `mcIssues`).
+
+**Savaş (kural sürümü 105).**
+- `combatantFromSheet`: 104 ve altında çoklu sınıflı sayfa `classes`/`spellClass` atılarak kurulur (ilk sınıf + toplam seviye:
+  MC öncesiyle bayt bayt aynı); 105'te `pactSlots {level, max, left}`, `spellByClass` (eşya büyü bonusu dahil), `spellClassOf`,
+  varsayılan büyü değiştiricisi ilk büyücü sınıftan (`src/battle/mc3.ts` `mcCombatant`).
+- `cast_spell` (`execute` girişi, `mcCastView`): büyünün sınıfı varsayılandan farklıysa ya da `pact: true` ise komut **gölge
+  durumda** yürür (yalnız büyücünün DC/saldırı/değiştiricisi ve `pact`'te yuva dizisi Pact havuzu); üretilen olaylar gerçek
+  duruma uygulanır, Pact harcaması `slot_spent.pact` (reducer havuzdan düşer). 43 yuva harcama çağrısı değişmedi. Pact yuvası
+  büyünün seviyesine yetmeli; yuva seviyesi Pact seviyesi (SRD: Pact yuvaları hep Pact seviyesinde).
+- ⚠ Yaklaşık: yapımdan sonraki turlarda büyücünün o anki DC'sini okuyan etkiler (ör. tekrar save'i büyücüden okuyanlar)
+  varsayılan sınıfın değerini görür; yapımda üretilen alan/etki kendi DC'sini taşıdığından çoğu büyü doğru.
+- Durum aktarımı (`withStatus`/`applyBattleResult`) Pact havuzunu taşır. Arayüz: yuva seçicide "Pact N. seviye (kalan)".
+- Yapay zekâ Pact havuzunu kullanmaz (çoklu sınıflı sim partisi MC7'de). Arcane Recovery, Sorcerous Restoration gibi sınıf
+  seviyesine bağlı dinlenme özellikleri hâlâ toplam seviyeyi okur: MC4 (savaşta ve dinlenmede sınıf seviyesi).
+
+**Test.** `src/battle/mc3.test.ts` (9: yuva/Pact/DC, dinlenme, hazırlama sorunları, 104/105 kurulum kapısı, Pact harcaması ve
+reddi, sınıfa göre DC; 104 savaşında bağ yok sayılır). "Eski = yeni" `src/sim/mc3Regresyon.test.ts`: altın değerler MC3 öncesi
+ağaçta (`f85717ea`) `scripts/mc3-eski-yeni.ts` ile üretildi (`src/sim/mc3-altin.json`): 75 tek sınıflı savaşçı 103/104/105'te
+aynı; MC3 öncesi savaş kaydı (sürüm 25, Çöl, 3 tur, 258 olay) yeni kodla aynı duruma oynar ve yüklenir; Çöl/Kale/Mağara/Orman
+imzası 3 tohumda 104 = MC3 öncesi (103) ve 105 = 104. MC2'nin 362 durumluk altın testi (`mc2.test.ts`) tembel parçaya
+taşımadan sonra da aynı.
+
 ## Görev MC2: çoklu sınıf türetmesi; sürüm numarası ayrımı (2026-11-24; kural ve savaş kaydı sürümü değişmedi, karakter kayıt sürümü 4)
 
 **Sürüm numaraları (kullanıcı kararı, 2026-11-24).** Kural sürümü **104 KARAR104 işine** verildi. Çoklu sınıfın savaşa
