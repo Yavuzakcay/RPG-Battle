@@ -1019,6 +1019,27 @@
    "tur": "lanet",
    "not_": "Görev KARAR104 A4: Humanoid hedef CON DC 14; başarısızsa lanetli (yalnız işaret, savaş sonunda karaktere), başarılıysa bu yaratığın lanetine 24 saat bağışık.",
    "kalan": "0 HP'de canavara dönüşme yok (kullanıcı kararı: yalnız işaret)."
+  },
+  "stirge:Proboscis": {
+   "yapisma": {"blocked": "self", "sourceTurnDamage": {"dice": "2d4", "type": "necrotic"}, "auto": true, "help": true},
+   "surum": 104,
+   "tur": "yapisma",
+   "not_": "Görev KARAR104 A2: Yapışır: stirge'nin tur başında 2d4 Necrotic; bağlıyken Proboscis yok; hedef ya da 5 ft içindeki yaratık eylemle zarsız ayırır; stirge 5 ft hareketle ayrılır.",
+   "kalan": "yok."
+  },
+  "darkmantle:Crush": {
+   "yapisma": {"blocked": "allOthers", "adv": true, "cover": {"maxSize": "M", "grants": ["Blinded"], "noBreath": true}, "escapeDc": 13},
+   "surum": 104,
+   "tur": "yapisma",
+   "not_": "Görev KARAR104 A2: Yapışır; Medium ya da küçük hedefe avantajlı isabette örter (Blinded, nefes alamaz); bağlıyken yalnız hedefe ve avantajlı saldırır, hedefle hareket eder; hedef eylemle DC 13 STR (Athletics).",
+   "kalan": "Darkmantle hızı 0 ve hız bonusu yok sayılmadı (hareket edince ayrılır); paylaşılan hasar türsüz."
+  },
+  "cloaker:Attach": {
+   "yapisma": {"maxSize": "L", "blocked": "others", "grants": ["Blinded"], "share": true, "escapeDc": 14, "help": true},
+   "surum": 104,
+   "tur": "yapisma",
+   "not_": "Görev KARAR104 A2: Large ya da küçük hedefe yapışır: Blinded; Attach başka hedefe yok; cloaker aldığı hasarı yarıya indirir, hedef aynı miktarı alır; hedef ya da 5 ft içindeki yaratık eylemle DC 14 STR (Athletics).",
+   "kalan": "Darkmantle hızı 0 ve hız bonusu yok sayılmadı (hareket edince ayrılır); paylaşılan hasar türsüz."
   }
  }
 }

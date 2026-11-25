@@ -1,4 +1,5 @@
 /** Canavar saldırıları: şablondan gelen saldırılar, nefes (save), Recharge ve Multiattack. */
+import { attachBlock, attachEvents, attachSources } from './attach';
 import { submerged } from './underwaterCore';
 import { hasSwimSpeed } from './deepWater';
 import { k73cOn } from './k73cSurum';
@@ -59,6 +60,9 @@ export function monsterAttackEvents(
   if (atk.recharge && actor.rechargeUsed.includes(index)) return fail(`${atk.name} henüz şarj olmadı.`);
   const inReach = checkReach(state, actor, target, monsterAttackReach(atk));
   if (!inReach.ok) return { ok: false, error: `${atk.name}: ${inReach.error}` };
+  // Görev KARAR104 (sürüm 104, A2): yapışıkken saldırı kısıtı (Stirge, Cloaker, Darkmantle).
+  const attachWhy = attachBlock(state, actor, target, atk.name);
+  if (attachWhy) return fail(attachWhy);
   // Kuyruk K64a (sürüm 48): ele geçirme engelleri save'den önce (Humanoid, 5 ft, görme, bağışıklık, PfEG, zaten ele geçirilmiş).
   const poss = possessSpecOf(state, actor, atk.name);
   const possWhy = poss ? possessionProblem(state, actor, target, poss) : null;
@@ -151,6 +155,8 @@ export function monsterAttackEvents(
       }),
       ...inReach.sources,
       ...water.sources,
+      // Görev KARAR104 (A2): Darkmantle yapışık olduğu hedefe avantajlı.
+      ...attachSources(state, actor, target),
     ];
     // Silah ustalığı işareti (Sap): bir sonraki saldırı zarı dezavantajlı, kullanılınca kalkar.
     const marks = markSources(actor, target);
@@ -250,6 +256,8 @@ export function monsterAttackEvents(
     if (hit) events.push(...attackEffectEvents(state, actor, { ...target, hp: fx.hpAfter }, formMonsterId(actor), atk.name, rng));
     // Rider durum etkileri (Prone, yakalama, hücum, süreli durumlar; attack-riders.json): isabette.
     if (hit) events.push(...riderConditionEvents(state, actor, { ...target, hp: fx.hpAfter }, spec, atk.name, rng));
+    // Görev KARAR104 (sürüm 104, A2): yapışma (Darkmantle örtmesi avantajlı saldırıda).
+    if (hit) events.push(...attachEvents(applyEvents(state, events), actor, { ...target, hp: fx.hpAfter }, atk.name, mode === 'advantage'));
   }
   if (atk.recharge) events.push({ type: 'recharge_used', actorId: actor.id, attackIndex: index });
   // Geri yöneltme, karşılık saldırısı ve hasar alanın tepkisi (Görev R1).

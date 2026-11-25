@@ -16,9 +16,10 @@ import { replay } from './index';
 import { GM, mk, P1 } from './fixtures';
 import { KARAR104_VERSION, karar104On } from './karar104Surum';
 import { CURRENT_RULES } from './ruleVersion';
+import { distance } from '../rules/hex';
 import { zoneAttackSources, zoneSpecOf } from './zones';
 import type { DiceRequest, Rng } from '../rules/dice';
-import type { BattleEvent, BattleState, Combatant, Command } from './types';
+import { FRESH_ECONOMY, type BattleEvent, type BattleState, type Combatant, type Command } from './types';
 
 const NEW = KARAR104_VERSION;
 const OLD = KARAR104_VERSION - 1;
@@ -198,5 +199,68 @@ describe('KARAR104 A11: 0 HP’de uzun dinlenme (SRD 5.2.1 s. 185, s. 18; Normal
     expect(zeroHpRest({ toggles: {} })).toBe('srd');
     expect(zeroHpRest({ toggles: { kolayDinlenme: true } })).toBe('ev');
     expect(currentStatus(sh, dragBack(sh, { ...down(), dead: true })).hp).toBe(fullStatus(sh).hp);
+  });
+});
+
+describe('KARAR104 A2: yapışma (Stirge, Darkmantle, Cloaker; SRD 5.2.1)', () => {
+  const beast = (id: string, cid: string, pos: { col: number; row: number }, side: 'enemies' | 'party' = 'enemies'): Combatant =>
+    ({ ...combatantFromMonster(getMonster(id), { id: cid }), side, pos, ...(side === 'party' ? { ownerId: 'p1' } : {}) });
+  const hero = (p: Partial<Combatant> = {}) => mk('H', { ownerId: 'p1', hp: 300, maxHp: 300, ac: 5, speed: 30, pos: at(4, 5), ...p });
+  const atk = (s: BattleState, actorId: string, name: string, targetId = 'H'): Command =>
+    ({ type: 'monster_attack', actorId, targetId, attackIndex: (s.combatants[actorId] as Combatant).attacks.findIndex((a) => a.name === name) }) as Command;
+  const attachOf = (s: BattleState, id = 'H') => s.combatants[id]?.effects?.find((e) => e.attachedBy);
+  /** Eylemi tazelenmiş saldırganla dener (yalnız yapışma kısıtı sınanır). */
+  const err = (s: BattleState, cmd: Command) => {
+    const id = (cmd as { actorId: string }).actorId;
+    const fresh = { ...s, combatants: { ...s.combatants, [id]: { ...(s.combatants[id] as Combatant), economy: { ...FRESH_ECONOMY } } } };
+    const r = execute(fresh, cmd, (s.combatants[id] as Combatant).side === 'enemies' ? GM : P1, hooked(20));
+    return r.ok ? '' : r.error;
+  };
+
+  it('104 Stirge: yapışır, Proboscis tekrar yok, stirge’nin tur başında 2d4 Necrotic; 103: yapışma yok', () => {
+    const s = scene104(NEW, [beast('stirge', 'S', at(3, 5)), hero()]);
+    const r = play(s, [atk(s, 'S', 'Proboscis')], hooked(20));
+    expect(attachOf(r.state)).toMatchObject({ attachedBy: 'S', attachAuto: true, sourceTurnDamage: { dice: '2d4', type: 'necrotic' } });
+    expect(err(r.state, atk(r.state, 'S', 'Proboscis'))).toContain('yapışıkken');
+    const t = play(r.state, [{ type: 'end_turn', actorId: 'S' } as Command, { type: 'end_turn', actorId: 'H' } as Command], hooked(20));
+    expect(t.events.some((e) => e.type === 'effect_tick' && e.targetId === 'H' && e.damageType === 'necrotic')).toBe(true);
+    const o = scene104(OLD, [beast('stirge', 'S', at(3, 5)), hero()]);
+    expect(attachOf(play(o, [atk(o, 'S', 'Proboscis')], hooked(20)).state)).toBeUndefined();
+  });
+  it('104: hedef yürüyünce yapışan birlikte gelir, fırsat saldırısı yok; eylemle zarsız ayırma; yapışan 5 ft ile ayrılır', () => {
+    const s = scene104(NEW, [beast('stirge', 'S', at(3, 5)), hero()]);
+    const r = play(s, [atk(s, 'S', 'Proboscis'), { type: 'end_turn', actorId: 'S' } as Command, { type: 'move', actorId: 'H', to: at(8, 5) } as Command], hooked(20));
+    expect(r.events.some((e) => e.type === 'attack_resolved' && e.actorId === 'S' && e.targetId === 'H' && (e as { opportunity?: boolean }).opportunity)).toBe(false);
+    const S = r.state.combatants.S as Combatant;
+    expect(distance(S.pos!, r.state.combatants.H!.pos!)).toBe(1);
+    expect(attachOf(r.state)).toBeDefined();
+    const esc = play(r.state, [{ type: 'escape', actorId: 'H' } as Command], hooked(1));
+    expect(attachOf(esc.state)).toBeUndefined();
+    // Yapışan kendi hareketiyle ayrılır: ayrılma 5 ft harcar.
+    const own = play(s, [atk(s, 'S', 'Proboscis'), { type: 'move', actorId: 'S', to: at(2, 5) } as Command], hooked(20));
+    expect(attachOf(own.state)).toBeUndefined();
+    expect(own.events.some((e) => e.type === 'moved' && e.actorId === 'S' && e.cost === 1 && e.path.length === 1)).toBe(true);
+  });
+  it('104 Darkmantle: avantajlı isabette örter (Blinded, nefes alamaz); avantajsızda yalnız yapışır; yalnız hedefe saldırır', () => {
+    const adv = scene104(NEW, [beast('darkmantle', 'D', at(3, 5)), hero({ conditions: ['Prone'] }), beast('ogre', 'O', at(3, 4), 'party')]);
+    const r = play(adv, [atk(adv, 'D', 'Crush')], hooked(20));
+    expect(attachOf(r.state)).toMatchObject({ grants: ['Blinded'], noBreath: true, escapeCheck: { dc: 13 } });
+    expect(err(r.state, atk(r.state, 'D', 'Crush', 'O'))).toContain('yalnız');
+    const plain = scene104(NEW, [beast('darkmantle', 'D', at(3, 5)), hero()]);
+    const p = play(plain, [atk(plain, 'D', 'Crush')], hooked(20));
+    expect(attachOf(p.state)?.grants).toBeUndefined();
+    expect(attachOf(p.state)?.noBreath).toBeUndefined();
+  });
+  it('104 Cloaker: hedef Blinded; cloaker aldığı hasarı yarıya indirir, hedef aynı miktarı alır', () => {
+    const s = scene104(NEW, [beast('cloaker', 'C', at(3, 5)), hero(), beast('ogre', 'O', at(3, 4), 'party')]);
+    const r = play(s, [atk(s, 'C', 'Attach')], hooked(20));
+    expect(attachOf(r.state)).toMatchObject({ grants: ['Blinded'], escapeCheck: { dc: 14, allyHelp: true } });
+    const hp0 = r.state.combatants.H!.hp;
+    const c0 = r.state.combatants.C!.hp;
+    const hit = play({ ...r.state, turnIndex: r.state.order.indexOf('O') }, [atk(r.state, 'O', 'Greatclub', 'C')], hooked(20));
+    const raw = hit.events.find((e) => e.type === 'attack_resolved' && e.targetId === 'C') as Extract<BattleEvent, { type: 'attack_resolved' }>;
+    const lost = c0 - hit.state.combatants.C!.hp;
+    expect(lost).toBe(Math.floor(raw.rawDamage / 2));
+    expect(hp0 - hit.state.combatants.H!.hp).toBe(lost);
   });
 });

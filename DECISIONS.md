@@ -40,6 +40,18 @@ commit: A1, A3, A4, A11, A2, A10, A5. Değişen eski testler: `ruleVersion.test.
   yeni anahtar `kolayDinlenme` (varsayılan kapalı = SRD). Hapishane başarısızlığı (`dragBack`) sürüklenme saatlerinde önce uyanma
   (1 HP) sonra uzun dinlenme: sonuç eskisiyle aynı. ⚠ 1d4 saatlik süre yolculuk saatine eklenmiyor; Serüven bozgun tekrarı Normal'de
   düşenleri 1 HP ile yeniden savaşa sokar (`sim:zincir` ölçülmedi).
+- **A2 yapışma** (SRD 5.2.1 Stirge Proboscis s. 330, Darkmantle Crush s. 279, Cloaker Attach s. 274): yeni modül
+  `src/battle/attach.ts`, kural `data/canavar-ekleri-a2.json` `yapisma` (`surum` 104). Tek doğru kaynak hedefteki süren etki
+  (`attachedBy`); yapışan bağlıyken hedefe bitişik kalır (komut sonunda hedefin yanındaki en yakın boş altıgene `teleported`, yer
+  yoksa düşer), hedef yürürken yapışanın fırsat saldırısı yok (`features.ts`). Yapışan kendi yürüme/atlama komutuyla 5 ft harcayarak
+  ayrılır (`commands.ts` `detachSelfEvents`). Ayırma: hedef `escape` (Darkmantle DC 13, Cloaker DC 14 STR (Athletics); Stirge zarsız
+  `attachAuto`), Stirge ve Cloaker'da 5 ft içindeki dost `help` (`escapeCheck.allyHelp`, yapay zekâ da kullanır). Kısıtlar
+  (`monsters.ts` `attachBlock`): Stirge bağlıyken Proboscis yok, Cloaker Attach'ı başka hedefe yok, Darkmantle yalnız hedefe ve
+  avantajlı (`attachSources`). Stirge 2d4 Necrotic stirge'nin tur başında (`sourceTurnDamage`). Darkmantle avantajlı isabette
+  Medium ya da küçük hedefi örter: Blinded + nefes alamaz (A3 `noBreath`). Cloaker: hedef Blinded; cloaker bütün türlere dirençli
+  (yarı, aşağı) ve komut sonunda aldığı kadar hasar hedefe (`effect_tick`). ⚠ Paylaşılan hasar türsüz (hedefin direnci işlemez);
+  Darkmantle'ın "Speed 0, hız bonusu yok" kısmı ayrıca uygulanmadı (hareket ayrılma sayılır); yapışanın irtifası hedefi izlemez;
+  yapay zekâ bilerek ayrılmaz.
 
 ## CELESTIAL-KANAT-IYILESME: Kırık Kanat uçuşu iyileşince melek kanadı ve renkli gövde (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
 

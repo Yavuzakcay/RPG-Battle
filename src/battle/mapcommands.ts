@@ -45,6 +45,11 @@ export function executeEscape(state: BattleState, actor: Combatant, rng: Rng): C
     ];
     return { ok: true, state: applyEvents(state, events), events };
   }
+  // Görev KARAR104 (A2, Stirge): yapışanı ayırmak zarsız ("can detach the stirge as an action").
+  if (held?.attachAuto) {
+    const events: BattleEvent[] = [{ type: 'effect_ended', targetId: actor.id, effectId: held.id, name: held.name, reason: 'save' }];
+    return { ok: true, state: applyEvents(state, events), events };
+  }
   if (held?.escapeCheck) {
     const dc = held.escapeCheck.dc;
     // Kuyruk A6: Phantasmal Force'ta Study eylemi INT (Investigation).
@@ -142,6 +147,8 @@ export function executeAttackGate(state: BattleState, actor: Combatant, at: Offs
 export function allyEscapeEvents(state: BattleState, actor: Combatant, target: Combatant, rng: Rng): BattleEvent[] | null {
   const held = target.effects?.find((e) => e.escapeCheck?.allyHelp);
   if (!held?.escapeCheck) return null;
+  // Görev KARAR104 (A2, Stirge): zarsız ayırma.
+  if (held.attachAuto) return [{ type: 'effect_ended', targetId: target.id, effectId: held.id, name: held.name, reason: 'save' }];
   const dc = held.escapeCheck.dc;
   const bonus = skillBonus(actor, 'athletics');
   const mode = checkMode(actor, 'athletics', checkBase(state, actor, 'normal', 'athletics'));
