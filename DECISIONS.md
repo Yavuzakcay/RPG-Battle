@@ -45,6 +45,11 @@ aynı; MC3 öncesi savaş kaydı (sürüm 25, Çöl, 3 tur, 258 olay) yeni kodla
 imzası 3 tohumda 104 = MC3 öncesi (103) ve 105 = 104. MC2'nin 362 durumluk altın testi (`mc2.test.ts`) tembel parçaya
 taşımadan sonra da aynı.
 
+**100 tohum hızlı regresyon (tek sınıflı standart parti, 5. seviye).** MC3 öncesi ağaç (103) ve yeni kod 104 ile 105'te
+Çöl/Kale/Mağara/Orman imzaları dördünde de birebir aynı (col `a2c8ab4ab4e4`, kale `37f46869188f`, mağara `ec2eaaa685ef`,
+orman `d2cc7015ae54`; `scripts/mc3-imza.ts`, sürüm başına ≈ 39 dk). İmza altın dosyada (`imza["100"]`); testte
+`$env:MC3_TOHUM=100` ile denetlenir. Denge değişmediği için `DENGE.md`'ye satır eklenmedi.
+
 ## Görev MC2: çoklu sınıf türetmesi; sürüm numarası ayrımı (2026-11-24; kural ve savaş kaydı sürümü değişmedi, karakter kayıt sürümü 4)
 
 **Sürüm numaraları (kullanıcı kararı, 2026-11-24).** Kural sürümü **104 KARAR104 işine** verildi. Çoklu sınıfın savaşa
