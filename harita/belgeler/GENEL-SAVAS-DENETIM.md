@@ -21,7 +21,7 @@ Ertelenen kalanların ikinci turu. 99 ve altı (eski kayıt, replay) eski davran
 | A45 | Yapay zekâ Dash yapmıyor | **düzeldi** (100, davranış değişikliği; denge ölçülmedi) | s. 180 Dash |
 | E8 | Sürünme + zorlu arazi (3 mü 4 mü) | **doğrulanmadı** (metin birikmeyi söylemiyor; ×2 × 2 = 4 kaldı) | s. 179 Crawling, s. 181 Difficult Terrain |
 | E26 | Başkasının alanında tur sonu Prone | **doğrulanmadı** (oyunda paylaşım yalnız Swarm/binici/Gaseous Form özel kurallarıyla) | s. 14 |
-| G6/D21 | 0 HP'de uzun dinlenme yasağı | **bilinçli sapma** (Serüven bozgun tekrarı, Hapishane `dragBack`; kod değişmedi) | s. 185, s. 18 |
+| G6/D21 | 0 HP'de uzun dinlenme yasağı | **düzeltildi (KARAR104 A11, sürümsüz):** Normal SRD (1 HP ile kalkar), Kolay ev kuralı (yolculuk zorluğu, Serüven `kolayDinlenme`) | s. 185, s. 18 |
 | B40 | Baygının elindekini düşürmesi | **ertelendi** (yapay zekâ yerden silah almıyor) | s. 191 |
 | A7/E3 | Dash ve hız bütçesinde yürüme/uçuş ayrımı | **ertelendi, karar gerekli** (hareket bütçesi modeli) | s. 180, s. 188 |
 | H3/H4/H12 | `nightVision` varsayılanı, `darkness` haritaları | **ertelendi, karar gerekli** (kayıtlı denge kararı; ölçüm gerekir) | s. 10, s. 15 |

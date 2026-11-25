@@ -40,8 +40,11 @@ export function nonlethal(st: CharacterStatus): CharacterStatus {
 }
 /** Kısa ceza: hücreye geri, bayılanlar 1 HP ile uyanır. */
 export const wakeUp = (st: CharacterStatus): CharacterStatus => ({ ...nonlethal(st), hp: Math.max(1, st.hp) });
-/** Başarısızlık: şehre sürüklenip uyanırlar (uzun dinlenme; ölüm yok). */
-export const dragBack = (sheet: CharacterSheet, st: CharacterStatus): CharacterStatus => longRestStatus(sheet, nonlethal(st));
+/**
+ * Başarısızlık: şehre sürüklenip uyanırlar (uzun dinlenme; ölüm yok). Görev KARAR104 (A11): sürüklenirken saatler geçer; düşen önce
+ * uyanır (stabil, 1 HP; SRD 5.2.1 s. 18), sonra uzun dinlenir (sonuç eskisiyle aynı).
+ */
+export const dragBack = (sheet: CharacterSheet, st: CharacterStatus): CharacterStatus => longRestStatus(sheet, wakeUp(st));
 
 /**
  * Emanet: adadaki savaşlarda ekipman yok (zırh, kalkan, silahlar, yan el, eşyalar). Büyüler sayfada kalır; tasma

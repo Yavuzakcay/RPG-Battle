@@ -53,6 +53,7 @@ const tr = {
       status: (hp: number, max: number, dice: number, level: number) => `Durum: HP ${hp}/${max} · HP zarı ${dice}/${level}`,
       resources: (list: string) => `Kalan: ${list}`, slots: (list: string) => `Slotlar: ${list}`,
       rested: 'Dinlenmiş.', dead: 'Öldü (dinlenme diriltmez).', down: '0 HP: savaşa girmeden önce dinlenmeli.', shortNeedsHp: 'Kısa dinlenme için en az 1 HP gerekir (uzun dinlenme ya da iyileştirme).',
+      longFromZero: '0 HP: uzun dinlenme başlamadı; 1d4 saat sonra 1 HP ile kalktı (SRD). Tam iyileşme için bir uzun dinlenme daha.',
       cursed: (kind: string) => `Lanetli: likantropi (${kind}). Dinlenme kaldırmaz; Remove Curse gerekir.`,
       short: 'Kısa dinlenme', long: 'Uzun dinlenme', revive: 'Diriltildi say',
       dice: 'Harcanacak HP zarı', spend: (n: number) => `${n} zar harca ve dinlen`,

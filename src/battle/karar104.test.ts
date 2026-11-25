@@ -7,7 +7,10 @@ import { combatantFromMonster } from './index';
 import { getMonster } from '../data';
 import { applyBattleResult } from '../app/partyStatus';
 import { blankCharacter } from '../rules/builder';
-import { fullStatus, longRestStatus } from '../rules/characterRest';
+import { currentStatus, fullStatus, longRestStatus } from '../rules/characterRest';
+import { JOURNEY_RULES } from '../journey/engine';
+import { zeroHpRest } from '../journey/seruven';
+import { dragBack } from '../journey/hapishane';
 import { startBattle } from './create';
 import { replay } from './index';
 import { GM, mk, P1 } from './fixtures';
@@ -173,5 +176,27 @@ describe('KARAR104 A4: likantrop laneti yalnız işaret (kullanıcı kararı)', 
     const clean: BattleState = { ...fin, combatants: { ...fin.combatants, H: { ...(fin.combatants.H as Combatant), effects: [] } } };
     expect(applyBattleResult([{ ...ch, status: st }], clean)[0]?.status?.lanet).toEqual({ likantrop: 'werewolf' });
     expect(r.state.combatants.H?.side).toBe('party');
+  });
+});
+
+describe('KARAR104 A11: 0 HP’de uzun dinlenme (SRD 5.2.1 s. 185, s. 18; Normal SRD, Kolay ev kuralı)', () => {
+  const sh = { ...blankCharacter('p1').sheet, name: 'Kahraman', classId: 'wizard', level: 3 };
+  const down = () => { const f = fullStatus(sh); return { ...f, hp: 0, hitDiceSpent: 2, slots: f.slots.map(() => 0) }; };
+  it('SRD (varsayılan): uzun dinlenme başlamaz, 1 HP ile kalkar, başka kazanç yok; sonraki uzun dinlenme tam', () => {
+    const r = longRestStatus(sh, down());
+    expect(r.hp).toBe(1);
+    expect(r.hitDiceSpent).toBe(2);
+    expect(r.slots.every((n) => n === 0)).toBe(true);
+    expect(longRestStatus(sh, r).hp).toBe(fullStatus(sh).hp);
+  });
+  it('ev kuralı: 0 HP’de tam uzun dinlenme (eski davranış); ölü dirilmez', () => {
+    expect(longRestStatus(sh, down(), undefined, 'ev').hp).toBe(fullStatus(sh).hp);
+    expect(longRestStatus(sh, { ...down(), dead: true }, undefined, 'ev').dead).toBe(true);
+  });
+  it('yolculuk zorluğa göre (Kolay ev, Normal/Zor SRD); Serüven anahtarı `kolayDinlenme`; Hapishane sürüklenişi tam dinlendirir', () => {
+    expect(JOURNEY_RULES.zeroHpLongRest).toEqual({ kolay: 'ev', normal: 'srd', zor: 'srd' });
+    expect(zeroHpRest({ toggles: {} })).toBe('srd');
+    expect(zeroHpRest({ toggles: { kolayDinlenme: true } })).toBe('ev');
+    expect(currentStatus(sh, dragBack(sh, { ...down(), dead: true })).hp).toBe(fullStatus(sh).hp);
   });
 });

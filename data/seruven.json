@@ -83,6 +83,11 @@
    "tr": "Hapishane Adası kolay (her düğümde bir nöbetçi az)",
    "en": "Prison Island easy (one guard fewer per node)"
   },
+  "kolayDinlenme": {
+   "default": false,
+   "tr": "Kolay dinlenme: 0 HP'de uzun dinlenme tam iyileştirir (ev kuralı; kapalıyken SRD: önce 1 HP)",
+   "en": "Easy rest: a Long Rest at 0 HP fully recovers (house rule; off = SRD: first 1 HP)"
+  },
   "haritaSisi": {
    "default": true,
    "tr": "Dünya haritasında keşif sisi (kapalıyken bütün harita açık: Game Master ve Harita Keşfi)",

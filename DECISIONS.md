@@ -32,6 +32,14 @@ commit: A1, A3, A4, A11, A2, A10, A5. Değişen eski testler: `ruleVersion.test.
   lanetine 24 saat bağışık. Savaş sonunda karaktere `CharacterStatus.lanet` (`partyStatus.ts`), dinlenmeler kaldırmaz
   (`characterRest.ts` `moralPart`), karakter listesinde dinlenme panelinde "Lanetli" satırı. ⚠ 0 HP'de canavara dönüşme ve Game
   Master'ın denetimine geçme yok (bilinçli); Remove Curse ile kaldırma savaş dışı (Game Master kaydı siler).
+- **A11 0 HP'de uzun dinlenme** (GENEL-SAVAS G6/D21; kullanıcı kararı: Normal SRD, Kolay ev kuralı; savaş dışı, sürümsüz):
+  `characterRest.ts` `longRestStatus(…, zeroHp)`: `srd` (varsayılan; SRD 5.2.1 s. 185 "at least 1 Hit Point", s. 18 stabil yaratık
+  1d4 saatte 1 HP) dinlenme başlamaz, karakter 1 HP ile kalkar, başka kazanç yok; `ev` eski davranış (tam). Nerede hangisi: karakter
+  listesi ve Game Master "Hepsini dinlendir" SRD (zorluk yok; listede "1d4 saat sonra 1 HP" notu); yolculuk zorluğa göre
+  (`data/yolculuk/ayarlar.json` `zeroHpLongRest`: Kolay ev, Normal/Zor SRD); Serüven dinlenme düğümü, han ve bozgunda yeniden deneme
+  yeni anahtar `kolayDinlenme` (varsayılan kapalı = SRD). Hapishane başarısızlığı (`dragBack`) sürüklenme saatlerinde önce uyanma
+  (1 HP) sonra uzun dinlenme: sonuç eskisiyle aynı. ⚠ 1d4 saatlik süre yolculuk saatine eklenmiyor; Serüven bozgun tekrarı Normal'de
+  düşenleri 1 HP ile yeniden savaşa sokar (`sim:zincir` ölçülmedi).
 
 ## CELESTIAL-KANAT-IYILESME: Kırık Kanat uçuşu iyileşince melek kanadı ve renkli gövde (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
 

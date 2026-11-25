@@ -292,7 +292,8 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
             return mc ? <button className="ghost" onClick={() => { setNote(R.cunningDone); props.onUpdate({ ...props.c, status: mc }); }}>{R.cunning}</button> : null;
           })()}
           <button onClick={() => {
-            setNote(R.longDone);
+            // Görev KARAR104 (A11): 0 HP'de uzun dinlenme başlamaz (SRD); karakter 1 HP ile kalkar.
+            setNote(s.hp <= 0 ? R.longFromZero : R.longDone);
             if (masteryRight(sheet)) setDrills(sheet.weaponMasteries ?? []);
             props.onUpdate(alignmentLongRest({ ...props.c, status: longRestStatus(sheet, props.c.status) }));
           }}>{R.long}</button>

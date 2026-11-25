@@ -386,6 +386,7 @@ export const en: Strings = {
       status: (hp: number, max: number, dice: number, level: number) => `Status: HP ${hp}/${max} · Hit Point Dice ${dice}/${level}`,
       resources: (list: string) => `Left: ${list}`, slots: (list: string) => `Slots: ${list}`,
       rested: 'Rested.', dead: 'Dead (resting does not revive).', down: '0 HP: must rest before the next battle.', shortNeedsHp: 'A Short Rest needs at least 1 HP (take a Long Rest or heal first).',
+      longFromZero: '0 HP: the Long Rest could not start; regained 1 HP after 1d4 hours (SRD). Take another Long Rest to recover fully.',
       cursed: (kind: string) => `Cursed: lycanthropy (${kind}). Resting does not remove it; needs Remove Curse.`,
       short: 'Short rest', long: 'Long rest', revive: 'Mark as revived',
       dice: 'Hit Point Dice to spend', spend: (n: number) => `Spend ${n} dice and rest`,

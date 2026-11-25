@@ -209,11 +209,21 @@ export function arcaneRecovery(sheet: CharacterSheet, resources: Record<string, 
   return { slots: used ? out : slots, used };
 }
 
+/**
+ * Görev KARAR104 (A11, GENEL-SAVAS G6/D21; kullanıcı kararı): 0 HP'de uzun dinlenme. `srd` (Normal, varsayılan; SRD 5.2.1 s. 185 "To
+ * start a Long Rest, you must have at least 1 Hit Point", s. 18 Stabilizing "regains 1 Hit Point after 1d4 hours"): dinlenme başlamaz,
+ * karakter 1 HP ile kalkar, başka kazanç yok (sonraki uzun dinlenme tam). `ev` (Kolay ev kuralı, eski davranış): 0 HP'de de tam uzun
+ * dinlenme. Savaş dışı; kural sürümü gerektirmez.
+ */
+export type ZeroHpRest = 'srd' | 'ev';
+
 /** Uzun dinlenme: HP, slotlar ve bütün kaynaklar dolar; harcanan HP zarlarının tamamı geri gelir (SRD 5.2.1 s. 185). */
 export function longRestStatus(sheet: CharacterSheet, status: CharacterStatus | undefined,
-  /** Görev TE99: eşya yükünün zarlı yenilenmesi (yoksa durumdan tohumlu, tekrarlanabilir). */ rng?: Rng): CharacterStatus {
+  /** Görev TE99: eşya yükünün zarlı yenilenmesi (yoksa durumdan tohumlu, tekrarlanabilir). */ rng?: Rng,
+  /** Görev KARAR104 (A11): 0 HP'de uzun dinlenme kipi (varsayılan SRD). */ zeroHp: ZeroHpRest = 'srd'): CharacterStatus {
   const s = currentStatus(sheet, status);
   if (s.dead) return s;
+  if (s.hp <= 0 && zeroHp === 'srd') return { ...s, hp: 1 };
   const r = longRest(restState(sheet, s));
   return {
     hp: r.hp, hitDiceSpent: sheet.level - r.hitDiceLeft, slots: r.spellSlots, slotMax: s.slotMax ?? [], resourceMax: s.resourceMax ?? {}, hpMax: s.hpMax ?? r.hp,
