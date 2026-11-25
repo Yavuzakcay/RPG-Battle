@@ -52,6 +52,15 @@ commit: A1, A3, A4, A11, A2, A10, A5. Değişen eski testler: `ruleVersion.test.
   (yarı, aşağı) ve komut sonunda aldığı kadar hasar hedefe (`effect_tick`). ⚠ Paylaşılan hasar türsüz (hedefin direnci işlemez);
   Darkmantle'ın "Speed 0, hız bonusu yok" kısmı ayrıca uygulanmadı (hareket ayrılma sayılır); yapışanın irtifası hedefi izlemez;
   yapay zekâ bilerek ayrılmaz.
+- **A10 eşya ↔ silah bağı** (KARAR101 5e, TE99 K-D2; kullanıcı kararı: ana silah varsayılan, oyuncu isterse seçer; SRD 5.2.1 s. 253
+  "made with this magic weapon"): uygun silahlar `data/esya-silah-bagi.json` (36 silah eşyası; SRD tür satırından: liste, `any`,
+  `melee`; asalar Quarterstaff, Rod of Lordly Might Mace), karakterde yeni alan `CharacterSheet.silahBagi` (eşya adı → silah adı;
+  yoksa ana silah = sayfadaki ilk uygun silah; geçersiz seçim ana silaha düşer), modül `src/rules/itemBinding.ts`. Savaşta 104+:
+  eşyanın silah bonusu yalnız bağlı silah seçeneğine (`create.ts` `k104Alt`, savaş başında sürüme göre seçilir), isabet eki
+  (`onHit`) yalnız bağlı silahla (`itemHitsFor`, savaşçıda `k104` işareti). Uygun silah taşımayan karakterde eşyanın bonusu ve
+  eki işlemez (oluşturucuda uyarı). Oluşturucu donanım adımında bağlanan eşyanın altında "Bağlı silah" seçimi. Cephane
+  (Ammunition, +N, Slaying) ve Javelin of Lightning TE99 yolunda kaldı. 103 ve altı: bonus her silaha (eski davranış). ⚠ Aynı
+  silahın iki girdisi ayrılmaz (bağ silah adına); kayıt sürümü değişmedi (alan isteğe bağlı).
 
 ## CELESTIAL-KANAT-IYILESME: Kırık Kanat uçuşu iyileşince melek kanadı ve renkli gövde (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
 

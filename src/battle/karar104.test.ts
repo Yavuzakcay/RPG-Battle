@@ -3,7 +3,10 @@
  */
 import { describe, expect, it } from 'vitest';
 import { execute } from './commands';
-import { combatantFromMonster } from './index';
+import { combatantFromMonster, combatantFromSheet } from './index';
+import { itemHitsFor } from './itemEffects';
+import { boundWeaponName, eligibleWeaponsOf } from '../rules/itemBinding';
+import type { CharacterSheet } from '../rules/stats';
 import { getMonster } from '../data';
 import { applyBattleResult } from '../app/partyStatus';
 import { blankCharacter } from '../rules/builder';
@@ -262,5 +265,40 @@ describe('KARAR104 A2: yapışma (Stirge, Darkmantle, Cloaker; SRD 5.2.1)', () =
     const lost = c0 - hit.state.combatants.C!.hp;
     expect(lost).toBe(Math.floor(raw.rawDamage / 2));
     expect(hp0 - hit.state.combatants.H!.hp).toBe(lost);
+  });
+});
+
+describe('KARAR104 A10: eşya ↔ silah bağı (SRD 5.2.1 "made with this magic weapon")', () => {
+  const fighter = (patch: Partial<CharacterSheet> = {}) => ({ ...blankCharacter('p1').sheet, name: 'Savaşçı', classId: 'fighter', level: 3,
+    weapons: [{ name: 'Longsword' }, { name: 'Dagger' }], itemNames: ['Weapon, +2', 'Flame Tongue'], ...patch }) as CharacterSheet;
+  const opts = (v: number, sh: CharacterSheet) => {
+    const c = combatantFromSheet(sh, { id: 'A', ownerId: 'p1' });
+    const s = startBattle('a10', 'd', [{ ...c, pos: null }], () => 0.5, { kuralSurumu: v } as never).state;
+    const a = s.combatants.A as Combatant;
+    const by = (id: string) => a.weaponOptions.find((o) => o.weaponId === id && !o.ranged)!;
+    return { a, long: by('longsword'), dagger: by('dagger') };
+  };
+  it('varsayılan ana silah: 104’te +2 yalnız Longsword’a; 103’te her silaha', () => {
+    const n = opts(NEW, fighter());
+    expect(n.long.attackBonus - n.dagger.attackBonus).toBeGreaterThanOrEqual(2);
+    expect(n.long.enchant).toBe(2);
+    expect(n.dagger.enchant ?? 0).toBe(0);
+    const o = opts(OLD, fighter());
+    expect(o.dagger.enchant).toBe(2);
+  });
+  it('oyuncu seçimi: +2 Dagger’a bağlanınca Longsword’da yok; Flame Tongue eki yalnız bağlı silahta', () => {
+    const n = opts(NEW, fighter({ silahBagi: { 'Weapon, +2': 'Dagger' } }));
+    expect(n.dagger.enchant).toBe(2);
+    expect(n.long.enchant ?? 0).toBe(0);
+    const foe = mk('F', { side: 'enemies' });
+    expect(itemHitsFor(n.a, n.long, foe).map((h) => h.label)).toContain('Flame Tongue');
+    expect(itemHitsFor(n.a, n.dagger, foe).map((h) => h.label)).not.toContain('Flame Tongue');
+    const o = opts(OLD, fighter());
+    expect(itemHitsFor(o.a, o.dagger, foe).map((h) => h.label)).toContain('Flame Tongue');
+  });
+  it('uygunluk veriden: Dagger of Venom yalnız Dagger; uygun silah yoksa bağ yok', () => {
+    expect(eligibleWeaponsOf({ weapons: [{ name: 'Longsword' }, { name: 'Dagger' }] }, 'Dagger of Venom')).toEqual(['Dagger']);
+    expect(boundWeaponName({ weapons: [{ name: 'Longsword' }] }, 'Dagger of Venom')).toBeNull();
+    expect(boundWeaponName({ weapons: [{ name: 'Longsword' }, { name: 'Dagger' }], silahBagi: { 'Weapon, +1': 'Club' } }, 'Weapon, +1')).toBe('Longsword');
   });
 });

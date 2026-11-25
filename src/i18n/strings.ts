@@ -226,6 +226,7 @@ const tr = {
       attuneCount: (n: number, max: number) => `Uyumlu eşya ${n}/${max}`,
       attuneInfo: (max: number) => `Bazı sihirli eşyalar "uyum" ister (Attunement): aynı anda en çok ${max} tanesine uyum sağlayabilirsin. Uyum istemeyen eşyaların sayı sınırı yok.`,
       attuneFull: (max: number) => `Uyum doldu (${max}/${max}): yeni uyumlu eşya için birini çıkar.`, attuneTag: 'uyum ister',
+      boundWeapon: 'Bağlı silah', boundMain: (w: string) => `ana silah (${w})`, boundNone: 'Uygun silah yok: eşyanın bonusu savaşta işlemez (önce uygun silah ekle).',
       offHandShort: 'İki hafif silahla ek bir vuruş yaparsın (bonus eylem).',
       autoUnarmed: 'Silahsız vuruş', autoUnarmedText: 'Elini kullanırsın: 1 + Güç hasarı. Her zaman hazır.',
       autoTraining: 'Eğitimlerin', autoTrainingText: (armor: string, weapons: string) => `Zırh: ${armor}. Silah: ${weapons}.`,

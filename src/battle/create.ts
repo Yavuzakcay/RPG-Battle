@@ -1,4 +1,6 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
+import { KARAR104_VERSION } from './karar104Surum';
+import { bindableItem, boundWeaponId } from '../rules/itemBinding';
 import { SINIF97_VERSION } from './sinif97Surum';
 import { TE99_VERSION, te99On } from './te99Surum';
 import { KARAR101_VERSION } from './karar101Surum';
@@ -180,7 +182,8 @@ export function combatantFromSheet(
   // Görev P7: eşya kancaları (eşyanın paket ilkelleri savaşçının paketine).
   const ib = itemBag(activeItemNames(sheet));
   const c = ib ? { ...c0, paket: mergeBags(c0.paket, ib.bag), resources: { ...c0.resources, ...ib.resources } } : c0;
-  const p = itemParts(activeItemNames(sheet), opts.id);
+  // Görev KARAR104 (A10): silah eşyasının bağlı silahı (yalnız 104+ savaşta kullanılır: `k104Alt`, `k104` işareti).
+  const p = itemParts(activeItemNames(sheet), opts.id, (n) => (bindableItem(n) ? boundWeaponId(sheet, n) : undefined));
   if (!p.effects.length && !p.hits.length && !p.weaponBonus && !p.spellBonus && !p.addSpells.length && !p.traits.length && !p.fallReduction && !p.noStealthDis && !p.rangedReduce) return c;
   const newSpells = p.addSpells.filter((n) => !c.spellNames.includes(n));
   return {
@@ -200,7 +203,11 @@ export function combatantFromSheet(
       // bonusu yalnız cephaneli silaha; 99 seçeneği `te99Alt` (savaş başında sürüme göre seçilir).
       const n99 = o.ammo ? Math.max(p.weaponBonusNoAmmo, p.ammoBonus) : p.weaponBonusNoAmmo;
       const alt = n99 > 0 ? withWeaponBonus(o, n99) : o;
-      return JSON.stringify(alt) === JSON.stringify(old) ? old : { ...old, te99Alt: alt };
+      // Görev KARAR104 (A10, 104+): silah eşyasının bonusu yalnız bağlı silaha (SRD "made with this magic weapon"); cephane TE99 gibi.
+      const n104 = Math.max(p.looseBonus, p.boundBonus[o.weaponId ?? ''] ?? 0, o.ammo ? p.ammoBonus : 0);
+      const k104 = n104 > 0 ? withWeaponBonus(o, n104) : o;
+      const base = JSON.stringify(alt) === JSON.stringify(old) ? old : { ...old, te99Alt: alt };
+      return JSON.stringify(k104) === JSON.stringify(base.te99Alt ?? base) ? base : { ...base, k104Alt: k104 };
     }) } : {}),
     ...(p.spellBonus && c.spellSaveDc !== null ? { spellSaveDc: c.spellSaveDc + p.spellBonus } : {}),
     ...(p.spellBonus && c.spellAttack !== null ? { spellAttack: c.spellAttack + p.spellBonus } : {}),
@@ -870,8 +877,10 @@ export function startBattle(
   // Görev TE99 (99+, SRD 5.2.1 s. 90 Two-Handed): kalkan takılıyken iki elli silah seçeneği saldırı listesinden çıkar
   // (yapay zekâ, fırsat saldırısı, Hazırla aynı listeden); arayüz nedeniyle gösterir (`shieldBlocked`).
   // Görev TE99: eşya bonusu bağı (`te99Alt`) sürüme göre; Javelin of Lightning (99+) Javelin seçeneğine Lightning türü.
-  participants = participants.map((p) => !p.weaponOptions.some((o) => o.te99Alt) ? p
-    : { ...p, weaponOptions: p.weaponOptions.map(({ te99Alt, ...o }) => (rules >= TE99_VERSION && te99Alt ? te99Alt : o)) });
+  // Görev KARAR104 (A10, 104+): silah eşyası bonusu yalnız bağlı silaha (`k104Alt`); isabet ekleri `k104` işaretiyle (`itemHitsFor`).
+  participants = participants.map((p) => !p.weaponOptions.some((o) => o.te99Alt || o.k104Alt) ? p
+    : { ...p, weaponOptions: p.weaponOptions.map(({ te99Alt, k104Alt, ...o }) => (rules >= KARAR104_VERSION && k104Alt ? k104Alt : rules >= TE99_VERSION && te99Alt ? te99Alt : o)) });
+  if (rules >= KARAR104_VERSION) participants = participants.map((p) => ({ ...p, k104: true }));
   // KARAR101: kalkan tak/çıkar yalnız 101+ savaşta (eski savaşta alan yok: durum eskisiyle aynı).
   if (rules < KARAR101_VERSION) participants = participants.map((p) => { if (p.shieldAc === undefined) return p; const { shieldAc: _s, ...rest } = p; return rest; });
   // KARAR101 (101+; SRD 5.2.1 s. 85 Stone's Endurance "When you take damage, you can take a Reaction"): her hasarda tepki

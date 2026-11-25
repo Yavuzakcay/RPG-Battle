@@ -68,6 +68,11 @@ export interface CharacterSheet {
   weapons?: Array<{ name: string; enchant?: number }>;
   /** Yan eldeki Light silah (data/weapons.json adı; Görev P1): Light özelliğinin ek saldırısı. Kalkanla olmaz. */
   offHand?: string;
+  /**
+   * Görev KARAR104 (A10): silah olan büyülü eşyanın bağlı silahı (eşya adı → silah adı; `rules/itemBinding.ts`). Yoksa ana silah
+   * (sayfadaki ilk uygun silah). Savaşta 104+ eşyanın bonusu ve isabet eki yalnız bu silahla.
+   */
+  silahBagi?: Record<string, string>;
   /** Weapon Mastery: ustalığı kullanılan silahlar (data/weapons.json kimlikleri; sayı sınıf tablosundan). */
   weaponMasteries?: string[];
   /** Görev WARLOCK: seçilen Eldritch Invocations (`kimlik` ya da tekrarlanabilende `kimlik:Cantrip`) ve pact silahı. */

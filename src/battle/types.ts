@@ -822,6 +822,8 @@ export interface Combatant {
   sinif97?: boolean;
   /** KAPSAM103 (kural sürümü 103+): savaş başında konan işaret (Empowered Evocation Wizard büyüsü + INT, Gift of the Depths su soluma). */
   k103?: true;
+  /** Görev KARAR104 (104+): durum görmeyen yardımcılar için savaşçı işareti (eşya isabet ekinin bağlı silahı). */
+  k104?: true;
   /** Görev B94: yalnız savaş kurulumuna dek (startBattle siler): 93 ve altı savaşta geri eklenecek eski slotsuz büyüler. */
   freeSpellsPre94?: Record<string, string>;
   /** Kuyruk K50: imza alt sınıfı (`data/imza.json`; pasifler, saldırı kancası). */
@@ -904,7 +906,7 @@ export interface Combatant {
   fateBy?: string;
   fateFoe?: string;
   /** Kuyruk 19 (SRD denetimi): eşya isabet ekleri, yüklü büyülerin DC/saldırısı (kaynak → değer), yalnızca eşyadan bilinen büyüler. */
-  itemHits?: Array<{ label: string; dice: string; type: string; vs?: string[]; ranged?: boolean; melee?: boolean; critOnly?: boolean; /** Görev TE99 */ ammo?: boolean; weaponId?: string; replaceType?: boolean }>;
+  itemHits?: Array<{ label: string; dice: string; type: string; vs?: string[]; ranged?: boolean; melee?: boolean; critOnly?: boolean; /** Görev TE99 */ ammo?: boolean; weaponId?: string; replaceType?: boolean; /** Görev KARAR104 (A10) */ bound?: string | null }>;
   itemCasts?: Record<string, { dc?: number; attack?: number }>;
   itemOnlySpells?: string[];
   itemTraits?: string[];
@@ -1653,6 +1655,8 @@ export interface AttackOption {
   shieldBusy?: boolean;
   /** Görev TE99: kural sürümü 99+ savaşta bu seçeneğin yerine geçen seçenek (eşya bonusu bağı; savaş başında çözülür). */
   te99Alt?: AttackOption;
+  /** Görev KARAR104 (A10): 104+ savaşta seçilen seçenek (silah eşyası bonusu yalnız bağlı silaha). */
+  k104Alt?: AttackOption;
   loading?: boolean;
   ammo?: string;
   /** K13: Wild Shape biçiminin saldırısı (canavar kimliği ve saldırı adı): ek etkileri (rider, süreli etki) canavardaki gibi. */
