@@ -61,6 +61,14 @@ commit: A1, A3, A4, A11, A2, A10, A5. Değişen eski testler: `ruleVersion.test.
   eki işlemez (oluşturucuda uyarı). Oluşturucu donanım adımında bağlanan eşyanın altında "Bağlı silah" seçimi. Cephane
   (Ammunition, +N, Slaying) ve Javelin of Lightning TE99 yolunda kaldı. 103 ve altı: bonus her silaha (eski davranış). ⚠ Aynı
   silahın iki girdisi ayrılmaz (bağ silah adına); kayıt sürümü değişmedi (alan isteğe bağlı).
+- **A5 otomatik seçimler "Sor"a bağlı** (kullanıcı kararı: tepki ayarındaki Sor; kancasız Rng/simülasyon ve yapay zekâ bugünkü
+  otomatik seçimi önerir, imza değişmez): seçim istemi `askChoice` (tetik `choice`; "Her zaman"/"Asla" ayarında öneri) ve yeni sıralı
+  çoklu seçim `rules/choice.ts` `askPicks` (her adımda kalan adaylar, öneri sıradaki otomatik aday, "Seçme" bitirir). 104+:
+  Sculpt Spells (korunacak yaratıklar, `spells.ts`; Careful Spell aynı havuz), Preserve Life (iyileştirme sırası, `cleric.ts`),
+  Land's Aid (save atacaklar + iyileşecek tek yaratık, `druid.ts`), Superior Hunter's Prey (ikinci hedef, `classTraits.ts`),
+  Intimidating Presence (hedefler, `apex.ts`), Stroke of Luck (kullanmadan önce `boon` sorusu, `effectDice.ts`, `k104` işareti).
+  Zaten soran: Bardic Inspiration (98), Improve Fate, Peerless Aim, Heroic Inspiration (99). 103 ve altı: sorusuz eski yol.
+  ⚠ Çok hedefli seçimler sıralı istem (hedef başına bir soru); Land's Aid'de dost da seçilebilir (SRD "of your choice").
 
 ## CELESTIAL-KANAT-IYILESME: Kırık Kanat uçuşu iyileşince melek kanadı ve renkli gövde (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
 

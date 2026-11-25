@@ -3,6 +3,8 @@
  * savaşçıda `traits` işaretiyle (veriden: `data/class-features.json` ve `data/subclasses.json` `trait`); kodda sınıf adı
  * yok. Saf; saldırı, save ve hareket kodu buradan sorar. SRD 5.2.1.
  */
+import { karar104On } from './karar104Surum';
+import { askChoice } from '../rules/choice';
 import { sinif97On } from './sinif97Surum';
 import { b94On, weaponBase } from './b94Surum';
 import { featuresOn, shiftGrant } from './shift';
@@ -160,10 +162,14 @@ export function cunningEvents(state: BattleState, actor: Combatant, target: Comb
 /** Superior Hunter's Prey: Hunter's Mark hasarı, ilk hedefin 30 ft yakınındaki (görünen) başka bir düşmana; turda bir kez. */
 export function superiorPreyEvents(state: BattleState, actor: Combatant, first: Combatant, mark: { raw: number; rolls: number[]; type: string }, rng: Rng): BattleEvent[] {
   if (!hasTrait(actor, 'superior-hunters-prey') || usedThisTurn(state, actor, 'superior-hunters-prey') || mark.raw <= 0) return [];
-  const second = Object.values(state.combatants)
+  const cands = Object.values(state.combatants)
     .filter((c) => c.id !== first.id && c.side !== actor.side && !c.civilian && c.hp > 0 && !hiddenTo(state, actor, c) && !c.summon?.gone)
     .filter((c) => (state.map ? !!c.pos && !!first.pos && distance(c.pos, first.pos) <= 6 : true))
-    .sort((a, b) => a.hp - b.hp)[0];
+    .sort((a, b) => a.hp - b.hp);
+  // Görev KARAR104 (A5, 104+; SRD "a different creature you can see"): ikinci hedef sorulur; öneri en az HP'li (eski davranış).
+  const pickId = karar104On(state) && cands.length ? askChoice(rng, { actorId: actor.id, sourceId: first.id, label: "Superior Hunter's Prey: ikinci hedef",
+    options: cands.map((c) => ({ id: c.id, label: c.name })), suggested: cands[0]?.id ?? null }) : cands[0]?.id;
+  const second = cands.find((c) => c.id === pickId);
   if (!second) return [];
   const adj = adjustDamage(mark.raw, mark.type, second);
   const fx = damageEffects(second, adj.amount, mark.type, false, rng);

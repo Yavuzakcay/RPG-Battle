@@ -9,6 +9,8 @@
  * - Land's Aid (`landsAid` etkisi): 60 ft içinde 10 ft küre, seçilen yaratıklar CON save, Necrotic; bir dost iyileşir.
  * Saf.
  */
+import { karar104On } from './karar104Surum';
+import { askChoice, askPicks } from '../rules/choice';
 import { b94On } from './b94Surum';
 import { healRoll } from './healMax';
 import { globalRule } from './ruleControl';
@@ -240,7 +242,10 @@ export function executeLandsAid(state: BattleState, actor: Combatant, f: UsableF
   if (f.resource) events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource, remaining: resourceLeft(actor, f.resource) - 1 });
   events.push({ type: 'spell_cast', actorId: actor.id, targetId: null, label: f.name, slotLevel: null, note: `10 ft küre, ${n}d6` });
   const dmg = rollDice(`${n}d6`, rollTag(rng, { kind: 'damage', by: actor.id }));
-  for (const t of living.filter((c) => c.side !== actor.side)) {
+  // Görev KARAR104 (A5, 104+; SRD "each creature of your choice"): save atacaklar sırayla sorulur; öneri düşmanlar (eski davranış).
+  const foes = living.filter((c) => c.side !== actor.side);
+  const picked = karar104On(state) ? new Set(askPicks(rng, { actorId: actor.id, label: `${f.name}: hedef`, options: living.map((c) => ({ id: c.id, label: c.name })), suggested: foes.map((c) => c.id), max: living.length })) : null;
+  for (const t of picked ? living.filter((c) => picked.has(c.id)) : foes) {
     const save = resolveSave({ extra: saveDice(t, 'con'), modifier: t.saves.con, dc: actor.spellSaveDc ?? 0, mode: saveMode('normal', t, 'con') }, rollTag(rng, { by: t.id }));
     const raw = save.success ? halfDamage(dmg.total) : dmg.total;
     const adj = adjustDamage(raw, 'necrotic', t);
@@ -253,7 +258,11 @@ export function executeLandsAid(state: BattleState, actor: Combatant, f: UsableF
   // Görev B94 (sürüm 94+, SRD 5.2.1 s. 46 "One creature of your choice in that area regains HP"): 0 HP'deki (ölmemiş) dost da
   // iyileşir ve ayağa kalkar; en yaralı (0 HP önce).
   const healable = b94On(state) ? Object.values(state.combatants).filter((c) => c.hp <= 0 && c.life !== 'dead' && !c.civilian && !c.summon?.gone && inside(c)) : [];
-  const ally = [...living, ...healable].filter((c) => c.side === actor.side && c.hp < c.maxHp).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
+  const ally0 = [...living, ...healable].filter((c) => c.side === actor.side && c.hp < c.maxHp).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
+  // Görev KARAR104 (A5, 104+; "One creature of your choice in that area regains HP"): iyileşecek sorulur; öneri en yaralı dost.
+  const healCands = [...living, ...healable].filter((c) => c.hp < c.maxHp);
+  const healId = karar104On(state) ? askChoice(rng, { actorId: actor.id, label: `${f.name}: iyileşecek`, options: healCands.map((c) => ({ id: c.id, label: c.name })), suggested: ally0?.id ?? null }) : ally0?.id;
+  const ally = healCands.find((c) => c.id === healId);
   if (ally) {
     const heal = healRoll(state, ally, `${n}d6`, rng, actor.id);
     const after = applyHealing(ally.hp, ally.maxHp, heal);

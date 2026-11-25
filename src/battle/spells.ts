@@ -57,7 +57,8 @@ import { concentrationEvent, spendSlot } from './slots';
 import { executeSummon } from './summons';
 import { castBarrier } from './castBarrier';
 import { teleportEvent, teleportProblem } from './teleport';
-import { askChoice } from '../rules/choice';
+import { askChoice, askPicks } from '../rules/choice';
+import { karar104On } from './karar104Surum';
 import { gap } from './body';
 import { altitudeOf, areaOriginFt, areaReachesAltitude, levitateRiseEvents } from './altitude';
 import { katmanOn } from './heights';
@@ -232,7 +233,11 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const sculpt = (spell.school === 'Evocation' && !!actor.traits?.includes('sculpt-spells') ? 1 + spell.level : 0)
     // Görev SORCERER: Careful Spell: CHA değiştiricisi kadar (en az 1) yaratık save'i otomatik geçer ve yarı hasar almaz.
     + (actor.traits?.includes('mm-careful') ? Math.max(1, actor.modifiers.cha) : 0);
-  const spared = new Set(pick.reached.filter((x) => x.c.side === actor.side).slice(0, sculpt).map((x) => x.c.id));
+  // Görev KARAR104 (A5, 104+; SRD "choose a number of them"): korunacaklar sırayla sorulur; öneri alandaki dostlar (eski davranış).
+  const allyIds = pick.reached.filter((x) => x.c.side === actor.side).map((x) => x.c.id);
+  const spared = new Set(sculpt > 0 && karar104On(state)
+    ? askPicks(rng, { actorId: actor.id, label: `${spell.name}: korunacak`, options: pick.reached.map((x) => ({ id: x.c.id, label: x.c.name })), suggested: allyIds, max: sculpt })
+    : allyIds.slice(0, sculpt));
   // Kuyruk S2 (sürüm 41): alanın ulaşmadığı irtifadaki yaratık etkilenmez.
   // Kuyruk K68b (Call Lightning): yaratık seçilince nokta onun irtifasında; noktanın 5 ft içi (dikeyde de) etkilenir.
   const pointAlt = cloud && named ? altitudeOf(named) : pointFt;

@@ -1,3 +1,5 @@
+import { karar104On } from './karar104Surum';
+import { askPicks } from '../rules/choice';
 import { globalRule } from './ruleControl';
 import { b94On } from './b94Surum';
 import { buyucu93On } from './buyucu93Surum';
@@ -188,7 +190,10 @@ export function executeClericFeature(state: BattleState, actor: Combatant, f: Us
 
   if (e.kind === 'preserveLife') {
     let pool = e.perLevel * actor.level;
-    const list = preserveTargets(state, actor, e.rangeFt).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
+    const list0 = preserveTargets(state, actor, e.rangeFt).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
+    // Görev KARAR104 (A5, 104+; SRD "divided among any creatures"): iyileştirme sırası sorulur; öneri en yaralıdan (eski davranış).
+    const order = karar104On(state) ? askPicks(rng, { actorId: actor.id, label: `${f.name}: iyileştirilecek`, options: list0.map((c) => ({ id: c.id, label: c.name })), suggested: list0.map((c) => c.id), max: list0.length }) : null;
+    const list = order ? order.map((id) => list0.find((c) => c.id === id) as Combatant) : list0;
     for (const t of list) {
       if (pool <= 0) break;
       const give = Math.min(pool, Math.floor(t.maxHp / 2) - Math.max(0, t.hp));

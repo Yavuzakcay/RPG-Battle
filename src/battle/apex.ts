@@ -13,6 +13,8 @@
  *   (yarıçap 1 altıgen) 1 dakika: içindeki dostlar yarım siperli ve Nature's Ward direncine sahip; küp varken
  *   yeniden kullanmak (bonus eylem, kaynak harcamaz) onu 60 ft taşır.
  */
+import { karar104On } from './karar104Surum';
+import { askPicks } from '../rules/choice';
 import { distance, withinRange, type Offset } from '../rules/hex';
 import { rollDice, rollTag, type Rng } from '../rules/dice';
 import { resolveSave } from '../rules/attack';
@@ -147,7 +149,10 @@ export function executeApex(state: BattleState, actor: Combatant, f: UsableFeatu
     if (!rng) return fail('Zar gerekli.');
     events.push(spend(actor, payment(actor, f) as { resource: string; cost: number }));
     const dc = 8 + actor.modifiers[e.dcAbility] + actor.proficiency;
-    for (const t of fearTargets(state, actor, e.rangeFt)) {
+    // Görev KARAR104 (A5, 104+; SRD "each creature of your choice"): hedefler sırayla sorulur; öneri bütün düşmanlar (eski davranış).
+    const cands = fearTargets(state, actor, e.rangeFt);
+    const chosen = karar104On(state) ? new Set(askPicks(rng, { actorId: actor.id, label: `${f.name}: hedef`, options: cands.map((c) => ({ id: c.id, label: c.name })), suggested: cands.map((c) => c.id), max: cands.length })) : null;
+    for (const t of cands.filter((c) => !chosen || chosen.has(c.id))) {
       const save = resolveSave({ extra: saveDice(t, e.save), modifier: t.saves[e.save], dc, mode: saveMode('normal', t, e.save, actor) }, rollTag(rng, { by: t.id }));
       events.push({
         type: 'save_resolved', actorId: actor.id, targetId: t.id, label: f.name, ability: e.save, dc, mode: 'normal', reasons: [],

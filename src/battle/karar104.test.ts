@@ -5,6 +5,10 @@ import { describe, expect, it } from 'vitest';
 import { execute } from './commands';
 import { combatantFromMonster, combatantFromSheet } from './index';
 import { itemHitsFor } from './itemEffects';
+import { superiorPreyEvents } from './classTraits';
+import { attackDice } from './effectDice';
+import { askPicks } from '../rules/choice';
+import type { ReactionAnswer, ReactionRequest } from '../rules/reactionChoice';
 import { boundWeaponName, eligibleWeaponsOf } from '../rules/itemBinding';
 import type { CharacterSheet } from '../rules/stats';
 import { getMonster } from '../data';
@@ -300,5 +304,44 @@ describe('KARAR104 A10: eşya ↔ silah bağı (SRD 5.2.1 "made with this magic 
     expect(eligibleWeaponsOf({ weapons: [{ name: 'Longsword' }, { name: 'Dagger' }] }, 'Dagger of Venom')).toEqual(['Dagger']);
     expect(boundWeaponName({ weapons: [{ name: 'Longsword' }] }, 'Dagger of Venom')).toBeNull();
     expect(boundWeaponName({ weapons: [{ name: 'Longsword' }, { name: 'Dagger' }], silahBagi: { 'Weapon, +1': 'Club' } }, 'Weapon, +1')).toBe('Longsword');
+  });
+});
+
+describe('KARAR104 A5: otomatik seçimler "Sor"a bağlı (öneri = eski otomatik seçim)', () => {
+  const deciding = (answer: (q: ReactionRequest) => ReactionAnswer, seen: ReactionRequest[] = []): Rng => {
+    const r = (() => 0.5) as Rng & { react: (q: ReactionRequest) => ReactionAnswer };
+    r.react = (q) => { seen.push(q); return answer(q); };
+    return r;
+  };
+  const opts = [{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }, { id: 'c', label: 'C' }];
+  it('askPicks: kancasız Rng öneriyi aynen verir; oyuncu sırayı değiştirip erken bırakabilir', () => {
+    expect(askPicks(() => 0.5, { actorId: 'X', label: 'L', options: opts, suggested: ['b', 'a'], max: 3 })).toEqual(['b', 'a']);
+    expect(askPicks(() => 0.5, { actorId: 'X', label: 'L', options: opts, suggested: ['b', 'a', 'c'], max: 2 })).toEqual(['b', 'a']);
+    const picks = ['c', null];
+    let i = 0;
+    expect(askPicks(deciding(() => { const p = picks[i++]; return p ? { option: 'choice', choice: p } : null; }), { actorId: 'X', label: 'L', options: opts, suggested: ['a', 'b'], max: 3 })).toEqual(['c']);
+  });
+  it("Superior Hunter's Prey: 104'te ikinci hedef sorulur (öneri en az HP'li); 103'te soru yok", () => {
+    const parts = [mk('R', { ownerId: 'p1', traits: ['superior-hunters-prey'], pos: at(3, 5) }), mk('F1', { side: 'enemies', hp: 50, maxHp: 50, pos: at(4, 5) }),
+      mk('F2', { side: 'enemies', hp: 40, maxHp: 50, pos: at(5, 5) }), mk('F3', { side: 'enemies', hp: 10, maxHp: 50, pos: at(4, 6) })];
+    const mark = { raw: 6, rolls: [6], type: 'force' };
+    const target = (v: number, rng: Rng) => {
+      const s = scene104(v, parts);
+      const ev = superiorPreyEvents(s, s.combatants.R as Combatant, s.combatants.F1 as Combatant, mark, rng);
+      return (ev[0] as { targetId?: string } | undefined)?.targetId;
+    };
+    expect(target(NEW, () => 0.5)).toBe('F3');
+    const seen: ReactionRequest[] = [];
+    expect(target(NEW, deciding(() => ({ option: 'choice', choice: 'F2' }), seen))).toBe('F2');
+    expect(seen[0]?.trigger).toBe('choice');
+    const old: ReactionRequest[] = [];
+    expect(target(OLD, deciding(() => ({ option: 'choice', choice: 'F2' }), old))).toBe('F3');
+    expect(old).toHaveLength(0);
+  });
+  it('Stroke of Luck: 104 savaşçısında (`k104`) kullanmadan önce sorulur; 103’te sorusuz', () => {
+    const c = mk('A', { traits: ['stroke-of-luck'], resources: { strokeOfLuck: 1 } });
+    const luck = (k104?: true) => attackDice({ ...c, ...(k104 ? { k104 } : {}) }).find((x) => x.label === 'Stroke of Luck');
+    expect(luck(true)).toMatchObject({ ask: true, askTrigger: 'boon' });
+    expect(luck()?.ask).toBeUndefined();
   });
 });
