@@ -32,6 +32,12 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   tur sonu zinciri). ⚠ "Behind cover" kime göre yazmıyor: Hide'ın bütün düşmanlar yorumu (bilinçli sapma A17) alındı. Bulunan eski
   hata: 96–103'te GENEL96 C12 `attackRevealEvents` Stealth Attack yapanı yine açığa çıkarıyordu (özellik fiilen işlemiyordu); 104'te
   aynı komutun açığa çıkışı atlanır. 103 ve altı dokunulmadı (replay).
+- **A8 Swarm varışta da paylaşır** (SRD 5.2.1 "The swarm can occupy another creature's space and vice versa": metin gönüllü hareketle
+  sınırlamıyor; SWARM95'in ⚠ kapsam dışı kısmı): 104+ ışınlanma (`teleport.ts` `teleportProblem`: Misty Step, Fey Step, Blink
+  Steps…), zorla hareket (`forced.ts` `pushOutcome`: itme/çekme, Repelling Blast, Thunderwave; tek ve çok altıgen) ve Game Master
+  yerleştirmesi (`movement.ts` `executePlace`) tek giriş `arrivalOccupant`'tan: sürü dolu altıgene, sürü olmayan yalnız sürülerin
+  altıgenine girer (`swarmShareOk` aynen). Çağırma varışı motorun seçtiği boş altıgen olduğu için değişmedi. 103: varışta sürünün
+  altıgeni dolu.
 
 ## Görev KARAR104: bekleyen kullanıcı kararları SRD 5.2.1'e göre (2026-11-24; kural sürümü 104 `KARAR104_VERSION`, kayıt sürümü 26)
 

@@ -9,6 +9,9 @@ import { superiorPreyEvents } from './classTraits';
 import { attackDice, saveDice } from './effectDice';
 import { secondChance } from '../rules/attack';
 import { revealEvent, supremeSneakEndEvents } from './stealth';
+import { teleportProblem } from './teleport';
+import { pushOutcome } from './forced';
+import { arrivalOccupant } from './movement';
 import { askPicks } from '../rules/choice';
 import type { ReactionAnswer, ReactionRequest } from '../rules/reactionChoice';
 import { boundWeaponName, eligibleWeaponsOf } from '../rules/itemBinding';
@@ -455,5 +458,24 @@ describe('KARAR104-KALAN A6: SRD-12 sınıf özelliği sapmaları', () => {
     expect(supremeSneakEndEvents(walled(NEW, false), 'A')).toEqual([]);
     expect(supremeSneakEndEvents(marked(walled(OLD, false)), 'A')).toEqual([]);
     expect(revealEvent(walled(OLD, false), walled(OLD, false), cmd)).toMatchObject({ type: 'revealed' });
+  });
+});
+
+describe('KARAR104-KALAN A8: Swarm varışta da altıgen paylaşır (SRD 5.2.1 "can occupy another creature’s space and vice versa")', () => {
+  const scene = (v: number) => scene104(v, [{ ...combatantFromMonster(getMonster('swarm-of-rats'), { id: 'S', kuralSurumu: v }), side: 'enemies' as const, pos: at(3, 5) },
+    mk('A', { ownerId: 'p1', hp: 30, maxHp: 30, pos: at(5, 5) }), mk('B', { ownerId: 'p1', hp: 30, maxHp: 30, pos: at(4, 5) })]);
+  it('ışınlanma: 104 sürü dolu altıgene ışınlanır; 103 "dolu"', () => {
+    const sw = (s: BattleState) => s.combatants.S as Combatant;
+    expect(teleportProblem(scene(NEW), sw(scene(NEW)), at(5, 5), { rangeFt: 60, sight: false })).toBeNull();
+    expect(teleportProblem(scene(OLD), sw(scene(OLD)), at(5, 5), { rangeFt: 60, sight: false })).toMatch(/dolu/);
+  });
+  it('itme: 104 sürü başka yaratığın altıgenine itilir, başkası sürünün altıgenine; 103 arkada yaratık var', () => {
+    for (const [v, ok] of [[NEW, true], [OLD, false]] as const) {
+      const s = scene(v);
+      expect(pushOutcome(s, s.combatants.S as Combatant, at(3, 5), at(4, 5)).ok).toBe(ok);
+      expect(pushOutcome(s, s.combatants.B as Combatant, at(4, 5), at(3, 5)).ok).toBe(ok);
+      // Sürü olmayan sürü olmayanın altıgenine girmez (her iki sürümde).
+      expect(arrivalOccupant(s, s.combatants.B as Combatant, at(5, 5))?.id).toBe('A');
+    }
   });
 });
