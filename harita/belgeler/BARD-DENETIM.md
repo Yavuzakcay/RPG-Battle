@@ -189,3 +189,9 @@ Görev B98 (2026-11-20; kural sürümü 98 `B98_VERSION`, 97 ve altı eski davra
 | C5 / K4 | Bilinçli sapma (kayıtlı, kullanıcı kararı): ilham zarı savaşlar arası taşınmaz | — |
 | B2 / K3 | Ertelendi: müzik aleti (alet) yetkinliği; beceri/alet kontrol sistemi yok, savaşsız dungeon fikriyle birlikte | — |
 | E1 | Düzeldi: TR menüde "İlham Ver" → Bardic Inspiration (SD4; EN "Inspire" → Bardic Inspiration) | sürümsüz |
+
+## KARAR104 / KARAR104-KALAN (kural sürümü 104; 2026-11-26 belge güncellemesi)
+
+Kod okunarak doğrulandı (`karar104On` kapısı; 103 ve altı eski davranış). Test bu görevde (SRD-TAMAMLAMA-1) çalıştırıldı ve geçti.
+
+- **A21 Cutting Words ıskada** (DECISIONS KARAR104-KALAN A6, sürüm 104; SRD 5.2.1 s. 35 "makes a damage roll"): ıskada da hasar zarı atan büyü saldırısında (Acid Arrow `halfOnMiss`, Potent Cantrip) Bard'ın tepkisi `cuttingWordsDamage` ile (`spells.ts` ıska dalı, `reactions.ts` `cuttingWordsDamage`); zar toplamdan yarıya bölünmeden önce düşer. Silah saldırısında ıskada hasar zarı yok (Graze sabit değiştirici, zar değil). 103'te ıskada tetik yok. Test `src/battle/karar104.test.ts` "Cutting Words ıskada atılan hasar zarında (Acid Arrow yarı hasar)" (Acid Arrow 4d4 = 12, Bard d8 = 5 → ⌊(12 − 5) / 2⌋ = 3; 103: 6). A21 satırının B94 sonrası kalanı (GM'in istediği tekil beceri kontrolü) kapsam dışı kalır.

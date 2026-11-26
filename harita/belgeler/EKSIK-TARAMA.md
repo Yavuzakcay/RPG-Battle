@@ -44,7 +44,7 @@ kaydıdır: bayat satırları kapanmış konuları gösterir, belge düzeltilmed
     Presence; Stroke of Luck, Peerless Aim): `askChoice` kalıbıyla. — **kapandı (sürüm 104; DECISIONS KARAR104 A5; `rules/choice.ts` `askPicks`; Peerless Aim 99'dan beri soruyor)**
 12. **Cutting Words ıskada, Dark One's Own Luck** (Bard/Warlock tepki zamanlaması). — **kapandı (sürüm 104; DECISIONS KARAR104-KALAN A6; `spells.ts` `cuttingWordsDamage` ıskada, `ExtraDie.spendAlways`)**
 13. **Maliyetli materyal** (Revivify 300 GP …): Serüven ekonomisiyle doğrudan ilgili. — **açık** (DECISIONS'ta karar yok)
-14. **Çoklu sınıf kararı** (Multiclassing): Serüven seviye atlamasında soru çıkacak. — **kapandı (sürüm 105; DECISIONS MC1–MC5; `mc3Surum.ts`, savaş kaydı 27)** ⚠ uygulama sonrası SRD s. 24–26 denetimi yok
+14. **Çoklu sınıf kararı** (Multiclassing): Serüven seviye atlamasında soru çıkacak. — **kapandı (sürüm 105; DECISIONS MC1–MC5; `mc3Surum.ts`, savaş kaydı 27)**; uygulama sonrası SRD s. 24–26 denetimi `harita/belgeler/MC-SRD-DENETIM.md` (SRD-TAMAMLAMA-1, 2026-11-26: kesin sapma yok, 6 kısmi)
 15. **"Var-test edilmiş" sınama açığı:** örneklemde satırların ≈ %42'si kuralı gerçekten sınıyor (SRD-KAPSAM Aşama 5 notu); Serüven
     öncesi tam test turunda yüzeysel testler kural testine çevrilmeli.
 

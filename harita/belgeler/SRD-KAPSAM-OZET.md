@@ -3,6 +3,12 @@
 Tarih: 2026-11-26 · Taban: `origin/birlesik` 598acd70 · Güncel kural sürümü 105, savaş kayıt sürümü 27. **Yalnız okuma:** kod, veri ve
 test değişmedi; depoya yalnız bu belge girdi. Hiçbir denetim betiği yeniden çalıştırılmadı (ayrıntı "Yöntem").
 
+> **2026-11-26 güncellemesi (Görev SRD-TAMAMLAMA-1, kural sürümü 106):** "Kaynak belgelerin tazeliği" tablosu, sınıf belgelerinin
+> KARAR104 bölümleri (`d565ab84` ve bu görev), EKSIK-TARAMA'nın kapanış işaretleri ve yeni `MC-SRD-DENETIM.md`'ye göre elle
+> düzeltildi; "Denetlenmemiş ve bayat bölümler" ve bölüm tablosunun işaret sütunu buna uyduruldu. **Sayılar değişmedi** (kodla
+> yeniden sayılmadı): 106'nın üç düzeltmesi (Preserve Life miktarı, Land's Aid aynı yaratık, Elixir of Health / Potion of Vitality
+> eşya yolu) SRD-KAPSAM'da zaten "çalışır" sayılan satırlarda; elle işlenen yerler **(tahmin)** işaretli.
+
 ## Yöntem
 
 - **Sayıların tabanı** `harita/belgeler/SRD-KAPSAM.md` (2026-11-21, ikinci çalışma, kural sürümü 103; 1870 satır, SRD'nin
@@ -33,15 +39,15 @@ varlığı).
 | SRD 5.2.1 bölümü (sayfa) | Madde (satır) | Çalışır | Kısmi | Savaş dışı / GM | Yok | Hiç olmayan | Son denetim (tarih, kural sürümü) | İşaret |
 |---|---:|---:|---:|---:|---:|---:|---|---|
 | Playing the Game (s. 5–18) | 41 kural | 20 | 18 | 3 | 0 | 2 | GENEL-SAVAS-DENETIM 2026-11-20 (94) + KALAN100 (100) + KARAR104 A11 2026-11-25 (104); SRD-KAPSAM 2026-11-21 (103) | güncel |
-| Character Creation (s. 19–27) | 13 kural | 7 | 2 | 3 | 1 | 3 | SRD-KAPSAM 2026-11-21 (103); MULTICLASS-INCELEME 2026-11-22 (uygulama öncesi); çoklu sınıf MC1–MC5 2026-11-26 (105), uygulama sonrası denetim yok | denetlenmemiş |
-| Classes: 12 sınıf + SRD alt sınıfları (s. 28–82) | 280 özellik / seçenek | 180 | 93 | 7 | 0 | 5 | 12 sınıf denetimi 2026-11-20 (79–94; B93/B94/B95/B98 ve TE99 düzeltme bölümleriyle 99); SRD-KAPSAM (103); KARAR104-KALAN 104'te 7 satırı kapattı, sınıf belgelerine işlenmedi | bayat |
+| Character Creation (s. 19–27) | 13 kural | 7 | 2 | 3 | 1 | 3 | SRD-KAPSAM 2026-11-21 (103); çoklu sınıf MC1–MC5 2026-11-26 (105); MC-SRD-DENETIM 2026-11-26 (105, uygulama sonrası s. 24–26: 35 satır, kesin sapma yok, 6 kısmi) | güncel (çoklu sınıf) / denetlenmemiş (diğer kurallar) (tahmin) |
+| Classes: 12 sınıf + SRD alt sınıfları (s. 28–82) | 280 özellik / seçenek | 180 | 93 | 7 | 0 | 5 | 12 sınıf denetimi 2026-11-20 (79–94; B93/B94/B95/B98 ve TE99 düzeltme bölümleriyle 99); SRD-KAPSAM (103); KARAR104/KARAR104-KALAN'ın 7 satırı + Cutting Words ıskada 7 sınıf belgesine işlendi (2026-11-26); 106 Preserve Life / Land's Aid | güncel (104–106 farkı) / gövde bayat (Barbarian, Fighter, Paladin, Sorcerer, Wizard belgelerinde KARAR104 bölümü yok) (tahmin) |
 | Character Origins: geçmiş + tür (s. 83–86) | 72 (4 geçmiş, 9 tür, özellikler, kurallar) | 56 | 13 | 0 | 3 | 3 | TUR-FEAT-ESYA-DENETIM 2026-11-20 (97) + TE99 (99); SRD-KAPSAM (103) | güncel |
 | Feats (s. 87–88) | 29 | 22 | 7 | 0 | 0 | 0 | TUR-FEAT-ESYA-DENETIM 2026-11-20 (97) + TE99 (99); SRD-KAPSAM (103) | güncel |
 | Equipment (s. 89–103) | 254 | 118 | 40 | 91 | 5 | 33 | TUR-FEAT-ESYA-DENETIM 2026-11-25 (KARAR104 A10, 104); alet/araç/yaşam satırları yalnız SRD-KAPSAM (103) | güncel (silah, zırh) / denetlenmemiş (alet, araç, binek eşyası) |
 | Spells 0–9 (s. 104–175) | 355 (339 büyü + 16 kural) | 215 | 26 | 114 | 0 | 0 | BUYU-TAM-TARAMA 2026-11-24 (104); BUYU-DURUM 2026-11-21 (102); MEKANIK-MATRIS 2026-11-20 (91) | güncel (MEKANIK-MATRIS bayat) |
 | Rules Glossary: terimler + durumlar (s. 176–191) | 155 başlık | 94 | 49 | 10 | 2 | 9 | GENEL-SAVAS-DENETIM (B satırları durumlar) 2026-11-25 (104); SRD-KAPSAM (103) | güncel |
 | Gameplay Toolbox (s. 192–203) | 54 | 5 | 17 | 6 | 26 | 32 | yalnız SRD-KAPSAM 2026-11-21 (103) | denetlenmemiş |
-| Magic Items (s. 204–253) | 267 (258 eşya + 9 kural) | 169 | 17 | 81 | 0 | 3 | ESYA-SINIFLANDIRMA 2026-11-06 (34); ENVANTER-ESYALAR 2026-11-05 (27); TUR-FEAT-ESYA D satırları (≈30 eşya kuralı) 2026-11-25 (104); 142 satır yalnız veri varlığından | bayat |
+| Magic Items (s. 204–253) | 267 (258 eşya + 9 kural) | 169 | 17 | 81 | 0 | 3 | ESYA-SINIFLANDIRMA 2026-11-06 (34); ENVANTER-ESYALAR 2026-11-05 (27); TUR-FEAT-ESYA D satırları (≈30 eşya kuralı) 2026-11-25 (104); 142 satır yalnız veri varlığından; 106: Elixir of Health ve Potion of Vitality "var-testsiz" sayılıyordu ama eşya yolunda temizleme işlemiyordu, 106'da düzeldi ve testli (sayı aynı) | bayat |
 | Monsters A–Z (s. 254–343) | 254 (234 canavar + 20 stat blok kuralı) | 228 | 24 | 2 | 0 | 1 | SRD-VERI-DOGRULAMA 2026-11-19 (89); ENVANTER-CANAVARLAR gövdesi A0 2026-11-05 (27), "A2'de kalan" satırları 2026-11-25 (104); SRD-KAPSAM (103) | güncel sayılar / ENVANTER-CANAVARLAR bayat |
 | Animals (s. 344–364) | 96 | 96 | 0 | 0 | 0 | 0 | SRD-VERI-DOGRULAMA 2026-11-19 (89); WILD-SHAPE-BICIMLER-DENETIM 2026-11-20 (91, SWARM95 notu 95); SRD-KAPSAM (103) | güncel |
 | **Toplam** | **1870** | **1210** | **306** | **317** | **37** | **91** | | |
@@ -55,8 +61,8 @@ varlığı).
 |---|---|---|---|---|
 | Character Creation | Multiclassing: önkoşullar (13 yetenek) | yok | çalışır | MC1–MC2, MC5 (`multiclassProblems`, oluşturucu "ön koşul: CHA en az 13") |
 | Character Creation | Multiclassing: HP, HP zarları, PB, yetkinlikler, özellikler, ortak büyü yuvası, Pact Magic | yok | kısmi | MC2–MC4 (kural 105); ⚠ yaklaşıklar: Weapon Mastery tek havuz (K5, SRD'de açık değil), paket ilkellerinin `channelDivinity` başvurusu sınıfsız; MC5: Serüven'de yeni (yan) sınıf yalnız kutsal ayna yanında (ev kuralı) |
-| Classes | Preserve Life (Life Domain) | kısmi | çalışır | KARAR104 A5 (`askPicks`, bölüşüm oyuncuya) |
-| Classes | Land's Aid (Circle of the Land) | kısmi | çalışır | KARAR104 A5 |
+| Classes | Preserve Life (Life Domain) | kısmi | çalışır | KARAR104 A5 (`askPicks`, sıra oyuncuya); 106 SRD-TAMAMLAMA-1: yaratık başına miktar, her taraftan Bloodied |
+| Classes | Land's Aid (Circle of the Land) | kısmi | çalışır | KARAR104 A5; 106 SRD-TAMAMLAMA-1: aynı yaratık hem hasar alıp iyileşirse iyileşme hasardan sonra |
 | Classes | Superior Hunter's Prey (Hunter) | kısmi | çalışır | KARAR104 A5 |
 | Classes | Quivering Palm (Warrior of the Open Hand) | kısmi | çalışır | KARAR104-KALAN A6 (yapay zekâ kullanmaz: durumu düşürmez) |
 | Classes | Supreme Sneak (Thief) | kısmi | çalışır | KARAR104-KALAN A6 (tur sonu siper) |
@@ -124,24 +130,28 @@ taşınma), Bard Cutting Words (zaten çalışır sayılıyordu; ıskada hasar z
 
 ## Kaynak belgelerin tazeliği
 
+Son değişim `git log` tarihinden (2026-11-26 SRD-TAMAMLAMA-1'de elle düzeltildi; durum sütunu belge okunarak, betik çalıştırılmadan).
+
 | Belge | Son değişim | Kural sürümü | Durum |
 |---|---|---|---|
-| `harita/belgeler/SRD-KAPSAM.md` | 2026-11-21 | 103 | 104–105'in 23 satırı işlenmedi (yukarıdaki tablo); "Önemli bulgular" 5 çoklu sınıfı yok sayıyor |
-| `harita/belgeler/EKSIK-TARAMA.md` | 2026-11-21 | 103 | "Serüven öncesi mutlaka" listesinin 2–12. ve 14. (çoklu sınıf) maddeleri 104–105'te kapandı, belgede açık |
-| `harita/belgeler/MULTICLASS-INCELEME.md`, `MULTICLASS-PLAN.md` | 2026-11-22 / 11-24 | 103–104 | uygulama öncesi inceleme ve plan; MC1–MC5 sonrası SRD s. 24–26 karşılaştırması yok |
-| `harita/belgeler/{12 sınıf}-DENETIM.md` | 2026-11-20 | 79–94 (+ B93–B98 bölümleri) | KARAR104 A5 ve KARAR104-KALAN A6 bölümü yok |
+| `harita/belgeler/SRD-KAPSAM.md` | 2026-11-26 (yalnız yönlendirme notu; gövde 2026-11-21) | 103 | gövde 103 tabanı; başında "güncel özet SRD-KAPSAM-OZET" notu var; 104–106'nın satırları gövdeye işlenmedi (bu özetteki tablo) |
+| `harita/belgeler/EKSIK-TARAMA.md` | 2026-11-26 (elle kapanış işaretleri; betik çıktısı 2026-11-21) | 103 (+ 104–105 işaretleri) | "Serüven öncesi mutlaka" 2–6, 8–12 ve 14 "kapandı (sürüm N)" işaretli; açık: 1 (denge), 7 (YZ Ready), 13 (maliyetli materyal), 15 (test kalitesi); 14'ün "denetim yok" ⚠'si MC-SRD-DENETIM ile kapandı (bu görevde işlendi). Otomatik bölümler ve karar soruları (bölüm 3; 2, 3, 8, 9, 11, 15 104–105'te yanıtlandı) güncellenmedi (tahmin) |
+| `harita/belgeler/MC-SRD-DENETIM.md` | 2026-11-26 | 105 | **yeni**, güncel: SRD s. 24–26 ve 12 "As a Multiclass Character" kutusu ↔ MC1–MC7 |
+| `harita/belgeler/MULTICLASS-INCELEME.md`, `MULTICLASS-PLAN.md` | 2026-11-22 / 11-24 | 103–104 | tarihsel (uygulama öncesi); uygulama sonrası karşılaştırma MC-SRD-DENETIM'de |
+| `harita/belgeler/{BARD,CLERIC,DRUID,MONK,RANGER,ROGUE,WARLOCK}-DENETIM.md` | 2026-11-26 | 79–94 (+ B93–B98) + 104 bölümü (Cleric, Druid 106 notu) | "KARAR104 / KARAR104-KALAN" bölümü var (Bard'ınki bu görevde: Cutting Words ıskada); gövde 2026-11-20 |
+| `harita/belgeler/{BARBARIAN,FIGHTER,PALADIN,SORCERER,WIZARD}-DENETIM.md` | 2026-11-20 | 79–94 (+ B93–B98) | KARAR104 bölümü yok; kapanan satır yok, ama 104'te kısmi ilerleyen Wizard Sculpt Spells ve Barbarian Intimidating Presence (KARAR104 A5 seçim istemi) işlenmedi (tahmin) |
 | `harita/belgeler/GENEL-SAVAS-DENETIM.md` | 2026-11-25 | 94 + KALAN100 + 104 (G6) | güncel; B40 (Unconscious) ve A23 (Ready) satırları KARAR104-KALAN'la güncellenmedi |
-| `harita/belgeler/TUR-FEAT-ESYA-DENETIM.md` | 2026-11-25 | 97 + TE99 + 104 (D26, D31) | güncel |
+| `harita/belgeler/TUR-FEAT-ESYA-DENETIM.md` | 2026-11-25 | 97 + TE99 + 104 (D26, D31) | güncel (106 eşya düzeltmesi D satırı değil; DECISIONS SRD-TAMAMLAMA-1) |
 | `harita/belgeler/BUYU-TAM-TARAMA.md` | 2026-11-24 | 102 + 104 (Storm of Vengeance) | güncel |
 | `harita/belgeler/BUYU-DURUM.md` | 2026-11-21 | 102 | güncel (104'te büyü satırı yalnız Storm of Vengeance) |
-| `harita/belgeler/MEKANIK-MATRIS.md` | 2026-11-20 | 91 | bayat (92–104 düzeltmeleri ölçülmedi) |
+| `harita/belgeler/MEKANIK-MATRIS.md` | 2026-11-20 | 91 | bayat (92–106 düzeltmeleri ölçülmedi) |
 | `harita/belgeler/SRD-VERI-DOGRULAMA.md` | 2026-11-19 | 89 | güncel (veri değeri denetimi; 103 inisiyatif SRD-KAPSAM'da) |
-| `harita/belgeler/ENVANTER-CANAVARLAR.md` | 2026-11-25 | gövde 27, ek satırlar 104 | bayat satır: likantrop "dönüşme yok" (KARAR104-KALAN'da uygulandı) |
-| `harita/belgeler/ENVANTER-{BUYULER,ESYALAR,DIGER,OZET}.md` | 2026-11-05 … 11-20 | 27 | tarihsel (A0); SRD-KAPSAM aştı |
-| `harita/belgeler/ESYA-SINIFLANDIRMA.md` | 2026-11-06 | 34 | bayat (TE99 ve 104 eşya düzeltmeleri yok) |
+| `harita/belgeler/ENVANTER-CANAVARLAR.md` | 2026-11-26 | gövde 27, ek satırlar 104 | gövde tarihsel (başında not); likantrop satırları "kapandı (104)" olarak düzeltildi |
+| `harita/belgeler/ENVANTER-{BUYULER,ESYALAR,DIGER,OZET}.md` | 2026-11-26 (yalnız "tarihsel" notu) | 27 | tarihsel (A0); başlarında güncel özete yönlendirme |
+| `harita/belgeler/ESYA-SINIFLANDIRMA.md` | 2026-11-06 | 34 | bayat (TE99, 104 ve 106 eşya düzeltmeleri yok) |
 | `harita/belgeler/WILD-SHAPE-BICIMLER-DENETIM.md` | 2026-11-20 | 91 (+ SWARM95) | güncel; KARAR104-KALAN A8 (sürü varışı) notu yok |
-| `docs/SRD-DENETIM.md` | 2026-11-20 | Kuyruk 19 (16) kapsamı | bayat kapsam (SRD-KAPSAM aştı); betik çıktısı 11-21'de değişmemişti |
-| `docs/MEKANIK-DURUM.md` | 2026-11-03 | Kuyruk 18 (14–15) | bayat (SRD kapsamı değil, Game Master anahtarları durumu) |
+| `docs/SRD-DENETIM.md` | 2026-11-26 (yalnız "tarihsel" notu) | Kuyruk 19 (16) kapsamı | tarihsel; betik çıktısı 11-21'de değişmemişti |
+| `docs/MEKANIK-DURUM.md` | 2026-11-26 (yalnız "tarihsel" notu) | Kuyruk 18 (14–15) | tarihsel (SRD kapsamı değil, Game Master anahtarları durumu) |
 
 ## Denetlenmemiş ve bayat bölümler
 
@@ -149,12 +159,12 @@ taşınma), Bard Cutting Words (zaten çalışır sayılıyordu; ıskada hasar z
 |---|---|---|---|---|---|
 | 1 | Gameplay Toolbox | denetlenmemiş | Kendi denetim belgesi yok; 54 satırın 26'sı yok (14 örnek zehir, 5 tuzak, 3 salgın, Extreme Heat, Mental Stress, Extended Travel, zehir hasadı); kısmi 17 satırın neden sütunu tek cümle | orta | Salt okuma bir TOOLBOX denetimi (GENEL-SAVAS biçiminde satır kimlikli): kısmi 17 satırın SRD metniyle tek tek okunması; yok satırlar zaten kesin, yeniden sayılması gerekmez |
 | 2 | Magic Items | bayat | 258 eşyanın 142'si "var-testsiz" yalnız veri türünden (`passive`/`onHit`/`spells`/`bonus` var mı); eşya başına SRD metni okunmadı; ESYA-SINIFLANDIRMA sürüm 34'te | büyük | TUR-FEAT-ESYA D satırlarının yöntemiyle eşya başına denetim, önce savaşta kullanılan 169 eşya (en çok `onHit` ve yüklü büyü eşyaları); 81 savaş dışı satır yalnız örneklemle |
-| 3 | Classes (sınıf belgeleri) | bayat | KARAR104 A5 ve KARAR104-KALAN A6'nın kapattığı 7 satır belgelerde hâlâ kısmi/bilinçli sapma; Cleric/Sorcerer/Wizard gövdesi 79–80'de okunmuş | küçük | 12 sınıf belgesine "KARAR104 / KARAR104-KALAN" düzeltme bölümü (yalnız belge) |
+| 3 | Classes (sınıf belgeleri) | büyük ölçüde yapıldı (2026-11-26) | 7 belgede KARAR104 bölümü var (Bard'ınki SRD-TAMAMLAMA-1'de); Barbarian, Fighter, Paladin, Sorcerer, Wizard'da yok (Sculpt Spells, Intimidating Presence kısmi ilerlemesi); Cleric/Sorcerer/Wizard gövdesi 79–80'de okunmuş | küçük | kalan 5 belgeye kısa KARAR104 bölümü (tahmin: 2 satır) |
 | 4 | SRD-KAPSAM.md | bayat | 104–105'in 23 satırı ve "Kısmi satırların içinde hiç uygulanmamış alt kurallar" listesi (B40, A23, G6, yapışma/likantropi/boğulma) güncel değil | küçük | Üçüncü çalışma: yalnız bu özetteki 23 satır + alt kural listesi; tam yeniden üretim gerekmez |
 | 5 | MEKANIK-MATRIS.md | bayat | Sürüm 91; 92–104 düzeltmeleri (WS92, B93–B98, GENEL96, TE99, KALAN100, KARAR101, BUYU-TAM, KAPSAM103, KARAR104) matriste ölçülmedi | küçük | `npx vite-node src/sim/mekanikMatris.ts -- --yaz --etiket "104"` (≈5 sn; dosya yazdığı için ayrı görev) |
 | 6 | ENVANTER-CANAVARLAR.md | bayat | Gövde A0 (sürüm 27); likantrop satırları "dönüşme yok" diyor | küçük | Satırlara KARAR104-KALAN ⚠e notu; başlığa "gövde tarihsel" notu |
-| 7 | EKSIK-TARAMA.md | bayat | "Serüven öncesi mutlaka" 2–12 ve 14 ile karar soruları 2–3 104–105'te kapandı | küçük | `python3 scripts/eksik-tarama.py` yeniden üretimi (salt okuma betiği) ya da kapanış notu |
-| 8 | Character Creation | denetlenmemiş | Çoklu sınıf 105'te geldi ama SRD s. 24–26'ya karşı uygulama sonrası denetimi yok (MULTICLASS-INCELEME uygulama öncesi); üst seviye başlangıç donanımı yok; diller, Tiers of Play, Trinkets savaş dışı | orta | Salt okuma çoklu sınıf denetimi (sınıf başına özellik tablosu, büyü yuvası tablosu, Pact Magic, Extra Attack/Unarmored Defense birikmezliği; MC ⚠'leri) |
+| 7 | EKSIK-TARAMA.md | kısmen yapıldı (2026-11-26) | "Serüven öncesi" listesi kapanış işaretli; otomatik bölümler ve karar soruları 103'te | küçük | `python3 scripts/eksik-tarama.py` yeniden üretimi (salt okuma betiği) |
+| 8 | Character Creation | çoklu sınıf denetlendi (2026-11-26) | `MC-SRD-DENETIM.md`: kesin sapma yok; kısmiler kısa dinlenmede zar türü seçimi, feat ön koşulu sınıf seviyesiyle (Epic Boon), ön koşul son puanla, AC otomatik, sonraki tur büyü DC'si, YZ Pact. Üst seviye başlangıç donanımı yok; diller, Tiers of Play, Trinkets savaş dışı | küçük | kısmilerden karar istenenler (MC-SRD-DENETIM "Bulunan sorunlar") |
 | 9 | Equipment: alet, araç, binek eşyası, yaşam giderleri | denetlenmemiş | 23 alet ve 5 yaşam/üretim satırı savaş dışı etiketiyle geçti; Saddles, Barding, Large Vehicles yok | küçük | SRD-KAPSAM satırları yeterli; Serüven ekonomisi görevi açılınca birlikte denetlenmeli |
 | 10 | ESYA-SINIFLANDIRMA.md, ENVANTER-* (A0), docs/SRD-DENETIM.md, docs/MEKANIK-DURUM.md | bayat (tarihsel) | SRD-KAPSAM ve sonraki denetimler aştı; kural sürümü 16–34 | küçük | Belge başına "tarihsel; güncel durum SRD-KAPSAM" notu ya da betikli olanların yeniden üretimi |
 | 11 | Bütün bölümler: "çalışır" kalitesi | — | "Var-test edilmiş" satırlarda testin kuralı sınama oranı örneklemde ≈ %42; 414 + "var-testsiz" satırın testi yok | büyük | CLAUDE.md'deki "Dungeondex öncesi tam test turu"na: yüzeysel testlerin kural testine çevrilmesi |

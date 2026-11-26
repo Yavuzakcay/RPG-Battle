@@ -199,3 +199,4 @@ Görev B98 (2026-11-20; kural sürümü 98 `B98_VERSION`, 97 ve altı eski davra
 Kod okunarak doğrulandı (`karar104On` kapısı; 103 ve altı eski davranış). Test çalıştırılmadı.
 
 - **A23 Land's Aid seçimleri** (DECISIONS KARAR104 A5, sürüm 104): save atacak yaratıklar (`askPicks`, öneri düşmanlar; dost da seçilebilir, SRD "of your choice") ve iyileşecek tek yaratık (`askChoice`, öneri en yaralı dost, 0 HP'deki dahil B94) oyuncuya sorulur (`druid.ts` Land's Aid dalı). Özel test yok (`askPicks` genel testi `karar104.test.ts`). Wild Resurgence slot seçimi (A7) bu görevde değişmedi.
+- **A23 Land's Aid iyileşmesi** (DECISIONS SRD-TAMAMLAMA-1, sürüm 106; SRD 5.2.1 s. 46): iyileşecek yaratığın adayları ve canı bu eylemin hasarından sonraki durumdan (`druid.ts`, `applyEvents`); 105'te aynı yaratık hem save atıp hem iyileşince hasar siliniyordu. Özel test `src/battle/srd106.test.ts` "Land's Aid" (3 test: kancasız 106 = 105, aynı yaratık 105/106, hasardan sonra aday).
