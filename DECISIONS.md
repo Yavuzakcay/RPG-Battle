@@ -2,6 +2,33 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev KATALOG-1 D: 45 özgün yüzük/tılsım/mühür taşı + Kaltakkıran taşları ve Mühür (2026-11-26; kural sürümü ve kayıt sürümü değişmedi)
+
+Kaynak: Yüzük ve Tılsım Kataloğu #1–45 (`YT#`: 18 yüzük, 15 tılsım, 9 mühür taşı, 3 zanaat eklentisi); Kaltakkıran paketi: Çatlak Element
+Taşı (Sv.1) ve Uyanmış Element Taşı (Sv.2) on tür varyantıyla (`BOSS#7a–j`, `BOSS#8a–j`; ad "Cracked Elemental Stone (Fire)" / "Çatlak
+Element Taşı (Ateş)", metin PDF'teki ortak metin), on Sv.3 taşı (`BOSS#9–18`), Koruyucu Ejderha Mührü (`BOSS#19`). K7: Caustic Band →
+**Searing Acid Ring**, Callous Glow Ring → **Lightcall Ring**, Strange Conduit Ring → **Leaping Current Ring**.
+
+- **Metin birebir:** 76 kayıtta özet, 130 güç, riskler ve kimler ham PDF'te aynen (16 katalog parçasında risk/kimler satırı elle;
+  boss dosyasında bölümler sabit işaretlerle, ör. Sv.3 riski "Kararma Etkisi: …" sonrasından).
+- **K3 (mühür taşları yalnız tılsım modu):** katalog mühür taşlarında (YT#34–42) soket yok; taş taşınırken yalnız "Tılsım yuvası" etkisi
+  uygulanır, silah/zırh yuvası `planli` (notlu). Sv.1/Sv.2 da "Mühür taşı" başlıklı olduğu için tılsım modunda: Sv.2 türüne direnç +
+  turda bir silah isabetine 1d4 (paket `ekHasar` `turdaBir`) `calisir`; Sv.1'in türe sabit −3 azaltması motorda yok → `planli`.
+  Zanaat eklentileri (YT#43–45) yalnız veri.
+- **Sv.3 taşları:** PDF "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken …": motor zırh bağını denetleyemediği için
+  (B-4 Çeneli Zincir Kılıcı ile aynı) bütün güçler `planli`; kaynaşma, Kararma ve İhanet G'de anlatım. ⚠ Kullanıcıya soruldu.
+- **Birebir mekanikler:** saldırı avantajı / kurtarma dezavantajı (paket `zarEtkisi`), silaha sabit +2 asit (`ekHasar` `zar: "2"`),
+  konsantrasyonda silaha 1d4 psişik (`ekHasar` `kosul: konsantrasyon`), CON 21 (`setAbility`, Amulet of Health yolu), kurtarma avantajı,
+  Blinded/Frightened bağışıklığı, direnç, 19–20 kritik (`kritikAralik`), en yüksek can +8 (`canArtisi`), +1 AC, tüm kurtarma +1,
+  karanlık görüş, Misty Step (KD yükü `kismi`).
+- Sayılar: 130 güç = 23 çalışır, 6 kısmen, 101 planlı. Bütünüyle çalışan: Yakıcı Asit Yüzüğü, Sıçrayan Akım Yüzüğü, Peri Duruşu Tılsımı,
+  Sv.2'nin on varyantı.
+- **Tek liste (B-4):** `harita/belgeler/KATALOG-1-KANCA-LISTESI.md`: A–D'nin 518 planlı/kısmi gücü kanca türüne göre (zırh bağı,
+  soket, sabit azaltma, kısa dinlenme, beceri, ışık, yükseklik, büyü bonusu, tetik, aktif güç, koşul).
+- Testler: eşya 645 → 721, görsel eşleme 695 → 771 (76 yedek ikon); `katalogB.test.ts` BOSS filtresi #1–6; `src/battle/katalogD.test.ts`.
+  İkon sayfası (`katalog-ikon-imza`) Sv.1/Sv.2 için şablon kimlik (`cracked-elemental-stone`, `awakened-elemental-stone`) kullanıyor;
+  varyant kimlikleri ikon işinde `ayniGorsel`'e eklenecek.
+
 ## Görev KATALOG-1 C: 55 özgün giyilebilir (2026-11-26; kural sürümü ve kayıt sürümü değişmedi)
 
 Kaynak: Giyilebilir Kataloğu #1–50 (`GY#`: 13 başlık, 11 pelerin, 14 eldiven, 12 bot) ve Karanlık Yadigârlar başlıkları #45–48, #54

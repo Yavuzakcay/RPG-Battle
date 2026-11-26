@@ -11384,6 +11384,2760 @@
     "riskler": "Soğuk dışındaki diğer büyü türlerine herhangi bir bonus sağlamaz.",
     "kimlerKullanamaz": "Spellcasting veya Pact Magic özelliği olmayan karakterler bu şapkayla uyum yapamaz."
    }
+  },
+  {
+   "id": "shadowspark-ring",
+   "name": "Shadowspark Ring",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Savaş büyücüleri ve düzenbaz ozanlar için efsanevi siyah yüzük: silahla isabet ettikten sonra bir Illusion veya Enchantment büyüsünü bonus eylemle yapmanı sağlar.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#1",
+    "tr": "Gölge Kıvılcımı Yüzüğü",
+    "nadirlik": "efsanevi",
+    "tur": "aksesuar",
+    "yuva": "yüzük",
+    "fiyatGp": 22000,
+    "ozet": "Savaş büyücüleri ve düzenbaz ozanlar için efsanevi siyah yüzük: silahla isabet ettikten sonra bir Illusion veya Enchantment büyüsünü bonus eylemle yapmanı sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılıyken Stealth kontrollerine +1 bonus kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Hızlı Yanılsama (3 yük, UD 1d3)",
+      "metin": "Kendi turunda bir silah saldırısıyla isabet ettikten sonra 1 yük harcayarak normalde 1 Eylem döküm süresine sahip bildiğin bir Enchantment veya Illusion büyüsünü (ör. Command, Hold Person, Hypnotic Pattern, Fear, Mirror Image) aynı tur bonus eylemle yapabilirsin (büyünün yuvası normal harcanır).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Turda yalnızca bir büyü yuvası harcanır (SRD 5.2.1 kuralı); o tur zaten yuvalı başka bir büyü yaptıysan yalnızca cantrip yapılabilir.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Hızlı Yanılsama gücünü açamaz; Enchantment veya Illusion büyüsü bilmeyenlerde yalnızca Stealth +1 verir."
+   }
+  },
+  {
+   "id": "high-command-ring",
+   "name": "High Command Ring",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Ölümcül infazcılar için yakut taşlı yüzük: bir düşmanı öldürdüğünde bir sonraki isabetli saldırını garantili kritik vuruşa çevirecek bir mühür doldurur.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#2",
+    "tr": "Yüksek Emir Yüzüğü",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "yüzük",
+    "fiyatGp": 7400,
+    "ozet": "Ölümcül infazcılar için yakut taşlı yüzük: bir düşmanı öldürdüğünde bir sonraki isabetli saldırını garantili kritik vuruşa çevirecek bir mühür doldurur.",
+    "ozellikler": [
+     {
+      "ad": "İnfaz Mührü (1 yük, UD)",
+      "metin": "Savaşta bir düşmanı 0 HP'ye düşürdüğünde yüzük uyanır; sonraki 3 tur içinde yaptığın bir saldırı zarı isabet ettiğinde (doğal 1 hariç) yükü harcayarak o isabeti kritik vuruşa çevirebilirsin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Öldürmeden sonra 3 tur içinde kullanılmazsa uyanış söner; yalnızca isabet eden saldırı zarlarında (kurtarma zarlı büyülerde değil) çalışır.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter İnfaz Mührü gücünü kullanamaz."
+   }
+  },
+  {
+   "id": "gamblers-edge-ring",
+   "name": "Gambler's Edge Ring",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Kaderle kumar oynayan altın yüzük: yaptığın bütün saldırı zarlarını kalıcı olarak avantajlı kılar, ancak karşılığında tüm kurtarma zarlarında dezavantaj verir.",
+   "weight": 0.0,
+   "effects": {},
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "zarEtkisi",
+      "tetik": "pasif",
+      "avantaj": [
+       "saldiri"
+      ]
+     },
+     {
+      "tur": "zarEtkisi",
+      "tetik": "pasif",
+      "dezavantaj": [
+       "kurtulma"
+      ]
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "YT#3",
+    "tr": "Riskli Zar Yüzüğü",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "yüzük",
+    "fiyatGp": 7000,
+    "ozet": "Kaderle kumar oynayan altın yüzük: yaptığın bütün saldırı zarlarını kalıcı olarak avantajlı kılar, ancak karşılığında tüm kurtarma zarlarında dezavantaj verir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılı ve uyumlu olduğun sürece bütün silah ve büyü saldırı zarlarında avantaj kazanırsın.",
+      "durum": "calisir",
+      "not": "bütün saldırı zarlarında avantaj (paket zarEtkisi)"
+     },
+     {
+      "ad": "Kumar Bedeli",
+      "metin": "Aynı süre boyunca yaptığın bütün kurtarma zarlarında (ölüm kurtarması ve konsantrasyon dahil) dezavantaj alırsın.",
+      "durum": "kismi",
+      "not": "bütün yetenek kurtarmalarında dezavantaj (konsantrasyon dahil) çalışır; ölüm kurtarmasında dezavantaj yok"
+     }
+    ],
+    "riskler": "Kurtarma zarı dezavantajı kontrol büyüleri (Hold Person, Fear, Banishment) ve konsantrasyon için ciddi tehlike yaratır; savaş içinde yüzüğü çıkarmak bir eylem gerektirir.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter ne avantajı ne de bedeli alır."
+   }
+  },
+  {
+   "id": "dazzling-halo-ring",
+   "name": "Dazzling Halo Ring",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Güneş kristali oturtulmuş yüzük: kullanıcı parlak ışık altındayken büyü hasarı verdiği düşmanları parlak bir hareyle sararak saldırı isabetlerini kırar.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#4",
+    "tr": "Körleştiren Işık Yüzüğü",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "yüzük",
+    "fiyatGp": 6800,
+    "ozet": "Güneş kristali oturtulmuş yüzük: kullanıcı parlak ışık altındayken büyü hasarı verdiği düşmanları parlak bir hareyle sararak saldırı isabetlerini kırar.",
+    "ozellikler": [
+     {
+      "ad": "Körleştiren Hare",
+      "metin": "Parlak ışık düzeyindeki bir altıgende dururken bir düşmana büyü veya cantrip ile hasar verdiğinde (turda en fazla bir kez) hedef DC 15 CON kurtarma zarı atar; geçemezse 2 tur boyunca 5 ft parlak ışık yayar (Invisible olamaz) ve saldırı zarlarına −2 ceza alır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Loş veya karanlık altıgenlerde pasif çalışmaz; gece haritalarında meşale veya Light büyüsü desteği gerekir.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Körleştiren Hare pasifini açamaz."
+   }
+  },
+  {
+   "id": "snowburst-ring",
+   "name": "Snowburst Ring",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Buzul safiri kakmalı yüzük: soğuk hasarı verdiğin hedefin ayaklarının altında kaygan buz yüzeyi oluşturarak kalabalık düşmanları yere serer.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#5",
+    "tr": "Ayaz Halka Yüzüğü",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "yüzük",
+    "fiyatGp": 1750,
+    "ozet": "Buzul safiri kakmalı yüzük: soğuk hasarı verdiğin hedefin ayaklarının altında kaygan buz yüzeyi oluşturarak kalabalık düşmanları yere serer.",
+    "ozellikler": [
+     {
+      "ad": "Kırağı Halkası",
+      "metin": "Kendi turunda ilk kez bir düşmana soğuk hasarı verdiğinde (silah, cantrip veya büyüyle) hedefin altıgeninde ve 5 ft çevresinde 2 tur süren buz yüzeyi oluşur; bu alana giren veya orada kalan yaratıklar DC 13 DEX kurtarma zarını geçemezse Prone olur.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Oluşan buz yüzeyi yakındaki dostları da kaydırır; ateş hasarı değdiğinde buz eriyerek su yüzeyine dönüşür.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Kırağı Halkası pasifini açamaz."
+   }
+  },
+  {
+   "id": "searing-acid-ring",
+   "name": "Searing Acid Ring",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Zümrüt damlalı simya yüzüğü: tüm silah saldırılarına sabit asit hasarı ekleyerek özellikle çoklu saldırı yapan savaşçılarda yüksek tutarlı hasar sağlar.",
+   "weight": 0.0,
+   "effects": {},
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "ekHasar",
+      "tetik": "isabet",
+      "zar": "2",
+      "hasarTuru": "acid",
+      "saldiri": "silah"
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "YT#6",
+    "tr": "Yakıcı Asit Yüzüğü",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "yüzük",
+    "fiyatGp": 1500,
+    "ozet": "Zümrüt damlalı simya yüzüğü: tüm silah saldırılarına sabit asit hasarı ekleyerek özellikle çoklu saldırı yapan savaşçılarda yüksek tutarlı hasar sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılı olduğu sürece yaptığın bütün isabetli silah saldırılarına (yakın dövüş, menzilli, yan el ve fırlatma dahil) +2 asit hasarı eklenir.",
+      "durum": "calisir",
+      "not": "bütün silah isabetlerine +2 asit (paket ekHasar)"
+     }
+    ],
+    "riskler": "Asit bağışıklığı olan yaratıklarda ek hasar 0 olur; büyü saldırılarına ve Unarmed Strike'a uygulanmaz.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "lightcall-ring",
+   "name": "Lightcall Ring",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Sarı kehribar taşlı avcı yüzüğü: aydınlatılmış hedeflere karşı yapılan her silah veya büyü vuruşunu sabit ışıltı hasarıyla güçlendirir.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#7",
+    "tr": "Işık Çağrısı Yüzüğü",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "yüzük",
+    "fiyatGp": 1600,
+    "ozet": "Sarı kehribar taşlı avcı yüzüğü: aydınlatılmış hedeflere karşı yapılan her silah veya büyü vuruşunu sabit ışıltı hasarıyla güçlendirir.",
+    "ozellikler": [
+     {
+      "ad": "Aydınlık Avı",
+      "metin": "Parlak ışık altındaki bir altıgende duran (gündüz açık alan, meşale, Daylight veya parlayan etki altında) bir yaratığa silah veya büyüyle hasar verdiğinde saldırı/büyü başına +2 ışıltı hasarı eklenir (Magic Missile gibi çok oklu büyülerde hedef başına en fazla bir kez).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Loş ve karanlık altıgenlerdeki hedeflerde ek hasar devre dışı kalır; karanlık mağaralarda ışık kaynağı gerektirir.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "spellstrike-ring",
+   "name": "Spellstrike Ring",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Kılıç-büyü melezleri için çift halkalı yüzük: hasar veren bir cantrip kullandıktan sonra bir sonraki silah vuruşunu büyücülük yeteneğiyle güçlendirir.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#8",
+    "tr": "Örgü Ahengi Yüzüğü",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "yüzük",
+    "fiyatGp": 1700,
+    "ozet": "Kılıç-büyü melezleri için çift halkalı yüzük: hasar veren bir cantrip kullandıktan sonra bir sonraki silah vuruşunu büyücülük yeteneğiyle güçlendirir.",
+    "ozellikler": [
+     {
+      "ad": "Cantrip Ahengi",
+      "metin": "Kendi turunda hasar veren bir cantrip ile bir düşmana hasar verdiğinde, bir sonraki turunun sonuna kadar yapacağın ilk isabetli silah saldırısının hasarına büyücülük yeteneği değiştiricini (en az +1, en fazla +5) eklersin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Yalnızca cantrip hasarından sonra tetiklenir; seviyeli büyüler veya hasarsız cantrip'ler bu bonusu açmaz.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Cantrip Ahengi pasifini alamaz."
+   }
+  },
+  {
+   "id": "eversight-shadow-ring",
+   "name": "Eversight Shadow Ring",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Obsidyen gözlü karanlık yüzüğü: taşıyıcıyı körlük durumuna karşı tam bağışık kılar ve gölgeli hedeflere ek hasar verir.",
+   "weight": 0.0,
+   "effects": {},
+   "passive": {
+    "immune": [
+     "Blinded"
+    ]
+   },
+   "katalog": {
+    "ref": "YT#9",
+    "tr": "Gölge Yürüyen Yüzüğü",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "yüzük",
+    "fiyatGp": 1850,
+    "ozet": "Obsidyen gözlü karanlık yüzüğü: taşıyıcıyı körlük durumuna karşı tam bağışık kılar ve gölgeli hedeflere ek hasar verir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılı ve uyumlu olduğun sürece Blinded durumuna bağışıklık kazanırsın (Fog Cloud ve Darkness içindeki görüş cezaları yine sürer; yalnız Blinded durumu ve büyülü körlük işlemez).",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Gölge Kesiği",
+      "metin": "Loş veya karanlık ışık düzeyindeki bir altıgende duran hedeflere yaptığın saldırılara turda bir kez +1d4 hasar (silahın türünde) eklenir.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Darkness veya Fog Cloud'un yoğun örtü görüş engelini kaldırmaz; yalnızca Blinded durumunu engeller.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Blinded bağışıklığını ve Gölge Kesiği bonusunu alamaz."
+   }
+  },
+  {
+   "id": "whispering-promise-ring",
+   "name": "Whispering Promise Ring",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Altın dua işlemeli rahip yüzüğü: iyileştirdiğin her yaratığı konsantrasyon harcamadan kısa bir kutsama etkisiyle güçlendirir.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#10",
+    "tr": "Kutsanmış Şifa Yüzüğü",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "yüzük",
+    "fiyatGp": 1800,
+    "ozet": "Altın dua işlemeli rahip yüzüğü: iyileştirdiğin her yaratığı konsantrasyon harcamadan kısa bir kutsama etkisiyle güçlendirir.",
+    "ozellikler": [
+     {
+      "ad": "Şifa Kutsaması",
+      "metin": "Bir büyü, sınıf özelliği veya iksirle bir yaratığı iyileştirdiğinde (kendin dahil) o yaratık 2 tur boyunca saldırı zarlarına ve kurtarma zarlarına +1d4 ekler (Bless ile aynı türden olduğundan Bless ile üst üste birikmez, konsantrasyon gerekmez).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Bless büyüsü zaten aktif olan bir hedefte iki +1d4 bonusu toplanmaz; yalnızca geçici can veren etkiler iyileştirme sayılmaz.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Şifa Kutsaması pasifini açamaz."
+   }
+  },
+  {
+   "id": "sparkswall-ring",
+   "name": "Sparkswall Ring",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Topraklanmış bakır ve cam yüzük: yıldırım direnci sağlar ve su yüzeyinde yayılan yıldırım zincirinin hasarından kullanıcıyı tamamen korur.",
+   "weight": 0.0,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "lightning"
+    ]
+   },
+   "katalog": {
+    "ref": "YT#11",
+    "tr": "Kıvılcım Halkası",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "yüzük",
+    "fiyatGp": 1500,
+    "ozet": "Topraklanmış bakır ve cam yüzük: yıldırım direnci sağlar ve su yüzeyinde yayılan yıldırım zincirinin hasarından kullanıcıyı tamamen korur.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılı ve uyumlu olduğun sürece yıldırım hasarına direnç kazanırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Yalıtımlı Taban",
+      "metin": "Su altıgenindeyken yıldırım + su yüzey tepkimesinden (lightningWater zinciri) doğan ikincil yıldırım hasarına ve bu tepkimeden gelen durumlara karşı tamamen bağışıksın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Doğrudan seni hedef alan yıldırım büyülerine (ör. Lightning Bolt, Call Lightning) karşı tam bağışıklık değil, yalnızca direnç verir.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter yıldırım direnci ve Yalıtımlı Taban bağışıklığını alamaz."
+   }
+  },
+  {
+   "id": "flinging-ring",
+   "name": "Flinging Ring",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Savaşçı ve barbarlar için hafif demir yüzük: fırlatılan silah ve nesne saldırılarına ek hasar katarak menzilli fırlatma tarzını güçlendirir.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#12",
+    "tr": "Kurnaz Fırlatış Yüzüğü",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "yüzük",
+    "fiyatGp": 450,
+    "ozet": "Savaşçı ve barbarlar için hafif demir yüzük: fırlatılan silah ve nesne saldırılarına ek hasar katarak menzilli fırlatma tarzını güçlendirir.",
+    "ozellikler": [
+     {
+      "ad": "Keskin Savuruş",
+      "metin": "Thrown özellikli bir silahla yaptığın fırlatma saldırılarına ve Nesne Fırlat (object_use throw) atışlarına +1d4 ek hasar (atılanın türünde) eklersin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Yakın dövüş vuruşlarında ve yay/arbalet atışlarında çalışmaz; aynı etkiyi veren eldivenle takıldığında toplamda en fazla iki zar (+2d4) eklenir.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "leaping-current-ring",
+   "name": "Leaping Current Ring",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Mor kuvars taşlı odak yüzüğü: bir büyüye konsantrasyon sürdürdüğün sürece bütün silah saldırılarını psişik enerjiyle besler.",
+   "weight": 0.0,
+   "effects": {},
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "ekHasar",
+      "tetik": "isabet",
+      "zar": "1d4",
+      "hasarTuru": "psychic",
+      "saldiri": "silah",
+      "kosul": [
+       "konsantrasyon"
+      ]
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "YT#13",
+    "tr": "Sıçrayan Akım Yüzüğü",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "yüzük",
+    "fiyatGp": 1600,
+    "ozet": "Mor kuvars taşlı odak yüzüğü: bir büyüye konsantrasyon sürdürdüğün sürece bütün silah saldırılarını psişik enerjiyle besler.",
+    "ozellikler": [
+     {
+      "ad": "Odak Akımı",
+      "metin": "Herhangi bir büyüye konsantrasyon sürdürdüğün sürece yaptığın tüm isabetli silah saldırılarına ek 1d4 psişik hasarı eklenir.",
+      "durum": "calisir",
+      "not": "konsantrasyon sürerken silah isabetlerine 1d4 psişik (paket ekHasar, koşul konsantrasyon)"
+     }
+    ],
+    "riskler": "Konsantrasyon kırıldığı anda ek hasar kesilir; psişik bağışıklığı olan Construct'larda işlemez.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Odak Akımı pasifini açamaz."
+   }
+  },
+  {
+   "id": "elemental-infusion-ring",
+   "name": "Elemental Infusion Ring",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Beş renkli taşla çevrili savaş büyücüsü yüzüğü: element hasarı veren bir büyüden sonra silahını aynı elementle geçici olarak kaplar.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#14",
+    "tr": "Kül Ezgisi Yüzüğü",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "yüzük",
+    "fiyatGp": 1550,
+    "ozet": "Beş renkli taşla çevrili savaş büyücüsü yüzüğü: element hasarı veren bir büyüden sonra silahını aynı elementle geçici olarak kaplar.",
+    "ozellikler": [
+     {
+      "ad": "Element Kaplaması",
+      "metin": "Kendi turunda bir büyü veya cantrip ile asit, ateş, soğuk, yıldırım veya gürültü hasarı verdiğinde, bir sonraki turunun sonuna kadar yapacağın ilk isabetli silah saldırısına +1d4 aynı elementten hasar eklenir (yeni element öncekinin yerini alır).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Bonus yalnızca tek bir sonraki silah isabetinde harcanır; fiziksel veya psişik/nekrotik büyülerle tetiklenmez.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Element Kaplaması pasifini açamaz."
+   }
+  },
+  {
+   "id": "venomthorn-ring",
+   "name": "Venomthorn Ring",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Yeşil diken oymalı simyacı yüzüğü: verdiğin zehir hasarlarını artırır ve zehirlenmiş düşmanlara karşı saldırı isabetini yükseltir.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#15",
+    "tr": "Zehirli Diken Yüzüğü",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "yüzük",
+    "fiyatGp": 480,
+    "ozet": "Yeşil diken oymalı simyacı yüzüğü: verdiğin zehir hasarlarını artırır ve zehirlenmiş düşmanlara karşı saldırı isabetini yükseltir.",
+    "ozellikler": [
+     {
+      "ad": "Zehir Keskinliği",
+      "metin": "Bir silah, kaplama veya büyüyle zehir hasarı verdiğinde turda bir kez hasara +2 zehir hasarı eklersin. Ayrıca Poisoned durumundaki hedeflere yaptığın saldırı zarlarına +1 bonus kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Zehir bağışıklığı olan Undead ve Construct düşmanlarda her iki bonus da işlevsiz kalır.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "locksmiths-ring",
+   "name": "Locksmith's Ring",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Karanlık sokak izcileri için sade gümüş yüzük: gizlenme ve kilit açma becerilerini belirgin biçimde artırır ancak karizmatik etkileyiciliği hafifçe törpüler.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#16",
+    "tr": "Tuzakçının Kilit Yüzüğü",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "yüzük",
+    "fiyatGp": 420,
+    "ozet": "Karanlık sokak izcileri için sade gümüş yüzük: gizlenme ve kilit açma becerilerini belirgin biçimde artırır ancak karizmatik etkileyiciliği hafifçe törpüler.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılıyken Stealth kontrollerine +2 ve Sleight of Hand (kilit açma dahil) kontrollerine +2 bonus kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Gölge Soğukluğu",
+      "metin": "Aynı süre boyunca CHA yetenek kontrollerinde (Persuasion, Deception, Performance) −1 ceza alırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "CHA kurtarma zarlarını etkilemez ancak sosyal beceri kontrollerinde (ikna ve aldatma) −1 ceza doğurur.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "rootgrip-ring",
+   "name": "Rootgrip Ring",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Canlı ağaç kökünden bükülmüş şifa yüzüğü: yaptığın her iyileştirmeye sabit ek can katar ve günde bir kez uzaktan Healing Word yapmanı sağlar.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#17",
+    "tr": "Çiftçi Kökü Yüzüğü",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "yüzük",
+    "fiyatGp": 500,
+    "ozet": "Canlı ağaç kökünden bükülmüş şifa yüzüğü: yaptığın her iyileştirmeye sabit ek can katar ve günde bir kez uzaktan Healing Word yapmanı sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Bir büyü veya sınıf özelliğiyle bir yaratığı iyileştirdiğinde iyileşme miktarına +2 can eklenir (hedef başına).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Kök Şifası (1 yük, UD)",
+      "metin": "Bonus eylemle 1. seviye Healing Word (60 ft, 2d4 + 2 can iyileştirme) yaparsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "İksir içmeye değil, büyü ve özellik iyileştirmelerine +2 ekler; Healing Word yükü uzun dinlenmeye dek yenilenmez.",
+    "kimlerKullanamaz": "Herkes takabilir (büyücü olmayan sınıflar da Kök Şifası yükünü kullanabilir)."
+   }
+  },
+  {
+   "id": "fracture-ring",
+   "name": "Fracture Ring",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Çatlak kuvars taşlı ses yüzüğü: gürültü hasarı verdiği düşmanın dengesini bozarak bir tur boyunca tepki kullanmasını engelleyebilir.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#18",
+    "tr": "Sarsıntı Kırığı Yüzüğü",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "yüzük",
+    "fiyatGp": 460,
+    "ozet": "Çatlak kuvars taşlı ses yüzüğü: gürültü hasarı verdiği düşmanın dengesini bozarak bir tur boyunca tepki kullanmasını engelleyebilir.",
+    "ozellikler": [
+     {
+      "ad": "Yankı Kesintisi",
+      "metin": "Kendi turunda ilk kez bir düşmana gürültü hasarı verdiğinde hedef DC 13 CON kurtarma zarı atar; geçemezse sonraki turunun başına kadar tepki (Reaction) kullanamaz (fırsat saldırısı, Shield veya Counterspell yapamaz).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Gürültü hasarı kaynağı olmayan karakterlerde çalışmaz; hedef kurtarma zarını geçerse ek hasar vermez.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "lifespring-amulet",
+   "name": "Lifespring Amulet",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Altın damarlı yakut tılsım: taşıyıcının dayanıklılığını insanüstü düzeye çıkarır, bütün CON kurtarma zarlarına avantaj verir ve günde bir kez yüksek can yeniler.",
+   "weight": 0.0,
+   "effects": {
+    "setAbility": {
+     "con": 21
+    }
+   },
+   "passive": {
+    "saveAdv": [
+     "con"
+    ]
+   },
+   "katalog": {
+    "ref": "YT#19",
+    "tr": "Yaşam Kaynağı Tılsımı",
+    "nadirlik": "efsanevi",
+    "tur": "aksesuar",
+    "yuva": "tılsım",
+    "fiyatGp": 26000,
+    "ozet": "Altın damarlı yakut tılsım: taşıyıcının dayanıklılığını insanüstü düzeye çıkarır, bütün CON kurtarma zarlarına avantaj verir ve günde bir kez yüksek can yeniler.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılı ve uyumlu olduğun sürece CON skorun 21 olur (en yüksek canın buna göre artar; mevcut CON skorun 21 veya üstüyse değişmez) ve bütün CON kurtarma zarlarında (konsantrasyon dahil) avantaj kazanırsın.",
+      "durum": "calisir",
+      "not": "CON 21 (setAbility; 21+ ise değişmez) ve CON kurtarma avantajı (konsantrasyon dahil)"
+     },
+     {
+      "ad": "Yaşam Pınarı (1 yük, UD)",
+      "metin": "Bonus eylemle 4d8 + 4 can iyileşirsin ve üzerindeki Poisoned durumunu temizlersin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Tılsım çıkarıldığında veya uyum bozulduğunda CON 21'den gelen ek maksimum can anında düşer; mevcut can yeni tavanı aşamaz.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter CON sabitlemesi, kurtarma avantajı ve Yaşam Pınarı gücünü kullanamaz."
+   }
+  },
+  {
+   "id": "spellwell-amulet",
+   "name": "Spellwell Amulet",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "İçinde saf büyü kıvılcımı tutan kristal kolye: büyü kurtarma zarı DC'sini artırır ve günde bir kez 6. seviyeye kadar harcanmış bir büyü yuvasını anında doldurur.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#20",
+    "tr": "Yedek Yuva Kolyesi",
+    "nadirlik": "efsanevi",
+    "tur": "aksesuar",
+    "yuva": "tılsım",
+    "uyumKosulu": "Büyücü",
+    "fiyatGp": 24500,
+    "ozet": "İçinde saf büyü kıvılcımı tutan kristal kolye: büyü kurtarma zarı DC'sini artırır ve günde bir kez 6. seviyeye kadar harcanmış bir büyü yuvasını anında doldurur.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılıyken büyü kurtarma zarı DC'sine +1 bonus alırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Yuva Pınarı (1 yük, UD)",
+      "metin": "Bonus eylemle harcanmış en fazla 6. seviye 1 büyü yuvasını (veya Warlock için 1 Pact Magic yuvasını) geri kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "7–9. seviye büyü yuvalarını yenilemez; 1–6. seviye arasında harcanmış yuvan yoksa bonus eylem boşa gider.",
+    "kimlerKullanamaz": "Spellcasting veya Pact Magic özelliği olmayan karakterler bu kolyeyle uyum yapamaz."
+   }
+  },
+  {
+   "id": "rebirth-idol-amulet",
+   "name": "Rebirth Idol Amulet",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Küllerinden doğan zümrüt heykelcik tılsımı: taşıyıcı savaşta 0 HP'ye düştüğünde tepki veya eylem harcamadan onu yarı canıyla anında ayağa kaldırır.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#21",
+    "tr": "Yeniden Doğuş Tılsımı",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "tılsım",
+    "fiyatGp": 8500,
+    "ozet": "Küllerinden doğan zümrüt heykelcik tılsımı: taşıyıcı savaşta 0 HP'ye düştüğünde tepki veya eylem harcamadan onu yarı canıyla anında ayağa kaldırır.",
+    "ozellikler": [
+     {
+      "ad": "Kül Dirilişi (1 yük, UD)",
+      "metin": "Savaşta hasar alarak 0 HP'ye düşecekken (anında ölüm hariç) tılsım parlar ve düşmek yerine en yüksek canının yarısı kadar iyileşerek ayakta kalırsın (Prone olmazsın). Yük harcandığında tılsım uzun dinlenmeye kadar sönük kalır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Lav düşüşü, Power Word Kill veya 6. Exhaustion gibi anında ölüm etkilerini engellemez; uzun dinlenmeye kadar yalnızca bir kez çalışır.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Kül Dirilişi korumasını alamaz."
+   }
+  },
+  {
+   "id": "devouts-medallion",
+   "name": "Devout's Medallion",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "İlahi mühürlü altın madalyon: büyü kurtarma zarı zorluğunu belirgin biçimde yükseltir ve günde bir kez ek Channel Divinity hakkı verir.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#22",
+    "tr": "Adanmışlık Tılsımı",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "tılsım",
+    "uyumKosulu": "Rahip/Paladin",
+    "fiyatGp": 8000,
+    "ozet": "İlahi mühürlü altın madalyon: büyü kurtarma zarı zorluğunu belirgin biçimde yükseltir ve günde bir kez ek Channel Divinity hakkı verir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılıyken büyü kurtarma zarı DC'sine +2 bonus kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "İlahi Akış (1 yük, UD)",
+      "metin": "Bonus eylemle harcanmış 1 Channel Divinity kullanımını geri kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Channel Divinity havuzu zaten doluysa İlahi Akış tavanın üzerine çıkmaz; saldırı zarlarına bonus vermez.",
+    "kimlerKullanamaz": "Channel Divinity özelliği olmayan karakterler (Cleric ve Paladin dışındakiler) uyum yapamaz."
+   }
+  },
+  {
+   "id": "spellspark-pendant",
+   "name": "Spellspark Pendant",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "İkiz safir düğümlü büyücü kolyesi: Magic Missile büyüsüne fazladan bir ok ekler ve element cantrip'lerinin hasarını büyücülük yeteneğiyle güçlendirir.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#23",
+    "tr": "Kıvılcım Düğümü Kolyesi",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "tılsım",
+    "uyumKosulu": "Büyücü",
+    "fiyatGp": 7400,
+    "ozet": "İkiz safir düğümlü büyücü kolyesi: Magic Missile büyüsüne fazladan bir ok ekler ve element cantrip'lerinin hasarını büyücülük yeteneğiyle güçlendirir.",
+    "ozellikler": [
+     {
+      "ad": "Ek Güdümlü Ok",
+      "metin": "Herhangi bir seviyede Magic Missile yaptığında büyü fazladan 1 kuvvet oku (1d4 + 1 kuvvet hasarı) daha üretir.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Element Güçlendirmesi",
+      "metin": "Asit, ateş, soğuk, yıldırım veya gürültü hasarı veren bir cantrip ile hasar verdiğinde turda bir kez hasara büyücülük yeteneği değiştiricini (en az +1) eklersin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Element Güçlendirmesi turda yalnızca bir kez ve belirtilen beş element türünde çalışır; kuvvet, psişik veya ışıltı cantrip'lerine eklenmez.",
+    "kimlerKullanamaz": "Spellcasting veya Pact Magic özelliği olmayan karakterler uyum yapamaz."
+   }
+  },
+  {
+   "id": "subjugation-pendant",
+   "name": "Subjugation Pendant",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Sinir düğümlerini hedefleyen gümüş kolye: bir insansıya kritik vuruş indirildiğinde hedefi iki tur boyunca tamamen felç edebilir.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#24",
+    "tr": "Cerrahi Felç Kolyesi",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "tılsım",
+    "fiyatGp": 7200,
+    "ozet": "Sinir düğümlerini hedefleyen gümüş kolye: bir insansıya kritik vuruş indirildiğinde hedefi iki tur boyunca tamamen felç edebilir.",
+    "ozellikler": [
+     {
+      "ad": "Sinir Kilidi (1 yük, UD)",
+      "metin": "Bir Humanoid yaratığa silah saldırısıyla kritik vuruş yaptığında yükü harcayabilirsin; hedef DC 15 CON kurtarma zarını geçemezse 2 tur boyunca Paralyzed olur (her kendi turunun sonunda CON kurtarmasını yenileyebilir).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Yalnızca Humanoid yaratıklara ve silah kritiklerine işler; hedef kurtarma zarını geçse de günlük yük harcanır.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Sinir Kilidi gücünü kullanamaz."
+   }
+  },
+  {
+   "id": "feyward-amulet",
+   "name": "Feyward Amulet",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Peri diyarı gümüşünden örülü koruyucu tılsım: bütün zihinsel kurtarma zarlarında kalıcı avantaj vererek akıl ve korku büyülerine set çeker.",
+   "weight": 0.0,
+   "effects": {},
+   "passive": {
+    "saveAdv": [
+     "int",
+     "wis",
+     "cha"
+    ]
+   },
+   "katalog": {
+    "ref": "YT#25",
+    "tr": "Peri Duruşu Tılsımı",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "tılsım",
+    "fiyatGp": 7600,
+    "ozet": "Peri diyarı gümüşünden örülü koruyucu tılsım: bütün zihinsel kurtarma zarlarında kalıcı avantaj vererek akıl ve korku büyülerine set çeker.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılı ve uyumlu olduğun sürece bütün INT, WIS ve CHA kurtarma zarlarında avantaj kazanırsın.",
+      "durum": "calisir"
+     }
+    ],
+    "riskler": "Fiziksel kurtarma zarlarını (STR, DEX, CON) etkilemez; Gnome gibi zaten benzer avantaja sahip türlerde avantajlar üst üste binmez.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter zihinsel kurtarma avantajını alamaz."
+   }
+  },
+  {
+   "id": "brandbreaker-amulet",
+   "name": "Brandbreaker Amulet",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Kızgın demir mührü taşıyan taktik tılsımı: günde bir kez bir düşmanın zırhında gedik açarak seçilen tek bir fiziksel hasar türüne karşı geçici zayıflık verir.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#26",
+    "tr": "Damgalayan Tılsım",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "tılsım",
+    "fiyatGp": 1800,
+    "ozet": "Kızgın demir mührü taşıyan taktik tılsımı: günde bir kez bir düşmanın zırhında gedik açarak seçilen tek bir fiziksel hasar türüne karşı geçici zayıflık verir.",
+    "ozellikler": [
+     {
+      "ad": "Zayıf Damga (1 yük, UD)",
+      "metin": "Bonus eylemle 30 ft içinde görebildiğin bir yaratığı seçer ve bir fiziksel tür belirlersin (ezici, delici veya kesici). Hedef DC 14 CON kurtarma zarını geçemezse sonraki 2 tur içinde o türden alacağı ilk isabetin hasarına karşı Zayıflık (Vulnerability; 2× hasar) kazanır ve darbe indiğinde damga biter.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Zayıflık ilk isabette tüketildiği için takım sırası doğru ayarlanmazsa küçük bir yan darbede harcanabilir; ilgili türe bağışıklığı olanlarda işlemez.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Zayıf Damga gücünü kullanamaz."
+   }
+  },
+  {
+   "id": "venomkiss-pendant",
+   "name": "Venomkiss Pendant",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Yılan dişi kakmalı simya kolyesi: taşıyıcı her iyileştirildiğinde elindeki silahı üç tur boyunca yakıcı zehirle kaplar.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#27",
+    "tr": "Zehirli İntikam Kolyesi",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "tılsım",
+    "fiyatGp": 1600,
+    "ozet": "Yılan dişi kakmalı simya kolyesi: taşıyıcı her iyileştirildiğinde elindeki silahı üç tur boyunca yakıcı zehirle kaplar.",
+    "ozellikler": [
+     {
+      "ad": "Zehirli Şifa",
+      "metin": "Bir büyü, sınıf özelliği veya iksirle can iyileştirmesi aldığında (geçici can hariç) elindeki silah 3 tur boyunca zehirle kaplanır ve bu silahla yaptığın her isabetli saldırıya ek 1d6 zehir hasarı eklenir.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Zehir bağışıklığı olan Undead ve Construct düşmanlara karşı ek hasar işlemez; tam candayken iyileşme alınmazsa tetiklenmez.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Zehirli Şifa pasifini açamaz."
+   }
+  },
+  {
+   "id": "torment-conduit-amulet",
+   "name": "Torment Conduit Amulet",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Yüzey tepkimelerini büyü gücüne çeviren odak kolyesi: üzerinde durduğun tehlikeli yüzeyin elementini yaptığın saldırı büyülerine aktarır.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#28",
+    "tr": "Element Kurbanı Kolyesi",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "tılsım",
+    "fiyatGp": 1700,
+    "ozet": "Yüzey tepkimelerini büyü gücüne çeviren odak kolyesi: üzerinde durduğun tehlikeli yüzeyin elementini yaptığın saldırı büyülerine aktarır.",
+    "ozellikler": [
+     {
+      "ad": "Yüzey Aktarımı",
+      "metin": "Alev, asit, zehir bulutu, buz veya su yüzeyinin üstünde dururken hasar veren bir büyü veya cantrip yaptığında, turda bir kez büyünün hasarına yüzeyin türüne göre +1d4 ek hasar katılır (alev → ateş hasarı, buz → soğuk hasarı, su → yıldırım hasarı, zehir bulutu → zehir hasarı).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Tehlikeli yüzeylerin üzerinde durmak taşıyıcıyı yüzey hasarına ve kayma/zehirlenme riskine açık bırakır; direnç veya koruma ekipmanıyla desteklenmelidir.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Yüzey Aktarımı pasifini açamaz."
+   }
+  },
+  {
+   "id": "clearmind-pendant",
+   "name": "Clearmind Pendant",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Huzurlu meditasyon taşlı kolye: WIS kurtarmalarını güçlendirir ve günde bir kez keşiş odağını veya düşük seviyeli bir büyü yuvasını geri doldurur.",
+   "weight": 0.0,
+   "effects": {},
+   "passive": {
+    "saveMod": {
+     "wis": 1
+    }
+   },
+   "katalog": {
+    "ref": "YT#29",
+    "tr": "Berrak Zihin Kolyesi",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "tılsım",
+    "fiyatGp": 1650,
+    "ozet": "Huzurlu meditasyon taşlı kolye: WIS kurtarmalarını güçlendirir ve günde bir kez keşiş odağını veya düşük seviyeli bir büyü yuvasını geri doldurur.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılıyken WIS kurtarma zarlarına +1 bonus alırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "İç Dinginlik (1 yük, UD)",
+      "metin": "Bonus eylemle harcanmış 2 Focus puanını (keşiş) ya da en fazla 2. seviye harcanmış 1 büyü yuvasını geri kazanırsın (ikisine de sahip değilsen 10 geçici can alırsın).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Focus veya yuva zaten doluysa tavanı aşmaz; 3. seviye ve üstü yuvaları yenilemez.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter WIS bonusu ve İç Dinginlik gücünü kullanamaz."
+   }
+  },
+  {
+   "id": "miststep-pendant",
+   "name": "Miststep Pendant",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Gümüş sis kapsüllü kaçış kolyesi: her kısa dinlenmede bir kez bonus eylemle Misty Step yaptırarak kuşatmadan zahmetsizce kurtarır.",
+   "weight": 0.0,
+   "effects": {},
+   "spells": [
+    {
+     "name": "Misty Step",
+     "level": 2
+    }
+   ],
+   "charges": 1,
+   "recharge": "all",
+   "katalog": {
+    "ref": "YT#30",
+    "tr": "Sis Adımı Kolyesi",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "tılsım",
+    "fiyatGp": 1500,
+    "ozet": "Gümüş sis kapsüllü kaçış kolyesi: her kısa dinlenmede bir kez bonus eylemle Misty Step yaptırarak kuşatmadan zahmetsizce kurtarır.",
+    "ozellikler": [
+     {
+      "ad": "Sis Kaçışı (1 yük, KD)",
+      "metin": "Bonus eylemle 2. seviye Misty Step yaparak 30 ft içinde görebildiğin boş bir altıgene fırsat saldırısı tetiklemeden ışınlanırsın.",
+      "durum": "kismi",
+      "not": "2. seviye Misty Step slotsuz çalışır; eşya yükü yalnız uzun dinlenmede yenilenir (kısa dinlenme yok)"
+     }
+    ],
+    "riskler": "Varış altıgeni görüş hattında ve boş olmalıdır; Forcecage kutusu içinden çıkmak için CHA kurtarma zarı gerekir.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "dreadwing-charm",
+   "name": "Dreadwing Charm",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kuzgun pençesi biçimli hayatta kalma muskası: yaralıyken düşman erişiminden fırsat saldırısı yemeden sıyrılmanı sağlar ve karanlık görüşünü uzatır.",
+   "weight": 0.0,
+   "effects": {},
+   "passive": {
+    "darkvision": 30
+   },
+   "katalog": {
+    "ref": "YT#31",
+    "tr": "Karanlık Kanat Muskası",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "tılsım",
+    "fiyatGp": 480,
+    "ozet": "Kuzgun pençesi biçimli hayatta kalma muskası: yaralıyken düşman erişiminden fırsat saldırısı yemeden sıyrılmanı sağlar ve karanlık görüşünü uzatır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Mevcut Darkvision menzilin +30 ft artar (karanlık görüşün yoksa 30 ft Darkvision kazanırsın).",
+      "durum": "kismi",
+      "not": "karanlık görüşü olmayana 30 ft çalışır; olanın menziline +30 ft eklenmez (motorda en yüksek değer)"
+     },
+     {
+      "ad": "Son Kaçış",
+      "metin": "Mevcut canın en yüksek canının yarısında veya altındayken hareketin fırsat saldırısı tetiklemez.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Yarı canın üstündeyken fırsat saldırısı koruması kapalıdır; kaçış için canı düşük tutmak risklidir.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "silverthread-locket",
+   "name": "Silverthread Locket",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Sahra hekimlerinin acil şifa madalyonu: büyücü olmayan karakterlerin bile günde iki kez düşmüş dostları ayağa kaldırabilmesini sağlar.",
+   "weight": 0.0,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#32",
+    "tr": "Gümüş İğne Muskası",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "tılsım",
+    "fiyatGp": 520,
+    "ozet": "Sahra hekimlerinin acil şifa madalyonu: büyücü olmayan karakterlerin bile günde iki kez düşmüş dostları ayağa kaldırabilmesini sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Acil Müdahale (2 yük, UD 1d2)",
+      "metin": "Bonus eylemle 1 yük harcayarak 1. seviye Healing Word (60 ft, 2d4 + 2 can) yaparsın; ya da eylemle 2 yük harcayarak 15 ft çevrendeki en fazla 3 dostu 1d6 + 2 can iyileştirirsin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Undead ve Construct dostlara şifa işlemez; 2 yükü toplu şifaya harcamak acil tekil kaldırma hakkını tüketir.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "emberheart-talisman",
+   "name": "Emberheart Talisman",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Volkan camından yontulmuş savaş tılsımı: ateş direnci verir ve kullanıcı ağır yaralandığında yakın dövüş saldırılarını alevle güçlendirir.",
+   "weight": 0.0,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "fire"
+    ]
+   },
+   "katalog": {
+    "ref": "YT#33",
+    "tr": "Kızgın Yürek Tılsımı",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "tılsım",
+    "fiyatGp": 450,
+    "ozet": "Volkan camından yontulmuş savaş tılsımı: ateş direnci verir ve kullanıcı ağır yaralandığında yakın dövüş saldırılarını alevle güçlendirir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Ateş hasarına direnç kazanırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Son Kor",
+      "metin": "Mevcut canın en yüksek canının yarısında veya altındayken bütün yakın dövüş silah ve Unarmed Strike isabetlerine ek 1d4 ateş hasarı eklenir.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Menzilli saldırılarda çalışmaz; yarı canın üzerinde yalnızca ateş direnci sağlar.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "ember-sigil-stone",
+   "name": "Ember Sigil Stone",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Ateş özü hapsedilmiş kırmızı mühür taşı: silaha yakıcı ateş hasarı, zırha ateş direnci, tılsıma ise keskin kritik şansı kazandırır.",
+   "weight": 0.5,
+   "effects": {},
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "zarEtkisi",
+      "tetik": "pasif",
+      "kritikAralik": 19
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "YT#34",
+    "tr": "Kor Mühür Taşı",
+    "nadirlik": "nadir",
+    "tur": "sihirli",
+    "yuva": "soket",
+    "fiyatGp": 1200,
+    "ozet": "Ateş özü hapsedilmiş kırmızı mühür taşı: silaha yakıcı ateş hasarı, zırha ateş direnci, tılsıma ise keskin kritik şansı kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında boş mühür soketi bulunan tek bir ekipmana takılır (aynı anda bir eşyaya en fazla 1 Mühür Taşı takılır).",
+      "durum": "planli",
+      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; yalnız Tılsım yuvası etkisi"
+     },
+     {
+      "ad": "Silah yuvası",
+      "metin": "Silah isabetlerine +1d4 ateş hasarı (yanıcı yüzey tutuşturur).",
+      "durum": "planli",
+      "not": "K3 tılsım modu: silah/zırh yuvası etkisi uygulanmaz"
+     },
+     {
+      "ad": "Zırh yuvası",
+      "metin": "Ateş hasarına direnç.",
+      "durum": "planli",
+      "not": "K3 tılsım modu: silah/zırh yuvası etkisi uygulanmaz"
+     },
+     {
+      "ad": "Tılsım yuvası",
+      "metin": "d20 saldırı zarında 19– 20 kritik vuruş sayılır.",
+      "durum": "calisir",
+      "not": "19–20 kritik (paket zarEtkisi kritikAralik)"
+     }
+    ],
+    "riskler": "Savaş sırasında yuva değiştirilemez; aynı ekipmana ikinci bir Mühür Taşı takıldığında önceki taş çıkarılır.",
+    "kimlerKullanamaz": "Boş mühür soketi taşıyan bir ekipmanı olmayan karakter soketleyemez."
+   }
+  },
+  {
+   "id": "frost-sigil-stone",
+   "name": "Frost Sigil Stone",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kış rüzgârıyla donmuş mavi mühür taşı: silaha soğuk hasarı, zırha soğuk direnci, tılsıma ise ek hız ve buzda kaymama dengesi kazandırır.",
+   "weight": 0.5,
+   "effects": {},
+   "passive": {
+    "speedFt": 5,
+    "iceWalker": true
+   },
+   "katalog": {
+    "ref": "YT#35",
+    "tr": "Kırağı Mühür Taşı",
+    "nadirlik": "nadir",
+    "tur": "sihirli",
+    "yuva": "soket",
+    "fiyatGp": 1200,
+    "ozet": "Kış rüzgârıyla donmuş mavi mühür taşı: silaha soğuk hasarı, zırha soğuk direnci, tılsıma ise ek hız ve buzda kaymama dengesi kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında soketli bir ekipmana yerleştirilir.",
+      "durum": "planli",
+      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; yalnız Tılsım yuvası etkisi"
+     },
+     {
+      "ad": "Silah yuvası",
+      "metin": "Silah isabetlerine +1d4 soğuk hasarı (su altıgenini dondurur).",
+      "durum": "planli",
+      "not": "K3 tılsım modu: silah/zırh yuvası etkisi uygulanmaz"
+     },
+     {
+      "ad": "Zırh yuvası",
+      "metin": "Soğuk hasarına direnç.",
+      "durum": "planli",
+      "not": "K3 tılsım modu: silah/zırh yuvası etkisi uygulanmaz"
+     },
+     {
+      "ad": "Tılsım yuvası",
+      "metin": "Yürüme hızı +5 ft artar ve buz yüzeyinde kayarak Prone olmazsın (iceWalker).",
+      "durum": "kismi",
+      "not": "hız +5 ft ve buz/kar zorlu arazi değil (Ice Walk) çalışır; buzda kayıp Prone olmama yok"
+     }
+    ],
+    "riskler": "Silaha takıldığında suda oluşturulan buz yüzeyi dostların yürüyüş yolunu kayganlaştırabilir.",
+    "kimlerKullanamaz": "Soketli ekipmanı olmayan karakter soketleyemez."
+   }
+  },
+  {
+   "id": "storm-sigil-stone",
+   "name": "Storm Sigil Stone",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Elektrik yüklü kehribar mühür taşı: silaha yıldırım hasarı, zırha yıldırım direnci, tılsıma ise çevik kaçınma savunması (+1 AC) kazandırır.",
+   "weight": 0.5,
+   "effects": {
+    "acBonus": 1
+   },
+   "katalog": {
+    "ref": "YT#36",
+    "tr": "Fırtına Mühür Taşı",
+    "nadirlik": "nadir",
+    "tur": "sihirli",
+    "yuva": "soket",
+    "fiyatGp": 1250,
+    "ozet": "Elektrik yüklü kehribar mühür taşı: silaha yıldırım hasarı, zırha yıldırım direnci, tılsıma ise çevik kaçınma savunması (+1 AC) kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında soketli bir ekipmana yerleştirilir.",
+      "durum": "planli",
+      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; yalnız Tılsım yuvası etkisi"
+     },
+     {
+      "ad": "Silah yuvası",
+      "metin": "Silah isabetlerine +1d4 yıldırım hasarı (su altıgeninde zincir tepkime tetikler).",
+      "durum": "planli",
+      "not": "K3 tılsım modu: silah/zırh yuvası etkisi uygulanmaz"
+     },
+     {
+      "ad": "Zırh yuvası",
+      "metin": "Yıldırım hasarına direnç.",
+      "durum": "planli",
+      "not": "K3 tılsım modu: silah/zırh yuvası etkisi uygulanmaz"
+     },
+     {
+      "ad": "Tılsım yuvası",
+      "metin": "+1 AC (acExtra).",
+      "durum": "calisir"
+     }
+    ],
+    "riskler": "Su altıgenindeki düşmanlara vurulduğunda oluşan yıldırım zinciri aynı sudaki dostlara sıçrayabilir.",
+    "kimlerKullanamaz": "Soketli ekipmanı olmayan karakter soketleyemez."
+   }
+  },
+  {
+   "id": "stone-sigil-stone",
+   "name": "Stone Sigil Stone",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Toprak ve asit damarlı yeşil mühür taşı: silaha asit hasarı, zırha asit direnci, tılsıma ise kalıcı en yüksek can artışı kazandırır.",
+   "weight": 0.5,
+   "effects": {},
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "canArtisi",
+      "tetik": "pasif",
+      "miktar": 8
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "YT#37",
+    "tr": "Kaya Mühür Taşı",
+    "nadirlik": "nadir",
+    "tur": "sihirli",
+    "yuva": "soket",
+    "fiyatGp": 1150,
+    "ozet": "Toprak ve asit damarlı yeşil mühür taşı: silaha asit hasarı, zırha asit direnci, tılsıma ise kalıcı en yüksek can artışı kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında soketli bir ekipmana yerleştirilir.",
+      "durum": "planli",
+      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; yalnız Tılsım yuvası etkisi"
+     },
+     {
+      "ad": "Silah yuvası",
+      "metin": "Silah isabetlerine +1d4 asit hasarı.",
+      "durum": "planli",
+      "not": "K3 tılsım modu: silah/zırh yuvası etkisi uygulanmaz"
+     },
+     {
+      "ad": "Zırh yuvası",
+      "metin": "Asit hasarına direnç.",
+      "durum": "planli",
+      "not": "K3 tılsım modu: silah/zırh yuvası etkisi uygulanmaz"
+     },
+     {
+      "ad": "Tılsım yuvası",
+      "metin": "En yüksek canın +8 artar (taş çıkarıldığında ek can düşer).",
+      "durum": "calisir",
+      "not": "en yüksek can +8 (paket canArtisi)"
+     }
+    ],
+    "riskler": "Tılsım yuvasındaki taş çıkarılırsa +8 can artışı anında silinir.",
+    "kimlerKullanamaz": "Soketli ekipmanı olmayan karakter soketleyemez."
+   }
+  },
+  {
+   "id": "venom-sigil-stone",
+   "name": "Venom Sigil Stone",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Koyu zümrüt damlalı mühür taşı: silaha zehir hasarı, zırha zehir direnci, tılsıma ise keskin nişan isabeti (+1 saldırı) kazandırır.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#38",
+    "tr": "Zehir Mühür Taşı",
+    "nadirlik": "nadir",
+    "tur": "sihirli",
+    "yuva": "soket",
+    "fiyatGp": 1200,
+    "ozet": "Koyu zümrüt damlalı mühür taşı: silaha zehir hasarı, zırha zehir direnci, tılsıma ise keskin nişan isabeti (+1 saldırı) kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında soketli bir ekipmana yerleştirilir.",
+      "durum": "planli",
+      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; yalnız Tılsım yuvası etkisi"
+     },
+     {
+      "ad": "Silah yuvası",
+      "metin": "Silah isabetlerine +1d4 zehir hasarı.",
+      "durum": "planli",
+      "not": "K3 tılsım modu: silah/zırh yuvası etkisi uygulanmaz"
+     },
+     {
+      "ad": "Zırh yuvası",
+      "metin": "Zehir hasarına direnç ve Poisoned kurtarmalarına avantaj.",
+      "durum": "planli",
+      "not": "K3 tılsım modu: silah/zırh yuvası etkisi uygulanmaz"
+     },
+     {
+      "ad": "Tılsım yuvası",
+      "metin": "Bütün silah saldırı zarlarına +1 bonus.",
+      "durum": "planli",
+      "not": "yalnız silah saldırı zarına +1 kancası yok"
+     }
+    ],
+    "riskler": "Silah yuvasındaki zehir hasarı Undead ve Construct düşmanlara işlemez.",
+    "kimlerKullanamaz": "Soketli ekipmanı olmayan karakter soketleyemez."
+   }
+  },
+  {
+   "id": "masterwork-sigil-stone",
+   "name": "Masterwork Sigil Stone",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Bileyli saf demir çekirdekli mühür taşı: saf fiziksel güç, ağır darbe emilimi veya genel kurtarma koruması sağlayan çok yönlü taş.",
+   "weight": 0.5,
+   "effects": {
+    "saveBonus": 1
+   },
+   "katalog": {
+    "ref": "YT#39",
+    "tr": "Usta Çelik Mühür Taşı",
+    "nadirlik": "cokNadir",
+    "tur": "sihirli",
+    "yuva": "soket",
+    "fiyatGp": 4800,
+    "ozet": "Bileyli saf demir çekirdekli mühür taşı: saf fiziksel güç, ağır darbe emilimi veya genel kurtarma koruması sağlayan çok yönlü taş.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında soketli bir ekipmana yerleştirilir.",
+      "durum": "planli",
+      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; yalnız Tılsım yuvası etkisi"
+     },
+     {
+      "ad": "Silah yuvası",
+      "metin": "Silah hasar zarlarına +2 sabit hasar (silahın fiziksel türünde).",
+      "durum": "planli",
+      "not": "K3 tılsım modu: silah/zırh yuvası etkisi uygulanmaz"
+     },
+     {
+      "ad": "Zırh yuvası",
+      "metin": "Gelen ezici, delici ve kesici hasarlar 2 puan azalır.",
+      "durum": "planli",
+      "not": "K3 tılsım modu: silah/zırh yuvası etkisi uygulanmaz"
+     },
+     {
+      "ad": "Tılsım yuvası",
+      "metin": "Tüm kurtarma zarlarına +1 bonus.",
+      "durum": "calisir"
+     }
+    ],
+    "riskler": "Aynı zırhın kendi hasar azaltmasıyla birlikte toplam sabit azaltma 4 puanı aşamaz.",
+    "kimlerKullanamaz": "Soketli ekipmanı olmayan karakter soketleyemez."
+   }
+  },
+  {
+   "id": "umbral-sigil-stone",
+   "name": "Umbral Sigil Stone",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Karanlık özü taşıyan siyah ametist mühür taşı: silaha güçlü nekrotik hasarı, zırha nekrotik direnci, tılsıma karanlık görüşü ve gizlilik verir.",
+   "weight": 0.5,
+   "effects": {},
+   "passive": {
+    "darkvision": 60
+   },
+   "katalog": {
+    "ref": "YT#40",
+    "tr": "Gölge Özü Mühür Taşı",
+    "nadirlik": "cokNadir",
+    "tur": "sihirli",
+    "yuva": "soket",
+    "fiyatGp": 4600,
+    "ozet": "Karanlık özü taşıyan siyah ametist mühür taşı: silaha güçlü nekrotik hasarı, zırha nekrotik direnci, tılsıma karanlık görüşü ve gizlilik verir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında soketli bir ekipmana yerleştirilir.",
+      "durum": "planli",
+      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; yalnız Tılsım yuvası etkisi"
+     },
+     {
+      "ad": "Silah yuvası",
+      "metin": "Silah isabetlerine +1d6 nekrotik hasarı.",
+      "durum": "planli",
+      "not": "K3 tılsım modu: silah/zırh yuvası etkisi uygulanmaz"
+     },
+     {
+      "ad": "Zırh yuvası",
+      "metin": "Nekrotik hasarına direnç.",
+      "durum": "planli",
+      "not": "K3 tılsım modu: silah/zırh yuvası etkisi uygulanmaz"
+     },
+     {
+      "ad": "Tılsım yuvası",
+      "metin": "60 ft Darkvision ve Stealth kontrollerine +2 bonus.",
+      "durum": "kismi",
+      "not": "60 ft karanlık görüş çalışır; Stealth +2 yok"
+     }
+    ],
+    "riskler": "Nekrotik hasarı birçok Undead düşmana karşı direnç veya bağışıklıkla karşılaşır.",
+    "kimlerKullanamaz": "Soketli ekipmanı olmayan karakter soketleyemez."
+   }
+  },
+  {
+   "id": "radiant-sigil-stone",
+   "name": "Radiant Sigil Stone",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Güneş özü taşıyan parlak elmas mühür taşı: silaha ışıltı hasarı, zırha ışıltı direnci, tılsıma ise bütün şifa büyülerini besleyen ek güç verir.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#41",
+    "tr": "Işıltı Özü Mühür Taşı",
+    "nadirlik": "cokNadir",
+    "tur": "sihirli",
+    "yuva": "soket",
+    "fiyatGp": 4800,
+    "ozet": "Güneş özü taşıyan parlak elmas mühür taşı: silaha ışıltı hasarı, zırha ışıltı direnci, tılsıma ise bütün şifa büyülerini besleyen ek güç verir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında soketli bir ekipmana yerleştirilir.",
+      "durum": "planli",
+      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; yalnız Tılsım yuvası etkisi"
+     },
+     {
+      "ad": "Silah yuvası",
+      "metin": "Silah isabetlerine +1d6 ışıltı hasarı ve 10 ft loş ışık.",
+      "durum": "planli",
+      "not": "K3 tılsım modu: silah/zırh yuvası etkisi uygulanmaz"
+     },
+     {
+      "ad": "Zırh yuvası",
+      "metin": "Işıltı hasarına direnç.",
+      "durum": "planli",
+      "not": "K3 tılsım modu: silah/zırh yuvası etkisi uygulanmaz"
+     },
+     {
+      "ad": "Tılsım yuvası",
+      "metin": "Yaptığın bütün iyileştirme büyüleri hedef başına +3 ek can yeniler.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Silah yuvasında yayılan 10 ft loş ışık gece gizlenmesinde konumu belli edebilir.",
+    "kimlerKullanamaz": "Soketli ekipmanı olmayan karakter soketleyemez."
+   }
+  },
+  {
+   "id": "aether-core-stone",
+   "name": "Aether Core Stone",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Saf enerji küresi biçiminde efsanevi mühür taşı: diğer taşların aksine pasif bonus yerine takıldığı yuvaya göre güçlü bir aktif savaş yeteneği kazandırır.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#42",
+    "tr": "Öz Çekirdeği Taşı",
+    "nadirlik": "efsanevi",
+    "tur": "sihirli",
+    "yuva": "soket",
+    "fiyatGp": 18000,
+    "ozet": "Saf enerji küresi biçiminde efsanevi mühür taşı: diğer taşların aksine pasif bonus yerine takıldığı yuvaya göre güçlü bir aktif savaş yeteneği kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında soketli bir ekipmana yerleştirilir (günde 1 yük, UD).",
+      "durum": "planli",
+      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; yalnız Tılsım yuvası etkisi"
+     },
+     {
+      "ad": "Silah yuvası (Zehirli Kaplama)",
+      "metin": "Bonus eylemle 3 tur boyunca elindeki silaha +2d4 zehir hasarı eklersin.",
+      "durum": "planli",
+      "not": "K3 tılsım modu: silah/zırh yuvası etkisi uygulanmaz"
+     },
+     {
+      "ad": "Zırh yuvası (Toplu Arındırma)",
+      "metin": "Eylemle 15 ft içindeki dostları 2d6 can iyileştirir ve üzerlerindeki Poisoned, Blinded ve Burning durumlarını temizlersin.",
+      "durum": "planli",
+      "not": "K3 tılsım modu: silah/zırh yuvası etkisi uygulanmaz"
+     },
+     {
+      "ad": "Tılsım yuvası (Kaçınma Halesi)",
+      "metin": "Bonus eylemle 2 tur boyunca 10 ft içindeki dostlara (sen dahil) +2 AC ve saldırılardan kaçınma avantajı (saldıranlara dezavantaj) verirsin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Aktif yük tüm yuvalar arasında ortaktır; savaş dışında taş başka yuvaya alınsa bile harcanmış yük uzun dinlenmeye kadar dolmaz.",
+    "kimlerKullanamaz": "Uyum yapmayan ve soketli ekipmanı olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "mounting-of-power",
+   "name": "Mounting of Power",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Altın kakmalı kalıcı yükseltme çerçevesi: herhangi bir Mühür Taşıyla birleştirildiğinde o taşa hangi yuvaya takılırsa takılsın geçerli olan bir nitelik artışı ekler.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#43",
+    "tr": "Güç Çerçevesi",
+    "nadirlik": "cokNadir",
+    "tur": "sihirli",
+    "yuva": "mühür çerçevesi",
+    "fiyatGp": 5500,
+    "ozet": "Altın kakmalı kalıcı yükseltme çerçevesi: herhangi bir Mühür Taşıyla birleştirildiğinde o taşa hangi yuvaya takılırsa takılsın geçerli olan bir nitelik artışı ekler.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında bir Mühür Taşına kalıcı olarak geçirilir (tek kullanımlıktır; çerçevelenen taşa ikinci çerçeve takılamaz). Taşın türüne göre taşıyıcıya +1 temel nitelik (tavan 20) kazandırır: Kor, Kırağı, Işıltı → +1 INT; Fırtına, Zehir, Gölge → +1 DEX; Kaya, Usta Çelik → +1 STR.",
+      "durum": "planli",
+      "not": "K3: zanaat eklentisi yalnız veri (soket/çerçeve sistemi yok)"
+     }
+    ],
+    "riskler": "Birleştirme geri alınamaz; çerçevelenmiş taş başka bir çerçeveyle (Mistik Çerçeve) birleştirilemez.",
+    "kimlerKullanamaz": "Mühür Taşı olmayan karakter çerçeveyi tek başına kullanamaz."
+   }
+  },
+  {
+   "id": "mystical-mounting",
+   "name": "Mystical Mounting",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Saf gümüş oymalı kalıcı yükseltme çerçevesi: bir Mühür Taşıyla birleştirildiğinde takıldığı yuvaya göre taktik savaş veya büyü bonusu ekler.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#44",
+    "tr": "Mistik Çerçeve",
+    "nadirlik": "cokNadir",
+    "tur": "sihirli",
+    "yuva": "mühür çerçevesi",
+    "fiyatGp": 5500,
+    "ozet": "Saf gümüş oymalı kalıcı yükseltme çerçevesi: bir Mühür Taşıyla birleştirildiğinde takıldığı yuvaya göre taktik savaş veya büyü bonusu ekler.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında bir Mühür Taşına kalıcı olarak geçirilir (tek kullanımlıktır). Taşın takıldığı yuvaya göre ek bonus kazandırır: Silah yuvası: saldırı zarlarına +1; Zırh yuvası: CON kurtarma zarlarına +1; Tılsım yuvası: büyü kurtarma zarı DC'sine +1 ve inisiyatife +1.",
+      "durum": "planli",
+      "not": "K3: zanaat eklentisi yalnız veri (soket/çerçeve sistemi yok)"
+     }
+    ],
+    "riskler": "Birleştirme geri alınamaz; Güç Çerçevesi ile aynı Mühür Taşı üzerinde birleşemez.",
+    "kimlerKullanamaz": "Mühür Taşı olmayan karakter çerçeveyi tek başına kullanamaz."
+   }
+  },
+  {
+   "id": "ancient-imbuement-relic",
+   "name": "Ancient Imbuement Relic",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Soket gerektirmeyen tek kullanımlık antik efsun taşı: seçilen tek bir silahı, zırhı veya takıyı kalıcı olarak fırtına enerjisiyle güçlendirir.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "YT#45",
+    "tr": "Kadim Efsun Kalıntısı",
+    "nadirlik": "efsanevi",
+    "tur": "sihirli",
+    "yuva": "kalıcı efsun",
+    "fiyatGp": 16000,
+    "ozet": "Soket gerektirmeyen tek kullanımlık antik efsun taşı: seçilen tek bir silahı, zırhı veya takıyı kalıcı olarak fırtına enerjisiyle güçlendirir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında bir ekipmana uygulanır ve taş tüketilir (aynı ekipmana en fazla bir kez uygulanabilir).",
+      "durum": "planli",
+      "not": "K3: zanaat eklentisi yalnız veri (soket/çerçeve sistemi yok)"
+     },
+     {
+      "ad": "Silah",
+      "metin": "Kalıcı olarak +1d4 yıldırım hasarı ekler.",
+      "durum": "planli",
+      "not": "K3: zanaat eklentisi yalnız veri (soket/çerçeve sistemi yok)"
+     },
+     {
+      "ad": "Zırh veya Kalkan",
+      "metin": "Kalıcı olarak +1 AC ve yıldırım direnci ekler.",
+      "durum": "planli",
+      "not": "K3: zanaat eklentisi yalnız veri (soket/çerçeve sistemi yok)"
+     },
+     {
+      "ad": "Başlık, Eldiven, Bot, Pelerin veya Takı",
+      "metin": "Kalıcı olarak tüm kurtarma zarlarına +1 bonus ve +1 inisiyatif ekler.",
+      "durum": "planli",
+      "not": "K3: zanaat eklentisi yalnız veri (soket/çerçeve sistemi yok)"
+     }
+    ],
+    "riskler": "Uygulama kalıcıdır ve başka ekipmana aktarılamaz; sıradan ekipman yerine uzun süre kullanılacak yüksek nadirlikli eşyalara saklanmalıdır.",
+    "kimlerKullanamaz": "Herkes savaş dışında kendi ekipmanına uygulayabilir."
+   }
+  },
+  {
+   "id": "cracked-elemental-stone-fire",
+   "name": "Cracked Elemental Stone (Fire)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#7a",
+    "tr": "Çatlak Element Taşı (Ateş)",
+    "nadirlik": "olagandisi",
+    "tur": "sihirli",
+    "yuva": "Seviye 1 soket",
+    "fiyatGp": 350,
+    "ozet": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
+      "durum": "planli",
+      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+     }
+    ],
+    "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
+    "kimlerKullanamaz": "Boş soket yuvası olan bir zırh taşımayan karakter kullanamaz (zırhsız cübbelere takılamaz)."
+   }
+  },
+  {
+   "id": "cracked-elemental-stone-cold",
+   "name": "Cracked Elemental Stone (Cold)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#7b",
+    "tr": "Çatlak Element Taşı (Soğuk)",
+    "nadirlik": "olagandisi",
+    "tur": "sihirli",
+    "yuva": "Seviye 1 soket",
+    "fiyatGp": 350,
+    "ozet": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
+      "durum": "planli",
+      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+     }
+    ],
+    "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
+    "kimlerKullanamaz": "Boş soket yuvası olan bir zırh taşımayan karakter kullanamaz (zırhsız cübbelere takılamaz)."
+   }
+  },
+  {
+   "id": "cracked-elemental-stone-lightning",
+   "name": "Cracked Elemental Stone (Lightning)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#7c",
+    "tr": "Çatlak Element Taşı (Yıldırım)",
+    "nadirlik": "olagandisi",
+    "tur": "sihirli",
+    "yuva": "Seviye 1 soket",
+    "fiyatGp": 350,
+    "ozet": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
+      "durum": "planli",
+      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+     }
+    ],
+    "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
+    "kimlerKullanamaz": "Boş soket yuvası olan bir zırh taşımayan karakter kullanamaz (zırhsız cübbelere takılamaz)."
+   }
+  },
+  {
+   "id": "cracked-elemental-stone-thunder",
+   "name": "Cracked Elemental Stone (Thunder)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#7d",
+    "tr": "Çatlak Element Taşı (Gürültü)",
+    "nadirlik": "olagandisi",
+    "tur": "sihirli",
+    "yuva": "Seviye 1 soket",
+    "fiyatGp": 350,
+    "ozet": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
+      "durum": "planli",
+      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+     }
+    ],
+    "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
+    "kimlerKullanamaz": "Boş soket yuvası olan bir zırh taşımayan karakter kullanamaz (zırhsız cübbelere takılamaz)."
+   }
+  },
+  {
+   "id": "cracked-elemental-stone-acid",
+   "name": "Cracked Elemental Stone (Acid)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#7e",
+    "tr": "Çatlak Element Taşı (Asit)",
+    "nadirlik": "olagandisi",
+    "tur": "sihirli",
+    "yuva": "Seviye 1 soket",
+    "fiyatGp": 350,
+    "ozet": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
+      "durum": "planli",
+      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+     }
+    ],
+    "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
+    "kimlerKullanamaz": "Boş soket yuvası olan bir zırh taşımayan karakter kullanamaz (zırhsız cübbelere takılamaz)."
+   }
+  },
+  {
+   "id": "cracked-elemental-stone-poison",
+   "name": "Cracked Elemental Stone (Poison)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#7f",
+    "tr": "Çatlak Element Taşı (Zehir)",
+    "nadirlik": "olagandisi",
+    "tur": "sihirli",
+    "yuva": "Seviye 1 soket",
+    "fiyatGp": 350,
+    "ozet": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
+      "durum": "planli",
+      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+     }
+    ],
+    "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
+    "kimlerKullanamaz": "Boş soket yuvası olan bir zırh taşımayan karakter kullanamaz (zırhsız cübbelere takılamaz)."
+   }
+  },
+  {
+   "id": "cracked-elemental-stone-radiant",
+   "name": "Cracked Elemental Stone (Radiant)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#7g",
+    "tr": "Çatlak Element Taşı (Işıltı)",
+    "nadirlik": "olagandisi",
+    "tur": "sihirli",
+    "yuva": "Seviye 1 soket",
+    "fiyatGp": 350,
+    "ozet": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
+      "durum": "planli",
+      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+     }
+    ],
+    "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
+    "kimlerKullanamaz": "Boş soket yuvası olan bir zırh taşımayan karakter kullanamaz (zırhsız cübbelere takılamaz)."
+   }
+  },
+  {
+   "id": "cracked-elemental-stone-necrotic",
+   "name": "Cracked Elemental Stone (Necrotic)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#7h",
+    "tr": "Çatlak Element Taşı (Nekrotik)",
+    "nadirlik": "olagandisi",
+    "tur": "sihirli",
+    "yuva": "Seviye 1 soket",
+    "fiyatGp": 350,
+    "ozet": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
+      "durum": "planli",
+      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+     }
+    ],
+    "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
+    "kimlerKullanamaz": "Boş soket yuvası olan bir zırh taşımayan karakter kullanamaz (zırhsız cübbelere takılamaz)."
+   }
+  },
+  {
+   "id": "cracked-elemental-stone-psychic",
+   "name": "Cracked Elemental Stone (Psychic)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#7i",
+    "tr": "Çatlak Element Taşı (Psişik)",
+    "nadirlik": "olagandisi",
+    "tur": "sihirli",
+    "yuva": "Seviye 1 soket",
+    "fiyatGp": 350,
+    "ozet": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
+      "durum": "planli",
+      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+     }
+    ],
+    "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
+    "kimlerKullanamaz": "Boş soket yuvası olan bir zırh taşımayan karakter kullanamaz (zırhsız cübbelere takılamaz)."
+   }
+  },
+  {
+   "id": "cracked-elemental-stone-force",
+   "name": "Cracked Elemental Stone (Force)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#7j",
+    "tr": "Çatlak Element Taşı (Kuvvet)",
+    "nadirlik": "olagandisi",
+    "tur": "sihirli",
+    "yuva": "Seviye 1 soket",
+    "fiyatGp": 350,
+    "ozet": "Kıtadaki madenlerden ve elit ganimetlerden çıkan 1. kademe zırh taşı: on temel hasar türünden birine karşı sabit darbe emilimi kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
+      "durum": "planli",
+      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+     }
+    ],
+    "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
+    "kimlerKullanamaz": "Boş soket yuvası olan bir zırh taşımayan karakter kullanamaz (zırhsız cübbelere takılamaz)."
+   }
+  },
+  {
+   "id": "awakened-elemental-stone-fire",
+   "name": "Awakened Elemental Stone (Fire)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+   "weight": 0.5,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "fire"
+    ]
+   },
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "ekHasar",
+      "tetik": "isabet",
+      "zar": "1d4",
+      "hasarTuru": "fire",
+      "saldiri": "silah",
+      "turdaBir": true
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "BOSS#8a",
+    "tr": "Uyanmış Element Taşı (Ateş)",
+    "nadirlik": "nadir",
+    "tur": "sihirli",
+    "yuva": "Seviye 2 soket",
+    "fiyatGp": 1400,
+    "ozet": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
+      "durum": "calisir",
+      "not": "K3 tılsım modu (soket yok, taşınırken etkin): ateş direnci ve turda bir silah isabetine +1d4 ateş (paket ekHasar turdaBir)"
+     }
+    ],
+    "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
+    "kimlerKullanamaz": "2. kademe soketli zırhı olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "awakened-elemental-stone-cold",
+   "name": "Awakened Elemental Stone (Cold)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+   "weight": 0.5,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "cold"
+    ]
+   },
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "ekHasar",
+      "tetik": "isabet",
+      "zar": "1d4",
+      "hasarTuru": "cold",
+      "saldiri": "silah",
+      "turdaBir": true
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "BOSS#8b",
+    "tr": "Uyanmış Element Taşı (Soğuk)",
+    "nadirlik": "nadir",
+    "tur": "sihirli",
+    "yuva": "Seviye 2 soket",
+    "fiyatGp": 1400,
+    "ozet": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
+      "durum": "calisir",
+      "not": "K3 tılsım modu (soket yok, taşınırken etkin): soğuk direnci ve turda bir silah isabetine +1d4 soğuk (paket ekHasar turdaBir)"
+     }
+    ],
+    "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
+    "kimlerKullanamaz": "2. kademe soketli zırhı olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "awakened-elemental-stone-lightning",
+   "name": "Awakened Elemental Stone (Lightning)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+   "weight": 0.5,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "lightning"
+    ]
+   },
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "ekHasar",
+      "tetik": "isabet",
+      "zar": "1d4",
+      "hasarTuru": "lightning",
+      "saldiri": "silah",
+      "turdaBir": true
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "BOSS#8c",
+    "tr": "Uyanmış Element Taşı (Yıldırım)",
+    "nadirlik": "nadir",
+    "tur": "sihirli",
+    "yuva": "Seviye 2 soket",
+    "fiyatGp": 1400,
+    "ozet": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
+      "durum": "calisir",
+      "not": "K3 tılsım modu (soket yok, taşınırken etkin): yıldırım direnci ve turda bir silah isabetine +1d4 yıldırım (paket ekHasar turdaBir)"
+     }
+    ],
+    "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
+    "kimlerKullanamaz": "2. kademe soketli zırhı olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "awakened-elemental-stone-thunder",
+   "name": "Awakened Elemental Stone (Thunder)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+   "weight": 0.5,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "thunder"
+    ]
+   },
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "ekHasar",
+      "tetik": "isabet",
+      "zar": "1d4",
+      "hasarTuru": "thunder",
+      "saldiri": "silah",
+      "turdaBir": true
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "BOSS#8d",
+    "tr": "Uyanmış Element Taşı (Gürültü)",
+    "nadirlik": "nadir",
+    "tur": "sihirli",
+    "yuva": "Seviye 2 soket",
+    "fiyatGp": 1400,
+    "ozet": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
+      "durum": "calisir",
+      "not": "K3 tılsım modu (soket yok, taşınırken etkin): gürültü direnci ve turda bir silah isabetine +1d4 gürültü (paket ekHasar turdaBir)"
+     }
+    ],
+    "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
+    "kimlerKullanamaz": "2. kademe soketli zırhı olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "awakened-elemental-stone-acid",
+   "name": "Awakened Elemental Stone (Acid)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+   "weight": 0.5,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "acid"
+    ]
+   },
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "ekHasar",
+      "tetik": "isabet",
+      "zar": "1d4",
+      "hasarTuru": "acid",
+      "saldiri": "silah",
+      "turdaBir": true
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "BOSS#8e",
+    "tr": "Uyanmış Element Taşı (Asit)",
+    "nadirlik": "nadir",
+    "tur": "sihirli",
+    "yuva": "Seviye 2 soket",
+    "fiyatGp": 1400,
+    "ozet": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
+      "durum": "calisir",
+      "not": "K3 tılsım modu (soket yok, taşınırken etkin): asit direnci ve turda bir silah isabetine +1d4 asit (paket ekHasar turdaBir)"
+     }
+    ],
+    "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
+    "kimlerKullanamaz": "2. kademe soketli zırhı olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "awakened-elemental-stone-poison",
+   "name": "Awakened Elemental Stone (Poison)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+   "weight": 0.5,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "poison"
+    ]
+   },
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "ekHasar",
+      "tetik": "isabet",
+      "zar": "1d4",
+      "hasarTuru": "poison",
+      "saldiri": "silah",
+      "turdaBir": true
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "BOSS#8f",
+    "tr": "Uyanmış Element Taşı (Zehir)",
+    "nadirlik": "nadir",
+    "tur": "sihirli",
+    "yuva": "Seviye 2 soket",
+    "fiyatGp": 1400,
+    "ozet": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
+      "durum": "calisir",
+      "not": "K3 tılsım modu (soket yok, taşınırken etkin): zehir direnci ve turda bir silah isabetine +1d4 zehir (paket ekHasar turdaBir)"
+     }
+    ],
+    "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
+    "kimlerKullanamaz": "2. kademe soketli zırhı olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "awakened-elemental-stone-radiant",
+   "name": "Awakened Elemental Stone (Radiant)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+   "weight": 0.5,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "radiant"
+    ]
+   },
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "ekHasar",
+      "tetik": "isabet",
+      "zar": "1d4",
+      "hasarTuru": "radiant",
+      "saldiri": "silah",
+      "turdaBir": true
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "BOSS#8g",
+    "tr": "Uyanmış Element Taşı (Işıltı)",
+    "nadirlik": "nadir",
+    "tur": "sihirli",
+    "yuva": "Seviye 2 soket",
+    "fiyatGp": 1400,
+    "ozet": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
+      "durum": "calisir",
+      "not": "K3 tılsım modu (soket yok, taşınırken etkin): ışıltı direnci ve turda bir silah isabetine +1d4 ışıltı (paket ekHasar turdaBir)"
+     }
+    ],
+    "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
+    "kimlerKullanamaz": "2. kademe soketli zırhı olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "awakened-elemental-stone-necrotic",
+   "name": "Awakened Elemental Stone (Necrotic)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+   "weight": 0.5,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "necrotic"
+    ]
+   },
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "ekHasar",
+      "tetik": "isabet",
+      "zar": "1d4",
+      "hasarTuru": "necrotic",
+      "saldiri": "silah",
+      "turdaBir": true
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "BOSS#8h",
+    "tr": "Uyanmış Element Taşı (Nekrotik)",
+    "nadirlik": "nadir",
+    "tur": "sihirli",
+    "yuva": "Seviye 2 soket",
+    "fiyatGp": 1400,
+    "ozet": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
+      "durum": "calisir",
+      "not": "K3 tılsım modu (soket yok, taşınırken etkin): nekrotik direnci ve turda bir silah isabetine +1d4 nekrotik (paket ekHasar turdaBir)"
+     }
+    ],
+    "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
+    "kimlerKullanamaz": "2. kademe soketli zırhı olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "awakened-elemental-stone-psychic",
+   "name": "Awakened Elemental Stone (Psychic)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+   "weight": 0.5,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "psychic"
+    ]
+   },
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "ekHasar",
+      "tetik": "isabet",
+      "zar": "1d4",
+      "hasarTuru": "psychic",
+      "saldiri": "silah",
+      "turdaBir": true
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "BOSS#8i",
+    "tr": "Uyanmış Element Taşı (Psişik)",
+    "nadirlik": "nadir",
+    "tur": "sihirli",
+    "yuva": "Seviye 2 soket",
+    "fiyatGp": 1400,
+    "ozet": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
+      "durum": "calisir",
+      "not": "K3 tılsım modu (soket yok, taşınırken etkin): psişik direnci ve turda bir silah isabetine +1d4 psişik (paket ekHasar turdaBir)"
+     }
+    ],
+    "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
+    "kimlerKullanamaz": "2. kademe soketli zırhı olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "awakened-elemental-stone-force",
+   "name": "Awakened Elemental Stone (Force)",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+   "weight": 0.5,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "force"
+    ]
+   },
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "ekHasar",
+      "tetik": "isabet",
+      "zar": "1d4",
+      "hasarTuru": "force",
+      "saldiri": "silah",
+      "turdaBir": true
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "BOSS#8j",
+    "tr": "Uyanmış Element Taşı (Kuvvet)",
+    "nadirlik": "nadir",
+    "tur": "sihirli",
+    "yuva": "Seviye 2 soket",
+    "fiyatGp": 1400,
+    "ozet": "Tam parlaklığına ulaşmış 2. kademe zırh taşı: ilgili hasar türüne karşı kalıcı Direnç kazandırır ve saldırılara küçük bir element kıvılcımı ekler.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
+      "durum": "calisir",
+      "not": "K3 tılsım modu (soket yok, taşınırken etkin): kuvvet direnci ve turda bir silah isabetine +1d4 kuvvet (paket ekHasar turdaBir)"
+     }
+    ],
+    "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
+    "kimlerKullanamaz": "2. kademe soketli zırhı olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "ember-core",
+   "name": "Ember Core",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Yanık Demirhane'nin lav kalbinden koparılan ateş mührü: her türlü ateş hasarına ve yanmaya karşı tam bağışıklık verir, etrafı lav çemberine çeviren Savaş Sanatı açar.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#9",
+    "tr": "Kor Çekirdeği (Ateş)",
+    "nadirlik": "efsanevi",
+    "tur": "sihirli",
+    "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
+    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "fiyatGp": null,
+    "ozet": "Yanık Demirhane'nin lav kalbinden koparılan ateş mührü: her türlü ateş hasarına ve yanmaya karşı tam bağışıklık verir, etrafı lav çemberine çeviren Savaş Sanatı açar.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken ateş hasarına Tam Bağışıklık (Immunity) ve Burning durumuna bağışıklık kazanırsın (alev ve lav yüzeylerinin ateş hasarı 0 vurur).",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     },
+     {
+      "ad": "Boss Savaş Sanatı — Erimiş Örs Patlaması (1/UD, Eylem)",
+      "metin": "Kendi altıgenin merkezli 15 ft yarıçapta erimiş dalga salarsın; alandaki düşmanlar DC 16 DEX kurtarma zarı atar, geçemezse 5d6 ateş hasarı alır ve 10 ft geri itilir (geçerse yarı hasar). Tüm alan 2 tur alev yüzeyine dönüşür.",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     }
+    ],
+    "riskler": "Zırha basıldığı an geri sökülemez ve Kararma artışını kalıcı olarak hızlandırır. Erimiş Örs Patlaması çevredeki yağ ve ağ yüzeylerini tutuşturup dostların yolunu kesebilir.",
+    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz; normal bir zırha takılmaya çalışılırsa zırh parçalanır."
+   }
+  },
+  {
+   "id": "frost-heart",
+   "name": "Frost Heart",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Donmuş Geçit'teki ebedi buzun özü: her türlü soğuk hasarına tam bağışıklık, buzda sarsılmaz denge ve önündeki düşmanları donduran tipi konisi kazandırır.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#10",
+    "tr": "Ayaz Kalbi (Soğuk)",
+    "nadirlik": "efsanevi",
+    "tur": "sihirli",
+    "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
+    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "fiyatGp": null,
+    "ozet": "Donmuş Geçit'teki ebedi buzun özü: her türlü soğuk hasarına tam bağışıklık, buzda sarsılmaz denge ve önündeki düşmanları donduran tipi konisi kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken soğuk hasarına Tam Bağışıklık (Immunity) kazanır, buz ve kar yüzeylerinde zorlu arazi veya kayma (Prone) yaşamazsın (iceWalker).",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     },
+     {
+      "ad": "Boss Savaş Sanatı — Kırağı Nefesi (1/UD, Eylem)",
+      "metin": "Önündeki 20 ft konide dondurucu fırtına salarsın; alandaki düşmanlar DC 16 CON kurtarma zarı atar, geçemezse 5d6 soğuk hasarı alır ve 1 tur Restrained olur (geçerse yarı hasar). Konideki tüm zemin ve su altıgenleri 3 tur buz yüzeyine döner.",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     }
+    ],
+    "riskler": "Geri sökülemez; Kararmayı kalıcı hızlandırır. Oluşan geniş buz yüzeyi kendi takım arkadaşlarını da kaydırıp yere serebilir.",
+    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "storm-spire",
+   "name": "Storm Spire",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Paratoner Yaylası'ndaki gök mızrağı çekirdeği: her türlü yıldırım hasarına ve su zincirine tam bağışıklık verir, gökten şimşek mızrağı indiren Savaş Sanatı açar.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#11",
+    "tr": "Fırtına Mili (Yıldırım)",
+    "nadirlik": "efsanevi",
+    "tur": "sihirli",
+    "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
+    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "fiyatGp": null,
+    "ozet": "Paratoner Yaylası'ndaki gök mızrağı çekirdeği: her türlü yıldırım hasarına ve su zincirine tam bağışıklık verir, gökten şimşek mızrağı indiren Savaş Sanatı açar.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken yıldırım hasarına Tam Bağışıklık (Immunity) kazanırsın (su×yıldırım zincir tepkimesi dahil) ve yıldırım kaynaklı tepki kesme etkileri sana işlemez.",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     },
+     {
+      "ad": "Boss Savaş Sanatı — Gök Mızrağı (1/UD, Eylem)",
+      "metin": "60 ft içinde görebildiğin bir altıgene gökten dev yıldırım mızrağı indirirsin; hedefteki ve 10 ft çevresindeki düşmanlar DC 16 DEX kurtarma zarı atar, geçemezse 6d6 yıldırım hasarı alır ve sonraki tur tepki (Reaction) kullanamaz (geçerse yarı hasar). Su altıgenine inerse bağlı 7 su altıgeninde zincirleme şok tetiklenir.",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     }
+    ],
+    "riskler": "Geri sökülemez; Kararmayı kalıcı hızlandırır. Suda tetiklenen yıldırım zinciri aynı sudaki dostlara sıçrayabilir.",
+    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "resonance-seal",
+   "name": "Resonance Seal",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Yankı Kanyonu'nun kadim çan çekirdeği: gürültü hasarına ve sağırlığa tam bağışıklık kazandırır, 30 ft uzunluğunda duvar ve kalkan parçalayan şok dalgası salar.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#12",
+    "tr": "Çınlama Mührü (Gürültü)",
+    "nadirlik": "efsanevi",
+    "tur": "sihirli",
+    "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
+    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "fiyatGp": null,
+    "ozet": "Yankı Kanyonu'nun kadim çan çekirdeği: gürültü hasarına ve sağırlığa tam bağışıklık kazandırır, 30 ft uzunluğunda duvar ve kalkan parçalayan şok dalgası salar.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken gürültü hasarına Tam Bağışıklık (Immunity) ve Deafened durumuna bağışıklık kazanırsın; ses dalgası kaynaklı zorla itilmeler seni sarsamaz.",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     },
+     {
+      "ad": "Boss Savaş Sanatı — Kanyon Yırtığı (1/UD, Eylem)",
+      "metin": "Önündeki 30 ft çizgide (10 ft genişliğinde) dev ses dalgası gönderirsin; çizgideki düşmanlar DC 16 CON kurtarma zarı atar, geçemezse 5d6 gürültü hasarı alır, 15 ft geri itilip Prone olur ve 2 tur Deafened kalır (geçerse yarı hasar). Alandaki kırılabilir duvar ve nesneler iki kat hasar alır.",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     }
+    ],
+    "riskler": "Geri sökülemez; Kararmayı kalıcı hızlandırır. Kanyon Yırtığı 150 ft yarıçapta tüm haritadaki uyuyan düşmanları alarma geçirir.",
+    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "dissolution-drop",
+   "name": "Dissolution Drop",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Sülfür Bataklığı'ndaki aşındırıcı öz: her türlü asit hasarına ve zırh aşınmasına tam bağışıklık verir, düşman zırhlarını eriten asit tufanı kusar.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#13",
+    "tr": "Erime Damlası (Asit)",
+    "nadirlik": "efsanevi",
+    "tur": "sihirli",
+    "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
+    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "fiyatGp": null,
+    "ozet": "Sülfür Bataklığı'ndaki aşındırıcı öz: her türlü asit hasarına ve zırh aşınmasına tam bağışıklık verir, düşman zırhlarını eriten asit tufanı kusar.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken asit hasarına Tam Bağışıklık (Immunity) kazanırsın; asit yüzeyleri ve AC düşüren aşındırma etkileri sana işlemez.",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     },
+     {
+      "ad": "Boss Savaş Sanatı — Sülfür Tufanı (1/UD, Eylem)",
+      "metin": "30 ft içindeki bir noktada 15 ft yarıçaplı yoğun asit patlaması açarsın; alandaki düşmanlar DC 16 DEX kurtarma zarı atar, geçemezse 5d6 asit hasarı alır ve 3 tur boyunca AC −3 cezası yer (geçerse yarı hasar, AC −1). Alan 3 tur asit yüzeyine dönüşür.",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     }
+    ],
+    "riskler": "Geri sökülemez; Kararmayı kalıcı hızlandırır. Oluşan asit gölü dostların da yürüyüş hattını yakar.",
+    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "venom-essence",
+   "name": "Venom Essence",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Çürük Orman'ın spor çekirdeği: her türlü zehir hasarına ve zehirlenmeye tam bağışıklık verir, geniş alanda ölümcül zehir sporu patlatır.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#14",
+    "tr": "Ağu Özü (Zehir)",
+    "nadirlik": "efsanevi",
+    "tur": "sihirli",
+    "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
+    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "fiyatGp": null,
+    "ozet": "Çürük Orman'ın spor çekirdeği: her türlü zehir hasarına ve zehirlenmeye tam bağışıklık verir, geniş alanda ölümcül zehir sporu patlatır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken zehir hasarına Tam Bağışıklık (Immunity) ve Poisoned durumuna bağışıklık kazanırsın; zehir bulutları görüşünü veya nefesini etkilemez.",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     },
+     {
+      "ad": "Boss Savaş Sanatı — Veba Bulutu (1/UD, Eylem)",
+      "metin": "30 ft içindeki bir noktada 15 ft yarıçapında 3 tur süren yoğun zehir bulutu oluşturursun; anında ve bulutta turuna başlayan her düşman DC 16 CON kurtarma zarı atar, geçemezse 4d6 zehir hasarı alır ve 2 tur Poisoned olur (geçerse yarı hasar). Bu bulut zehir direncini yok sayar.",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     }
+    ],
+    "riskler": "Geri sökülemez; Kararmayı kalıcı hızlandırır. Zehir bağışıklığı olan Construct ve Undead düşmanlar buluttan yine etkilenmez; ateşle temas ederse bulut patlayabilir.",
+    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "blinding-sun-shard",
+   "name": "Blinding Sun Shard",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Terk Edilmiş Katedral'den sökülen düşmüş güneş kristali: her türlü ışıltı hasarına ve körlüğe tam bağışıklık sağlar, gökten yargı sütunu indirir.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#15",
+    "tr": "Kör Güneş Parçası (Işıltı)",
+    "nadirlik": "efsanevi",
+    "tur": "sihirli",
+    "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
+    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "fiyatGp": null,
+    "ozet": "Terk Edilmiş Katedral'den sökülen düşmüş güneş kristali: her türlü ışıltı hasarına ve körlüğe tam bağışıklık sağlar, gökten yargı sütunu indirir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken ışıltı hasarına Tam Bağışıklık (Immunity) ve Blinded durumuna bağışıklık kazanırsın; istenildiğinde bonus eylemle 20 ft parlak ışık açılıp kapatılabilir.",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     },
+     {
+      "ad": "Boss Savaş Sanatı — Altın Yargı Sütunu (1/UD, Eylem)",
+      "metin": "60 ft içinde görebildiğin bir noktada 10 ft yarıçaplı, 40 ft yüksekliğinde ışıltı sütunu indirirsin (uçan hedefler dahil); düşmanlar DC 16 CON kurtarma zarı atar, geçemezse 6d6 ışıltı hasarı alır ve 2 tur Blinded olur (geçerse yarı hasar). Alandaki büyülü karanlık anında dağılır.",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     }
+    ],
+    "riskler": "Geri sökülemez; Kararmayı kalıcı hızlandırır. Parlak sütun gece haritalarında tüm gizlilik düzenini bozar.",
+    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "sepulcher-orb",
+   "name": "Sepulcher Orb",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kemik Ovası'nın kara alev çekirdeği: her türlü nekrotik hasarına ve maksimum can düşüşüne tam bağışıklık verir, düşmanın can tavanını törpüleyen kara dalga savurur.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#16",
+    "tr": "Mezar Küresi (Nekrotik)",
+    "nadirlik": "efsanevi",
+    "tur": "sihirli",
+    "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
+    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "fiyatGp": null,
+    "ozet": "Kemik Ovası'nın kara alev çekirdeği: her türlü nekrotik hasarına ve maksimum can düşüşüne tam bağışıklık verir, düşmanın can tavanını törpüleyen kara dalga savurur.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken nekrotik hasarına Tam Bağışıklık (Immunity) kazanırsın; maksimum canını azaltan ve iyileşmeni engelleyen etkiler (noHeal) sana işlemez.",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     },
+     {
+      "ad": "Boss Savaş Sanatı — Kara Alev Kesiği (1/UD, Eylem)",
+      "metin": "Önündeki 25 ft çizgide kara alev dalgası gönderirsin; düşmanlar DC 16 CON kurtarma zarı atar, geçemezse 5d6 nekrotik hasarı alır, 2 tur iyileşme alamaz (noHeal) ve savaş sonuna dek en yüksek canı alınan hasarın yarısı kadar azalır (geçerse yarı hasar, tavan düşmez).",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     }
+    ],
+    "riskler": "Geri sökülemez; Kararmayı kalıcı hızlandırır. Kara Alev Kesiği Undead düşmanlarda direnç veya bağışıklıkla karşılaşabilir.",
+    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "whisper-crystal",
+   "name": "Whisper Crystal",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Sisli Akademi'nin kırık zihin aynası: psişik hasara, korkuya ve büyülenmeye tam bağışıklık sağlar, yakındaki düşmanların zihnini parçalayan çığlık yayar.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#17",
+    "tr": "Vesvese Kristali (Psişik)",
+    "nadirlik": "efsanevi",
+    "tur": "sihirli",
+    "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
+    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "fiyatGp": null,
+    "ozet": "Sisli Akademi'nin kırık zihin aynası: psişik hasara, korkuya ve büyülenmeye tam bağışıklık sağlar, yakındaki düşmanların zihnini parçalayan çığlık yayar.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken psişik hasarına Tam Bağışıklık (Immunity) ile Charmed ve Frightened durumlarına bağışıklık kazanırsın (bu bağışıklık zırhın kendi Üstün Varlık Çekimi irade zarını ortadan kaldırmaz).",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     },
+     {
+      "ad": "Boss Savaş Sanatı — Zihin Kıran Çığlık (1/UD, Eylem)",
+      "metin": "20 ft çevrendeki tüm düşmanlara zihinsel şok salarsın; her düşman DC 16 INT kurtarma zarı atar, geçemezse 5d6 psişik hasarı alır, 1 tur Stunned olur ve sürdürdüğü konsantrasyon otomatik kırılır (geçerse yarı hasar, sersemlemez).",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     }
+    ],
+    "riskler": "Geri sökülemez; Kararmayı kalıcı hızlandırır. Zırhın kendi fısıltılarına ve ejderha karşısındaki İhanet zarlarına bağışıklık vermez.",
+    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "void-fracture",
+   "name": "Void Fracture",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Yıkık Gözlemevi'ndeki yerçekimi çekirdeği: saf kuvvet hasarına ve zorla yer değiştirmeye tam bağışıklık verir, uzak düşmanları çekip yere çakan kütle dalgası salar.",
+   "weight": 0.5,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#18",
+    "tr": "Boşluk Kırığı (Kuvvet)",
+    "nadirlik": "efsanevi",
+    "tur": "sihirli",
+    "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
+    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "fiyatGp": null,
+    "ozet": "Yıkık Gözlemevi'ndeki yerçekimi çekirdeği: saf kuvvet hasarına ve zorla yer değiştirmeye tam bağışıklık verir, uzak düşmanları çekip yere çakan kütle dalgası salar.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken kuvvet hasarına Tam Bağışıklık (Immunity) kazanırsın (Magic Missile, Eldritch Blast dahil) ve iraden dışında hiçbir etki seni zorla itemez, çekemez veya ışınlayamaz.",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     },
+     {
+      "ad": "Boss Savaş Sanatı — Yıldız Çöküşü (1/UD, Eylem)",
+      "metin": "30 ft çevrendeki tüm düşmanları (havada uçanlar dahil) kendine doğru 15 ft çekersin (DC 16 STR kurtarma zarı engeller); ardından 10 ft çevrene indirdiğin yerçekimi darbesiyle alandaki tüm düşmanlar 6d6 kuvvet hasarı alır (DC 16 STR geçerse yarı) ve Prone olur (uçan düşmanlar yere çakılır).",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+     }
+    ],
+    "riskler": "Geri sökülemez; Kararmayı kalıcı hızlandırır. Yıldız Çöküşü tehlikeli yakın dövüş düşmanlarını doğrudan kendi çevrene toplar.",
+    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "guardian-dragon-sigil",
+   "name": "Guardian Dragon Sigil",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Evrimleşen Kıta Ejderhası'nın on saf element dengesinden dövdüğü lanetsiz nişan: kalıcı irade koruması verir ve günde bir kez Ölümsüz Koruyucu'nun uyumlu element nefesini çağırır.",
+   "weight": 0.5,
+   "effects": {
+    "saveBonus": 1
+   },
+   "passive": {
+    "immune": [
+     "Frightened"
+    ]
+   },
+   "katalog": {
+    "ref": "BOSS#19",
+    "tr": "Koruyucu Ejderha Mührü",
+    "nadirlik": "efsanevi",
+    "tur": "aksesuar",
+    "yuva": "tılsım",
+    "fiyatGp": null,
+    "ozet": "Evrimleşen Kıta Ejderhası'nın on saf element dengesinden dövdüğü lanetsiz nişan: kalıcı irade koruması verir ve günde bir kez Ölümsüz Koruyucu'nun uyumlu element nefesini çağırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılı ve uyumlu olduğun sürece tüm kurtarma zarlarına +1 bonus kazanırsın, Frightened durumuna bağışık olursun ve her uzun dinlenme sonunda on element/düzlem hasar türünden seçtiğin 2 türe Direnç kazanırsın.",
+      "durum": "kismi",
+      "not": "tüm kurtarma +1 ve Frightened bağışıklığı çalışır; uzun dinlenmede seçilen 2 türe direnç seçimi yok"
+     },
+     {
+      "ad": "Koruyucunun Nefesi (1/UD, Eylem)",
+      "metin": "Önündeki 30 ft koniye seçtiğin element türünden arınmış ejderha nefesi salarsın; konideki düşmanlar DC 17 DEX kurtarma zarı atar, geçemezse 6d8 seçilen türde hasar alır (geçerse yarı hasar), konideki dostlar ise zarar görmez ve 2d8 geçici can kazanır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Tam bağışıklık (Immunity) yerine esnek direnç sunar; yalnızca Yol A (Ölümsüz Koruyucu Finali) tamamlandığında elde edilir.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter tılsımın pasif ve aktif güçlerini açamaz."
+   }
   }
  ]
 }

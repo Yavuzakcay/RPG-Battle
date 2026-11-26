@@ -50,8 +50,8 @@ describe('Dungeondex görsel eşlemesi', () => {
     expect((srdGear as unknown as { gear: unknown[] }).gear.length).toBeGreaterThan(0);
     for (const w of weapons) has('esya', w.id);
     for (const a of armor as Array<{ srd?: string }>) if (a.srd) has('esya', a.srd.split(':')[1]!);
-    // Görev KATALOG-1 A: 449 SRD/oyun eşyası + 125 özgün katalog silahı (yedek ikon); B: + 66 zırh/cübbe/kalkan/imza eşyası; C: + 55 giyilebilir.
-    expect(Object.keys(E.kategoriler.esya)).toHaveLength(695);
+    // Görev KATALOG-1 A: 449 SRD/oyun eşyası + 125 özgün katalog silahı (yedek ikon); B: + 66 zırh/cübbe/kalkan/imza eşyası; C: + 55 giyilebilir; D: + 76 yüzük, tılsım, taş.
+    expect(Object.keys(E.kategoriler.esya)).toHaveLength(771);
     for (const id of Object.keys((srdMonsters as unknown as { monsters: Record<string, unknown> }).monsters)) has('canavar', id);
     expect(Object.keys(E.kategoriler.canavar)).toHaveLength(monsters.length);
     for (const id of srdIds((srdFeats as unknown as { feats: Array<{ id: string }> }).feats)) has('feat', id);
