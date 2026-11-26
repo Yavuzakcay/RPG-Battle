@@ -1766,6 +1766,7 @@
      "ad": "Caustic Band",
      "gorunum": "Thick bronze band holding a single emerald-green droplet-shaped gem in a claw setting, a bead of bright green acid on the band."
     },
+    null,
     {
      "id": "callous-glow-ring",
      "ad": "Callous Glow Ring",
@@ -1775,6 +1776,657 @@
      "id": "strange-conduit-ring",
      "ad": "Strange Conduit Ring",
      "gorunum": "Focus ring with a smoky blue-grey quartz stone with a tiny pale-teal spark inside, on a dark silver band."
+    }
+   ],
+   "not": "Gemini 7 eşya çizdi; hücre 5 (kehribar taşlı kemik yüzük) yedek, kullanılmaz (KATALOG-IKON-AKTAR-2)."
+  },
+  {
+   "dosya": "katalog-duzeltme-01.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "not": "KATALOG-IKON-AKTAR-2 düzeltme sayfası: kusurlu hücrelerin yeniden üretimi (dış parıltı/hale yok). Öğedeki `eskiHucre` ilk sayfadaki yeri.",
+   "ogeler": [
+    {
+     "id": "giantbreaker-blade",
+     "ad": "Giantbreaker Blade",
+     "gorunum": "Huge two-handed greatsword with a broad, slightly flared steel blade notched like a giant's broken tooth, a heavy square dark-iron crossguard, a long leather-wrapped grip and a round pommel, faint warm gold glow.",
+     "eskiHucre": "katalog-silah-01#1"
+    },
+    {
+     "id": "starcleave",
+     "ad": "Starcleave",
+     "gorunum": "Two-handed greatsword forged from dark speckled meteorite steel with tiny glinting white star flecks along the blade, a crescent-shaped crossguard and a cool pale-teal glow along the edge.",
+     "eskiHucre": "katalog-silah-01#2"
+    },
+    {
+     "id": "cinderheart-greatsword",
+     "ad": "Cinderheart Greatsword",
+     "gorunum": "Greatsword with a dark steel blade whose central fuller glows like live embers, thin orange heat cracks along the edge, a soot-blackened iron crossguard and a soft orange glow.",
+     "eskiHucre": "katalog-silah-01#5"
+    },
+    {
+     "id": "frostcrescent-greatsword",
+     "ad": "Frostcrescent Greatsword",
+     "gorunum": "Greatsword with a pale silver blade curving gently like a crescent moon, frost crystals along the edge and a cold blue moonlight glow.",
+     "eskiHucre": "katalog-silah-01#8"
+    },
+    {
+     "id": "riftbreaker-greatsword",
+     "ad": "Riftbreaker Greatsword",
+     "gorunum": "Huge sword-shaped slab carved from a single piece of cracked grey ruin stone with worn ancient carvings, small stone chips floating around it and a faint pale-blue gravity glow.",
+     "eskiHucre": "katalog-silah-01#10"
+    },
+    {
+     "id": "horizonlight-greatsword",
+     "ad": "Horizonlight Greatsword",
+     "gorunum": "Greatsword forged from golden bone: an ivory-gold blade with sunrise ray patterns, a winged gold crossguard and a warm radiant gold glow.",
+     "eskiHucre": "katalog-silah-01#11"
+    },
+    {
+     "id": "golden-poise-greatsword",
+     "ad": "Golden Poise Greatsword",
+     "gorunum": "Perfectly balanced knight's greatsword with a polished steel blade, a straight gold crossguard and pommel, a gold-wrapped grip and a faint golden shimmer.",
+     "eskiHucre": "katalog-silah-01#13"
+    },
+    {
+     "id": "twin-starblades",
+     "ad": "Twin Starblades",
+     "gorunum": "A matched pair of crossed greatswords forming an X, dark steel blades flecked with glinting white stars, gold crossguards and a faint pale-blue shimmer.",
+     "eskiHucre": "katalog-silah-01#14"
+    },
+    {
+     "id": "cinderfrost-katana",
+     "ad": "Cinderfrost Katana",
+     "gorunum": "Katana with a scale-patterned blade: one half of the edge glows with orange cinders, the other half is frosted icy blue, with a grey-wrapped grip.",
+     "eskiHucre": "katalog-silah-02#2"
+    },
+    {
+     "id": "whispering-rapier",
+     "ad": "Whispering Rapier",
+     "gorunum": "Thin rapier with a narrow blade and an open spiral wire cup-hilt shaped like a curled ear, a dark blue grip and faint pale-teal whisper wisps along the blade.",
+     "eskiHucre": "katalog-silah-02#8"
+    },
+    {
+     "id": "harmonic-rapier",
+     "ad": "Harmonic Rapier",
+     "gorunum": "Rapier with a thin steel blade and a lyre-shaped swept hilt with tiny strings across the guard, faint golden musical ripples.",
+     "eskiHucre": "katalog-silah-02#9"
+    },
+    {
+     "id": "nightjudge-scimitar",
+     "ad": "Nightjudge Scimitar",
+     "gorunum": "Black scimitar with a matte dark blade and a thin silver edge, a guard shaped like a small set of judge's scales, and wisps of shadow.",
+     "eskiHucre": "katalog-silah-02#14"
+    },
+    {
+     "id": "nebula-wing-scimitar",
+     "ad": "Nebula Wing Scimitar",
+     "gorunum": "Light scimitar whose curved blade is shaped like a feathered wing, dark night-blue metal sprinkled with glittering white stars, trailing faint blue-white stardust.",
+     "eskiHucre": "katalog-silah-02#16"
+    },
+    {
+     "id": "gloomfang",
+     "ad": "Gloomfang",
+     "gorunum": "Short sword with a smoked dark-steel blade tapering into a fang-like point, a black iron guard and grip, and dark shadow smoke clinging to the blade.",
+     "eskiHucre": "katalog-silah-03#2"
+    },
+    {
+     "id": "spiteful-dagger",
+     "ad": "Spiteful Dagger",
+     "gorunum": "Assassin's dagger with a wavy, wicked kris-style blade, a grip wrapped in black cord and a faint pale-teal haze swirling over the blade.",
+     "eskiHucre": "katalog-silah-03#8"
+    },
+    {
+     "id": "glacierbreak-maul",
+     "ad": "Glacierbreak Maul",
+     "gorunum": "Heavy maul whose head is a block of translucent blue glacier ice bound with iron straps, on a frost-covered haft, with icy cyan mist.",
+     "eskiHucre": "katalog-silah-04#3"
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-duzeltme-02.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "not": "KATALOG-IKON-AKTAR-2 düzeltme sayfası: kusurlu hücrelerin yeniden üretimi (dış parıltı/hale yok). Öğedeki `eskiHucre` ilk sayfadaki yeri.",
+   "ogeler": [
+    {
+     "id": "shadowbloom-maul",
+     "ad": "Shadowbloom Maul",
+     "gorunum": "Heavy maul whose head is a petrified giant sunflower of dark grey stone with stone petals, faint gold light glowing from its center.",
+     "eskiHucre": "katalog-silah-04#6"
+    },
+    {
+     "id": "chainbreaker-warhammer",
+     "ad": "Chainbreaker Warhammer",
+     "gorunum": "Warhammer with a square steel head, broken chain links wrapped around the haft and a shattered shackle hanging below the head, faint pale-blue glow.",
+     "eskiHucre": "katalog-silah-04#12"
+    },
+    {
+     "id": "oathshatter-warhammer",
+     "ad": "Oathshatter Warhammer",
+     "gorunum": "Warhammer with a cracked white marble head bound in steel bands, pale blue force light leaking from the cracks, on a steel haft.",
+     "eskiHucre": "katalog-silah-04#13"
+    },
+    {
+     "id": "pactbound-warhammer",
+     "ad": "Pactbound Warhammer",
+     "gorunum": "Warhammer with a dark steel head bound to its haft by a glowing golden chain of linked abstract runes, small yellow lightning sparks around it.",
+     "eskiHucre": "katalog-silah-04#14"
+    },
+    {
+     "id": "homing-forge-hammer",
+     "ad": "Homing Forge Hammer",
+     "gorunum": "Heavy throwing hammer with a smith's square head stamped with an anvil emblem and forge marks, a short iron haft and a faint orange heat glow.",
+     "eskiHucre": "katalog-silah-04#15"
+    },
+    {
+     "id": "dawnseal-mace",
+     "ad": "Dawnseal Mace",
+     "gorunum": "Flanged steel mace whose head carries a round white-stone seal disc stamped with a rising-sun emblem, white cloth ribbons tied below the head, soft pale-gold glow.",
+     "eskiHucre": "katalog-silah-05#6"
+    },
+    {
+     "id": "sunstar-morningstar",
+     "ad": "Sunstar Morningstar",
+     "gorunum": "Morningstar with a polished gold spherical head bristling with sun-ray spikes, glowing warm white-gold daylight, on a white-wrapped steel haft.",
+     "eskiHucre": "katalog-silah-05#10"
+    },
+    {
+     "id": "brimstone-flail",
+     "ad": "Brimstone Flail",
+     "gorunum": "Chain flail whose spiked iron ball is pitted and crusted with yellow sulfur, dripping dark oily liquid, with faint yellow fumes.",
+     "eskiHucre": "katalog-silah-05#12"
+    },
+    {
+     "id": "stardust-flail",
+     "ad": "Stardust Flail",
+     "gorunum": "Flail with a short handle and two chains, each ending in a glowing pale blue-white star sphere trailing glittering stardust.",
+     "eskiHucre": "katalog-silah-05#14"
+    },
+    {
+     "id": "homing-pike",
+     "ad": "Homing Pike",
+     "gorunum": "Long balanced pike with a slim steel point, two small fin-like stabilizers below the head, a polished ash shaft and a faint circular pale-blue swirl.",
+     "eskiHucre": "katalog-silah-06#5"
+    },
+    {
+     "id": "luster-twinblade",
+     "ad": "Luster Twinblade",
+     "gorunum": "Double-ended weapon: a central wrapped grip with a long golden blade at each end shaped like a spread wing, glowing warm gold.",
+     "eskiHucre": "katalog-silah-06#9"
+    },
+    {
+     "id": "skybolt-spear",
+     "ad": "Skybolt Spear",
+     "gorunum": "Ancient spear with a gold-and-bronze head shaped like a dragon's fang, crackling with yellow-white lightning, on a dark shaft.",
+     "eskiHucre": "katalog-silah-06#14"
+    },
+    {
+     "id": "stormbolt-javelin",
+     "ad": "Stormbolt Javelin",
+     "gorunum": "Throwing javelin with a bright steel head shaped like a lightning bolt on a slim pale-wood shaft, crackling with yellow electric light.",
+     "eskiHucre": "katalog-silah-06#15"
+    },
+    {
+     "id": "hoarfrost-staff",
+     "ad": "Hoarfrost Staff",
+     "gorunum": "Wizard staff topped with a large cluster of ice crystals, a frost-covered pale wooden shaft, an icy cyan glow and small snowflakes.",
+     "eskiHucre": "katalog-silah-07#3"
+    },
+    {
+     "id": "archmages-conduit-staff",
+     "ad": "Archmage's Conduit Staff",
+     "gorunum": "Tall grand staff of polished white wood with an ornate gold cage at the top holding a large brilliant blue crystal and swirling blue arcane light.",
+     "eskiHucre": "katalog-silah-07#7"
+    },
+    {
+     "id": "resonance-staff",
+     "ad": "Resonance Staff",
+     "gorunum": "Staff topped with a silver tuning-fork-shaped head holding a small floating prism crystal, faint concentric rings of red, blue and yellow light.",
+     "eskiHucre": "katalog-silah-07#10"
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-duzeltme-03.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "not": "KATALOG-IKON-AKTAR-2 düzeltme sayfası: kusurlu hücrelerin yeniden üretimi (dış parıltı/hale yok). Öğedeki `eskiHucre` ilk sayfadaki yeri.",
+   "ogeler": [
+    {
+     "id": "staff-of-arcane-benediction",
+     "ad": "Staff of Arcane Benediction",
+     "gorunum": "Support staff of pale wood with a small golden halo ring floating above its top and white cloth ribbons, soft warm golden glow.",
+     "eskiHucre": "katalog-silah-07#11"
+    },
+    {
+     "id": "pitchtorch-club",
+     "ad": "Pitchtorch Club",
+     "gorunum": "War torch club: a thick wooden cudgel with its end wrapped in pitch-soaked rags burning with a bright orange flame, an iron collar below the rags.",
+     "eskiHucre": "katalog-silah-07#14"
+    },
+    {
+     "id": "skylight-longbow",
+     "ad": "Skylight Longbow",
+     "gorunum": "Tall longbow of white-gold wood with sun-ray carvings on the limbs and a string made of a glowing beam of golden light, bright warm gold glow.",
+     "eskiHucre": "katalog-silah-08#1"
+    },
+    {
+     "id": "banshees-wail-shortbow",
+     "ad": "Banshee's Wail Shortbow",
+     "gorunum": "Short bow of pale grey wood with wailing ghost-face carvings at the limb ends, a thin silvery string and pale ghostly mist.",
+     "eskiHucre": "katalog-silah-08#4"
+    },
+    {
+     "id": "forcebolt-hand-crossbow",
+     "ad": "Forcebolt Hand Crossbow",
+     "gorunum": "Compact one-handed crossbow of dark lacquered wood and steel, loaded with a glowing pale-blue bolt of pure force energy instead of a real bolt.",
+     "eskiHucre": "katalog-silah-08#6"
+    },
+    {
+     "id": "hellforge-plate",
+     "ad": "Hellforge Plate",
+     "gorunum": "Full plate of black infernal steel with glowing orange forge seams between the plates and small horn details, slight heat shimmer.",
+     "eskiHucre": "katalog-zirh-01#6"
+    },
+    {
+     "id": "mindfortress-plate",
+     "ad": "Mindfortress Plate",
+     "gorunum": "Heavy enclosed plate of smooth layered steel with a high protective gorget and a calm pale-teal gem set in the chest.",
+     "eskiHucre": "katalog-zirh-01#12"
+    },
+    {
+     "id": "forcewave-chain-mail",
+     "ad": "Forcewave Chain Mail",
+     "gorunum": "Chain mail hauberk with concentric rippling rings of pale blue force energy across the steel links.",
+     "eskiHucre": "katalog-zirh-01#15"
+    },
+    {
+     "id": "sparkmesh-chain-shirt",
+     "ad": "Sparkmesh Chain Shirt",
+     "gorunum": "Light chain shirt of shiny copper rings with tiny yellow sparks jumping between the links.",
+     "eskiHucre": "katalog-zirh-02#8"
+    },
+    {
+     "id": "sunburst-breastplate",
+     "ad": "Sunburst Breastplate",
+     "gorunum": "Bright silver breastplate with a carved radiating sunburst on the chest and soft golden light.",
+     "eskiHucre": "katalog-zirh-02#9"
+    },
+    {
+     "id": "raptor-feather-coat",
+     "ad": "Raptor Feather Coat",
+     "gorunum": "Light armored coat covered in overlapping glossy black raven feathers, held by leather straps.",
+     "eskiHucre": "katalog-zirh-03#1"
+    },
+    {
+     "id": "spellblade-coat",
+     "ad": "Spellblade Coat",
+     "gorunum": "Long battle-mage coat of dark blue leather with brass buttons engraved with abstract runes and reinforced shoulders.",
+     "eskiHucre": "katalog-zirh-03#2"
+    },
+    {
+     "id": "moonshift-hide",
+     "ad": "Moonshift Hide",
+     "gorunum": "Druidic hide armor of pale silvery moon-colored fur with crescent-moon motifs.",
+     "eskiHucre": "katalog-zirh-03#3"
+    },
+    {
+     "id": "spidersilk-armor",
+     "ad": "Spidersilk Armor",
+     "gorunum": "Light armor woven from shimmering white-grey spider silk with a faint web pattern.",
+     "eskiHucre": "katalog-zirh-03#5"
+    },
+    {
+     "id": "corsair-captains-coat",
+     "ad": "Corsair Captain's Coat",
+     "gorunum": "Flamboyant naval captain's long coat in deep red with gold trims, brass buttons and wide cuffs.",
+     "eskiHucre": "katalog-zirh-03#6"
+    },
+    {
+     "id": "minstrels-favor-jerkin",
+     "ad": "Minstrel's Favor Jerkin",
+     "gorunum": "Embroidered bard's jerkin in teal and gold with lute and musical-note embroidery.",
+     "eskiHucre": "katalog-zirh-03#7"
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-duzeltme-04.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "not": "KATALOG-IKON-AKTAR-2 düzeltme sayfası: kusurlu hücrelerin yeniden üretimi (dış parıltı/hale yok). Öğedeki `eskiHucre` ilk sayfadaki yeri.",
+   "ogeler": [
+    {
+     "id": "vigil-shroud-robe",
+     "ad": "Vigil Shroud Robe",
+     "gorunum": "Thin pale white hooded robe for death-watch vigils with soft silver trim and a faint warm light.",
+     "eskiHucre": "katalog-zirh-03#9"
+    },
+    {
+     "id": "weavewoven-robe",
+     "ad": "Weavewoven Robe",
+     "gorunum": "Ivory robe interlaced with glowing golden threads woven into knot patterns, with a high collar.",
+     "eskiHucre": "katalog-zirh-03#10"
+    },
+    {
+     "id": "resonant-caster-robe",
+     "ad": "Resonant Caster Robe",
+     "gorunum": "Shiny robe of rich deep blue silk with gold embroidery and a sparkling sheen.",
+     "eskiHucre": "katalog-zirh-03#11"
+    },
+    {
+     "id": "robe-of-supreme-focus",
+     "ad": "Robe of Supreme Focus",
+     "gorunum": "Heavy layered silk robe in calm dark teal with a meditation-circle emblem on the chest.",
+     "eskiHucre": "katalog-zirh-03#12"
+    },
+    {
+     "id": "soulmender-monk-vest",
+     "ad": "Soulmender Monk Vest",
+     "gorunum": "Sleeveless monk vest in saffron orange with white embroidered spirit-swirl patterns.",
+     "eskiHucre": "katalog-zirh-03#13"
+    },
+    {
+     "id": "tidecaller-robe",
+     "ad": "Tidecaller Robe",
+     "gorunum": "Flowing sea-silk robe in ocean blue-green with wave patterns and small water droplets.",
+     "eskiHucre": "katalog-zirh-03#14"
+    },
+    {
+     "id": "nimble-cat-tunic",
+     "ad": "Nimble Cat Tunic",
+     "gorunum": "Short light acrobat's tunic in tan with black stripes and a small cat-face emblem.",
+     "eskiHucre": "katalog-zirh-03#15"
+    },
+    {
+     "id": "venomweaver-robe",
+     "ad": "Venomweaver Robe",
+     "gorunum": "Alchemist's robe of dark green waxed cloth with yellow-green trims and small glass vials hanging from the belt.",
+     "eskiHucre": "katalog-zirh-03#16"
+    },
+    {
+     "id": "walking-bastion-shield",
+     "ad": "Walking Bastion Shield",
+     "gorunum": "Tall tower shield shaped like a miniature fortress gate with a crenellated top edge, stone-grey steel, a small portcullis relief and a soft blue ward glow.",
+     "eskiHucre": "katalog-zirh-04#6"
+    },
+    {
+     "id": "sunward-shield",
+     "ad": "Sunward Shield",
+     "gorunum": "Round carved bronze shield with a sun-disc and radiating ray pattern, faint golden glow.",
+     "eskiHucre": "katalog-zirh-04#9"
+    },
+    {
+     "id": "fungal-crown",
+     "ad": "Fungal Crown",
+     "gorunum": "Crown woven from living underground mushrooms in tan and orange-brown, with softly glowing pale mushroom caps.",
+     "eskiHucre": "katalog-giyilebilir-01#4"
+    },
+    {
+     "id": "dawnmender-circlet",
+     "ad": "Dawnmender Circlet",
+     "gorunum": "Healer's circlet wrapped in gold wire with a pale warm sunrise-orange gem at the front.",
+     "eskiHucre": "katalog-giyilebilir-01#13"
+    },
+    {
+     "id": "weavefold-cloak",
+     "ad": "Weavefold Cloak",
+     "gorunum": "Heavy deep blue silk cloak whose folds shimmer with faint swirling magic-absorbing patterns.",
+     "eskiHucre": "katalog-giyilebilir-02#4"
+    },
+    {
+     "id": "frostmist-cloak",
+     "ad": "Frostmist Cloak",
+     "gorunum": "Thick wool cloak covered in white frost rime with a cold icy mist.",
+     "eskiHucre": "katalog-giyilebilir-02#8"
+    },
+    {
+     "id": "skythunder-gloves",
+     "ad": "Skythunder Gloves",
+     "gorunum": "Pair of leather gloves stitched with storm patterns, faint blue-white thunder ripples around them.",
+     "eskiHucre": "katalog-giyilebilir-03#5"
+    },
+    {
+     "id": "luminous-gauntlets",
+     "ad": "Luminous Gauntlets",
+     "gorunum": "Pair of gauntlets plated in bright sun-silver that glow with warm white-gold light.",
+     "eskiHucre": "katalog-giyilebilir-03#7"
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-duzeltme-05.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "not": "KATALOG-IKON-AKTAR-2 düzeltme sayfası: kusurlu hücrelerin yeniden üretimi (dış parıltı/hale yok). Öğedeki `eskiHucre` ilk sayfadaki yeri.",
+   "ogeler": [
+    {
+     "id": "winterclaw-gloves",
+     "ad": "Winterclaw Gloves",
+     "gorunum": "Pair of frosted gloves with icy claw-like fingertips and an icy cyan glow.",
+     "eskiHucre": "katalog-giyilebilir-03#9"
+    },
+    {
+     "id": "ichorous-gloves",
+     "ad": "Ichorous Gloves",
+     "gorunum": "Pair of thick alchemist's gloves stained with dripping yellow-green acid.",
+     "eskiHucre": "katalog-giyilebilir-03#11"
+    },
+    {
+     "id": "stormstep-boots",
+     "ad": "Stormstep Boots",
+     "gorunum": "Pair of boots with trembling layered soles and faint concentric sound rings below them.",
+     "eskiHucre": "katalog-giyilebilir-04#5"
+    },
+    {
+     "id": "springvault-boots",
+     "ad": "Springvault Boots",
+     "gorunum": "Pair of boots with springy coiled-spring soles.",
+     "eskiHucre": "katalog-giyilebilir-04#7"
+    },
+    {
+     "id": "sparkstride-boots",
+     "ad": "Sparkstride Boots",
+     "gorunum": "Pair of light leather boots with crackling yellow static sparks around them.",
+     "eskiHucre": "katalog-giyilebilir-04#10"
+    },
+    {
+     "id": "shadowspark-ring",
+     "ad": "Shadowspark Ring",
+     "gorunum": "Polished black ring set with a dark smoky stone that has a tiny white spark inside.",
+     "eskiHucre": "katalog-yuzuk-01#1"
+    },
+    {
+     "id": "high-command-ring",
+     "ad": "High Command Ring",
+     "gorunum": "Heavy black-iron signet ring with a square ruby set flush into its face and a tiny engraved crown.",
+     "eskiHucre": "katalog-yuzuk-01#2"
+    },
+    {
+     "id": "gamblers-edge-ring",
+     "ad": "Gambler's Edge Ring",
+     "gorunum": "Gold ring whose setting holds a tiny ivory six-sided die.",
+     "eskiHucre": "katalog-yuzuk-01#3"
+    },
+    {
+     "id": "dazzling-halo-ring",
+     "ad": "Dazzling Halo Ring",
+     "gorunum": "Gold ring set with a radiant yellow sun crystal surrounded by a small halo of light rays.",
+     "eskiHucre": "katalog-yuzuk-01#4"
+    },
+    {
+     "id": "snowburst-ring",
+     "ad": "Snowburst Ring",
+     "gorunum": "Silver ring inlaid with an icy blue glacier sapphire, frost on the band.",
+     "eskiHucre": "katalog-yuzuk-01#5"
+    },
+    {
+     "id": "spellstrike-ring",
+     "ad": "Spellstrike Ring",
+     "gorunum": "Two interlinked bands, one steel and one copper, fused into a single double ring.",
+     "eskiHucre": "katalog-yuzuk-01#6"
+    },
+    {
+     "id": "eversight-shadow-ring",
+     "ad": "Eversight Shadow Ring",
+     "gorunum": "Dark ring with a glossy black obsidian stone shaped like an eye.",
+     "eskiHucre": "katalog-yuzuk-01#7"
+    },
+    {
+     "id": "whispering-promise-ring",
+     "ad": "Whispering Promise Ring",
+     "gorunum": "Gold priest's ring with engraved prayer lines (abstract marks) and a small white pearl.",
+     "eskiHucre": "katalog-yuzuk-01#8"
+    },
+    {
+     "id": "sparkswall-ring",
+     "ad": "Sparkswall Ring",
+     "gorunum": "Ring of grounded copper wire wrapped around a clear glass stone.",
+     "eskiHucre": "katalog-yuzuk-01#9"
+    },
+    {
+     "id": "flinging-ring",
+     "ad": "Flinging Ring",
+     "gorunum": "Plain light iron ring with a small throwing-axe emblem.",
+     "eskiHucre": "katalog-yuzuk-01#10"
+    },
+    {
+     "id": "elemental-infusion-ring",
+     "ad": "Elemental Infusion Ring",
+     "gorunum": "Battle-mage ring surrounded by five tiny gems: red, blue, yellow, green and white.",
+     "eskiHucre": "katalog-yuzuk-01#11"
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-duzeltme-06.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "not": "KATALOG-IKON-AKTAR-2 düzeltme sayfası: kusurlu hücrelerin yeniden üretimi (dış parıltı/hale yok). Öğedeki `eskiHucre` ilk sayfadaki yeri.",
+   "ogeler": [
+    {
+     "id": "venomthorn-ring",
+     "ad": "Venomthorn Ring",
+     "gorunum": "Alchemist's ring carved with green thorns, a small green poison drop gem.",
+     "eskiHucre": "katalog-yuzuk-01#12"
+    },
+    {
+     "id": "locksmiths-ring",
+     "ad": "Locksmith's Ring",
+     "gorunum": "Simple silver ring with a tiny lockpick and key motif.",
+     "eskiHucre": "katalog-yuzuk-01#13"
+    },
+    {
+     "id": "rootgrip-ring",
+     "ad": "Rootgrip Ring",
+     "gorunum": "Ring made of twisted living tree root with a small green bud.",
+     "eskiHucre": "katalog-yuzuk-01#14"
+    },
+    {
+     "id": "devouts-medallion",
+     "ad": "Devout's Medallion",
+     "gorunum": "Gold medallion stamped with a divine sun seal on a gold chain.",
+     "eskiHucre": "katalog-yuzuk-02#4"
+    },
+    {
+     "id": "spellspark-pendant",
+     "ad": "Spellspark Pendant",
+     "gorunum": "Wizard pendant with a twin knot of two sapphires on a silver chain.",
+     "eskiHucre": "katalog-yuzuk-02#5"
+    },
+    {
+     "id": "subjugation-pendant",
+     "ad": "Subjugation Pendant",
+     "gorunum": "Thin silver pendant shaped like a surgical needle with fine nerve-like silver lines.",
+     "eskiHucre": "katalog-yuzuk-02#6"
+    },
+    {
+     "id": "silverthread-locket",
+     "ad": "Silverthread Locket",
+     "gorunum": "Round field medic's silver locket with a white cross-shaped embossing and a silver needle and thread wrapped around it.",
+     "eskiHucre": "katalog-yuzuk-02#14"
+    },
+    {
+     "id": "umbral-sigil-stone",
+     "ad": "Essence Sigil Stone (Umbral / Radiant; ortak hücre)",
+     "gorunum": "Larger essence sigil stone: an elongated faceted crystal in an ornate gold setting, drawn in one bright saturated warm golden-white hue (single color, to be recolored per element later) with a glowing core.",
+     "eskiHucre": "katalog-yuzuk-03#3"
+    },
+    {
+     "id": "ancient-imbuement-relic",
+     "ad": "Ancient Imbuement Relic",
+     "gorunum": "Ancient weathered stone relic with glowing blue engraved patterns, a one-use imbuement charm.",
+     "eskiHucre": "katalog-yuzuk-03#7"
+    },
+    {
+     "id": "flashblind-capsule",
+     "ad": "Flashblind Capsule",
+     "gorunum": "Small capsule of white paper and brass filled with bright magnesium light powder, glowing at the seams.",
+     "eskiHucre": "katalog-tuketilebilir-01#4"
+    },
+    {
+     "id": "arcing-bolt-arrow",
+     "ad": "Arcing Bolt Arrow",
+     "gorunum": "Arrow wrapped in copper wire with yellow lightning arcing at the tip.",
+     "eskiHucre": "katalog-tuketilebilir-02#6"
+    },
+    {
+     "id": "splitflight-arrow",
+     "ad": "Splitflight Arrow",
+     "gorunum": "Arrow whose head splits into three glowing pale-blue magical prongs.",
+     "eskiHucre": "katalog-tuketilebilir-02#7"
+    },
+    {
+     "id": "transposition-arrow",
+     "ad": "Transposition Arrow",
+     "gorunum": "Arrow with a glowing pale-blue spiral portal ring around its shaft.",
+     "eskiHucre": "katalog-tuketilebilir-02#8"
+    },
+    {
+     "id": "blessed-mending-arrow",
+     "ad": "Blessed Mending Arrow",
+     "gorunum": "Arrow with a fragile glass capsule of holy water at its tip and a soft golden glow.",
+     "eskiHucre": "katalog-tuketilebilir-02#11"
+    },
+    {
+     "id": "shadowpierce-arrow",
+     "ad": "Shadowpierce Arrow",
+     "gorunum": "Black arrow branded with dark marks, wisps of shadow trailing behind.",
+     "eskiHucre": "katalog-tuketilebilir-02#12"
+    },
+    {
+     "id": "hoarfrost-coating",
+     "ad": "Hoarfrost Coating",
+     "gorunum": "Small flask of glistening icy blue crystal oil with frost on the glass.",
+     "eskiHucre": "katalog-tuketilebilir-03#1"
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-duzeltme-07.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "not": "KATALOG-IKON-AKTAR-2 düzeltme sayfası: kusurlu hücrelerin yeniden üretimi (dış parıltı/hale yok). Öğedeki `eskiHucre` ilk sayfadaki yeri.",
+   "ogeler": [
+    {
+     "id": "strong-will-draught",
+     "ad": "Strong Will Draught",
+     "gorunum": "Potion bottle of glowing golden liquid with a small golden fire flower inside.",
+     "eskiHucre": "katalog-tuketilebilir-03#10"
+    },
+    {
+     "id": "elixir-of-battlemage-focus",
+     "ad": "Elixir of Battlemage Focus",
+     "gorunum": "Elixir bottle of glowing blue arcane liquid with a small eye-shaped glass stopper.",
+     "eskiHucre": "katalog-tuketilebilir-03#15"
+    },
+    {
+     "id": "callous-glow-ring",
+     "ad": "Callous Glow Ring",
+     "gorunum": "Hunter's ring of bone and gold with an amber cabochon glowing like a small lantern.",
+     "eskiHucre": "katalog-bekleyen-01#6"
     }
    ]
   }

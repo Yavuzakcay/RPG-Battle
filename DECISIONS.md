@@ -2,6 +2,22 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev KATALOG-IKON-AKTAR-2: bütün katalog sayfaları, otomatik kusur taraması ve düzeltme sayfaları (2026-11-26; yalnız görünüm, kural/kayıt sürümü yok)
+
+- **23 sayfa içe aktarıldı**: 330 kimlik (323 hücre + 7 `ayniGorsel` kopyası), `public/esya` + `kucuk/`; ilk turun 59 ikonu bayt bayt aynı
+  çıktı. Boyut 6,53 MB (256 px ort. 16,0 KB, 96 px ort. 4,2 KB); `public/esya` toplam 15,57 MB.
+- **Hücre sayıları** (zeminden uzak piksel oranıyla otomatik): 22 sayfada manifestle aynı. tüketilebilir-02 13. hücre çay fincanı =
+  manifestin 13. öğesi `emerald-tea-brew` (uyuşmazlık yok). bekleyen-01'de Gemini 7 eşya çizdi: manifest 1–4, 6, 7 (hücre 5 kehribar taşlı
+  kemik yüzük yedek, `null`, sayfa `not`'unda).
+- **Kusur taraması** (`scripts/katalog-ikon-kusur.mjs`, hücreler gözle denetlenmedi): kenar bandında leylak/pembe (despill sonrası leylak
+  R ≈ G, B baskın; pembe somona döner), somon, bant dışı opak macenta cep, düşük alfalı sis, kaynak hücre kenarında zemin dışı piksel.
+  Eşiğin yarısı ile eşik arası "belirsiz". Sonuç `harita/belgeler/KATALOG-IKON-KUSUR.md`: 99 kusurlu hücre (116 satır), 40 belirsiz satır.
+  Kalibrasyon yalnız ilk turda yakın planla bakılan hücreler (buz/arşimag asası leylak, kutsal asa somon, yaylı bot cebi).
+- **Düzeltme sayfaları**: kusurlu 99 hücre `katalog-duzeltme-01…07` (manifest sonunda, sonraki sayfa ezer; öğede `eskiHucre`), promptlar
+  `harita/belgeler/KATALOG-IKON-DUZELTME.md`: ortak blok, "thin soft glow hugging its silhouette" satırı yerine dış parıltı/hale yasağı
+  (ışıltı yalnız silüetin içinde, zemin tek düz #FF00FF; iki satır çelişeceği için değiştirildi), hücre tarifleri eski `gorunum`.
+  Belirsizler sayfalara girmedi.
+
 ## Görev KATALOG-IKON-AKTAR-1: katalog ikonlarının ilk içe aktarma turu (2026-11-26; yalnız görünüm, kural/kayıt sürümü yok)
 
 - **Katalog manifesti hedeftir** (`scripts/esya-ikon.mjs`, kullanıcı kararı): `--manifest <yol>` (varsayılan `data/esya-ikon-sayfalar.json`,

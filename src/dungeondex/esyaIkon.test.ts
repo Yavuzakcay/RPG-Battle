@@ -148,8 +148,15 @@ describe('Eşya ikon hattı: katalog manifesti', () => {
 
   it('katalog manifesti: sabit listede, kimlikleri tekil, oyun kayıtlarıyla çakışmıyor, sayfa öğesi hücreyi aşmıyor', () => {
     expect(KATALOG_MANIFESTLER).toContain('data/katalog-ikon-sayfalar.json');
-    const idler = katalog.sayfalar.flatMap((s) => s.ogeler.filter((o) => o?.id).map((o) => o!.id));
+    // Düzeltme sayfaları (katalog-duzeltme-NN, scripts/katalog-ikon-kusur.mjs) önceki bir sayfadaki kimliği yeniden üretir; en sonda.
+    const duz = (s: Manifest['sayfalar'][number]) => s.dosya.startsWith('katalog-duzeltme-');
+    const idOf = (s: Manifest['sayfalar'][number]) => s.ogeler.filter((o) => o?.id).map((o) => o!.id);
+    const idler = katalog.sayfalar.filter((s) => !duz(s)).flatMap(idOf);
     expect(new Set(idler).size).toBe(idler.length);
+    const duzIdler = katalog.sayfalar.filter(duz).flatMap(idOf);
+    expect(new Set(duzIdler).size).toBe(duzIdler.length);
+    for (const id of duzIdler) expect(idler.includes(id), id).toBe(true);
+    if (duzIdler.length) expect(katalog.sayfalar.findIndex(duz)).toBe(katalog.sayfalar.length - katalog.sayfalar.filter(duz).length);
     const oyun = new Set(oyunKayitlari().map((k) => k.id));
     for (const id of KATALOG) expect(oyun.has(id), id).toBe(false);
     for (const s of katalog.sayfalar) expect(s.ogeler.length, s.dosya).toBeLessThanOrEqual(s.kolon * s.satir);
