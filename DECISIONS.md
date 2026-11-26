@@ -2,6 +2,23 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev ESYA-IKON-ARTI: +1/+2/+3 eşyaları Gemini ikon sayfasından; doğrulama modu daraldı (2026-11-26; yalnız görünüm, kural/kayıt sürümü yok)
+
+- **15 artı eşya** (Ammunition, Armor, Shield, Weapon, Wand of the War Mage × +1/+2/+3) artık üst kimliğin ikonunu paylaşmıyor:
+  `data/esya-ikon-sayfalar.json` son sayfası `arti-1.jpg` (5 × 3, satır = +N, Gemini çizimi; +1 sade, +2 mavi rünlü parıltı, +3 altın
+  süslemeli parıltı). Kimlikler oyun kayıtlarıyla birebir tuttu; `data/esya-ikon-ayirt.json`'da bunlara kural yok.
+- **Macenta zemin** (`scripts/esya-ikon.mjs` `zeminKipi`): köşeden okunan zemin `isMagenta` (`scripts/lib/madalyon.mjs`) ise macenta
+  kipi. Taşkın dolgu macenta fazlası (min(R, B) − G > 0) olan ve zemine uzaklığı < 200 pikselleri alır (koyu dış çizgi durdurur).
+  Alfa/renk yeşildeki uzaklık rampasıyla değil `macentaAyristir` ile: Gemini parıltısı tek renk + zemin karışımı olduğundan anahtarlı
+  piksel, anahtarlı bölgeden ≥ 3 px içerideki en yakın nesne pikselinin rengine izdüşürülür (alfa izdüşümden, renk parıltının kendisi);
+  izdüşüm tutmazsa (artık > 30) fark matı a = 1 − fazla/fazla(zemin). Bitişik 3 px'lik geçiş halkası yalnız izdüşüm tutarsa çözülür (dış
+  çizgi ve mor gövde gibi nesne renkleri olduğu gibi kalır). Despill (1, 0, 1) yönündeki fazlayı R ve B'den düşer. İlk deneme (yeşil kuralın
+  macenta aynası) +3'ün altın halesini somon-pembe bırakıyordu. Yeşil sayfalarda kod yolu değişmedi: 39 sayfanın 550 ikonu (256 + 96)
+  önce/sonra bayt bayt aynı.
+- **Hafif doğrulama modu güncellemesi** (kullanıcı kararı): her görevde typecheck + ilgili testler + build; `check:harita` yalnız harita
+  JSON'u/görseli/yükleyicisi ya da savaş çizim koduna, `check:ses` yalnız ses dosyası/motoru/`data/ses*.json`'a dokunan görevde; yalnız
+  ikon/görsel varlık/veri/doküman görevlerinde ikisi de çalıştırılmaz ve raporda "dokunulmadı" yazılır.
+
 ## Görev ESYA-IKON-AYIRT: aynı ikonu paylaşan eşya varyantları ayrıştı (2026-11-26; yalnız görünüm, kural/kayıt sürümü yok)
 
 61 kayıt SRD üst kimliğinin tek ikonunu paylaşıyordu (Ammunition/Armor/Shield/Weapon/Wand of the War Mage +1/+2/+3, Armor/Potion/Ring of

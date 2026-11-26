@@ -193,8 +193,9 @@ npm run srd:canavar    # Görev D1: SRD canavar stat blokları → data/srd/mons
 - **Ekran metinleri** `src/i18n/strings.ts` (TR) ve `src/i18n/strings.en.ts` (EN, tembel), aynı yapı; arayüz `t()` ile okur, koda metin yazılmaz. "Game Master" yazılır, "GM" değil.
 - **Komutlar:** Kullanıcıya verilen komutlar PowerShell sözdiziminde.
 - **Küçük adımlar:** Her adımda typecheck, ilgili testler ve build yeşil kalmalı (ayrıntı: hafif doğrulama modu).
-- **Hafif doğrulama modu (kalıcı kural; kullanıcı kararı 2026-11-22, DECISIONS.md):**
-  - Her görevde yalnız: `npm run typecheck`, o görevin dokunduğu dosyalarla ilgili testler, `npm run build`, `npm run check:harita` ve `npm run check:ses` (bulutta TimeoutError verirse rapora gerçek durum yazılır).
+- **Hafif doğrulama modu (kalıcı kural; kullanıcı kararı 2026-11-22, 2026-11-26 güncellemesi, DECISIONS.md):**
+  - Her görevde yalnız: `npm run typecheck`, o görevin dokunduğu dosyalarla ilgili testler ve `npm run build`.
+  - `npm run check:harita` yalnız harita JSON'una, harita görseline, harita yükleyicisine ya da savaş çizim koduna dokunan görevde; `npm run check:ses` yalnız ses dosyasına, ses motoruna ya da `data/ses*.json`'a dokunan görevde (bulutta TimeoutError verirse rapora gerçek durum yazılır). Yalnız ikon/görsel varlık/veri/doküman görevlerinde ikisi de çalıştırılmaz, raporda "dokunulmadı" yazılır.
   - Görev sonunda tam `npm test` çalıştırılmaz. Tam `npm test` günde bir kez, akşam en sonda, kullanıcı istediğinde ayrı görev olarak.
   - Uzun testleri arka planda başlatıp sonuç gelmeden "geçti" denmez; rapora gerçek durum yazılır.
   - Denge ölçümü yalnızca yeni parti eklenen görevlerde ve 100 tohumla; 200 tohum, eski partilerin tam ölçümü ve düşman listesi düzeltme denemeleri yapılmaz, aralık dışı satırlar `harita/belgeler/DENGE.md`'ye yazılır. Ortak motor değişirse yalnızca 3–4 senaryolu hızlı regresyon. Ekran görüntüsü yalnızca arayüz değişen görevlerde ve tek görüntü. Tam ölçüm, düzeltme ve optimizasyon "Dungeondex öncesi tam test turu" görevine kalır; kullanıcı o görevi verene kadar yapılmaz.
