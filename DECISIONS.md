@@ -59,6 +59,10 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   yaratıklar (dost da), öneri eski otomatik seçim (büyücünün düşmanlarından merkeze en yakın altı). Kancasız Rng, yapay zekâ ve
   "Her zaman/Asla" ayarında sonuç aynı (sim imzası değişmez). ⚠ Nesneler hâlâ hedef değil (canavar/nesne hasar yolu ayrı; asit
   aşaması da nesnelere işlemez).
+- **⚠ b Cloaker paylaşılan hasarın türü** (SRD 5.2.1 s. 274 "the target takes the same amount of damage"; A2'nin ⚠'si): komutta
+  Cloaker'ın aldığı hasar olaylardaki tür parçalarına ayrılır (`attach.ts` `takenByType`: saldırı, save ve süren etki olayları ile
+  ek hasarları); hedef her parçayı o türle alır ve kendi direnç/bağışıklık/zayıflığı işler (`adjustDamage`; emme 0 sayılır). Türü
+  bulunamayan kalan türsüz. Yapışma yalnız 104'te olduğundan 103'te paylaşım hiç yok.
 
 ## Görev KARAR104: bekleyen kullanıcı kararları SRD 5.2.1'e göre (2026-11-24; kural sürümü 104 `KARAR104_VERSION`, kayıt sürümü 26)
 

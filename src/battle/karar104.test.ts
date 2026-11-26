@@ -287,6 +287,18 @@ describe('KARAR104 A2: yapışma (Stirge, Darkmantle, Cloaker; SRD 5.2.1)', () =
     expect(lost).toBe(Math.floor(raw.rawDamage / 2));
     expect(hp0 - hit.state.combatants.H!.hp).toBe(lost);
   });
+  it('KARAR104-KALAN: Cloaker’ın paylaştığı hasar türlü (Bludgeoning): hedefin direnci ve zayıflığı işler', () => {
+    for (const [p, f] of [[{ resistances: ['bludgeoning'] }, (n: number) => Math.floor(n / 2)], [{ vulnerabilities: ['bludgeoning'] }, (n: number) => n * 2]] as const) {
+      const s = scene104(NEW, [beast('cloaker', 'C', at(3, 5)), hero(p as unknown as Partial<Combatant>), beast('ogre', 'O', at(3, 4), 'party')]);
+      const r = play(s, [atk(s, 'C', 'Attach')], hooked(20));
+      const hp0 = r.state.combatants.H!.hp;
+      const c0 = r.state.combatants.C!.hp;
+      const hit = play({ ...r.state, turnIndex: r.state.order.indexOf('O') }, [atk(r.state, 'O', 'Greatclub', 'C')], hooked(20));
+      const lost = c0 - hit.state.combatants.C!.hp;
+      expect(hp0 - hit.state.combatants.H!.hp).toBe(f(lost));
+      expect(hit.events.find((e) => e.type === 'effect_tick' && e.targetId === 'H')).toMatchObject({ damageType: 'bludgeoning' });
+    }
+  });
 });
 
 describe('KARAR104 A10: eşya ↔ silah bağı (SRD 5.2.1 "made with this magic weapon")', () => {

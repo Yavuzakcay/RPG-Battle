@@ -12,13 +12,15 @@
  *   yalnız hedefe saldırır ve avantajlıdır (`allOthers`, `adv`).
  * - Stirge: hedef stirge'nin her tur başında 2d4 Necrotic (`sourceTurnDamage`).
  * - Cloaker (`share`): aldığı hasarı yarıya indirir (bütün türlere direnç, aşağı yuvarlanır), hedef aynı miktarda hasar alır
- *   (komut sonu; ⚠ türsüz).
+ *   (komut sonu; aynı türle, hedefin direnci işler: KARAR104-KALAN).
  * Biten: yapışan 0 HP/kaybolmuş, hedef ölü, ayrılma. 103 ve altında yok.
  */
 import { distance, neighbors, type Offset } from '../rules/hex';
 import { a2Of } from './ridersA2';
 import { fitsSize } from './grapple';
 import { damageEffects } from './damage-effects';
+import { adjustDamage } from '../rules/damage';
+import { damageProfile } from './common';
 import { isAirborne } from './flight';
 import { occupantAt, placeProblem } from './movement';
 import { karar104On } from './karar104Surum';
@@ -114,6 +116,26 @@ export function attachedTo(state: BattleState, attacker: Combatant, hostId: stri
   return attachedHost(state, attacker)?.host.id === hostId;
 }
 
+/**
+ * Görev KARAR104-KALAN: komutta `id`'nin aldığı hasarın tür parçaları (saldırı, save, süren etki olayları ve ek hasarları);
+ * toplam `lost`'u aşmaz, türü bilinmeyen kalan `''` (türsüz).
+ */
+function takenByType(events: readonly BattleEvent[], id: string, lost: number): Array<[string, number]> {
+  const parts = new Map<string, number>();
+  const add = (type: string | undefined, n: number | undefined) => { if (n && n > 0) parts.set(type ?? '', (parts.get(type ?? '') ?? 0) + n); };
+  for (const e of events) {
+    if (!('targetId' in e) || e.targetId !== id || !('appliedDamage' in e)) continue;
+    const x = e as { appliedDamage?: number; damageType?: string; extra?: Array<{ applied: number; type: string }> };
+    add(x.damageType, x.appliedDamage);
+    for (const ex of x.extra ?? []) add(ex.type, ex.applied);
+  }
+  const out: Array<[string, number]> = [];
+  let left = lost;
+  for (const [t, n] of parts) { if (left <= 0) break; const k = Math.min(n, left); out.push([t, k]); left -= k; }
+  if (left > 0) out.push(['', left]);
+  return out;
+}
+
 function followSpot(state: BattleState, a: Combatant, host: Combatant): Offset | null {
   if (!host.pos || !a.pos) return null;
   const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };
@@ -122,21 +144,31 @@ function followSpot(state: BattleState, a: Combatant, host: Combatant): Offset |
 }
 
 // Komut sonu: Cloaker hasar paylaşımı, birlikte hareket ve bitiş.
-registerCommandEnd((before, next) => {
+registerCommandEnd((before, next, events) => {
   if (!karar104On(next)) return [];
   const out: BattleEvent[] = [];
   let s = next;
   const push = (evs: BattleEvent[]) => { if (evs.length) { out.push(...evs); s = applyEvents(s, evs); } };
-  // Cloaker: bu komutta aldığı (yarıya inmiş) hasar kadar hedef de hasar alır.
+  // Cloaker: bu komutta aldığı (yarıya inmiş) hasar kadar hedef de hasar alır. KARAR104-KALAN (⚠ kapandı; SRD "the target takes
+  // the same amount of damage"): Cloaker'ın aldığı türle (olaylardaki tür parçaları), hedefin direnç/bağışıklık/zayıflığıyla;
+  // türü bilinmeyen kalan türsüz.
   for (const a of Object.values(next.combatants)) {
     const share = a.effects?.find((e) => e.attachShare);
     const b = before.combatants[a.id];
     if (!share || !b) continue;
     const lost = (b.hp + (b.tempHp ?? 0)) - (Math.max(0, a.hp) + (a.tempHp ?? 0));
-    const host = s.combatants[share.attachShare as string];
-    if (lost <= 0 || !host || host.hp <= 0) continue;
-    const fx = damageEffects(host, lost, '', false, () => 0.5);
-    push([{ type: 'effect_tick', targetId: host.id, effectId: share.id, name: `${a.name}: paylaşılan hasar`, damageRolls: [], appliedDamage: lost, damageType: '', targetHpAfter: fx.hpAfter, effects: fx.effects }]);
+    if (lost <= 0) continue;
+    let left = lost;
+    for (const [type, n] of takenByType(events, a.id, lost)) {
+      const host = s.combatants[share.attachShare as string];
+      if (!host || host.hp <= 0) break;
+      const part = Math.min(n, left);
+      left -= part;
+      const adj = type ? adjustDamage(part, type, damageProfile(host)) : { amount: part, note: null };
+      const amount = Math.max(0, adj.amount);
+      const fx = damageEffects(host, amount, type, false, () => 0.5);
+      push([{ type: 'effect_tick', targetId: host.id, effectId: share.id, name: `${a.name}: paylaşılan hasar`, damageRolls: [], appliedDamage: amount, damageType: type, targetHpAfter: fx.hpAfter, effects: fx.effects }]);
+    }
   }
   for (const host0 of Object.values(s.combatants)) {
     for (const e of host0.effects ?? []) {
