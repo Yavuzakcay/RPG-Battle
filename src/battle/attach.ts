@@ -5,20 +5,23 @@
  *   Blinded + nefes alamaz, A3 `noBreath`). Cloaker hedefi Blinded.
  * - Yapışan hedefle birlikte hareket eder: komut sonunda hedefe bitişik değilse hedefin yanındaki en yakın boş altıgene geçer
  *   (`teleported`; fırsat saldırısı ve zemin girişi yok), yer yoksa düşer. Hedef yürürken yapışanın fırsat saldırısı yok.
- * - Yapışan kendi hareketiyle ayrılır (5 ft harcar; `detachSelfEvents`, yürüme/atlama komutundan önce).
+ * - Yapışan kendi hareketiyle ayrılır (5 ft harcar; `detachSelfEvents`, yürüme/atlama komutundan önce). Darkmantle bağlıyken
+ *   hızı 0 ve hız bonusu yok (`speedZero` → kendinde `speedMult: 0` etkisi `attachHold`; KARAR104-KALAN), ayrılınca kalkar.
  * - Hedef eylemle ayırır (`escape`: Darkmantle DC 13, Cloaker DC 14 STR (Athletics); Stirge zarsız); Stirge ve Cloaker'da 5 ft
  *   içindeki yaratık da (`help`, `escapeCheck.allyHelp`).
  * - Kısıt (`blocked`): Stirge bağlıyken Proboscis yapamaz (`self`), Cloaker Attach'ı başka hedefe yapamaz (`others`), Darkmantle
  *   yalnız hedefe saldırır ve avantajlıdır (`allOthers`, `adv`).
  * - Stirge: hedef stirge'nin her tur başında 2d4 Necrotic (`sourceTurnDamage`).
  * - Cloaker (`share`): aldığı hasarı yarıya indirir (bütün türlere direnç, aşağı yuvarlanır), hedef aynı miktarda hasar alır
- *   (komut sonu; ⚠ türsüz).
+ *   (komut sonu; aynı türle, hedefin direnci işler: KARAR104-KALAN).
  * Biten: yapışan 0 HP/kaybolmuş, hedef ölü, ayrılma. 103 ve altında yok.
  */
 import { distance, neighbors, type Offset } from '../rules/hex';
 import { a2Of } from './ridersA2';
 import { fitsSize } from './grapple';
 import { damageEffects } from './damage-effects';
+import { adjustDamage } from '../rules/damage';
+import { damageProfile } from './common';
 import { isAirborne } from './flight';
 import { occupantAt, placeProblem } from './movement';
 import { karar104On } from './karar104Surum';
@@ -39,11 +42,14 @@ export interface AttachSpec {
   auto?: boolean;
   help?: boolean;
   share?: boolean;
+  /** KARAR104-KALAN: bağlıyken yapışanın hızı 0, hız bonusu yok (Darkmantle); ayrılma 5 ft hareketiyle (taban hız). */
+  speedZero?: boolean;
 }
 
 const ALL_DAMAGE = ['acid', 'bludgeoning', 'cold', 'fire', 'force', 'lightning', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder'];
 export const attachId = (attackerId: string): string => `yapisma:${attackerId}`;
 const shareId = (targetId: string): string => `yapisma-paylas:${targetId}`;
+const holdId = (targetId: string): string => `yapisma-hiz:${targetId}`;
 const fits = fitsSize;
 
 /** Saldırının yapışma kuralı (104+, A2 kaydında `yapisma`). */
@@ -98,6 +104,8 @@ export function attachEvents(state: BattleState, actor: Combatant, target: Comba
   };
   const out: BattleEvent[] = [{ type: 'effect_added', targetId: target.id, effect }];
   if (spec.share) out.push({ type: 'effect_added', targetId: actor.id, effect: { id: shareId(target.id), name: `${attackName}: hasar paylaşımı`, sourceId: actor.id, resist: ALL_DAMAGE, until: state.round + 14400, attachShare: target.id } });
+  // KARAR104-KALAN (SRD 5.2.1 s. 279 Crush): bağlıyken hızı 0 ve hız bonusu yok (Dash dahil: `speedMult` 0 Dash ekini de sıfırlar).
+  if (spec.speedZero) out.push({ type: 'effect_added', targetId: actor.id, effect: { id: holdId(target.id), name: `${attackName}: yapışık (hız 0)`, sourceId: actor.id, speedMult: 0, until: state.round + 14400, attachHold: target.id } });
   return out;
 }
 
@@ -106,12 +114,36 @@ export function detachSelfEvents(state: BattleState, actor: Combatant): BattleEv
   const at = attachedHost(state, actor);
   if (!at || !actor.pos) return [];
   if (Math.floor(actor.speed / 5) - actor.movementUsed < 1) return `${at.host.name} hedefinden ayrılmak için 5 ft hareket gerekli.`;
-  return [{ type: 'effect_ended', targetId: at.host.id, effectId: at.effect.id, name: at.effect.name, reason: 'expired' }, { type: 'moved', actorId: actor.id, path: [actor.pos], cost: 1 }];
+  // KARAR104-KALAN: hız 0 etkisi (Darkmantle) ayrılınca kalkar; "using 5 feet of movement" taban hızdan (hız 0 bağlıyken içindir).
+  const hold = actor.effects?.find((e) => e.attachHold === at.host.id);
+  return [{ type: 'effect_ended', targetId: at.host.id, effectId: at.effect.id, name: at.effect.name, reason: 'expired' },
+    ...(hold ? [{ type: 'effect_ended' as const, targetId: actor.id, effectId: hold.id, name: hold.name, reason: 'expired' as const }] : []),
+    { type: 'moved', actorId: actor.id, path: [actor.pos], cost: 1 }];
 }
 
 /** Hedef yürürken yapışan ona fırsat saldırısı yapmaz (birlikte hareket eder). */
 export function attachedTo(state: BattleState, attacker: Combatant, hostId: string): boolean {
   return attachedHost(state, attacker)?.host.id === hostId;
+}
+
+/**
+ * Görev KARAR104-KALAN: komutta `id`'nin aldığı hasarın tür parçaları (saldırı, save, süren etki olayları ve ek hasarları);
+ * toplam `lost`'u aşmaz, türü bilinmeyen kalan `''` (türsüz).
+ */
+function takenByType(events: readonly BattleEvent[], id: string, lost: number): Array<[string, number]> {
+  const parts = new Map<string, number>();
+  const add = (type: string | undefined, n: number | undefined) => { if (n && n > 0) parts.set(type ?? '', (parts.get(type ?? '') ?? 0) + n); };
+  for (const e of events) {
+    if (!('targetId' in e) || e.targetId !== id || !('appliedDamage' in e)) continue;
+    const x = e as { appliedDamage?: number; damageType?: string; extra?: Array<{ applied: number; type: string }> };
+    add(x.damageType, x.appliedDamage);
+    for (const ex of x.extra ?? []) add(ex.type, ex.applied);
+  }
+  const out: Array<[string, number]> = [];
+  let left = lost;
+  for (const [t, n] of parts) { if (left <= 0) break; const k = Math.min(n, left); out.push([t, k]); left -= k; }
+  if (left > 0) out.push(['', left]);
+  return out;
 }
 
 function followSpot(state: BattleState, a: Combatant, host: Combatant): Offset | null {
@@ -122,21 +154,31 @@ function followSpot(state: BattleState, a: Combatant, host: Combatant): Offset |
 }
 
 // Komut sonu: Cloaker hasar paylaşımı, birlikte hareket ve bitiş.
-registerCommandEnd((before, next) => {
+registerCommandEnd((before, next, events) => {
   if (!karar104On(next)) return [];
   const out: BattleEvent[] = [];
   let s = next;
   const push = (evs: BattleEvent[]) => { if (evs.length) { out.push(...evs); s = applyEvents(s, evs); } };
-  // Cloaker: bu komutta aldığı (yarıya inmiş) hasar kadar hedef de hasar alır.
+  // Cloaker: bu komutta aldığı (yarıya inmiş) hasar kadar hedef de hasar alır. KARAR104-KALAN (⚠ kapandı; SRD "the target takes
+  // the same amount of damage"): Cloaker'ın aldığı türle (olaylardaki tür parçaları), hedefin direnç/bağışıklık/zayıflığıyla;
+  // türü bilinmeyen kalan türsüz.
   for (const a of Object.values(next.combatants)) {
     const share = a.effects?.find((e) => e.attachShare);
     const b = before.combatants[a.id];
     if (!share || !b) continue;
     const lost = (b.hp + (b.tempHp ?? 0)) - (Math.max(0, a.hp) + (a.tempHp ?? 0));
-    const host = s.combatants[share.attachShare as string];
-    if (lost <= 0 || !host || host.hp <= 0) continue;
-    const fx = damageEffects(host, lost, '', false, () => 0.5);
-    push([{ type: 'effect_tick', targetId: host.id, effectId: share.id, name: `${a.name}: paylaşılan hasar`, damageRolls: [], appliedDamage: lost, damageType: '', targetHpAfter: fx.hpAfter, effects: fx.effects }]);
+    if (lost <= 0) continue;
+    let left = lost;
+    for (const [type, n] of takenByType(events, a.id, lost)) {
+      const host = s.combatants[share.attachShare as string];
+      if (!host || host.hp <= 0) break;
+      const part = Math.min(n, left);
+      left -= part;
+      const adj = type ? adjustDamage(part, type, damageProfile(host)) : { amount: part, note: null };
+      const amount = Math.max(0, adj.amount);
+      const fx = damageEffects(host, amount, type, false, () => 0.5);
+      push([{ type: 'effect_tick', targetId: host.id, effectId: share.id, name: `${a.name}: paylaşılan hasar`, damageRolls: [], appliedDamage: amount, damageType: type, targetHpAfter: fx.hpAfter, effects: fx.effects }]);
+    }
   }
   for (const host0 of Object.values(s.combatants)) {
     for (const e of host0.effects ?? []) {
@@ -151,11 +193,12 @@ registerCommandEnd((before, next) => {
       push([{ type: 'teleported', actorId: a.id, from: a.pos, to, label: 'yapışık: hedefle birlikte' }]);
     }
   }
-  // Yapışması biten Cloaker'ın paylaşım etkisi kalkar.
+  // Yapışması biten Cloaker'ın paylaşım etkisi ve Darkmantle'ın hız 0 etkisi kalkar.
   for (const a of Object.values(s.combatants)) {
-    const share = a.effects?.find((e) => e.attachShare);
-    if (share && !s.combatants[share.attachShare as string]?.effects?.some((e) => e.attachedBy === a.id)) {
-      push([{ type: 'effect_ended', targetId: a.id, effectId: share.id, name: share.name, reason: 'expired' }]);
+    for (const fx of (a.effects ?? []).filter((e) => e.attachShare || e.attachHold)) {
+      if (!s.combatants[(fx.attachShare ?? fx.attachHold) as string]?.effects?.some((e) => e.attachedBy === a.id)) {
+        push([{ type: 'effect_ended', targetId: a.id, effectId: fx.id, name: fx.name, reason: 'expired' }]);
+      }
     }
   }
   return out;

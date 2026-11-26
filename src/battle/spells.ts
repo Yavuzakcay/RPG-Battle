@@ -1093,11 +1093,16 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       const miss = !hit && (m.halfOnMiss || (v93 && !!m.damage && potentCantrip(actor, spell))) ? (() => {
         const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }));
         const once = onceLeft; onceLeft = 0;
-        const a = adjustDamage(Math.floor((d.total + once) / 2), m.damageType, profileIn(state, t, true, actor));
-        return { rolls: d.rolls, raw: Math.floor((d.total + once) / 2), amount: a.amount, note: a.note };
+        // Görev KARAR104-KALAN A6 (104+, SRD 5.2.1 s. 35 Cutting Words "makes a damage roll"): ıskada atılan hasar zarı da
+        // (Acid Arrow, Potent Cantrip); zar yarıya bölünmeden önce toplamdan düşer. 103: ıskada tetik yok.
+        const cw = karar104On(current) ? cuttingWordsDamage(hr?.events.length ? applyEvents(current, hr.events) : current, actor, d.total + once, [t], spell.name, rng) : null;
+        const sum = cw ? cw.total : d.total + once;
+        const a = adjustDamage(Math.floor(sum / 2), m.damageType, profileIn(state, t, true, actor));
+        return { rolls: d.rolls, raw: Math.floor(sum / 2), amount: a.amount, note: a.note, events: cw?.events ?? [] };
       })() : null;
       const total = hit ? hr?.damage ?? 0 : miss?.amount ?? 0;
       if (hr?.events.length) { events.push(...hr.events); current = applyEvents(current, hr.events); }
+      if (miss?.events.length) { events.push(...miss.events); current = applyEvents(current, miss.events); }
       const fx = damageEffects(t, total, m.damageType ?? '', hit && res.critical, rng);
       ev = {
         type: 'attack_resolved', actorId: actor.id, targetId: t.id, label: spell.name, mode,

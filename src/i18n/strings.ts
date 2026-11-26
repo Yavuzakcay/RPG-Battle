@@ -55,6 +55,7 @@ const tr = {
       rested: 'Dinlenmiş.', dead: 'Öldü (dinlenme diriltmez).', down: '0 HP: savaşa girmeden önce dinlenmeli.', shortNeedsHp: 'Kısa dinlenme için en az 1 HP gerekir (uzun dinlenme ya da iyileştirme).',
       longFromZero: '0 HP: uzun dinlenme başlamadı; 1d4 saat sonra 1 HP ile kalktı (SRD). Tam iyileşme için bir uzun dinlenme daha.',
       cursed: (kind: string) => `Lanetli: likantropi (${kind}). Dinlenme kaldırmaz; Remove Curse gerekir.`,
+      cursedTurned: (kind: string) => `Lanetli: likantropi (${kind}). Savaşta 0 HP'de canavara dönüştü (Game Master'ın denetiminde). Remove Curse gerekir.`,
       short: 'Kısa dinlenme', long: 'Uzun dinlenme', revive: 'Diriltildi say',
       dice: 'Harcanacak HP zarı', spend: (n: number) => `${n} zar harca ve dinlen`,
       shortDone: (rolls: string, healed: number) => `Kısa dinlenme: ${rolls || 'zar yok'} → +${healed} HP; kısa dinlenmede yenilenen kaynaklar doldu.`,
@@ -94,6 +95,16 @@ const tr = {
     spells: (n: number) => `Büyüler (${n} seçildi)`,
     summary: 'Özet', ready: 'Karakter hazır.', fixFirst: 'Değerler, sorunlar giderilince görünür.',
     sumIntro: (name: string, race: string, cls: string, level: number) => `${name || 'Adsız'}: ${level}. seviye ${race} ${cls}.`,
+    /** Görev MC5: çoklu sınıf (SRD 5.2.1 s. 24–26). */
+    mc: {
+      title: 'Sınıflar', help: 'Çoklu sınıf (SRD): yeni sınıf 1. seviyeden başlar; yeni ve mevcut sınıfların ana yeteneği en az 13 olmalı. Toplam seviye en çok 20.',
+      add: 'Sınıf ekle', addPick: 'Yeni sınıf seç…', remove: 'Çıkar', level: 'Seviye',
+      total: (n: number) => `Toplam seviye ${n}`, max: (n: number) => `En çok ${n} sınıf alınabilir.`,
+      dup: 'zaten var', cap: (n: number) => `toplam seviye ${n}'yi aşar`, prereq: (abs: string) => `ön koşul: ${abs} en az 13`,
+      extraSkill: (cls: string) => `${cls}: ek beceri`, extraTool: (cls: string) => `${cls}: çalgı`, none: 'Seçilmedi',
+      spellsFor: (cls: string) => `${cls} büyüleri`, featuresFor: (cls: string, lv: number) => `${cls} ${lv}`,
+      label: (parts: string[]) => parts.join(' · '),
+    },
     sumHp: (hp: number, hitDie: number) => `Can (HP) ${hp} (zar d${hitDie}).`,
     sumSpeed: (speed: number, prof: number, init: string) => `Hız ${speed} ft · yetkinlik +${prof} · inisiyatif ${init}.`,
     sumAc: (ac: number, parts: string) => `Zırh Sınıfı (AC) ${ac} = ${parts}.`,
@@ -632,7 +643,7 @@ const tr = {
     formsFrom: 'Çıkacak biçim', formsTo: 'Yeni biçim', formsAdd: 'Boş yere ekle', formsGo: 'Değiştir', formsAddGo: 'Ekle',
     formsNote: 'Boş yere her zaman eklenir; dolu listede uzun dinlenmeden sonra bir biçim değişir. Biçim savaş sonunda biter.',
     formsWait: 'Bu dinlenmede biçim değiştirildi: sonraki uzun dinlenmeyi bekle.',
-    levelUp: (n: number) => `Seviye atla (${n})`, levelGm: 'Seviye atlama Game Master işi: Serüven kurallarını açın.', rest: 'Dinlen', enterCave: 'Mağaraya gir', testSection: 'Test', skipBattle: 'Savaşı kazanılmış say', skipped: '(atlandı)',
+    levelUp: (n: number) => `Seviye atla (${n})`, levelClass: (name: string) => `${name}: seviye sınıfı`, levelGm: 'Seviye atlama Game Master işi: Serüven kurallarını açın.', rest: 'Dinlen', enterCave: 'Mağaraya gir', testSection: 'Test', skipBattle: 'Savaşı kazanılmış say', skipped: '(atlandı)',
     jailNow: 'Hapse at (Hapishane Adası)', prisonTitle: 'Hapishane Adası', prisonNoRules: 'Hapishane kuralları kapalı: ekipman ve büyüler yerinde.',
     prisonConfiscated: (g: number, p: number, i: number) => `Emanette: ${g} altın, ${p} iksir, ${i} eşya ve ekipman (iskeledeki sandıkta).`,
     prisonReturned: 'Emanet geri alındı.', prisonAlarm: (n: number) => (n > 0 ? `Alarm düzeyi ${n}: nöbetçiler takviyeli.` : 'Alarm yok: sessiz ilerleme.'),
@@ -779,7 +790,7 @@ const tr = {
     } as Record<string, (...a: never[]) => string>,
     slot: (n: number): string => `${n}. seviye slot`,
     /** Görev Z2: Cutting Words zarın uygulanacağı yer (zar atılmadan seçilir). */
-    choice: { attack: 'saldırı zarından düş', damage: 'hasardan düş' } as Record<string, string>,
+    choice: { attack: 'saldırı zarından düş', damage: 'hasardan düş', hurl: 'kullan', 'hurl-slot': 'Pact slotu harca (kullanım geri gelir)' } as Record<string, string>,
     /** Kuyruk S1: büyünün seçim istemi. */
     choiceTitle: (who: string): string => `Seçim: ${who}`,
     choiceLine: (label: string): string => `${label}: birini seç.`,

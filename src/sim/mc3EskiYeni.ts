@@ -1,7 +1,7 @@
 /**
  * Görev MC3 "eski = yeni" derlemi. Yalnız MC3 öncesinde de var olan API'leri kullanır; aynı dosya MC3 öncesi commit'te
- * çalıştırılarak `mc3-altin.json` üretildi (`scripts/mc3-eski-yeni.ts`; ilk `f85717ea` kural 103 / kayıt 25, MC3-BIRLESTIR'den
- * beri `a50fd8ed` kural 104 / kayıt 26, KARAR104 dahil).
+ * çalıştırılarak `mc3-altin.json` üretildi (`scripts/mc3-eski-yeni.ts`; ilk `f85717ea` kural 103 / kayıt 25, MC3-BIRLESTIR'de
+ * `a50fd8ed`, MC5'ten beri `304bcb60` kural 104 / kayıt 26, KARAR104 ve KARAR104-KALAN dahil).
  * - Tek sınıflı savaşçılar: sim partilerinin bütün üyeleri, 1/3/5/11/20. seviye (`combatantFromSheet` özeti).
  * - MC3 öncesi savaş kaydı: Çöl, 5. seviye standart parti, tohum 1, 3 tur; olay günlüğü + son durumun özeti (yeni kod aynı
  *   günlüğü aynı duruma oynatmalı).

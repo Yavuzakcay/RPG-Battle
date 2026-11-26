@@ -11,7 +11,7 @@ import { lineageEtki, raceSpeed } from './lineage';
 import { findSubclass } from './subclasses';
 import { bonusesOf, type MagicInitiatePick } from './backgrounds';
 import { I } from './issueText';
-import { isMultiSheet, mcImpl } from './mcHook';
+import { classesOf, isMultiSheet, mcImpl } from './mcHook';
 
 export type Scores = Record<Ability, number>;
 
@@ -282,6 +282,18 @@ export function sheetSpellcasting(sheet: Pick<CharacterSheet, 'classId' | 'level
 /** Kuyruk K48: alt sınıfın ek beceri yetkinlikleri (alt sınıf seviyesinden; Karadul: Persuasion, Deception). */
 function subclassSkills(sheet: CharacterSheet): Skill[] {
   const own = sheet.skills ?? [];
+  if (isMultiSheet(sheet)) {
+    // Görev MC5: çoklu sınıfta her sınıfın alt sınıf becerileri (o sınıfın seviyesiyle) ve ek sınıfın ilk seviye becerisi
+    // (SRD 5.2.1 s. 25 "As a Multiclass Character": Bard, Ranger, Rogue; `ClassEntry.ekBeceri`).
+    const extra: Skill[] = [];
+    classesOf(sheet).forEach((e, i) => {
+      const sub = e.subclassId && e.level >= 3 ? findSubclass(e.classId, e.subclassId) : undefined;
+      for (const s of sub?.ekBeceriler ?? []) if (isSkill(s)) extra.push(s);
+      if (i > 0 && e.ekBeceri && isSkill(e.ekBeceri)) extra.push(e.ekBeceri);
+    });
+    const add = [...new Set(extra)].filter((s) => !own.includes(s));
+    return add.length ? [...own, ...add] : own;
+  }
   const sub = sheet.subclassId && sheet.level >= 3 ? findSubclass(sheet.classId, sheet.subclassId) : undefined;
   const extra = (sub?.ekBeceriler ?? []).filter((s): s is Skill => isSkill(s) && !own.includes(s));
   return extra.length ? [...own, ...extra] : own;

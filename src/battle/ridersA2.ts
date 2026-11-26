@@ -48,9 +48,9 @@ export interface A2Spec {
     noBreath?: boolean };
   corrode?: { armor?: boolean; weapon?: boolean };
   /**
-   * Görev KARAR104 (sürüm 104, A4; kullanıcı kararı): likantrop laneti yalnız işaret. Humanoid hedef CON save; başarısızsa lanetli
-   * (`lycanthropy` etkisi, savaş sonunda karaktere `lanet` yazılır), başarılıysa bu yaratığın lanetine 24 saat bağışık. 0 HP'de
-   * canavara dönüşme yok (⚠ SRD "becomes a Werewolf under the GM's control").
+   * Görev KARAR104 (sürüm 104, A4): likantrop laneti. Humanoid hedef CON save; başarısızsa lanetli (`lycanthropy` etkisi, savaş
+   * sonunda karaktere `lanet` yazılır), başarılıysa bu yaratığın lanetine 24 saat bağışık. KARAR104-KALAN: 0 HP'de Game Master'ın
+   * tarafında 10 HP'li canavara dönüşür (`lycanthrope.ts`; SRD "becomes a Werewolf under the GM's control").
    */
   lanet?: { dc: number; kind: string };
   tur: string;

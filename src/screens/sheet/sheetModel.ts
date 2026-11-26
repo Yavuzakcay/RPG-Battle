@@ -3,6 +3,8 @@
  * (`deriveStats`, `combatantFromSheet`, `carryLoad`) gelir; yeni kural yok. Adlar İngilizce, açıklamalar Türkçe (SD4;
  * `featureSummary` EN arayüzde mevcut davranışı verir). Boş hikâye alanı modelde yoktur.
  */
+import { classesOf } from '../../rules/mcHook';
+import { sheetClassName } from '../../ui/classLabel';
 import { classes, getRace, spells as allSpells, aciklamaOf } from '../../data';
 import srdSpecies from '../../../data/srd/species.json';
 import { ABILITIES, type Ability } from '../../rules/abilities';
@@ -44,7 +46,8 @@ export function sheetModel(c: SavedCharacter, lang: Lang, opts: { carryRule?: Ca
   const missing: string[] = [];
   const d = deriveStats(sheet);
   const scores = finalScores(sheet);
-  const klass = classes.find((k) => k.id === sheet.classId)?.name ?? sheet.classId;
+  // Görev MC5: çoklu sınıfta "Fighter 3 · Wizard 2".
+  const klass = sheetClassName(sheet);
   let race = sheet.raceId;
   try { race = getRace(sheet.raceId).name; } catch { missing.push(sheet.raceId); }
   const lin = (() => { try { return lineageOf(sheet); } catch { return undefined; } })();
@@ -69,8 +72,11 @@ export function sheetModel(c: SavedCharacter, lang: Lang, opts: { carryRule?: Ca
   // Özellikler: sınıf/alt sınıf (ad İngilizce, açıklama Türkçe) + tür özellikleri.
   const features: SheetModel['features'] = [];
   try {
-    for (const f of gainedFeatures(sheet.classId, sheet.level, sheet.subclassId)) {
-      features.push({ name: f.name, level: f.level, from: f.from, text: featureSummary(f, sheet.classId, sheet.subclassId, lang) });
+    // Görev MC5: çoklu sınıfta her sınıfın özellikleri kendi seviyesiyle.
+    for (const e of classesOf(sheet)) {
+      for (const f of gainedFeatures(e.classId, e.level, e.subclassId)) {
+        features.push({ name: f.name, level: f.level, from: f.from, text: featureSummary(f, e.classId, e.subclassId, lang) });
+      }
     }
   } catch { /* ilerleme verisi yok */ }
   // Tür özellikleri (SRD tür kaydı; açıklama dile göre `aciklamalar-tr.json` / `aciklamalar-en.json` `tur`).

@@ -5,6 +5,7 @@
  * karakter çekmecesi. Hareketli katman ve harita kuralları (Adım 8) henüz yok; animasyonlar
  * en sona bırakıldı (Adım 12).
  */
+import { resourceLabel } from './ui/classLabel';
 import { sinif97On } from './battle/sinif97Surum';
 import { karar101On } from './battle/karar101Surum';
 import { heldBy } from './battle/karar101';
@@ -23,7 +24,7 @@ const featHex = (f: UsableFeature | undefined): 'hex' | 'after' | null => (!f ? 
 import { needSensed } from './battle/imza54';
 import { changeFloorProblem, floorLinkOf } from './battle/floors';
 import { metamagicProblem, TRANSMUTE_TYPES } from './battle/sorcerer';
-import { overchannelProblem } from './battle/apex';
+import { overchannelProblem, palmEnding, quiveringOf } from './battle/apex';
 import { mountProblem } from './battle/mounted';
 import { dismountOptions } from './ui/dismountOptions';
 import { swallowedOnTop, swallowedStack } from './ui/swallowUi';
@@ -374,7 +375,7 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
       {c.concentration && <p>{D.concentration(c.concentration.spell)}</p>}
       {(plain(usableResources(c)).length > 0 || c.sneakAttackDice > 0) && (
         <p>{D.features([
-          ...plain(usableResources(c)).map(([id, n]) => `${resourceDef(id)?.name ?? id}${usesShown(n) === null ? '' : ` ${n}`}`),
+          ...plain(usableResources(c)).map(([id, n]) => `${resourceLabel(id, resourceDef(id)?.name)}${usesShown(n) === null ? '' : ` ${n}`}`),
           c.sneakAttackDice > 0 ? `Sneak Attack ${c.sneakAttackDice}d6` : '',
         ].filter(Boolean).join(' · '))}</p>
       )}
@@ -1805,6 +1806,10 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
           : f.effect.kind === 'teleport' || f.effect.kind === 'landsAid' || f.effect.kind === 'blinkStep'
           ? (reset(), setFeatureKey(f.key), setMode('teleport'), setMenuOpen(false))
           : run({ type: 'use_feature', actorId, feature: f.key })) }))),
+    // Görev KARAR104-KALAN A6 (104+): bu tur Unarmed Strike isabeti varken de titreşimi bitirme (Attack'in bir saldırısı).
+    ...(actor.features ?? []).filter((f) => f.effect.kind === 'quiveringPalm' && palmEnding(state, 'end') && quiveringOf(state, actor).length > 0 && !!actor.economy.meleeHit)
+      .map((f) => ({ key: `${f.key}-end`, label: N.quiveringEnd, reason: why({ type: 'use_feature', actorId, feature: f.key, choice: 'end' }) ?? undefined,
+        act: () => run({ type: 'use_feature', actorId, feature: f.key, choice: 'end' }) })),
     // Kuyruk 19: Find Steed atının bonus eylemleri.
     ...steedActions(state, actor).map((k) => ({ key: `steed-${k}`, label: N.steed[k] ?? k, reason: actor.economy.bonus ? Y.steerBonus : undefined,
       act: () => { reset(); if (k === 'fey-step') { setPickHexCmd({ make: (h) => ({ type: 'steed_action', actorId, kind: k, to: h }) }); setMode('pickHex'); }

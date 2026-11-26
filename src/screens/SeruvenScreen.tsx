@@ -4,6 +4,7 @@
  * gündüz/gece), alt çubukta parti; Serüven kuralları paneli; geliştirici düğüm aracı (#dugum). Komutlar
  * `executeSeruven`'e gider; olay günlüğü yolculuk kaydında isteğe bağlı `seruven` alanında (`seruvenSave.ts`).
  */
+import { getClass } from '../data';
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import {
   SERUVEN, TOGGLE_KEYS, bestSkill, choiceWindows, executeSeruven, formSwapReady, memberForms, gateOpen, prevPage, levelXp, linkCrossable, linkFound, linkOpen, linksHere, nodeKey, nodeOpen, nodeStop, nodeVisible, pageById, pageOrder, toggleOn,
@@ -189,6 +190,8 @@ const pct = (p: Point) => ({ left: `${p.x * 100}%`, top: `${p.y * 100}%` });
 const edge = (p: Point) => pct({ x: Math.min(0.97, Math.max(0.03, p.x)), y: Math.min(0.94, Math.max(0.06, p.y)) });
 
 export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) => boolean; error: string | null; /** K49 D: son olay (yürüyüş yolu, yüzme). */ lastEvent?: SeruvenEvent; onBack: () => void; onReset: () => void; onBattle: (node: string) => void; onMap?: (map: string) => void; onSuc?: () => void }) {
+  // Görev MC5 (K12): seviye atlamada çoklu sınıflı üyelerin seçtiği sınıf.
+  const [levelPick, setLevelPick] = useState<Record<string, string>>({});
   const { state, run } = props;
   const S = t().seruven;
   const en = getLang() === 'en';
@@ -418,8 +421,18 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
       <footer className="seruven-party-bar">
         {/* Kuyruk 32: XP eşiği aşılınca seviye atlama; yalnızca Game Master (Serüven kuralları paneli açıkken). */}
         {toggleOn(state, 'seviyeAtlama') && levelXp(state.level) !== null && state.xp >= (levelXp(state.level) ?? Infinity) && (
-          <button type="button" className="cta" disabled={!rules} title={rules ? undefined : S.levelGm} onClick={() => run({ type: 'level_up' })}>{S.levelUp(state.level + 1)}</button>
+          <button type="button" className="cta" disabled={!rules} title={rules ? undefined : S.levelGm}
+            onClick={() => run({ type: 'level_up', ...(Object.keys(levelPick).length ? { classOf: levelPick } : {}) })}>{S.levelUp(state.level + 1)}</button>
         )}
+        {/* Görev MC5 (K12): çoklu sınıflı üyenin seviye aldığı sınıf (varsayılan ilk sınıfı; yan sınıf yalnız kutsal aynada). */}
+        {toggleOn(state, 'seviyeAtlama') && levelXp(state.level) !== null && state.xp >= (levelXp(state.level) ?? Infinity)
+          && state.party.filter((m) => (m.sheet.classes?.length ?? 0) > 1).map((m) => (
+            <label key={`lv-${m.id}`} className="seruven-level-class">{S.levelClass(m.sheet.name)}
+              <select value={levelPick[m.id] ?? m.sheet.classes![0]!.classId} onChange={(e: { target: { value: string } }) => setLevelPick((p) => ({ ...p, [m.id]: e.target.value }))}>
+                {m.sheet.classes!.map((c) => <option key={c.classId} value={c.classId}>{getClass(c.classId).name} {c.level}</option>)}
+              </select>
+            </label>
+          ))}
         {state.party.map((m) => {
           const max = fullStatus(m.sheet).hp;
           // Kuyruk K48: Moral (anahtar açıksa): çubuk, Moral ölümü anlatımı, diriltme (tapınak ya da büyü).

@@ -27,6 +27,7 @@ import { resourceLeft, type BattleEvent, type BattleState, type BonusOption, typ
 import { ruleVersion } from './ruleVersion';
 import { te99On } from './te99Surum';
 import { kalan100On } from './kalan100Surum';
+import { karar104On } from './karar104Surum';
 const hasTrait = (c: Pick<Combatant, 'traits'>, t: string): boolean => !!c.traits?.includes(t);
 
 const ACTION_NAMES: Partial<Record<Command['type'], string>> = {
@@ -367,8 +368,14 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       const f = (actor.features ?? []).find((x) => x.key === cmd.feature);
       if (!f) return { ok: true, event: null };
       // Kuyruk 19 (11–20): Quivering Palm tetiği eylem, işareti eylemsiz; Nature's Sanctuary taşıması bonus eylem.
-      const kind = isApex(f) ? apexCost(state, actor, f) : f.type;
+      const kind = isApex(f) ? apexCost(state, actor, f, cmd.choice) : f.type;
       if (kind === 'free') return { ok: true, event: null };
+      // Görev KARAR104-KALAN A6 (104+, SRD 5.2.1 s. 52 Quivering Palm "when you take the Attack action on your turn, you can forgo
+      // one of the attacks to end the vibrations"): bitirmek Attack eyleminin bir saldırısı (eylemle bitirmekten hep iyi). 103: eylem.
+      if (kind === 'action' && f.effect.kind === 'quiveringPalm' && karar104On(state)) {
+        if (e.attacksLeft > 0) return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: f.name, attacksLeft: e.attacksLeft - 1 } };
+        return spend(actor, 'action', 'Attack', { attacksLeft: actionAttacks(actor, false) - 1 });
+      }
       return spend(actor, kind, f.name);
     }
     case 'rage':

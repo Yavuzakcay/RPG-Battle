@@ -2,6 +2,7 @@
  * Game Master ekranı: harita, düşmanlar, masumlar ve parti seçilip savaş kurulur. Ayrı parça (tembel yüklenir;
  * savaş kurma kodu ve harita verisi giriş ekranını yavaşlatmasın).
  */
+import { sheetClassLevel } from '../ui/classLabel';
 import { storedCarryRule } from '../ui/carrySetting';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { classes, monsters, type Monster } from '../data';
@@ -264,7 +265,7 @@ export function GmScreen(props: {
                   onChange={(e: { target: { checked: boolean } }) => (room
                     ? rm((o) => (e.target.checked ? joinRoom(o, c.id) : leaveRoom(o, c.id)))
                     : setParty(e.target.checked ? (partyFull ? party : [...party, c.id]) : party.filter((x) => x !== c.id)))} />
-                {c.sheet.name} ({className(c.sheet.classId)} {c.sheet.level}){c.status ? ` · ${hpText(c)}` : ''}
+                {c.sheet.name} ({sheetClassLevel(c.sheet)}){c.status ? ` · ${hpText(c)}` : ''}
               </label>
             ))}
             {blocked.map((c) => (

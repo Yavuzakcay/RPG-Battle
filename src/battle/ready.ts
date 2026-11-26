@@ -14,6 +14,7 @@
  * - Yapay zekâ Ready kullanmaz (bu sürümde).
  */
 import { sinif97On } from './sinif97Surum';
+import { karar104On } from './karar104Surum';
 import { cunningProblem } from './classTraits';
 import { spells } from '../data';
 import hazirla from '../../data/hazirla.json';
@@ -43,7 +44,11 @@ export interface ReadyTriggerDef {
   mesafeFt?: number; ad: { tr: string; en: string };
 }
 export const READY_TRIGGERS = hazirla.tetikler as ReadyTriggerDef[];
-export const READY_RESPONSES = hazirla.yanitlar as Array<{ id: ReadyResponse['kind']; ad: { tr: string; en: string } }>;
+export const READY_RESPONSES = hazirla.yanitlar as Array<{ id: ReadyResponse['kind']; ad: { tr: string; en: string }; surum?: number }>;
+/** Bu savaşın kural sürümünde seçilebilen yanıtlar (veride `surum`: KARAR104-KALAN A9 yanıtları 104+). */
+export const readyResponsesFor = (state: Pick<BattleState, 'kuralSurumu'>) => READY_RESPONSES.filter((r) => (r.surum ?? 0) <= (state.kuralSurumu ?? 1));
+/** Görev KARAR104-KALAN A9: eylem yanıtları (Dash dışında hareketsiz). */
+const ACTION_KINDS = ['dash', 'disengage', 'dodge', 'help', 'hide', 'utilize'] as const;
 export const readyTrigger = (id: string): ReadyTriggerDef | undefined => READY_TRIGGERS.find((t) => t.id === id);
 
 /** Tutulan büyünün konsantrasyon adı. */
@@ -53,13 +58,14 @@ const holdIntact = (c: Combatant): boolean =>
   c.readied?.response.kind !== 'spell' || c.concentration?.spell === holdName(c.readied.response.spellName);
 
 /** Büyü salma (iç komut) için komut yürütücüsü: `commands.ts` yüklenirken kaydeder (döngüsel içe aktarma yok). */
-type CastExec = (state: BattleState, cmd: Extract<Command, { type: 'cast_spell' }>, rng: Rng) => CommandResult;
+type CastExec = (state: BattleState, cmd: Command, rng: Rng) => CommandResult;
 let castExec: CastExec | null = null;
 export const registerReadyCast = (f: CastExec): void => { castExec = f; };
 
 const DRY: Rng = () => 0.5;
+const ACTION_LABEL: Record<string, string> = { dash: 'Dash', disengage: 'Disengage', dodge: 'Kaçın (Dodge)', help: 'Yardım (Help)', hide: 'Gizlen (Hide)', utilize: 'Utilize' };
 const responseLabel = (r: ReadyResponse): string =>
-  r.kind === 'attack' ? `saldırı (${r.option?.label ?? 'canavar saldırısı'})` : r.kind === 'move' ? 'hareket' : `büyü (${r.spellName})`;
+  r.kind === 'attack' ? `saldırı (${r.option?.label ?? 'canavar saldırısı'})` : r.kind === 'move' ? 'hareket' : r.kind === 'spell' ? `büyü (${r.spellName})` : ACTION_LABEL[r.kind] ?? r.kind;
 
 // ---------------------------------------------------------------- komut
 
@@ -92,9 +98,14 @@ export function readyProblem(state: BattleState, actor: Combatant, cmd: Extract<
       const bad = cunningProblem(actor, r.cunning);
       if (bad) return bad;
     }
+  } else if ((ACTION_KINDS as readonly string[]).includes(r.kind)) {
+    // Görev KARAR104-KALAN A9 (104+): eylem yanıtları.
+    if (!karar104On(state)) return 'Bu yanıt bu kural sürümünde yok (sürüm 104 ve üstü).';
+    if (r.kind === 'dash' && (!isInside(r.to, size) || sameHex(r.to, actor.pos))) return 'Hareket hedefini seç.';
+    if (r.kind === 'utilize' && !state.map.objects?.some((o) => o.id === r.objectId)) return 'Kullanılacak nesneyi seç.';
   } else if (r.kind === 'move') {
     if (!isInside(r.to, size) || sameHex(r.to, actor.pos)) return 'Hareket hedefini seç.';
-  } else {
+  } else if (r.kind === 'spell') {
     const sp = spells.find((s) => s.name === r.spellName);
     if (!sp) return `Büyü bulunamadı: ${r.spellName}`;
     if (!actor.spellNames.includes(sp.name)) return 'Bu büyüyü bilmiyor.';
@@ -213,6 +224,23 @@ function dropHeldSlot(events: BattleEvent[], c: Combatant, lvl: number): BattleE
   return i < 0 ? events : [...events.slice(0, i), ...events.slice(i + 1)];
 }
 
+/** Görev KARAR104-KALAN A9: hedefsiz eylem yanıtının iç komutu (Help hedefli: `helpChoices`). */
+function actionCmd(c: Combatant, r: ReadyResponse): Command | null {
+  if (r.kind === 'disengage') return { type: 'disengage', actorId: c.id };
+  if (r.kind === 'dodge') return { type: 'dodge', actorId: c.id };
+  if (r.kind === 'hide') return { type: 'hide', actorId: c.id };
+  if (r.kind === 'utilize') return { type: 'object_use', actorId: c.id, objectId: r.objectId, action: r.action, ...(r.to ? { to: r.to } : {}) };
+  return null;
+}
+/** Help yanıtının geçerli hedefleri (kuru çalıştırma; tetikleyen önce, sonra yakınlık). */
+function helpChoices(state: BattleState, c: Combatant): Array<{ id: string; label: string }> {
+  if (!castExec || !c.pos) return [];
+  return Object.values(state.combatants)
+    .filter((t) => t.id !== c.id && t.pos && t.hp > 0 && !t.summon?.gone && !t.offFloor && castExec!(state, { type: 'help', actorId: c.id, targetId: t.id }, DRY).ok)
+    .sort((a, b) => distance(c.pos!, a.pos!) - distance(c.pos!, b.pos!))
+    .map((t) => ({ id: t.id, label: t.name }));
+}
+
 function spellChoices(state: BattleState, c: Combatant): Array<{ id: string; label: string }> {
   if (!castExec) return [];
   const cands = ['-', ...Object.values(state.combatants).filter((t) => t.pos && t.hp > 0 && !t.summon?.gone && !t.offFloor).map((t) => t.id)];
@@ -235,9 +263,16 @@ function release(state: BattleState, c: Combatant, ev: Trigger, rng: Rng): Battl
   if (r.response.kind === 'attack') {
     choices = attackTargets(state, c, src.id).map((x) => ({ id: x.id, label: x.name }));
     if (!choices.length) return [];
-  } else if (r.response.kind === 'move') {
+  } else if (r.response.kind === 'move' || r.response.kind === 'dash') {
     const probe = executeMove(state, { ...c, movementUsed: 0 }, r.response.to, DRY);
     if (!probe.ok) return [];
+  } else if (r.response.kind === 'help') {
+    choices = helpChoices(state, c);
+    if (!choices.length) return [];
+  } else if (r.response.kind !== 'spell') {
+    // Görev KARAR104-KALAN A9: hedefsiz eylem yanıtları yapılabiliyorsa (kuru çalıştırma).
+    const cmd = actionCmd(c, r.response);
+    if (!cmd || !castExec || !castExec(state, cmd, DRY).ok) return [];
   } else {
     choices = spellChoices(state, c);
     if (!choices.length) return [];
@@ -266,7 +301,14 @@ function release(state: BattleState, c: Combatant, ev: Trigger, rng: Rng): Battl
       return { ...rest, ready: true };
     })];
   }
-  if (resp.kind === 'move') {
+  if (resp.kind === 'help' || resp.kind === 'disengage' || resp.kind === 'dodge' || resp.kind === 'hide' || resp.kind === 'utilize') {
+    // Görev KARAR104-KALAN A9 (104+): eylemin kendi yürütücüsü (eylem ekonomisi yok: tepkiyle).
+    const cmd = resp.kind === 'help' ? { type: 'help' as const, actorId: c.id, targetId: answer.choice ?? '' } : actionCmd(me, resp);
+    const res = cmd && castExec ? castExec(s1, cmd, rng) : null;
+    if (!res?.ok) return [];
+    return [...head, ...res.events];
+  }
+  if (resp.kind === 'move' || resp.kind === 'dash') {
     // GENEL96 A8/A25 (sürüm 96+; SRD 5.2.1 s. 181 Disengage/Dash "for the rest of the current turn", s. 186 Ready "move
     // up to your Speed"): kendi turunda alınan Disengage ve Dash tepki hareketine taşınmaz (yalnız bu hesap; durum değişmez).
     const g96 = genel96On(s1);

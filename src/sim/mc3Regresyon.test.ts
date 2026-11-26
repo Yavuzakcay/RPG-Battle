@@ -1,6 +1,6 @@
 /**
  * Görev MC3 "eski = yeni" (kural sürümü 105, savaş kaydı 27). Altın değerler MC3 öncesi taban ağaçta üretildi: MC3-BIRLESTIR'den
- * beri `origin/birlesik` `a50fd8ed` (KARAR104 dahil: kural 104, kayıt 26), `scripts/mc3-eski-yeni.ts` ile
+ * beri `origin/birlesik` `304bcb60` (KARAR104 ve KARAR104-KALAN dahil: kural 104, kayıt 26; MC5'te `a50fd8ed`'den yenilendi), `scripts/mc3-eski-yeni.ts` ile
  * (`src/sim/mc3-altin.json`; yardımcı `mc3EskiYeni.ts`):
  * - tek sınıflı savaşçılar 104 ve 105'te tabandaki 104 ile, 103'te tabandaki 103 ile aynı;
  * - taban ağacın savaş kaydı (sürüm 26, KARAR104; Çöl, 3 tur) yeni kodla aynı duruma oynar ve yüklenir;

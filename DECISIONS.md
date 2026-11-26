@@ -2,6 +2,51 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev MC5: oluşturucudan çoklu sınıflı karakter; etiketler; Serüven seviye atlama (2026-11-26; kural ve kayıt sürümü değişmedi)
+
+**Birleştirme.** Başlarken `origin/birlesik` `304bcb60` (KARAR104-KALAN; kural 104, kayıt 26) merge edildi. Çakışma: `CLAUDE.md`
+kural sürümü satırı (105 MC3/MC4 + birlesik'in genişleyen 104 metni birlikte) ve `characterRest.ts` içe aktarma (`rollDice`).
+Sürümler aynı: kural 105, savaş kaydı 27. KARAR104-KALAN 104'ün davranışını değiştirdiği için MC3 altın imzası (taban
+`a50fd8ed`) artık tutmadı (3 tohum Çöl `94495b88faea` → `e8d6fb4912c2`); altın yeni tabanda (`304bcb60`) yeniden üretildi.
+
+**Sınıf sayısı sınırı (kullanıcı kararı 2026-11-26, K4'ün yinelenmesi).** Sınır zaten vardı: `MAX_CLASSES = 3`
+(`src/app/limits.ts`, Görev MC1); kural tarafında `multiclassProblems` (`cok`) ve `addClassProblems`, oluşturucu sorunu
+`characterIssues` ("En çok 3 sınıf olabilir (N seçili)."). MC5 arayüzü ekledi: 3 sınıfta "Sınıf ekle" seçicisi kapalı ve altında
+"En çok 3 sınıf alınabilir." (TR/EN). Toplam seviye `LEVEL_CAP` (20) sınırı zaten vardı (`toplam`); dokunulmadı, seçicide
+sınırı aşan sınıf soluk. Eski kayıtta 3'ten fazla sınıflı karakter açılır, türetilir, savaşa girer; yalnız Özet'te uyarı.
+
+**Oluşturucu (`src/screens/builder/Multiclass.tsx`, `Builder.tsx`).** Yeni karakter tek sınıfla başlar (akış aynı). Sınıf
+adımında "Sınıflar" paneli: "Sınıf ekle" (yeni sınıf 1. seviye; zaten olan, ön koşulu tutmayan ya da toplam 20'yi aşan sınıf
+soluk ve nedeni yazılı: "ön koşul: CHA en az 13"), çoklu sınıfta sınıf başına seviye ve alt sınıf (o sınıfın alt sınıf
+seviyesinden), ek sınıfın ilk seviye becerisi (Bard serbest, Ranger/Rogue sınıf listesinden) ve Bard çalgısı, sınıf çıkarma
+(tek sınıfa dönünce `classes` silinir: kayıt eskisiyle aynı). Çoklu sınıfta kimlik adımında seviye seçicisi yerine toplam,
+sınıf kartları gizli (ilk sınıf panelden), özellikler sınıf başına kendi seviyesiyle; seviye yuvaları sınıf başına
+(`sheetAdvancementSlots`, yeni seçimde `Advancement.classId`, sınıfsız eski seçim ilk sınıfın); büyü adımı sınıf başına bölüm
+(her bölüm o sınıfın tek sınıflı büyü adımı; seçilen büyü o sınıfa bağlanır `spellClass`, başka sınıftan seçilmişse taşınır).
+Ek sınıf becerisi yetkinliğe yazılır (`stats.ts` `subclassSkills`; çoklu sınıfta her sınıfın alt sınıf becerileri de kendi
+seviyesiyle). Plan "Yeni seviye: [sınıf ▾]" diyordu; sınıf başına seviye seçicisi aynı işi görür ve geri almayı kolaylaştırır.
+
+**Etiketler (`src/ui/classLabel.ts`).** Karakter kartı, Game Master ve oda listeleri, Özet ve karakter kâğıdı "Fighter 3 · Wizard 2";
+tek sınıfta eskisi gibi. Kâğıtta özellikler sınıf başına. MC4 kalanı: iki Channel Divinity havuzu sınıf etiketiyle
+("Channel Divinity (Paladin)"; kaynak çipi, durum satırı, dinlenme, günlük).
+
+**Serüven (K12).** `level_up` isteğe bağlı `classOf` (üye → sınıf); olay `seruven_leveled.classOf` taşır (replay güvenli).
+Çoklu sınıflı üye seviyeyi mevcut sınıflarından birinde alır (varsayılan ilk sınıfı; seviye atla düğmesinin yanında üye başına
+seçici); tek sınıflılar eskisi gibi. Yan (yeni) sınıf yalnız kutsal ayna yanında: koşulun girişi `yanSinifAcik` (ayna yok: kapalı,
+komut reddedilir).
+
+**Test.** `src/screens/mc5.test.tsx` (13: sabit 3, 3 sınıf kurulur, 4. sınıf kuralda ve arayüzde reddedilir, eski 4 sınıflı kayıt
+açılır/türetilir/savaşa girer ve uyarı, tek sınıf değişmez, sınıf çıkarma tek sınıfa katlanır, ön koşul nedeni, etiketler,
+Channel Divinity etiketi, ek beceri, büyü adımı, Serüven varsayılan/seçilen sınıf ve yan sınıf reddi). İlgili 43 test dosyası
+(317 test) geçti.
+
+**Paket.** Ana parça 459,21 kB (onaylı sınır 465; MC4'te 457,19). Panel stili `styles.css` (`.mc-panel`).
+
+**100 tohum hızlı regresyon (tek sınıflı standart parti, 5. seviye).** Birleşik ağaçta 104 ve 105 imzaları Çöl/Kale/Mağara/Orman'da
+birebir aynı ve yeni taban (`304bcb60`) 104 ile eşit: col `f607c1cb6866`, kale `1b329e2153bf`, mağara `70a19db3d4e6`, orman
+`f9ad38d667b0`. `a50fd8ed` tabanına göre dördü de değişti (KARAR104-KALAN'ın 104 davranışı; MC'yle ilgisi yok). Tarayıcı
+kontrolleri: check:harita 92/92, check:ses 15/15.
+
 ## Görev MC4: çoklu sınıflı savaşçı sınıf başına; savaşta ve dinlenmede sınıf seviyesi (2026-11-26; kural sürümü 105, savaş kaydı 27)
 
 **Sürüm numaraları.** Başlarken `origin/birlesik` `a50fd8ed`'de (yeni commit yok; kural 104 KARAR104, kayıt 26). 105 MC3'le MC
@@ -220,6 +265,90 @@ yalnız 2+ sınıfta yazılır; varken `classId`/`subclassId` ilk öğeden, `lev
 3'teki gibi yazılır (yalnız `surum` 4), eski kayıtlar göçsüz yüklenir (test `src/rules/multiclass.test.ts`). Hiçbir hesap
 henüz alanı okumuyor: davranış değişmedi. `src/screens/ck1.test.tsx` kayıt sürümü beklentisi 3 → 4 (sürüm artışı bu görevin
 kendisi).
+## Görev KARAR104-KALAN: KARAR104'ün ertelenen ve ⚠ maddeleri (2026-11-26; kural sürümü 104'e eklendi, kayıt sürümü 26)
+
+- **Kural sürümü (kullanıcı kararı):** yeni sürüm açılmadı; düzeltmeler 104'e eklendi (104 çıkalı saatler oldu, 104'te kayıtlı
+  gerçek savaş yok). Her düzeltme `karar104On` ile kapılı; 103 ve altı aynen (`karar104.test.ts` her madde için 103 ↔ 104).
+- **A6 Cutting Words ıskada** (SRD 5.2.1 s. 35 "makes a damage roll"): ıskada da hasar zarı atan büyü saldırısında (Acid Arrow
+  `halfOnMiss`, Potent Cantrip) Bard'ın tepkisi `cuttingWordsDamage` ile; zar toplamdan yarıya bölünmeden önce düşer (`spells.ts`).
+  Silah saldırısında ıskada hasar zarı yok (Graze sabit değiştirici: zar değil). 103'te ıskada tetik yok.
+- **A6 Quivering Palm vazgeçme** (SRD 5.2.1 s. 52 "when you take the Attack action on your turn, you can forgo one of the attacks to
+  end the vibrations"): 104+ bitirmek Attack eyleminin bir saldırısı (`economy.ts`; kalan saldırı varsa ondan düşer, yoksa Attack
+  eylemi başlar ve kalanlar sürer). "Take an action" yolu bundan hep kötü olduğundan ayrı düğme yok. Aynı tur Unarmed Strike isabeti
+  varken komut kurar; bitirmek için `use_feature` `choice: 'end'` (`apex.ts` `palmEnding`; arayüzde "Quivering Palm: titreşimi
+  bitir"). 103: bitirmek eylem, isabet turunda bitirilemez. Yapay zekâ hâlâ kullanmaz (MONK-DENETIM D6).
+- **A6 Hurl Through Hell** (SRD 5.2.1 s. 76; alt sınıf dış pakette, kullanıcının kitapçık metninde slot yenilemesi yok, SRD esas
+  alındı): 104+ `apex.ts` `hurlEvents`: (1) "you can try": oyuncuya sorulur (`askChoice`, tetik `choice`; öneri kullanım varsa kullan
+  = eski otomatik davranış), (2) "Once per turn" (`traitTurns['hurl-through-hell']`), (3) kullanım yoksa Pact Magic slotu harcanıp
+  kullanım geri gelir ve harcanır (eylemsiz; öneri kullanmamak: sim ve "Sor" dışı ayarda eskisiyle aynı), (4) hedef "disappears":
+  Banishment'ın geçici çıkış etkisi (`banished` + `ethereal`, `grants: Incapacitated`, `endAfterSourceTurn`), Warlock'un sonraki
+  turunun sonunda biter ve hedef eski altıgenine ya da en yakın boş altıgene döner (reducer `unstack`). 103: her isabette sorusuz,
+  hedef yerinde Incapacitated, slot yenilemesi yok.
+- **A6 Holy Nimbus yenilenmesi:** B94'te zaten SRD 5.2.1 s. 57 ile aynı (kullanım yoksa 5. seviye slot eylemsiz harcanır, uzun
+  dinlenmede kullanım döner; slot savaş dışında harcanmaz ama sonuç aynı: kullanım yalnız savaşta işe yarar). Değişiklik yok.
+- **A6 Dark One's Own Luck** (SRD 5.2.1 s. 76 "you can use this feature to add 1d10 … after seeing the roll", kullanım eklenince
+  harcanır): 104+ (`k104` işareti) sahibine sorulur (tetik `boon`, öneri kullan), 1d10 tutmasa da kullanım gider (`ExtraDie.spendAlways`),
+  en iyi 10 bile yetmiyorsa hiç sunulmaz (`skipHopeless`, `onFail` zarında zarın en büyüğüyle). 103: sorusuz, yalnız tutarsa harcanır.
+- **A6 Supreme Sneak** (SRD 5.2.1 s. 64 "doesn't end that condition on you if you end the turn behind Three-Quarters Cover or Total
+  Cover"): 104+ Stealth Attack saldırı anında açığa çıkarmaz (`revealEvent` yerine işaret `traitTurns['supreme-sneak']`); Thief turunu
+  bitirirken görüş hattı olan her canlı düşmana göre ¾ ya da tam siperde değilse açığa çıkar (`stealth.ts` `supremeSneakEndEvents`,
+  tur sonu zinciri). ⚠ "Behind cover" kime göre yazmıyor: Hide'ın bütün düşmanlar yorumu (bilinçli sapma A17) alındı. Bulunan eski
+  hata: 96–103'te GENEL96 C12 `attackRevealEvents` Stealth Attack yapanı yine açığa çıkarıyordu (özellik fiilen işlemiyordu); 104'te
+  aynı komutun açığa çıkışı atlanır. 103 ve altı dokunulmadı (replay).
+- **A7 Unconscious eşya düşürme + yapay zekânın yerden alması** (SRD 5.2.1 s. 191 "You drop whatever you're holding"; GENEL-SAVAS
+  B40): 104+ komut içinde Unconscious olan (0 HP, Sleep, Knocking Out…) yaratık elindeki silahları altıgenine düşürür
+  (`heldItems.ts` `unconsciousDropEvents`, komut sonu; S2 el modelinin `item_dropped`'ı, bağlı silah da). Yapay zekâ ayılınca
+  kendi düşen silahını bitişikten ya da altıgeninden alır (`ownDroppedNear`, `ai.ts` `chooseCommand` turun başında; turda serbest
+  nesne etkileşimi). Canavarların silahı el modelinde değil (`weaponOptions` boş): düşürmez (stat bloğu saldırıları). Haritasız
+  savaşta ve savaşı bitiren düşüşte düşürmez. ⚠ Kalkan (giyilir) ve elde tutulan büyü etkileri (Flame Blade, Produce Flame) kapsam
+  dışı. 103: düşürmez. Sim etkisi: düşüp ayılan parti üyesi bir serbest etkileşimle silahını alır (hızlı regresyon DENGE.md).
+- **A8 Swarm varışta da paylaşır** (SRD 5.2.1 "The swarm can occupy another creature's space and vice versa": metin gönüllü hareketle
+  sınırlamıyor; SWARM95'in ⚠ kapsam dışı kısmı): 104+ ışınlanma (`teleport.ts` `teleportProblem`: Misty Step, Fey Step, Blink
+  Steps…), zorla hareket (`forced.ts` `pushOutcome`: itme/çekme, Repelling Blast, Thunderwave; tek ve çok altıgen) ve Game Master
+  yerleştirmesi (`movement.ts` `executePlace`) tek giriş `arrivalOccupant`'tan: sürü dolu altıgene, sürü olmayan yalnız sürülerin
+  altıgenine girer (`swarmShareOk` aynen). Çağırma varışı motorun seçtiği boş altıgen olduğu için değişmedi. 103: varışta sürünün
+  altıgeni dolu.
+- **A9 Ready yanıt listesi** (SRD 5.2.1 s. 186 "decide what … the action you will take", GENEL-SAVAS A23): 104+ yanıtlara Dash,
+  Disengage, Dodge, Help, Hide, Utilize eklendi (`data/hazirla.json` `yanitlar` `surum: 104`, `ready.ts` `readyResponsesFor`; tür
+  `ReadyResponse`). Salma eylemin kendi yürütücüsünden (eylem ekonomisi yok, tepki harcanır; iç komut sıra dışı çalışır,
+  `commands.ts` `readyInner`): Dodge Kaçın durumu, Hide Gizlen zarı, Help hedefi salınırken (Help'in geçerli hedefleri), Utilize
+  bitişik nesnenin varsayılan etkileşimi (SRD örneği kolu çekmek; arayüzde nesne seçimi, `objectCommand`). Dash: tepkide başkasının
+  turunda hareket hakkı olmadığından Dash'in verdiği ek hareket kadar (hız) yürür, "move" yanıtıyla aynı yol. Disengage SRD
+  metniyle eklendi; tepkide hareket olmadığından çoğunlukla etkisiz (panelde not). Kayıt sürümü 26 kaldı (yeni olay türü yok;
+  `readied.response` yeni türleri isteğe bağlı alanlarla taşır). Yapay zekâ Ready'yi hâlâ kullanmaz (A27, bu görevin listesinde
+  değildi). 103: yalnız saldırı, hareket, büyü.
+- **⚠ a Storm of Vengeance yıldırım hedefleri** (SRD 5.2.1 s. 165 "six different creatures or objects of your choice beneath the
+  cloud"; A1'in ⚠'si): 3. turda büyücüye sıralı çoklu seçimle sorulur (`stormStage.ts`, `askPicks`); adaylar bulutun altındaki bütün
+  yaratıklar (dost da), öneri eski otomatik seçim (büyücünün düşmanlarından merkeze en yakın altı). Kancasız Rng, yapay zekâ ve
+  "Her zaman/Asla" ayarında sonuç aynı (sim imzası değişmez). ⚠ Nesneler hâlâ hedef değil (canavar/nesne hasar yolu ayrı; asit
+  aşaması da nesnelere işlemez).
+- **⚠ b Cloaker paylaşılan hasarın türü** (SRD 5.2.1 s. 274 "the target takes the same amount of damage"; A2'nin ⚠'si): komutta
+  Cloaker'ın aldığı hasar olaylardaki tür parçalarına ayrılır (`attach.ts` `takenByType`: saldırı, save ve süren etki olayları ile
+  ek hasarları); hedef her parçayı o türle alır ve kendi direnç/bağışıklık/zayıflığı işler (`adjustDamage`; emme 0 sayılır). Türü
+  bulunamayan kalan türsüz. Yapışma yalnız 104'te olduğundan 103'te paylaşım hiç yok.
+- **⚠ c Darkmantle hızı** (SRD 5.2.1 s. 279 "Its Speed becomes 0, it can't benefit from any bonus to its Speed, and it moves with the
+  target … On its turn, the darkmantle can detach itself by using 5 feet of movement"): yapışınca Darkmantle'a `speedMult: 0` etkisi
+  (`attachHold`; veride `yapisma.speedZero`): hız 0, Dash eki de 0 (Dash anındaki hızdan, KARAR101). Ayrılma metindeki gibi kendi
+  turunda 5 ft hareketle (taban hızdan; hız 0 kuralı bağlıyken yürümeyi yasaklar, ayrılmayı değil); ayrılınca etki kalkar, kalan
+  hareket normal hızdan. Hedef kaçınca/ölünce de kalkar. Hedefle birlikte hareket A2'deki gibi. 103'te yapışma yok.
+- **⚠ d 0 HP'den kalkış saati** (SRD 5.2.1 s. 18 "regains 1 Hit Point after 1d4 hours"; A11'in ⚠'si; savaş dışı, sürümsüz): SRD
+  kipindeki uzun dinlenmede 0 HP'de (ölü değil) biri varsa 1d4 saat zamana eklenir (`characterRest.ts` `zeroHpWakeHours`). Yolculuk:
+  `long_rested.hour` + 8 + 1d4 (Normal/Zor; Kolay ev kuralında eklenmez), olayda `wakeHours`. Serüven: dinlenme düğümü, han ve
+  bozgunda yeniden deneme (Normal'de düşenler dahil) olaylarında `wakeHours`, reducer `saat`e ekler; zar Serüven tohumu + dinlenme
+  sayısından (Serüven komutları zarsız, replay aynı). Saat yalnız serbest gezintide (`saat`) tutulur: saatsiz eski kayıtta gün
+  dinlenme sayısından, eklenecek saat yok (değişmez). Alanlar isteğe bağlı: eski kayıtlar aynen yüklenir.
+- **⚠ e Likantrop laneti savaşta** (A4'ün ⚠'si; SRD 5.2.1 s. 339 Werewolf Bite, aynı metin Wererat/Wereboar/Weretiger/Werebear: "If
+  the cursed target drops to 0 Hit Points, it instead becomes a Werewolf under the GM's control and has 10 Hit Points"): SRD'de savaş
+  içi mekanik var, uygulandı (A4'teki "yalnız işaret" kullanıcı kararının yerine bu görevin "SRD'de savaşta mekaniği varsa uygula"
+  talimatı). 104+ komut sonu (`src/battle/lycanthrope.ts`): bu komutta 0 HP'ye düşen (ölmeyen) lanetli yaratık savaştan çekilir
+  (`retreated` + yeni isteğe bağlı alan `floor: 'likantrop'`; ölüm save'i atmaz, tarafını ayakta tutmaz) ve aynı altıgende Game
+  Master'ın tarafında laneti verenin stat bloğuyla 10 HP'li canavar girer (`H-likantrop`, savaş başındaki canavar kurulumu
+  `lateSummonEvents`; yapay zekâ oynatır). Savaş sonunda karaktere `lanet.donustu` (karakter listesinde "canavara dönüştü" notu);
+  lanet sonraki savaşlara karakter durumundan taşınır (`withStatus`). Kayıt sürümü 26 kaldı (yeni olay türü yok). ⚠ Kalanlar:
+  Shape-Shift (canavarın biçim değiştirme bonus eylemi) yalnız boyut/hız değiştirir, savaş istatistiğine etkisi olmadığından
+  (SRD "Its game statistics, other than its size, are the same") uygulanmadı; dönüşen karakterin Game Master'ın elinden kurtarılması
+  ve Remove Curse savaş dışı (Game Master kaydı siler); savaşı bitiren düşüşte yeni canavar gelmez, yalnız `donustu` yazılır.
+  103: yalnız işaret.
 ## Görev ESYA-IKON-AYIRT: aynı ikonu paylaşan eşya varyantları ayrıştı (2026-11-26; yalnız görünüm, kural/kayıt sürümü yok)
 
 61 kayıt SRD üst kimliğinin tek ikonunu paylaşıyordu (Ammunition/Armor/Shield/Weapon/Wand of the War Mage +1/+2/+3, Armor/Potion/Ring of
@@ -253,7 +382,8 @@ commit: A1, A3, A4, A11, A2, A10, A5. Değişen eski testler: `ruleVersion.test.
 - **Ertelendi (kullanıcı kararı, sonraki tura):** A6 SRD-12 sınıf özelliği sapmaları (Cutting Words ıskada, Quivering Palm vazgeçme,
   Holy Nimbus/Hurl Through Hell yenilenme, Dark One's Own Luck zamanı, Supreme Sneak siper zamanı), A7 Unconscious eşya düşürme + yapay
   zekânın yerden silah alması (GENEL-SAVAS B40), A8 Swarm'ın başka yaratığın altıgeninde durması (SWARM95), A9 Ready yanıt listesi
-  (Dash/Disengage/Dodge/Help/Hide/Utilize; GENEL-SAVAS A23). Çoklu sınıf kural sürümü 105'e (başka dal), bu göreve girmedi.
+  (Dash/Disengage/Dodge/Help/Hide/Utilize; GENEL-SAVAS A23). Çoklu sınıf kural sürümü 105'e (başka dal), bu göreve girmedi. **Hepsi KARAR104-KALAN'da
+  kapandı (aynı sürüm 104; yukarıdaki bölüm); A1, A2, A4 ve A11'in ⚠'leri de.**
 - **A1 Storm of Vengeance 2–10. tur aşamaları** (SRD 5.2.1 s. 165 "At the start of each of your later turns"): büyü verisinde `k104`
   bloğu (`zone.stages`: tur, save, hasar, `targets`, `persist`), alan yapımda `stage: 1`, büyücünün her tur başında `zone_stage` olayı
   (`src/battle/stormStage.ts`, `commands.ts` tur başı zinciri; kayıt sürümü 26). 2. tur 4d6 Acid, 3. tur altı yıldırım (DEX, 10d6

@@ -34,6 +34,7 @@ import { terrainAt } from './movement';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
 import { te99On } from './te99Surum';
+import { karar104On } from './karar104Surum';
 
 /** SRD 5.2.1 Hide eyleminin zorluğu (data/stealth.json). */
 export const HIDE_DC: number = stealthJson.dc;
@@ -256,6 +257,23 @@ export function attackRevealEvents(before: BattleState, after: BattleState, even
   return out;
 }
 
+const SNEAK = 'supreme-sneak';
+/** `economy.ts` `turnKey` ile aynı (döngüsel içe aktarma olmasın diye burada). */
+const stealthTurnKey = (state: BattleState) => `${state.round}:${state.turnIndex}${state.timeStopTurn ? `:t${state.timeStopTurn}` : ''}`;
+
+/**
+ * Görev KARAR104-KALAN A6 (104+): bu tur Stealth Attack yapan gizlenmiş Thief, turunu bitirirken görüş hattı olan her canlı
+ * düşmana göre ¾ ya da tam siperde değilse açığa çıkar (SRD "behind Three-Quarters Cover or Total Cover"; Hide'ın "hiçbir
+ * düşmanın görüş hattı" yorumuyla aynı taraf: bütün düşmanlar). Siper `lineOfFire` (görüş kesik = tam siper).
+ */
+export function supremeSneakEndEvents(state: BattleState, id: string): BattleEvent[] {
+  const me = state.combatants[id];
+  if (!karar104On(state) || !me?.hidden || !me.pos || me.traitTurns?.[SNEAK] !== stealthTurnKey(state)) return [];
+  const open = Object.values(state.combatants).find((w) => w.side !== me.side && w.hp > 0 && !!w.pos && !w.summon?.gone && !w.offFloor
+    && (() => { const l = lineOfFire(state, w, me); return !l.blocked && l.cover < 5; })());
+  return open ? [{ type: 'revealed', actorId: id, reason: `${open.name}: siper yok (Supreme Sneak)` }] : [];
+}
+
 /** Başarılı bir komuttan sonra, komutu veren gizlenmişse ortaya çıkma olayı. */
 export function revealEvent(before: BattleState, after: BattleState, cmd: Command): BattleEvent | null {
   if (!('actorId' in cmd)) return null;
@@ -266,6 +284,10 @@ export function revealEvent(before: BattleState, after: BattleState, cmd: Comman
   // Kuyruk 18 H3: Supreme Sneak (Stealth Attack): hedefe göre ¾ ya da tam siperde saldıran gizli kalır (SRD: turun
   // sonunda siper; yaklaşık: saldırı anında). Anahtar supremeSneak (kural sürümü 14).
   if (cmd.type === 'attack' && cmd.cunning?.includes('stealth') && globalRule(before, 'supremeSneak')) {
+    // Görev KARAR104-KALAN A6 (104+, SRD 5.2.1 s. 64 "if you end the turn behind Three-Quarters Cover or Total Cover"): saldırı
+    // anında açığa çıkmaz; turun sonunda siper denetlenir (`supremeSneakEndEvents`). İşaret `traitTurns['supreme-sneak']`;
+    // olay çağırana "açığa çıkma yerine" döner (aynı komutun saldırı açığa çıkışı da atlanır, `attackRevealEvents` skip).
+    if (karar104On(before)) return { type: 'trait_turn', actorId: cmd.actorId, trait: SNEAK, key: stealthTurnKey(after) };
     const t = after.combatants[cmd.targetId];
     const lof = t ? lineOfFire(after, t, me) : null;
     if (lof && (lof.blocked || lof.cover >= 5)) return null;

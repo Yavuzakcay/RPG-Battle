@@ -1,6 +1,6 @@
 /**
- * Görev MC3: "eski = yeni" altın değerlerini yazar (`src/sim/mc3-altin.json`). MC3-BIRLESTIR'den beri MC3 öncesi taban
- * `origin/birlesik` `a50fd8ed` (KARAR104 dahil: kural sürümü 104, savaş kaydı 26); ilk sürüm `f85717ea`'da (kural 103, kayıt 25)
+ * Görev MC3: "eski = yeni" altın değerlerini yazar (`src/sim/mc3-altin.json`). MC5'ten beri MC3 öncesi taban
+ * `origin/birlesik` `304bcb60` (KARAR104 ve KARAR104-KALAN dahil: kural sürümü 104, savaş kaydı 26; MC3-BIRLESTIR'de `a50fd8ed`); ilk sürüm `f85717ea`'da (kural 103, kayıt 25)
  * üretilmişti. O ağaçta bir kez çalıştırılır; yalnız bilinçli bir davranış değişikliğinde yeniden üretilir. Ortam testlerinkiyle
  * aynı (`src/test-setup.ts`).
  *   npx vite-node scripts/mc3-eski-yeni.ts [çıktı yolu] [imza tohumları, virgüllü; varsayılan 3] [eski altın (25 sürümlü kayıt)]

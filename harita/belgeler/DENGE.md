@@ -2,6 +2,24 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Not: KARAR104-KALAN (2026-11-26, kural sürümü 104'e eklendi) — hızlı regresyon
+
+KARAR104'ün ertelenenleri ve ⚠'leri 104'e eklendi (DECISIONS.md KARAR104-KALAN): Cutting Words ıskada, Quivering Palm, Hurl Through
+Hell, Dark One's Own Luck, Supreme Sneak, Unconscious silah düşürür + yapay zekâ yerden alır, Swarm varış paylaşımı, Ready yanıtları,
+Storm of Vengeance hedef sorusu, Cloaker türlü paylaşım, Darkmantle hız 0, likantrop dönüşümü. Hızlı regresyon (100 tohum, 5. seviye
+standart parti; `$env:KURAL_SURUMU=103/104; npm run sim -- 100 col kale magara orman --seviye 5`):
+
+| Senaryo | 103 | 104 (KARAR104) | 104 (KALAN) |
+|---|---:|---:|---:|
+| Çöl — Gündüz | %81 | %81 | %76 (berabere %4) |
+| Kale — Gündüz (Kale ve avlu) | %32 | %32 | %37 |
+| Mağara — karanlık | %78 (berabere %4) | %76 (berabere %2) | %79 (berabere %3) |
+| Orman | %68 | %68 | %69 |
+
+103 sütunu önceki ölçümle aynı (103 davranışı değişmedi). 104 farkları **kural kaynaklı**: düşüp ayılan parti üyesi silahını
+düşürmüş olur ve bir serbest etkileşimle yerden alır (A7; Çöl'de en çok düşen partide tur kaybı), Darkmantle bağlıyken hız 0 (Mağara).
+Aralık dışı (hedef %60–80): Kale %37 (103'ten beri), Çöl %76 aralığa girdi. Düzeltme yapılmadı (hafif doğrulama modu; tam tura).
+
 ## Not: KARAR104 (2026-11-26, kural sürümü 104) — hızlı regresyon
 
 Kural sürümü 104 (Görev KARAR104): Storm of Vengeance aşamaları, boğulma, likantrop laneti işareti, yapışma (Stirge/Darkmantle/

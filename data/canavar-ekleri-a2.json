@@ -1028,7 +1028,7 @@
    "kalan": "yok."
   },
   "darkmantle:Crush": {
-   "yapisma": {"blocked": "allOthers", "adv": true, "cover": {"maxSize": "M", "grants": ["Blinded"], "noBreath": true}, "escapeDc": 13},
+   "yapisma": {"blocked": "allOthers", "adv": true, "cover": {"maxSize": "M", "grants": ["Blinded"], "noBreath": true}, "escapeDc": 13, "speedZero": true},
    "surum": 104,
    "tur": "yapisma",
    "not_": "Görev KARAR104 A2: Yapışır; Medium ya da küçük hedefe avantajlı isabette örter (Blinded, nefes alamaz); bağlıyken yalnız hedefe ve avantajlı saldırır, hedefle hareket eder; hedef eylemle DC 13 STR (Athletics).",

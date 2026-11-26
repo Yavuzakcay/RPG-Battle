@@ -4,6 +4,7 @@
  * zırh, silah, eşya (her birinin bir satır özeti, ayrıntı üzerine gelince ya da seçilince); büyüler.
  * Sağda (dar ekranda altta) anlamlı bir özet ve sorunlar canlı görünür.
  */
+import { sheetClassLevel, sheetClassName } from '../ui/classLabel';
 import { StoryStep } from './builder/Story';
 import { SpellComps, componentsInfo } from '../ui/SpellComps';
 import { spellRitual } from '../rules/spellComponents';
@@ -42,7 +43,7 @@ import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLe
 import { findSubclass, genderVisible, isOtherClassSubclass, subclassForGender, subclassMissing, subclassPlainName } from '../rules/subclasses';
 import { wishPickKey } from '../battle/paket/bag';
 import {
-  ASI_FEAT, advancementSlots, casterCtx, asiCanRaise, asiPointsLeft, asiStep, scoresBeforeSlot, featById, featMechanic, featOptions, featEffects, featProblem, isStyleChoice, slotAlternativeById,
+  ASI_FEAT, advancementSlots, casterCtx, sheetAdvancementSlots, sheetCasterCtx, asiCanRaise, asiPointsLeft, asiStep, scoresBeforeSlot, featById, featMechanic, featOptions, featEffects, featProblem, isStyleChoice, slotAlternativeById,
   originFeats, sheetFeats, type Advancement, type AdvancementSlot, type Scores,
 } from '../rules/advancement';
 import { offHandOptionProblem, offHandProblem } from '../rules/hands';
@@ -62,6 +63,8 @@ import { recommendedAsi, reSuggestAfterBackground, reSuggestAfterLevel, reSugges
 import onerilen from '../../data/onerilen-baslangic.json';
 import { EquipmentStep } from './builder/Equipment';
 import { FeaturesPanel } from './builder/Features';
+import { MulticlassPanel } from './builder/Multiclass';
+import { classesOf, isMultiSheet, mcImpl } from '../rules/mcHook';
 import { StepBoundary } from '../ui/StepBoundary';
 import { useDiceFlow } from '../ui/diceFlow';
 import { DicePrompt } from '../ui/DicePrompt';
@@ -113,7 +116,9 @@ function mainAttack(sheet: CharacterSheet): string {
 /** Sihirbazın adımları (Görev K1, K3: kimlik + tür + sınıf tek "Karakter" adımı); büyü adımı yalnızca büyü seçebilen karakterde. */
 export function wizardSteps(sheet: CharacterSheet): BuilderStep[] {
   const caster = getClass(sheet.classId).casting !== null || alternativeCantrips(sheet).options.length > 0
-    || spellOptions(sheet.classId, sheet.level).length > 0;
+    || spellOptions(sheet.classId, sheet.level).length > 0
+    // Görev MC5: çoklu sınıfta herhangi bir sınıf büyü yapabiliyorsa.
+    || (isMultiSheet(sheet) && classesOf(sheet).some((e) => getClass(e.classId).casting !== null || spellOptions(e.classId, e.level, e.subclassId).length > 0));
   // Kuyruk KQ4 CK1: "Hikâye" adımı özetten (Kaydet ekranı) hemen önce; Alignment adımı yine en sonda.
   const all: BuilderStep[] = ['character', 'scores', 'skills', 'progress', 'equipment', 'spells', 'story', 'summary'];
   const list = caster ? all : all.filter((x) => x !== 'spells');
@@ -255,7 +260,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
             {current === 'skills' && <SkillsStep c={c} setC={setC} set={set} expertiseOnly={props.choices} />}
             {current === 'progress' && <ProgressStep c={c} setC={setC} set={set} />}
             {current === 'equipment' && <EquipmentStep sheet={s} set={set} carryRule={carryRule} />}
-            {current === 'spells' && <SpellsStep sheet={s} set={set} />}
+            {current === 'spells' && (isMultiSheet(s) ? <McSpellsStep sheet={s} set={set} /> : <SpellsStep sheet={s} set={set} />)}
             {current === 'story' && <StoryStep c={c} setC={setC} />}
             {current === 'alignment' && <AlignmentStep c={c} setC={setC} initial={props.initial} />}
             </RecoProvider>
@@ -410,7 +415,7 @@ function TokenPreview(props: { sheet: CharacterSheet; size: number; className: s
   return (
     <figure className={`token-preview ${props.className}`} aria-label={W.preview}>
       <CharacterFigure key={avatar.src} avatar={avatar} size={props.size} title={s.name || '—'} />
-      <figcaption><b>{s.name || '—'}</b><small>{race?.name ?? s.raceId}{l ? ` · ${lineageName(l, getLang())}` : ''} · {getClass(s.classId).name} {s.level}</small></figcaption>
+      <figcaption><b>{s.name || '—'}</b><small>{race?.name ?? s.raceId}{l ? ` · ${lineageName(l, getLang())}` : ''} · {sheetClassLevel(s)}</small></figcaption>
     </figure>
   );
 }
@@ -467,12 +472,13 @@ function IdentityStep({ c, setC, set, suggest }: StepProps) {
   return (
     <div className="form-row wiz-identity">
       <label>{T.name} <input value={s.name} maxLength={40} onChange={(e: { target: { value: string } }) => set({ name: e.target.value })} /></label>
-      <label>{T.level}
+      {/* Görev MC5: çoklu sınıfta seviye sınıf başına (Sınıflar paneli); burada toplam. */}
+      {isMultiSheet(s) ? <span className="mute">{T.mc.total(s.level)}</span> : <label>{T.level}
         <select value={s.level} onChange={(e: { target: { value: string } }) => setLevel(Number(e.target.value))}>
           {/* 2026-11-19: seviye sınırı her yerde 1–20 (Üst seviye anahtarı kalktı). */}
           {Array.from({ length: Math.max(LEVEL_CAP, s.level) }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
         </select>
-      </label>
+      </label>}
       <span className="seg" role="radiogroup" aria-label={T.avatar}>
         {(['erkek', 'kadin'] as const).map((g) => (
           <button key={g} role="radio" aria-checked={(s.gender ?? 'erkek') === g} className={(s.gender ?? 'erkek') === g ? 'on' : ''}
@@ -684,6 +690,24 @@ function ClassStep({ c, setC, set, suggest, lockClass }: StepProps & { /** Göre
       <b>{k.name}</b>
     </button>
   );
+  // Görev MC5: çoklu sınıfta ilk sınıf kartlardan değişmez (Sınıflar paneli); özellikler sınıf başına, kendi seviyesiyle.
+  const multi = isMultiSheet(s);
+  const featuresOf = (e: { classId: string; level: number; subclassId?: string }) => (
+    <FeaturesPanel key={e.classId} classId={e.classId} level={e.level} subclassId={e.subclassId} experimentalFrom={experimentalFrom(e.classId, e.subclassId)}
+      choices={s.featureChoices ?? {}} onChoose={(key, value) => set({ featureChoices: { ...(s.featureChoices ?? {}), [key]: value } })}
+      metamagic={s.metamagic ?? []} onMetamagic={(ids) => set({ metamagic: ids })}
+      invocations={s.invocations ?? []} onInvocations={(ids) => set({ invocations: ids })} known={s.spellNames ?? []} book={s.spellbook}
+      weapons={(s.weapons ?? []).map((w) => w.name)} pactWeapon={s.pactWeapon} onPact={(w) => set({ pactWeapon: w })}
+      forms={s.wildShapeForms ?? []} onForms={(ids) => set({ wildShapeForms: ids })} />
+  );
+  if (multi && !lockClass) {
+    return (
+      <>
+        <MulticlassPanel sheet={s} setSheet={(f) => setC((x) => ({ ...x, sheet: f(x.sheet) }))} />
+        {classesOf(s).map((e) => <section key={e.classId} className="mc-features"><h4>{T.mc.featuresFor(getClass(e.classId).name, e.level)}</h4>{featuresOf(e)}</section>)}
+      </>
+    );
+  }
   return (
     <>
       {!lockClass && <div className="card-grid class-grid">{classes.map(card)}</div>}
@@ -717,6 +741,7 @@ function ClassStep({ c, setC, set, suggest, lockClass }: StepProps & { /** Göre
         weapons={(s.weapons ?? []).map((w) => w.name)} pactWeapon={s.pactWeapon} onPact={(w) => set({ pactWeapon: w })}
         forms={s.wildShapeForms ?? []} onForms={(ids) => set({ wildShapeForms: ids })} />
       {lockClass && <MasteryPick s={s} set={set} />}
+      {!lockClass && <MulticlassPanel sheet={s} setSheet={(f) => setC((x) => ({ ...x, sheet: f(x.sheet) }))} />}
     </>
   );
 }
@@ -1080,6 +1105,34 @@ function ProgressStep({ c, setC, set }: StepProps) {
  * kitabı) tablodan; sınıra gelince seçilmemişler kapalı; erişilemeyen seviyeler kilitli, oyunda verisi olmayanlar soluk.
  * Wizard'da seviyeli büyü önce kitaba yazılır, sonra hazırlanır.
  */
+/**
+ * Görev MC5: çoklu sınıfta büyüler sınıf başına bölümde (SRD 5.2.1 s. 25 "as if you were a single-classed member"): her bölüm
+ * o sınıfın tek sınıflı büyü adımı (sınıfın seviyesiyle; sayaçlar ve listeler kendi sınırları). Bölümde seçilen büyü o
+ * sınıfa bağlanır (`spellClass`); başka sınıfa bağlıysa bu sınıfa taşınır. Sınıfa bağlı olmayan (tür, feat) büyüler kalır.
+ */
+function McSpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
+  const M = t().builder.mc;
+  const bound = mcImpl().spellClassMap(s);
+  const casters = classesOf(s).filter((e) => getClass(e.classId).casting !== null || spellOptions(e.classId, e.level, e.subclassId).length > 0);
+  return (
+    <>
+      {casters.map((e) => {
+        const all = s.spellNames ?? [];
+        const mine = all.filter((n) => bound[n] === e.classId);
+        const view: CharacterSheet = { ...s, classes: undefined, classId: e.classId, level: e.level, subclassId: e.subclassId, spellNames: mine };
+        const setView = (p: Partial<CharacterSheet>) => {
+          if (!p.spellNames) { set(p); return; }
+          const next = p.spellNames;
+          const names = [...all.filter((n) => bound[n] !== e.classId && !next.includes(n)), ...next];
+          const sc = Object.fromEntries(Object.entries({ ...(s.spellClass ?? {}), ...Object.fromEntries(next.map((n) => [n, e.classId])) }).filter(([n]) => names.includes(n)));
+          set({ ...p, spellNames: names, spellClass: sc });
+        };
+        return <section key={e.classId} className="mc-spells"><h3>{M.spellsFor(getClass(e.classId).name)}</h3><SpellsStep sheet={view} set={setView} /></section>;
+      })}
+    </>
+  );
+}
+
 function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
   const T = t().builder;
   const reco = useRecoSets();
@@ -1224,7 +1277,7 @@ function SidePanel(props: { final: SavedCharacter; derived: DerivedStats | null;
   const d = props.derived;
   return (
     <div className="side-sum">
-      <p><b>{s.name || '—'}</b><br /><small>{s.level}. · {props.raceName} · {getClass(s.classId).name}</small></p>
+      <p><b>{s.name || '—'}</b><br /><small>{s.level}. · {props.raceName} · {sheetClassName(s)}</small></p>
       {lineageLine(s) && <p className="sum-lineage"><small>{lineageLine(s)}</small></p>}
       {d ? (
         <>
@@ -1257,7 +1310,7 @@ function SummaryBody(props: { final: SavedCharacter; derived: DerivedStats | nul
   return (
     <>
       <ul className="summary-points">
-        <li><b>{T.sumIntro(s.name, props.raceName, cls.name, s.level)}</b></li>
+        <li><b>{T.sumIntro(s.name, props.raceName, sheetClassName(s), s.level)}</b></li>
         {lineageLine(s) && <li className="sum-lineage">{t().builder.wiz.lineageTitle}: {lineageLine(s)}</li>}
         {lineageAbilityList(s).length > 0 && <li><LineageAbilities list={lineageAbilityList(s)} /></li>}
         <li>{T.sumHp(derived.maxHp, cls.hitDie)} {T.sumSpeed(derived.speed, derived.proficiency, mod(derived.initiative))}</li>
@@ -1283,13 +1336,15 @@ function SummaryBody(props: { final: SavedCharacter; derived: DerivedStats | nul
 const ABILITY_OPTIONS = ABILITIES;
 
 /** Yuvadaki seçim (Fighting Style yuvası ile aynı seviyedeki ASI yuvası ayrılır). */
-function slotAdvancement(list: Advancement[], slot: AdvancementSlot): Advancement | undefined {
-  return list.find((a) => a.level === slot.level && (slot.kind === 'style' ? isStyleChoice(a.featId) : !isStyleChoice(a.featId)));
+function slotAdvancement(list: Advancement[], slot: AdvancementSlot, first?: string): Advancement | undefined {
+  // Görev MC5: çoklu sınıfta yuva sınıfıyla eşleşir (sınıfsız eski seçim ilk sınıfın).
+  return list.find((a) => a.level === slot.level && (!slot.classId || (a.classId ?? first) === slot.classId)
+    && (slot.kind === 'style' ? isStyleChoice(a.featId) : !isStyleChoice(a.featId)));
 }
 
 /** Yuvanın seçimini değiştirir (null: yuva boşalır); seviye sırası korunur. */
-function withSlot(list: Advancement[], slot: AdvancementSlot, next: Advancement | null): Advancement[] {
-  const old = slotAdvancement(list, slot);
+function withSlot(list: Advancement[], slot: AdvancementSlot, next: Advancement | null, first?: string): Advancement[] {
+  const old = slotAdvancement(list, slot, first);
   const rest = list.filter((a) => a !== old);
   return next ? [...rest, next].sort((x, y) => x.level - y.level) : rest;
 }
@@ -1298,8 +1353,8 @@ function withSlot(list: Advancement[], slot: AdvancementSlot, next: Advancement 
 function asiCapableSlots(s: CharacterSheet, scores: Scores): AdvancementSlot[] {
   const asi = featById(ASI_FEAT);
   if (!asi) return [];
-  const ctx = { scores, ...casterCtx(s.classId, s.level, s.subclassId) };
-  return advancementSlots(s.classId, s.level, s.subclassId).filter((x) => x.kind !== 'style' && featProblem(asi, x, ctx) === null);
+  const ctx = { scores, ...sheetCasterCtx(s) };
+  return sheetAdvancementSlots(s).filter((x) => x.kind !== 'style' && featProblem(asi, x, ctx) === null);
 }
 
 /**
@@ -1358,11 +1413,16 @@ function AdvancementPanel(props: {
   const T = t().builder;
   const s = props.sheet;
   const bg = backgroundOf(s);
-  const slots = advancementSlots(s.classId, s.level, s.subclassId);
-  const ctx = { scores: finalScores({ ...s, advancements: [] }), ...casterCtx(s.classId, s.level, s.subclassId) };
-  const asiOk = new Set(asiCapableSlots(s, ctx.scores).map((x) => `${x.level}:${x.kind}`));
+  // Görev MC5: çoklu sınıfta yuvalar sınıf başına, kendi seviyesiyle (`Advancement.classId`).
+  const slots = sheetAdvancementSlots(s);
+  const ctx = { scores: finalScores({ ...s, advancements: [] }), ...sheetCasterCtx(s) };
+  const sk = (x: AdvancementSlot) => `${x.classId ?? ''}${x.level}:${x.kind}`;
+  const asiOk = new Set(asiCapableSlots(s, ctx.scores).map(sk));
   const list = s.advancements ?? [];
-  const put = (slot: AdvancementSlot, next: Advancement | null) => props.set({ advancements: withSlot(list, slot, next) });
+  const put = (slot: AdvancementSlot, next: Advancement | null) => props.set({ advancements: withSlot(list, slot, next && slot.classId ? { ...next, classId: slot.classId } : next, s.classId) });
+  /** Yuvanın Feat kipi anahtarı (çoklu sınıfta sınıf sırası × 100). */
+  const fm = (x: AdvancementSlot) => x.level + 100 * Math.max(0, classesOf(s).findIndex((e) => e.classId === x.classId));
+  const slotTitle = (x: AdvancementSlot) => (x.classId && isMultiSheet(s) ? `${getClass(x.classId).name} · ${T.slot[x.kind](x.level)}` : T.slot[x.kind](x.level));
   const originId = originFeatOf(s);
   const slotSummary = (slot: AdvancementSlot, a: Advancement | undefined): string => {
     if (!a) return T.wiz.slotEmpty;
@@ -1419,27 +1479,28 @@ function AdvancementPanel(props: {
       </div>
       {slots.length > 0 && <h3>{T.slotsTitle}</h3>}
       {slots.map((slot) => {
-        const a = slotAdvancement(list, slot);
-        const canAsi = asiOk.has(`${slot.level}:${slot.kind}`);
-        const featChosen = a ? a.featId !== ASI_FEAT : !!props.featMode[slot.level];
+        const a = slotAdvancement(list, slot, s.classId);
+        const canAsi = asiOk.has(sk(slot));
+        const featChosen = a ? a.featId !== ASI_FEAT : !!props.featMode[fm(slot)];
         const asiMode = canAsi && !featChosen;
         const inc = a && a.featId !== ASI_FEAT ? featMechanic(a.featId)?.abilityIncrease : undefined;
         const options = featOptions(slot, ctx).filter((f) => f.id !== ASI_FEAT);
         // Fighting Style yuvasında feat yerine seçenek (Blessed Warrior; veriden).
-        const alts = slot.kind === 'style' ? classKit(s.classId, s.level, s.subclassId).slotAlternatives.filter((x) => x.level === slot.level) : [];
+        const se = classesOf(s).find((e) => e.classId === (slot.classId ?? s.classId)) ?? { classId: s.classId, level: s.level, subclassId: s.subclassId };
+        const alts = slot.kind === 'style' ? classKit(se.classId, se.level, se.subclassId).slotAlternatives.filter((x) => x.level === slot.level) : [];
         const incomplete = !a || (asiMode && asiPointsLeft(a) > 0);
         return (
-          <Fold key={`${slot.level}:${slot.kind}`} title={T.slot[slot.kind](slot.level)} summary={slotSummary(slot, a)}
+          <Fold key={sk(slot)} title={slotTitle(slot)} summary={slotSummary(slot, a)}
             open={incomplete || slots.length === 1} className="advancement">
             {canAsi && (
               <div className="form-row">
                 <span className="toggle-group" role="radiogroup" aria-label={T.slot[slot.kind](slot.level)}>
                   <label className="toggle"><input type="radio" checked={asiMode} onChange={() => {
-                    props.setFeatMode(slot.level, false);
+                    props.setFeatMode(fm(slot), false);
                     put(slot, { level: slot.level, featId: ASI_FEAT, abilities: {} });
                   }} /> {T.asiChoice.asi}</label>
                   <label className="toggle"><input type="radio" checked={!asiMode} onChange={() => {
-                    props.setFeatMode(slot.level, true);
+                    props.setFeatMode(fm(slot), true);
                     put(slot, null);
                   }} /> {T.asiChoice.feat}</label>
                 </span>

@@ -2,19 +2,20 @@
  * Kuyruk E4c: kaynak göstergesi "ikon + sayı" (savaş kartı, karakter listesi). İkon en az 32 px (24 px altında ince çizgili ki / d20 /
  * arcanum okunmaz); ad ve sayı `title` ve `aria-label`'da (yalnız görünüm). İkonsuz kaynak çağıranda metin kalır.
  */
+import { resourceLabel } from './classLabel';
 import { resourceDef } from '../rules/classFeatures';
 import { ICON_PX, resourceIconOf, resourceIconSrc } from './resourceIcon';
 
 export function ResourceChip({ id, n, max, showName }: { id: string; n: number; max?: number; /** Aynı ikonu paylaşan kaynaklar ayırt edilsin diye ad da görünür. */ showName?: boolean }) {
   const icon = resourceIconOf(id);
   if (!icon) return null;
-  const label = `${resourceDef(id)?.name ?? id} ${n}${max !== undefined ? `/${max}` : ''}`;
+  const label = `${resourceLabel(id, resourceDef(id)?.name)} ${n}${max !== undefined ? `/${max}` : ''}`;
   const { src, srcSet } = resourceIconSrc(icon);
   return (
     <span className="res-chip" role="img" title={label} aria-label={label}>
       <img src={src} srcSet={srcSet} width={ICON_PX} height={ICON_PX} alt="" aria-hidden="true" draggable={false} />
       <b aria-hidden="true">{n}{max !== undefined ? <small>/{max}</small> : null}</b>
-      {showName && <em aria-hidden="true">{resourceDef(id)?.name ?? id}</em>}
+      {showName && <em aria-hidden="true">{resourceLabel(id, resourceDef(id)?.name)}</em>}
     </span>
   );
 }

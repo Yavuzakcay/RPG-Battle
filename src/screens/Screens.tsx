@@ -3,6 +3,8 @@
  * karakterler). Game Master (GmScreen.tsx) ve durum (StatusScreen.tsx) ayrı, tembel yüklenen parçalar. Tek cihaz: rol seçimi yalnızca hangi ekranın
  * açılacağını belirler; online sürüm sonra.
  */
+import { resourceLabel } from '../ui/classLabel';
+import { sheetClassName } from '../ui/classLabel';
 import { alignmentLongRest } from '../rules/alignmentRest';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { classes, races, weapons } from '../data';
@@ -193,7 +195,7 @@ function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode; r
       <CharacterFigure avatar={sheetAvatar(sheet)} size={48} title={sheet.name || t().common.unnamed} />
       <div>
         <strong>{sheet.name || t().common.unnamed}</strong>
-        <small>{t().player.cardTitle(raceName(sheet.raceId), className(sheet.classId), sheet.level)} · {line}</small>
+        <small>{t().player.cardTitle(raceName(sheet.raceId), sheetClassName(sheet), sheet.level)} · {line}</small>
         {lineageLine(sheet) && <small className="card-lineage">{lineageLine(sheet)}</small>}
         {/* Görev K5: kural açıkken yük eşiği aşıldıysa uyarı rozeti (eski kayıt açılır, engellenmez). */}
         {((lvl) => lvl !== 'ok' && <small className="carry-badge error">⚖ {t().carry.level[lvl]} ({carriedWeight(sheet)} lb)</small>)(carryLevel(sheet))}
@@ -227,12 +229,12 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
   try { s = currentStatus(sheet, props.c.status); full = fullStatus(sheet); } catch { return null; }
   const drillPanel = drills && <MasteryDrills c={props.c} before={drills} onUpdate={props.onUpdate} onDone={() => setDrills(null)} />;
   if (isRested(sheet, props.c.status)) return note || drillPanel ? <>{note && <small className="ok">{note}</small>}{drillPanel}</> : null;
-  // Görev KARAR104 (A4): likantrop laneti işareti (yalnız bilgi; biçim değişimi yok).
+  // Görev KARAR104 (A4): likantrop laneti işareti; KARAR104-KALAN: savaşta dönüştüyse ayrı metin.
   const curse = s.lanet?.likantrop;
-  const cursed = curse ? <small className="error">{R.cursed(curse.charAt(0).toUpperCase() + curse.slice(1))}</small> : null;
+  const cursed = curse ? <small className="error">{(s.lanet?.donustu ? R.cursedTurned : R.cursed)(curse.charAt(0).toUpperCase() + curse.slice(1))}</small> : null;
   const left = sheet.level - s.hitDiceSpent;
   const resList = Object.entries(s.resources).filter(([id]) => (full.resources[id] ?? 0) > 0);
-  const res = plain(resList).map(([id, n]) => `${resourceDef(id)?.name ?? id} ${n}/${full.resources[id]}`).join(', ');
+  const res = plain(resList).map(([id, n]) => `${resourceLabel(id, resourceDef(id)?.name)} ${n}/${full.resources[id]}`).join(', ');
   const resIcons = iconed(resList);
   const slots = s.slots.map((n, i) => (full.slots[i] ? `${i + 1}: ${n}/${full.slots[i]}` : '')).filter(Boolean).join(' · ');
   return (
@@ -260,7 +262,7 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
           {(['arcaneRecovery', 'naturalRecovery'] as const).map((id) => {
             const opts = recoveryOptions(sheet, props.c.status, id);
             if (!opts.length) return null;
-            return <label key={id} className="rest-recovery">{R.recovery(resourceDef(id)?.name ?? id)}
+            return <label key={id} className="rest-recovery">{R.recovery(resourceLabel(id, resourceDef(id)?.name))}
               <select value={recoverPick[id] ?? ''} onChange={(e: { target: { value: string } }) => setRecoverPick((m) => ({ ...m, [id]: e.target.value }))}>
                 <option value="">{R.recoveryAuto}</option>
                 <option value="skip">{R.recoverySkip}</option>

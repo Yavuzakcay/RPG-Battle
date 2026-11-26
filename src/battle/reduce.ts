@@ -1590,7 +1590,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       let next = state;
       for (const id of event.ids) {
         const c = next.combatants[id];
-        if (c) next = withCombatant(next, id, { pos: null, offFloor: 'duzlem', floorPos: c.pos ?? undefined });
+        if (c) next = withCombatant(next, id, { pos: null, offFloor: event.floor ?? 'duzlem', floorPos: c.pos ?? undefined });
       }
       return next;
     }

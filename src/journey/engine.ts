@@ -7,7 +7,7 @@
 import ayar from '../../data/yolculuk/ayarlar.json';
 import { rollDice, rollTag, type Rng } from '../rules/dice';
 import { getClass } from '../data';
-import { currentStatus, fullStatus, longRestStatus, shortRestStatus, type CharacterStatus, type ZeroHpRest } from '../rules/characterRest';
+import { currentStatus, fullStatus, longRestStatus, shortRestStatus, type CharacterStatus, type ZeroHpRest, zeroHpWakeHours } from '../rules/characterRest';
 import type { JourneyCommand, JourneyEvent, JourneyMember, JourneyResult, JourneyState } from './types';
 
 export const JOURNEY_RULES = ayar as {
@@ -136,8 +136,11 @@ export function executeJourney(state: JourneyState | null, cmd: JourneyCommand, 
       const why = longRestBlock(state);
       if (why === 'notRestStop') return fail('Uzun dinlenme yalnızca dinlenme yerinde.');
       if (why === 'tooSoon') return fail(`Uzun dinlenme için erken (son uzun dinlenmeden ${state.hour - state.lastLongRest} saat geçti; en az ${JOURNEY_RULES.longRestGapHours}).`);
-      const statuses = Object.fromEntries(state.party.filter(alive).map((m) => [m.id, longRestStatus(m.sheet, m.status, undefined, JOURNEY_RULES.zeroHpLongRest[state.difficulty] ?? 'srd')]));
-      const events: JourneyEvent[] = [{ type: 'long_rested', statuses, hour: state.hour + JOURNEY_RULES.longRestHours }];
+      const mode = JOURNEY_RULES.zeroHpLongRest[state.difficulty] ?? 'srd';
+      const statuses = Object.fromEntries(state.party.filter(alive).map((m) => [m.id, longRestStatus(m.sheet, m.status, undefined, mode)]));
+      // Görev KARAR104-KALAN (SRD 5.2.1 s. 18): 0 HP'de biri varsa kalkışı 1d4 saat sürer, saate eklenir (SRD kipinde).
+      const wake = zeroHpWakeHours(state.party.filter(alive).map((m) => m.status), mode, rng);
+      const events: JourneyEvent[] = [{ type: 'long_rested', statuses, hour: state.hour + JOURNEY_RULES.longRestHours + wake, ...(wake ? { wakeHours: wake } : {}) }];
       // XP kipinde seviye yalnızca uzun dinlenmede (TASARIM §3).
       const need = nextLevelXp(state.level);
       if (state.progression === 'xp' && need !== null && state.xp >= need) events.push({ type: 'leveled', level: state.level + 1 });

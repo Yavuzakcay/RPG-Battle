@@ -4,6 +4,7 @@
  * Sıra: silah tablosu → biçim canavarı → Örümcek Biçimi → saldırı seçeneğinin adı → genel ad ("eşya").
  * Grup kimlikleri (harita `groups`) de aynı ilkeyle: çeviri tablosu, yoksa okunur biçim.
  */
+import { resourceLabel } from './classLabel';
 import weaponData from '../../data/weapons.json';
 import { getMonster } from '../data';
 import { getLang, t } from '../i18n';
@@ -46,8 +47,8 @@ export const droppableWeapons = (c: Combatant): string[] => heldWeapons(c).filte
 export function groupName(id: string): string {
   const table = t().alarm.groupNames as Record<string, string>;
   if (table[id]) return table[id] as string;
-  // Görev MC4 (K6): sınıf ekli kaynak (`channelDivinity@paladin`): sınıfsız kimliğin adı.
-  if (id.includes('@') && table[id.slice(0, id.indexOf('@'))]) return table[id.slice(0, id.indexOf('@'))] as string;
+  // Görev MC4/MC5 (K6): sınıf ekli kaynak (`channelDivinity@paladin`): sınıfsız kimliğin adı + sınıf etiketi.
+  if (id.includes('@') && table[id.slice(0, id.indexOf('@'))]) return resourceLabel(id, table[id.slice(0, id.indexOf('@'))]);
   const words = id.replace(/([a-zçğıöşü])([A-ZÇĞİÖŞÜ])/g, '$1 $2').replace(/[-_]+/g, ' ').trim().toLocaleLowerCase();
   return words ? words.charAt(0).toLocaleUpperCase() + words.slice(1) : t().alarm.groupFallback;
 }
@@ -66,6 +67,6 @@ export function featureName(id: string, state: BattleState, actorId: string): st
     if (a) return getLang() === 'en' ? a.en : a.tr;
   }
   const def = resourceDef(id);
-  if (def?.name) return def.name;
+  if (def?.name) return resourceLabel(id, def.name);
   return t().battle.held.feature;
 }

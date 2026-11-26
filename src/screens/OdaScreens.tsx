@@ -4,6 +4,7 @@
  * kurulum içeriği (`GmScreen`) oda düzenleyicisinin içinde; oda ayarları üstte `RoomPanel`'de. Sonraki çevrimiçi aşama aynı
  * ekranlara bağlanacak.
  */
+import { sheetClassLevel } from '../ui/classLabel';
 import { useState } from 'react';
 import { t, getLang } from '../i18n';
 import { classes } from '../data';
@@ -249,7 +250,7 @@ export function OdaKatil(props: { characters: SavedCharacter[]; onBack: () => vo
                   const ready = room.parti.includes(c.id);
                   return (
                     <li key={c.id} className="oda-card">
-                      <div className="oda-card-text"><strong>{c.sheet.name}</strong> <small className="mute">{className(c.sheet.classId)} {c.sheet.level}</small></div>
+                      <div className="oda-card-text"><strong>{c.sheet.name}</strong> <small className="mute">{sheetClassLevel(c.sheet)}</small></div>
                       {ready && <span className="chip on oda-ready">{O.joinReady}</span>}
                       {ready
                         ? <button type="button" className="ghost" onClick={() => commit((l) => updateRoom(l, room.id, (o) => leaveRoom(o, c.id)))}>{O.joinLeave}</button>

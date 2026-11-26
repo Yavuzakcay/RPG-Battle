@@ -10,6 +10,7 @@ import { lineageOf } from './lineage';
 import { featResources } from './backgrounds';
 import { itemResources, rechargeItems } from './itemCharges';
 import { getClass } from '../data';
+import { rollDice } from './dice';
 import { classResources, depotStart, rechargeResources, resourceDef } from './classFeatures';
 import { longRest, shortRest, type RestState } from './rest';
 import { MAX_EXHAUSTION, exhaustionAfterLongRest } from './exhaustion';
@@ -61,7 +62,7 @@ export interface CharacterStatus {
    * Görev KARAR104 (sürüm 104, A4): savaşta alınan lanet işareti (likantrop: canavar kimliği). Dinlenmeler kaldırmaz; yalnız işaret
    * (biçim değişimi yok). Remove Curse ile kaldırma savaş dışı (Game Master).
    */
-  lanet?: { likantrop: string };
+  lanet?: { likantrop: string; /** KARAR104-KALAN: savaşta 0 HP'de canavara dönüştü (Game Master'ın denetimine geçti). */ donustu?: true };
 }
 
 /** Kuyruk K48: Moral alanları olduğu gibi taşınır (yoksa yazılmaz; eski kayıt aynı). */
@@ -409,3 +410,13 @@ export function fontOfMagicStatus(sheet: CharacterSheet, status: CharacterStatus
   const slots = [...s.slots]; slots[level - 1] = (slots[level - 1] ?? 0) + 1;
   return { ...s, slots, resources: { ...s.resources, sorceryPoints: points - row[0] } };
 }
+
+/**
+ * Görev KARAR104-KALAN (A11'in ⚠'si; SRD 5.2.1 s. 18 "A Stable creature … regains 1 Hit Point after 1d4 hours"): SRD kipindeki
+ * uzun dinlenmede 0 HP'de (ölü değil) biri varsa kalkış süresi 1d4 saat zamana eklenir. Yoksa 0 (eski davranış).
+ */
+export function zeroHpWakeHours(statuses: readonly CharacterStatus[], zeroHp: ZeroHpRest, rng: Rng): number {
+  if (zeroHp !== 'srd' || !statuses.some((s) => !s.dead && s.hp <= 0)) return 0;
+  return rollDice('1d4', rng).total;
+}
+

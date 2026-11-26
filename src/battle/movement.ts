@@ -61,6 +61,7 @@ import { conveyorBlocks, conveyorFlow, conveyorSlideEvents, isUphillStep } from 
 import { diggable } from './burrow';
 import { swarm95On } from './swarm95Surum';
 import { isSwarm, swarmShareOk } from './swarmShare';
+import { karar104On } from './karar104Surum';
 
 /** Kullanıcıya gösterilen 1 tabanlı konum metni. */
 export const hexLabel = (o: Offset): string => `sütun ${o.col + 1}, satır ${o.row + 1}`;
@@ -115,6 +116,15 @@ function occupies(state: BattleState, at: Offset, exceptId?: string, band?: Band
 /** Görev SWARM95: altıgendeki bütün savaşçılar (sürü paylaşımında birden çok olabilir). */
 export function occupantsAt(state: BattleState, at: Offset, exceptId?: string, band?: Band): Combatant[] {
   return Object.values(state.combatants).filter(occupies(state, at, exceptId, band));
+}
+
+/**
+ * Görev KARAR104-KALAN A8 (104+, SRD 5.2.1 Swarm "can occupy another creature's space and vice versa"; yalnız gönüllü
+ * hareketle sınırlı değil): ışınlanma, zorla hareket (itme/çekme) ve Game Master yerleştirmesi varışında da sürü paylaşımı
+ * (`blockingOccupant`). 103 ve altı: `occupantAt` (sürünün altıgeni dolu).
+ */
+export function arrivalOccupant(state: BattleState, actor: Combatant, at: Offset, band?: Band): Combatant | undefined {
+  return karar104On(state) ? blockingOccupant(state, actor, at, band) : occupantAt(state, at, actor.id, band);
 }
 
 /**
@@ -201,7 +211,7 @@ export function executePlace(state: BattleState, actorId: string, at: Offset, ct
     if (!zone.some((h) => sameHex(h, at)) && !swimNear) return fail(`${hexLabel(at)} kendi başlangıç bölgende değil.`);
   }
   for (const h of bodyAt(state, actor, at)) {
-    const other = occupantAt(state, h, actor.id);
+    const other = arrivalOccupant(state, actor, h);
     if (other) return fail(`${hexLabel(h)} dolu (${other.name}).`);
   }
   const events: BattleEvent[] = [{ type: 'placed', actorId: actor.id, at }];

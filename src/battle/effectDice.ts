@@ -98,7 +98,10 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   }
   // Görev WARLOCK: Dark One's Own Luck (Fiend): başarısız kontrol ya da save'e 1d10; tutarsa kullanım harcanır.
   if (on !== 'attack' && traits.includes('dark-ones-own-luck') && resourceLeft(c, 'darkOnesLuck') > 0) {
-    out.push({ label: "Dark One's Own Luck", die: '1d10', sign: 1, reroll: 'onFail', resource: 'darkOnesLuck', holderId: c.id });
+    // Görev KARAR104-KALAN A6 (104+ `k104` işareti, SRD 5.2.1 s. 76 "you can … after seeing the roll"): sahibine sorulur (tetik
+    // `boon`, öneri kullan), eklenince harcanır (tutmasa da); 1d10 yetmeyecekse sunulmaz. 103: sorusuz, yalnız tutarsa harcanır.
+    out.push({ label: "Dark One's Own Luck", die: '1d10', sign: 1, reroll: 'onFail', resource: 'darkOnesLuck', holderId: c.id,
+      ...(c.k104 ? { ask: true, askTrigger: 'boon' as const, spendAlways: true, skipHopeless: true } : {}) });
   }
   // Kuyruk 19 (11–20): Peerless Skill (Lore 14): başarısız kontrol ya da saldırıya Bardic Inspiration zarı; yine başarısızsa harcanmaz.
   if (on !== 'save' && c.k19Traits && traits.includes('peerless-skill') && resourceLeft(c, 'bardicInspiration') > 0) {
