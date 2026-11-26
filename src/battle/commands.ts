@@ -787,7 +787,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'change_floor') return executeChangeFloor(state, actor, rng);
   if (cmd.type === 'stunning_strike') return executeStunningStrike(state, actor, cmd.targetId, rng);
   if (cmd.type === 'eldritch_smite') return executeEldritchSmite(state, actor, rng);
-  if (cmd.type === 'bonus_strike') return executeBonusStrike(state, actor, cmd.targetId, cmd.technique, rng);
+  if (cmd.type === 'bonus_strike') return executeBonusStrike(state, actor, cmd.targetId, cmd.technique, rng, !!cmd.crossSide);
   if (cmd.type === 'sphere_roll') return executeSphereRoll(state, actor, cmd.to);
   if (cmd.type === 'command_summons') return executeCommandSummons(state, actor);
   if (cmd.type === 'sphere_carry') return executeSphereCarry(state, actor, cmd.targetId, !!cmd.drop);
@@ -862,7 +862,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'move') return cmd.toFt !== undefined ? executeAirMove(state, actor, cmd.to, cmd.toFt, rng) : executeMove(state, actor, cmd.to, rng);
   if (cmd.type === 'shift_move') return executeShiftMove(state, actor, cmd.to, rng);
   if (cmd.type === 'superior_defense') return executeSuperiorDefense(state, actor);
-  if (cmd.type === 'steed_action') return executeSteedAction(state, actor, cmd.kind, rng, cmd.targetId, cmd.to);
+  if (cmd.type === 'steed_action') return executeSteedAction(state, actor, cmd.kind, rng, cmd.targetId, cmd.to, !!cmd.crossSide);
   if (cmd.type === 'initiative_swap') return executeInitiativeSwap(state, actor, cmd.allyId);
   if (cmd.type === 'jump') return executeJump(state, actor, cmd.to, rng);
   if (cmd.type === 'climb') return executeClimb(state, actor, cmd.to, rng);
@@ -889,7 +889,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'ready') return executeReady(state, actor, cmd);
   if (cmd.type === 'help') return executeHelp(state, actor, cmd.targetId, rng);
   if (cmd.type === 'distract') return executeDistract(state, actor, cmd.at);
-  if (cmd.type === 'use_item') return executeUseItem(state, actor, cmd.itemId, cmd.targetId, rng);
+  if (cmd.type === 'use_item') return executeUseItem(state, actor, cmd.itemId, cmd.targetId, rng, !!cmd.crossSide);
   if (cmd.type === 'moral_rally') return executeRally(state, cmd);
   if (cmd.type === 'dash') {
     const dashed: BattleEvent[] = [{ type: 'dashed', actorId: actor.id }];
@@ -974,7 +974,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'familiar_strike') return executeFamiliarStrike(state, actor, cmd.targetId, rng);
   if (cmd.type === 'familiar_order') return executeFamiliarOrder(state, actor);
   if (cmd.type === 'gaze') return executeGaze(state, actor, cmd.targetId);
-  if (cmd.type === 'monster_ability') return executeMonsterAbility(state, actor, cmd.abilityId, cmd.targetId, cmd.targetHex, rng, cmd.option);
+  if (cmd.type === 'monster_ability') return executeMonsterAbility(state, actor, cmd.abilityId, cmd.targetId, cmd.targetHex, rng, cmd.option, !!cmd.crossSide);
   if (cmd.type === 'retreat') return fail('Bilinmeyen komut.');
   // Kuyruk S2 (sürüm 41): dikey hareket, eşya bırakma ve yerden alma.
   // Kuyruk K66a (sürüm 50): yarıktaki uçmayan yaratık tırmanır (çift maliyet; 0 ft'te bitişik zemine çıkış).

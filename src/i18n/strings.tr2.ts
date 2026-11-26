@@ -458,6 +458,8 @@ export const TR_EXTRA = {
     grappleEscape: (a: string, skill: string, d20: string, total: number, dc: number, ok: boolean) => `${a} kaçmaya çalıştı: ${skill} zar ${d20}, toplam ${total} / DC ${dc}: ${ok ? 'kurtuldu' : 'kurtulamadı'}.`,
   },
   battle: {
+    /** Görev OYUNCU-HEDEF-DOST: karşı taraf hedefi onayı (ikinci dokunuş). */
+    crossConfirm: { ally: 'Dost hedef: devam? Onaylamak için yeniden dokun.', foe: 'Düşman hedef: devam? Onaylamak için yeniden dokun.' },
     wake: {
       damage: 'Uyanır: herhangi bir hasar alırsa.',
       loud: (ft: number, list: string) => `Uyanır: ${ft} ft içinde gürültülü büyü/yetenek (${list}).`,
@@ -906,7 +908,11 @@ export const TR_EXTRA = {
       l: { damage: 'Hasar', twoHand: 'iki elle', range: 'Menzil', reach: 'Erişim', mastery: 'Ustalık', props: 'Özellikler', ac: 'AC', save: 'Kurtarma zarı',
         area: 'Alan', burning: 'Yanma', conditions: 'Durumlar', escape: 'Kurtulma', heal: 'İyileştirme', tempHp: 'Geçici HP', duration: 'Süre', coat: 'Silaha sürülür',
         bonus: 'Büyülü bonus', onHit: 'İsabette', spells: 'Yüklü büyüler', charges: 'Yük', attune: 'Uyum', cost: 'Maliyet', weight: 'Ağırlık', rarity: 'Nadirlik',
-        don: 'Giyme / çıkarma', strength: 'Güç şartı', stealth: 'Gizlen', category: 'Sınıf', reason: 'Not', diff: 'Oyunda farklı', fixedDc: 'Sabit DC', setAbility: 'Yetenek değeri' },
+        don: 'Giyme / çıkarma', strength: 'Güç şartı', stealth: 'Gizlen', category: 'Sınıf', reason: 'Not', diff: 'Oyunda farklı', fixedDc: 'Sabit DC', setAbility: 'Yetenek değeri',
+        base: 'Taban silah / zırh', baseDiff: 'Taban farkı (henüz oyunda yok)', attuneBy: 'Uyum koşulu', source: 'Kaynak', features: 'Çalışan / çalışmayan güç' },
+      katNadirlik: { olagandisi: 'Sıra Dışı', nadir: 'Nadir', cokNadir: 'Çok Nadir', efsanevi: 'Efsanevi', yadigar: 'Yadigâr' } as Record<string, string>,
+      katDurum: { calisir: 'çalışır', kismi: 'kısmen çalışır', planli: 'planlı (henüz oyunda yok)', calismiyor: 'çalışmıyor' } as Record<string, string>,
+      katKaynak: (ref: string) => `Dice & Hex özgün eşya kataloğu (${ref})`, priceless: 'Satılamaz / paha biçilemez',
       v: {
         dexMod: 'DEX', dexMax: (n: number) => `DEX (en çok ${n})`, shield: (n: number) => `+${n} (kalkan)`,
         minutes: (a: number, b: number) => `${a} dk giyme, ${b} dk çıkarma`, stealthDis: 'Gizlen (Stealth) zarlarında dezavantaj',

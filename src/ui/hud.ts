@@ -1,4 +1,5 @@
 /** Harita üstü arayüzün (HUD) saf yardımcıları: yüzen menü ve balon yerleşimi, parlayan hedefler. */
+import { crossProbe } from './crossTarget';
 import { freeShapeArea, freeShapeFor, freeShapeOf, pathProblem } from '../battle/freeShape';
 import { fissureHexes, fissureProblem } from '../battle/fissure';
 import { beadsOf, beadThrowLanding, touchableBeads } from '../battle/bead';
@@ -101,11 +102,11 @@ export function bubbleAt(anchor: Point, size: Box, box: Box, gap = 12): Point {
 /** Saldırı seçenekleri (silah, canavar saldırısı, Multiattack) ve büyü seçenekleri ayrı. */
 export const isSpellChoice = (c: AttackChoice) => c.id.startsWith('s-');
 
-/** "Saldır" kipinde: en az bir saldırıyla vurulabilecek düşmanlar. */
+/** "Saldır" kipinde: en az bir saldırıyla vurulabilecek yaratıklar (Görev OYUNCU-HEDEF-DOST: dost da; dokununca onay). Sivil hariç. */
 export function attackTargets(state: BattleState, actorId: string): string[] {
   const side = state.combatants[actorId]?.side;
   return Object.values(state.combatants)
-    .filter((c) => c.id !== actorId && c.side !== side)
+    .filter((c) => c.id !== actorId && (c.side !== side || !c.civilian))
     .filter((c) => attackChoices(state, actorId, c.id).some((ch) => !isSpellChoice(ch) && ch.command))
     .map((c) => c.id);
 }
@@ -195,9 +196,9 @@ export function onceFree(actor: Combatant, spell: Spell): boolean {
  */
 export function effectTargets(state: BattleState, actorId: string, spell: Spell): string[] {
   const choice = spell.mechanics.effect?.choices?.[0];
+  // Görev OYUNCU-HEDEF-DOST: karşı taraf da (onaylı `crossSide`; "willing" büyüler motorda reddedilir).
   return Object.values(state.combatants)
-    .filter((c) => execute(state, { type: 'cast_spell', actorId, spellName: spell.name, targetIds: [c.id], ...(choice ? { choice } : {}) },
-      contextFor(state, actorId), () => 0.5).ok)
+    .filter((c) => crossProbe(state, actorId, { type: 'cast_spell', actorId, spellName: spell.name, targetIds: [c.id], ...(choice ? { choice } : {}) }) !== null)
     .map((c) => c.id);
 }
 

@@ -29,7 +29,7 @@ export function steedActions(state: BattleState, steed: Combatant): SteedAction[
   return (Object.keys(NEEDS) as SteedAction[]).filter((k) => steed.summon?.choice === NEEDS[k] && !steed.traitTurns?.[k]);
 }
 
-export function executeSteedAction(state: BattleState, steed: Combatant, kind: SteedAction, rng: Rng, targetId?: string, to?: Offset): CommandResult {
+export function executeSteedAction(state: BattleState, steed: Combatant, kind: SteedAction, rng: Rng, targetId?: string, to?: Offset, /** Görev OYUNCU-HEDEF-DOST */ cross = false): CommandResult {
   if (!steedActions(state, steed).includes(kind)) return fail('Bu at bu bonus eylemi yapamaz (tür ya da kullanılmış).');
   const owner = state.combatants[steed.summon?.by ?? ''];
   const mark: BattleEvent = { type: 'trait_turn', actorId: steed.id, trait: kind, key: 'used' };
@@ -49,7 +49,8 @@ export function executeSteedAction(state: BattleState, steed: Combatant, kind: S
     return finish(state, [mark, { type: 'healed', actorId: steed.id, targetId: t.id, label: 'Healing Touch', amount: after - t.hp, targetHpAfter: after }]);
   }
   // Fell Glare
-  if (t.side === steed.side) return fail('Fell Glare bir düşmana.');
+  // Görev OYUNCU-HEDEF-DOST: SRD Fell Glare "one creature within 60 feet" (onaylı dost da).
+  if (t.side === steed.side && !cross) return fail('Fell Glare bir düşmana.');
   if (steed.pos && t.pos && distance(steed.pos, t.pos) > 12) return fail('Fell Glare: 60 ft içinde olmalı.');
   if (!canSee(state, steed, t)) return fail(`${t.name} görülmüyor.`);
   const dc = owner?.spellSaveDc ?? 10;

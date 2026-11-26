@@ -1,0 +1,8 @@
+{
+  "_aciklama": "Görev OYUNCU-HEDEF-DOST (2026-11-26): oyuncu/Game Master komutunda `crossSide: true` (arayüzde onaylanan) taraf filtresini aşar: düşman için tanımlı büyü/yetenek dosta, dost için tanımlı büyü düşmana yapılabilir (SRD hedefi tarafla sınırlamıyor). Bu listedeki büyüler SRD 5.2.1 metninde \"willing creature\" ister: rıza modeli olmadığından tarafı değişmez (yalnız dost ve kendisi). Liste SRD metninden (`data/srd/spells.json`, \"willing\" geçen ve veride `side: ally` olanlar; Dragon's Breath SRD dışı, metni \"willing\"; Protection from Evil and Good `ward`). Yapay zekâ `crossSide` vermez.",
+  "rizali": [
+    "Guidance", "Resistance", "Mage Armor", "Barkskin", "Haste", "Fly", "Protection from Energy", "Heroism", "Gaseous Form",
+    "Water Walk", "Darkvision", "Warding Bond", "Jump", "Spider Climb", "Stoneskin", "Freedom of Movement", "True Seeing",
+    "Etherealness", "Animal Shapes", "Mind Blank", "Foresight", "Dragon's Breath", "Protection from Evil and Good"
+  ]
+}

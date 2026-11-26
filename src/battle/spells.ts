@@ -60,6 +60,7 @@ import { castBarrier } from './castBarrier';
 import { teleportEvent, teleportProblem } from './teleport';
 import { askChoice, askPicks } from '../rules/choice';
 import { karar104On } from './karar104Surum';
+import { crossOk, needsWilling } from './crossSide';
 import { gap } from './body';
 import { altitudeOf, areaOriginFt, areaReachesAltitude, levitateRiseEvents } from './altitude';
 import { katmanOn } from './heights';
@@ -1912,8 +1913,10 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     const t = state.combatants[id];
     if (!t) return fail('Hedef bulunamadı.');
     if (!isTargetable(t) || t.hp <= 0) return fail(`${t.name} ayakta değil.`);
-    if (spec.side === 'ally' && t.side !== actor.side) return fail(`${spell.name} yalnızca dostlara (ya da kendine).`);
-    if (spec.side === 'enemy' && t.side === actor.side) return fail(`${spell.name} yalnızca düşmanlara.`);
+    // Görev OYUNCU-HEDEF-DOST: onaylı karşı taraf hedefi (`crossSide`) taraf filtresini aşar; "willing" büyüler hariç.
+    const cross = crossOk(cmd) && !needsWilling(spell.name);
+    if (spec.side === 'ally' && t.side !== actor.side && !cross) return fail(`${spell.name} yalnızca dostlara (ya da kendine).`);
+    if (spec.side === 'enemy' && t.side === actor.side && !cross) return fail(`${spell.name} yalnızca düşmanlara.`);
     // Görev B3: yalnızca bu yaratık türleri (Charm Person: Humanoid; Animal Friendship: Beast); türsüz parti üyesi Humanoid.
     if (spec.onlyTypes && !spec.onlyTypes.includes(t.creatureType ?? 'humanoid')) return fail(`${spell.name} yalnızca: ${spec.onlyTypes.join(', ')}.`);
     // CILA: sözlü buyruk (Command, Suggestion) duyamayana (Deafened) işlemez.
@@ -2122,7 +2125,8 @@ function executeRestore(state: BattleState, actor: Combatant, cmd: CastCommand, 
   // GENEL96 D19 (sürüm 96+; SRD 5.2.1 s. 163 Spare the Dying "Choose a creature within range that has 0 Hit Points and
   // isn't dead"; "The range doubles when you reach levels 5 (30 feet), 11 (60 feet), and 17 (120 feet)"): herhangi bir yaratık.
   const spare96 = m.revive === 'stabilize' && genel96On(state);
-  if (!spare96 && (t.side !== actor.side || t.civilian && t.side !== 'party')) return fail(`${spell.name} yalnızca dostlara.`);
+  // Görev OYUNCU-HEDEF-DOST: onaylı karşı taraf hedefi (SRD "a creature").
+  if (!spare96 && !crossOk(cmd) && (t.side !== actor.side || t.civilian && t.side !== 'party')) return fail(`${spell.name} yalnızca dostlara.`);
   if (t.summon) return fail(`${spell.name} çağrılmış yaratığa yapılmaz.`);
   let ev: BattleEvent;
   if (m.kind === 'cure' && m.restoreChoices && globalRule(state, 'spellsK19')) {
@@ -2297,7 +2301,7 @@ function executeBuff(state: BattleState, actor: Combatant, cmd: CastCommand, spe
   if (m.ward || m.touchBuff) {
     const t = cmd.targetId ? state.combatants[cmd.targetId] : actor;
     if (!t) return fail('Hedef bulunamadı.');
-    if (t.side !== actor.side || !isTargetable(t) || t.hp <= 0) return fail('Yalnızca ayaktaki bir dosta (ya da kendine).');
+    if ((t.side !== actor.side && !(crossOk(cmd) && !needsWilling(spell0.name))) || !isTargetable(t) || t.hp <= 0) return fail('Yalnızca ayaktaki bir dosta (ya da kendine).');
     if (t.id !== actor.id) {
       const r = checkReach(state, actor, t, spellReach(spell, actor));
       if (!r.ok) return r;

@@ -197,11 +197,11 @@ export function withMonsterAbilities(state: BattleState): BattleState {
 // ------------------------------------------------------------------ komut
 
 export function executeMonsterAbility(state: BattleState, actor: Combatant, abilityId: string, targetId: string | undefined, targetHex: Offset | undefined,
-  rng: Rng, opt?: string): CommandResult {
+  rng: Rng, opt?: string, /** Görev OYUNCU-HEDEF-DOST: onaylı karşı taraf hedefi. */ cross = false): CommandResult {
   const a = abilitiesOf(state, actor).find((x) => x.id === abilityId);
   if (!a) return fail('Bu yaratığın böyle bir yeteneği yok.');
   if (!abilityReady(actor, a)) return fail(`${a.tr}: kullanım hakkı yok ya da şarj olmadı.`);
-  const events = abilityEvents(state, actor, a, targetId, targetHex, rng, opt);
+  const events = abilityEvents(state, actor, a, targetId, targetHex, rng, opt, cross);
   if (!events.length) return fail(`${a.tr} şu an kullanılamaz (uygun hedef ya da koşul yok).`);
   const cost: BattleEvent[] = [];
   if (a.uses !== undefined) cost.push({ type: 'feature_used', actorId: actor.id, feature: `mab:${a.id}`, remaining: (actor.resources[`mab:${a.id}`] ?? a.uses) - 1 });
@@ -213,9 +213,11 @@ export function executeMonsterAbility(state: BattleState, actor: Combatant, abil
 
 /** Yeteneğin olayları (yapay zekâ da kullanır; boşsa kullanılamaz). */
 export function abilityEvents(state: BattleState, actor: Combatant, a: MonsterAbility, targetId: string | undefined, targetHex: Offset | undefined,
-  rng: Rng, opt?: string): BattleEvent[] {
+  rng: Rng, opt?: string, cross = false): BattleEvent[] {
   let foes = foesOf(state, actor);
-  if (targetId) foes = foes.filter((f) => f.id === targetId);
+  // Görev OYUNCU-HEDEF-DOST: onaylı hedef (`crossSide`) tarafından bağımsız (SRD yetenekleri "a creature/target"); yoksa düşmanlar.
+  if (targetId) foes = cross ? Object.values(state.combatants).filter((o) => o.id === targetId && o.id !== actor.id && o.hp > 0 && !!o.pos && isTargetable(o) && canSee(state, actor, o))
+    : foes.filter((f) => f.id === targetId);
   if (a.waterOnly && !isUnderwater(state, actor)) return [];
   switch (a.kind) {
     case 'strike': {
@@ -328,7 +330,7 @@ export function abilityEvents(state: BattleState, actor: Combatant, a: MonsterAb
     }
     case 'pull': {
       // Reel: Restrained/Grappled hedefi düz çizgide kendine çeker.
-      const t = Object.values(state.combatants).find((c) => c.side !== actor.side && c.hp > 0 && c.pos && c.conditions.includes(a.needsCondition ?? 'Restrained')
+      const t = Object.values(state.combatants).find((c) => (c.side !== actor.side || (cross && c.id === targetId)) && c.id !== actor.id && c.hp > 0 && c.pos && c.conditions.includes(a.needsCondition ?? 'Restrained')
         && distance(hexOf(c), hexOf(actor)) * 5 <= (a.rangeFt ?? 30) && distance(hexOf(c), hexOf(actor)) > 1 && (!targetId || c.id === targetId));
       if (!t) return [];
       return pullToward(state, actor, t, Math.floor((a.pullFt ?? 25) / 5), rng);
@@ -342,7 +344,7 @@ export function abilityEvents(state: BattleState, actor: Combatant, a: MonsterAb
       return [{ ...damageEffect(t, 'srdK19', `${a.tr}: ${ft} ft düşüş`, { dice, type: 'bludgeoning' }, rng), removeCondition: 'Grappled' } as BattleEvent,
         { type: 'map_effect', rule: 'srdK19', targetId: t.id, text: `${a.tr}: Prone`, addCondition: 'Prone' }];
     }
-    case 'swallow': return swallowEvents(state, actor, a, rng);
+    case 'swallow': return swallowEvents(state, actor, a, rng, cross ? targetId : undefined);
     case 'summon': return summonEvents(state, actor, a);
     case 'spell': {
       const list = a.spells ?? (a.spell ? [a.spell] : []);
@@ -354,7 +356,7 @@ export function abilityEvents(state: BattleState, actor: Combatant, a: MonsterAb
           for (const how of [targetHex ? { targetHex } : { targetId: t.id }, { targetHex: hexOf(t) }]) {
             const evs = castWithoutAction(state, actor, sp, how, rng, { ...(a.level ? { level: a.level } : {}), ...(a.dc ? { dc: a.dc } : {}) });
             if (!evs) continue;
-            if (!a.ally && !a.self && evs.some((e) => e.type === 'save_resolved' && state.combatants[e.targetId]?.side === actor.side)) continue;
+            if (!cross && !a.ally && !a.self && evs.some((e) => e.type === 'save_resolved' && state.combatants[e.targetId]?.side === actor.side)) continue;
             if (!a.twice) return evs;
             // Hellfire Spellcasting: ikinci Fireball (ikinci en iyi hedefe).
             const after = applyEvents(state, evs);
@@ -442,10 +444,10 @@ function treeStride(state: BattleState, actor: Combatant, a: MonsterAbility, foe
  * alınamaz (tam siper), yutanın her tur başında asit (ve Remorhaz'da ateş) hasarı; yutan bir turda `escapeDamage`
  * hasar alırsa CON save'i (DC) başarısızsa kusar; yutan ölünce çıkar (`swallowCleanup`).
  */
-function swallowEvents(state: BattleState, actor: Combatant, a: MonsterAbility, rng: Rng): BattleEvent[] {
+function swallowEvents(state: BattleState, actor: Combatant, a: MonsterAbility, rng: Rng, /** Görev OYUNCU-HEDEF-DOST: onaylı hedef (dost da). */ allyId?: string): BattleEvent[] {
   const big = a.small ? ['L', 'H', 'G'] : ['H', 'G'];
   const fits = (sz: string | undefined) => (a.maxSize ? SIZE_ORDER.indexOf(sz ?? 'M') <= SIZE_ORDER.indexOf(a.maxSize) : !big.includes(sz ?? 'M'));
-  const t = Object.values(state.combatants).find((c) => c.hp > 0 && c.side !== actor.side && c.grapple?.by === actor.id && fits(c.size)
+  const t = Object.values(state.combatants).find((c) => c.hp > 0 && (allyId ? c.id === allyId : c.side !== actor.side) && c.grapple?.by === actor.id && fits(c.size)
     && !c.effects?.some((e) => e.swallowedBy));
   if (!t) return [];
   // Görev WS92 (92+): Giant Toad bir seferde tek yaratık yutar (midesi dolu: yetenek boşa gitmez, kullanılamaz).

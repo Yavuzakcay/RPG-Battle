@@ -18,7 +18,7 @@ describe('etki görünümü', () => {
     expect(b.map((r) => r.harmful)).toEqual([true, false]);
     expect(effectIcons(s, s.combatants.B as Combatant).map((x) => x.icon)).toEqual(['⛓', '💠']);
   });
-  it('etki büyüsü menüde kendi kipinde; Bless yalnızca dostları hedefler', () => {
+  it('etki büyüsü menüde kendi kipinde; Bless dostları ve (onaylı) düşmanları hedefler', () => {
     const cleric = combatantFromSheet({ name: 'T', raceId: 'human', classId: 'cleric', level: 3, subclassId: 'life-domain', armorName: 'Zırhsız', shield: false,
       itemNames: [], spellNames: ['Bless'], baseScores: { str: 10, dex: 10, con: 12, int: 10, wis: 16, cha: 10 } }, { id: 'A', ownerId: 'p1' });
     expect(spellMenu(cleric).find((x) => x.spell.name === 'Bless')?.kind).toBe('effect');
@@ -26,6 +26,7 @@ describe('etki görünümü', () => {
     const s = setup('Düz', { A: f });
     const at = { ...s, turnIndex: s.order.indexOf('A') };
     const bless = spells.find((x) => x.name === 'Bless');
-    expect(bless && effectTargets(at, 'A', bless).sort()).toEqual(['A', 'C']);
+    // Görev OYUNCU-HEDEF-DOST: Bless ("up to three creatures") düşmana da (onaylı `crossSide`).
+    expect(bless && effectTargets(at, 'A', bless).sort()).toEqual(['A', 'B', 'C']);
   });
 });

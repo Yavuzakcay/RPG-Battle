@@ -11,7 +11,8 @@ import { itemDetail, itemHasMechanic, itemSummary } from '../ui/equipmentText';
 import type { Item } from './types';
 
 // test-setup tembel SRD eşyalarını items.json dizisine ekler: kimliğe göre tekilleştir.
-const all = [...new Map(([...itemsBase, ...itemsSrd] as unknown as Item[]).map((it) => [it.id, it])).values()];
+// Görev KATALOG-1: özgün katalog eşyaları SRD sınıflandırmasının dışında (her gücün durumu `katalog.ozellikler`'de).
+const all = [...new Map(([...itemsBase, ...itemsSrd] as unknown as Item[]).filter((it) => !it.kaynak).map((it) => [it.id, it])).values()];
 const karar = cls.gm as Record<string, string>;
 const kod = cls.kod as Record<string, string>;
 const classOf = (it: Item) => (karar[it.id] ? 'c' : it.offCombat ? 'a' : itemHasMechanic(it) || kod[it.id] ? 'b' : null);

@@ -47,6 +47,13 @@ birebir aynı ve yeni taban (`304bcb60`) 104 ile eşit: col `f607c1cb6866`, kale
 `f9ad38d667b0`. `a50fd8ed` tabanına göre dördü de değişti (KARAR104-KALAN'ın 104 davranışı; MC'yle ilgisi yok). Tarayıcı
 kontrolleri: check:harita 92/92, check:ses 15/15.
 
+**İkinci birleştirme (MC5 sonu).** `origin/birlesik` bu arada `729b3690`'a ilerledi (KATALOG-1 eşyaları ve ikonları,
+OYUNCU-HEDEF-DOST; kural ve kayıt sürümü değişmedi). MC dalına merge edildi; çakışmalar: `CLAUDE.md` (kural sürümü satırı +
+yeni OYUNCU-HEDEF-DOST maddesi), `src/data/index.ts` (tembel yükleme listesi: `items-katalog.json` ve `mcImpl` birlikte),
+`src/rules/stats.ts` (KATALOG-1 eşya zırhsız tabanı `unarmoredBase` ile MC2'nin en yüksek Unarmored Defense'i birlikte: çoklu
+sınıfta `mv.ud`). Altın testleri, MC1–MC5 ve KATALOG testleri geçti (14 dosya, 119 test); ana parça 459,58 kB; check:harita
+92/92, check:ses 15/15. Ardından MC dalı `birlesik`'e ileri sarıldı (force yok).
+
 ## Görev MC4: çoklu sınıflı savaşçı sınıf başına; savaşta ve dinlenmede sınıf seviyesi (2026-11-26; kural sürümü 105, savaş kaydı 27)
 
 **Sürüm numaraları.** Başlarken `origin/birlesik` `a50fd8ed`'de (yeni commit yok; kural 104 KARAR104, kayıt 26). 105 MC3'le MC
@@ -265,6 +272,264 @@ yalnız 2+ sınıfta yazılır; varken `classId`/`subclassId` ilk öğeden, `lev
 3'teki gibi yazılır (yalnız `surum` 4), eski kayıtlar göçsüz yüklenir (test `src/rules/multiclass.test.ts`). Hiçbir hesap
 henüz alanı okumuyor: davranış değişmedi. `src/screens/ck1.test.tsx` kayıt sürümü beklentisi 3 → 4 (sürüm artışı bu görevin
 kendisi).
+## Görev OYUNCU-HEDEF-DOST: oyuncu komutunda dost (ve düşman) hedefi, genel dost ateşi (2026-11-26; kural sürümü değişmedi, kayıt sürümü 26)
+
+- **İlke (kullanıcı kararı):** oyuncu/Game Master kontrolündeki eylemde SRD hedefi tarafla sınırlamıyorsa motor taraf filtresi
+  koymaz; sonucu kural verir. Yapay zekânın hedef seçimi aynen düşmanla sınırlı.
+- **Tek kapı:** komutta isteğe bağlı `crossSide: true` (`types.ts`; `cast_spell`, `monster_ability`, `use_feature`, `bonus_strike`,
+  `use_item`, `steed_action`). Yalnız arayüz, oyuncu onaylayınca verir; yapay zekâ ve simülasyon hiç vermez. Bayraksız komut
+  birebir eski yol: **kural sürümü artırılmadı** (yalnız daha önce reddedilen komutlar açıldı, mevcut hiçbir komutun sonucu
+  değişmedi; MC dalının 105'iyle çakışma yok). Yeni olay türü yok.
+- **Kaldırılan taraf filtreleri (bayrakla; 9 yer):** canavar yetenekleri `monsterAbilities.ts` hedef seçimi (`abilityEvents`: hedefli
+  strike/save/büyü yeteneği; `pull` Reel; büyü yeteneğinde "kendi tarafına save" engeli) ve Swallow (`swallowEvents`: yakaladığı dost
+  da; yutulan düşmanla birebir: Blinded + Restrained, tam siper, asit, kaçış/kusma kuralları), Monk bonus vuruşu (`martial.ts`),
+  fırlatılan eşya ve dosta/düşmana iksir (`items.ts`, SRD "administer it to another creature"), Fell Glare (`steed.ts`, "one creature"),
+  Bardic Inspiration (`bard.ts`, "another creature"), büyü verisindeki `side: ally|enemy` (`spells.ts`: Bane/Command/Charm Person
+  dosta; Bless/Aid/Shield of Faith/Magic Weapon düşmana), iyileştirme dışı onarım büyüleri (Lesser/Greater Restoration, Revivify).
+  Saldırı, Multiattack, yan el saldırısı, yakalama ve itme motorda zaten tarafsızdı (yalnız arayüz listesi süzüyordu).
+- **Tarafla sınırlı kalanlar (gerekçe):** "willing creature" isteyen 23 büyü (`data/dost-hedef.json` `rizali`: Guidance, Resistance,
+  Mage Armor, Barkskin, Haste, Fly, Heroism…; SRD metninden; rıza modeli yok), binme (`mounted.ts` "willing creature"), Alert
+  inisiyatif takası ("willing ally"), Pact of the Chain, Teleport/Dimension Door'un götürdükleri (istekli), Help (SRD "an enemy within
+  5 feet"), Ready tetiği (A24 bilinçli sapma: tetikleyen düşman), alan büyüleri ve canavar alanları (zaten herkesi vurur; dost ateşi
+  hesabı aynen), ev kuralları ve paket verisi (Karadul, Celestial Şifa Eli, Moral toparlama, imza ve paket `hedef: dusman|dost`
+  ilkelleri, Leash: hedef tanımı içeriğin kendisinde), harita kuralları (bataklıktan müttefik çekme, ejderha uyandırma).
+- **Arayüz:** hedef listeleri tarafsız (Saldır kipi `attackTargets`, bonus vuruş, yan el, itme, eşya, özellik seçimi `pick`, çoklu
+  hedef etki büyüsü `effectTargets`; motorda kuru çalıştırılarak, `ui/crossTarget.ts` `crossProbe`: düz ya da yalnız `crossSide` ile).
+  Onay: dosta zararlı tek hedefli eylem/büyü ya da yalnız bayrakla olan karşı taraf hedefi ilk dokunuşta "Dost hedef: devam?" /
+  "Düşman hedef: devam?" bildirimi, ikinci dokunuş uygular (`MapBattle.tsx` `confirmCross`; hedef balonu, seçim kipleri, canavar
+  yeteneği menüsü, etki büyüsü). Önizleme kartının dost ateşi işareti aynen. Alan büyülerinde değişiklik yok.
+- **Doğrulama:** `src/battle/oyuncuHedefDost.test.ts` (Giant Toad/Frog yutması dosta, asit, Blinded/Restrained, yapay zekâ yutmaz,
+  Wolf Bite Prone, Elephant Trample, Fire Breath alanı, eşya/büyü bayraksız red–onaylı kabul, Haste ve Help sınırlı, arayüz seçenekleri).
+## Görev KATALOG-1 D: 45 özgün yüzük/tılsım/mühür taşı + Kaltakkıran taşları ve Mühür (2026-11-26; kural sürümü ve kayıt sürümü değişmedi)
+
+Kaynak: Yüzük ve Tılsım Kataloğu #1–45 (`YT#`: 18 yüzük, 15 tılsım, 9 mühür taşı, 3 zanaat eklentisi); Kaltakkıran paketi: Çatlak Element
+Taşı (Sv.1) ve Uyanmış Element Taşı (Sv.2) on tür varyantıyla (`BOSS#7a–j`, `BOSS#8a–j`; ad "Cracked Elemental Stone (Fire)" / "Çatlak
+Element Taşı (Ateş)", metin PDF'teki ortak metin), on Sv.3 taşı (`BOSS#9–18`), Koruyucu Ejderha Mührü (`BOSS#19`). K7: Caustic Band →
+**Searing Acid Ring**, Callous Glow Ring → **Lightcall Ring**, Strange Conduit Ring → **Leaping Current Ring**.
+
+- **Metin birebir:** 76 kayıtta özet, 130 güç, riskler ve kimler ham PDF'te aynen (16 katalog parçasında risk/kimler satırı elle;
+  boss dosyasında bölümler sabit işaretlerle, ör. Sv.3 riski "Kararma Etkisi: …" sonrasından).
+- **K3 (mühür taşları yalnız tılsım modu):** katalog mühür taşlarında (YT#34–42) soket yok; taş taşınırken yalnız "Tılsım yuvası" etkisi
+  uygulanır, silah/zırh yuvası `planli` (notlu). Sv.1/Sv.2 da "Mühür taşı" başlıklı olduğu için tılsım modunda: Sv.2 türüne direnç +
+  turda bir silah isabetine 1d4 (paket `ekHasar` `turdaBir`) `calisir`; Sv.1'in türe sabit −3 azaltması motorda yok → `planli`.
+  Zanaat eklentileri (YT#43–45) yalnız veri.
+- **Sv.3 taşları:** PDF "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken …": motor zırh bağını denetleyemediği için
+  (B-4 Çeneli Zincir Kılıcı ile aynı) bütün güçler `planli`; kaynaşma, Kararma ve İhanet G'de anlatım. ⚠ Kullanıcıya soruldu.
+- **Birebir mekanikler:** saldırı avantajı / kurtarma dezavantajı (paket `zarEtkisi`), silaha sabit +2 asit (`ekHasar` `zar: "2"`),
+  konsantrasyonda silaha 1d4 psişik (`ekHasar` `kosul: konsantrasyon`), CON 21 (`setAbility`, Amulet of Health yolu), kurtarma avantajı,
+  Blinded/Frightened bağışıklığı, direnç, 19–20 kritik (`kritikAralik`), en yüksek can +8 (`canArtisi`), +1 AC, tüm kurtarma +1,
+  karanlık görüş, Misty Step (KD yükü `kismi`).
+- Sayılar: 130 güç = 23 çalışır, 6 kısmen, 101 planlı. Bütünüyle çalışan: Yakıcı Asit Yüzüğü, Sıçrayan Akım Yüzüğü, Peri Duruşu Tılsımı,
+  Sv.2'nin on varyantı.
+- **Tek liste (B-4):** `harita/belgeler/KATALOG-1-KANCA-LISTESI.md`: A–D'nin 518 planlı/kısmi gücü kanca türüne göre (zırh bağı,
+  soket, sabit azaltma, kısa dinlenme, beceri, ışık, yükseklik, büyü bonusu, tetik, aktif güç, koşul).
+- Testler: eşya 645 → 721, görsel eşleme 695 → 771 (76 yedek ikon); `katalogB.test.ts` BOSS filtresi #1–6; `src/battle/katalogD.test.ts`.
+  İkon sayfası (`katalog-ikon-imza`) Sv.1/Sv.2 için şablon kimlik (`cracked-elemental-stone`, `awakened-elemental-stone`) kullanıyor;
+  varyant kimlikleri ikon işinde `ayniGorsel`'e eklenecek.
+
+## Görev KATALOG-1 C: 55 özgün giyilebilir (2026-11-26; kural sürümü ve kayıt sürümü değişmedi)
+
+Kaynak: Giyilebilir Kataloğu #1–50 (`GY#`: 13 başlık, 11 pelerin, 14 eldiven, 12 bot) ve Karanlık Yadigârlar başlıkları #45–48, #54
+(`KY#`). Tür `aksesuar` (oluşturucuda Aksesuar grubu). K7: Helldusk Gauntlets → **Blazing Fist Gauntlets**, Nightwalker Boots →
+**Darkstep Boots** (kimlik yeni addan; TR ad ve güçler aynı).
+
+- **Metin birebir** (A/B yöntemi): 55 parçada özet, 87 güç, riskler ve kimler kullanamaz ham PDF metninde aynen; etiket sütunu kaymış
+  16 parçada risk/kimler başlangıç satırı elle. İlk adsız paragraf "Temel etki" gücü.
+- **Birebir mekanikler:** başlıktaki "Ek AC" `effects.acBonus` (zırhsız da), direnç, Frightened/Stunned bağışıklığı, kritik
+  bağışıklığı (`noCrit`), tüm kurtarma +1 (`saveBonus`), tek yetenek kurtarma (`saveMod`), Poisoned/Paralyzed/Restrained'a karşı
+  avantaj (`saveAdvAgainst`), karanlık görüş 60, hız (`speedFt`), Ice Walk (`iceWalker`), inisiyatif +2 (paket), eşit büyü bonusu
+  (`bonus.spell`), DEX 18 (`setAbility`, Gauntlets of Ogre Power yolu), Unarmed Strike isabetine 1d8 kuvvet (`onHit.weaponId`),
+  2. seviye Misty Step (eşya büyüsü), "5 ft içinden yakın dövüşle isabet edene N hasar" karşılığı (`passive.retort`, Fire Shield yolu;
+  yakın dövüş isabeti hasar verince, 5 ft).
+- **B'ye ek:** aynı karşılık yolu B'nin iki gücüne de bağlandı (Kızgın Demir Plakası 1d4 ateş, Ebedi Fırtına Pul Zırhı 1d4 yıldırım;
+  ikisi `kismi`: tutuşturma ve su zinciri yok). B sayıları: 68 çalışır, 30 kısmen, 93 planlı.
+- **Planlı:** tetikli/koşullu güçlerin çoğu (verilen hasar türü, durum uygulama, ışık, Dash, iyileştirme, kanama, ilk turlar),
+  beceri bonusu, yetenek skoru +2 (en fazla 20), en yüksek can −10, tur başı zarla yenilenme (motorda `regen` sabit sayı), yalnız
+  saldırı ya da yalnız DC büyü bonusu, düşme hasarına direnç, KD (kısa dinlenme) yükü (motor eşya yükünü yalnız uzun dinlenmede
+  yeniler: Misty Step `kismi`), SRD'den farklı süreli büyü etkileri (10 tur See Invisibility / Water Walk).
+- Sayılar: 87 güç = 15 çalışır, 11 kısmen, 61 planlı. Bütünüyle çalışan: Düşünce Siperi Miğferi (GY#11), Asit Püskürten Pelerin (GY#17).
+- Testler: eşya 590 → 645, görsel eşleme 640 → 695 (55 yedek `esya-aksesuar` ikonu); `katalogB.test.ts` filtresi C'nin KY
+  başlıklarını dışlar; `src/battle/katalogC.test.ts`.
+
+## Görev KATALOG-1 B onayı: kullanıcı kararları (2026-11-26)
+
+- K8 kalkanları aynen: "+2 AC sağlar" sihirli +2, "Toplam +3 AC" sihirli +1 (kalkanın kendi +2'si üstüne).
+- Ad ile istatistik çelişirse istatistik esas (B'deki zırhlar; A'daki dört silah: Yakarış Uzun Yayı → Shortbow, Kızıl İğne Mızrağı →
+  Rapier, Işık Biriktiren Çift Mızrak → kesici, Yarık Çökerten Dev Kılıç → Maul; ad ve ikon aynı kalır). A'da zaten böyleydi; değişiklik yok.
+- Görünen ad her yerde "Kaltakkıran": `Kaltakkiran's Maw-Chain Greatsword` → `Kaltakkıran's Maw-Chain Greatsword` (kimlik
+  `kaltakkirans-maw-chain-greatsword` ve güçler aynı).
+- Çeneli Zincir Kılıcı'nın +3'ü planlı kalır. Motorun denetleyemediği güçlerin tek listesi D sonunda verilir.
+- Kör Nokta Cübbesi "temel AC 15 + DEX" taban AC'dir: yeni eşya alanı `effects.unarmoredBase` (zırhsızken taban = değer + DEX;
+  Mage Armor gibi; Unarmored Defense'le toplanmaz, yüksek olan geçerli; kalkan eklenir; `stats.ts`). Zırhsız ek (+5) kaldırıldı,
+  "Cübbe" gücü `calisir` (B sayıları: 68 çalışır, 28 kısmen, 95 planlı). Savaş AC'si karakter AC'sinden geldiği için kural sürümü yok.
+
+## Görev KATALOG-1 B: 60 özgün zırh, cübbe, kalkan + 6 boss imza eşyası (2026-11-26; kural sürümü ve kayıt sürümü değişmedi)
+
+Kaynak: Zırh Kataloğu #1–45 (`ZK#`), Karanlık Yadigârlar #36–44, #49–53, #55 (`KY#`; #45–48 ve #54 başlık, C'de), boss dosyaları:
+Mora'nın Filakteri Sarkacı ve Kör Nokta Cübbesi, Tarvok'un Zincirli Dikilitaşı ve Kaya Koşumu, Kaltakkıran'ın Paladin Zırhı ve Çeneli
+Zincir Kılıcı (`BOSS#1–6`, envanter 3.9 sırası; S1 kararı: üç imza silah zırh/koşum/cübbe eşleriyle B'de).
+
+- **Metin birebir** (A ile aynı yöntem): 66 eşyada özet, 191 güç, riskler ve kimler kullanamaz cümle cümle ham PDF metninde aynen
+  geçiyor. Riskler/kimler ayrımı `-layout` metninde satır başından (bölüm metni yeni satırda başlar); etiket sütunu kaymış 26 parçada
+  risk başlangıç satırı elle verildi. Zırhın ilk paragrafındaki AC/Stealth cümleleri "Zırh"/"Kalkan"/"Cübbe" gücü, kalanı "… ek etkisi".
+- **Zırh AC'si:** taban SRD zırhı türe, AC'ye ve Stealth'e göre (hafif: Leather 11, Studded 12; orta Stealth normal: Chain Shirt 13,
+  Breastplate 14; orta Stealth dezavantajlı: Half Plate 15; ağır: Chain Mail 16, Splint 17, Plate 18) + `effects.armorAcBonus` farkı.
+  Ad ile istatistik çelişirse istatistik esas (Shadowknight Half Plate → Breastplate + 2, Sparkmesh Chain Shirt → Breastplate,
+  Dwarven Anvil Splint → Plate, Moonshift Hide → Studded Leather, Briarwander Hide → Chain Shirt, Venomcarapace/Stormplate Scale →
+  Half Plate). "Tam DEX" (ZK#11, #15) ve "STR şartı/eğitim yok" (ZK#22) `tabanFarki`, "Zırh" gücü `kismi`. O3b zırh bağı yok:
+  sihirli ek her giyilen zırha eklenir (SRD Armor +N gibi).
+- **Kalkan (K8):** katalogdaki +N sihirli, kalkanın kendi +2'sine eklenir (`shieldAcBonus`); metin "Toplam +3 AC" diyen iki kalkanda
+  (Walking Bastion "temel +2 kalkan +1 büyülü", Spellmirror) sihirli +1. ⚠ "+2 AC sağlar" diyen 10 kalkanın kimler metni "Kalkan
+  eğitimi olmayan +2 AC bonusunu alamaz" (kalkanın kendi +2'si gibi okunuyor); K8'e göre sihirli +2 verildi, kullanıcıya soruldu.
+- **Cübbe:** zırhsız AC eki `unarmoredAcBonus` (zırhsız ve kalkansızken; Unarmored Defense/Mage Armor tabanıyla birleşir); kalkan
+  taşınırken ek düştüğü için "Cübbe" gücü `kismi`. Kör Nokta Cübbesi "temel AC 15 + DEX" = zırhsız 10 + DEX + 5 (Unarmored Defense
+  tabanıyla toplanır ⚠). Üstün Odak Cübbesi (ZK#34) AC'si yalnız konsantrasyonda: zırhsız eki yerine koşullu paket pasifi
+  (`zarEtkisi` `kosul: konsantrasyon`, +1 AC, bütün kurtarmalara +2).
+- **Birebir mekanikler:** direnç/bağışıklık/durum bağışıklığı (`passive.resist`, `immuneDamage`, `immune`), tüm kurtarma +N
+  (`effects.saveBonus`), tek yetenek kurtarma +N (`passive.saveMod`), kurtarma avantajı (`saveAdv`), büyülere karşı avantaj
+  (`saveAdvAgainst: ['spell']`, Magic Resistance yolu), Web Walker, hız +5 ft, DEX kontrolü avantajı (`checkAdv`), inisiyatif bonusu
+  ve avantajı (paket), büyü saldırısı + DC eşit bonus (`bonus.spell`), SRD büyüsü yapan güçler (Plant Growth 3. seviye, Warding Bond),
+  imza silahlarında bağlı taban silahta `bonus.weapon` + `onHit` (Sarkaç: Quarterstaff, +3, 2d6 psişik; Dikilitaş: Maul, +3, 1d8
+  gürültü).
+- **Planlı bırakılanlar:** sabit hasar azaltma ("tüm hasar −N", motorda yok; `reduce` turda bir), beceri düzeyinde bonus/avantaj
+  (Stealth, Perception, Persuasion, Nature), yalnız DC ya da yalnız saldırı büyü bonusu, Burning bağışıklığı, ışık/zemin/yükseklik
+  koşulları, yük harcayan özgün güçler, en yüksek can +10, kalkanla silah saldırısı (KY#36, en yakın SRD Rapier), Çeneli Zincir
+  Kılıcı'nın zırh bağı (bağ kontrol edilemediği için +3 ve üç fiziksel tür motora verilmedi; zırha kilitli, `attunement: false`).
+- Sayılar: 191 güç = 67 çalışır, 29 kısmen, 95 planlı. Bütünüyle çalışan: Üstün Odak Cübbesi (ZK#34), Güneş Siperi Kalkanı (ZK#42).
+- Testler: `data.test.ts` eşya sayısı 524 → 590, `gorselEsleme.test.ts` 574 → 640 (66 eşya, yedek tür ikonu `esya-zirh`/`esya-kalkan`/
+  `esya-silah`, elle eklendi), `katalogA.test.ts` A sayımı BOSS silahları hariç 125 ve bağ denetimi yalnız silahlarda;
+  `src/battle/katalogB.test.ts`. `esya-silah-bagi.json` +3 satır (imza silahları).
+
+## Görev KATALOG-1 A: 125 özgün silah (2026-11-26; kural sürümü ve kayıt sürümü değişmedi)
+
+Kaynak: Silahlar Cilt 1 (40), Cilt 2 (50), Karanlık Yadigârlar #1–35 (35). `data/items-katalog.json`, kimlik EN-AD'dan kebab-case;
+K7: Titanstring Longbow → **Giant-Sinew Longbow** (`giant-sinew-longbow`).
+
+- **Metin birebir.** PDF metni `pdftotext` ham ve `-layout` kiplerinden; "Ne işe yarar", güçler ("Ad: metin" bölümleri), riskler ve
+  kimler kullanamaz cümle cümle ham PDF metniyle karşılaştırıldı: 125 silahta 340 gücün, özetlerin ve risk/kimler cümlelerinin hepsi
+  ham metinde aynen geçiyor (sütun kırılmasıyla bölünen kelimeler ham metne göre birleştirildi; zar, DC, menzil, süre, yük olduğu gibi).
+- **Mekanik yalnız tam karşılığı olanda** (genel kural: motora uydurmak yok):
+  - büyülü bonus `bonus.weapon` ve başlıktaki koşulsuz ek hasar zarı `onHit`: bağlı taban silahta (KARAR104 A10; `esya-silah-bagi.json`'a
+    125 satır, taban = `katalog.taban`);
+  - birebir SRD büyüsü yapan güçler `spells` + `charges` + `recharge` + sabit `dc`/`attack` (Lightning Bolt, Hold Person,
+    Darkness/Moonbeam, Magic Missile, Thunderwave, Scorching Ray, Fireball, Protection from Energy, Bless, Acid Arrow);
+  - tam "+N büyü saldırısı ve DC" `bonus.spell`; kullanıcıya bağlı pasifler (direnç, karanlık görüş, Blinded bağışıklığı, ışık
+    `light`/`lightDim`, STR 19, inisiyatif `zarEtkisi.inisiyatifBonusu`).
+- **Planlı bırakılanlar** (metin kayıtta, `durum: planli`/`kismi`, `not` gerekçeli): silaha özgü olup motorda bütün saldırılara
+  yayılacak etkiler (19–20 kritik, koşullu avantaj), koşul/tetik kancası isteyenler (ışık, Hidden, hedef konsantrasyonu, verilen hasar
+  türü, iyileştirme…), SRD'den farklı büyü sürümleri (3 tur bonus eylemli Haste, 1–2. seviye Dispel, +3 sabit kontrol bonuslu Dispel),
+  eşya büyüsünde yük maliyeti > 1 (motor her yapımda 1 düşer: Blight 2 yük), sınırsız cantrip (eşya büyüsü yükten düşer), yalnız DC ya
+  da yalnız menzilli büyü saldırısı bonusu.
+- **K11:** SRD karşılığı olmayan silahlar en yakın SRD silahına bağlı, fark `katalog.tabanFarki` ve "Silah" gücü `kismi`: katana
+  (Finesse + Vex) → longsword, el/ayak sargısı → mace/flail, simya şişeleri → dart, Işık Biriktiren Çift Mızrak → longsword, Yarık
+  Çökerten Dev Kılıç → maul, Gök Yıldırımı Mızrağı → spear; toplam 20 silahta zar/özellik/ustalık/tür farkı.
+- Sayılar: 340 güç = 125 çalışır, 27 kısmen, 189 planlı. Bütünüyle çalışan silah 2 (Dev Özü Sopası, Asit Oku Asası); diğerlerinde
+  temel istatistik çalışır, en az bir güç planlı. Oluşturucuda katalog silahının işlemesi için taban silah da taşınmalı (bağ yoksa
+  bonus hiçbir silaha gitmez); taban silahı kendiliğinden ekleme (O3'ün oluşturucu kısmı) yapılmadı.
+- Testler: `data.test.ts` eşya sayısı 399 → 524, `gorselEsleme.test.ts` eşya eşlemesi 449 → 574 (125 katalog silahı; görsel
+  kayıtları yedek ikonla elle eklendi, `npm run dd-gorsel` worktree'de yerel `icerik/` olmadığından alt soy kayıtlarını da
+  değiştirdiği için çalıştırılıp geri alındı); `src/battle/katalogA.test.ts`.
+
+## Görev KATALOG-1 P0: özgün eşya kataloğu altyapısı (2026-11-26; kural sürümü ve kayıt sürümü değişmedi)
+
+Envanter ve kullanıcı kararları K1–K14: `harita/belgeler/KATALOG-1-ENVANTER.md`. Genel kural (kullanıcı): PDF'teki güçler birebir
+(metin, zar, DC, menzil, süre, yük); sadeleştirme, dengeleme, kırpma yok; motorda karşılığı olmayan güç metniyle kayıtta durur, durum
+etiketi `planli`/`calismiyor` alır; belirsiz yer tahminle doldurulmaz, sorulur.
+
+- `Item.srd` isteğe bağlı; özgün eşyada yok, `kaynak: 'katalog-1'` (özgün geçmişlerin `ozgun` deseni). Sihirli eşya sorgusu tek yerde
+  `isMagicItem` (`src/data/index.ts`); `srd.startsWith('magic-items')` çağrıları (Dungeondex, prospektüs, görsel envanter, ikon raporu,
+  testler) buna geçti. `scripts/esya-ikon.mjs` katalog eşyalarını SRD kimliksiz kayıt olarak okur.
+- PDF bilgisi `Item.katalog` (`KatalogEsya`): kaynak sırası (`ref`), TR ad, nadirlik (Yadigâr dahil; görünümde Efsanevi kademesi),
+  tür, yuva, uyum koşulu, fiyat (`null` = satılamaz), taban silah/zırh ve K11 farkı, hasar, ustalık, özellikler, "Ne işe yarar"
+  (`ozet`), riskler, kimler kullanamaz ve her güç için `ozellikler[]` (ad, PDF metni, durum, not). Savaş etkisi yine `Item`'ın
+  mevcut alanlarında (bonus, onHit, passive, paket, spells/charges/recharge, use); yeni savaş kodu yok.
+- Veri `data/items-katalog.json` (`esyalar`), `loadClassData` tembel yükler, `items`'a ekler (ana parça 453,85 kB / 500 kB).
+- `itemKind`/`itemTier` önce `katalog` alanına bakar. Dungeondex prospektüsü katalog eşyasında bölümleri `katalog`'dan kurar; her güç
+  "ad · durum" satırı, "Oyundaki durum" rozeti hepsi çalışırsa "Savaşta çalışır", bir kısmı "Kısmen", hiçbiri "Yalnız açıklama".
+- Test: `src/data/srdIds.test.ts` katalog kolu (kimlik biçimi ve tekilliği, EN-AD tekilliği (eşyalar adla bağlanır), `ref` biçimi,
+  enum'lar, yüklü büyü adı, silah eşyasında `esya-silah-bagi.json` satırı ve taban SRD silahı), `src/data/katalog.test.ts`.
+- Dungeondex kartında Türkçe açıklama yoksa PDF'in "Ne işe yarar" paragrafı (`desc.ui`; `Item.text` oluşturucu özetinin yedeği, ham metin sayılmaz). Prospektüs kapsamı `esyaIds().katalog` ayrı listede (SRD paragraf dosyası `data/prospektus/esya-sihirli.json` yalnız SRD eşyaları); A5 sınıflandırması ve SRD kimlik testi katalog eşyalarını saymaz (`loadClassData` onları `items.json` modül dizisine de ekler).
+- Planla fark: O12 (boss yükleyici iskeleti) F'ye kaldı; O3'ün "oluşturucu taban silahı ekler" kısmı A'da değerlendirilir.
+## Görev KATALOG-IKON-AKTAR-3: macenta cep ve komşu hücre taşması betikte (2026-11-26; yalnız görünüm, kural/kayıt sürümü yok)
+
+Kullanıcı kontakt görsellerini inceledi: 99 hücre yeniden üretilmeyecek; `katalog-duzeltme-01…07` manifestte `ertelendi: true`, belgede
+ERTELENDİ notu (kusur betiği işareti korur). İki betik iyileştirmesi (`scripts/esya-ikon.mjs`, yalnız macenta kipi; yeşil 550 ikon bayt
+bayt aynı):
+
+- **Komşu taşması** (`komsuTasmasi`, genel): komşunun ucu hücreye girer ya da kırpım payında durup bu hücrenin yarı saydam parıltısına
+  değer, tam kırpımda tek bileşen olur (zirh-03'te "küçük ayrı bileşen" kuralı hiç tetiklenmedi). Bağlantıyı yalnız opak gövde (α ≥ 250)
+  taşır: hücre içinde etiketlenen gövdeden sınıra değen ve en büyüğün %25'inden küçük olan atılır, korunan iç gövdeye opak yolla
+  ulaşamayan hücre dışı gövde atılır, aradaki yarı saydam pikseller en yakın gövdeye bölüştürülür. Atılan gövde yoksa hiçbir piksel
+  değişmez. Etki: zirh-03 #3, #6, #7, #10 (istenen) + kendiliğinden #1, #2, #12 ve yuzuk-01 #14.
+- **Kapalı macenta cep** (`macentaCepleri`, yalnız manifest `cepTemizle` kimlikleri): zeminin karartılmış tonu (O ≈ s·Z, artık ≤ 28,
+  G ≤ 0,25·min(R, B), s ≥ 0,12), kırpım kenarına değmeyen, 24 px ile kırpımın %4'ü arası bileşen saydam; 1 px geçiş artık ≤ 55.
+  Genel kural denendi, geri alındı: Gemini birçok eşyanın koyu dış çizgisini ve dış zemine açılan gölgeli aralıkları aynı tonla çizmiş;
+  "dış zeminden kopuk" şartı hedef cepleri (yay sarmalı, zincir halkası, ok gölgesi: hepsi dış zemine bağlı) dışarıda bırakıyor, genel
+  kural 300+ ikonun dış çizgisini yiyordu. Liste: yuzuk-02 #6, giyilebilir-04 #7, #8, tuketilebilir-02 #12, silah-03 #2, silah-02 #9,
+  #14, zirh-02 #8, bekleyen-01 #2 (`blazing-fist-gauntlets`; K7 adı KATALOG-1 birleşmesinden).
+- **Açık kalan**: subjugation-pendant halkaları arasındaki açık pembe bant (artık 70–110, zeminin karartılmışı değil: kurala göre nesne
+  rengi), harmonic-rapier tellerinin, springvault yaylarının ve sparkmesh alt kenarının açık pembe karışım pikselleri. ⚠ nightjudge,
+  gloomfang ve shadowpierce'in mor duman/sis parçaları zeminin tam karartılmış tonunda çizildiği için silindi (gri duman kalır); kullanıcı
+  "mor duman korunsun" dediyse bu üç kimlik `cepTemizle`'den çıkarılır.
+- Önce/sonra: `harita/belgeler/ESYA-IKON-KONTROL/katalog-cep-tasma-once-sonra.png` (13 hücre) ve `katalog-tasma-ek-once-sonra.png`
+  (kendiliğinden düzelen 4; klasör git dışı). Kusur raporu (`KATALOG-IKON-KUSUR.md`) yeni çıktılarla yeniden üretildi: kusurlu hücre 99 → 94, belirsiz satır 40 → 42.
+
+## Görev KATALOG-IKON-AKTAR-2: bütün katalog sayfaları, otomatik kusur taraması ve düzeltme sayfaları (2026-11-26; yalnız görünüm, kural/kayıt sürümü yok)
+
+- **23 sayfa içe aktarıldı**: 330 kimlik (323 hücre + 7 `ayniGorsel` kopyası), `public/esya` + `kucuk/`; ilk turun 59 ikonu bayt bayt aynı
+  çıktı. Boyut 6,53 MB (256 px ort. 16,0 KB, 96 px ort. 4,2 KB); `public/esya` toplam 15,57 MB.
+- **Hücre sayıları** (zeminden uzak piksel oranıyla otomatik): 22 sayfada manifestle aynı. tüketilebilir-02 13. hücre çay fincanı =
+  manifestin 13. öğesi `emerald-tea-brew` (uyuşmazlık yok). bekleyen-01'de Gemini 7 eşya çizdi: manifest 1–4, 6, 7 (hücre 5 kehribar taşlı
+  kemik yüzük yedek, `null`, sayfa `not`'unda).
+- **Kusur taraması** (`scripts/katalog-ikon-kusur.mjs`, hücreler gözle denetlenmedi): kenar bandında leylak/pembe (despill sonrası leylak
+  R ≈ G, B baskın; pembe somona döner), somon, bant dışı opak macenta cep, düşük alfalı sis, kaynak hücre kenarında zemin dışı piksel.
+  Eşiğin yarısı ile eşik arası "belirsiz". Sonuç `harita/belgeler/KATALOG-IKON-KUSUR.md`: 99 kusurlu hücre (116 satır), 40 belirsiz satır.
+  Kalibrasyon yalnız ilk turda yakın planla bakılan hücreler (buz/arşimag asası leylak, kutsal asa somon, yaylı bot cebi).
+- **Düzeltme sayfaları**: kusurlu 99 hücre `katalog-duzeltme-01…07` (manifest sonunda, sonraki sayfa ezer; öğede `eskiHucre`), promptlar
+  `harita/belgeler/KATALOG-IKON-DUZELTME.md`: ortak blok, "thin soft glow hugging its silhouette" satırı yerine dış parıltı/hale yasağı
+  (ışıltı yalnız silüetin içinde, zemin tek düz #FF00FF; iki satır çelişeceği için değiştirildi), hücre tarifleri eski `gorunum`.
+  Belirsizler sayfalara girmedi.
+
+## Görev KATALOG-IKON-AKTAR-1: katalog ikonlarının ilk içe aktarma turu (2026-11-26; yalnız görünüm, kural/kayıt sürümü yok)
+
+- **Katalog manifesti hedeftir** (`scripts/esya-ikon.mjs`, kullanıcı kararı): `--manifest <yol>` (varsayılan `data/esya-ikon-sayfalar.json`,
+  davranış aynı). `KATALOG_MANIFESTLER` (`data/katalog-ikon-sayfalar.json`) ve ana dışı `--manifest` kimlikleri oyun kaydı olmadan da
+  `public/esya/<kimlik>.webp` + `kucuk/` olarak yazılır; `ayniGorsel` hücresi bütün hedeflere aynı görseli kopyalar (renk ayırt sonra).
+  Kayıtsız (hiçbir manifestte hedefi olmayan) kimlik özette sayı değil tek tek uyarı.
+- **Silme**: tam çalıştırma, hiçbir manifestin (ana + katalog; bütün sayfalar var sayılarak, `beklenenDosyalar`) hedefi olmayan dosyaları
+  yalnız listeler; `--temizle` ile siler. Eskiden tam çalıştırma yazılmayan her dosyayı siliyordu (katalog dosyaları da giderdi).
+- **Ayırt aşaması** (ESYA-IKON-AYIRT) yalnız ana manifestle çalışır; katalog çalıştırmasında atlanır.
+- **Bekleyen yay**: `titanstring-longbow` → `giant-sinew-longbow` (katalog-1 `items-katalog.json` S1#40 "Dev Kirişli Yay", KATALOG-1 K7 ad
+  önerisi). Diğer beş bekleyen kimlik aynı.
+- **Macenta yaması** (Gemini'nin zemine yakın renkli dikdörtgenleri, silah-07 buz asası): macenta kipinde de yeşildeki uzaklık tabanı;
+  zemine uzaklığı 45'in altı tam saydam, 45–90 rampa (`macentaRampa`). Bağlantısız yama bileşeni bulunmadı (bileşen süzgeci zaten atıyor);
+  görünen dikdörtgenler parıltının düşük alfalı sisiydi. arti-1 bu kuralla yeniden üretildi (görsel aynı, soluk kuyruk kırpıldı).
+- **Denenip geri alınan**: izdüşüm tutmayan pikselde "en az alfa" (renk RGB küpünün sınırına uzatılır). Mavi/sarı parıltıyı düzeltiyor ama
+  beyazımsı haleyi turkuaza, +3 asa/kılıç ucunu yeşile çeviriyordu; fark matı kaldı.
+- **Açık (ilk tur raporu)**: yarı saydam parıltı macenta üstünde belirsiz (renk ile alfa ayrışmıyor): turkuaz/buz parıltısı leylak
+  (zirh-01 #12, silah-07 #3), altın hale somon (silah-07 #11), botların pembe halkası ve şimşek ışıltısı (giyilebilir-04 #5, #10),
+  kapalı küçük cepte gölgeli macenta (yay sarmalı, kayış arası, bot ağzı; giyilebilir-04 #7, #8, #10). Öneri: parıltılı eşyalarda Gemini'ye
+  "dış parıltı/hale yok, ışıltı yalnız silüetin içinde" ya da bu hücreleri yeniden üretmek.
+- Yeşil sayfalar: 39 sayfanın 550 ikonu (1100 dosya) önce/sonra bayt bayt aynı. Boyut: 59 ikon 1201,5 KB (256 px ort. 16,2 KB, 96 px
+  ort. 4,1 KB); 330 ikon ≈ 6,6 MB.
+
+## Görev ESYA-IKON-ARTI: +1/+2/+3 eşyaları Gemini ikon sayfasından; doğrulama modu daraldı (2026-11-26; yalnız görünüm, kural/kayıt sürümü yok)
+
+- **15 artı eşya** (Ammunition, Armor, Shield, Weapon, Wand of the War Mage × +1/+2/+3) artık üst kimliğin ikonunu paylaşmıyor:
+  `data/esya-ikon-sayfalar.json` son sayfası `arti-1.jpg` (5 × 3, satır = +N, Gemini çizimi; +1 sade, +2 mavi rünlü parıltı, +3 altın
+  süslemeli parıltı). Kimlikler oyun kayıtlarıyla birebir tuttu; `data/esya-ikon-ayirt.json`'da bunlara kural yok.
+- **Macenta zemin** (`scripts/esya-ikon.mjs` `zeminKipi`): köşeden okunan zemin `isMagenta` (`scripts/lib/madalyon.mjs`) ise macenta
+  kipi. Taşkın dolgu macenta fazlası (min(R, B) − G > 0) olan ve zemine uzaklığı < 200 pikselleri alır (koyu dış çizgi durdurur).
+  Alfa/renk yeşildeki uzaklık rampasıyla değil `macentaAyristir` ile: Gemini parıltısı tek renk + zemin karışımı olduğundan anahtarlı
+  piksel, anahtarlı bölgeden ≥ 3 px içerideki en yakın nesne pikselinin rengine izdüşürülür (alfa izdüşümden, renk parıltının kendisi);
+  izdüşüm tutmazsa (artık > 30) fark matı a = 1 − fazla/fazla(zemin). Bitişik 3 px'lik geçiş halkası yalnız izdüşüm tutarsa çözülür (dış
+  çizgi ve mor gövde gibi nesne renkleri olduğu gibi kalır). Despill (1, 0, 1) yönündeki fazlayı R ve B'den düşer. İlk deneme (yeşil kuralın
+  macenta aynası) +3'ün altın halesini somon-pembe bırakıyordu. Yeşil sayfalarda kod yolu değişmedi: 39 sayfanın 550 ikonu (256 + 96)
+  önce/sonra bayt bayt aynı.
+- **Hafif doğrulama modu güncellemesi** (kullanıcı kararı): her görevde typecheck + ilgili testler + build; `check:harita` yalnız harita
+  JSON'u/görseli/yükleyicisi ya da savaş çizim koduna, `check:ses` yalnız ses dosyası/motoru/`data/ses*.json`'a dokunan görevde; yalnız
+  ikon/görsel varlık/veri/doküman görevlerinde ikisi de çalıştırılmaz ve raporda "dokunulmadı" yazılır.
+
 ## Görev KARAR104-KALAN: KARAR104'ün ertelenen ve ⚠ maddeleri (2026-11-26; kural sürümü 104'e eklendi, kayıt sürümü 26)
 
 - **Kural sürümü (kullanıcı kararı):** yeni sürüm açılmadı; düzeltmeler 104'e eklendi (104 çıkalı saatler oldu, 104'te kayıtlı

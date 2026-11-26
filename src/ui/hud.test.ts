@@ -78,7 +78,8 @@ describe('parlayan hedefler', () => {
     const bor = { ...s, turnIndex: s.order.indexOf('bor') };
     const targets = attackTargets(bor, 'bor');
     expect(targets.length).toBeGreaterThan(0);
-    expect(targets.every((id) => bor.combatants[id]?.side === 'enemies')).toBe(true);
+    // Görev OYUNCU-HEDEF-DOST: dostlar da listede (onaylı); düşmanların hepsi hâlâ burada.
+    expect(targets.some((id) => bor.combatants[id]?.side === 'enemies')).toBe(true);
     const mira = { ...s, turnIndex: s.order.indexOf('mira') };
     expect(spellTargets(mira, 'mira', 'Fire Bolt').length).toBeGreaterThan(0);
     expect(spellTargets(mira, 'mira', 'Cure Wounds')).not.toContain('troll');
