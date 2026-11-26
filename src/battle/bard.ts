@@ -51,14 +51,15 @@ function perceives(state: BattleState, t: Combatant, actor: Combatant): boolean 
   return sees || hears;
 }
 
-export function inspireProblem(state: BattleState, actor: Combatant, f: UsableFeature, targetId: string | undefined): string | null {
+export function inspireProblem(state: BattleState, actor: Combatant, f: UsableFeature, targetId: string | undefined, /** Görev OYUNCU-HEDEF-DOST */ cross = false): string | null {
   const e = f.effect;
   if (e.kind !== 'inspire') return null;
   if (!payment(actor, f, state)) return `${f.name}: kullanım kalmadı.`;
   if (!targetId) return 'Bir dost seçmelisin.';
   const t = state.combatants[targetId];
   if (!t || t.id === actor.id) return 'Kendinden başka bir dost seçmelisin.';
-  if (t.side !== actor.side || t.hp <= 0) return 'Ayakta bir dost seçmelisin.';
+  // Görev OYUNCU-HEDEF-DOST: SRD "another creature within 60 feet" (onaylı karşı taraf da).
+  if ((t.side !== actor.side && !cross) || t.hp <= 0) return 'Ayakta bir dost seçmelisin.';
   if (state.map && actor.pos && t.pos && distance(actor.pos, t.pos) * 5 > e.rangeFt) return `${e.rangeFt} ft içinde olmalı.`;
   if (t.effects?.some((x) => x.inspire)) return `${t.name} zaten bir Bardic Inspiration zarı taşıyor.`;
   if (b94On(state) && !perceives(state, t, actor)) return `${t.name} seni göremiyor ve duyamıyor.`;

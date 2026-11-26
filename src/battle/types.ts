@@ -1803,7 +1803,7 @@ export type Command =
   /** Kuyruk 19: Monk 18 Superior Defense (tur başında 3 Focus). */
   | { type: 'superior_defense'; actorId: string }
   /** Kuyruk 19: Find Steed atının bonus eylemleri (Fell Glare, Fey Step, Healing Touch). */
-  | { type: 'steed_action'; actorId: string; kind: 'fell-glare' | 'fey-step' | 'healing-touch'; targetId?: string; to?: Offset }
+  | { type: 'steed_action'; actorId: string; kind: 'fell-glare' | 'fey-step' | 'healing-touch'; targetId?: string; to?: Offset; /** Görev OYUNCU-HEDEF-DOST: oyuncunun onayladığı karşı taraf hedefi (taraf filtresi aşılır; yapay zekâ vermez). */ crossSide?: true }
   /** Kuyruk 19: Alert'in Initiative Swap'ı (sıra dışı). */
   | { type: 'initiative_swap'; actorId: string; allyId: string }
   /** Kuyruk 19: oyuncunun Grapple'ı (Attack eyleminde bir saldırının yerine). */
@@ -1832,6 +1832,7 @@ export type Command =
       type: 'cast_spell'; actorId: string; spellName: string; targetId?: string; targetHex?: Offset; slotLevel?: number;
       /** Çok hedefli etki büyüsü (Bless, Bane, Heroism; Görev R2): hedefler (yoksa `targetId`). */
       targetIds?: string[];
+      /** Görev OYUNCU-HEDEF-DOST: oyuncunun onayladığı karşı taraf hedefi (taraf filtresi aşılır; yapay zekâ vermez). */ crossSide?: true;
       /** Kuyruk A8: birden çok merkezli alan (Meteor Swarm: dört nokta). Kuyruk S2: Wind Wall serbest duvar yolu. */
       targetHexes?: Offset[];
       /** Kuyruk P11 (paket `buyuSakla`): büyüyü yapmadan sakla (slot ve eylem harcanır; sonra `spell_followup` `choice: 'sakli'`). */
@@ -1903,7 +1904,7 @@ export type Command =
    */
   | { type: 'multiattack'; actorId: string; targetId: string; plan?: MultiStep[] }
   /** Kuyruk 19 (srdK19): SRD canavar yeteneği (`data/canavar-yetenekleri.json`); `option` Cunning Action/büyü seçimi. */
-  | { type: 'monster_ability'; actorId: string; abilityId: string; targetId?: string; targetHex?: Offset; option?: string }
+  | { type: 'monster_ability'; actorId: string; abilityId: string; targetId?: string; targetHex?: Offset; option?: string; /** Görev OYUNCU-HEDEF-DOST: oyuncunun onayladığı karşı taraf hedefi (taraf filtresi aşılır; yapay zekâ vermez). */ crossSide?: true }
   /**
    * İtme (Unarmed Strike'ın Shove seçeneği): Attack eylemindeki bir saldırının yerine. Hedef STR
    * ya da DEX save'i yapar; başarısızsa 5 ft itilir (`push`) ya da Prone olur (`prone`).
@@ -1928,7 +1929,7 @@ export type Command =
   /** Kuyruk 41b: Dikkat dağıt (eylem): `at` altıgenine ses; yakındaki uyanık düşmanların pasif Algısı düşer. */
   | { type: 'distract'; actorId: string; at: Offset }
   /** Kuyruk 43: sarf eşyası (iksir) kullan: kendine ya da erişimdeki dosta. */
-  | { type: 'use_item'; actorId: string; itemId: string; targetId: string }
+  | { type: 'use_item'; actorId: string; itemId: string; targetId: string; /** Görev OYUNCU-HEDEF-DOST: oyuncunun onayladığı karşı taraf hedefi (taraf filtresi aşılır; yapay zekâ vermez). */ crossSide?: true }
   /** Kuyruk K48: Moral tam modu: çökmüş dosta toparlama (eylem). */
   | { type: 'moral_rally'; actorId: string; targetId: string }
   /** Fighter: Action Surge (eylemini kullandıktan sonra bir eylem daha). */
@@ -1952,9 +1953,9 @@ export type Command =
   /** Görev DRUID: Wild Shape (bonus eylem; `form` yoksa biçimi bırak) ve Wild Resurgence (eylemsiz). */
   | { type: 'wild_shape'; actorId: string; form?: string }
   | { type: 'wild_resurgence'; actorId: string; mode: 'toShape' | 'toSlot' | 'magician'; /** Kuyruk 19: Nature Magician kullanım sayısı. */ uses?: number }
-  | { type: 'use_feature'; actorId: string; feature: string; targetId?: string; amount?: number; cure?: boolean; to?: Offset; choice?: string }
+  | { type: 'use_feature'; actorId: string; feature: string; targetId?: string; amount?: number; cure?: boolean; to?: Offset; choice?: string; /** Görev OYUNCU-HEDEF-DOST: oyuncunun onayladığı karşı taraf hedefi (taraf filtresi aşılır; yapay zekâ vermez). */ crossSide?: true }
   /** Bonus eylemle Unarmed Strike (Martial Arts) ya da Flurry of Blows'un vuruşu (Open Hand Technique seçimiyle). */
-  | { type: 'bonus_strike'; actorId: string; targetId: string; technique?: 'addle' | 'push' | 'topple' }
+  | { type: 'bonus_strike'; actorId: string; targetId: string; technique?: 'addle' | 'push' | 'topple'; /** Görev OYUNCU-HEDEF-DOST: oyuncunun onayladığı karşı taraf hedefi (taraf filtresi aşılır; yapay zekâ vermez). */ crossSide?: true }
   /** Focus ile bonus eylem (veriden: Flurry of Blows, Patient Defense, Step of the Wind). */
   | { type: 'focus_action'; actorId: string; action: string }
   /** Stunning Strike: bu tur Monk silahı ya da Unarmed Strike ile vurulan hedefe (eylemsiz, Focus harcar). */

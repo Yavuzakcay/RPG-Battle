@@ -4,6 +4,7 @@
  * yürüme ve atlama komutları zar atmadığı için motor üzerinde denenerek bulunur, saldırı
  * önizlemesi motorun menzil/siper/görüş denetimini kullanır.
  */
+import { needsWilling } from '../battle/crossSide';
 import { nesneOn } from '../battle/nesneSurum';
 import { objectWeightLb, weightClassOf } from '../battle/nesneAgirlik';
 import { climbOn, surfaceAt } from '../battle/climbing';
@@ -126,6 +127,8 @@ export interface AttackChoice {
   label: string;
   /** Yapılabilirse komut; yapılamıyorsa null ve nedeni `detail`de. */
   command: Command | null;
+  /** Görev OYUNCU-HEDEF-DOST: zararlı eylem dosta (`ally`) ya da yardım düşmana (`foe`): arayüz bir kez onay ister. */
+  cross?: 'ally' | 'foe';
   detail: string;
 }
 
@@ -173,12 +176,15 @@ export function attackChoices(state: BattleState, actorId: string, targetId: str
   // karakter hedef olabilir (SRD 5.2.1: Unconscious; Görev U).
   if (!isTargetable(target) || target.summon?.gone) return [];
   const out: AttackChoice[] = [];
-  const add = (id: string, label: string, reach: Reach, command: Command) => {
+  // Görev OYUNCU-HEDEF-DOST: dosta zararlı eylem onaylı (SRD hedefi tarafla sınırlamıyor); kendisi ve sivil hariç ayrım yok.
+  const sameSide = target.side === actor.side;
+  const add = (id: string, label: string, reach: Reach, command: Command, cross?: 'ally' | 'foe') => {
     const p = previewText(state, actor, target, reach);
-    out.push({ id, label, command: p.ok ? command : null, detail: p.text });
+    out.push({ id, label, command: p.ok ? command : null, detail: p.text, ...(cross ? { cross } : {}) });
   };
+  const hostile = sameSide ? 'ally' as const : undefined;
   actor.weaponOptions.forEach((o, i) =>
-    add(`w${i}`, o.label, optionReach(o), { type: 'attack', actorId, targetId, option: o }));
+    add(`w${i}`, o.label, optionReach(o), { type: 'attack', actorId, targetId, option: o }, hostile));
   // Görev TE99 (99+): kalkanla kullanılamayan iki elli silah kapalı, nedeniyle.
   (actor.shieldBlocked ?? []).forEach((o, i) => out.push({ id: `wb${i}`, label: o.label, command: null, detail: t().view.shieldTwoHanded }));
   actor.attacks.forEach((a, i) => {
@@ -186,11 +192,11 @@ export function attackChoices(state: BattleState, actorId: string, targetId: str
     if (state.map && a.area) return;
     const used = a.recharge !== undefined && actor.rechargeUsed.includes(i);
     if (used) out.push({ id: `m${i}`, label: a.name, command: null, detail: t().view.noRecharge });
-    else add(`m${i}`, a.name, monsterAttackReach(a), { type: 'monster_attack', actorId, targetId, attackIndex: i });
+    else add(`m${i}`, a.name, monsterAttackReach(a), { type: 'monster_attack', actorId, targetId, attackIndex: i }, hostile);
   });
   if (actor.multiattack) {
     const first = actor.attacks.find((a) => !a.recharge && a.repeat > 0);
-    if (first) add('multi', 'Multiattack', monsterAttackReach(first), { type: 'multiattack', actorId, targetId });
+    if (first) add('multi', 'Multiattack', monsterAttackReach(first), { type: 'multiattack', actorId, targetId }, hostile);
   }
   for (const name of actor.spellNames) {
     const spell = spells.find((s) => s.name === name);
@@ -198,9 +204,12 @@ export function attackChoices(state: BattleState, actorId: string, targetId: str
     if (spell.mechanics.kind === 'buff' && !spell.mechanics.ward) continue;
     // İyileştirme ve koruma (Shield of Faith) dostlara, diğerleri düşmanlara.
     const friendly = spell.mechanics.kind === 'heal' || spell.mechanics.kind === 'buff';
-    // Görev B5: büyü kaldırma (Dispel Magic, Remove Curse) iki tarafa da.
-    if (spell.mechanics.kind !== 'dispel' && (friendly ? target.side !== actor.side : target.side === actor.side)) continue;
-    add(`s-${name}`, spell.name, spellReach(spell, actor), { type: 'cast_spell', actorId, spellName: name, targetId });
+    // Görev B5: büyü kaldırma (Dispel Magic, Remove Curse) iki tarafa da. Görev OYUNCU-HEDEF-DOST: karşı taraf da (onaylı,
+    // `crossSide`); "willing creature" isteyen büyüler hariç (`data/dost-hedef.json`).
+    const crossing = spell.mechanics.kind !== 'dispel' && (friendly ? !sameSide : sameSide);
+    if (crossing && needsWilling(spell.name)) continue;
+    add(`s-${name}`, spell.name, spellReach(spell, actor), { type: 'cast_spell', actorId, spellName: name, targetId, ...(crossing ? { crossSide: true as const } : {}) },
+      crossing ? (friendly ? 'foe' : 'ally') : undefined);
   }
   return out;
 }

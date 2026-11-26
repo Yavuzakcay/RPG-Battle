@@ -48,7 +48,7 @@ import { senseSees } from './sight';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Buff, type Combatant, type UsableFeature } from './types';
 import { te99On } from './te99Surum';
 
-type UseFeature = { feature: string; targetId?: string; amount?: number; cure?: boolean; to?: Offset; choice?: string };
+type UseFeature = { feature: string; targetId?: string; amount?: number; cure?: boolean; to?: Offset; choice?: string; crossSide?: true };
 
 const spellOf = (name: string | undefined) => spells.find((s) => s.name === name);
 
@@ -86,7 +86,7 @@ export function featureProblem(state: BattleState, actor: Combatant, cmd: UseFea
   const e = f.effect;
   // Görev CLERIC: Divine Spark, Turn Undead, Preserve Life.
   if (e.kind === 'divineSpark' || e.kind === 'turnUndead' || e.kind === 'preserveLife' || e.kind === 'abjure') return clericFeatureProblem(state, actor, f, cmd);
-  if (e.kind === 'inspire') return inspireProblem(state, actor, f, cmd.targetId);
+  if (e.kind === 'inspire') return inspireProblem(state, actor, f, cmd.targetId, !!cmd.crossSide);
   if (e.kind === 'divineSense') return globalRule(state, 'featuresK19') ? null : 'Divine Sense bu kural sürümünde etkisiz.';
   if (e.kind === 'landsAid') return landsAidProblem(state, actor, f, cmd.to);
   if (e.kind === 'leash') return leashProblem(state, actor, f, cmd.targetId);

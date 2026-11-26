@@ -30,7 +30,7 @@ export function consumablesOf(c: Combatant): Array<{ id: string; name: string; c
 }
 
 /** Eşya bu hedefe kullanılabilir mi (sorun yoksa null). */
-export function useItemProblem(state: BattleState, actor: Combatant, itemId: string, targetId: string): string | null {
+export function useItemProblem(state: BattleState, actor: Combatant, itemId: string, targetId: string, /** Görev OYUNCU-HEDEF-DOST */ cross = false): string | null {
   const it = items.find((i) => i.id === itemId);
   if (!it?.use) return 'Bu eşya savaşta kullanılmaz.';
   if ((actor.consumables?.[itemId] ?? 0) <= 0) return `${it.name} kalmadı.`;
@@ -39,19 +39,21 @@ export function useItemProblem(state: BattleState, actor: Combatant, itemId: str
   const t = state.combatants[targetId];
   if (!t || t.life === 'dead' || t.summon?.gone) return 'Hedef yok.';
   if (u.kind === 'throw') {
-    if (t.side === actor.side) return 'Fırlatma bir düşmana.';
+    // Görev OYUNCU-HEDEF-DOST: onaylı dost hedefe de (SRD "a creature").
+    if (t.side === actor.side && !cross) return 'Fırlatma bir düşmana.';
     if (!isTargetable(t)) return 'Hedef alınamaz.';
     if (state.map && (!t.pos || !actor.pos || distance(t.pos, actor.pos) * 5 > u.rangeFt)) return `Hedef ${u.rangeFt} ft içinde olmalı.`;
     return null;
   }
   if (u.kind === 'coat') return t.id === actor.id ? null : 'Silahını zehirlemek için kendini seç.';
-  if (t.side !== actor.side) return 'Yalnızca kendine ya da bir dosta.';
+  // Görev OYUNCU-HEDEF-DOST: iksir "administer it to another creature" (onaylı karşı taraf da).
+  if (t.side !== actor.side && !cross) return 'Yalnızca kendine ya da bir dosta.';
   if (t.id !== actor.id && state.map && (!t.pos || !actor.pos || distance(t.pos, actor.pos) * 5 > u.reachFt)) return `Hedef ${u.reachFt} ft içinde olmalı.`;
   return null;
 }
 
-export function executeUseItem(state: BattleState, actor: Combatant, itemId: string, targetId: string, rng: Rng): CommandResult {
-  const why = useItemProblem(state, actor, itemId, targetId);
+export function executeUseItem(state: BattleState, actor: Combatant, itemId: string, targetId: string, rng: Rng, cross = false): CommandResult {
+  const why = useItemProblem(state, actor, itemId, targetId, cross);
   if (why) return fail(why);
   const it = items.find((i) => i.id === itemId)!;
   const u = it.use!;

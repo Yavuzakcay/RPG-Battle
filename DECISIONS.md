@@ -2,6 +2,34 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev OYUNCU-HEDEF-DOST: oyuncu komutunda dost (ve düşman) hedefi, genel dost ateşi (2026-11-26; kural sürümü değişmedi, kayıt sürümü 26)
+
+- **İlke (kullanıcı kararı):** oyuncu/Game Master kontrolündeki eylemde SRD hedefi tarafla sınırlamıyorsa motor taraf filtresi
+  koymaz; sonucu kural verir. Yapay zekânın hedef seçimi aynen düşmanla sınırlı.
+- **Tek kapı:** komutta isteğe bağlı `crossSide: true` (`types.ts`; `cast_spell`, `monster_ability`, `use_feature`, `bonus_strike`,
+  `use_item`, `steed_action`). Yalnız arayüz, oyuncu onaylayınca verir; yapay zekâ ve simülasyon hiç vermez. Bayraksız komut
+  birebir eski yol: **kural sürümü artırılmadı** (yalnız daha önce reddedilen komutlar açıldı, mevcut hiçbir komutun sonucu
+  değişmedi; MC dalının 105'iyle çakışma yok). Yeni olay türü yok.
+- **Kaldırılan taraf filtreleri (bayrakla; 9 yer):** canavar yetenekleri `monsterAbilities.ts` hedef seçimi (`abilityEvents`: hedefli
+  strike/save/büyü yeteneği; `pull` Reel; büyü yeteneğinde "kendi tarafına save" engeli) ve Swallow (`swallowEvents`: yakaladığı dost
+  da; yutulan düşmanla birebir: Blinded + Restrained, tam siper, asit, kaçış/kusma kuralları), Monk bonus vuruşu (`martial.ts`),
+  fırlatılan eşya ve dosta/düşmana iksir (`items.ts`, SRD "administer it to another creature"), Fell Glare (`steed.ts`, "one creature"),
+  Bardic Inspiration (`bard.ts`, "another creature"), büyü verisindeki `side: ally|enemy` (`spells.ts`: Bane/Command/Charm Person
+  dosta; Bless/Aid/Shield of Faith/Magic Weapon düşmana), iyileştirme dışı onarım büyüleri (Lesser/Greater Restoration, Revivify).
+  Saldırı, Multiattack, yan el saldırısı, yakalama ve itme motorda zaten tarafsızdı (yalnız arayüz listesi süzüyordu).
+- **Tarafla sınırlı kalanlar (gerekçe):** "willing creature" isteyen 23 büyü (`data/dost-hedef.json` `rizali`: Guidance, Resistance,
+  Mage Armor, Barkskin, Haste, Fly, Heroism…; SRD metninden; rıza modeli yok), binme (`mounted.ts` "willing creature"), Alert
+  inisiyatif takası ("willing ally"), Pact of the Chain, Teleport/Dimension Door'un götürdükleri (istekli), Help (SRD "an enemy within
+  5 feet"), Ready tetiği (A24 bilinçli sapma: tetikleyen düşman), alan büyüleri ve canavar alanları (zaten herkesi vurur; dost ateşi
+  hesabı aynen), ev kuralları ve paket verisi (Karadul, Celestial Şifa Eli, Moral toparlama, imza ve paket `hedef: dusman|dost`
+  ilkelleri, Leash: hedef tanımı içeriğin kendisinde), harita kuralları (bataklıktan müttefik çekme, ejderha uyandırma).
+- **Arayüz:** hedef listeleri tarafsız (Saldır kipi `attackTargets`, bonus vuruş, yan el, itme, eşya, özellik seçimi `pick`, çoklu
+  hedef etki büyüsü `effectTargets`; motorda kuru çalıştırılarak, `ui/crossTarget.ts` `crossProbe`: düz ya da yalnız `crossSide` ile).
+  Onay: dosta zararlı tek hedefli eylem/büyü ya da yalnız bayrakla olan karşı taraf hedefi ilk dokunuşta "Dost hedef: devam?" /
+  "Düşman hedef: devam?" bildirimi, ikinci dokunuş uygular (`MapBattle.tsx` `confirmCross`; hedef balonu, seçim kipleri, canavar
+  yeteneği menüsü, etki büyüsü). Önizleme kartının dost ateşi işareti aynen. Alan büyülerinde değişiklik yok.
+- **Doğrulama:** `src/battle/oyuncuHedefDost.test.ts` (Giant Toad/Frog yutması dosta, asit, Blinded/Restrained, yapay zekâ yutmaz,
+  Wolf Bite Prone, Elephant Trample, Fire Breath alanı, eşya/büyü bayraksız red–onaylı kabul, Haste ve Help sınırlı, arayüz seçenekleri).
 ## Görev KATALOG-1 D: 45 özgün yüzük/tılsım/mühür taşı + Kaltakkıran taşları ve Mühür (2026-11-26; kural sürümü ve kayıt sürümü değişmedi)
 
 Kaynak: Yüzük ve Tılsım Kataloğu #1–45 (`YT#`: 18 yüzük, 15 tılsım, 9 mühür taşı, 3 zanaat eklentisi); Kaltakkıran paketi: Çatlak Element
