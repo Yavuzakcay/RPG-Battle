@@ -99,7 +99,7 @@ Doğrulananlar (regresyon notu): tablo (cantrip, hazırlanan, slot, Wild Shape s
 | A20 | Circle Spells: arid/polar/temperate/tropical, 3/5/7/9, her zaman hazır (s. 46) | Fikstürde seçenek başına `alwaysPrepared` (cantrip dahil); probe tropical 3/5/7/9 ve varsayılan Temperate SRD tablosuyla aynı | tam | probe; `srd-alt-siniflar.json:356–460` | DECISIONS 5802, 4540 |
 | A21 | Land's Aid (3.): Magic eylemi, Wild Shape kullanımı, 60 ft içinde nokta, 10 ft küre, **seçtiğin** yaratıklar CON save, 2d6 Necrotic (başarıda yarı; 10: 3d6, 14: 4d6) (s. 46) | Eylem + `wildShape` −1; 60 ft menzil denetimi; küredeki **düşmanlar** save (dost zarar görmez); zar 2/3/4 | tam | `druid.ts:214–253`; `druid.test.ts:150` (düşman save'li Necrotic, dost save atmaz) | DECISIONS 5802 |
 | A22 | Land's Aid: alandaki **bir** yaratık 2d6 HP geri kazanır (0 HP'deki dahil) (s. 46) | Yalnız `hp > 0` olanlar sayılıyor: **0 HP'deki dost hiç iyileşmiyor** (probe: C 0/30 → iyileştirme olayı yok, HP 0) | **düzeldi (B94)** ← kısmi **[hata, YENİ]** | probe; `druid.ts:236` `living = ... c.hp > 0` | — |
-| A23 | Land's Aid: iyileşen yaratığı oyuncu seçer (s. 46) | En yaralı dost otomatik (kendisi dahil) | bilinçli sapma | `druid.ts:246` | DECISIONS 5802 ("oyunda düşmanlar ve en yaralı dost") |
+| A23 | Land's Aid: iyileşen yaratığı oyuncu seçer (s. 46) | En yaralı dost otomatik (kendisi dahil) | bilinçli sapma → **kapandı (104, DECISIONS KARAR104 A5)** | `druid.ts:246` | DECISIONS 5802 ("oyunda düşmanlar ve en yaralı dost") |
 | A24 | Natural Recovery (6.), kısa dinlenme: toplamı ⌈seviye/2⌉ olan slotlar, 6+ yok, Long Rest'te bir kez (s. 46) | `arcaneRecovery(..., 'naturalRecovery')` (aynı bütçe), en yüksek slottan; kaynak 0'lanır, uzun dinlenmede döner; Serüven kısa dinlenmesi aynı fonksiyon | tam | `characterRest.ts:118,170–180`; `druid.test.ts:160` (6. seviye: bir 3. seviye slot) | DECISIONS 5802 |
 | A25 | Natural Recovery: hangi slotların döneceğini oyuncu seçer; kullanmak isteğe bağlı (s. 46) | Otomatik, en yüksek slottan; eksik slot varsa ilk kısa dinlenme hakkı yakar (seçim/erteleme yok) | bilinçli sapma (bilinen) | `characterRest.ts:114–118` | Wizard C2 ile ortak **[bilinen]** |
 | A26 | Natural Recovery: **Circle Spells'ten** hazır bir 1+ seviye büyü slotsuz, Long Rest'te bir kez (s. 46) | Kaynak `naturalRecoveryCast`: `freeSpellList.names` = **dört arazinin hepsinin** büyüleri; bilinen (hazır) herhangi bir eşleşen büyü slotsuz yapılabiliyor. Probe: Temperate Druid 9 sv, sıradan hazırladığı Fog Cloud ve Hold Person (Polar listesi) `freeSpells`'e bağlandı | **düzeldi (B94)** ← kısmi **[hata, YENİ]** | probe: `freeSpells` {Fog Cloud, Hold Person, Misty Step, Sleep, Lightning Bolt, Freedom of Movement, Tree Stride → naturalRecoveryCast}; `class-features.json:559–585`, `create.ts:335–356` | DECISIONS 4540 ("hazırlanmış bir daire büyüsü") |
@@ -155,7 +155,7 @@ Sıra etkiye göre. "Sürüm" sütunundaki "güncel sürümün bir fazlası, tek
 | 6 | **Potent/Improved Potent yalnız Druid listesindeki cantrip'e** (A9, A14): `spell.classes` ∋ `Drd` süzgeci (aynı satır Cleric'te `Clr`) | Düşük | güncel sürümün bir fazlası, tek sabit | 1 saat |
 | 7 | **Beast Spells maliyetli/tüketilen Material'lı büyüyü hariç tutsun** (A16): büyü `components` metninden "worth … GP" / "consumes" ayrıştırması; oyunda bileşen takibi yok, yalnız bu kapı için | Düşük-orta (18+ seviye) | güncel sürümün bir fazlası, tek sabit | 2–3 saat + veri taraması |
 | 8 | **YZ: Land's Aid, Wild Resurgence, Nature's Sanctuary, Wild Companion** (D2): basit sezgiler (≥2 düşman kümesi / 0 HP'li dost / Wild Shape yok + slot var) | Orta (Druid'li YZ partileri) | YZ kararı; sim imzasını değiştirir, denge ölçümü gerekir | 4–6 saat |
-| 9 | Land's Aid iyileştirilecek yaratık ve Wild Resurgence slot seçimi arayüzü (A7, A23) | Düşük | sürümsüz (komutta isteğe bağlı alan) | 3 saat |
+| 9 | Land's Aid iyileştirilecek yaratık ve Wild Resurgence slot seçimi arayüzü (A7, A23) | Düşük — Land's Aid kısmı **kapandı (104, KARAR104 A5)**; Wild Resurgence slot seçimi açık | sürümsüz (komutta isteğe bağlı alan) | 3 saat |
 | 10 | E: EN özetleri (Primal Order, Elemental Fury, Improved, Archdruid), TR Archdruid'e Nature Magician, SD2/SD4 isim netliği, başlangıç ekipmanı (Sickle) (E1, E2, B3) | Düşük | sürümsüz | 1–2 saat |
 | 11 | Test boşlukları (probe'lar kalıcı teste): Land's Aid 0 HP, Natural Recovery listesi, Wild Companion türü, OA'da Primal Strike, Sanctuary Incapacitated, Beast Spells 17/18, Evergreen, Nature Magician, B11 sayım, C8/C9 kaydet-yükle | — | — | 2 saat |
 
@@ -193,3 +193,9 @@ Görev B98 (2026-11-20; kural sürümü 98 `B98_VERSION`, 97 ve altı eski davra
 |---|---|---|
 | B8 / B2 | Ertelendi: Magician'ın Arcana/Nature bonusu ve alet yetkinliği; beceri/alet kontrol sistemi yok, savaşsız dungeon fikriyle birlikte | — |
 | E1 | Düzeldi: TR menü adları SRD İngilizce (Land's Aid, Nature's Sanctuary, Wild Resurgence, Nature Magician, Wild Shape; SD4) | sürümsüz |
+
+## KARAR104 / KARAR104-KALAN (kural sürümü 104; 2026-11-26 belge güncellemesi)
+
+Kod okunarak doğrulandı (`karar104On` kapısı; 103 ve altı eski davranış). Test çalıştırılmadı.
+
+- **A23 Land's Aid seçimleri** (DECISIONS KARAR104 A5, sürüm 104): save atacak yaratıklar (`askPicks`, öneri düşmanlar; dost da seçilebilir, SRD "of your choice") ve iyileşecek tek yaratık (`askChoice`, öneri en yaralı dost, 0 HP'deki dahil B94) oyuncuya sorulur (`druid.ts` Land's Aid dalı). Özel test yok (`askPicks` genel testi `karar104.test.ts`). Wild Resurgence slot seçimi (A7) bu görevde değişmedi.

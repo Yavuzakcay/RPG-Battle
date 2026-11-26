@@ -102,7 +102,7 @@ Tarih: 2026-11-20. Yalnız denetim: kod, veri ve test değişmedi. Güncel kural
 | A34 | Wholeness of Body (fikstür): MA zarı + WIS, en az 1 HP | Bonus eylem, kullanım WIS (en az 1); WIS negatifken eklenmiyor: WIS −1, zar 4 → 4 HP (fikstür metni 3) | kısmi **[YENİ]** | probe; `divine.ts:176-185`; fikstür `:723` (`min: 0`) | 4745 |
 | A35 | Fleet Step (fikstür notu): başka bonus eylemden sonra SotW bonus eylemsiz, turda bir, Focus harcanır | Aynen (probe: Focus 11 → 10); Focus'suz Dash bu yoldan yok (fikstür notuyla uyumlu) | tam | probe; `economy.ts:324-327`; `k19tier4b.test.ts:87` | 4602 |
 | A36 | Quivering Palm (fikstür): **Unarmed Strike** isabetinde 4 FP | Monk silahı isabeti de kabul ediliyor (Quarterstaff → titreşim) | kısmi **[YENİ, hata]** | probe; `apex.ts:83-86, 181-190` | 4602 |
-| A37 | Titreşimi bitirmek: Attack eyleminde bir saldırının yerine | Eylem olarak (fikstür notu da öyle) | bilinçli sapma **[bilinen]** | `apex.ts:67`; fikstür `:767` | 4602 |
+| A37 | Titreşimi bitirmek: Attack eyleminde bir saldırının yerine | Eylem olarak (fikstür notu da öyle) | bilinçli sapma **[bilinen]** → **kapandı (104, DECISIONS KARAR104-KALAN A6)** | `apex.ts:67`; fikstür `:767` | 4602 |
 | A38 | Stunning Strike başkasının turundaki isabette (fırsat saldırısı) | Komut ve arayüz yalnız kendi turunda; motorun fırsat saldırısında `meleeHit` yazıp yazmadığı çalıştırılmadı | doğrulanmadı | — | — |
 
 ## B) Oluşturucu ve seviye atlama
@@ -196,3 +196,9 @@ Probe'larla denenip **doğru** bulunan davranışlar (regresyon için not): Mart
 - Test: `src/battle/b95monk.test.ts`.
 
 **C) Ertelendi, karar gerekli.** Monk silahı dışında silah taşırken bonus vuruş modeli (SRD 5.2.1 s. 50 Martial Arts); yapay zekânın Patient Defense, Step of the Wind (s. 50), Wholeness of Body, Superior Defense (s. 52) ve Quivering Palm (bizim alt sınıf) kullanması (YZ davranışı denge değiştirir, denge turuna kalır).
+
+## KARAR104 / KARAR104-KALAN (kural sürümü 104; 2026-11-26 belge güncellemesi)
+
+Kod okunarak doğrulandı (`karar104On` kapısı; 103 ve altı eski davranış). Test çalıştırılmadı.
+
+- **A37 Quivering Palm vazgeçme** (DECISIONS KARAR104-KALAN A6, sürüm 104): titreşimi bitirmek Attack eyleminin bir saldırısı (`economy.ts`; `use_feature` `choice: 'end'`, `apex.ts` `palmEnding`); isabet turunda da bitirilebilir. Test `src/battle/karar104.test.ts` "Quivering Palm: 104 Attack eyleminde bir saldırıdan vazgeçerek bitirilir". D6 (yapay zekâ kullanmaz) açık kalır.

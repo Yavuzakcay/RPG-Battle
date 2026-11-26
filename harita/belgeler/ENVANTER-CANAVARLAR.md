@@ -1,3 +1,5 @@
+> Tarihsel: güncel durum için harita/belgeler/SRD-KAPSAM-OZET.md (gövde A0, sürüm 27; "A2'de kalan" satırları 104'e dek işlendi)
+
 # Envanter: canavarlar
 
 > A0 envanter denetimi (2026-11-05, dal `wip/a0`, kural sürümü 27). Salt-okunur: oyun kodu, veri ve testler değişmedi. Yoklama betikleri repo dışında çalıştırıldı.
@@ -98,14 +100,14 @@ Hiç bağlanmayanlar (yeni sistem gerektirir ya da savaş dışı):
 | stirge:Proboscis | yapışma (attach) sistemi yok: yapışık kalıp her tur hasar, eylemle sökme (104: uygulandı, KARAR104 A2 `attach.ts`) | orta |
 | sprite:Heart Sight | savaş dışı (duygu/hizalanma bilgisi) | savaş dışı |
 | darkmantle:Crush | yapışma (attach) sistemi yok: hedefe yapışıp birlikte hareket, avantajla örtme (104: uygulandı, KARAR104 A2 `attach.ts`) | orta |
-| wererat:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (yeni sistem) (104: lanet işareti, KARAR104 A4; dönüşme yok) | büyük |
-| werewolf:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (104: lanet işareti, KARAR104 A4; dönüşme yok) | büyük |
+| wererat:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (yeni sistem) (104: lanet işareti, KARAR104 A4; 0 HP'de Game Master'ın tarafında 10 HP'li canavara dönüşme KARAR104-KALAN, `lycanthrope.ts`) | ~~büyük~~ kapandı (104) |
+| werewolf:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (104: lanet işareti, KARAR104 A4; 0 HP'de Game Master'ın tarafında 10 HP'li canavara dönüşme KARAR104-KALAN, `lycanthrope.ts`) | ~~büyük~~ kapandı (104) |
 | ghost:Possession | **Kuyruk K64a (sürüm 48) uygulandı**: `src/battle/possession.ts`, `data/ele-gecirme.json` (Game Master anahtarı `possession`) | tamam |
 | incubus:Restless Touch | savaş dışı (kısa dinlenme yararı yok) | savaş dışı |
-| wereboar:Gore | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (104: lanet işareti, KARAR104 A4; dönüşme yok) | büyük |
-| weretiger:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (104: lanet işareti, KARAR104 A4; dönüşme yok) | büyük |
+| wereboar:Gore | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (104: lanet işareti, KARAR104 A4; 0 HP'de Game Master'ın tarafında 10 HP'li canavara dönüşme KARAR104-KALAN, `lycanthrope.ts`) | ~~büyük~~ kapandı (104) |
+| weretiger:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (104: lanet işareti, KARAR104 A4; 0 HP'de Game Master'ın tarafında 10 HP'li canavara dönüşme KARAR104-KALAN, `lycanthrope.ts`) | ~~büyük~~ kapandı (104) |
 | barbed-devil:Hurl Flame | yalnızca giyilmeyen yanıcı nesneye; canavar saldırısı nesne hedeflemez | küçük |
-| werebear:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (104: lanet işareti, KARAR104 A4; dönüşme yok) | büyük |
+| werebear:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (104: lanet işareti, KARAR104 A4; 0 HP'de Game Master'ın tarafında 10 HP'li canavara dönüşme KARAR104-KALAN, `lycanthrope.ts`) | ~~büyük~~ kapandı (104) |
 | cloaker:Attach | yapışma (attach) sistemi yok: hasar paylaşımı, birlikte hareket (104: uygulandı, KARAR104 A2 `attach.ts`) | orta |
 | aboleth:Dominate Mind | kalıcı zihin kontrolü + telepati (allegianceSwap bağlantısı ayrı iş; ölüm/uzaklık koşulu) | büyük |
 | horned-devil:Hurl Flame | yalnızca giyilmeyen yanıcı nesneye; canavar saldırısı nesne hedeflemez | küçük |

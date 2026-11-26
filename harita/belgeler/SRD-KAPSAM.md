@@ -1,5 +1,7 @@
 # SRD 5.2.1 kapsam denetimi (SRD ↔ oyun)
 
+> Güncel özet için SRD-KAPSAM-OZET.md; bu belge sürüm 103 tabanıdır.
+
 Tarih: 2026-11-21 · Taban: `origin/birlesik` 9e8e2ce4 · Kural sürümü 99. **Yalnız okuma:** kod, veri ve test değişmedi; depoya yalnız bu belge girdi. Belge depo dışındaki bir tarama betiğiyle üretildi (SRD verisi × oyun verisi × test dosyaları × mevcut denetim belgeleri); elle düzenlenmiş bir tablo değildir, yeniden üretilirken değerler değişebilir.
 
 **Amaç:** SRD 5.2.1'de olup oyunda hiç olmayan ya da eksik kalan her şeyi bulmak. Bölümler SRD'nin içindekiler sırasıyla: oynama kuralları (s. 5–18), karakter oluşturma (s. 19–27), 12 sınıf ve SRD alt sınıfları (s. 28–82), geçmişler ve türler (s. 83–86), feat'ler (s. 87–88), donanım (s. 89–103), büyüler (s. 104–175), kural sözlüğü (s. 176–191), oyun araç kutusu (s. 192–203), sihirli eşyalar (s. 204–253), canavarlar (s. 254–343) ve hayvanlar (s. 344–364). Sayfa numaraları PDF'teki basılı numaradır.
