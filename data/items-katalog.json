@@ -6435,6 +6435,3076 @@
     "riskler": "Asit bağışıklığı olan yaratıklar çürük hasarından etkilenmez; İğne Hücumu düz hat gerektirir.",
     "kimlerKullanamaz": "Uyum yapmayan karakter Kızıl Çürük ve İğne Hücumu gücünü açamaz; Martial silah yetkinliği olmayan yetkinlik bonusunu ekleyemez."
    }
+  },
+  {
+   "id": "ravenwing-leather",
+   "name": "Ravenwing Leather",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Koyu tüy işlemeli efsanevi çivili deri zırh: inisiyatifi ve gizliliği yükseltir, yüksek zeminden menzilli hasarı artırır ve kısa süreli uçuş kanatları açabilir.",
+   "weight": 12.0,
+   "effects": {
+    "armorAcBonus": 2
+   },
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "zarEtkisi",
+      "tetik": "pasif",
+      "inisiyatifBonusu": 2
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "ZK#1",
+    "tr": "Kuzgun Kanadı Derisi",
+    "nadirlik": "efsanevi",
+    "tur": "zirh",
+    "yuva": "hafif",
+    "fiyatGp": 22000,
+    "taban": "Studded Leather Armor",
+    "bonus": "AC: 14 + DEX",
+    "ozet": "Koyu tüy işlemeli efsanevi çivili deri zırh: inisiyatifi ve gizliliği yükseltir, yüksek zeminden menzilli hasarı artırır ve kısa süreli uçuş kanatları açabilir.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 14 + DEX değiştiricisidir.",
+      "durum": "calisir",
+      "not": "Studded Leather Armor giyilmeli (taban 12 + sihirli +2); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Giyildiğinde inisiyatif zarlarına +2 bonus ve Stealth kontrollerinde avantaj kazanırsın.",
+      "durum": "kismi",
+      "not": "inisiyatif +2 çalışır; Stealth avantajı yok (beceri düzeyinde avantaj kancası)"
+     },
+     {
+      "ad": "Yüksek Avcı",
+      "metin": "Hedeften en az 10 ft daha yüksek bir zemindeyken yaptığın menzilli saldırılara turda bir kez ek 1d4 delici hasarı eklenir.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Kuzgun Kanadı (2 yük, UD 1d2)",
+      "metin": "Bonus eylemle 1 yük harcayarak 5 tur boyunca yürüme hızın kadar uçuş hızı (Fly) kazanırsın (konsantrasyon gerekmez).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Uçuş süresi havadayken biterse veya Prone/Incapacitated olunursa düşme hasarı kuralı uygulanır; tavanlı iç mekânlarda yükselme tavanla sınırlıdır.",
+    "kimlerKullanamaz": "Hafif zırh eğitimi olmayan karakter STR/DEX d20 testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan büyülü özellikleri açamaz."
+   }
+  },
+  {
+   "id": "mossmantle-armor",
+   "name": "Mossmantle Armor",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Canlı orman yosunuyla örülü çivili deri zırh: büyü odağını ve büyü DC'sini güçlendirir, bitki zemininde can yeniler ve Plant Growth alanı açabilir.",
+   "weight": 13.0,
+   "effects": {
+    "armorAcBonus": 1
+   },
+   "passive": {
+    "saveAdv": [
+     "con"
+    ]
+   },
+   "spells": [
+    {
+     "name": "Plant Growth",
+     "level": 3
+    }
+   ],
+   "charges": 1,
+   "recharge": "all",
+   "katalog": {
+    "ref": "ZK#2",
+    "tr": "Yosun Örtüsü Zırhı",
+    "nadirlik": "cokNadir",
+    "tur": "zirh",
+    "yuva": "hafif",
+    "fiyatGp": 7400,
+    "taban": "Studded Leather Armor",
+    "bonus": "AC: 13 + DEX",
+    "ozet": "Canlı orman yosunuyla örülü çivili deri zırh: büyü odağını ve büyü DC'sini güçlendirir, bitki zemininde can yeniler ve Plant Growth alanı açabilir.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 13 + DEX değiştiricisidir.",
+      "durum": "calisir",
+      "not": "Studded Leather Armor giyilmeli (taban 12 + sihirli +1); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "CON kurtarma zarlarında (konsantrasyon dahil) avantaj ve büyü kurtarma zarı DC'sine +1 bonus verir.",
+      "durum": "kismi",
+      "not": "CON kurtarma avantajı (konsantrasyon dahil) çalışır; yalnız büyü DC'sine +1 (saldırıya değil) kancası yok"
+     },
+     {
+      "ad": "Yeşil Kök",
+      "metin": "Çalılık veya bitkisel büyü alanı (Entangle, Plant Growth, Spike Growth) altıgeninde turuna başladığında 1d4 can iyileşirsin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Sarmaşık Yayılımı (1 yük, UD)",
+      "metin": "Eylemle 3. seviye Plant Growth yaparsın (dost altıgenleri hariç tutulabilir).",
+      "durum": "calisir",
+      "not": "3. seviye Plant Growth slotsuz; dost altıgenleri Plant Growth'un hariç tutma seçimiyle"
+     }
+    ],
+    "riskler": "Kuru ve yanıcı bitkisel yüzeyler ateş büyüsüyle tutuşursa Yeşil Kök iyileşmesi durur ve alev hasarı başlar.",
+    "kimlerKullanamaz": "Hafif zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan büyülü özellikleri açamaz."
+   }
+  },
+  {
+   "id": "moonshift-hide",
+   "name": "Moonshift Hide",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Biçim değiştiren druid'ler için işlenmiş ay derisi: Wild Shape'e girildiğinde yüksek geçici can, biçim içi +1 AC ve büyü kurtarma avantajı kazandırır.",
+   "weight": 10.0,
+   "effects": {},
+   "katalog": {
+    "ref": "ZK#3",
+    "tr": "Ay Biçimi Derisi",
+    "nadirlik": "cokNadir",
+    "tur": "zirh",
+    "yuva": "hafif",
+    "uyumKosulu": "Druid",
+    "fiyatGp": 6800,
+    "taban": "Studded Leather Armor",
+    "bonus": "AC: 12 + DEX",
+    "ozet": "Biçim değiştiren druid'ler için işlenmiş ay derisi: Wild Shape'e girildiğinde yüksek geçici can, biçim içi +1 AC ve büyü kurtarma avantajı kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 12 + DEX değiştiricisidir.",
+      "durum": "calisir",
+      "not": "Studded Leather Armor giyilmeli (taban 12 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Ay Koruması",
+      "metin": "Wild Shape ile hayvan biçimine girdiğinde normal geçici can yerine en az 18 geçici can kazanırsın (seviyen daha yüksekse kendi değerin geçerlidir); bu geçici can sürdüğü sürece biçiminin AC'si +1 artar, gelen hasar 1 azalır ve büyülere karşı kurtarma zarlarında avantaj alırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Biçim içi koruma bonusu yalnızca geçici can sıfırlanana kadar sürer; insan biçiminde zırh yalnız 12 + DEX savunma sunar.",
+    "kimlerKullanamaz": "Wild Shape özelliği olmayan karakterler uyum yapamaz; hafif zırh eğitimi olmayan ceza alır."
+   }
+  },
+  {
+   "id": "sporewarden-leather",
+   "name": "Sporewarden Leather",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Yeraltı mantar keseleriyle donatılmış çivili deri zırh: nekrotik direnci ile +1 büyü DC sağlar ve bonus eylemle zehirli veya hızlandırıcı spor bulutu salar.",
+   "weight": 12.0,
+   "effects": {
+    "armorAcBonus": 1
+   },
+   "passive": {
+    "resist": [
+     "necrotic"
+    ]
+   },
+   "katalog": {
+    "ref": "ZK#4",
+    "tr": "Spor Bekçisi Derisi",
+    "nadirlik": "cokNadir",
+    "tur": "zirh",
+    "yuva": "hafif",
+    "fiyatGp": 7100,
+    "taban": "Studded Leather Armor",
+    "bonus": "AC: 13 + DEX",
+    "ozet": "Yeraltı mantar keseleriyle donatılmış çivili deri zırh: nekrotik direnci ile +1 büyü DC sağlar ve bonus eylemle zehirli veya hızlandırıcı spor bulutu salar.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 13 + DEX değiştiricisidir.",
+      "durum": "calisir",
+      "not": "Studded Leather Armor giyilmeli (taban 12 + sihirli +1); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Nekrotik hasarına direnç ve büyü kurtarma zarı DC'sine +1 bonus verir.",
+      "durum": "kismi",
+      "not": "nekrotik direnci çalışır; yalnız büyü DC'sine +1 kancası yok"
+     },
+     {
+      "ad": "Spor Kesesi (2 yük, UD 1d2)",
+      "metin": "Bonus eylemle 1 yük harcayarak 15 ft içindeki bir noktada 10 ft yarıçapında 2 tur süren iki buluttan birini açarsın — Boğucu Spor: zehir bulutu yüzeyi (DC 15 CON, 2d6 zehir hasarı + Poisoned); Canlandıran Spor: alandan geçen veya orada başlayan dostlara o turun sonuna kadar +10 ft hız ve saldırı zarlarına +1d4.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Boğucu Spor bulutu dostları da etkiler ve rüzgârlı haritalarda sürüklenebilir; zehir bağışıkları etkilenmez.",
+    "kimlerKullanamaz": "Hafif zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan spor kesesini açamaz."
+   }
+  },
+  {
+   "id": "crimson-stalker-leather",
+   "name": "Crimson Stalker Leather",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Yakın dövüş suikastçıları için dikilmiş keskin zırh: inisiyatif bonusu verir ve 5 ft içindeki düşmanların delici darbelere karşı savunmasını açar.",
+   "weight": 12.0,
+   "effects": {
+    "armorAcBonus": 1
+   },
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "zarEtkisi",
+      "tetik": "pasif",
+      "inisiyatifBonusu": 2
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "ZK#5",
+    "tr": "Kızıl Suikastçı Derisi",
+    "nadirlik": "cokNadir",
+    "tur": "zirh",
+    "yuva": "hafif",
+    "fiyatGp": 7600,
+    "taban": "Studded Leather Armor",
+    "bonus": "AC: 13 + DEX",
+    "ozet": "Yakın dövüş suikastçıları için dikilmiş keskin zırh: inisiyatif bonusu verir ve 5 ft içindeki düşmanların delici darbelere karşı savunmasını açar.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 13 + DEX değiştiricisidir.",
+      "durum": "calisir",
+      "not": "Studded Leather Armor giyilmeli (taban 12 + sihirli +1); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "İnisiyatif zarlarına +2 bonus kazanırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Zayıf Nokta Aurası",
+      "metin": "Sana 5 ft (bitişik altıgen) mesafedeki düşmanlara yapılan delici silah saldırıları (senin veya dostlarının) hedef başına turda bir kez ek 1d6 delici hasarı verir ve delici direncini yok sayar.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Zayıf Nokta Aurası kullanıcıyı düşmanla bitişik durmaya zorlar; düşük HP'li hafif zırhlı karakter için cephe riski taşır.",
+    "kimlerKullanamaz": "Hafif zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan aurayı açamaz."
+   }
+  },
+  {
+   "id": "twilight-leather",
+   "name": "Twilight Leather",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Gece keşifleri ve gölge haritaları için boyanmış deri zırh: loş ve karanlık altıgenlerde gizliliği ve bütün kurtarma zarlarını güçlendirir.",
+   "weight": 11.0,
+   "effects": {},
+   "katalog": {
+    "ref": "ZK#6",
+    "tr": "Alacakaranlık Derisi",
+    "nadirlik": "nadir",
+    "tur": "zirh",
+    "yuva": "hafif",
+    "fiyatGp": 1500,
+    "taban": "Studded Leather Armor",
+    "bonus": "AC: 12 + DEX",
+    "ozet": "Gece keşifleri ve gölge haritaları için boyanmış deri zırh: loş ve karanlık altıgenlerde gizliliği ve bütün kurtarma zarlarını güçlendirir.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 12 + DEX değiştiricisidir.",
+      "durum": "calisir",
+      "not": "Studded Leather Armor giyilmeli (taban 12 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Stealth kontrollerine her koşulda +1 bonus verir.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Gölge Koruması",
+      "metin": "Loş veya karanlık ışık düzeyindeki bir altıgende dururken Stealth bonusun +3'e çıkar ve bütün kurtarma zarlarına +1 bonus alırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Gündüz açık alanlarında veya meşale/Daylight ışığı altında Gölge Koruması devre dışı kalır.",
+    "kimlerKullanamaz": "Hafif zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan Gölge Koruması'nı alamaz."
+   }
+  },
+  {
+   "id": "spidersilk-armor",
+   "name": "Spidersilk Armor",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Yeraltı örümcek ipeğinden dokunmuş hafif zırh: konsantrasyon kurtarma zarlarında avantaj, gizlilik bonusu ve örümcek ağında serbest hareket sağlar.",
+   "weight": 10.0,
+   "effects": {},
+   "passive": {
+    "saveAdv": [
+     "con"
+    ],
+    "webWalker": true
+   },
+   "katalog": {
+    "ref": "ZK#7",
+    "tr": "Örümcek İpeği Zırhı",
+    "nadirlik": "nadir",
+    "tur": "zirh",
+    "yuva": "hafif",
+    "fiyatGp": 1450,
+    "taban": "Studded Leather Armor",
+    "bonus": "AC: 12 + DEX",
+    "ozet": "Yeraltı örümcek ipeğinden dokunmuş hafif zırh: konsantrasyon kurtarma zarlarında avantaj, gizlilik bonusu ve örümcek ağında serbest hareket sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 12 + DEX değiştiricisidir.",
+      "durum": "calisir",
+      "not": "Studded Leather Armor giyilmeli (taban 12 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Giydiğin sürece CON kurtarma zarlarında avantaj kazanırsın, Stealth kontrollerine +1 eklersin ve örümcek ağı (Web) yüzeyleri sana zorlu arazi sayılmaz (Restrained etmez).",
+      "durum": "kismi",
+      "not": "CON kurtarma avantajı ve Web Walker (ağ zorlu arazi değil, Restrained etmez) çalışır; Stealth +1 yok"
+     }
+    ],
+    "riskler": "İpek dokusu ateş hasarına karşı ek direnç sağlamaz; temel AC değeri standart çivili deri düzeyindedir.",
+    "kimlerKullanamaz": "Hafif zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz."
+   }
+  },
+  {
+   "id": "corsair-captains-coat",
+   "name": "Corsair Captain's Coat",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Gösterişli denizci kaptan ceketi: ölümcül darbede kullanıcıyı bir kez ayakta tutar ve yakındaki düşmanları kısa süreliğine büyüleyebilir.",
+   "weight": 11.0,
+   "effects": {},
+   "katalog": {
+    "ref": "ZK#8",
+    "tr": "Korsan Kaptanı Ceketi",
+    "nadirlik": "nadir",
+    "tur": "zirh",
+    "yuva": "hafif",
+    "fiyatGp": 1800,
+    "taban": "Studded Leather Armor",
+    "bonus": "AC: 12 + DEX",
+    "ozet": "Gösterişli denizci kaptan ceketi: ölümcül darbede kullanıcıyı bir kez ayakta tutar ve yakındaki düşmanları kısa süreliğine büyüleyebilir.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 12 + DEX değiştiricisidir.",
+      "durum": "calisir",
+      "not": "Studded Leather Armor giyilmeli (taban 12 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Persuasion kontrollerine +1 bonus verir.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "İnatçı Kaptan (1 yük, UD)",
+      "metin": "0 HP'ye düşecekken düşmek yerine 1 HP'de kalır ve 8 geçici can kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Kaptanın Emri (1 yük, UD)",
+      "metin": "Bonus eylemle 10 ft içindeki seçtiğin en fazla 2 düşmana DC 14 WIS kurtarma zarı attırırsın; geçemeyen 1 tur Charmed olur.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "İnatçı Kaptan anında ölüm (ör. lav düşüşü veya Power Word Kill) durumlarını önlemez; Charmed dost hasarıyla bozulur.",
+    "kimlerKullanamaz": "Hafif zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan aktif güçleri kullanamaz."
+   }
+  },
+  {
+   "id": "minstrels-favor-jerkin",
+   "name": "Minstrel's Favor Jerkin",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Destek ozanları ve şifacılar için dikilmiş işlemeli ceket: dostuna ilham verdiğinde veya bir dostu iyileştirdiğinde kullanıcıya geçici can kazandırır.",
+   "weight": 10.0,
+   "effects": {},
+   "katalog": {
+    "ref": "ZK#9",
+    "tr": "Ozanın İyilik Ceketi",
+    "nadirlik": "olagandisi",
+    "tur": "zirh",
+    "yuva": "hafif",
+    "fiyatGp": 380,
+    "taban": "Leather Armor",
+    "bonus": "AC: 11 + DEX",
+    "ozet": "Destek ozanları ve şifacılar için dikilmiş işlemeli ceket: dostuna ilham verdiğinde veya bir dostu iyileştirdiğinde kullanıcıya geçici can kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 11 + DEX değiştiricisidir.",
+      "durum": "calisir",
+      "not": "Leather Armor giyilmeli (taban 11 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Paylaşılan Moral",
+      "metin": "Kendi turunda bir dosta Bardic Inspiration verdiğinde ya da bir dostu büyüyle iyileştirdiğinde (turda en fazla bir kez) 5 geçici can kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Geçici can üst üste binmez (yalnızca yüksek değer kalır); 11 + DEX temel AC'si yakın cephe için düşüktür.",
+    "kimlerKullanamaz": "Hafif zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz."
+   }
+  },
+  {
+   "id": "scarlet-scout-leather",
+   "name": "Scarlet Scout Leather",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Orman ve sınır izcileri için güçlendirilmiş çivili deri: gizlilik ve inisiyatifi artırır, çalılık ve zorlu bitki zeminlerinde hareketi korur.",
+   "weight": 12.0,
+   "effects": {},
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "zarEtkisi",
+      "tetik": "pasif",
+      "inisiyatifBonusu": 1
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "ZK#10",
+    "tr": "Kızıl İzci Derisi",
+    "nadirlik": "olagandisi",
+    "tur": "zirh",
+    "yuva": "hafif",
+    "fiyatGp": 420,
+    "taban": "Studded Leather Armor",
+    "bonus": "AC: 12 + DEX",
+    "ozet": "Orman ve sınır izcileri için güçlendirilmiş çivili deri: gizlilik ve inisiyatifi artırır, çalılık ve zorlu bitki zeminlerinde hareketi korur.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 12 + DEX değiştiricisidir.",
+      "durum": "calisir",
+      "not": "Studded Leather Armor giyilmeli (taban 12 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Stealth kontrollerine +1, inisiyatif zarlarına +1 bonus verir; çalılık ve doğal bitki örtüsünde yürürken zorlu arazi maliyeti ödemezsin.",
+      "durum": "kismi",
+      "not": "inisiyatif +1 çalışır; Stealth +1 ve bitki örtüsünde zorlu arazi muafiyeti yok"
+     }
+    ],
+    "riskler": "Taşlık, su, çamur ve büyülü zorlu alanlarda (ör. Grease, Spike Growth) hareket maliyeti normal kuralla işler.",
+    "kimlerKullanamaz": "Hafif zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz."
+   }
+  },
+  {
+   "id": "armor-of-fleetness",
+   "name": "Armor of Fleetness",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Egzotik hafif plakalı efsanevi orta zırh: +2 DEX sınırını kaldırarak tam DEX bonusunu AC'ye ekler, bütün kurtarma zarlarını +2 artırır ve hız kazandırır.",
+   "weight": 28.0,
+   "effects": {
+    "armorAcBonus": 2,
+    "saveBonus": 2
+   },
+   "passive": {
+    "speedFt": 5
+   },
+   "katalog": {
+    "ref": "ZK#11",
+    "tr": "Çeviklik Zırhı",
+    "nadirlik": "efsanevi",
+    "tur": "zirh",
+    "yuva": "orta",
+    "fiyatGp": 24000,
+    "taban": "Breastplate",
+    "tabanFarki": "orta zırhta DEX tavanı kalkmıyor (motor sabit +2)",
+    "bonus": "AC: 16 + Tam DEX",
+    "ozet": "Egzotik hafif plakalı efsanevi orta zırh: +2 DEX sınırını kaldırarak tam DEX bonusunu AC'ye ekler, bütün kurtarma zarlarını +2 artırır ve hız kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 16'dır ve standart orta zırhların aksine DEX değiştiricinin tamamı AC'ye eklenir; Stealth dezavantajı vermez.",
+      "durum": "kismi",
+      "not": "Breastplate giyilmeli (taban 14 + sihirli +2); başka zırh giyilirse ek yine eklenir (O3b bağı yok); orta zırhta DEX tavanı kalkmıyor (motor sabit +2)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Giydiğin sürece tüm kurtarma zarlarına +2 bonus ve yürüme hızına +5 ft eklenir.",
+      "durum": "calisir"
+     }
+    ],
+    "riskler": "Yüksek AC yalnızca DEX skoru yüksek karakterlerde zirveye ulaşır; STR odaklı düşük DEX'li karakterlerde standart plaka kadar verim vermez.",
+    "kimlerKullanamaz": "Orta zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan tam DEX ve kurtarma bonuslarını alamaz."
+   }
+  },
+  {
+   "id": "shadowknight-half-plate",
+   "name": "Shadowknight Half Plate",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Karartılmış çelikten gizlilik dostu yarım plaka: CON kurtarma avantajı verir, loş/karanlıkta gelen hasarı azaltır ve koruyucu gölge kalkanı açabilir.",
+   "weight": 35.0,
+   "effects": {
+    "armorAcBonus": 2
+   },
+   "passive": {
+    "saveAdv": [
+     "con"
+    ]
+   },
+   "katalog": {
+    "ref": "ZK#12",
+    "tr": "Gölge Şövalyesi Yarım Plakası",
+    "nadirlik": "cokNadir",
+    "tur": "zirh",
+    "yuva": "orta",
+    "fiyatGp": 7800,
+    "taban": "Breastplate",
+    "bonus": "AC: 16 + DEX (maks. +2)",
+    "ozet": "Karartılmış çelikten gizlilik dostu yarım plaka: CON kurtarma avantajı verir, loş/karanlıkta gelen hasarı azaltır ve koruyucu gölge kalkanı açabilir.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 16 + DEX (maks. +2); Stealth dezavantajı vermez.",
+      "durum": "calisir",
+      "not": "Breastplate giyilmeli (taban 14 + sihirli +2); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "CON kurtarma zarlarında avantaj alırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Gölge Zırhı",
+      "metin": "Loş veya karanlık altıgende dururken Stealth kontrollerinde avantaj kazanır ve aldığın her hasarı 2 azaltırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Karanlık Kalkanı (1 yük, UD)",
+      "metin": "Bonus eylemle 3 tur boyunca +2 AC kazanırsın (konsantrasyon gerekir).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Karanlık Kalkanı konsantrasyon gerektirir; mevcut konsantrasyon büyünü sonlandırır ve parlak ışıkta hasar azaltma pasifi kapanır.",
+    "kimlerKullanamaz": "Orta zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan gölge özelliklerini açamaz."
+   }
+  },
+  {
+   "id": "venomcarapace-scale",
+   "name": "Venomcarapace Scale",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Sertleştirilmiş zehirli kitin pullardan oluşan orta zırh: zehir hasarı ve Poisoned bağışıklığı sağlar, yakın dövüşte vurulunca karşı zehir bulutu patlatabilir.",
+   "weight": 42.0,
+   "effects": {},
+   "passive": {
+    "immuneDamage": [
+     "poison"
+    ],
+    "immune": [
+     "Poisoned"
+    ],
+    "saveMod": {
+     "con": 1
+    }
+   },
+   "katalog": {
+    "ref": "ZK#13",
+    "tr": "Zehirli Kabuk Zırhı",
+    "nadirlik": "cokNadir",
+    "tur": "zirh",
+    "yuva": "orta",
+    "fiyatGp": 7200,
+    "taban": "Half Plate Armor",
+    "bonus": "AC: 15 + DEX (maks. +2)",
+    "ozet": "Sertleştirilmiş zehirli kitin pullardan oluşan orta zırh: zehir hasarı ve Poisoned bağışıklığı sağlar, yakın dövüşte vurulunca karşı zehir bulutu patlatabilir.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 15 + DEX (maks. +2); Stealth kontrollerinde dezavantaj verir.",
+      "durum": "calisir",
+      "not": "Half Plate Armor giyilmeli (taban 15 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Zehir hasarına ve Poisoned durumuna bağışıklık ile CON kurtarma zarlarına +1 bonus kazanırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Spor Patlaması (2 yük, UD 1d2)",
+      "metin": "5 ft içinden yakın dövüş darbesi aldığında tepkiyle 1 yük harcayarak 5 ft çevrende 2 tur zehir bulutu oluşturur ve saldırgana DC 15 CON kurtarma zarıyla 2d6 zehir hasarı verirsin (geçerse yarı hasar).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "42 lb ağırlığı ve Stealth dezavantajı sızma görevlerinde engeldir; patlayan zehir bulutu bitişikteki dostları da etkiler.",
+    "kimlerKullanamaz": "Orta zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan bağışıklıkları alamaz."
+   }
+  },
+  {
+   "id": "stormplate-scale",
+   "name": "Stormplate Scale",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Antik fırtına alaşımıyla dövülmüş pul zırh: yıldırım direnci ve Stunned bağışıklığı kazandırır, yakın dövüş saldırganlarına şok karşılığı yansıtır.",
+   "weight": 40.0,
+   "effects": {
+    "armorAcBonus": 1
+   },
+   "passive": {
+    "resist": [
+     "lightning"
+    ],
+    "immune": [
+     "Stunned"
+    ]
+   },
+   "katalog": {
+    "ref": "ZK#14",
+    "tr": "Ebedi Fırtına Pul Zırhı",
+    "nadirlik": "cokNadir",
+    "tur": "zirh",
+    "yuva": "orta",
+    "fiyatGp": 7600,
+    "taban": "Half Plate Armor",
+    "bonus": "AC: 16 + DEX (maks. +2)",
+    "ozet": "Antik fırtına alaşımıyla dövülmüş pul zırh: yıldırım direnci ve Stunned bağışıklığı kazandırır, yakın dövüş saldırganlarına şok karşılığı yansıtır.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 16 + DEX (maks. +2); Stealth kontrollerinde dezavantaj verir.",
+      "durum": "calisir",
+      "not": "Half Plate Armor giyilmeli (taban 15 + sihirli +1); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Yıldırım hasarına direnç ve Stunned durumuna bağışıklık kazanırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Şok Yansıması",
+      "metin": "5 ft içinden sana isabet eden yakın dövüş saldırganı 1d4 yıldırım hasarı alır (su altıgenindeyse bağlı su altıgenlerinde yıldırım zinciri tetiklenir).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Su altıgeninde tetiklenen Şok Yansıması zinciri aynı sudaki dost yaratıklara da sıçrayabilir; Stealth dezavantajı taşır.",
+    "kimlerKullanamaz": "Orta zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan fırtına pasiflerini açamaz."
+   }
+  },
+  {
+   "id": "serpentscale-mail",
+   "name": "Serpentscale Mail",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Esnek sürüngen pullarından örülmüş hafif orta zırh: Stealth cezası olmadan tam DEX değiştiricisini AC'ye katar ve inisiyatifi +1 artırır.",
+   "weight": 30.0,
+   "effects": {
+    "armorAcBonus": 1
+   },
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "zarEtkisi",
+      "tetik": "pasif",
+      "inisiyatifBonusu": 1
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "ZK#15",
+    "tr": "Kertenkele Pulu Zırhı",
+    "nadirlik": "nadir",
+    "tur": "zirh",
+    "yuva": "orta",
+    "fiyatGp": 1950,
+    "taban": "Breastplate",
+    "tabanFarki": "orta zırhta DEX tavanı kalkmıyor (motor sabit +2)",
+    "bonus": "AC: 15 + Tam DEX",
+    "ozet": "Esnek sürüngen pullarından örülmüş hafif orta zırh: Stealth cezası olmadan tam DEX değiştiricisini AC'ye katar ve inisiyatifi +1 artırır.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 15'tir; standart orta zırhlardaki +2 DEX sınırı yerine DEX değiştiricinin tamamı AC'ye eklenir ve Stealth dezavantajı vermez.",
+      "durum": "kismi",
+      "not": "Breastplate giyilmeli (taban 14 + sihirli +1); başka zırh giyilirse ek yine eklenir (O3b bağı yok); orta zırhta DEX tavanı kalkmıyor (motor sabit +2)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "İnisiyatif zarlarına +1 bonus alırsın.",
+      "durum": "calisir"
+     }
+    ],
+    "riskler": "Element direnci veya aktif savunma gücü bulunmaz; tüm değeri yüksek DEX savunmasına dayanır.",
+    "kimlerKullanamaz": "Orta zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz."
+   }
+  },
+  {
+   "id": "barkweave-breastplate",
+   "name": "Barkweave Breastplate",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Sertleşmiş kutsal meşe kabuğundan göğüslük: CON kurtarma zarlarında avantaj verir ve kullanıcıya yakın dövüşte vuran Undead yaratıkları ışıltıyla yakar.",
+   "weight": 20.0,
+   "effects": {
+    "armorAcBonus": 1
+   },
+   "passive": {
+    "saveAdv": [
+     "con"
+    ]
+   },
+   "katalog": {
+    "ref": "ZK#16",
+    "tr": "Ağaç Kabuğu Göğüslüğü",
+    "nadirlik": "nadir",
+    "tur": "zirh",
+    "yuva": "orta",
+    "fiyatGp": 1500,
+    "taban": "Breastplate",
+    "bonus": "AC: 15 + DEX (maks. +2)",
+    "ozet": "Sertleşmiş kutsal meşe kabuğundan göğüslük: CON kurtarma zarlarında avantaj verir ve kullanıcıya yakın dövüşte vuran Undead yaratıkları ışıltıyla yakar.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 15 + DEX (maks. +2); Stealth dezavantajı vermez.",
+      "durum": "calisir",
+      "not": "Breastplate giyilmeli (taban 14 + sihirli +1); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "CON kurtarma zarlarında avantaj kazanırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Meşe Yansıması",
+      "metin": "Sana 5 ft içinden yakın dövüş isabeti vurulan her Undead yaratık anında 1d6 ışıltı hasarı alır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Meşe Yansıması yalnızca Undead türü saldırganlarda çalışır; diğer yaratık türlerine karşı hasar yansıtmaz.",
+    "kimlerKullanamaz": "Orta zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz."
+   }
+  },
+  {
+   "id": "sparkmesh-chain-shirt",
+   "name": "Sparkmesh Chain Shirt",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Bakır halkalı hafif zincir yelek: yıldırım direnci verir ve su yüzeyindeyken ya da yakın darbe alındığında saldırganın tepkisini kesen elektrik boşaltır.",
+   "weight": 20.0,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "lightning"
+    ]
+   },
+   "katalog": {
+    "ref": "ZK#17",
+    "tr": "Kıvılcım Yeleği",
+    "nadirlik": "nadir",
+    "tur": "zirh",
+    "yuva": "orta",
+    "fiyatGp": 1600,
+    "taban": "Breastplate",
+    "bonus": "AC: 14 + DEX (maks. +2)",
+    "ozet": "Bakır halkalı hafif zincir yelek: yıldırım direnci verir ve su yüzeyindeyken ya da yakın darbe alındığında saldırganın tepkisini kesen elektrik boşaltır.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 14 + DEX (maks. +2); Stealth dezavantajı vermez.",
+      "durum": "calisir",
+      "not": "Breastplate giyilmeli (taban 14 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Yıldırım hasarına direnç ve gelen kesici hasarda 1 puan azalma kazanırsın.",
+      "durum": "kismi",
+      "not": "yıldırım direnci çalışır; kesici hasarda −1 yok (sabit hasar azaltma kancası)"
+     },
+     {
+      "ad": "Çarpan Halka (2 yük, UD 1d2)",
+      "metin": "5 ft içinden yakın dövüş darbesi aldığında tepkiyle 1 yük harcarsın; saldırgan DC 14 DEX kurtarma zarını geçemezse 1d8 yıldırım hasarı alır ve sonraki turunun başına kadar tepki (Reaction) kullanamaz.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Çarpan Halka tepki hakkını harcar; su altıgenindeyken elektrik zinciri yakındaki dostları etkileyebilir.",
+    "kimlerKullanamaz": "Orta zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan tepkiyi kullanamaz."
+   }
+  },
+  {
+   "id": "mindward-half-plate",
+   "name": "Mindward Half Plate",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Zihinsel akışları sönümleyen yarım plaka: psişik direnç, zihinsel kurtarma bonusu ve başarılı büyü kurtarma zarlarında can yenileme sağlar.",
+   "weight": 40.0,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "psychic"
+    ],
+    "saveMod": {
+     "int": 1,
+     "wis": 1
+    }
+   },
+   "katalog": {
+    "ref": "ZK#18",
+    "tr": "Psişik Kalkan Zırhı",
+    "nadirlik": "nadir",
+    "tur": "zirh",
+    "yuva": "orta",
+    "fiyatGp": 1700,
+    "taban": "Half Plate Armor",
+    "bonus": "AC: 15 + DEX (maks. +2)",
+    "ozet": "Zihinsel akışları sönümleyen yarım plaka: psişik direnç, zihinsel kurtarma bonusu ve başarılı büyü kurtarma zarlarında can yenileme sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 15 + DEX (maks. +2); Stealth kontrollerinde dezavantaj verir.",
+      "durum": "calisir",
+      "not": "Half Plate Armor giyilmeli (taban 15 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Psişik hasarına direnç ve INT/WIS kurtarma zarlarına +1 bonus kazanırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Zihin Dirilişi",
+      "metin": "Bir düşman büyüsüne karşı kurtarma zarını geçtiğinde turda en fazla bir kez 1d6 can iyileşirsin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "40 lb ağırlığı ve Stealth dezavantajı hareketli keşif rollerini kısıtlar; fiziksel hasara karşı ek azaltma sunmaz.",
+    "kimlerKullanamaz": "Orta zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan psişik pasifleri açamaz."
+   }
+  },
+  {
+   "id": "sunburst-breastplate",
+   "name": "Sunburst Breastplate",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Parlak gümüş oymalı göğüslük: kullanıcı ışıltı hasarı verdiğinde hedefin çevresinde göz kamaştıran ışık dalgası yayarak düşmanların isabetini bozar.",
+   "weight": 20.0,
+   "effects": {},
+   "katalog": {
+    "ref": "ZK#19",
+    "tr": "Işık Dalgalı Göğüslük",
+    "nadirlik": "olagandisi",
+    "tur": "zirh",
+    "yuva": "orta",
+    "fiyatGp": 560,
+    "taban": "Breastplate",
+    "bonus": "AC: 14 + DEX (maks. +2)",
+    "ozet": "Parlak gümüş oymalı göğüslük: kullanıcı ışıltı hasarı verdiğinde hedefin çevresinde göz kamaştıran ışık dalgası yayarak düşmanların isabetini bozar.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 14 + DEX (maks. +2); Stealth dezavantajı vermez.",
+      "durum": "calisir",
+      "not": "Breastplate giyilmeli (taban 14 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Kamaştıran Hare",
+      "metin": "Kendi turunda ilk kez bir düşmana ışıltı hasarı verdiğinde (büyü veya silahla), hedefin 10 ft çevresindeki düşmanlar DC 13 CON kurtarma zarı atar; geçemeyenler bir sonraki saldırı zarlarında dezavantaj alır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Işıltı hasarı üretemeyen karakterlerde yalnızca sıradan bir göğüslük gibi çalışır; Blinded bağışıklığı olan yaratıklar etkilenmez.",
+    "kimlerKullanamaz": "Orta zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan pasifi açamaz."
+   }
+  },
+  {
+   "id": "slipstream-chain-shirt",
+   "name": "Slipstream Chain Shirt",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Savaş şifacıları için yağlı ince halkalı gömlek: bir yaratığı iyileştirdiğinde veya iyileşme aldığında fırsat saldırısı yemeden geri çekilmeni sağlar.",
+   "weight": 20.0,
+   "effects": {},
+   "katalog": {
+    "ref": "ZK#20",
+    "tr": "Sıyrılan Zincir Gömlek",
+    "nadirlik": "olagandisi",
+    "tur": "zirh",
+    "yuva": "orta",
+    "fiyatGp": 450,
+    "taban": "Chain Shirt",
+    "bonus": "AC: 13 + DEX (maks. +2)",
+    "ozet": "Savaş şifacıları için yağlı ince halkalı gömlek: bir yaratığı iyileştirdiğinde veya iyileşme aldığında fırsat saldırısı yemeden geri çekilmeni sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 13 + DEX (maks. +2); Stealth dezavantajı vermez.",
+      "durum": "calisir",
+      "not": "Chain Shirt giyilmeli (taban 13 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Kaygan Şifa",
+      "metin": "Bir büyü veya iksirle iyileştirme yaptığında (ya da kendine iyileşme uyguladığında), o turun sonuna kadar hareketin fırsat saldırısı tetiklemez (Disengage etkisi).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Temel AC 13 + DEX ön cephe için sınırlıdır; fırsat saldırısız hareket yalnızca iyileştirme yapılan turda geçerlidir.",
+    "kimlerKullanamaz": "Orta zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz."
+   }
+  },
+  {
+   "id": "briarwander-hide",
+   "name": "Briarwander Hide",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Hafif post ve kalın yaprak katmanlı orta zırh: doğa bilgisi ile DEX kurtarma zarlarını güçlendirir ve orman örtüsünde rahat hareket sağlar.",
+   "weight": 12.0,
+   "effects": {},
+   "passive": {
+    "saveMod": {
+     "dex": 1
+    }
+   },
+   "katalog": {
+    "ref": "ZK#21",
+    "tr": "Çalılık Gezgini Zırhı",
+    "nadirlik": "olagandisi",
+    "tur": "zirh",
+    "yuva": "orta",
+    "fiyatGp": 400,
+    "taban": "Chain Shirt",
+    "bonus": "AC: 13 + DEX (maks. +2)",
+    "ozet": "Hafif post ve kalın yaprak katmanlı orta zırh: doğa bilgisi ile DEX kurtarma zarlarını güçlendirir ve orman örtüsünde rahat hareket sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 13 + DEX (maks. +2); Stealth dezavantajı vermez.",
+      "durum": "calisir",
+      "not": "Chain Shirt giyilmeli (taban 13 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Nature kontrollerine +1 ve DEX kurtarma zarlarına +1 bonus alırsın; çalılık zemininde zorlu arazi cezası almazsın.",
+      "durum": "kismi",
+      "not": "DEX kurtarma +1 çalışır; Nature +1 (savaş dışı) ve çalılıkta zorlu arazi muafiyeti yok"
+     }
+    ],
+    "riskler": "13 + DEX tavanı ileri seviyelerde düşük kalır; yalnızca doğal bitki örtüsünde zorlu arazi muafiyeti verir.",
+    "kimlerKullanamaz": "Orta zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz."
+   }
+  },
+  {
+   "id": "hellforge-plate",
+   "name": "Hellforge Plate",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Büyüyle hafifletilmiş cehennem çeliği tam plaka: zırh eğitimi olmadan da her sınıfça giyilebilir, ateş direnci ve hasar azaltma verir, kısa süreli uçuş sağlar.",
+   "weight": 45.0,
+   "effects": {
+    "armorAcBonus": 2
+   },
+   "passive": {
+    "resist": [
+     "fire"
+    ]
+   },
+   "katalog": {
+    "ref": "ZK#22",
+    "tr": "Cehennem Ocağı Plakası",
+    "nadirlik": "efsanevi",
+    "tur": "zirh",
+    "yuva": "ağır",
+    "fiyatGp": 28000,
+    "taban": "Plate Armor",
+    "tabanFarki": "STR şartı ve eğitimsiz giyme muafiyeti yok",
+    "bonus": "AC: 20 (Sabit)",
+    "ozet": "Büyüyle hafifletilmiş cehennem çeliği tam plaka: zırh eğitimi olmadan da her sınıfça giyilebilir, ateş direnci ve hasar azaltma verir, kısa süreli uçuş sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Sabit 20 AC sağlar; Stealth dezavantajı verir ancak ağır zırh eğitimi ve STR şartı aramaz (büyücüler ceza almadan giyip büyü yapabilir).",
+      "durum": "kismi",
+      "not": "Plate Armor giyilmeli (taban 18 + sihirli +2); başka zırh giyilirse ek yine eklenir (O3b bağı yok); STR şartı ve eğitimsiz giyme muafiyeti yok"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Ateş hasarına direnç, Burning durumuna bağışıklık ve gelen tüm hasarlarda 2 puan azalma kazanırsın.",
+      "durum": "kismi",
+      "not": "ateş direnci çalışır; Burning bağışıklığı ve tüm hasarda −2 yok"
+     },
+     {
+      "ad": "Kor Karşılığı",
+      "metin": "Bir düşman büyüsüne karşı kurtarma zarını geçtiğinde tepkiyle büyücüye (60 ft) 2d4 ateş hasarı yansıtırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Alev Kanadı (1 yük, UD)",
+      "metin": "Bonus eylemle 3 tur uçuş hızı (Fly, 60 ft) kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "45 lb ağırlığı düşük STR'li büyücülerde taşıma kapasitesini zorlayabilir; Stealth dezavantajı sürer.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter eğitimsiz giyme muafiyetini, hasar azaltmayı ve aktif güçleri kullanamaz."
+   }
+  },
+  {
+   "id": "plate-of-endurance",
+   "name": "Plate of Endurance",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Ön cephe tankları için kalın dövülmüş tam plaka: fiziksel silah hasarlarını 2 azaltır, tüm kurtarma zarlarını güçlendirir ve 10 ft'e kadar zorla itilmeleri durdurur.",
+   "weight": 65.0,
+   "effects": {
+    "armorAcBonus": 1,
+    "saveBonus": 1
+   },
+   "katalog": {
+    "ref": "ZK#23",
+    "tr": "Sarsılmaz Yemin Plakası",
+    "nadirlik": "cokNadir",
+    "tur": "zirh",
+    "yuva": "ağır",
+    "fiyatGp": 8500,
+    "taban": "Plate Armor",
+    "bonus": "AC: 19 (Sabit)",
+    "ozet": "Ön cephe tankları için kalın dövülmüş tam plaka: fiziksel silah hasarlarını 2 azaltır, tüm kurtarma zarlarını güçlendirir ve 10 ft'e kadar zorla itilmeleri durdurur.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Sabit 19 AC sağlar; Stealth dezavantajı verir.",
+      "durum": "calisir",
+      "not": "Plate Armor giyilmeli (taban 18 + sihirli +1); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Aldığın tüm ezici, delici ve kesici hasarları 2 puan azalır ve tüm kurtarma zarlarına +1 bonus kazanırsın.",
+      "durum": "kismi",
+      "not": "tüm kurtarma +1 çalışır; ezici/delici/kesici hasarda −2 yok"
+     },
+     {
+      "ad": "Kaya Duruşu",
+      "metin": "İraden dışında 10 ft veya daha kısa mesafeli itme ve çekme etkilerine (Shove, Push, Thunderwave vb.) karşı STR kurtarma zarlarında avantaj alırsın ve başarısız olsan bile itilme mesafen 5 ft azalır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "STR 15 altındaki kullanıcıların yürüme hızı 10 ft düşer; 65 lb ağırlığı derin su ve batak kurallarında ağır zırh risklerini taşır.",
+    "kimlerKullanamaz": "Ağır zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan Kaya Duruşu'nu açamaz."
+   }
+  },
+  {
+   "id": "devouring-bone-plate",
+   "name": "Devouring Bone Plate",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Ejderha kemiği kaburgalarıyla güçlendirilmiş saldırgan tam plaka: yakın dövüş saldırılarına +1 ekler ve düşman öldürdüğünde kullanıcıya geçici can ile hız patlaması kazandırır.",
+   "weight": 60.0,
+   "effects": {
+    "armorAcBonus": 1
+   },
+   "katalog": {
+    "ref": "ZK#24",
+    "tr": "Yutucu Kemik Plakası",
+    "nadirlik": "cokNadir",
+    "tur": "zirh",
+    "yuva": "ağır",
+    "fiyatGp": 8200,
+    "taban": "Plate Armor",
+    "bonus": "AC: 19 (Sabit)",
+    "ozet": "Ejderha kemiği kaburgalarıyla güçlendirilmiş saldırgan tam plaka: yakın dövüş saldırılarına +1 ekler ve düşman öldürdüğünde kullanıcıya geçici can ile hız patlaması kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Sabit 19 AC sağlar; Stealth dezavantajı verir.",
+      "durum": "calisir",
+      "not": "Plate Armor giyilmeli (taban 18 + sihirli +1); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Yakın dövüş silah saldırı zarlarına +1 bonus kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Avcı İştahı",
+      "metin": "Kendi turunda bir düşmanı 0 HP'ye düşürdüğünde (turda en fazla bir kez) 10 geçici can kazanırsın ve sonraki turunun sonuna kadar yürüme hızın +10 ft artar.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Avcı İştahı yalnızca son darbeyi indirdiğinde tetiklenir; tek bir boss'a karşı savaşırken yalnızca pasif AC ve +1 saldırı sağlar.",
+    "kimlerKullanamaz": "Ağır zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan saldırı ve öldürme pasifini alamaz."
+   }
+  },
+  {
+   "id": "reapers-iron-plate",
+   "name": "Reaper's Iron Plate",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Kara demirden ağır kale plakası: gelen hasarı 2 azaltır, zorla itilmeye karşı direnç verir ve çevresindeki düşmanları yavaşlatan nekrotik feryat salar.",
+   "weight": 65.0,
+   "effects": {
+    "armorAcBonus": 1
+   },
+   "katalog": {
+    "ref": "ZK#25",
+    "tr": "Biçici Karanlık Plakası",
+    "nadirlik": "cokNadir",
+    "tur": "zirh",
+    "yuva": "ağır",
+    "fiyatGp": 8000,
+    "taban": "Plate Armor",
+    "bonus": "AC: 19 (Sabit)",
+    "ozet": "Kara demirden ağır kale plakası: gelen hasarı 2 azaltır, zorla itilmeye karşı direnç verir ve çevresindeki düşmanları yavaşlatan nekrotik feryat salar.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Sabit 19 AC sağlar; Stealth dezavantajı verir.",
+      "durum": "calisir",
+      "not": "Plate Armor giyilmeli (taban 18 + sihirli +1); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Gelen tüm hasarları 2 puan azaltır ve itilme etkilerine karşı STR kurtarma zarlarında avantaj verir.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Ölü Feryadı (1 yük, UD)",
+      "metin": "Eylemle 15 ft çevrendeki tüm düşmanlara DC 15 CON kurtarma zarı attırırsın; geçemeyen 3d6 nekrotik hasarı alır ve 2 tur boyunca hızı yarıya iner (geçen yarı hasar alır, yavaşlamaz).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "STR 15 altında hız −10 ft düşer; Ölü Feryadı Undead düşmanların çoğunda nekrotik direnç veya bağışıklıkla karşılaşır.",
+    "kimlerKullanamaz": "Ağır zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan Ölü Feryadı'nı kullanamaz."
+   }
+  },
+  {
+   "id": "marshals-crested-plate",
+   "name": "Marshal's Crested Plate",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Sancak mareşallerinin tören ve savaş plakası: ateş direnci, tüm kurtarma zarlarına +2 bonus ve gelen her darbede 1 puan hasar azaltma sağlar.",
+   "weight": 65.0,
+   "effects": {
+    "armorAcBonus": 1,
+    "saveBonus": 2
+   },
+   "passive": {
+    "resist": [
+     "fire"
+    ]
+   },
+   "katalog": {
+    "ref": "ZK#26",
+    "tr": "Mareşal Armalı Plakası",
+    "nadirlik": "cokNadir",
+    "tur": "zirh",
+    "yuva": "ağır",
+    "fiyatGp": 7900,
+    "taban": "Plate Armor",
+    "bonus": "AC: 19 (Sabit)",
+    "ozet": "Sancak mareşallerinin tören ve savaş plakası: ateş direnci, tüm kurtarma zarlarına +2 bonus ve gelen her darbede 1 puan hasar azaltma sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Sabit 19 AC sağlar; Stealth dezavantajı verir.",
+      "durum": "calisir",
+      "not": "Plate Armor giyilmeli (taban 18 + sihirli +1); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Uyum hâlindeyken ateş hasarına direnç, bütün kurtarma zarlarına +2 bonus ve aldığın tüm hasarlarda 1 puan azalma kazanırsın.",
+      "durum": "kismi",
+      "not": "ateş direnci ve tüm kurtarma +2 çalışır; tüm hasarda −1 yok"
+     }
+    ],
+    "riskler": "STR 15 altında hız −10 ft düşer; aktif bir alan veya iyileştirme gücü bulunmaz, tamamen sürekli savunmaya dayanır.",
+    "kimlerKullanamaz": "Ağır zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan kurtarma ve direnç bonusunu alamaz."
+   }
+  },
+  {
+   "id": "plate-of-devotion",
+   "name": "Plate of Devotion",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Tapınak şövalyeleri için kutsal mühürlü plaka: gelen hasarı 1 azaltır ve günde bir kez harcanmış bir Channel Divinity hakkını geri kazandırır.",
+   "weight": 65.0,
+   "effects": {},
+   "katalog": {
+    "ref": "ZK#27",
+    "tr": "Adanmışlık Plakası",
+    "nadirlik": "nadir",
+    "tur": "zirh",
+    "yuva": "ağır",
+    "fiyatGp": 2200,
+    "taban": "Plate Armor",
+    "bonus": "AC: 18 (Sabit)",
+    "ozet": "Tapınak şövalyeleri için kutsal mühürlü plaka: gelen hasarı 1 azaltır ve günde bir kez harcanmış bir Channel Divinity hakkını geri kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Sabit 18 AC sağlar; Stealth dezavantajı verir.",
+      "durum": "calisir",
+      "not": "Plate Armor giyilmeli (taban 18 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Gelen tüm hasarları 1 puan azaltır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Ebedi Adanmışlık (1 yük, UD)",
+      "metin": "Bonus eylemle harcanmış 1 Channel Divinity kullanımını geri kazanırsın (Channel Divinity özelliği olmayan bir karakter bunun yerine 12 geçici can kazanır).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "STR 15 altında yürüme hızı 10 ft düşer; Channel Divinity zaten doluysa Ebedi Adanmışlık fazladan üst sınır aşımı sağlamaz.",
+    "kimlerKullanamaz": "Ağır zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan Ebedi Adanmışlık gücünü kullanamaz."
+   }
+  },
+  {
+   "id": "mindfortress-plate",
+   "name": "Mindfortress Plate",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Korku ve zihin büyülerine karşı yalıtılmış ağır plaka: Frightened bağışıklığı, WIS kurtarma avantajı ve gelen hasarda 1 puan azalma verir.",
+   "weight": 65.0,
+   "effects": {},
+   "passive": {
+    "immune": [
+     "Frightened"
+    ],
+    "saveAdv": [
+     "wis"
+    ]
+   },
+   "katalog": {
+    "ref": "ZK#28",
+    "tr": "Zihin Kalesi Plakası",
+    "nadirlik": "nadir",
+    "tur": "zirh",
+    "yuva": "ağır",
+    "fiyatGp": 2000,
+    "taban": "Plate Armor",
+    "bonus": "AC: 18 (Sabit)",
+    "ozet": "Korku ve zihin büyülerine karşı yalıtılmış ağır plaka: Frightened bağışıklığı, WIS kurtarma avantajı ve gelen hasarda 1 puan azalma verir.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Sabit 18 AC sağlar; Stealth dezavantajı verir.",
+      "durum": "calisir",
+      "not": "Plate Armor giyilmeli (taban 18 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Giydiğin sürece Frightened durumuna bağışıklık, WIS kurtarma zarlarında avantaj ve gelen tüm hasarlarda 1 puan azalma kazanırsın.",
+      "durum": "kismi",
+      "not": "Frightened bağışıklığı ve WIS kurtarma avantajı çalışır; tüm hasarda −1 yok"
+     }
+    ],
+    "riskler": "STR 15 altında hız −10 ft düşer; Charmed ve Paralyzed gibi diğer zihinsel durumlara tam bağışıklık vermez (yalnız WIS kurtarma avantajı sağlar).",
+    "kimlerKullanamaz": "Ağır zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan zihinsel korumayı alamaz."
+   }
+  },
+  {
+   "id": "dwarven-anvil-splint",
+   "name": "Dwarven Anvil Splint",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Dağ ocağında dövülmüş çift katlı şerit zırh: dayanıklılığı artırarak +10 en yüksek can, +1 CON kurtarma ve delici ok/mızrak hasarında 2 puan azalma verir.",
+   "weight": 60.0,
+   "effects": {},
+   "passive": {
+    "saveMod": {
+     "con": 1
+    }
+   },
+   "katalog": {
+    "ref": "ZK#29",
+    "tr": "Cüce Örsü Şerit Zırhı",
+    "nadirlik": "nadir",
+    "tur": "zirh",
+    "yuva": "ağır",
+    "fiyatGp": 1900,
+    "taban": "Plate Armor",
+    "bonus": "AC: 18 (Sabit)",
+    "ozet": "Dağ ocağında dövülmüş çift katlı şerit zırh: dayanıklılığı artırarak +10 en yüksek can, +1 CON kurtarma ve delici ok/mızrak hasarında 2 puan azalma verir.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Sabit 18 AC sağlar; Stealth dezavantajı verir.",
+      "durum": "calisir",
+      "not": "Plate Armor giyilmeli (taban 18 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Uyum hâlindeyken en yüksek canın +10 artar, CON kurtarma zarlarına +1 bonus alırsın ve gelen delici hasarları 2 puan azalır.",
+      "durum": "kismi",
+      "not": "CON kurtarma +1 çalışır; en yüksek can +10 ve delici hasarda −2 yok"
+     }
+    ],
+    "riskler": "STR 15 altında yürüme hızı 10 ft düşer; zırh çıkarıldığında +10 en yüksek can bonusu da geri düşer.",
+    "kimlerKullanamaz": "Ağır zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan can ve azaltma bonusunu alamaz."
+   }
+  },
+  {
+   "id": "scorched-iron-plate",
+   "name": "Scorched Iron Plate",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "İçten ılık parlayan cehennem alaşımlı şerit zırh: gelen hasarı 1 azaltır ve yakın dövüşte isabet eden saldırganlara 1d4 ateş hasarı yansıtır.",
+   "weight": 60.0,
+   "effects": {},
+   "katalog": {
+    "ref": "ZK#30",
+    "tr": "Kızgın Demir Plakası",
+    "nadirlik": "olagandisi",
+    "tur": "zirh",
+    "yuva": "ağır",
+    "fiyatGp": 550,
+    "taban": "Splint Armor",
+    "bonus": "AC: 17 (Sabit)",
+    "ozet": "İçten ılık parlayan cehennem alaşımlı şerit zırh: gelen hasarı 1 azaltır ve yakın dövüşte isabet eden saldırganlara 1d4 ateş hasarı yansıtır.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Sabit 17 AC sağlar; Stealth dezavantajı verir.",
+      "durum": "calisir",
+      "not": "Splint Armor giyilmeli (taban 17 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Gelen tüm hasarları 1 puan azaltır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Sıcak Zırh",
+      "metin": "5 ft içinden sana yakın dövüş darbesi vuran düşman her isabette 1d4 ateş hasarı alır (saldırgan yağ veya ağ üzerindeyse tutuşturur).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "STR 15 altında hız −10 ft düşer; yansıtılan ateş kullanıcıya veya yanındaki dostlara sıçrayabilecek yağ yüzeylerini tutuşturabilir.",
+    "kimlerKullanamaz": "Ağır zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz."
+   }
+  },
+  {
+   "id": "forcewave-chain-mail",
+   "name": "Forcewave Chain Mail",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Darbe emici kinetik halkalı zincir zırh: gelen hasarı 1 azaltır ve yakın dövüşte vurulduğunda saldırganı 5 ft geri iten kuvvet dalgası yayabilir.",
+   "weight": 55.0,
+   "effects": {},
+   "katalog": {
+    "ref": "ZK#31",
+    "tr": "Dalgalanan Kuvvet Zırhı",
+    "nadirlik": "olagandisi",
+    "tur": "zirh",
+    "yuva": "ağır",
+    "fiyatGp": 480,
+    "taban": "Chain Mail",
+    "bonus": "AC: 16 (Sabit)",
+    "ozet": "Darbe emici kinetik halkalı zincir zırh: gelen hasarı 1 azaltır ve yakın dövüşte vurulduğunda saldırganı 5 ft geri iten kuvvet dalgası yayabilir.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Sabit 16 AC sağlar; Stealth dezavantajı verir.",
+      "durum": "calisir",
+      "not": "Chain Mail giyilmeli (taban 16 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Gelen tüm hasarları 1 puan azaltır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Kuvvet Geri Tepmesi",
+      "metin": "Turda en fazla bir kez, 5 ft içinden yakın dövüş darbesi aldığında saldırgana 1d4 kuvvet hasarı yansıtır ve DC 13 STR kurtarma zarını geçemezse onu 5 ft geri itersin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "STR 13 altında hız −10 ft düşer; geri itme tepkisiz ve otomatik olduğundan düşmanı kendi erişiminden uzaklaştırabilir.",
+    "kimlerKullanamaz": "Ağır zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz."
+   }
+  },
+  {
+   "id": "weavewoven-robe",
+   "name": "Weavewoven Robe",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Saf büyü iplikleriyle dokunmuş efsanevi cübbe: zırh sayılmadan +2 AC, +2 büyü kurtarma zarı DC ve +1 büyü saldırısı verir; direnilen düşman büyülerinden can çeker.",
+   "weight": 4.0,
+   "effects": {
+    "unarmoredAcBonus": 2
+   },
+   "katalog": {
+    "ref": "ZK#32",
+    "tr": "Örgü Dokuması Cübbe",
+    "nadirlik": "efsanevi",
+    "tur": "zirh",
+    "yuva": "zırhsız",
+    "uyumKosulu": "Büyücü",
+    "fiyatGp": 24000,
+    "taban": "Zırhsız",
+    "bonus": "AC: +2",
+    "ozet": "Saf büyü iplikleriyle dokunmuş efsanevi cübbe: zırh sayılmadan +2 AC, +2 büyü kurtarma zarı DC ve +1 büyü saldırısı verir; direnilen düşman büyülerinden can çeker.",
+    "ozellikler": [
+     {
+      "ad": "Cübbe",
+      "metin": "Zırh sınıfına girmez (Mage Armor ve Unarmored Defense üzerine +2 AC ekler).",
+      "durum": "kismi",
+      "not": "zırhsız ve kalkansızken (motor kalkan taşınırken eki düşürür)"
+     },
+     {
+      "ad": "Cübbe ek etkisi",
+      "metin": "Büyü kurtarma zarı DC'sine +2 ve büyü saldırı zarlarına +1 bonus alırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Örgü Yutucu",
+      "metin": "Bir düşman büyüsüne karşı kurtarma zarını geçtiğinde 1d6 can iyileşirsin (turda en fazla bir kez).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Zırhla birlikte giyilemez (gövde yuvasını kullanır); fiziksel darbelere karşı hasar azaltma sunmaz.",
+    "kimlerKullanamaz": "Spellcasting veya Pact Magic özelliği olmayan karakterler bu cübbeyle uyum yapamaz."
+   }
+  },
+  {
+   "id": "resonant-caster-robe",
+   "name": "Resonant Caster Robe",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Ozan, Sihirbaz ve Warlock'lar için dokunmuş parlak cübbe: +1 AC verir, hasar veren cantrip'leri CHA değiştiricisiyle güçlendirir ve her tur başında geçici can tazeler.",
+   "weight": 4.0,
+   "effects": {
+    "unarmoredAcBonus": 1
+   },
+   "katalog": {
+    "ref": "ZK#33",
+    "tr": "Karizmatik Büyücü Cübbesi",
+    "nadirlik": "cokNadir",
+    "tur": "zirh",
+    "yuva": "zırhsız",
+    "uyumKosulu": "Büyücü",
+    "fiyatGp": 7500,
+    "taban": "Zırhsız",
+    "bonus": "AC: +1",
+    "ozet": "Ozan, Sihirbaz ve Warlock'lar için dokunmuş parlak cübbe: +1 AC verir, hasar veren cantrip'leri CHA değiştiricisiyle güçlendirir ve her tur başında geçici can tazeler.",
+    "ozellikler": [
+     {
+      "ad": "Cübbe",
+      "metin": "Zırhsız olarak +1 AC verir (Mage Armor ile uyumludur).",
+      "durum": "kismi",
+      "not": "zırhsız ve kalkansızken (motor kalkan taşınırken eki düşürür)"
+     },
+     {
+      "ad": "Gür Cantrip",
+      "metin": "Hasar veren bir cantrip ile isabet ettiğinde (veya düşman save kaybettiğinde) turda bir kez hasara CHA değiştiricini (en az +1) eklersin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Canlı Hare",
+      "metin": "Savaşta kendi turunun başında CHA değiştiricin kadar (en az 1) geçici can kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "CHA skoru düşük büyücülerde (ör. Wizard/Druid) yalnızca asgari +1 fayda verir; geçici can üst üste birikmez.",
+    "kimlerKullanamaz": "Spellcasting veya Pact Magic özelliği olmayan karakterler bu cübbeyle uyum yapamaz."
+   }
+  },
+  {
+   "id": "robe-of-supreme-focus",
+   "name": "Robe of Supreme Focus",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Konsantrasyon büyülerini korumak için örülmüş ağır ipek cübbe: büyüye odaklanıldığı sürece +1 AC ve tüm kurtarma zarlarına +2 bonus sağlar.",
+   "weight": 4.0,
+   "effects": {},
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "zarEtkisi",
+      "tetik": "pasif",
+      "acBonusu": 1,
+      "kurtulmaBonusu": 2,
+      "kosul": [
+       "konsantrasyon"
+      ]
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "ZK#34",
+    "tr": "Üstün Odak Cübbesi",
+    "nadirlik": "cokNadir",
+    "tur": "zirh",
+    "yuva": "zırhsız",
+    "uyumKosulu": "Büyücü",
+    "fiyatGp": 6900,
+    "taban": "Zırhsız",
+    "bonus": "AC: +1 (Odaklanırken)",
+    "ozet": "Konsantrasyon büyülerini korumak için örülmüş ağır ipek cübbe: büyüye odaklanıldığı sürece +1 AC ve tüm kurtarma zarlarına +2 bonus sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Cübbe",
+      "metin": "+1 (Odaklanırken)",
+      "durum": "calisir",
+      "not": "AC +1 yalnız konsantrasyon sürerken (Sarsılmaz Odak ilkeli)"
+     },
+     {
+      "ad": "Cübbe ek etkisi",
+      "metin": "Zırh uzmanlığı gerektirmez; Mage Armor ile uyumludur.",
+      "durum": "calisir",
+      "not": "cübbe motorda zırh sayılmaz; Mage Armor ile birleşir"
+     },
+     {
+      "ad": "Sarsılmaz Odak",
+      "metin": "Herhangi bir büyüye konsantrasyon sürdürdüğün sürece +1 AC ve tüm kurtarma zarlarına (konsantrasyon CON kurtarması dahil) +2 bonus kazanırsın.",
+      "durum": "calisir",
+      "not": "paket zarEtkisi pasif, koşul konsantrasyon: +1 AC, bütün kurtarmalara +2 (konsantrasyon CON kurtarması dahil)"
+     }
+    ],
+    "riskler": "Konsantrasyon sürdüren bir büyü etkin değilken cübbe hiçbir AC veya kurtarma bonusu sağlamaz.",
+    "kimlerKullanamaz": "Spellcasting veya Pact Magic özelliği olmayan karakterler bu cübbeyle uyum yapamaz."
+   }
+  },
+  {
+   "id": "soulmender-monk-vest",
+   "name": "Soulmender Monk Vest",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Keşişler ve zırhsız dövüşçüler için işlenmiş yelek: +2 AC verir, seni ıskalayan yakın saldırgana tepkiyle silahsız karşılık indirir ve direnilen büyülerden can çeker.",
+   "weight": 3.0,
+   "effects": {
+    "unarmoredAcBonus": 2
+   },
+   "katalog": {
+    "ref": "ZK#35",
+    "tr": "Ruh Yenileyen Keşiş Yeleği",
+    "nadirlik": "cokNadir",
+    "tur": "zirh",
+    "yuva": "zırhsız",
+    "fiyatGp": 7800,
+    "taban": "Zırhsız",
+    "bonus": "AC: +2",
+    "ozet": "Keşişler ve zırhsız dövüşçüler için işlenmiş yelek: +2 AC verir, seni ıskalayan yakın saldırgana tepkiyle silahsız karşılık indirir ve direnilen büyülerden can çeker.",
+    "ozellikler": [
+     {
+      "ad": "Cübbe",
+      "metin": "Zırhsız olarak +2 AC verir (Unarmored Defense ile birleşir).",
+      "durum": "kismi",
+      "not": "zırhsız ve kalkansızken (motor kalkan taşınırken eki düşürür)"
+     },
+     {
+      "ad": "Akıcı Karşılık",
+      "metin": "5 ft içinden yapılan bir yakın dövüş saldırısı seni ıskaladığında tepkiyle saldırgana tek bir Unarmed Strike yapabilirsin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Sakin Ruh",
+      "metin": "Bir düşman büyüsüne karşı kurtarma zarını geçtiğinde 1d4 can iyileşirsin (turda en fazla bir kez).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Akıcı Karşılık tepki hakkını harcadığından o tur Deflect Attacks veya fırsat saldırısı kullanılamaz.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter +2 AC, tepki vuruşu ve iyileşme özelliklerini kullanamaz; zırh giyenlerle kullanılamaz."
+   }
+  },
+  {
+   "id": "tidecaller-robe",
+   "name": "Tidecaller Robe",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Deniz ipeğinden dokunmuş akıcı cübbe: ateş ve soğuk direnci verir, su altıgeninde can yeniler ve alevleri söndüren su yüzeyi çağırabilir.",
+   "weight": 4.0,
+   "effects": {
+    "unarmoredAcBonus": 1
+   },
+   "passive": {
+    "resist": [
+     "fire",
+     "cold"
+    ]
+   },
+   "katalog": {
+    "ref": "ZK#36",
+    "tr": "Dalga Anası Cübbesi",
+    "nadirlik": "nadir",
+    "tur": "zirh",
+    "yuva": "zırhsız",
+    "fiyatGp": 1650,
+    "taban": "Zırhsız",
+    "bonus": "AC: +1",
+    "ozet": "Deniz ipeğinden dokunmuş akıcı cübbe: ateş ve soğuk direnci verir, su altıgeninde can yeniler ve alevleri söndüren su yüzeyi çağırabilir.",
+    "ozellikler": [
+     {
+      "ad": "Cübbe",
+      "metin": "Zırhsız olarak +1 AC verir.",
+      "durum": "kismi",
+      "not": "zırhsız ve kalkansızken (motor kalkan taşınırken eki düşürür)"
+     },
+     {
+      "ad": "Cübbe ek etkisi",
+      "metin": "Ateş ve soğuk hasarına direnç kazanırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Sulu Diriliş",
+      "metin": "Su altıgeninde veya su yüzeyinde turuna başladığında 1d4 can iyileşirsin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Dalga Çağrısı (1 yük, KD)",
+      "metin": "Eylemle 30 ft içindeki bir noktada 10 ft yarıçapında 3 tur süren su yüzeyi oluşturur ve alandaki alevleri söndürürsün (buhar tepkimesi doğurur).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Su üzerinde beklemek yıldırım saldırılarına karşı harita zincir tepkimesi riski doğurur.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter direnç, yenilenme ve Dalga Çağrısı özelliklerini açamaz."
+   }
+  },
+  {
+   "id": "nimble-cat-tunic",
+   "name": "Nimble Cat Tunic",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Akrobatlar, keşişler ve zırhsız çeviklik dövüşçüleri için hafif tunik: bütün DEX beceri kontrollerinde avantaj, +1 DEX kurtarma ve ek zıplama mesafesi verir.",
+   "weight": 3.0,
+   "effects": {},
+   "passive": {
+    "checkAdv": [
+     "dex"
+    ],
+    "saveMod": {
+     "dex": 1
+    }
+   },
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "zarEtkisi",
+      "tetik": "pasif",
+      "inisiyatifAvantaji": true
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "ZK#37",
+    "tr": "Atik Kedi Tuniği",
+    "nadirlik": "nadir",
+    "tur": "zirh",
+    "yuva": "zırhsız",
+    "fiyatGp": 1500,
+    "taban": "Zırhsız",
+    "bonus": "AC: Yok",
+    "ozet": "Akrobatlar, keşişler ve zırhsız çeviklik dövüşçüleri için hafif tunik: bütün DEX beceri kontrollerinde avantaj, +1 DEX kurtarma ve ek zıplama mesafesi verir.",
+    "ozellikler": [
+     {
+      "ad": "Cübbe",
+      "metin": "Zırh sayılmaz (Unarmored Defense ve Mage Armor ile uyumludur).",
+      "durum": "calisir",
+      "not": "zırh sayılmaz; AC eki yok"
+     },
+     {
+      "ad": "Cübbe ek etkisi",
+      "metin": "Giydiğin sürece bütün DEX yetenek kontrollerinde (Acrobatics, Sleight of Hand, Stealth, inisiyatif) avantaj kazanırsın, DEX kurtarma zarlarına +1 eklersin ve Long Jump mesafen +5 ft artar.",
+      "durum": "kismi",
+      "not": "DEX kontrollerinde ve inisiyatifte avantaj, DEX kurtarma +1 çalışır; Long Jump +5 ft yok"
+     }
+    ],
+    "riskler": "Doğrudan +AC bonusu vermediği için yüksek savunma için Unarmored Defense veya Mage Armor ile birlikte kullanılmalıdır.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter avantaj, kurtarma ve zıplama pasiflerini alamaz."
+   }
+  },
+  {
+   "id": "venomweaver-robe",
+   "name": "Venomweaver Robe",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Simyacı ve bataklık büyücüleri için zehir geçirmez cübbe: zehir direnci kazandırır ve zehir hasarı veren büyülere ek 1d4 zehir hasarı katar.",
+   "weight": 4.0,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "poison"
+    ]
+   },
+   "katalog": {
+    "ref": "ZK#38",
+    "tr": "Zehirci Cübbesi",
+    "nadirlik": "olagandisi",
+    "tur": "zirh",
+    "yuva": "zırhsız",
+    "fiyatGp": 420,
+    "taban": "Zırhsız",
+    "bonus": "AC: Yok",
+    "ozet": "Simyacı ve bataklık büyücüleri için zehir geçirmez cübbe: zehir direnci kazandırır ve zehir hasarı veren büyülere ek 1d4 zehir hasarı katar.",
+    "ozellikler": [
+     {
+      "ad": "Cübbe",
+      "metin": "Zırh sayılmaz (Mage Armor ile uyumludur).",
+      "durum": "calisir",
+      "not": "zırh sayılmaz; AC eki yok"
+     },
+     {
+      "ad": "Cübbe ek etkisi",
+      "metin": "Zehir hasarına direnç kazanırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Zehir İzi",
+      "metin": "Zehir hasarı veren bir büyü veya cantrip ile hasar verdiğinde turda bir kez hasara +1d4 zehir hasarı eklenir.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Zehir bağışıklığı olan Undead ve Construct düşmanlara karşı Zehir İzi etkisiz kalır; ek AC sağlamaz.",
+    "kimlerKullanamaz": "Herkes giyebilir; ancak zehir büyüleri olmayan karakterler yalnızca zehir direncinden yararlanır."
+   }
+  },
+  {
+   "id": "walking-bastion-shield",
+   "name": "Walking Bastion Shield",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Büyü ve yakın dövüşe karşı efsanevi kale kalkanı: +3 AC ve büyü kurtarma avantajı verir, yakın saldırganı kuvvet dalgasıyla devirir ve Warding Bond kurabilir.",
+   "weight": 8.0,
+   "effects": {
+    "shieldAcBonus": 1
+   },
+   "passive": {
+    "saveAdvAgainst": [
+     "spell"
+    ]
+   },
+   "spells": [
+    {
+     "name": "Warding Bond",
+     "level": 2
+    }
+   ],
+   "charges": 1,
+   "recharge": "all",
+   "katalog": {
+    "ref": "ZK#39",
+    "tr": "Yürüyen Hisar Kalkanı",
+    "nadirlik": "efsanevi",
+    "tur": "kalkan",
+    "yuva": "kalkan",
+    "fiyatGp": 23000,
+    "taban": "Shield",
+    "bonus": "AC: +3",
+    "ozet": "Büyü ve yakın dövüşe karşı efsanevi kale kalkanı: +3 AC ve büyü kurtarma avantajı verir, yakın saldırganı kuvvet dalgasıyla devirir ve Warding Bond kurabilir.",
+    "ozellikler": [
+     {
+      "ad": "Kalkan",
+      "metin": "Toplam +3 AC sağlar (temel +2 kalkan +1 büyülü).",
+      "durum": "calisir",
+      "not": "Shield taşınmalı; kalkanın kendi +2'si + sihirli +1 (K8; metin \"Toplam +3 AC\")"
+     },
+     {
+      "ad": "Kalkan ek etkisi",
+      "metin": "Büyülere karşı kurtarma zarlarında avantaj kazanırsın.",
+      "durum": "calisir",
+      "not": "büyülere karşı kurtarma avantajı (Magic Resistance yolu)"
+     },
+     {
+      "ad": "Hisar Karşılığı (2 yük, UD 1d2)",
+      "metin": "5 ft içinden yakın dövüş darbesi aldığında tepkiyle 1 yük harcarsın; saldırgan 2d6 kuvvet hasarı alır ve DC 16 STR kurtarma zarını geçemezse 10 ft geri itilip Prone olur.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Koruyucu Bağ (1 yük, UD)",
+      "metin": "Eylemle 2. seviye Warding Bond yaparsın.",
+      "durum": "calisir",
+      "not": "2. seviye Warding Bond slotsuz; eşya yükü yalnız bu güç için (Hisar Karşılığı'nın 2 yükü ayrı, planlı)"
+     }
+    ],
+    "riskler": "Kalkan eldeyken Two-Handed silah kullanılamaz; Warding Bond bağlı dostun aldığı hasarı kullanıcıya da aktarır.",
+    "kimlerKullanamaz": "Kalkan eğitimi olmayan +3 AC bonusunu alamaz; uyum yapmayan büyülü özellikleri açamaz."
+   }
+  },
+  {
+   "id": "deflector-knight-shield",
+   "name": "Deflector Knight Shield",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Ayna cilalı ok ve ışın saptırıcı kalkan: menzilli saldırılara karşı savunma sağlar ve ıskalayan menzilli saldırganlara kuvvet enerjisi geri gönderir.",
+   "weight": 6.0,
+   "effects": {
+    "shieldAcBonus": 2
+   },
+   "katalog": {
+    "ref": "ZK#40",
+    "tr": "Saptıran Şövalye Kalkanı",
+    "nadirlik": "cokNadir",
+    "tur": "kalkan",
+    "yuva": "kalkan",
+    "fiyatGp": 7200,
+    "taban": "Shield",
+    "bonus": "AC: +2",
+    "ozet": "Ayna cilalı ok ve ışın saptırıcı kalkan: menzilli saldırılara karşı savunma sağlar ve ıskalayan menzilli saldırganlara kuvvet enerjisi geri gönderir.",
+    "ozellikler": [
+     {
+      "ad": "Kalkan",
+      "metin": "+2 AC sağlar.",
+      "durum": "calisir",
+      "not": "Shield taşınmalı; kalkanın kendi +2'si + sihirli +2 (K8)"
+     },
+     {
+      "ad": "Kalkan ek etkisi",
+      "metin": "Sana yapılan menzilli silah saldırıları dezavantajlıdır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Mermi Saptırma (2 yük, UD 1d2)",
+      "metin": "60 ft içinden yapılan bir menzilli silah veya büyü saldırısı seni ıskaladığında tepkiyle 1 yük harcayarak saldırgana 2d6 kuvvet hasarı geri yansıtırsın (DC 15 DEX kurtarma zarı geçerse yarı hasar).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Mermi Saptırma yalnızca ıskalayan menzilli saldırılarda tetiklenir ve tepki hakkını harcar; alan büyülerine işlemez.",
+    "kimlerKullanamaz": "Kalkan eğitimi olmayan +2 AC bonusunu alamaz; uyum yapmayan saptırma güçlerini açamaz."
+   }
+  },
+  {
+   "id": "dreadwall-shield",
+   "name": "Dreadwall Shield",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Dehşet maskesi kabartmalı kalkan: taşıyıcıya fazladan 1. seviye büyü yuvası açar ve 15 ft içindeki düşmanların korkuya direncini kırar.",
+   "weight": 6.0,
+   "effects": {
+    "shieldAcBonus": 2
+   },
+   "katalog": {
+    "ref": "ZK#41",
+    "tr": "Korku Kalkanı",
+    "nadirlik": "cokNadir",
+    "tur": "kalkan",
+    "yuva": "kalkan",
+    "fiyatGp": 6800,
+    "taban": "Shield",
+    "bonus": "AC: +2",
+    "ozet": "Dehşet maskesi kabartmalı kalkan: taşıyıcıya fazladan 1. seviye büyü yuvası açar ve 15 ft içindeki düşmanların korkuya direncini kırar.",
+    "ozellikler": [
+     {
+      "ad": "Kalkan",
+      "metin": "+2 AC sağlar.",
+      "durum": "calisir",
+      "not": "Shield taşınmalı; kalkanın kendi +2'si + sihirli +2 (K8)"
+     },
+     {
+      "ad": "Kalkan ek etkisi",
+      "metin": "Uyum hâlindeyken fazladan 1 adet 1. seviye büyü yuvası kazanırsın (uzun dinlenmede yenilenir).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Dehşet Yüzü",
+      "metin": "15 ft içindeki düşmanlar Frightened durumuna karşı yaptıkları kurtarma zarlarında dezavantaj alır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Frightened bağışıklığı olan düşmanlarda Dehşet Yüzü etkisizdir; büyü yuvası olmayan sınıflarda ek yuva kullanılmaz.",
+    "kimlerKullanamaz": "Kalkan eğitimi olmayan +2 AC bonusunu alamaz; uyum yapmayan ek yuva ve korku aurasını açamaz."
+   }
+  },
+  {
+   "id": "sunward-shield",
+   "name": "Sunward Shield",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Savaş rahipleri ve paladinler için oymalı kalkan: DEX kurtarma zarlarında avantaj, +1 büyü kurtarma zarı DC ve +1 büyü saldırısı sağlar.",
+   "weight": 6.0,
+   "effects": {
+    "shieldAcBonus": 2
+   },
+   "passive": {
+    "saveAdv": [
+     "dex"
+    ]
+   },
+   "bonus": {
+    "spell": 1
+   },
+   "katalog": {
+    "ref": "ZK#42",
+    "tr": "Güneş Siperi Kalkanı",
+    "nadirlik": "nadir",
+    "tur": "kalkan",
+    "yuva": "kalkan",
+    "fiyatGp": 1850,
+    "taban": "Shield",
+    "bonus": "AC: +2",
+    "ozet": "Savaş rahipleri ve paladinler için oymalı kalkan: DEX kurtarma zarlarında avantaj, +1 büyü kurtarma zarı DC ve +1 büyü saldırısı sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Kalkan",
+      "metin": "+2 AC sağlar.",
+      "durum": "calisir",
+      "not": "Shield taşınmalı; kalkanın kendi +2'si + sihirli +2 (K8)"
+     },
+     {
+      "ad": "Kalkan ek etkisi",
+      "metin": "Uyum hâlindeyken DEX kurtarma zarlarında avantaj kazanırsın; ayrıca büyü kurtarma zarı DC'sine +1 ve büyü saldırı zarlarına +1 bonus alırsın.",
+      "durum": "calisir",
+      "not": "DEX kurtarma avantajı; büyü DC'si ve büyü saldırısı +1 (bonus.spell)"
+     }
+    ],
+    "riskler": "Elde kalkan tutmak Two-Handed silahları engeller; DEX kurtarma avantajı Incapacitated iken de sürer ancak otomatik başarısızlığı kaldırmaz.",
+    "kimlerKullanamaz": "Kalkan eğitimi olmayan +2 AC bonusunu alamaz; uyum yapmayan büyü ve kurtarma bonuslarını alamaz."
+   }
+  },
+  {
+   "id": "cinderback-shield",
+   "name": "Cinderback Shield",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "İçinden alev yükselen demir kalkan: ateş direnci verir ve bonus eylemle iki tur boyunca ek AC ile yakın saldırganlara ateş karşılığı açar.",
+   "weight": 6.0,
+   "effects": {
+    "shieldAcBonus": 2
+   },
+   "passive": {
+    "resist": [
+     "fire"
+    ]
+   },
+   "katalog": {
+    "ref": "ZK#43",
+    "tr": "Kor Karşılığı Kalkanı",
+    "nadirlik": "nadir",
+    "tur": "kalkan",
+    "yuva": "kalkan",
+    "fiyatGp": 1600,
+    "taban": "Shield",
+    "bonus": "AC: +2",
+    "ozet": "İçinden alev yükselen demir kalkan: ateş direnci verir ve bonus eylemle iki tur boyunca ek AC ile yakın saldırganlara ateş karşılığı açar.",
+    "ozellikler": [
+     {
+      "ad": "Kalkan",
+      "metin": "+2 AC sağlar ve ateş hasarına direnç verir.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Alevli Siper (2 yük, UD 1d2)",
+      "metin": "Bonus eylemle 1 yük harcayarak 2 tur boyunca +1 AC kazanırsın; bu sürede 5 ft içinden sana yakın dövüş saldırısı yapan düşman (isabet etse de ıskalasa da) 1d6 ateş hasarı alır ve yağ/ağ yüzeylerini tutuşturur.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Alevli Siper yakınındaki yağ veya ağ yüzeylerini tutuşturabilir; menzilli saldırılara karşı ateş yansıtmaz.",
+    "kimlerKullanamaz": "Kalkan eğitimi olmayan +2 AC bonusunu alamaz; uyum yapmayan ateş direnci ve Alevli Siper gücünü açamaz."
+   }
+  },
+  {
+   "id": "shadecloak-greatshield",
+   "name": "Shadecloak Greatshield",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Karanlık büyüyle kaplanmış uzun kalkan: algı kontrollerinde avantaj verir ve kısa dinlenmede bir kez kendi etrafında yoğun karanlık bulutu açar.",
+   "weight": 7.0,
+   "effects": {
+    "shieldAcBonus": 2
+   },
+   "katalog": {
+    "ref": "ZK#44",
+    "tr": "Gölge Örtüsü Kalkanı",
+    "nadirlik": "nadir",
+    "tur": "kalkan",
+    "yuva": "kalkan",
+    "fiyatGp": 1700,
+    "taban": "Shield",
+    "bonus": "AC: +2",
+    "ozet": "Karanlık büyüyle kaplanmış uzun kalkan: algı kontrollerinde avantaj verir ve kısa dinlenmede bir kez kendi etrafında yoğun karanlık bulutu açar.",
+    "ozellikler": [
+     {
+      "ad": "Kalkan",
+      "metin": "+2 AC sağlar ve Perception kontrollerinde avantaj verir.",
+      "durum": "kismi",
+      "not": "+2 AC çalışır; Perception avantajı yok (beceri düzeyinde avantaj kancası)"
+     },
+     {
+      "ad": "Karanlık Perdesi (1 yük, KD)",
+      "metin": "Bonus eylemle kendi altıgenin merkezli 10 ft yarıçapında 2 tur süren büyülü karanlık (Darkness; konsantrasyon gerekmez) açarsın ve aynı tur Hide denemende avantaj kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Büyülü karanlık kalkan sahibinin de görüşünü keser (Devil's Sight, Blindsight veya Truesight yoksa) ve dostların hedeflemesini zorlaştırır.",
+    "kimlerKullanamaz": "Kalkan eğitimi olmayan +2 AC bonusunu alamaz; uyum yapmayan Karanlık Perdesi gücünü açamaz."
+   }
+  },
+  {
+   "id": "briarvine-shield",
+   "name": "Briarvine Shield",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Canlı orman köklerinden örülmüş ahşap kalkan: bütün kurtarma zarlarına +1 bonus verir ve kısa dinlenmede bir kez yakındaki düşmanı sarmaşıkla bağlar.",
+   "weight": 6.0,
+   "effects": {
+    "shieldAcBonus": 2,
+    "saveBonus": 1
+   },
+   "katalog": {
+    "ref": "ZK#45",
+    "tr": "Dikenli Asma Kalkanı",
+    "nadirlik": "olagandisi",
+    "tur": "kalkan",
+    "yuva": "kalkan",
+    "fiyatGp": 480,
+    "taban": "Shield",
+    "bonus": "AC: +2",
+    "ozet": "Canlı orman köklerinden örülmüş ahşap kalkan: bütün kurtarma zarlarına +1 bonus verir ve kısa dinlenmede bir kez yakındaki düşmanı sarmaşıkla bağlar.",
+    "ozellikler": [
+     {
+      "ad": "Kalkan",
+      "metin": "+2 AC sağlar ve tüm kurtarma zarlarına +1 bonus verir.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Dikenli Sarmaşık (1 yük, KD)",
+      "metin": "Bonus eylemle 10 ft içindeki görebildiğin bir düşmana dikenli sarmaşık fırlatırsın; hedef DC 13 STR kurtarma zarını geçemezse 1d6 delici hasarı alır ve sonraki turunun sonuna kadar Restrained olur.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Ahşap kalkan metal sayılmaz (Heat Metal etkilemez) ancak ateş hasarına karşı ek direnç vermez.",
+    "kimlerKullanamaz": "Kalkan eğitimi olmayan +2 AC bonusunu alamaz; Dikenli Sarmaşık ve kurtarma bonusu eğitim şartı aramaz."
+   }
+  },
+  {
+   "id": "piercing-knight-shield",
+   "name": "Piercing Knight Shield",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Sivri uçlu kılıç-kalkan melezi: aynı anda +2 AC kalkan koruması sunar ve kendi başına +2 savaş silahı gibi delici saldırı yapar.",
+   "weight": 8.0,
+   "effects": {
+    "shieldAcBonus": 2
+   },
+   "katalog": {
+    "ref": "KY#36",
+    "tr": "Delici Şövalye Kalkanı",
+    "nadirlik": "cokNadir",
+    "tur": "kalkan",
+    "yuva": "kalkan",
+    "fiyatGp": 7400,
+    "taban": "Shield",
+    "bonus": "AC: +2",
+    "ozet": "Sivri uçlu kılıç-kalkan melezi: aynı anda +2 AC kalkan koruması sunar ve kendi başına +2 savaş silahı gibi delici saldırı yapar.",
+    "ozellikler": [
+     {
+      "ad": "Kalkan",
+      "metin": "Kalkan yuvasında +2 AC sağlar ve aynı zamanda tek elli savaş silahı olarak kullanılır (1d8 + 2 delici hasarı, STR veya DEX seçilebilir).",
+      "durum": "kismi",
+      "not": "kalkan +2 AC çalışır (K8); kalkanla silah saldırısı (1d8 + 2 delici, STR/DEX, Vex) kancası yok, en yakın SRD silahı Rapier"
+     },
+     {
+      "ad": "Siperli Saplama",
+      "metin": "Bu kalkanla Attack eyleminde saldırı yaptığında bir sonraki turunun başına kadar aldığın ilk silah darbesinin hasarı 4 puan azalır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "hasar": "1d8 + 2 delici",
+    "ustalik": "Vex",
+    "riskler": "Two-Handed silahlarla birlikte kullanılamaz; silah olarak kullanmak için hem kalkan hem Martial silah yetkinliği önerilir.",
+    "kimlerKullanamaz": "Kalkan eğitimi olmayan +2 AC alamaz; Martial yetkinliği olmayan saldırı zarına yetkinlik ekleyemez; uyum yapmayan Siperli Saplama'yı açamaz."
+   }
+  },
+  {
+   "id": "spellmirror-greatshield",
+   "name": "Spellmirror Greatshield",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Altın ayna yüzeyli efsanevi büyük kalkan: tepkiyle gelen büyü saldırılarını savuşturup büyücüye altın ışıltı oku olarak geri fırlatır.",
+   "weight": 10.0,
+   "effects": {
+    "shieldAcBonus": 1
+   },
+   "katalog": {
+    "ref": "KY#37",
+    "tr": "Büyü Yansıtan Büyük Kalkan",
+    "nadirlik": "efsanevi",
+    "tur": "kalkan",
+    "yuva": "kalkan",
+    "fiyatGp": 23500,
+    "taban": "Shield",
+    "bonus": "AC: +3",
+    "ozet": "Altın ayna yüzeyli efsanevi büyük kalkan: tepkiyle gelen büyü saldırılarını savuşturup büyücüye altın ışıltı oku olarak geri fırlatır.",
+    "ozellikler": [
+     {
+      "ad": "Kalkan",
+      "metin": "Toplam +3 AC sağlar.",
+      "durum": "calisir",
+      "not": "Shield taşınmalı; kalkanın kendi +2'si + sihirli +1 (K8; metin \"Toplam +3 AC\")"
+     },
+     {
+      "ad": "Ayna Yansıtması (3 yük, UD 1d3)",
+      "metin": "60 ft içinden seni hedef alan bir menzilli büyü saldırısı yapıldığında veya bir büyü hasarı aldığında tepkiyle 1 yük harcarsın; o büyüden aldığın hasar yarıya iner (menzilli büyü saldırısıysa +4 AC kazanırsın) ve büyücüye anında 3d8 ışıltı hasarı veren bir geri tepme ışını fırlatırsın (DC 16 DEX kurtarma zarı geçerse yarı hasar).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "10 lb ağırlığı ağırdır; tepki hakkını harcadığından o tur fırsat saldırısı yapılamaz ve 60 ft ötesindeki büyücülere ışın ulaşmaz.",
+    "kimlerKullanamaz": "Kalkan eğitimi olmayan +3 AC bonusunu alamaz; uyum yapmayan Ayna Yansıtması gücünü kullanamaz."
+   }
+  },
+  {
+   "id": "one-eyed-mortar-shield",
+   "name": "One-Eyed Mortar Shield",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "İçine küçük kuşatma havanı gömülmüş demir büyük kalkan: savunma hattını bozmadan siperlerin üstünden aşan patlayıcı ateş gülleleri fırlatır.",
+   "weight": 12.0,
+   "effects": {
+    "shieldAcBonus": 2
+   },
+   "passive": {
+    "resist": [
+     "fire"
+    ]
+   },
+   "katalog": {
+    "ref": "KY#38",
+    "tr": "Tek Gözlü Topçu Kalkanı",
+    "nadirlik": "cokNadir",
+    "tur": "kalkan",
+    "yuva": "kalkan",
+    "fiyatGp": 7200,
+    "taban": "Shield",
+    "bonus": "AC: +2",
+    "ozet": "İçine küçük kuşatma havanı gömülmüş demir büyük kalkan: savunma hattını bozmadan siperlerin üstünden aşan patlayıcı ateş gülleleri fırlatır.",
+    "ozellikler": [
+     {
+      "ad": "Kalkan",
+      "metin": "+2 AC sağlar ve ateş hasarına direnç verir.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Havan Atışı (2 yük, UD 1d2)",
+      "metin": "Eylemle 60 ft içinde görebildiğin bir noktaya yüksek yay çizen ateş güllesi ateşlersin (yarım ve üç çeyrek siperi yok sayar); 10 ft yarıçaptaki tüm yaratıklar DC 15 DEX kurtarma zarı atar, geçemezse 4d6 ateş hasarı alır ve 5 ft geri itilir (geçerse yarı hasar, itilmez). Alandaki yanıcı yüzeyler tutuşur.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "12 lb ağırlığı yüksektir; gülle patlaması 10 ft içindeki dostlara da zarar verir ve 120 ft gürültü yayar.",
+    "kimlerKullanamaz": "Kalkan eğitimi olmayan +2 AC bonusunu alamaz; STR 13 altında Havan Atışı sonrası 5 ft geri tepme yaşanır; uyum yapmayan havanı ateşleyemez."
+   }
+  },
+  {
+   "id": "flamevisage-greatshield",
+   "name": "Flamevisage Greatshield",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Kızgın dev maskesi kabartmalı ağır kalkan: siper tutarken önündeki 15 ft koniye kesintisiz alev püskürterek geçitleri tek başına kapatır.",
+   "weight": 11.0,
+   "effects": {
+    "shieldAcBonus": 2
+   },
+   "passive": {
+    "resist": [
+     "fire"
+    ]
+   },
+   "katalog": {
+    "ref": "KY#39",
+    "tr": "Alev Yüzlü Kalkan",
+    "nadirlik": "nadir",
+    "tur": "kalkan",
+    "yuva": "kalkan",
+    "fiyatGp": 1800,
+    "taban": "Shield",
+    "bonus": "AC: +2",
+    "ozet": "Kızgın dev maskesi kabartmalı ağır kalkan: siper tutarken önündeki 15 ft koniye kesintisiz alev püskürterek geçitleri tek başına kapatır.",
+    "ozellikler": [
+     {
+      "ad": "Kalkan",
+      "metin": "+2 AC sağlar ve ateş hasarına direnç verir.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Kalkan Alevi (2 yük, UD 1d2)",
+      "metin": "Eylemle 1 yük harcayarak önündeki 15 ft koniye yoğun alev püskürtürsün; alandaki yaratıklar DC 14 DEX kurtarma zarı atar, geçemezse 3d6 ateş hasarı alır ve Burning olur (geçerse yarı hasar). Bu eylemi kullandığın tur yürüme hızın yarıya iner ama sonraki turunun başına kadar +1 ek AC kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "11 lb ağırlığı ağırdır; yarı hız cezası geri çekilmeyi zorlaştırır ve konideki dostlar da yanar.",
+    "kimlerKullanamaz": "Kalkan eğitimi olmayan +2 AC bonusunu alamaz; uyum yapmayan Kalkan Alevi gücünü kullanamaz."
+   }
+  },
+  {
+   "id": "barbed-monolith-shield",
+   "name": "Barbed Monolith Shield",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Çelik dikenlerle ve kadim taş oymalarıyla kaplı devasa kalkan: Shove itişlerini ölümcül bir saldırıya çevirir ve hedefi kanatıp sarsar.",
+   "weight": 12.0,
+   "effects": {
+    "shieldAcBonus": 2
+   },
+   "katalog": {
+    "ref": "KY#40",
+    "tr": "Dikenli Parmak İzi Kalkanı",
+    "nadirlik": "nadir",
+    "tur": "kalkan",
+    "yuva": "kalkan",
+    "fiyatGp": 1750,
+    "taban": "Shield",
+    "bonus": "AC: +2",
+    "ozet": "Çelik dikenlerle ve kadim taş oymalarıyla kaplı devasa kalkan: Shove itişlerini ölümcül bir saldırıya çevirir ve hedefi kanatıp sarsar.",
+    "ozellikler": [
+     {
+      "ad": "Kalkan",
+      "metin": "+2 AC sağlar ve zorla itilme etkilerine karşı STR kurtarma zarlarında avantaj verir.",
+      "durum": "kismi",
+      "not": "+2 AC çalışır; zorla itilmeye karşı STR kurtarma avantajı yok"
+     },
+     {
+      "ad": "Dikenli İtiş",
+      "metin": "Bu kalkanı tutarken yaptığın her başarılı Shove (itme veya devirme) hamlesi hedefe ek olarak 1d8 delici hasarı ve 1d4 psişik hasarı verir; hedef DC 14 CON kurtarma zarını geçemezse 2 tur 1d4 kesici kanama alır (itme seçildiyse mesafe 10 ft olur).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "12 lb ağırlığı taşınır yükte ağırdır; Shove hamlesi başarısız olursa hiçbir hasar vermez.",
+    "kimlerKullanamaz": "Kalkan eğitimi olmayan +2 AC bonusunu alamaz; uyum yapmayan Dikenli İtiş pasifini açamaz."
+   }
+  },
+  {
+   "id": "raptor-feather-coat",
+   "name": "Raptor Feather Coat",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kuzgun tüyleriyle kaplı çevik avcı zırhı: zıplama sonrası ve yüksek zeminden yapılan saldırıların hasarını belirgin biçimde artırır.",
+   "weight": 10.0,
+   "effects": {},
+   "katalog": {
+    "ref": "KY#41",
+    "tr": "Yırtıcı Tüy Pelerini Zırhı",
+    "nadirlik": "nadir",
+    "tur": "zirh",
+    "yuva": "hafif",
+    "fiyatGp": 1450,
+    "taban": "Studded Leather Armor",
+    "bonus": "AC: 12 + DEX",
+    "ozet": "Kuzgun tüyleriyle kaplı çevik avcı zırhı: zıplama sonrası ve yüksek zeminden yapılan saldırıların hasarını belirgin biçimde artırır.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 12 + DEX değiştiricisidir.",
+      "durum": "calisir",
+      "not": "Studded Leather Armor giyilmeli (taban 12 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Atlayış Kesimi",
+      "metin": "Kendi turunda jump yaptıktan hemen sonra indirdiğin ilk isabetli silah saldırısına veya hedeften en az 10 ft daha yüksek bir zemindeyken yaptığın ilk isabetli saldırıya (turda en fazla bir kez) ek 1d6 hasar (silahın türünde) eklenir.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Düz zeminde jump yapılmayan turlarda ek hasar sağlamaz; temel AC 12 + DEX orta düzeydedir.",
+    "kimlerKullanamaz": "Hafif zırh eğitimi olmayan STR/DEX d20 testlerinde dezavantaj alır ve büyü yapamaz."
+   }
+  },
+  {
+   "id": "bramble-iron-plate",
+   "name": "Bramble Iron Plate",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Dikenli demir tellerle sarılı orta zırh: koşu (Dash), itme (Shove) veya yakın temas sırasında yanından geçilen düşmanları dikenlerle deler.",
+   "weight": 38.0,
+   "effects": {},
+   "katalog": {
+    "ref": "KY#42",
+    "tr": "Dikenli Çelik Zırhı",
+    "nadirlik": "nadir",
+    "tur": "zirh",
+    "yuva": "orta",
+    "fiyatGp": 1600,
+    "taban": "Half Plate Armor",
+    "bonus": "AC: 15 + DEX (maks. +2)",
+    "ozet": "Dikenli demir tellerle sarılı orta zırh: koşu (Dash), itme (Shove) veya yakın temas sırasında yanından geçilen düşmanları dikenlerle deler.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 15 + DEX (maks. +2); Stealth dezavantajı verir.",
+      "durum": "calisir",
+      "not": "Half Plate Armor giyilmeli (taban 15 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Dikenli Temas",
+      "metin": "Kendi turunda Dash yaptığında veya bir düşmana başarılı Shove/Grapple uyguladığında, 5 ft bitişiğinden geçtiğin veya temas ettiğin her düşman turda en fazla bir kez 1d6 delici hasarı alır (save yok; konsantrasyon kurtarması tetikler).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Düşmanların bitişiğinden Dash ile geçmek Disengage yoksa fırsat saldırısı riski doğurur.",
+    "kimlerKullanamaz": "Orta zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz."
+   }
+  },
+  {
+   "id": "silentblade-scale",
+   "name": "Silentblade Scale",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Ses emici gümüşi pullarla dokunmuş suikastçı zırhı: adım seslerini tamamen silerek hem Stealth avantajı hem de sarsıntı duyusundan saklanma sağlar.",
+   "weight": 12.0,
+   "effects": {
+    "armorAcBonus": 1
+   },
+   "katalog": {
+    "ref": "KY#43",
+    "tr": "Sessiz Bıçak Zırhı",
+    "nadirlik": "cokNadir",
+    "tur": "zirh",
+    "yuva": "hafif",
+    "fiyatGp": 7400,
+    "taban": "Studded Leather Armor",
+    "bonus": "AC: 13 + DEX",
+    "ozet": "Ses emici gümüşi pullarla dokunmuş suikastçı zırhı: adım seslerini tamamen silerek hem Stealth avantajı hem de sarsıntı duyusundan saklanma sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 13 + DEX değiştiricisidir.",
+      "durum": "calisir",
+      "not": "Studded Leather Armor giyilmeli (taban 12 + sihirli +1); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Giydiğin sürece bütün Stealth kontrollerinde avantaj kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Suskun Adım",
+      "metin": "Hareketin hiçbir ayak sesi veya titreşim üretmez; Tremorsense sahibi yeraltı yaratıkları seni titreşimle tespit edemez ve gizliyken (Hidden) yaptığın hareketlerde uyuyan düşmanları uyandırmazsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Görüş hattındaki parlak ışıkta veya Blindsight/Truesight menzilinde saklanmaya tek başına yetmez.",
+    "kimlerKullanamaz": "Hafif zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan Suskun Adım'ı açamaz."
+   }
+  },
+  {
+   "id": "crimson-fiend-plate",
+   "name": "Crimson Fiend Plate",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Kana bulanmış kızıl savaş plakası: taşıyıcının verdiği bütün saldırı ve büyü hasarlarını artırır, ancak karşılığında alınan her hasarı da büyüten cam-top zırhıdır.",
+   "weight": 55.0,
+   "effects": {},
+   "katalog": {
+    "ref": "KY#44",
+    "tr": "Kızıl İblis Zırhı",
+    "nadirlik": "cokNadir",
+    "tur": "zirh",
+    "yuva": "ağır",
+    "fiyatGp": 7200,
+    "taban": "Plate Armor",
+    "bonus": "AC: 18 (Sabit)",
+    "ozet": "Kana bulanmış kızıl savaş plakası: taşıyıcının verdiği bütün saldırı ve büyü hasarlarını artırır, ancak karşılığında alınan her hasarı da büyüten cam-top zırhıdır.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Sabit 18 AC sağlar; Stealth dezavantajı verir.",
+      "durum": "calisir",
+      "not": "Plate Armor giyilmeli (taban 18 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Kızıl Bedel",
+      "metin": "Bu zırhı giydiğin sürece yaptığın bütün isabetli silah ve büyü saldırılarının hasarına +3 (veya alan büyülerinde hedef başına +2) eklersin; ancak aynı süre boyunca sana isabet eden veya kurtarma zarında maruz kaldığın her hasardan +3 fazla hasar alırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Çoklu küçük darbeler (ör. Magic Missile, sürü saldırıları veya yüzey dot hasarları) +3 ek hasar yüzünden kullanıcıyı hızla eritebilir.",
+    "kimlerKullanamaz": "Ağır zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan hasar artışını alamaz."
+   }
+  },
+  {
+   "id": "royal-remnant-plate",
+   "name": "Royal Remnant Plate",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Kırık taç motifli kemik-çelik plaka: taşıyıcı ölümün eşiğine indiğinde her tur başında otomatik can yenileyerek cepheyi ayakta tutar.",
+   "weight": 58.0,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "necrotic"
+    ]
+   },
+   "katalog": {
+    "ref": "KY#49",
+    "tr": "Kraliyet Kalıntısı Zırhı",
+    "nadirlik": "cokNadir",
+    "tur": "zirh",
+    "yuva": "ağır",
+    "fiyatGp": 7600,
+    "taban": "Plate Armor",
+    "bonus": "AC: 18 (Sabit)",
+    "ozet": "Kırık taç motifli kemik-çelik plaka: taşıyıcı ölümün eşiğine indiğinde her tur başında otomatik can yenileyerek cepheyi ayakta tutar.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Sabit 18 AC sağlar; Stealth dezavantajı verir.",
+      "durum": "calisir",
+      "not": "Plate Armor giyilmeli (taban 18 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Nekrotik hasarına direnç kazanırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Kraliyet Dirilişi",
+      "metin": "Mevcut canın en yüksek canının %25'inin (çeyreğinin) altındayken ve en az 1 HP'n varken her turunun başında otomatik olarak 1d6 + 2 can iyileşirsin (iyileşme en fazla %25 eşiğine kadar çıkarır).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "0 HP'ye düşmüş karakteri ayağa kaldırmaz ve %25 canın üstüne çıkarmaz; STR 15 altında hız −10 ft düşer.",
+    "kimlerKullanamaz": "Ağır zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan yenilenmeyi açamaz."
+   }
+  },
+  {
+   "id": "vigil-shroud-robe",
+   "name": "Vigil Shroud Robe",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Ölüm nöbetçilerinin ince beyaz cübbesi: zırh sayılmadan +1 AC verir ve çevresindeki yaralı müttefiklere her tur başında sessizce can yayar.",
+   "weight": 4.0,
+   "effects": {
+    "unarmoredAcBonus": 1
+   },
+   "katalog": {
+    "ref": "KY#50",
+    "tr": "Şifa Örtüsü Cübbesi",
+    "nadirlik": "nadir",
+    "tur": "zirh",
+    "yuva": "zırhsız",
+    "fiyatGp": 1800,
+    "taban": "Zırhsız",
+    "bonus": "AC: +1",
+    "ozet": "Ölüm nöbetçilerinin ince beyaz cübbesi: zırh sayılmadan +1 AC verir ve çevresindeki yaralı müttefiklere her tur başında sessizce can yayar.",
+    "ozellikler": [
+     {
+      "ad": "Cübbe",
+      "metin": "Zırhsız olarak +1 AC sağlar (Mage Armor ile uyumludur).",
+      "durum": "kismi",
+      "not": "zırhsız ve kalkansızken (motor kalkan taşınırken eki düşürür)"
+     },
+     {
+      "ad": "Sükûnet Halesi",
+      "metin": "Savaşta kendi turunun başında sana 10 ft mesafe içinde duran ve en az 1 HP'si olan tüm yaralı dostların (sen hariç) 1d4 can iyileşir.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Kullanıcının kendisini ve 0 HP'ye düşmüş (Unconscious) dostları iyileştirmez; 10 ft yakınlık cübbeli destekçiyi cepheye yakın tutar.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Sükûnet Halesi'ni açamaz; zırhla birlikte giyilemez."
+   }
+  },
+  {
+   "id": "verdigris-bastion-plate",
+   "name": "Verdigris Bastion Plate",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Oksitlenmiş kalın yeşil bakır bloklardan dövülmüş efsanevi kale plakası: ağır kütlesini mutlak dengeye çevirerek darbeleri emer ve kullanıcıyı yerinden oynatmaz.",
+   "weight": 75.0,
+   "effects": {
+    "armorAcBonus": 2
+   },
+   "katalog": {
+    "ref": "KY#51",
+    "tr": "Yeşil Bakır Hisar Plakası",
+    "nadirlik": "efsanevi",
+    "tur": "zirh",
+    "yuva": "ağır",
+    "fiyatGp": 26000,
+    "taban": "Plate Armor",
+    "bonus": "AC: 20 (Sabit)",
+    "ozet": "Oksitlenmiş kalın yeşil bakır bloklardan dövülmüş efsanevi kale plakası: ağır kütlesini mutlak dengeye çevirerek darbeleri emer ve kullanıcıyı yerinden oynatmaz.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Sabit 20 AC sağlar; Stealth dezavantajı verir.",
+      "durum": "calisir",
+      "not": "Plate Armor giyilmeli (taban 18 + sihirli +2); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Aldığın tüm ezici, delici ve kesici hasarlar 3 puan azalır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Kaya Kütlesi",
+      "metin": "Yerde ayakta durduğun sürece zorla itilme/ çekilme (forcedMove) ve Prone etkilerine karşı tam bağışıklık kazanırsın; ancak bu zırh giyiliyken yürüme hızın 5 ft azalır ve uzun atlama yapamazsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "75 lb ağırlığı taşıma sınırını zorlar; −5 ft hız ve derin su batma kurallarında yüksek hareket dezavantajı doğurur.",
+    "kimlerKullanamaz": "Ağır zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan Kaya Kütlesi'ni açamaz."
+   }
+  },
+  {
+   "id": "spellblade-coat",
+   "name": "Spellblade Coat",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Rünlü düğmeli uzun savaş büyücüsü paltosu: silahların yük harcayarak yaptığı özel aktif Savaş Sanatlarının ve büyü-silah yeteneklerinin hasarını güçlendirir.",
+   "weight": 12.0,
+   "effects": {},
+   "katalog": {
+    "ref": "KY#52",
+    "tr": "Savaş Büyücüsü Cübbe Zırhı",
+    "nadirlik": "nadir",
+    "tur": "zirh",
+    "yuva": "hafif",
+    "fiyatGp": 1650,
+    "taban": "Studded Leather Armor",
+    "bonus": "AC: 12 + DEX",
+    "ozet": "Rünlü düğmeli uzun savaş büyücüsü paltosu: silahların yük harcayarak yaptığı özel aktif Savaş Sanatlarının ve büyü-silah yeteneklerinin hasarını güçlendirir.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 12 + DEX değiştiricisidir.",
+      "durum": "calisir",
+      "not": "Studded Leather Armor giyilmeli (taban 12 + sihirli +0); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Silah Sanatı Odağı",
+      "metin": "Bir silahın yük harcayan aktif yeteneğiyle (veya büyüyle güçlendirilmiş tekil silah vuruşuyla) hasar verdiğinde turda bir kez hasara +1d6 (aynı türden) ekler ve bu aktif yeteneğin kurtarma zarı DC'sini +1 artırırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Yüklü aktif yeteneği olmayan sıradan +1/+2 silahlarda yalnızca temel 12 + DEX koruma sağlar.",
+    "kimlerKullanamaz": "Hafif zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan pasifi açamaz."
+   }
+  },
+  {
+   "id": "primordial-knight-plate",
+   "name": "Primordial Knight Plate",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Kızıl tunç pullu kadim şövalye plakası: yakın mesafe nefes, kuyruk/kanat darbesi ve fırtına-yıldırım dönüşüm yeteneklerinin alanını ve gücünü genişletir.",
+   "weight": 62.0,
+   "effects": {
+    "armorAcBonus": 1
+   },
+   "katalog": {
+    "ref": "KY#53",
+    "tr": "Kök Şövalye Zırhı",
+    "nadirlik": "cokNadir",
+    "tur": "zirh",
+    "yuva": "ağır",
+    "fiyatGp": 7800,
+    "taban": "Plate Armor",
+    "bonus": "AC: 19 (Sabit)",
+    "ozet": "Kızıl tunç pullu kadim şövalye plakası: yakın mesafe nefes, kuyruk/kanat darbesi ve fırtına-yıldırım dönüşüm yeteneklerinin alanını ve gücünü genişletir.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Sabit 19 AC sağlar; Stealth dezavantajı verir.",
+      "durum": "calisir",
+      "not": "Plate Armor giyilmeli (taban 18 + sihirli +1); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Gelen tüm hasarlar 1 puan azalır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Kadim Şekil Gücü",
+      "metin": "Kendi merkezli koni veya yarıçaplı (en fazla 20 ft) sınıf/tür/silah yetenekleri (ör. Dragon Breath, fırtına patlamaları, Channel Divinity alanları) ile hasar verdiğinde hasara +1d6 eklenir ve alanın erişimi/yarıçapı +5 ft genişler.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Genişleyen alan kendi takım arkadaşlarını da içine alabilir; STR 15 altında hız −10 ft düşer.",
+    "kimlerKullanamaz": "Ağır zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan Kadim Şekil Gücü'nü açamaz."
+   }
+  },
+  {
+   "id": "solitude-knight-plate",
+   "name": "Solitude Knight Plate",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Koyu gri törensel büyük şövalye plakası: kalkanla veya ağır zırhla savuşturulan saldırıların hemen ardından sarsıcı bir karşı darbe (Guard Counter) indirir.",
+   "weight": 65.0,
+   "effects": {
+    "armorAcBonus": 1
+   },
+   "katalog": {
+    "ref": "KY#55",
+    "tr": "Yalnızlık Şövalyesi Plakası",
+    "nadirlik": "cokNadir",
+    "tur": "zirh",
+    "yuva": "ağır",
+    "fiyatGp": 8200,
+    "taban": "Plate Armor",
+    "bonus": "AC: 19 (Sabit)",
+    "ozet": "Koyu gri törensel büyük şövalye plakası: kalkanla veya ağır zırhla savuşturulan saldırıların hemen ardından sarsıcı bir karşı darbe (Guard Counter) indirir.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Sabit 19 AC sağlar; Stealth dezavantajı verir.",
+      "durum": "calisir",
+      "not": "Plate Armor giyilmeli (taban 18 + sihirli +1); başka zırh giyilirse ek yine eklenir (O3b bağı yok)"
+     },
+     {
+      "ad": "Zırh ek etkisi",
+      "metin": "Gelen ezici, delici ve kesici hasarlar 1 puan azalır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Siper Karşılığı",
+      "metin": "5 ft içinden yapılan bir yakın dövüş saldırısı seni ıskaladığında (veya kalkan tutarken sana vurduğunda), bir sonraki turunun sonuna kadar aynı saldırgana yapacağın ilk isabetli yakın dövüş saldırısı ek 1d8 hasar verir ve hedef DC 15 STR kurtarma zarını geçemezse Prone olur (turda en fazla bir kez).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Menzilli saldırganlara karşı Siper Karşılığı tetiklenmez; STR 15 altında yürüme hızı 10 ft düşer.",
+    "kimlerKullanamaz": "Ağır zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan Siper Karşılığı'nı açamaz."
+   }
+  },
+  {
+   "id": "abandoned-phylactery-pendulum",
+   "name": "Abandoned Phylactery Pendulum",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Kara Malek'in klonlama teknolojisine geçtikten sonra kulesinde bıraktığı boş filakteriden yapılma, Kaltakkıran'ın kırık yemin demiriyle kelepçelenmiş sarkaçlı asa: üç büyü sınıfını tek odakta birleştirir ve korkuyu doğrudan psişik kâbus uykusuna çevirir.",
+   "weight": 5.0,
+   "effects": {},
+   "bonus": {
+    "weapon": 3
+   },
+   "onHit": {
+    "dice": "2d6",
+    "type": "psychic",
+    "label": "Filakteri Sarkacı"
+   },
+   "katalog": {
+    "ref": "BOSS#1",
+    "tr": "Kara Malek'in Terk Edilmiş Filakteri Sarkacı",
+    "nadirlik": "efsanevi",
+    "tur": "silah",
+    "yuva": "Silah / Büyü Odağı · Sarkaçlı Asa",
+    "uyumKosulu": "Büyücü, Sorcerer, Warlock",
+    "fiyatGp": null,
+    "taban": "quarterstaff",
+    "tabanFarki": "isabette 10 ft geri itme taban silahta yok; Büyücü, Sorcerer ve Warlock ortak büyü odağı",
+    "hasar": "1d6 + 3 ezici + 2d6 psişik",
+    "silahOzellikleri": [
+     "Versatile"
+    ],
+    "bonus": "+3 Büyü / +2 DC",
+    "ozet": "Kara Malek'in klonlama teknolojisine geçtikten sonra kulesinde bıraktığı boş filakteriden yapılma, Kaltakkıran'ın kırık yemin demiriyle kelepçelenmiş sarkaçlı asa: üç büyü sınıfını tek odakta birleştirir ve korkuyu doğrudan psişik kâbus uykusuna çevirir.",
+    "ozellikler": [
+     {
+      "ad": "Büyü odağı",
+      "metin": "Büyücü, Sorcerer ve Warlock büyülerinin tamamı için ortak odak sayılır. Büyü saldırı zarlarına +3, büyü kurtarma zarı DC'sine +2 bonus verir (hedef Frightened, Charmed veya Unconscious ise DC +3 olur).",
+      "durum": "planli",
+      "not": "büyü saldırısına +3 ile DC'ye +2 ayrı değer; motorda tek büyü bonusu (bonus.spell) var; Frightened/Charmed/Unconscious hedefe DC +3 koşulu yok"
+     },
+     {
+      "ad": "Silah",
+      "metin": "Yakın dövüşte +3 büyülü asa (1d6 + 3 ezici + 2d6 psişik hasarı; isabette hedef 10 ft geri itilir).",
+      "durum": "kismi",
+      "not": "+3 saldırı/hasar ve 2d6 psişik bağlı Quarterstaff ile çalışır; isabette 10 ft geri itme yok"
+     },
+     {
+      "ad": "Korku Beslemesi",
+      "metin": "60 ft içindeki Frightened her düşman tur başında 1d8 psişik hasarı alır; bu hedeflere attığın tüm psişik ve nekrotik büyüleri +1d8 ek hasar vurur.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Kadim İrade Kıran",
+      "metin": "Frightened bağışıklığı olan yaratıklara karşı bu bağışıklığı delerek yalnızca kurtarma zarı Avantajı'na indirger.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Korku Yükleri (6 yük, UD 1d4+2; 30 ft içinde korkmuş düşman ölünce veya kritik başarısız save atınca +1 yük)",
+      "metin": "(1) Yüzyıllık Ninni (2 yük, Eylem): 30 ft konide DC 19 WIS — başarısız normal hedef 3d8 psişik hasarı + 1 dk Frightened; zaten Frightened hedef 4d8 psişik hasarı + Kâbus Uykusu (Unconscious, tur başı 2d6 psişik hasarı uyandırmaz, yalnızca fiziksel darbe veya müttefik eylemi uyandırır); koni 2 tur Kâbus Sisi olur (WIS zarlarına −1d4). (2) Kör Nokta Perdesi (1 yük, Tepki): Sana gelen saldırı/tek hedefli büyüde saldıran DC 19 INT geçemezse hedefi haritada yok sayar, saldırı boşa düşer ve fırsat saldırısız 15 ft kayarsın. (3) Boş Filakterinin Yankısı (3 yük, 1/UD): 0 HP'ye düştüğünde 1 HP + 30 geçici canla ayakta kalırsın ve 20 ft çevredeki düşmanlar DC 19 WIS (başarısız: 4d8 psişik hasarı + 15 ft itme + Frightened) yer.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Uykusuzluk Yankısı: Uyumlu karakter (elfler dahil) uzun dinlenmede harcanan Can Zarlarının yalnızca yarısını geri kazanır. Kozmik Alev Çatlağı: Ateş ve ışıltı hasarını birlikte içeren kozmik bir etki (Anka alevi) altında Kör Nokta Perdesi ve 0 HP kurtuluşu kilitlenir.",
+    "kimlerKullanamaz": "Büyücü, Sorcerer veya Warlock sınıfına sahip olmayan karakterler asayla uyum yapamaz."
+   }
+  },
+  {
+   "id": "robe-of-the-blindspot",
+   "name": "Robe of the Blindspot",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Karanlık Elf gölge ipeğinden dokunmuş, yakasında Kara Malek'in rünü ve Kaltakkıran'ın kırık kılıç tokasını taşıyan cübbe: düşmanın algısını bükerek saldırıları saptırır ve büyücüyü neredeyse dokunulmaz kılar.",
+   "weight": 4.0,
+   "effects": {
+    "unarmoredAcBonus": 5
+   },
+   "passive": {
+    "resist": [
+     "psychic"
+    ],
+    "immune": [
+     "Charmed",
+     "Frightened"
+    ]
+   },
+   "katalog": {
+    "ref": "BOSS#2",
+    "tr": "Kör Nokta Cübbesi",
+    "nadirlik": "efsanevi",
+    "tur": "zirh",
+    "yuva": "zırhsız",
+    "uyumKosulu": "Büyücü, Sorcerer, Warlock",
+    "fiyatGp": null,
+    "taban": "Zırhsız",
+    "bonus": "AC: 15 + DEX",
+    "ozet": "Karanlık Elf gölge ipeğinden dokunmuş, yakasında Kara Malek'in rünü ve Kaltakkıran'ın kırık kılıç tokasını taşıyan cübbe: düşmanın algısını bükerek saldırıları saptırır ve büyücüyü neredeyse dokunulmaz kılar.",
+    "ozellikler": [
+     {
+      "ad": "Cübbe",
+      "metin": "Zırh yeterliliği gerektirmeden temel AC 15 + DEX sağlar.",
+      "durum": "kismi",
+      "not": "zırhsız taban 10 + DEX'e +5 eki olarak (15 + DEX); kalkan taşınırken ek düşer, Unarmored Defense tabanıyla toplanır (PDF tabanı değiştirir)"
+     },
+     {
+      "ad": "Zihin Kalkanı",
+      "metin": "Psişik hasarına Direnç, Charmed ve Frightened durumlarına bağışıklık.",
+      "durum": "calisir",
+      "not": "psişik direnç, Charmed ve Frightened bağışıklığı"
+     },
+     {
+      "ad": "Yüzyıllık Nöbet",
+      "metin": "Tüm Konsantrasyon kurtarma zarlarına +3 sabit bonus.",
+      "durum": "planli",
+      "not": "yalnız konsantrasyon kurtarmasına sabit eklenti kancası yok"
+     },
+     {
+      "ad": "Algıdan Silinme",
+      "metin": "Senden 30 ft veya daha uzaktaki düşmanların tüm saldırı zarları Dezavantajlıdır (hedef Frightened ise bu mesafe 15 ft'e daralır).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Gölge Kayması (2/UD, Tepki)",
+      "metin": "Hasar aldığında hasarı yarılar, bulunduğun altıgende siyah dumanlı bir kâbus sureti bırakır ve görüş hattındaki 20 ft içindeki boş bir altıgene fırsat saldırısız ışınlanırsın; suret bir sonraki turunun başında patlar ve 5 ft bitişikteki düşmanlara DC 19 WIS ile 2d8 psişik hasarı ve 1 tur Frightened verir.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Zihin Perdesi (1/UD, Bonus Eylem)",
+      "metin": "2 tur boyunca Invisible olursun; kontrol/korku/aldatma büyüleri görünmezliği bozmaz (yalnızca doğrudan hasar veren saldırı/büyü 1 tur sonunda perdeyi açar).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Set Sinerjisi (Filakteri Sarkacı ile)",
+      "metin": "Gölge Kayması sureti bir düşmanı korkuttuğunda sarkaç +1 Korku Yükü kazanır; sana karşı atılan Counterspell ve Dispel Magic zarları Dezavantajlı olur.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Silik Varlık: Dost olmayan NPC'lerle Persuasion kontrollerinde Dezavantaj (Stealth ve Intimidation için Avantaj) verir. Kozmik Alev Çatlağı: Ateş ve ışıltı hasarını birlikte içeren kozmik bir etki (Anka alevi) altında o turun sonuna dek Algıdan Silinme ile Zihin Perdesi kapanır ve +3 Konsantrasyon bonusu işlemez.",
+    "kimlerKullanamaz": "Büyücü, Sorcerer veya Warlock sınıfına sahip olmayan karakterler uyum yapamaz; zırhla birlikte giyilemez."
+   }
+  },
+  {
+   "id": "mountain-crushers-chained-monolith",
+   "name": "Mountain-Crusher's Chained Monolith",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Tarvok'un kendi gladyatör arenasından söküp ağır demir zincir ve Pehlivan rünleriyle sardığı kırık granit sütun: dev erişimle kemik ve zemin kırar, zincirle fırlatılıp geri çekilir.",
+   "weight": 45.0,
+   "effects": {},
+   "bonus": {
+    "weapon": 3
+   },
+   "onHit": {
+    "dice": "1d8",
+    "type": "thunder",
+    "label": "Zincirli Dikilitaş"
+   },
+   "katalog": {
+    "ref": "BOSS#3",
+    "tr": "Dağ Ezen'in Zincirli Dikilitaşı",
+    "nadirlik": "efsanevi",
+    "tur": "silah",
+    "yuva": "Savaş silahı (Dev Sütun / Balyoz)",
+    "fiyatGp": null,
+    "taban": "maul",
+    "tabanFarki": "hasar zarı 2d8 (Maul 2d6); Reach 10 ft ve Thrown 20/60 ft (zincirle geri döner) yok; ustalıkta Push seçimi yok (Maul: Topple)",
+    "hasar": "2d8 + 3 ezici + 1d8 gürültü",
+    "ustalik": "Topple / Push",
+    "silahOzellikleri": [
+     "Heavy",
+     "Two-Handed",
+     "Reach",
+     "Thrown"
+    ],
+    "menzil": "Reach 10 ft · Thrown 20/60 ft",
+    "bonus": "+3",
+    "ozet": "Tarvok'un kendi gladyatör arenasından söküp ağır demir zincir ve Pehlivan rünleriyle sardığı kırık granit sütun: dev erişimle kemik ve zemin kırar, zincirle fırlatılıp geri çekilir.",
+    "ozellikler": [
+     {
+      "ad": "Silah",
+      "metin": "+3 saldırı ve hasar bonusu verir; Heavy, Two-Handed, Reach (10 ft) ve Thrown (20/60 ft) özelliklidir (fırlatıldıktan sonra zincirden çekilerek ücretsiz ele döner). Her isabetli saldırı 2d8 + 3 + STR ezici hasarı ve 1d8 gürültü hasarı vurur; saldırı anında Topple veya Push (10 ft) ustalığı seçilir.",
+      "durum": "kismi",
+      "not": "+3 saldırı/hasar ve 1d8 gürültü bağlı Maul ile çalışır; 2d8 zarı, Reach 10 ft, geri dönen Thrown 20/60 ve Push seçimi yok"
+     },
+     {
+      "ad": "Sütun Sarsıntısı",
+      "metin": "Kritik vurduğunda veya bir hedefi Prone düşürdüğünde hedefin altıgeni ve bitişik 6 altıgen çatlayarak Kırık Kaya (Zorlu Arazi) yüzeyine dönüşür.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Arena Yaran Savuruş (2/UD, Eylem — iki moddan biri)",
+      "metin": "(1) Dairesel Yıkım: 15 ft yarıçaptaki tüm düşmanlar DC 19 STR kurtarma zarı atar (başarısız: 4d8 ezici hasarı + 2d8 gürültü hasarı + 15 ft geri savrulma + Prone; başarılı: yarı hasar). (2) Zincirli Mermi: 30 ft uzunluğunda düz hatta fırlatıp geri asılırsın; hattaki tüm düşmanlar DC 19 DEX atar (başarısız: 4d8 ezici + 2d8 gürültü, başarılı: yarı) ve seçilen bir hedef zincire dolanarak sana doğru 15 ft çekilir.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Dağın Ağırlığı: Cezasız kullanmak için STR 19+ gerekir; STR 19 altındaki karakterler saldırı zarlarında Dezavantaj alır ve yürüme hızı 10 ft düşer. 45 lb ağırlığı taşıma kapasitesini ciddi biçimde doldurur.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Arena Yaran Savuruş ve Sütun Sarsıntısı güçlerini açamaz; Martial silah yetkinliği olmayan yetkinlik bonusunu ekleyemez."
+   }
+  },
+  {
+   "id": "champions-crag-harness",
+   "name": "Champion's Crag Harness",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Tarvok'un dağ yamacından koparıp kırık gladyatör kalkanlarıyla omzuna bağladığı zırhsız kaya koşumu: Barbar Öfkesi'ni bozmadan devasa fiziksel ve elemental direnç sağlar, darbeleri gürültü şokuyla geri sektirir.",
+   "weight": 28.0,
+   "effects": {
+    "unarmoredAcBonus": 3
+   },
+   "katalog": {
+    "ref": "BOSS#4",
+    "tr": "Şampiyonun Kaya Koşumu",
+    "nadirlik": "efsanevi",
+    "tur": "zirh",
+    "yuva": "zırhsız",
+    "fiyatGp": null,
+    "taban": "Zırhsız",
+    "bonus": "Ek AC: +3 · Fiziksel −4",
+    "ozet": "Tarvok'un dağ yamacından koparıp kırık gladyatör kalkanlarıyla omzuna bağladığı zırhsız kaya koşumu: Barbar Öfkesi'ni bozmadan devasa fiziksel ve elemental direnç sağlar, darbeleri gürültü şokuyla geri sektirir.",
+    "ozellikler": [
+     {
+      "ad": "Koşum",
+      "metin": "Zırh sayılmaz (Barbar Zırhsız Savunma, Öfke ve Hızlı Hareket'i bozmaz) ve zırhsız AC hesabına +3 bonus ekler.",
+      "durum": "kismi",
+      "not": "zırhsız AC'ye +3 (Unarmored Defense ile toplanır); kalkan taşınırken motor eki düşürür"
+     },
+     {
+      "ad": "Taşın Kalbi",
+      "metin": "Aldığın tüm ezici, delici ve kesici hasarlar direnç sonrası sabit −4 azalır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Dağın Derisi",
+      "metin": "Barbar Öfkesi (veya benzeri savaş duruşu) açıkken psişik hasarı dışındaki tüm hasar türlerine Direnç kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Kaya Yankısı",
+      "metin": "Taşın Dayanıklılığı veya tepkiyle hasar azaltan bir yetenek kullandığında azalttığın zar +1d12 artar (Taş Golyatında 2d12 + CON) ve emdiğin hasarın yarısı (aşağı yuvarlanır) 5 ft içindeki saldırgana gürültü hasarı olarak geri çarpar.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Yıkılmaz Duruş",
+      "metin": "Zorla itilmeye/çekilmeye (forcedMove) ve irade dışı Prone etkisine bağışıklık.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "\"Sağlam Oyuncak!\" Meydan Okuması (2/UD, Bonus Eylem)",
+      "metin": "30 ft içindeki bir düşmanı işaretlersin; DC 19 WIS geçemezse 2 tur boyunca senden başkasına saldırılarında Dezavantaj alır ve bu 2 turda o hedeften yediğin her darbe sana +10 geçici can verir (en fazla 30).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Set Sinerjisi (Zincirli Dikilitaş ile — Altıgen Bilardosu)",
+      "metin": "Fırlatma veya itme etkilerinle bir düşmanı başka bir birime, sütuna veya arena duvarına çarptırdığında ekstra +3d6 ezici hasarı vurur ve çarpışan her iki yaratık da Prone olur.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Çatlak Zihin Mirası: Koşumu giyen karakter psişik hasarına Zayıflık (Vulnerability · 2×) ve INT kurtarma zarlarında Dezavantaj alır. Hantal Kaya Kütlesi: Tüm Stealth kontrolleri Dezavantajlıdır; yüzme ve tırmanma hızı yarıya iner.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter koşumun direnç, yansıma ve meydan okuma güçlerini açamaz; zırhla birlikte giyilemez."
+   }
+  },
+  {
+   "id": "kaltakkirans-paladin-armor",
+   "name": "Kaltakkıran's Paladin Armor",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "On mühür yuvalı kadim paladin tam plakası: kıtanın on bölgesindeki Seviye 3 taşları kalıcı olarak yutarak her birinin hasar türünde tam bağışıklık ve imza boss savaş sanatı açar; 10/10 tamamlandığında taşıyıcısını neredeyse yenilmez kılar.",
+   "weight": 65.0,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#5",
+    "tr": "Kaltakkıran'ın Paladin Zırhı",
+    "nadirlik": "yadigar",
+    "tur": "zirh",
+    "yuva": "ağır",
+    "uyumKosulu": "1→3 Yuva",
+    "fiyatGp": null,
+    "taban": "Plate Armor",
+    "bonus": "AC: 18→20",
+    "ozet": "On mühür yuvalı kadim paladin tam plakası: kıtanın on bölgesindeki Seviye 3 taşları kalıcı olarak yutarak her birinin hasar türünde tam bağışıklık ve imza boss savaş sanatı açar; 10/10 tamamlandığında taşıyıcısını neredeyse yenilmez kılar.",
+    "ozellikler": [
+     {
+      "ad": "Zırh",
+      "metin": "Temel AC 18'dir (5+ kaynaşmış taşta AC 19, 10/10 taşta AC 20); Stealth dezavantajı verir. Ağır zırh giyme (10 dk) ve çıkarma (5 dk) kuralları geçerlidir; savaş içinde değiştirilemez.",
+      "durum": "kismi",
+      "not": "Plate Armor (18, Stealth dezavantajı) çalışır; 5+ ve 10 taşta AC 19/20 kademesi soket sistemi bekler; giyme/çıkarma süresi savaş dışı"
+     },
+     {
+      "ad": "Kalıcı Kaynaşma",
+      "metin": "Savaş dışında bir Seviye 3 Taş zırhın göğsündeki boş yuvaya basıldığında anında metalle kaynaşır ve bir daha asla sökülemez. Zırh giyildiği sürece kaynaşmış bütün taşların bağışıklıkları, pasifleri ve aktif Savaş Sanatları aynı anda çalışır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Gövde Onarımı ve Uyum Bedeli",
+      "metin": "0– 4 taşta 1 Uyum yuvası kaplar; 5–9 taşta 2 Uyum yuvası kaplar ve ezici, delici ve kesici hasarlara Direnç verir; 10/10 taşta 3 Uyum yuvasının tamamını kilitler ve ezici, delici ve kesici hasarlara da Tam Bağışıklık (Immunity) açar (İhanet Çatlağı anları hariç).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Hükümdar Vuruşu",
+      "metin": "En az 1 taş kaynaşmışken, turda bir kez isabetli silah saldırına kaynaşmış taşlarından seçtiğin birinin hasar türünden +1d6 ek hasar katarsın (5+ taşta +1d8, 10 taşta +2d6 ve seçilen türde direnç yok sayma).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Zırh giyiliyken bitirilen her savaş ve uzun dinlenme Kararma Sayacı'nı yükseltir; kaynaşmış taş sayısı arttıkça kararma katlanır. 50+ Kararmada iyi diyalog seçimleri kapanır, 75+ Kararmada zırhı çıkarmak WIS kurtarma zarı ister, 100 Kararmada zırh bedene kilitlenir. Ayrıca ejderha veya kadim varlıklar karşısında Üstün Varlık Çekimi (İhanet) riski doğar.",
+    "kimlerKullanamaz": "Ağır zırh eğitimi olmayan karakter STR/DEX d20 testlerinde dezavantaj alır ve büyü yapamaz; STR 15 altında yürüme hızı 10 ft düşer. Gerekli uyum yuvası (5+ taşta 2, 10 taşta 3 yuva) boşaltılmadan zırhın üst kademesi açılmaz."
+   }
+  },
+  {
+   "id": "kaltakkirans-maw-chain-greatsword",
+   "name": "Kaltakkiran's Maw-Chain Greatsword",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kaltakkıran'ın kırılan eski paladin yemin kılıcından dövülen ve yalnızca onun zırhıyla uyanan eklemli zincir büyük kılıç: tek vuruşta kesici, ezici ve delici hasarı birlikte indirir; zincir formuna uzayıp hedefi pençeli çenesiyle sarmalar ve kurbanın en zayıf olduğu büyü veya element enerjisini doğrudan bedenine akıtır.",
+   "weight": 13.0,
+   "effects": {},
+   "katalog": {
+    "ref": "BOSS#6",
+    "tr": "Kaltakkıran'ın Çeneli Zincir Kılıcı",
+    "nadirlik": "efsanevi",
+    "tur": "silah",
+    "yuva": "Savaş silahı (Dönüşen Dev Kılıç / Zincir)",
+    "uyumKosulu": "Zırha Kilitli (Ek Uyum İstemez)",
+    "fiyatGp": null,
+    "taban": "greatsword",
+    "tabanFarki": "Greatsword 2d6 kesici; üç fiziksel tür (1d6 kesici + 1d6 ezici + 1d6 delici), adaptif hasar, 15 ft zincir formu ve zırh bağı yok",
+    "hasar": "1d6 kesici + 1d6 ezici + 1d6 delici + 3 + adaptif",
+    "ustalik": "Graze (Kilitli) / Topple veya 5 ft çekme (Zincir)",
+    "silahOzellikleri": [
+     "Heavy",
+     "Two-Handed"
+    ],
+    "menzil": "Erişim: 5 ft / 15 ft",
+    "bonus": "+3",
+    "ozet": "Kaltakkıran'ın kırılan eski paladin yemin kılıcından dövülen ve yalnızca onun zırhıyla uyanan eklemli zincir büyük kılıç: tek vuruşta kesici, ezici ve delici hasarı birlikte indirir; zincir formuna uzayıp hedefi pençeli çenesiyle sarmalar ve kurbanın en zayıf olduğu büyü veya element enerjisini doğrudan bedenine akıtır.",
+    "ozellikler": [
+     {
+      "ad": "Zırha Kilitli Bağ",
+      "metin": "Bu kılıç yalnızca Kaltakkıran'ın Paladin Zırhı giyiliyken uyandırılıp savaşta kullanılabilir; zırhın kendi Uyum bağından beslenir ve ikinci bir Uyum yuvası harcamaz. Zırh sırtında değilken kılıcın eklemleri taş kesilir, rün hattı söner ve savaşta savrulamaz. Zırh giyiliyken +3 saldırı ve hasar bonusu verir; Heavy ve Two-Handed özelliklidir. Her isabetli saldırı 1d6 kesici (jilet çentikler) + 1d6 ezici (ağır gövde ve çene kütlesi) + 1d6 delici (pençeli uç dişleri) + 3 + STR (hedefin dirençsiz olduğu fiziksel türe yazılır) hasarı vurur.",
+      "durum": "planli",
+      "not": "zırh bağı kancası yok; zırhsız kullanım engellenemediği için +3 ve üç fiziksel tür motora verilmedi (taban Greatsword yalın)"
+     },
+     {
+      "ad": "Çift Form Geçişi",
+      "metin": "Bonus eylemle (veya saldırıdan hemen önce serbestçe) Kilitli Kılıç (5 ft, Ustalık: Graze, +2d6 adaptif) ile Açık Zincir (15 ft, Ustalık: Topple veya 5 ft çekme, +1d6 adaptif; sarmaldayken +2d6) formları arasında geçiş yapılır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Boğucu Kıskaç ve Zaaf Akımı (2 yük, UD; Karanlık Final'de 3 yük)",
+      "metin": "Açık Zincir formunda eylemle 15 ft içindeki tek bir hedefe saldırırsın; isabet ederse hedef normal silah hasarını alır ve DC 18 STR veya DEX kurtarma zarı atar. Başarısız olan hedef Restrained olur (kaçmak için tur sonunda eylemle DC 18 STR/DEX). Hedef sarmalı kaldığı sürece: (a) her turunun başında 2d6 adaptif büyü/element hasarı alır ve sarmal boyunca o türe Zayıflık (Vulnerability) kazanır (direnci varsa kırılır); (b) altındaki altıgen akıtılan elemente uygun harita yüzeyine dönüşür.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Jiletli Geri Çekiş",
+      "metin": "Kullanıcı bonus eylemle zinciri kılıç formuna geri toplayıp sarmalı bozabilir; hedefe 2d6 kesici hasarı vurur, onu 10 ft kendine çeker ve Prone yapar.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Taş Yankısı",
+      "metin": "Silahın seçtiği element/büyü türü zırha kaynaşmış bir Seviye 3 Taş ile eşleşiyorsa adaptif hasar ve sarmal akımı 2d6 → 3d6 olur.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Zırh giyilmeden kullanılamadığı için bu kılıcı çekmek her zaman Kararma bedelini göze almak demektir; kullanıldığı her savaş zırhın Kararma artışına +2 daha ekler. Bir hedef sarmalanmışken başka düşmana vurmak için önce sarmal bırakılmalıdır. Final Akıbeti: Yol A'da (Ölümsüz Koruyucu) zırh Kıta Ejderhası'na geçtiğinde kılıcın tüm karanlık gücü kalıcı olarak söner ve kılıç savaş dışı bir Devrim Simgesi olarak kalır; Yol B'de (Yeni Kaltakkıran) ise tam gücüyle ve 3/UD Boğucu Kıskaç yüküyle sınırsızca kullanılır.",
+    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'nı giymeyen hiç kimse bu kılıcı savaşta kullanamaz. Zırh giyiliyken dahi Martial silah yetkinliği olmayan karakter yetkinlik bonusunu ekleyemez; STR 13 altında dezavantaj alır."
+   }
   }
  ]
 }

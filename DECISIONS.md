@@ -2,6 +2,43 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev KATALOG-1 B: 60 özgün zırh, cübbe, kalkan + 6 boss imza eşyası (2026-11-26; kural sürümü ve kayıt sürümü değişmedi)
+
+Kaynak: Zırh Kataloğu #1–45 (`ZK#`), Karanlık Yadigârlar #36–44, #49–53, #55 (`KY#`; #45–48 ve #54 başlık, C'de), boss dosyaları:
+Mora'nın Filakteri Sarkacı ve Kör Nokta Cübbesi, Tarvok'un Zincirli Dikilitaşı ve Kaya Koşumu, Kaltakkıran'ın Paladin Zırhı ve Çeneli
+Zincir Kılıcı (`BOSS#1–6`, envanter 3.9 sırası; S1 kararı: üç imza silah zırh/koşum/cübbe eşleriyle B'de).
+
+- **Metin birebir** (A ile aynı yöntem): 66 eşyada özet, 191 güç, riskler ve kimler kullanamaz cümle cümle ham PDF metninde aynen
+  geçiyor. Riskler/kimler ayrımı `-layout` metninde satır başından (bölüm metni yeni satırda başlar); etiket sütunu kaymış 26 parçada
+  risk başlangıç satırı elle verildi. Zırhın ilk paragrafındaki AC/Stealth cümleleri "Zırh"/"Kalkan"/"Cübbe" gücü, kalanı "… ek etkisi".
+- **Zırh AC'si:** taban SRD zırhı türe, AC'ye ve Stealth'e göre (hafif: Leather 11, Studded 12; orta Stealth normal: Chain Shirt 13,
+  Breastplate 14; orta Stealth dezavantajlı: Half Plate 15; ağır: Chain Mail 16, Splint 17, Plate 18) + `effects.armorAcBonus` farkı.
+  Ad ile istatistik çelişirse istatistik esas (Shadowknight Half Plate → Breastplate + 2, Sparkmesh Chain Shirt → Breastplate,
+  Dwarven Anvil Splint → Plate, Moonshift Hide → Studded Leather, Briarwander Hide → Chain Shirt, Venomcarapace/Stormplate Scale →
+  Half Plate). "Tam DEX" (ZK#11, #15) ve "STR şartı/eğitim yok" (ZK#22) `tabanFarki`, "Zırh" gücü `kismi`. O3b zırh bağı yok:
+  sihirli ek her giyilen zırha eklenir (SRD Armor +N gibi).
+- **Kalkan (K8):** katalogdaki +N sihirli, kalkanın kendi +2'sine eklenir (`shieldAcBonus`); metin "Toplam +3 AC" diyen iki kalkanda
+  (Walking Bastion "temel +2 kalkan +1 büyülü", Spellmirror) sihirli +1. ⚠ "+2 AC sağlar" diyen 10 kalkanın kimler metni "Kalkan
+  eğitimi olmayan +2 AC bonusunu alamaz" (kalkanın kendi +2'si gibi okunuyor); K8'e göre sihirli +2 verildi, kullanıcıya soruldu.
+- **Cübbe:** zırhsız AC eki `unarmoredAcBonus` (zırhsız ve kalkansızken; Unarmored Defense/Mage Armor tabanıyla birleşir); kalkan
+  taşınırken ek düştüğü için "Cübbe" gücü `kismi`. Kör Nokta Cübbesi "temel AC 15 + DEX" = zırhsız 10 + DEX + 5 (Unarmored Defense
+  tabanıyla toplanır ⚠). Üstün Odak Cübbesi (ZK#34) AC'si yalnız konsantrasyonda: zırhsız eki yerine koşullu paket pasifi
+  (`zarEtkisi` `kosul: konsantrasyon`, +1 AC, bütün kurtarmalara +2).
+- **Birebir mekanikler:** direnç/bağışıklık/durum bağışıklığı (`passive.resist`, `immuneDamage`, `immune`), tüm kurtarma +N
+  (`effects.saveBonus`), tek yetenek kurtarma +N (`passive.saveMod`), kurtarma avantajı (`saveAdv`), büyülere karşı avantaj
+  (`saveAdvAgainst: ['spell']`, Magic Resistance yolu), Web Walker, hız +5 ft, DEX kontrolü avantajı (`checkAdv`), inisiyatif bonusu
+  ve avantajı (paket), büyü saldırısı + DC eşit bonus (`bonus.spell`), SRD büyüsü yapan güçler (Plant Growth 3. seviye, Warding Bond),
+  imza silahlarında bağlı taban silahta `bonus.weapon` + `onHit` (Sarkaç: Quarterstaff, +3, 2d6 psişik; Dikilitaş: Maul, +3, 1d8
+  gürültü).
+- **Planlı bırakılanlar:** sabit hasar azaltma ("tüm hasar −N", motorda yok; `reduce` turda bir), beceri düzeyinde bonus/avantaj
+  (Stealth, Perception, Persuasion, Nature), yalnız DC ya da yalnız saldırı büyü bonusu, Burning bağışıklığı, ışık/zemin/yükseklik
+  koşulları, yük harcayan özgün güçler, en yüksek can +10, kalkanla silah saldırısı (KY#36, en yakın SRD Rapier), Çeneli Zincir
+  Kılıcı'nın zırh bağı (bağ kontrol edilemediği için +3 ve üç fiziksel tür motora verilmedi; zırha kilitli, `attunement: false`).
+- Sayılar: 191 güç = 67 çalışır, 29 kısmen, 95 planlı. Bütünüyle çalışan: Üstün Odak Cübbesi (ZK#34), Güneş Siperi Kalkanı (ZK#42).
+- Testler: `data.test.ts` eşya sayısı 524 → 590, `gorselEsleme.test.ts` 574 → 640 (66 eşya, yedek tür ikonu `esya-zirh`/`esya-kalkan`/
+  `esya-silah`, elle eklendi), `katalogA.test.ts` A sayımı BOSS silahları hariç 125 ve bağ denetimi yalnız silahlarda;
+  `src/battle/katalogB.test.ts`. `esya-silah-bagi.json` +3 satır (imza silahları).
+
 ## Görev KATALOG-1 A: 125 özgün silah (2026-11-26; kural sürümü ve kayıt sürümü değişmedi)
 
 Kaynak: Silahlar Cilt 1 (40), Cilt 2 (50), Karanlık Yadigârlar #1–35 (35). `data/items-katalog.json`, kimlik EN-AD'dan kebab-case;

@@ -18,7 +18,7 @@ import { ilkelErrors } from '../content/ilkelSema';
 import { esyaProspektus } from '../dungeondex/prospektus/esya';
 import { t } from '../i18n';
 
-const kat = (katalog as unknown as { esyalar: Array<{ id: string; name: string; katalog: { tur: string; taban: string; ozellikler: Array<{ durum: string }> } }> }).esyalar;
+const kat = (katalog as unknown as { esyalar: Array<{ id: string; name: string; katalog: { ref: string; tur: string; taban: string; ozellikler: Array<{ durum: string }> } }> }).esyalar;
 const sheet = (itemNames: string[], weapons: string[], patch: Partial<CharacterSheet> = {}) => ({ ...blankCharacter('p1').sheet, name: 'Savaşçı', classId: 'fighter', level: 5,
   weapons: weapons.map((name) => ({ name })), itemNames, ...patch }) as CharacterSheet;
 const opts = (sh: CharacterSheet) => {
@@ -30,8 +30,10 @@ const opts = (sh: CharacterSheet) => {
 
 describe('KATALOG-1 A: silahlar', () => {
   it('125 silah, hepsi listede ve taban SRD silahına bağlı; her silahın en az bir gücü kayıtta', () => {
-    expect(kat.filter((x) => x.katalog.tur === 'silah')).toHaveLength(125);
-    for (const x of kat) {
+    // Görev KATALOG-1 B: imza silahları (BOSS#) B'de; A'nın 125 silahı katalog kaynaklı.
+    const silah = kat.filter((x) => x.katalog.tur === 'silah');
+    expect(silah.filter((x) => !x.katalog.ref.startsWith('BOSS#'))).toHaveLength(125);
+    for (const x of silah) {
       expect(items.some((i) => i.id === x.id), x.id).toBe(true);
       expect(boundWeaponName({ weapons: [{ name: 'Dagger' }] }, x.name) === null || x.katalog.taban === 'dagger', x.id).toBe(true);
       expect(x.katalog.ozellikler.length, x.id).toBeGreaterThan(0);

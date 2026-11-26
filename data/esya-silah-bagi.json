@@ -161,6 +161,9 @@
     "ember-perfume-bottle": ["dart"],
     "storm-perfume-bottle": ["dart"],
     "frost-perfume-bottle": ["dart"],
-    "crimson-needle-rapier": ["rapier"]
+    "crimson-needle-rapier": ["rapier"],
+    "abandoned-phylactery-pendulum": ["quarterstaff"],
+    "mountain-crushers-chained-monolith": ["maul"],
+    "kaltakkirans-maw-chain-greatsword": ["greatsword"]
   }
 }
