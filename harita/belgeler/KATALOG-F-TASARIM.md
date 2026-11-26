@@ -356,4 +356,4 @@ Motor savaşta ganimet düşürmez. `ganimet` alanı yalnızca veridir; verilmes
 
 **Ortam.** Sv.1 ve Sv.2, bossun `ortam` listesini paylaşır (§1 tablosu). Sv.1 ayrıca bölgenin ilk haritasına eklenir: `buzul-kamp`, `dag`, `bataklik`, `orman` vb. Liste Aşama 2'de `monster-ortamlari.json`'a yazılır.
 
-**Durum.** 20 yaratığın bütün özellikleri mevcut veri alanlarıyla "birebir" yazılır. Sv.1/Sv.2'de sığmayan parça yoktur, çünkü sığmayanlar küçültmede bilerek bırakıldı. Görsel yoksa jeton `Avatar`'ın `onError` yedeğine düşer (kırık resim çıkmaz). Görseller BOSS-GORSEL'in kapsamında değilse ayrı iş olarak yazılır.
+**Durum.** 20 yaratığın bütün özellikleri mevcut veri alanlarıyla "birebir" yazılır. Sv.1/Sv.2'de sığmayan parça yoktur, çünkü sığmayanlar küçültmede bilerek bırakıldı. Görsel yoksa jeton `Avatar`'ın `onError` yedeğine düşer (kırık resim çıkmaz). Ham görseller depo dışında `assets-ham/boss/<kimlik>.jpg`: 30 kimliğin 26'sı var. **Eksik 4:** `mirit`, `mirath`, `darkit`, `darkath`. `public/boss/` dönüşümü BOSS-GORSEL-1'in işi.
