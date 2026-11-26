@@ -9,6 +9,18 @@ Görev KATALOG-1 F, Aşama 1. Bu dosya yalnızca belgedir: kod, veri ve test de�
   - *Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi* (21 s.): §5 on Seviye 3 taş, §6 on bölge bossu ve fazları.
   - *Kadim Yaratıklar ve Mücevher Ejderhası Kataloğu* (11 s.).
 
+**Onay durumu (kullanıcı, 2026-11-26):**
+
+- K1 onaylandı: boss CR 14.
+- K2 onaylandı: Fiend; ışıltı çizgisi (Lightaur) Celestial.
+- K3 onaylandı: Faz 2 için Game Master notu.
+- K4 onaylandı: efsanevi direnç 3/gün ve efsanevi eylem 3.
+- K5 onaylandı: kadim yaratıklar F2'ye.
+- K6 onaylandı: boyut tablosu olduğu gibi.
+- **Ek istek:** her boss için Sv.1 ve Sv.2 evrim yaratığı (20 yaratık, §9). Ateş bossunun kimliği ve dosya adı artık `cimbombom`.
+- **Yeniden adlandırma:** zehir bossu Mothra artık **Mothraq** (kimlik ve dosya adı `mothraq`; görsel `assets-ham/boss/mothraq.jpg`). Çizgi: `sporlet` → `mothcoon` → `mothraq`. PDF adı "Spor Hükümdarı" yalnız `eskiAd` alanında kalır.
+- Açık soru: yalnız K7 (§8). §9'daki CR ve stat önerileri bu güncellemeyle eklendi ve onay bekliyor.
+
 ## 0. Önce bilinmesi gereken üç bulgu
 
 1. **PDF'te bölge bosslarının stat bloğu yok.** §6 her boss için yalnız üç bilgi verir: element, bir cümlelik "Faz 1 — Temel Savaş Kimliği" ve "Faz 2 (%50 Can) — Taş Uyanışı". §5'teki taş prospektüsleri buna iki şey ekler: bossun kendi taşından gelen bağışıklıkları ve **taşın Savaş Sanatı**. PDF bu sanatı "o taşı taşıyan bölge boss'undan miras" diye anar, yani bossun imza eylemidir.
@@ -20,8 +32,8 @@ Görev KATALOG-1 F, Aşama 1. Bu dosya yalnızca belgedir: kod, veri ve test de�
 ## 1. Kimlik, sınıf ve dosya düzeni (Aşama 2 için öneri)
 
 - **Sınıf etiketi:** "Mühür Ruhu" / "Seal Spirit" (görünen sınıf; motor mekaniğine girmez). Ad ve unvan İngilizce (SD4), açıklama Türkçe.
-- **Yaratık türü:** motor türü SRD türlerinden biri olmalı. Türe bağlı kurallar şunlardır: Divine Smite +1d8 Fiend/Undead'e, Protection from Evil and Good, Hallow ve Turn Undead. Öneri: on bossun hepsi **Fiend** ("cehennem canavarı"); karar K2.
-- **Veri dosyası:** `data/bosslar-muhur.json`. `data/monsters.json`'a yazılmaz; SRD sayım testi `src/data/srdCanavar.test.ts` 330 canavarı karşılaştırır.
+- **Yaratık türü:** motor türü SRD türlerinden biri olmalı. Türe bağlı kurallar şunlardır: Divine Smite +1d8 Fiend/Undead'e, Protection from Evil and Good, Hallow ve Turn Undead. Karar K2 (onaylı): dokuz çizgi **Fiend** ("cehennem canavarı"), ışıltı çizgisi (`lumbo`, `lighty`, `lightaur`) **Celestial**.
+- **Veri dosyası:** `data/bosslar-muhur.json`. 30 kayıt: 10 boss + 20 evrim yaratığı (§9). `data/monsters.json`'a yazılmaz; SRD sayım testi `src/data/srdCanavar.test.ts` 330 canavarı karşılaştırır.
   - Kayıt `Monster` biçiminde, ek alanlar: `kaynak: "katalog-1"`, `sinif: "muhur-ruhu"`, `element`, `eskiAd` (PDF'teki boss adı), `unvan` TR/EN, `katalog` (PDF kaynak ve sayfa).
   - Jeton yolu `avatar: "boss/<kimlik>.webp"`: `Monster.avatar` zaten `public/` altındaki yolu alır, kod gerekmez.
 - **Güç bağlamaları** var olan dosyalara yeni anahtarlarla yazılır:
@@ -38,12 +50,12 @@ Görev KATALOG-1 F, Aşama 1. Bu dosya yalnızca belgedir: kod, veri ve test de�
 
 | # | Element | Kimlik | Ad, unvan (EN) | `eskiAd` (PDF) | Taş (PDF §5) | PDF bölgesi | Önerilen `ortam` |
 |---|---|---|---|---|---|---|---|
-| 1 | Ateş | `cimbom` | Cimbom, Lion of the Hell | Erimiş Örs Muhafızı | Kor Çekirdeği | Yanık Demirhane | `volkanik-demirhane`, `lav-tapinagi`, `derinlikler-lav-salonu`, `volkan` |
+| 1 | Ateş | `cimbombom` | Cimbom, Lion of the Hell (ad K7'de) | Erimiş Örs Muhafızı | Kor Çekirdeği | Yanık Demirhane | `volkanik-demirhane`, `lav-tapinagi`, `derinlikler-lav-salonu`, `volkan` |
 | 2 | Soğuk | `wolfgang` | Wolfgang, Blizzard Wolf | Tipi Yutan Dev | Ayaz Kalbi | Donmuş Geçit | `buzul-kayalik`, `buzul-acik`, `buzul-tapinak`, `buzul-kamp` |
 | 3 | Yıldırım | `stormer` | Stormer, Thunder Stallion | Şimşek Süvarisi | Fırtına Mili | Paratoner Yaylası | `dag-kayalik`, `dag-kopru`, `dag-nobetci`, `dag` |
 | 4 | Gürültü | `gongar` | Gongar, Bell Shell Brute | Kör Çan Devi | Çınlama Mührü | Yankı Kanyonu | `col-kanyon-nehri`, `col-sutun-harabesi`, `kanyon-koprusu` |
 | 5 | Asit | `hydraxe` | Hydraxe, Sulphur Hydra | Sülfür Hidrası | Erime Damlası | Sülfür Bataklığı | `batak-cukur`, `batak-adalar`, `batak-kale`, `bataklik` |
-| 6 | Zehir | `mothra` | Mothra, Spore Moth | Spor Hükümdarı | Ağu Özü | Çürük Orman | `derinlikler-mantar-magarasi`, `orman-kemik-acikligi`, `orman-heykel-golu` |
+| 6 | Zehir | `mothraq` | Mothraq, Spore Moth | Spor Hükümdarı | Ağu Özü | Çürük Orman | `derinlikler-mantar-magarasi`, `orman-kemik-acikligi`, `orman-heykel-golu` |
 | 7 | Işıltı | `lightaur` | Lightaur, Bull of Celestial | Kırık Hale Şövalyesi | Kör Güneş Parçası | Terk Edilmiş Katedral | `kasaba-demirci-tapinak`, `buzul-tapinak`, `lav-tapinagi` |
 | 8 | Nekrotik | `cerbones` | Cerbones, Crematorium | Kemik Toplayıcı Lord | Mezar Küresi | Kemik Ovası | `orman-kemik-acikligi`, `derinlikler-mezar-labirenti` |
 | 9 | Psişik | `mirage` | Mirage, Life Stealer | Ayna Zihin Avcısı | Vesvese Kristali | Sisli Akademi | `col-sutun-harabesi`, `isinlanma-salonu`, `beyaz-sehir-saray-avlusu` |
@@ -62,7 +74,7 @@ PDF bölgelerinin hiçbiri oyunda harita olarak yok. `ortam` listesi temaya en y
 | Stormer | binekli şövalye | Large | 1 | 3 | 15×7 ve üstü |
 | Gongar | dev tunç çan taşıyıcısı | Huge | 1 | 7 | 21×11 |
 | Hydraxe | dev bataklık hidrası | Huge (SRD Hydra gibi) | 1 | 7 | 21×11 |
-| Mothra | kadim yaratık | Huge | 1 | 7 | 21×11 ya da 31×17 |
+| Mothraq | kadim yaratık | Huge | 1 | 7 | 21×11 ya da 31×17 |
 | Lightaur | kutsal muhafız | Large | 1 | 3 | 15×7 ve üstü |
 | Cerbones | nekromansi komutanı | Huge | 1 | 7 | 21×11 ya da 31×17 |
 | Mirage | ışınlanan avcı | Medium | 1 | 1 | 15×7 ve üstü |
@@ -87,7 +99,7 @@ PDF yalnız DC'leri verir: sanatlar DC 16, Faz 2 auraları DC 15. Önerilen iske
 
 Durum sütunu: **birebir** (mevcut veri alanıyla aynen), **yaklaşık** (en yakın mevcut mekanik; satırda farkı yazılı), **sığmıyor** (KATALOG-SIGMAYAN'a girer), **öneri** (PDF'te yok, tasarım önerisi).
 
-### 4.1 Cimbom, Lion of the Hell (Ateş; eskiAd Erimiş Örs Muhafızı)
+### 4.1 `cimbombom`: Cimbom, Lion of the Hell (Ateş; eskiAd Erimiş Örs Muhafızı)
 
 | Alan | PDF | Motor karşılığı | Durum |
 |---|---|---|---|
@@ -165,7 +177,7 @@ Durum sütunu: **birebir** (mevcut veri alanıyla aynen), **yaklaşık** (en yak
 | Faz 2, her yakın dövüş isabetinde saldırgana 1d8 asit | var | dokunana hasar yalnız Fire Aura (1d10 ateş, sabit) | **sığmıyor**. Yaklaşık: `monster-reactions` hasar tetikli tepki (turda 1, tepki hakkıyla; birebir değil) |
 | Efsanevi | yok | LR 3; LA: Bite (1) | öneri |
 
-### 4.6 Mothra, Spore Moth (Zehir; eskiAd Spor Hükümdarı)
+### 4.6 Mothraq, Spore Moth (Zehir; eskiAd Spor Hükümdarı)
 
 | Alan | PDF | Motor karşılığı | Durum |
 |---|---|---|---|
@@ -184,7 +196,7 @@ Durum sütunu: **birebir** (mevcut veri alanıyla aynen), **yaklaşık** (en yak
 
 | Alan | PDF | Motor karşılığı | Durum |
 |---|---|---|---|
-| CR / boyut / HP / AC | yok | CR 14, Large, Fiend (K2), 230 / 19 ("parıltı kalkanı") | öneri |
+| CR / boyut / HP / AC | yok | CR 14, Large, Celestial (K2), 230 / 19 ("parıltı kalkanı") | öneri |
 | Bağışıklık | Işıltı; Blinded; 20 ft ışık aç/kapa | `immunities: ["radiant"]`, "Durum bağışıklığı: Blinded"; `passive.illumination` (aç/kapa yok) | birebir / yaklaşık (ışık hep açık) |
 | Faz 1: kör edici parıltı kalkanı, ışın darbeleri | var | Gore +11 (2d10+6 delici + 2d6 ışıltı; hücum eki); Radiant Ray menzilli +11, 120 ft, 3d8 ışıltı | yaklaşık (kalkan AC'de) |
 | Faz 1: karanlığı silme | var | canavar büyüsü Daylight (`canavar-buyuleri.json`, 1/gün) | yaklaşık |
@@ -243,9 +255,9 @@ Durum sütunu: **birebir** (mevcut veri alanıyla aynen), **yaklaşık** (en yak
 | Ortak boşluk | Bossların sayısı | Önerilen yol (yeni mekanik, donma kalkınca) |
 |---|---|---|
 | %50 can faz tetiği (Taş Uyanışı) | 10 | Veride `faz2: { esik: 0.5, pasif: …, harita: … }`; komut sonunda Bloodied geçişinde tek seferlik `effect_added`/`passive` açma |
-| Canavar eylemiyle yüzey oluşturma (alev, buz, asit) | 5 (Cimbom, Wolfgang, Hydraxe, Mothra, Cerbones dolaylı) | Canavar `save` yeteneğine `surface: {tur, rounds}`; `surfaceEvent` zaten var |
+| Canavar eylemiyle yüzey oluşturma (alev, buz, asit) | 5 (Cimbombom, Wolfgang, Hydraxe, Mothraq, Cerbones dolaylı) | Canavar `save` yeteneğine `surface: {tur, rounds}`; `surfaceEvent` zaten var |
 | Faz 2 harita dönüşümü (buz yarısı, yağmur, sis, ışık, düşük yerçekimi) | 6 | Faz kapılı harita kuralı açma (`map.ruleToggles` olayla) |
-| Kalıcı canavar bulutu, direnç aşma | 1 (Mothra) | Canavar yeteneğine `zone` + `ignoreResist` |
+| Kalıcı canavar bulutu, direnç aşma | 1 (Mothraq) | Canavar yeteneğine `zone` + `ignoreResist` |
 | Zorla hareket bağışıklığı | 2 (Gongar, Darkape) | Canavar pasifine `forcedImmune` (`forcedMove` girişinde) |
 | Dokunana sabit olmayan türde hasar | 1 (Hydraxe) | `fireForm` benzeri `meleeRetaliate {dice, type}` |
 | Silindir canavar alanı, karanlık dağıtma | 1 (Lightaur) | Canavar alanına `cylinder` (K73c büyü yolu var) |
@@ -266,24 +278,82 @@ PDF: *Kadim Yaratıklar ve Mücevher Ejderhası Kataloğu*. Hepsinin tam stat bl
 
 Öneri (K5): kadim yaratıklar F'ye girmesin, ayrı görev olsun (KATALOG-1 F2). Yalnız Kıta Ejderhası V-I motora büyük ölçüde sığıyor. Diğerleri birkaç yeni mekanik ister ve mekanik donması altında yarım kalır.
 
+Karar K5 (onaylı): kadim yaratıklar F2'ye.
+
 ## 7. Denge planı (Aşama 2)
 
-- `npm run sim:boss -- 100 --boss <kimlik>`. Senaryo, mevcut `data/sim-boss.json` biçiminde boss başına bir satır. Liste: boss + en çok 2 yardımcı (örn. Cerbones'ta Skeleton).
-- Parti seviyesi K1 kararıyla, yeni parti eklenmez. Hedef aralık mevcut: Normal %45–65, Kolay %70–85.
-- Aralık dışı satırlar `harita/belgeler/DENGE.md`'ye yazılır, düzeltilmez.
-- Kural ve kayıt sürümü değişmez. Ana parça etkilenmez: boss verisi tembel yüklenir, sınır 465 kB.
+- Her çizgi üç satırla ölçülür (`npm run sim:boss`, 100 tohum, Normal ve Kolay, yeni parti yok, `standart` parti). `data/sim-boss.json`'a çizgi başına üç kayıt girer; senaryo, temaya en yakın `ortam` haritasının sim senaryosu.
 
-## 8. Onay için kararlar
+  | Kademe | Parti seviyesi | Normal liste (öneri) | Kolay liste (öneri) | Gerekçe |
+  |---|---|---|---|---|
+  | Sv.1 | 3 | Sv.1 ×2 | Sv.1 ×1 + 1 SRD CR ½ yardımcı | 3. seviyede üye verisi var (`levels.3`) |
+  | Sv.2 | 7 | Sv.2 ×1 + Sv.1 ×2 | Sv.2 ×1 | `levels.7` var |
+  | Sv.3 (boss) | 13 | boss ×1 + Sv.2 ×1 | boss ×1 | K1. 13. seviyede üye verisi yok: `memberAt` 5. seviye sayfasını seviyeyle açar, 8/12. seviye ASI'leri ve ek büyüler eksik kalır (`k19smoke` 12/16/20 ile aynı yol). Ölçüm buna göre okunur |
 
-- **K1. Güç kademesi ve parti seviyesi.** PDF'te CR, HP, AC ve saldırı yok.
-  - Öneri: hepsi **CR 14** (yukarıdaki iskelet), sim 13. seviye parti.
-  - Alternatif: hikâyeye göre (Kaltakkıran sonrası, parti 17–20) CR 18–20. Sanat DC'leri PDF'te sabit 16 olduğu için bu kademede sanatlar zayıf kalır.
-- **K2. Yaratık türü.** Öneri: hepsi Fiend. Smite ve PfEG bundan etkilenir. Lightaur (Işıltı) için Celestial de olur.
-- **K3. Faz 2 (Taş Uyanışı).** Faz tetiği motorda yok. Seçenekler:
-  - **(a)** Faz 2'nin yazılabilen parçalarını (tur başı aura, Mirror Image, çağırma, Recharge'lı çekim) **baştan açık** ver. Bossun gücü artar, birebir değil.
-  - **(b)** Faz 2'yi verme. Yalnız Faz 1, sanat, LR ve LA olsun; Faz 2 KATALOG-SIGMAYAN'da beklesin.
-  - **(c)** (b) + Game Master notu (`gmNote`): boss Bloodied olunca Game Master `place_surface`, hava kuralı ve çağırmayla Faz 2'yi elle uygular.
-  - Öneri: **(c)**, PDF gücünü uydurmadan korur.
-- **K4. Efsanevi eylem ve direnç.** PDF'te yok. Öneri: LR 3/Day, LA 3 kullanım (yukarıdaki listeler). Alternatif: yalnız LR.
-- **K5. Kadim yaratıklar.** Öneri: F dışında ayrı görev. Alternatif: yalnız Kıta Ejderhası V-I bu görevde.
-- **K6. Boyutlar.** Tablo §2. Gargantuan yok, Huge bosslar 21×11+.
+- Toplam 10 çizgi × 3 kademe × 2 zorluk = 60 satır, her biri 100 tohum.
+- Hedef aralık mevcut: Normal %45–65, Kolay %70–85.
+- Aralık dışı satırlar `harita/belgeler/DENGE.md`'ye yazılır, düzeltilmez (liste ya da stat değişikliği yapılmaz).
+- Kural ve kayıt sürümü değişmez. Ana parça etkilenmez: canavar verisi tembel yüklenir, sınır 465 kB.
+
+## 8. Kararlar
+
+- K1–K6 onaylı (başta "Onay durumu").
+- **K7. Ateş bossunun görünen adı (açık).** Kimlik `cimbombom`. Sv.2'nin kimliği `cimbom`, görünen adı da "Cimbom" olunca bossun önceki adı "Cimbom, Lion of the Hell" ikisini karıştırır.
+  - Öneri: boss **"Cimbombom, Lion of the Hell"**, Sv.2 "Cimbom", Sv.1 "Cim".
+  - Alternatif: boss adı aynen kalır, Sv.2 "Cimbom Cub" gibi ayırt edici bir ad alır.
+
+## 9. Evrim çizgileri: Sv.1 ve Sv.2 (20 yaratık)
+
+Bu yaratıklar PDF'te yok; kullanıcının tasarımıdır. Kimlik = dosya adı = görsel adı (`public/boss/<kimlik>.webp`). Görünen ad kimliğin büyük harfle başlayan hâli ("Cim", "Wolfie"…), unvan yok. Sınıf etiketi üç kademede de "Mühür Ruhu / Seal Spirit".
+
+**Ortak kurallar.** Hepsi yalnız veri; yeni mekanik yok. Her satır mevcut alanlarla yazılır:
+
+- saldırı + A2 ekleri
+- `canavar-yetenekleri` `save` (`recharge`), `pull`
+- `passive.heads`, `illumination`, `siegeMonster`
+- Ice Walk, Blindsight, Misty Step (canavar büyüsü)
+
+| Alan | Sv.1 | Sv.2 | Sv.3 (boss, §4) |
+|---|---|---|---|
+| Hedef parti | 1–4. seviye | 5–10. seviye | 13. seviye (K1) |
+| CR (öneri) | **2** | **7** | 14 |
+| Yeterlilik / saldırı / kendi DC'si | +2 / +5 / 12 | +3 / +7 / 14 | +5 / +10…12 / 16 |
+| Hasar bağışıklığı | çizginin elementi | çizginin elementi | çizginin elementi |
+| Durum bağışıklığı | yok (zehirde Poisoned var: zehre bağışık yaratık zehirlenmez) | bossunki | bossunki |
+| Saldırı | tek saldırı + 1d4 element | Multiattack 2 + 1d6 element | §4 |
+| Sanat | yok | bossun sanatının küçüğü: aynı şekil, yarı boy, DC 14, 3d6, **Recharge 5–6**, yüzey yok | birebir, savaşta 1 kez |
+| Efsanevi direnç ve eylem / Faz 2 | yok | yok | LR 3, LA 3 / Game Master notu (K3) |
+| Ganimet (`ganimet`) | `cracked-elemental-stone-<tür>` (Sv.1 Çatlak Taş) | `awakened-elemental-stone-<tür>` (Sv.2 Uyanmış Taş) | benzersiz Sv.3 taşı (`ember-core`, `frost-heart`, `storm-spire`, `resonance-seal`, `dissolution-drop`, `venom-essence`, `blinding-sun-shard`, `sepulcher-orb`, `whisper-crystal`, `void-fracture`) |
+
+**Taş edinme, PDF ile karşılaştırma.** PDF §4 kademe tablosu şöyle der:
+
+- Sv.1: "Sandık, elit ganimet, şehir tüccarları"
+- Sv.2: "Zindan ara boss'ları veya 3× Seviye 1 taşı döverek"
+- Sv.3: "Yalnızca kıtadaki 10 Bölge Bossu'ndan"
+
+Sv.1 yaratığı elit ganimet, Sv.2 yaratığı ara boss sayılır. Kullanıcı kuralıyla **çelişki yok**. Sv.3 yalnız bölge bossundan düşer.
+
+Motor savaşta ganimet düşürmez. `ganimet` alanı yalnızca veridir; verilmesi Serüven düğümünün `reward.items` alanıyla olur (Serüven'e kalır).
+
+**Sanat küçültme kuralı:**
+
+- Alan bossunkinin yarısı, en az 5 ft: 15 ft → 10 ft küre/yayılım, 20 ft koni → 15 ft, 30 ft çizgi → 20 ft, 25 ft çizgi → 15 ft.
+- Hasar 3d6, DC 14. İtme yarıya iner. Durum aynı kalır, Mirath'ta istisna var (aşağıda).
+- Yüzey, karanlık dağıtma ve maks. HP gibi sığmayan parçalar Sv.2'de de yok.
+
+| Çizgi | Sv.1 kimlik: boyut, HP/AC, hız, saldırı, ek | Sv.2 kimlik: boyut, HP/AC, hız, saldırı, küçük sanat (Recharge 5–6, DC 14, 3d6), ek | Tür |
+|---|---|---|---|
+| Ateş | **`cim`**: Small, 45/13, 40 ft; Bite +5 (1d8+3 delici + 1d4 ateş) | **`cimbom`**: Large, 120/15, 50 ft; Bite +7 (2d8+4 + 1d6 ateş), Claw +7 (2d6+4); Küçük Örs Patlaması: 10 ft yayılım DEX, 5 ft itme | Fiend |
+| Soğuk | **`doggie`**: Small, 40/13, 40 ft; Bite +5 (1d6+3 + 1d4 soğuk); Ice Walk | **`wolfie`**: Large, 115/15, 50 ft, tırmanma 20; Bite +7 (2d8+4 + 1d6 soğuk) + Frost Spear menzilli +7 30/90 ft; Küçük Kırağı Nefesi: 15 ft koni CON, Restrained; Ice Walk | Fiend |
+| Yıldırım | **`sparkle`**: Small, 40/13, 60 ft; Hooves +5 (1d6+3 + 1d4 yıldırım); bonus Disengage | **`thunderse`**: Large, 110/16, 70 ft; 2 Hooves +7 (2d6+4 + 1d6 yıldırım), hücum eki; Küçük Gök Mızrağı: 60 ft, 5 ft küre DEX, sonraki tur tepki yok | Fiend |
+| Gürültü | **`twinkle`**: Small, 50/15, 25 ft; Bell Tap +5 (1d8+3 + 1d4 gürültü); Blindsight 30 | **`gongi`**: Large, 130/17, 30 ft; 2 Bell Slam +7 (2d8+4 + 1d6 gürültü); Küçük Kanyon Yırtığı: 20 ft çizgi (5 ft genişlik) CON, 5 ft itme + Prone + Deafened; Blindsight 60, `siegeMonster` | Fiend |
+| Asit | **`hydrop`**: Small, 45/13, 20 ft, yüzme 30; Bite +5 (1d6+3 + 1d4 asit) | **`hydras`**: Large, 120/15, 30 ft, yüzme 40; `heads` 3, Bite +7 (1d10+4 + 1d4 asit) + aşındırma eki; Küçük Sülfür Tufanı: 30 ft, 10 ft küre DEX, AC −3 | Fiend |
+| Zehir | **`sporlet`**: Small, 35/13, 10 ft, uçuş 30; Spore Bite +5 (1d6+3 + 1d4 zehir); Poisoned bağışıklığı | **`mothcoon`**: Large, 110/14, 20 ft, uçuş 50; Spore Bite +7 (2d6+4 + 1d6 zehir, DC 14 CON Poisoned eki), Poisoned'ı 20 ft çekme (`pull`); Küçük Veba Bulutu: 30 ft, 10 ft küre CON, Poisoned (bulut kalmaz) | Fiend |
+| Işıltı | **`lumbo`**: Small, 45/14, 40 ft; Gore +5 (1d8+3 + 1d4 ışıltı); `illumination` 10 | **`lighty`**: Large, 120/16, 50 ft; Gore +7 (2d8+4 + 1d6 ışıltı) + hücum eki, Radiant Ray menzilli +7 60 ft (2d8 ışıltı); Küçük Yargı Sütunu: 60 ft, 5 ft küre CON, Blinded | **Celestial** |
+| Nekrotik | **`cerbit`**: Small, 40/13, 40 ft; Bite +5 (1d6+3 + 1d4 nekrotik) | **`cerbedo`**: Large, 125/15, 50 ft; 2 Bite +7 (2d6+4 + 1d6 nekrotik, noHeal eki); Küçük Kara Alev Kesiği: 15 ft çizgi CON, noHeal | Fiend |
+| Psişik | **`mirit`**: Small, 35/14, 35 ft; Soul Claw +5 (1d6+3 + 1d4 psişik) | **`mirath`**: Medium, 105/15, 40 ft; 2 Soul Claw +7 (2d6+4 + 1d6 psişik), Misty Step 3/gün (canavar büyüsü); Küçük Çığlık: 10 ft yayılım INT, **Frightened** (bossun Stunned'ı CR 7'de çok güçlü olur; öneri, §9 onayıyla) | Fiend |
+| Kuvvet | **`darkit`**: Small, 45/13, 30 ft, tırmanma 30; Fist +5 (1d6+3 + 1d4 kuvvet, 5 ft itme) | **`darkath`**: Large, 130/15, 40 ft, tırmanma 40; 2 Fist +7 (2d8+4 + 1d6 kuvvet, 5 ft itme), 10 ft çekme (DC 14 STR, `pull`); Küçük Yıldız Çöküşü: 10 ft yayılım STR, Prone | Fiend |
+
+**Ortam.** Sv.1 ve Sv.2, bossun `ortam` listesini paylaşır (§1 tablosu). Sv.1 ayrıca bölgenin ilk haritasına eklenir: `buzul-kamp`, `dag`, `bataklik`, `orman` vb. Liste Aşama 2'de `monster-ortamlari.json`'a yazılır.
+
+**Durum.** 20 yaratığın bütün özellikleri mevcut veri alanlarıyla "birebir" yazılır. Sv.1/Sv.2'de sığmayan parça yoktur, çünkü sığmayanlar küçültmede bilerek bırakıldı. Görsel yoksa jeton `Avatar`'ın `onError` yedeğine düşer (kırık resim çıkmaz). Görseller BOSS-GORSEL'in kapsamında değilse ayrı iş olarak yazılır.
