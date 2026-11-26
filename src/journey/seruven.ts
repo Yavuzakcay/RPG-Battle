@@ -7,7 +7,8 @@
 import { reduceRoam, roamEvents, type RoamCommand, type RoamEvent } from '../world/roam';
 import { withFog } from '../world/seruvenFog';
 import data from '../../data/seruven.json';
-import { longRestStatus } from '../rules/characterRest';
+import { longRestStatus, zeroHpWakeHours } from '../rules/characterRest';
+import { seededRng } from '../rules/dice';
 import type { CharacterStatus } from '../rules/characterRest';
 import type { CharacterSheet } from '../rules/stats';
 import { seferById, seferRoute } from './sefer';
@@ -170,11 +171,11 @@ export type SeruvenEvent =
   | { type: 'seruven_page'; page: string; resetNight: boolean; /** Kuyruk 34b: geri dönüşte varış (çıkış işareti). */ at?: string }
   | { type: 'seruven_night'; key: string; on: boolean }
   | { type: 'seruven_toggle'; key: string; on: boolean }
-  | { type: 'seruven_result'; key: string; outcome: 'won' | 'lost'; statuses: Record<string, CharacterStatus>; xp: number; gold: number; potions: number; flags?: string[]; /** Kuyruk 32: bozgunda uzun dinlenildi. */ rested?: boolean; /** Kuyruk K48: savaşta düşen üyeler (Moral). */ downed?: string[];
+  | { type: 'seruven_result'; key: string; outcome: 'won' | 'lost'; statuses: Record<string, CharacterStatus>; xp: number; gold: number; potions: number; flags?: string[]; /** Kuyruk 32: bozgunda uzun dinlenildi. */ rested?: boolean; /** KARAR104-KALAN: bozgun dinlenmesinde 0 HP'den kalkış saati. */ wakeHours?: number; /** Kuyruk K48: savaşta düşen üyeler (Moral). */ downed?: string[];
       /** Kuyruk 35: savaş atlandı (test anahtarı); kayıtta "atlandı" işareti. */ skipped?: boolean }
   | { type: 'seruven_visited'; key: string; gold: number; potions: number; items: string[] }
   | { type: 'seruven_finished'; result: 'won' | 'lost' }
-  | { type: 'seruven_rested'; key: string; statuses: Record<string, CharacterStatus> }
+  | { type: 'seruven_rested'; key: string; statuses: Record<string, CharacterStatus>; /** KARAR104-KALAN: 0 HP'den kalkış saati (`saat` varsa eklenir). */ wakeHours?: number }
   /** Kuyruk K48: Moral değişimi (nedenler, Moral ölümleri); yalnızca değişen üyelerin durumu. */
   | { type: 'seruven_moral'; statuses: Record<string, CharacterStatus>; reasons: MoralReason[]; deaths: string[] }
   /** Kuyruk K48: diriltme (tapınak ya da büyü): durumlar (dirilen + büyücünün slotu) ve harcanan altın. */
@@ -188,7 +189,7 @@ export type SeruvenEvent =
   | { type: 'seruven_link_crossed'; link: string; page: string; node: string; flags?: string[]; statuses?: Record<string, CharacterStatus> }
   | { type: 'seruven_yerlesim'; yerlesim: { id: string; map: string | null; from: string | null; seen: string[] } | null; statuses?: Record<string, CharacterStatus> }
   | { type: 'seruven_shop'; gold: number; potions: number; add?: string; remove?: string }
-  | { type: 'seruven_inn'; gold: number; statuses: Record<string, CharacterStatus> }
+  | { type: 'seruven_inn'; gold: number; statuses: Record<string, CharacterStatus>; wakeHours?: number }
   | { type: 'seruven_quest'; quest: string; state: 'taken' | 'done'; gold: number }
   /** Kuyruk 36: Büyük suç / hapis geçişleri (durum yaması + parti durumları). */
   | { type: 'seruven_hapis'; patch: SeruvenPatch; statuses?: Record<string, CharacterStatus>; label: string }
@@ -201,6 +202,18 @@ export const nodeKey = (page: string, node: string) => `${page}/${node}`;
 export const toggleOn = (s: Pick<SeruvenState, 'toggles'>, key: string): boolean => s.toggles[key] ?? SERUVEN.anahtarlar[key]?.default ?? false;
 /** Görev KARAR104 (A11): 0 HP'de uzun dinlenme; anahtar `kolayDinlenme` açıkken ev kuralı (tam), yoksa SRD (1 HP). */
 export const zeroHpRest = (s: Pick<SeruvenState, 'toggles'>): 'srd' | 'ev' => (toggleOn(s, 'kolayDinlenme') ? 'ev' : 'srd');
+
+/**
+ * Görev KARAR104-KALAN (A11'in ⚠'si; SRD 5.2.1 s. 18): Serüven uzun dinlenmesinde 0 HP'deki üyenin kalkışı 1d4 saat. Saat yalnız
+ * serbest gezintide tutulur (`saat`); yoksa (gün = dinlenme sayısı, eski kayıt) eklenecek saat yok: 0. Zar Serüven tohumundan ve
+ * dinlenme sayısından (komutlar zarsız; replay aynı).
+ */
+function wakeHoursOf(state: SeruvenState, statuses: CharacterStatus[], salt: string): number {
+  if (state.saat === undefined) return 0;
+  let h = (state.seed ^ ((state.rests ?? 0) * 0x9e3779b1)) >>> 0;
+  for (const ch of salt) h = (Math.imul(h ^ ch.charCodeAt(0), 16777619)) >>> 0;
+  return zeroHpWakeHours(statuses, zeroHpRest(state), seededRng(h));
+}
 
 /** Düğümün yolculuk durağı (senaryo ya da sefer düğümü); verilen seviyede. Yoksa null (gizlenir). */
 export function nodeStop(node: SeruvenNode, level: number, night = false): JourneyStop | null {
@@ -298,7 +311,8 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
       if (state.done.includes(key)) return fail('Zaten alındı.');
       // Kuyruk 32: dinlenme düğümü bir kez uzun dinlenme (mevcut kural; ölü ölü kalır).
       if (stop.kind === 'rest') {
-        return done(state, [{ type: 'seruven_rested', key, statuses: Object.fromEntries(state.party.map((m) => [m.id, longRestStatus(m.sheet, m.status, undefined, zeroHpRest(state))])) }]);
+        const wake = wakeHoursOf(state, state.party.map((m) => m.status), key);
+        return done(state, [{ type: 'seruven_rested', key, statuses: Object.fromEntries(state.party.map((m) => [m.id, longRestStatus(m.sheet, m.status, undefined, zeroHpRest(state))])), ...(wake ? { wakeHours: wake } : {}) }]);
       }
       return done(state, [{ type: 'seruven_visited', key, gold: stop.reward?.gold ?? 0, potions: stop.reward?.potions ?? 0, items: stop.reward?.items ?? [] }]);
     }
@@ -344,13 +358,14 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
       let statuses = kural ? Object.fromEntries(Object.entries(cmd.statuses).map(([k, v]) => [k, nonlethal(v)])) : cmd.statuses;
       // Bozgunda (anahtar açıksa) parti uzun dinlenir ve yeniden dener; mevcut dinlenme kuralı (ölü ölü kalır).
       const rested = cmd.outcome === 'lost' && toggleOn(state, 'bozgundaYenidenDene');
+      const wake = rested ? wakeHoursOf(state, state.party.map((m) => statusOf(m, cmd.statuses)), key) : 0;
       if (rested) {
         statuses = Object.fromEntries(state.party.map((m) => [m.id, longRestStatus(m.sheet, statusOf(m, cmd.statuses), undefined, zeroHpRest(state))]));
       }
       const evs: SeruvenEvent[] = [{
         type: 'seruven_result', key, outcome: cmd.outcome, statuses, xp: cmd.xp,
         gold: cmd.outcome === 'won' ? stop?.reward?.gold ?? 0 : 0, potions: cmd.outcome === 'won' ? (stop?.potions ?? 0) + (stop?.reward?.potions ?? 0) : 0,
-        ...(cmd.flags?.length ? { flags: cmd.flags } : {}), ...(rested ? { rested: true } : {}), ...(cmd.skipped ? { skipped: true } : {}),
+        ...(cmd.flags?.length ? { flags: cmd.flags } : {}), ...(rested ? { rested: true } : {}), ...(wake ? { wakeHours: wake } : {}), ...(cmd.skipped ? { skipped: true } : {}),
         // Kuyruk K48 (Moral): savaşta düşen üyeler (bozgun dinlenmesinden önceki durum).
         ...(toggleOn(state, 'moralSistemi') ? ((d) => (d.length ? { downed: d } : {}))(state.party.filter((m) => { const st = cmd.statuses[m.id]; return !!st && (st.dead || st.hp <= 0) && !m.status.dead && m.status.hp > 0; }).map((m) => m.id)) : {}),
       }];
@@ -410,7 +425,7 @@ function reduceBase(s: SeruvenState | null, e: SeruvenEvent): SeruvenState | nul
     case 'seruven_night': return { ...s, night: e.on ? [...new Set([...s.night, e.key])] : s.night.filter((k) => k !== e.key) };
     case 'seruven_toggle': return { ...s, toggles: { ...s.toggles, [e.key]: e.on } };
     case 'seruven_result': return {
-      ...s, ...(e.outcome === 'lost' && e.rested ? { rests: (s.rests ?? 0) + 1 } : {}), done: e.outcome === 'won' && !s.done.includes(e.key) ? [...s.done, e.key] : s.done,
+      ...s, ...(e.outcome === 'lost' && e.rested ? { rests: (s.rests ?? 0) + 1 } : {}), ...(e.wakeHours && s.saat !== undefined ? { saat: s.saat + e.wakeHours } : {}), done: e.outcome === 'won' && !s.done.includes(e.key) ? [...s.done, e.key] : s.done,
       party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })),
       xp: s.xp + e.xp, gold: s.gold + e.gold, potions: s.potions + e.potions,
       flags: [...new Set([...s.flags, ...(e.flags ?? [])])],
@@ -418,7 +433,7 @@ function reduceBase(s: SeruvenState | null, e: SeruvenEvent): SeruvenState | nul
     };
     case 'seruven_visited': return { ...s, done: [...s.done, e.key], gold: s.gold + e.gold, potions: s.potions + e.potions, items: [...s.items, ...e.items] };
     case 'seruven_finished': return { ...s, result: e.result };
-    case 'seruven_rested': return { ...s, done: [...s.done, e.key], rests: (s.rests ?? 0) + 1, party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
+    case 'seruven_rested': return { ...s, done: [...s.done, e.key], rests: (s.rests ?? 0) + 1, ...(e.wakeHours && s.saat !== undefined ? { saat: s.saat + e.wakeHours } : {}), party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
     case 'seruven_moral': return { ...s, party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
     case 'seruven_dirildi': return { ...s, gold: s.gold - e.gold, party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
     case 'seruven_forms': return { ...s, party: s.party.map((m) => (m.id === e.memberId ? { ...m, sheet: { ...m.sheet, wildShapeForms: [...e.forms] } } : m)),
@@ -440,7 +455,7 @@ function reduceBase(s: SeruvenState | null, e: SeruvenEvent): SeruvenState | nul
       ...s, gold: s.gold + e.gold, potions: s.potions + e.potions,
       items: e.remove ? (() => { const i = s.items.indexOf(e.remove as string); return i < 0 ? s.items : [...s.items.slice(0, i), ...s.items.slice(i + 1)]; })() : e.add ? [...s.items, e.add] : s.items,
     };
-    case 'seruven_inn': return { ...s, gold: s.gold + e.gold, rests: (s.rests ?? 0) + 1, party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
+    case 'seruven_inn': return { ...s, gold: s.gold + e.gold, rests: (s.rests ?? 0) + 1, ...(e.wakeHours && s.saat !== undefined ? { saat: s.saat + e.wakeHours } : {}), party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
     case 'seruven_quest': return { ...s, gold: s.gold + e.gold, quests: { ...(s.quests ?? {}), [e.quest]: e.state } };
     case 'seruven_hapis': return {
       ...s, ...e.patch, ...(e.statuses ? { party: s.party.map((m) => ({ ...m, status: e.statuses?.[m.id] ?? m.status })) } : {}),
@@ -572,7 +587,8 @@ function yerlesimCommand(state: SeruvenState, page: SeruvenPage, cmd: SeruvenCom
     case 'inn_rest': {
       if (!cur || !y?.hub.han) return fail('Burada han yok.');
       if (state.gold < YERLESIM.hanUcreti) return fail('Altın yetmiyor.');
-      return done(state, [{ type: 'seruven_inn', gold: -YERLESIM.hanUcreti, statuses: Object.fromEntries(state.party.map((m) => [m.id, longRestStatus(m.sheet, m.status, undefined, zeroHpRest(state))])) }]);
+      const wake = wakeHoursOf(state, state.party.map((m) => m.status), 'han');
+      return done(state, [{ type: 'seruven_inn', gold: -YERLESIM.hanUcreti, statuses: Object.fromEntries(state.party.map((m) => [m.id, longRestStatus(m.sheet, m.status, undefined, zeroHpRest(state))])), ...(wake ? { wakeHours: wake } : {}) }]);
     }
     case 'quest_take': case 'quest_claim': {
       if (!cur || !y?.hub.gorevler.includes(cmd.quest)) return fail('Bu görev burada yok.');

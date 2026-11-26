@@ -68,6 +68,12 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   (`attachHold`; veride `yapisma.speedZero`): hız 0, Dash eki de 0 (Dash anındaki hızdan, KARAR101). Ayrılma metindeki gibi kendi
   turunda 5 ft hareketle (taban hızdan; hız 0 kuralı bağlıyken yürümeyi yasaklar, ayrılmayı değil); ayrılınca etki kalkar, kalan
   hareket normal hızdan. Hedef kaçınca/ölünce de kalkar. Hedefle birlikte hareket A2'deki gibi. 103'te yapışma yok.
+- **⚠ d 0 HP'den kalkış saati** (SRD 5.2.1 s. 18 "regains 1 Hit Point after 1d4 hours"; A11'in ⚠'si; savaş dışı, sürümsüz): SRD
+  kipindeki uzun dinlenmede 0 HP'de (ölü değil) biri varsa 1d4 saat zamana eklenir (`characterRest.ts` `zeroHpWakeHours`). Yolculuk:
+  `long_rested.hour` + 8 + 1d4 (Normal/Zor; Kolay ev kuralında eklenmez), olayda `wakeHours`. Serüven: dinlenme düğümü, han ve
+  bozgunda yeniden deneme (Normal'de düşenler dahil) olaylarında `wakeHours`, reducer `saat`e ekler; zar Serüven tohumu + dinlenme
+  sayısından (Serüven komutları zarsız, replay aynı). Saat yalnız serbest gezintide (`saat`) tutulur: saatsiz eski kayıtta gün
+  dinlenme sayısından, eklenecek saat yok (değişmez). Alanlar isteğe bağlı: eski kayıtlar aynen yüklenir.
 
 ## Görev KARAR104: bekleyen kullanıcı kararları SRD 5.2.1'e göre (2026-11-24; kural sürümü 104 `KARAR104_VERSION`, kayıt sürümü 26)
 

@@ -21,8 +21,11 @@ import { getMonster } from '../data';
 import { applyBattleResult } from '../app/partyStatus';
 import { blankCharacter } from '../rules/builder';
 import { currentStatus, fullStatus, longRestStatus } from '../rules/characterRest';
-import { JOURNEY_RULES } from '../journey/engine';
-import { zeroHpRest } from '../journey/seruven';
+import { JOURNEY_RULES, executeJourney, replayJourney } from '../journey/engine';
+import ilkGun from '../../data/yolculuk/ilk-gun.json';
+import type { JourneyCommand, JourneyEvent, JourneyRoute, JourneyState } from '../journey/types';
+import { reduceSeruven, zeroHpRest, type SeruvenState } from '../journey/seruven';
+import { zeroHpWakeHours } from '../rules/characterRest';
 import { dragBack } from '../journey/hapishane';
 import { startBattle } from './create';
 import { replay } from './index';
@@ -224,6 +227,36 @@ describe('KARAR104 A11: 0 HP’de uzun dinlenme (SRD 5.2.1 s. 185, s. 18; Normal
     expect(zeroHpRest({ toggles: {} })).toBe('srd');
     expect(zeroHpRest({ toggles: { kolayDinlenme: true } })).toBe('ev');
     expect(currentStatus(sh, dragBack(sh, { ...down(), dead: true })).hp).toBe(fullStatus(sh).hp);
+  });
+  it('KARAR104-KALAN: 0 HP’den kalkış 1d4 saat yolculuk saatine eklenir (Normal SRD); Kolay’da ve 0 HP yokken eklenmez', () => {
+    const R0 = ilkGun as unknown as JourneyRoute;
+    const R: JourneyRoute = { ...R0, stops: [R0.stops[0]!, { ...R0.stops[1]!, travelHours: 20 }, ...R0.stops.slice(2)] };
+    const party = [{ id: 'a', name: 'Bor', sheet: { ...sh, classId: 'fighter' } }, { id: 'b', name: 'Mira', sheet: sh }];
+    const run = (difficulty: 'normal' | 'kolay', hpA: number) => {
+      let st: JourneyState | null = null;
+      const evs: JourneyEvent[] = [];
+      const step = (c: JourneyCommand) => { const x = executeJourney(st, c, () => 0.5); if (!x.ok) throw new Error(x.error); st = x.state; evs.push(...x.events); };
+      step({ type: 'start', id: 'j', route: R, seed: 1, difficulty, progression: 'milestone', party } as JourneyCommand);
+      const cur = st as unknown as JourneyState;
+      step({ type: 'battle_result', outcome: 'won', statuses: Object.fromEntries(cur.party.map((m) => [m.id, { ...m.status, hp: m.id === 'a' ? hpA : m.status.hp }])), xp: 0 } as JourneyCommand);
+      step({ type: 'advance' } as JourneyCommand);
+      step({ type: 'long_rest' } as JourneyCommand);
+      expect(replayJourney(evs)).toEqual(st);
+      return st as unknown as JourneyState;
+    };
+    // Kancasız zar 0,5 → 1d4 = 3. Başlangıç 8 + yürüyüş 20 + uzun dinlenme 8.
+    expect(run('normal', 0)).toMatchObject({ hour: 39 });
+    expect(run('normal', 0).party[0]!.status.hp).toBe(1);
+    expect(run('normal', 5)).toMatchObject({ hour: 36 });
+    expect(run('kolay', 0)).toMatchObject({ hour: 36 });
+    expect(zeroHpWakeHours([{ ...down() }], 'srd', () => 0.99)).toBe(4);
+    expect(zeroHpWakeHours([{ ...down(), dead: true }], 'srd', () => 0.99)).toBe(0);
+  });
+  it('KARAR104-KALAN: Serüven dinlenmesinde kalkış saati `saat` varsa eklenir; saatsiz (eski) kayıtta değişmez', () => {
+    const base = { party: [], done: [], rests: 2, flags: [], toggles: {}, night: [], items: [], gold: 0, potions: 0, xp: 0, page: 'p', at: 'giris' } as unknown as SeruvenState;
+    expect(reduceSeruven({ ...base, saat: 50 }, { type: 'seruven_inn', gold: 0, statuses: {}, wakeHours: 3 })).toMatchObject({ saat: 53, rests: 3 });
+    expect(reduceSeruven(base, { type: 'seruven_inn', gold: 0, statuses: {}, wakeHours: 3 })?.saat).toBeUndefined();
+    expect(reduceSeruven({ ...base, saat: 50 }, { type: 'seruven_rested', key: 'k', statuses: {}, wakeHours: 2 })).toMatchObject({ saat: 52 });
   });
 });
 
