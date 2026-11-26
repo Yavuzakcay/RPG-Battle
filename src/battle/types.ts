@@ -1016,6 +1016,14 @@ export interface Combatant {
   monsterId?: string;
   /** Kuyruk 33: kalan efsanevi eylem kullanımı (yoksa tam) ve bu tur kullanılan tekrarlanmaz eylemler. */
   legendaryLeft?: number;
+  /**
+   * Görev KATALOG-F0 (107+): canavar kaydının yarı can fazı bloğu (oluşturulurken kopya; replay veri dosyasından bağımsız),
+   * geçildiyse `faz: 2` (geri dönmez), Faz 2'nin Recharge'lı alan çarpanı ve tur başına ek efsanevi eylem hakkı.
+   */
+  faz2?: import('../data').Faz2Block;
+  faz?: 2;
+  areaScale?: number;
+  legendaryExtra?: number;
   /** Kuyruk 43: savaşta kullanılabilen sarf eşyaları (eşya kimliği → adet; iksirler). */
   consumables?: Record<string, number>;
   /** Kuyruk 43: Legendary Resistance bu turlar arasında kullanıldı (kendi turunun başında kalkar). */
@@ -2225,6 +2233,13 @@ export type BattleEvent =
   /** Kuyruk 33: boss bir efsanevi eylem kullandı (başka yaratığın turundan sonra) / turunun başında yenilendi. */
   | { type: 'legendary_used'; actorId: string; actionId: string; name: string; left: number }
   | { type: 'legendary_refresh'; actorId: string; left: number }
+  /**
+   * Görev KATALOG-F0 (107+, kayıt sürümü 28): yarı can fazı (Faz 2). Çözülmüş değerler (atılmış geçici HP dahil); reducer zar atmaz.
+   * `effect`: süresiz etki (AC, saldırı/hasar zarı, eklenen direnç/zayıflık/bağışıklık); `remove`: savaşçının temel dizilerinden çıkarılanlar.
+   */
+  | { type: 'phase_changed'; targetId: string; phase: 2; tempHp?: number; effect?: ActiveEffect;
+      remove?: { resistances?: string[]; vulnerabilities?: string[]; immunities?: string[] };
+      rechargeReset?: boolean; areaScale?: number; legendaryExtra?: number; note?: { tr: string; en: string } }
   | {
       type: 'map_effect'; rule: string; targetId: string; text: string;
       roll?: { label: string; dc: number; d20: number[]; natural: number; total: number; success: boolean; mode: RollMode };

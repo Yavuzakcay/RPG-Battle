@@ -35,17 +35,18 @@ export { SAVE_KEY, hasSavedBattle };
  * 27: Görev MC3 (kural sürümü 105; çoklu sınıf): `slot_spent.pact` (ayrı Pact havuzu), `cast_spell.pact`, savaşçıda `pactSlots`,
  * `spellByClass`, `spellClassOf` (DECISIONS.md MC3); Görev MC4: `hit_die_spent.die` (çoklu sınıf HP zarı havuzu), savaşçıda
  * `classLevels`, `hitDice.pool`.
+ * 28: Görev KATALOG-F0 (kural sürümü 107): `phase_changed` olayı (yarı can fazı), savaşçıda `faz2`, `faz`, `areaScale`, `legendaryExtra`.
  * Eski sürümler oynatılmaz: "yüklenemedi".
  */
-export const SAVE_VERSION = 27;
+export const SAVE_VERSION = 28;
 /**
- * Yüklenebilen sürümler: her sürümün olayları bir sonrakinin alt kümesi. 3–26: Pact havuzu olayı yok (reducer aynı okur). 3–25: KARAR104 olayları yok (reducer aynı okur). 3–24: KARAR101 olayları yok (reducer aynı okur). 3–23: Ready olayı yok (reducer aynı okur). 3–22: nesne ağırlığı/ortak taşıma yok (reducer aynı okur; kural sürümü 79 ve altı eski kurallar). 3: görünümü olmayan masumlar tohumlu
+ * Yüklenebilen sürümler: her sürümün olayları bir sonrakinin alt kümesi. 3–27: yarı can fazı olayı yok (reducer aynı okur). 3–26: Pact havuzu olayı yok (reducer aynı okur). 3–25: KARAR104 olayları yok (reducer aynı okur). 3–24: KARAR101 olayları yok (reducer aynı okur). 3–23: Ready olayı yok (reducer aynı okur). 3–22: nesne ağırlığı/ortak taşıma yok (reducer aynı okur; kural sürümü 79 ve altı eski kurallar). 3: görünümü olmayan masumlar tohumlu
  * varsayılana düşer. 3–4: zar modu yok (otomatik), zar kaydı yok. 3–6: kaynaklar üç alanlı nesne (sıfırlar dahil);
  * yeni kayıt biçimiyle aynı okunur (olmayan kaynak 0). 3–7: ustalık olayı yok (savaşçılarda işaret yok). 3–8: Rage olayları yok
  * (Barbarian savaşçısında Rage alanları yok: Rage düğmesi görünmez). 3–9: yan el yok. 3–10: Paladin alanları yok (özellik düğmeleri görünmez). 3–11: Monk alanları yok.
  * 3–21: dikkat dağıtma, eşya kullanımı ve Legendary Resistance yok (reducer aynı okur). 3–20: doğaçlama silah ve anahtar nesnesi yok (reducer aynı okur). 3–19: geçmiş yok (savaşçılarda `backgroundId` yok; eski karakterler geçmişsiz oynar). 3–18: büyü alanı yok (haritada `zones` yok). 3–17: Görev F alanları yok (savaşçılarda işaret yok: özellikler çalışmaz, eski davranış). 3–16: `content` yok (dış içerik yoktu). 3–15: alan olayı yok (nefesler tek hedefli `save_resolved`; reducer aynı okur). 3–14: çağrılmış yaratık yok. 3–13: etki alanları yok (Bless vb. çalışmıyordu; savaşçılarda `effects` yok). 3–12: tepki alanları yok (fırsat saldırısı ve Deflect Attacks `action_used`/`deflected` ile harcanmış; reducer ikisini de okur).
  */
-export const LOADABLE_VERSIONS: readonly number[] = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27];
+export const LOADABLE_VERSIONS: readonly number[] = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28];
 
 /** `hp`: düşman HP görünürlüğü (Görev OD1B; yalnız görünüm, olay biçimi aynı: sürüm artmaz; yoksa Tam). */
 interface SaveFile { version: number; savedAt: string; events: BattleEvent[]; content?: string[]; hp?: HpVis }

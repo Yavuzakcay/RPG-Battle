@@ -87,7 +87,7 @@ import { activeBuffs } from './divine';
 import { offhandProblem } from './offhand';
 import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
 import { bonusOptionsOf, freeCast } from './economy';
-import { bestAim, pickArea } from './areaAttack';
+import { bestAim, monsterAreaOf, pickArea } from './areaAttack';
 import { multiSpecOf, multiTotal } from './monsters';
 import { abilitiesOf, abilityReady } from './monsterAbilities';
 import { checkReach as reachOk, monsterAttackReach as atkReach } from './range';
@@ -1162,9 +1162,11 @@ function areaAttack(state: BattleState, actor: Combatant): Command | null {
     if (!a.area || !a.save || a.damageDice === undefined || (a.recharge !== undefined && actor.rechargeUsed.includes(i))) continue;
     // Multiattack'ın içindeki alanlı saldırı (Draconic Spirit) Multiattack'la yapılır.
     if (actor.multiattack && a.repeat > 0 && a.recharge === undefined) continue;
-    const reach = Math.floor(a.area.sizeFt / 5) + Math.floor((a.area.rangeFt ?? 0) / 5) + 1;
+    // Görev KATALOG-F0: Faz 2'nin büyüttüğü alan (`areaScale`) aynı kaynaktan; faz bloğu yoksa veri alanı aynen.
+    const area = monsterAreaOf(actor, i, state)?.spec ?? a.area;
+    const reach = Math.floor(area.sizeFt / 5) + Math.floor((area.rangeFt ?? 0) / 5) + 1;
     if (!foes.some((f) => f.pos && gap(state, f, actor) <= reach)) continue;
-    const best = bestAim(state, actor, a.area, a.area.rangeFt ?? 0, (c) => visible.has(c.id));
+    const best = bestAim(state, actor, area, area.rangeFt ?? 0, (c) => visible.has(c.id));
     if (!best || best.allies > 0 || best.foes < (a.recharge !== undefined ? 1 : 2)) continue;
     const cmd: Command = { type: 'monster_attack', actorId: actor.id, targetId: '', attackIndex: i, ...(best.aim ? { targetHex: best.aim } : {}) };
     if (tryCmd(state, actor, cmd).ok) return cmd;

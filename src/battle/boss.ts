@@ -72,7 +72,9 @@ export function legendaryOf(state: BattleState, c: Combatant): LegendarySpec | n
   if (state.map?.dragon?.id === c.id) return DATA.yuva;
   return null;
 }
-export const legendaryLeft = (c: Combatant, spec: LegendarySpec): number => c.legendaryLeft ?? spec.uses;
+/** Görev KATALOG-F0 (107+): tur başına hak = veri + Faz 2'nin ek hakkı (`legendaryExtra`). */
+export const legendaryUses = (c: Combatant, spec: LegendarySpec): number => spec.uses + (c.legendaryExtra ?? 0);
+export const legendaryLeft = (c: Combatant, spec: LegendarySpec): number => c.legendaryLeft ?? legendaryUses(c, spec);
 
 const awake = (c: Combatant) => c.hp > 0 && c.life !== 'dead' && !c.asleep && !c.unaware && !c.summon?.gone && !!c.pos && !isIncapacitated(c.conditions);
 const foesOf = (s: BattleState, c: Combatant) =>
@@ -93,7 +95,7 @@ export function legendaryRefreshEvents(state: BattleState, actorId: string): Bat
   const c = state.combatants[actorId];
   const spec = c ? legendaryOf(state, c) : null;
   if (!c || !spec || (c.legendaryLeft === undefined && !c.legendaryUsed?.length)) return [];
-  return [{ type: 'legendary_refresh', actorId, left: spec.uses }];
+  return [{ type: 'legendary_refresh', actorId, left: legendaryUses(c, spec) }];
 }
 
 /** Işın: büyü saldırısı (d20 + bonus, AC'ye karşı), isabette ateş hasarı. */

@@ -2,14 +2,22 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
-## KATALOG-1 F: yarı can fazı (Faz 2) motor kuralı — mekanik donmasına bilinçli istisna (2026-11-26; karar, uygulama henüz yok)
+## KATALOG-1 F / KATALOG-F0: yarı can fazı (Faz 2) motor kuralı — mekanik donmasına bilinçli istisna (2026-11-26; kural sürümü 107, kayıt sürümü 28)
 
 Kullanıcı kararı (2026-11-26): Serüven öncesi mekanik donmasına **bilinçli istisna** olarak, Mühür Ruhu bosslarının "%50 can Taş Uyanışı" fazı gerçek bir motor kuralı olacak.
 
 - İptal edilen yollar: "Game Master elle uygular", "mevcut efsanevi güçlendirme (`buff`) kullanılır" ve "zayıflık hiç kalkmaz".
 - Kural genel ve veriden okunur: canavar kaydında `faz2` bloğu, eşik varsayılan %50. Kodda boss adıyla koşul yazılmaz. Savaşta bir kez tetiklenir, geri dönmez.
 - Tasarım: `harita/belgeler/KATALOG-F-TASARIM.md` "Faz 2 mekaniği". Kural sürümü 107, kayıt sürümü 28 (yeni olay `phase_changed`).
-- Uygulama, tasarım onaylandıktan sonra ayrı görev olarak yapılır. O zamana dek kural ve kayıt sürümü değişmez (106 / 27).
+- Uygulama ayrı görev KATALOG-F0'da (kullanıcı K12: F0 → BOSS-GORSEL-1 → F Aşama 2). Kodlar:
+  - `src/battle/faz2Surum.ts`, `faz2.ts` (komut sonu kancası)
+  - `reduce.ts` `phase_changed`, `create.ts` kopyası
+  - `areaAttack.ts` `areaScale`, `boss.ts` `legendaryUses`, `ai.ts` aynı alan kaynağı
+  - şema `src/rules/faz2Schema.ts`
+- Sabit saldırı ve hasar eki için yeni alan gerekmedi: `dice.die` ve `hitDie` sabit sayıyı kabul ediyor (`parseDice`).
+- Regresyon: Çöl/Kale/Mağara/Orman 3 tohum, 106 = 107 = MC3 altını. Ana parça 460,93 kB (değişmedi).
+- `g6.test.ts` güncel sürüm beklentisi 104'te kalmıştı (106'da zaten kırmızıydı); 107'ye güncellendi.
+- `mc3.test.ts` kayıt sürümü beklentisi "27 ve üstü" oldu.
 
 ## Görev KATALOG-1 G: Kaltakkıran anlatım verisi (2026-11-26; kural sürümü (106) ve kayıt sürümü (27) değişmedi)
 

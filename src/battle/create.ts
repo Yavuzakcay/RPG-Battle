@@ -5,6 +5,7 @@ import { SINIF97_VERSION } from './sinif97Surum';
 import { TE99_VERSION, te99On } from './te99Surum';
 import { KARAR101_VERSION } from './karar101Surum';
 import { KAPSAM103_VERSION } from './kapsam103Surum';
+import { FAZ2_VERSION } from './faz2Surum';
 import { STONE_ID } from './karar101';
 import srdSpells from '../../data/srd/spells.json';
 import { B94_VERSION } from './b94Surum';
@@ -623,6 +624,8 @@ export function combatantFromMonster(
     immunities: monster.immunities ?? [],
     vulnerabilities: monster.vulnerabilities ?? [],
     packTactics: monster.packTactics ?? false,
+    // Görev KATALOG-F0 (107+): yarı can fazı bloğu (kopya; replay veri dosyasından bağımsız).
+    ...(monster.faz2 && v >= FAZ2_VERSION ? { faz2: { ...monster.faz2 } } : {}),
     ...(monsterPhase(monster.traits) ? { phase: monsterPhase(monster.traits) } : {}),
     // Kuyruk 19: özel duyular (SRD; verideki "Duyu: Blindsight 30 ft…" notundan): görüş kuralları ve yapay zekâ.
     ...(monsterSenses(monster) ? { senses: monsterSenses(monster) } : {}),
@@ -899,6 +902,8 @@ export function startBattle(
   if (rules >= SINIF97_VERSION) participants = participants.map((p) => ({ ...p, sinif97: true }));
   // KAPSAM103 (103+): durum görmeyen sınıf yardımcıları (Empowered Evocation, Gift of the Depths) için savaşçı işareti.
   if (rules >= KAPSAM103_VERSION) participants = participants.map((p) => ({ ...p, k103: true }));
+  // Görev KATALOG-F0: 106 ve altı savaşta yarı can fazı bloğu taşınmaz (eski kurallar aynen).
+  if (rules < FAZ2_VERSION) participants = participants.map((p) => (p.faz2 ? (({ faz2: _f, ...rest }) => rest)(p) : p));
   // Görev TE99 (99+, SRD 5.2.1 s. 90 Two-Handed): kalkan takılıyken iki elli silah seçeneği saldırı listesinden çıkar
   // (yapay zekâ, fırsat saldırısı, Hazırla aynı listeden); arayüz nedeniyle gösterir (`shieldBlocked`).
   // Görev TE99: eşya bonusu bağı (`te99Alt`) sürüme göre; Javelin of Lightning (99+) Javelin seçeneğine Lightning türü.

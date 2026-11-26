@@ -133,9 +133,9 @@ Alanların anlamları:
 | Geçici HP | **Var**: `temp_hp` olayı | Olayın içinde atılmış değer; reducer mevcut `temp_hp` mantığıyla (SRD: üst üste binmez, büyüğü) |
 | AC | **Var**: `ActiveEffect.ac` | Reducer süresiz etki `faz2:<id>` ekler (`until` yok) |
 | Saldırı bonusu (zar) | **Var**: `ActiveEffect.dice` (`on: ['attack']`) | Aynı etkiye yazılır |
-| Saldırı bonusu (sabit) | **Yok** | Etkiye `attackFlat` alanı ve canavar saldırısında okunması (yeni, küçük) |
+| Saldırı bonusu (sabit) | **Var** (F0'da doğrulandı): `dice.die` sabit sayı da olabilir (`parseDice("2")`) | Aynı etki; yeni kod yok |
 | Hasar artışı (zar) | **Var**: `ActiveEffect.hitDie` (canavar saldırısında 34+) | Aynı etkiye yazılır |
-| Hasar artışı (sabit) | **Yok** | `hitDie` sabit sayıyı kabul eder ya da `hitFlat` alanı (yeni, küçük) |
+| Hasar artışı (sabit) | **Var** (F0'da doğrulandı): `hitDie` sabit sayıyı kabul eder | Aynı etki; yeni kod yok |
 | Direnç, zayıflık, bağışıklık **ekleme** | **Var**: etkide `resist`, `vulnerable`, `immuneDamage` (`common.ts` hasar profili) | Aynı etkiye yazılır |
 | Direnç, zayıflık, bağışıklık **kaldırma** | **Yok** (etkiler yalnızca ekler) | Reducer, olaydaki listeleri savaşçının `resistances`/`vulnerabilities`/`immunities` dizilerinden çıkarır (yeni). Eşyadan gelen etki zayıflığı (Armor of Vulnerability) dokunulmadan kalır |
 | Nefesi yeniden doldurma | **Kısmen**: durum `rechargeUsed` / `abilityRecharge` var, olay `recharge_rolled` zarla çalışır | Olayda `nefesDoldur`; reducer iki listeyi boşaltır (yeni dal) |
@@ -180,7 +180,7 @@ Alanların anlamları:
   - `faz2.ts` (~2–3 kB) ve değişen dosyalar savaş parçasına girer.
   - TR günlük metni tembel `strings.tr2.ts` (`log`), EN metni tembel `strings.en.ts`.
   - Jeton işareti `ui/damageFloats.ts` `statusIcons` ile çizilir; bu dosya savaş çizim koduna aittir.
-  - **Beklenen ana parça artışı ≈ 0 kB.** Uygulamada `npm run build` sonundaki `paket-siniri.mjs` ölçümüyle doğrulanır; 465 kB aşılırsa durulur.
+  - **Beklenen ana parça artışı ≈ 0 kB.** KATALOG-F0 ölçümü (`paket-siniri.mjs`): **460,93 kB, değişmedi**.
 - **Arayüz** (yalnızca görünüm):
   - Günlükte tek satır: "{ad}: Taş Uyanışı — {not}" (EN "Stone Awakening"), açılır ayrıntıda değişenler listelenir (zayıflık kalktı, nefes doldu, alan ×1,25).
   - Jetonda küçük "Ⅱ" rozeti (`statusIcons`).
@@ -508,7 +508,30 @@ Bloklarda "vuruş" Multiattack'ın tek saldırısıdır; ortalama parantez için
   - `gmNot`: haritanın yarısı buz; tipi görüşü 30 ft.
   - Anlatım: "Ayaz Kalbi kükrüyor; alev artık buzunu eritmiyor."
 
-### 5.11 Güç sıralaması
+### 5.11 Faz 2'nin her bosstaki karakteri (yalnız anlatım ve Game Master notu; yeni kod yok)
+
+Dokuz bossun Faz 2'si mekanik olarak aynı: zayıflık kalkar, nefes dolar, alan ×1,25. Stormer'da zayıflık yerine geçici can var. Fark Game Master'ın oynatışında ve anlatımda:
+
+- **Hamle sırası:** Game Master oynatırsa bu sırayla; yapay zekâ kendi seçimini yapar.
+- **Nefesin yönü:** nişan, yani hangi oyuncu grubuna doğru.
+- **Öne çıkan efsanevi eylem:** Faz 2'de ilk harcanan.
+
+Hepsi `gmNot`'a ve `faz2.not` metnine yazılır.
+
+| Boss | Hamle sırası (Faz 2) | Nefesin yönü | Öne çıkan efsanevi eylem | Faz 2 anlatımı (Game Master okur) |
+|---|---|---|---|---|
+| Cimbombom | Önce nefes (dolu), sonra Bite → Claw → Claw; Pounce'la arkaya geçer | Kenara sıkışmış gruba, alev yüzeyine doğru | Kuyruk Süpürmesi (arkasındakiler) | "Kor Çekirdeği yarılıyor; yele alev sütununa dönüşüyor. Soğuk artık onu söndürmüyor." |
+| Darkape | Grab → Fist → Fist: önce tutar, sonra döver | Uçurum ya da duvar kenarına doğru: Prone ve itme düşürür | Yerçekimi Halkası (yakındakileri yere çakar) | "Boşluk Kırığı göğsünde açılıyor; düşünceler ona ulaşmıyor, yerçekimi onu dinliyor." |
+| Cerbones | Üç ısırık aynı hedefe (en yaralı), sonra nefes | İyileştiricinin ve onun yanındakilerin üstüne (noHeal) | Kül Halesi (yakına) | "Üç ağız aynı anda kükrüyor; ışık artık kemiğe işlemiyor, kül havayı dolduruyor." |
+| Mirage | Misty Step → nefes → üç pençe: arkadan vurur | Büyücülerin toplandığı arka hatta (Charmed) | Ayna Çığlığı (Stunned) | "Suretler çoğalıyor; kılıç da büyü de artık gerçek olanı ayırmıyor." |
+| Gongar | Shell Ram → Slam → Slam: önce sağır eder, sonra iter | Dar geçide ya da sütunlara doğru: itme + Prone | Kabuk Dönüşü (çevresini yere serer) | "Çan kabuğu tek bir uzun notayla çınlıyor; yıldırım artık metale tutunmuyor." |
+| Lightaur | Hücum → Gore → Hoof → Hoof: koşarak açılır | Gölgeye saklananlara (Blinded) | Hale Parıltısı (Blinded) | "Kırık hale yeniden tamamlanıyor; gölge onu artık yaralamıyor." |
+| Hydraxe | Üç ısırık en ağır zırhlıya (AC eritir), sonra çizgi nefes | Sıra hâlinde duranlara (çizgi) | Asit Salyası (yakına) | "Başlar dağlanmıyor artık; sülfür buharı boyunlardan taşıyor." |
+| Mothraq | Çek (Poisoned) → Proboscis → Wing → Wing | Zehirli olanların bulunduğu gruba | Spor Patlaması (Poisoned zinciri) | "Kanatlar ışığı yutuyor; spor fırtınası ormanı kapatıyor." |
+| Stormer | Nefes (çizgi, 125 ft) → Hoof → Hoof → Disengage ile uzaklaşır | Uzun çizgide en çok oyuncuyu kesen hat | Zincir Şimşek (üç ışın, menzilliler) | "Fırtına Mili yeleye saplanıyor; gök artık onun için çakıyor, fırtına onu bir zırh gibi sarıyor." |
+| Wolfgang | Bite (tutar) → Claw (yavaşlatır) → nefes | Yavaşlamış ve tutulmuş hedeflerin çevresine | Ayaz Halesi (hız yarı) | "Tipi uluyor; alev artık buzunu eritmiyor, nefesi geçidi kapatıyor." |
+
+### 5.12 Güç sıralaması
 
 Sıra Serüven'in doğudan batıya akışını izler: Buzul → Dağ → Orman ve Bataklık → Çöl ve Katedral → Derinlikler → Gözlemevi → Volkan (final).
 

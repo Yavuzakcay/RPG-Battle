@@ -97,6 +97,8 @@ function statusBadges(c: Pick<Combatant, 'conditions' | 'mapStatus'> & Partial<P
   if (c.conditions.includes('Invisible')) out.push({ key: 'invisible', icon: '👁', title: S.invisible });
   // Kuyruk K73c (sürüm 64+): yer altında (kazarak).
   if ((c as { burrowed?: true }).burrowed) out.push({ key: 'burrowed', icon: '⛏', title: S.burrowed });
+  // Görev KATALOG-F0: yarı can fazı geçildi (yalnız görünüm).
+  if ((c as { faz?: 2 }).faz === 2) out.push({ key: 'faz2', icon: 'Ⅱ', title: S.phase2 });
   // Görev E1: Deafened rozetle (yalnızca görsel).
   if (c.conditions.includes('Deafened')) out.push({ key: 'deafened', icon: '🔇', title: S.deafened });
   // Hazırla (Ready, sürüm 90): tepkisini ayırdı.

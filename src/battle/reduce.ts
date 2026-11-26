@@ -881,6 +881,25 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       return withCombatant(state, c.id, { tempHp: Math.max(c.tempHp ?? 0, event.amount) });
     }
+    case 'phase_changed': {
+      // Görev KATALOG-F0 (107+): yarı can fazı. Değerler olayda çözülmüş; geri dönmez (`faz: 2`).
+      const c = state.combatants[event.targetId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      const drop = (xs: string[], rm?: string[]) => (rm?.length ? xs.filter((x) => !rm.includes(x)) : xs);
+      return withCombatant(state, c.id, {
+        faz: 2,
+        ...(event.tempHp ? { tempHp: Math.max(c.tempHp ?? 0, event.tempHp) } : {}),
+        ...(event.effect ? { effects: [...(c.effects ?? []).filter((e) => e.id !== event.effect!.id), event.effect] } : {}),
+        ...(event.remove ? {
+          resistances: drop(c.resistances, event.remove.resistances),
+          vulnerabilities: drop(c.vulnerabilities, event.remove.vulnerabilities),
+          immunities: drop(c.immunities, event.remove.immunities),
+        } : {}),
+        ...(event.rechargeReset ? { rechargeUsed: [], abilityRecharge: [] } : {}),
+        ...(event.areaScale ? { areaScale: event.areaScale } : {}),
+        ...(event.legendaryExtra ? { legendaryExtra: event.legendaryExtra } : {}),
+      });
+    }
     case 'hp_boosted': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);

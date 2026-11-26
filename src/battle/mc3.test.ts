@@ -30,7 +30,9 @@ describe('MC3 sabitler', () => {
     expect(CURRENT_RULES).toBeGreaterThanOrEqual(105);
     expect(mc3On({ kuralSurumu: 105 })).toBe(true);
     expect(mc3On({ kuralSurumu: 104 })).toBe(false);
-    expect(SAVE_VERSION).toBe(27);
+    // KATALOG-F0: 28 (`phase_changed`); 27 yüklenmeye devam eder.
+    expect(SAVE_VERSION).toBeGreaterThanOrEqual(27);
+    expect(LOADABLE_VERSIONS).toContain(27);
     expect(LOADABLE_VERSIONS).toContain(25);
     expect(LOADABLE_VERSIONS).toContain(26);
   });

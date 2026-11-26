@@ -344,6 +344,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.legendaryUsed(n(event.actorId), event.name, event.left);
     case 'legendary_refresh':
       return '';
+    case 'phase_changed':
+      return L.phaseChanged(n(event.targetId), event.note ? event.note[getLang() === 'en' ? 'en' : 'tr'] : null);
     case 'shove_resolved': {
       const push = event.effect === 'push';
       const roll = event.natural === null ? L.shoveAuto : L.shoveRoll(event.d20.join(' / '), event.total);

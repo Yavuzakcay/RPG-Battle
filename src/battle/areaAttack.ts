@@ -177,8 +177,11 @@ export function monsterAreaOf(actor: Combatant, index: number, state?: Pick<Batt
   if (!atk?.area || !atk.save) return null;
   // Kuyruk A2 (sürüm 30+): hasarsız alan saldırısına veriden hasar (Yarı-Ejderha nefesi).
   const a2d = !atk.damageDice && state ? a2AreaDamage(state, formMonsterId(actor), atk.name) : undefined;
+  // Görev KATALOG-F0 (107+): Faz 2'de Recharge'lı alan saldırısının boyu çarpanla (5 ft'e aşağı; çizginin eni aynı).
+  const k = atk.recharge && actor.areaScale && actor.areaScale !== 1 ? actor.areaScale : 1;
+  const spec = k === 1 ? atk.area : { ...atk.area, sizeFt: Math.max(5, Math.floor((atk.area.sizeFt * k) / 5) * 5) };
   return {
-    spec: atk.area,
+    spec,
     save: { label: atk.name, ability: atk.save.ability, dc: atk.save.dc, halfOnSave: atk.save.halfOnSave,
       ...(atk.damageDice ? { damageDice: atk.damageDice } : {}), ...(atk.damageType ? { damageType: atk.damageType } : {}),
       ...(a2d ? { damageDice: a2d.dice, damageType: a2d.type } : {}),

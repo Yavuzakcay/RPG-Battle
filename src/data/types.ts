@@ -1159,8 +1159,39 @@ export interface MonsterAttack {
 /** Yaratık boyutu (SRD 5.2.1): Tiny, Small, Medium, Large, Huge, Gargantuan. */
 export type CreatureSize = 'T' | 'S' | 'M' | 'L' | 'H' | 'G';
 
+/**
+ * Görev KATALOG-F0 (kural sürümü 107+): yarı can fazı (Faz 2) bloğu, canavar kaydında isteğe bağlı. Can ⌊maxHp × `esik`⌋'e
+ * inince komut sonunda bir kez (`phase_changed`). Doğrulama `src/rules/faz2Schema.ts`; tasarım harita/belgeler/KATALOG-F-TASARIM.md §3.
+ */
+export interface Faz2Block {
+  /** Eşik (0–1, varsayılan 0,5). */
+  esik?: number;
+  /** Geçici HP: sabit ya da zar ("4d10"); tetikte bir kez atılır. */
+  geciciCan?: number | string;
+  /** AC değişimi. */
+  ac?: number;
+  /** Saldırı zarına ek: sabit ("2") ya da zar ("1d4"). */
+  saldiri?: number | string;
+  /** İsabet başına ek hasar: sabit ya da zar; türü `hasarTuru` (yoksa saldırının türü). */
+  hasar?: number | string;
+  hasarTuru?: string;
+  direncEkle?: string[]; direncKaldir?: string[];
+  zayiflikEkle?: string[]; zayiflikKaldir?: string[];
+  bagisiklikEkle?: string[]; bagisiklikKaldir?: string[];
+  /** Recharge'lı saldırı ve yetenekler hemen dolar. */
+  nefesDoldur?: boolean;
+  /** Recharge'lı alan saldırılarının boy çarpanı (koni/çizgi uzunluğu, küre/yayılım yarıçapı; 5 ft'e aşağı). */
+  nefesAlan?: number;
+  /** Tur başına ek efsanevi eylem hakkı. */
+  efsaneviEk?: number;
+  /** Günlük ve kart metni. */
+  not?: { tr: string; en: string };
+}
+
 export interface Monster {
   id: string;
+  /** Görev KATALOG-F0: yarı can fazı (107+). */
+  faz2?: Faz2Block;
   name: string;
   /** KAPSAM103 (kural sürümü 103+): SRD stat bloğundaki "Initiative +X" (`scripts/srd-canavar.mjs`; yoksa DEX değiştiricisi). */
   initiative?: number;
