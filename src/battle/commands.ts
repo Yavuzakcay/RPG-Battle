@@ -89,7 +89,7 @@ import { executeVerticalMove } from './altitude';
 import './hiddenZones';
 // Kuyruk K73c: su altı nefes ve sudan çıkış (komut sonu kancası, sürüm 64+).
 import './underwater';
-import { executeDropItem, executePickUp } from './heldItems';
+import { executeDropItem, executePickUp, unconsciousDropEvents } from './heldItems';
 import { allyStoredOwner } from './paket/p11cast';
 import { executeDropBlade } from './s2spells';
 import { spendSlot } from './slots';
@@ -329,6 +329,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Kuyruk K48: Moral tam modu (dost düştü, korku; 0'da çökme, ≥ 1'de çökmenin bitmesi).
   const morale = moraleAfterEvents(state, next, events);
   if (morale.length) { next = applyEvents(next, morale); events = [...events, ...morale]; }
+  // Görev KARAR104-KALAN A7 (104+): bu komutta Unconscious olan elindekini düşürür.
+  const knocked = unconsciousDropEvents(state, next);
+  if (knocked.length) { next = applyEvents(next, knocked); events = [...events, ...knocked]; }
   const reveal = revealEvent(state, next, cmd);
   if (reveal) { next = applyEvents(next, [reveal]); events = [...events, reveal]; }
   // GENEL96 C12 (sürüm 96+): saldırı zarı atan başka gizlenmişler (bonus vuruş, tepki, Ready, takip saldırısı).

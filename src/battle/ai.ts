@@ -21,6 +21,7 @@
  * fırsat saldırısı yiyecek yürüyüşten önce bonus eylemle ayrılır (Cunning Action). Konsantre
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
+import { ownDroppedNear } from './heldItems';
 import { TRANSMUTE_TYPES } from './sorcerer';
 import { buyucu93On } from './buyucu93Surum';
 import { B94_KINDS, druidChoice94, paladinChoice94, rangerChoice94 } from './ai/b94';
@@ -1763,6 +1764,9 @@ export function chooseCommand(state: BattleState): Command {
   // Kuyruk K75 (79+): yakın dövüşçü bitişik eğitimli bineğe biner; ağır yaralı bineğinden iner (mevcut komutlar).
   const mountCmd = mountDecision(state, actor, (c) => tryCmd(state, actor, c).ok);
   if (mountCmd) return mountCmd;
+  // Görev KARAR104-KALAN A7 (104+): bayılınca düşen kendi silahını yerden alır (turda serbest nesne etkileşimi).
+  const dropped = ownDroppedNear(state, actor);
+  if (dropped) { const pick: Command = { type: 'pick_up', actorId, objectId: dropped }; if (tryCmd(state, actor, pick).ok) return pick; }
   const cmd0 = withMetamagic(state, actor, decide(state, actor, end), end);
   // Kuyruk K73a (sürüm 62+): turu bitirmeden önce uçuşu bu tur bitenin (süre, zorunlu iniş) ya da konsantrasyonlu uçuşta canı
   // azalanın inişi (düşme riski yok).

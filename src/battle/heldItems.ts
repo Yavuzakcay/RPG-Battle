@@ -13,6 +13,8 @@ import { distance, hexKey } from '../rules/hex';
 import { fail, finish, type CommandResult } from './common';
 import { ruleVersion } from './ruleVersion';
 import { genel96On } from './genel96Surum';
+import { karar104On } from './karar104Surum';
+import { applyEvents } from './reduce';
 import { economyCost } from './economy';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
@@ -96,3 +98,33 @@ export function bondRecallEvents(state: BattleState, c: Combatant, label: string
 export const groundItemsNear = (state: BattleState, c: Combatant) =>
   (state.map?.objects ?? []).filter((o) => o.kind === 'droppedItem' && o.item && c.pos && distance(c.pos, o.at) <= 1);
 export { hexKey };
+
+/**
+ * Görev KARAR104-KALAN A7 (104+, SRD 5.2.1 s. 191 Unconscious "You drop whatever you're holding"; GENEL-SAVAS B40): komut
+ * içinde Unconscious olan (0 HP, Sleep, Knocking Out…) yaratık elindeki silahları altıgenine düşürür (`item_dropped`, bağlı
+ * silah da). Yalnız haritalı savaşta (haritasızda yere düşen nesne olmaz, silah kaybolurdu). ⚠ Kalkan (giyilir, `shield_toggle`)
+ * ve elde tutulan büyü etkileri (Flame Blade bıçağı, Produce Flame) kapsam dışı. 103: düşürmez.
+ */
+export function unconsciousDropEvents(before: BattleState, after: BattleState): BattleEvent[] {
+  if (!karar104On(after) || !handsOn(after) || !after.map || after.status !== 'active') return [];
+  const out: BattleEvent[] = [];
+  let cur = after;
+  for (const c of Object.values(after.combatants)) {
+    if (!c.pos || c.offFloor || !c.conditions.includes('Unconscious') || before.combatants[c.id]?.conditions.includes('Unconscious')) continue;
+    for (const item of heldWeapons(c)) {
+      const evs = dropEvents(cur, cur.combatants[c.id] as Combatant, item, 'bayıldı, elinden düştü', true);
+      if (!evs.length) continue;
+      out.push(...evs);
+      cur = applyEvents(cur, evs);
+    }
+  }
+  return out;
+}
+
+/** Görev KARAR104-KALAN A7 (104+): yapay zekâ kendi düşen silahını bitişikten ya da altıgeninden alır (turda serbest etkileşim). */
+export function ownDroppedNear(state: BattleState, c: Combatant): string | null {
+  if (!karar104On(state) || !handsOn(state) || !c.pos || c.economy.interacted) return null;
+  const o = groundItemsNear(state, c).find((x) => x.id.startsWith(`drop:${c.id}:`) && (c.dropped ?? []).includes(x.item as string));
+  return o?.id ?? null;
+}
+

@@ -32,6 +32,13 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   tur sonu zinciri). ⚠ "Behind cover" kime göre yazmıyor: Hide'ın bütün düşmanlar yorumu (bilinçli sapma A17) alındı. Bulunan eski
   hata: 96–103'te GENEL96 C12 `attackRevealEvents` Stealth Attack yapanı yine açığa çıkarıyordu (özellik fiilen işlemiyordu); 104'te
   aynı komutun açığa çıkışı atlanır. 103 ve altı dokunulmadı (replay).
+- **A7 Unconscious eşya düşürme + yapay zekânın yerden alması** (SRD 5.2.1 s. 191 "You drop whatever you're holding"; GENEL-SAVAS
+  B40): 104+ komut içinde Unconscious olan (0 HP, Sleep, Knocking Out…) yaratık elindeki silahları altıgenine düşürür
+  (`heldItems.ts` `unconsciousDropEvents`, komut sonu; S2 el modelinin `item_dropped`'ı, bağlı silah da). Yapay zekâ ayılınca
+  kendi düşen silahını bitişikten ya da altıgeninden alır (`ownDroppedNear`, `ai.ts` `chooseCommand` turun başında; turda serbest
+  nesne etkileşimi). Canavarların silahı el modelinde değil (`weaponOptions` boş): düşürmez (stat bloğu saldırıları). Haritasız
+  savaşta ve savaşı bitiren düşüşte düşürmez. ⚠ Kalkan (giyilir) ve elde tutulan büyü etkileri (Flame Blade, Produce Flame) kapsam
+  dışı. 103: düşürmez. Sim etkisi: düşüp ayılan parti üyesi bir serbest etkileşimle silahını alır (hızlı regresyon DENGE.md).
 - **A8 Swarm varışta da paylaşır** (SRD 5.2.1 "The swarm can occupy another creature's space and vice versa": metin gönüllü hareketle
   sınırlamıyor; SWARM95'in ⚠ kapsam dışı kısmı): 104+ ışınlanma (`teleport.ts` `teleportProblem`: Misty Step, Fey Step, Blink
   Steps…), zorla hareket (`forced.ts` `pushOutcome`: itme/çekme, Repelling Blast, Thunderwave; tek ve çok altıgen) ve Game Master

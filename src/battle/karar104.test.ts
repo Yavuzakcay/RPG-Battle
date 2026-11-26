@@ -25,7 +25,8 @@ import { zeroHpRest } from '../journey/seruven';
 import { dragBack } from '../journey/hapishane';
 import { startBattle } from './create';
 import { replay } from './index';
-import { GM, mk, P1 } from './fixtures';
+import { GM, mk, P1, sword } from './fixtures';
+import { chooseCommand } from './ai';
 import { KARAR104_VERSION, karar104On } from './karar104Surum';
 import { CURRENT_RULES } from './ruleVersion';
 import { distance } from '../rules/hex';
@@ -521,6 +522,34 @@ describe('KARAR104-KALAN A9: Ready yanıt listesi (SRD 5.2.1 s. 186 "the action 
       expect(execute(scene(NEW), readyCmd(response), P1, hooked(10)).ok).toBe(true);
       expect(execute(scene(OLD), readyCmd(response), P1, hooked(10)).ok).toBe(false);
     }
+  });
+});
+
+describe('KARAR104-KALAN A7: Unconscious elindekini düşürür (SRD 5.2.1 s. 191), yapay zekâ yerden alır', () => {
+  const blade = { ...sword, weaponId: 'longsword' };
+  const scene = (v: number) => scene104(v, [mk('B', { side: 'enemies', hp: 60, maxHp: 60, weaponOptions: [blade], pos: at(4, 5) }),
+    mk('A', { ownerId: 'p1', hp: 1, maxHp: 30, weaponOptions: [blade], pos: at(3, 5) }), mk('C', { ownerId: 'p1', hp: 30, maxHp: 30, pos: at(10, 2) })]);
+  const hit = (v: number) => play(scene(v), [{ type: 'attack', actorId: 'B', targetId: 'A', option: blade } as Command], hooked(15));
+  it('104: 0 HP’ye düşen (Unconscious) silahını altıgenine düşürür; 103: elinde kalır', () => {
+    const now = hit(NEW);
+    expect(now.state.combatants.A!.conditions).toContain('Unconscious');
+    expect(now.events.some((e) => e.type === 'item_dropped' && e.actorId === 'A' && e.item === 'longsword')).toBe(true);
+    expect(now.state.combatants.A!.weaponOptions.some((o) => o.weaponId === 'longsword')).toBe(false);
+    expect(now.state.map!.objects!.some((o) => o.kind === 'droppedItem' && o.item === 'longsword')).toBe(true);
+    const old = hit(OLD);
+    expect(old.events.some((e) => e.type === 'item_dropped')).toBe(false);
+    expect(old.state.combatants.A!.weaponOptions.some((o) => o.weaponId === 'longsword')).toBe(true);
+  });
+  it('104: uyanan yapay zekâ yaratığı kendi silahını yerden alır (serbest etkileşim)', () => {
+    const down = hit(NEW).state;
+    const a = down.combatants.A!;
+    const up: BattleState = { ...down, turnIndex: down.order.indexOf('A'),
+      combatants: { ...down.combatants, A: { ...a, hp: 10, life: 'alive', conditions: a.conditions.filter((c) => c !== 'Unconscious' && c !== 'Prone'), economy: { ...FRESH_ECONOMY } } } };
+    const cmd = chooseCommand(up);
+    expect(cmd).toMatchObject({ type: 'pick_up', actorId: 'A' });
+    const r = execute(up, cmd, P1, hooked(10));
+    if (!r.ok) throw new Error(r.error);
+    expect(r.state.combatants.A!.weaponOptions.some((o) => o.weaponId === 'longsword')).toBe(true);
   });
 });
 
