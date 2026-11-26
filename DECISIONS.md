@@ -63,6 +63,11 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   Cloaker'ın aldığı hasar olaylardaki tür parçalarına ayrılır (`attach.ts` `takenByType`: saldırı, save ve süren etki olayları ile
   ek hasarları); hedef her parçayı o türle alır ve kendi direnç/bağışıklık/zayıflığı işler (`adjustDamage`; emme 0 sayılır). Türü
   bulunamayan kalan türsüz. Yapışma yalnız 104'te olduğundan 103'te paylaşım hiç yok.
+- **⚠ c Darkmantle hızı** (SRD 5.2.1 s. 279 "Its Speed becomes 0, it can't benefit from any bonus to its Speed, and it moves with the
+  target … On its turn, the darkmantle can detach itself by using 5 feet of movement"): yapışınca Darkmantle'a `speedMult: 0` etkisi
+  (`attachHold`; veride `yapisma.speedZero`): hız 0, Dash eki de 0 (Dash anındaki hızdan, KARAR101). Ayrılma metindeki gibi kendi
+  turunda 5 ft hareketle (taban hızdan; hız 0 kuralı bağlıyken yürümeyi yasaklar, ayrılmayı değil); ayrılınca etki kalkar, kalan
+  hareket normal hızdan. Hedef kaçınca/ölünce de kalkar. Hedefle birlikte hareket A2'deki gibi. 103'te yapışma yok.
 
 ## Görev KARAR104: bekleyen kullanıcı kararları SRD 5.2.1'e göre (2026-11-24; kural sürümü 104 `KARAR104_VERSION`, kayıt sürümü 26)
 

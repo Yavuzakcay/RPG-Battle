@@ -12,6 +12,7 @@ import { revealEvent, supremeSneakEndEvents } from './stealth';
 import { teleportProblem } from './teleport';
 import { pushOutcome } from './forced';
 import { arrivalOccupant } from './movement';
+import { speedHexes } from './reduce';
 import { askPicks } from '../rules/choice';
 import type { ReactionAnswer, ReactionRequest } from '../rules/reactionChoice';
 import { boundWeaponName, eligibleWeaponsOf } from '../rules/itemBinding';
@@ -274,6 +275,24 @@ describe('KARAR104 A2: yapışma (Stirge, Darkmantle, Cloaker; SRD 5.2.1)', () =
     const p = play(plain, [atk(plain, 'D', 'Crush')], hooked(20));
     expect(attachOf(p.state)?.grants).toBeUndefined();
     expect(attachOf(p.state)?.noBreath).toBeUndefined();
+  });
+  it('KARAR104-KALAN Darkmantle: bağlıyken hızı 0, Dash eki yok; kendi turunda 5 ft ile ayrılıp normal hızla yürür; ayırılınca hız döner', () => {
+    const plain = scene104(NEW, [beast('darkmantle', 'D', at(3, 5)), hero()]);
+    const p = play(plain, [atk(plain, 'D', 'Crush')], hooked(20));
+    const D = (s: BattleState) => s.combatants.D as Combatant;
+    expect(speedHexes(D(p.state))).toBe(0);
+    const fresh = { ...p.state, combatants: { ...p.state.combatants, D: { ...D(p.state), economy: { ...FRESH_ECONOMY } } } };
+    const dashed = play(fresh, [{ type: 'dash', actorId: 'D' } as Command], hooked(20)).state;
+    expect(speedHexes(D(dashed))).toBe(0);
+    // Ayrılma (5 ft) + yürüme: hız etkisi kalkar, kalan hareket taban hızdan.
+    const away = play(p.state, [{ type: 'move', actorId: 'D', to: at(2, 5) } as Command], hooked(20)).state;
+    expect(attachOf(away)).toBeUndefined();
+    expect(D(away).effects?.some((e) => e.attachHold)).toBe(false);
+    expect(D(away).pos).toEqual(at(2, 5));
+    // Hedef kaçınca (escape) hız etkisi de kalkar.
+    const freed = play({ ...p.state, turnIndex: p.state.order.indexOf('H') }, [{ type: 'escape', actorId: 'H' } as Command], hooked(20)).state;
+    expect(attachOf(freed)).toBeUndefined();
+    expect(speedHexes(D(freed))).toBeGreaterThan(0);
   });
   it('104 Cloaker: hedef Blinded; cloaker aldığı hasarı yarıya indirir, hedef aynı miktarı alır', () => {
     const s = scene104(NEW, [beast('cloaker', 'C', at(3, 5)), hero(), beast('ogre', 'O', at(3, 4), 'party')]);

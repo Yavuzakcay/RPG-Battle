@@ -397,6 +397,9 @@ export interface ActiveEffect {
   attachAuto?: boolean;
   /** Görev KARAR104 (A2, Cloaker): yapışanın üstünde; aldığı hasar kadar bu hedef de hasar alır. */
   attachShare?: string;
+  /** Görev KARAR104-KALAN (Darkmantle Crush "Its Speed becomes 0, it can't benefit from any bonus to its Speed"): yapışanın hız
+   * etkisi (`speedMult: 0`), değer hedefin kimliği; yapışma bitince ya da kendi 5 ft'iyle ayrılınca kalkar. */
+  attachHold?: string;
   /** Görev D1 (86+): `at` hasar yutanın tur başında (varsayılan) ya da sonunda; `disgorge` + `since` (Giant Frog): yutulduğu turdan sonraki ilk tur sonunda hasar, ölmezse kusulur. */
   swallow?: { dice: string; type: string; dice2?: string; type2?: string; escapeDamage: number; escapeDc: number; at?: 'start' | 'end'; disgorge?: boolean; since?: number;
     /** Görev WS92 (92+): yutulan midede (konum yutanınki, hücre kaplamaz, dışarıdan Total Cover). */

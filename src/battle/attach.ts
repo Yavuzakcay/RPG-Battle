@@ -5,7 +5,8 @@
  *   Blinded + nefes alamaz, A3 `noBreath`). Cloaker hedefi Blinded.
  * - Yapışan hedefle birlikte hareket eder: komut sonunda hedefe bitişik değilse hedefin yanındaki en yakın boş altıgene geçer
  *   (`teleported`; fırsat saldırısı ve zemin girişi yok), yer yoksa düşer. Hedef yürürken yapışanın fırsat saldırısı yok.
- * - Yapışan kendi hareketiyle ayrılır (5 ft harcar; `detachSelfEvents`, yürüme/atlama komutundan önce).
+ * - Yapışan kendi hareketiyle ayrılır (5 ft harcar; `detachSelfEvents`, yürüme/atlama komutundan önce). Darkmantle bağlıyken
+ *   hızı 0 ve hız bonusu yok (`speedZero` → kendinde `speedMult: 0` etkisi `attachHold`; KARAR104-KALAN), ayrılınca kalkar.
  * - Hedef eylemle ayırır (`escape`: Darkmantle DC 13, Cloaker DC 14 STR (Athletics); Stirge zarsız); Stirge ve Cloaker'da 5 ft
  *   içindeki yaratık da (`help`, `escapeCheck.allyHelp`).
  * - Kısıt (`blocked`): Stirge bağlıyken Proboscis yapamaz (`self`), Cloaker Attach'ı başka hedefe yapamaz (`others`), Darkmantle
@@ -41,11 +42,14 @@ export interface AttachSpec {
   auto?: boolean;
   help?: boolean;
   share?: boolean;
+  /** KARAR104-KALAN: bağlıyken yapışanın hızı 0, hız bonusu yok (Darkmantle); ayrılma 5 ft hareketiyle (taban hız). */
+  speedZero?: boolean;
 }
 
 const ALL_DAMAGE = ['acid', 'bludgeoning', 'cold', 'fire', 'force', 'lightning', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder'];
 export const attachId = (attackerId: string): string => `yapisma:${attackerId}`;
 const shareId = (targetId: string): string => `yapisma-paylas:${targetId}`;
+const holdId = (targetId: string): string => `yapisma-hiz:${targetId}`;
 const fits = fitsSize;
 
 /** Saldırının yapışma kuralı (104+, A2 kaydında `yapisma`). */
@@ -100,6 +104,8 @@ export function attachEvents(state: BattleState, actor: Combatant, target: Comba
   };
   const out: BattleEvent[] = [{ type: 'effect_added', targetId: target.id, effect }];
   if (spec.share) out.push({ type: 'effect_added', targetId: actor.id, effect: { id: shareId(target.id), name: `${attackName}: hasar paylaşımı`, sourceId: actor.id, resist: ALL_DAMAGE, until: state.round + 14400, attachShare: target.id } });
+  // KARAR104-KALAN (SRD 5.2.1 s. 279 Crush): bağlıyken hızı 0 ve hız bonusu yok (Dash dahil: `speedMult` 0 Dash ekini de sıfırlar).
+  if (spec.speedZero) out.push({ type: 'effect_added', targetId: actor.id, effect: { id: holdId(target.id), name: `${attackName}: yapışık (hız 0)`, sourceId: actor.id, speedMult: 0, until: state.round + 14400, attachHold: target.id } });
   return out;
 }
 
@@ -108,7 +114,11 @@ export function detachSelfEvents(state: BattleState, actor: Combatant): BattleEv
   const at = attachedHost(state, actor);
   if (!at || !actor.pos) return [];
   if (Math.floor(actor.speed / 5) - actor.movementUsed < 1) return `${at.host.name} hedefinden ayrılmak için 5 ft hareket gerekli.`;
-  return [{ type: 'effect_ended', targetId: at.host.id, effectId: at.effect.id, name: at.effect.name, reason: 'expired' }, { type: 'moved', actorId: actor.id, path: [actor.pos], cost: 1 }];
+  // KARAR104-KALAN: hız 0 etkisi (Darkmantle) ayrılınca kalkar; "using 5 feet of movement" taban hızdan (hız 0 bağlıyken içindir).
+  const hold = actor.effects?.find((e) => e.attachHold === at.host.id);
+  return [{ type: 'effect_ended', targetId: at.host.id, effectId: at.effect.id, name: at.effect.name, reason: 'expired' },
+    ...(hold ? [{ type: 'effect_ended' as const, targetId: actor.id, effectId: hold.id, name: hold.name, reason: 'expired' as const }] : []),
+    { type: 'moved', actorId: actor.id, path: [actor.pos], cost: 1 }];
 }
 
 /** Hedef yürürken yapışan ona fırsat saldırısı yapmaz (birlikte hareket eder). */
@@ -183,11 +193,12 @@ registerCommandEnd((before, next, events) => {
       push([{ type: 'teleported', actorId: a.id, from: a.pos, to, label: 'yapışık: hedefle birlikte' }]);
     }
   }
-  // Yapışması biten Cloaker'ın paylaşım etkisi kalkar.
+  // Yapışması biten Cloaker'ın paylaşım etkisi ve Darkmantle'ın hız 0 etkisi kalkar.
   for (const a of Object.values(s.combatants)) {
-    const share = a.effects?.find((e) => e.attachShare);
-    if (share && !s.combatants[share.attachShare as string]?.effects?.some((e) => e.attachedBy === a.id)) {
-      push([{ type: 'effect_ended', targetId: a.id, effectId: share.id, name: share.name, reason: 'expired' }]);
+    for (const fx of (a.effects ?? []).filter((e) => e.attachShare || e.attachHold)) {
+      if (!s.combatants[(fx.attachShare ?? fx.attachHold) as string]?.effects?.some((e) => e.attachedBy === a.id)) {
+        push([{ type: 'effect_ended', targetId: a.id, effectId: fx.id, name: fx.name, reason: 'expired' }]);
+      }
     }
   }
   return out;
