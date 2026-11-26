@@ -22,7 +22,7 @@ const pc = (cls: string, lvl: number, its: string[], extra: object = {}) => comb
 
 describe('Kuyruk 19: eşyalar', () => {
   it('SRD sihirli eşyalarının ve maceracı eşyalarının hepsi veride; savaş dışılar gerekçeli', () => {
-    expect(items.filter((i) => i.srd.startsWith('magic-items:')).length).toBeGreaterThanOrEqual(250);
+    expect(items.filter((i) => i.srd?.startsWith('magic-items:')).length).toBeGreaterThanOrEqual(250);
     for (const i of items) if (i.offCombat !== undefined) expect(i.offCombat.length).toBeGreaterThan(5);
   });
   it('Acid fırlatma: Attack eyleminin saldırısı yerine DEX save ya da 2d6; kapalıyken kullanılamaz', () => {

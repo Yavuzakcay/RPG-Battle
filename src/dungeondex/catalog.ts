@@ -4,7 +4,7 @@
  * adlar İngilizce (alt sınıf ve Geçmiş adı Türkçe), açıklamalar Türkçe; SRD'nin İngilizce ham metni (`text`, `raw`)
  * hiçbir kartta kullanılmaz. Tembel parça: yalnız `src/screens/Dungeondex.tsx` içe aktarır.
  */
-import { armor, classes, items, monsters, races, spells, spellDescriptions, trAciklama, weapons, classData, enDescriptions, loadMonsterDescriptions, loadEnMonsterDescriptions } from '../data';
+import { armor, classes, isMagicItem, items, monsters, races, spells, spellDescriptions, trAciklama, weapons, classData, enDescriptions, loadMonsterDescriptions, loadEnMonsterDescriptions } from '../data';
 import type { Item, Monster, Spell, SubclassDef, Weapon } from '../data';
 import { allFeats } from '../rules/advancement';
 import { backgrounds } from '../rules/backgrounds';
@@ -152,12 +152,13 @@ export function buildDex(x: DexExtras): Record<DexCat, DexEntry[]> {
   });
 
   // Eşyalar: sihirli eşya, donanım, silah, zırh.
-  const itemKind = (i: Item) => (i.srd.startsWith('magic-items') ? 'magic' : 'gear');
+  const itemKind = (i: Item) => (isMagicItem(i) ? 'magic' : 'gear');
   const masteryOf = (w: Weapon) => classData.srdWeapons.find((s) => s.id === w.id)?.mastery;
   const esya: DexEntry[] = [
     ...items.map((i): DexEntry => ({
       cat: 'esya', id: i.id, name: i.name, header: L.itemKind[itemKind(i)] ?? '',
-      desc: { tr: trAciklama('esya', i.id), en: en('esya', i.id), ui: trAciklama('esya', i.id) ? undefined : itemSummary(i) },
+      // Görev KATALOG-1: özgün eşyada Türkçe açıklama yoksa PDF'in "Ne işe yarar" paragrafı.
+      desc: { tr: trAciklama('esya', i.id), en: en('esya', i.id), ui: trAciklama('esya', i.id) ? undefined : i.katalog?.ozet ?? itemSummary(i) },
       facts: [
         ...(i.attunement ? [[L.fact.attune, L.yes] as [string, string]] : []),
         ...(i.weight !== undefined ? [[L.fact.weight, L.lb(i.weight)] as [string, string]] : []),

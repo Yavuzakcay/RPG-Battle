@@ -288,12 +288,14 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
   const acParts: DerivedStats['acParts'] = [];
   const kit = classKit(cls.id, level, sheet.subclassId, sheet.featureChoices);
   if (ar.type === 'none') {
-    acParts.push({ kind: 'base', value: 10 }, { kind: 'dex', value: modifiers.dex });
     // Unarmored Defense (veriden): yetenek değiştiricileri; bazı sınıflarda kalkanla geçmez.
     const ud = kit.unarmoredDefense;
-    if (ud && (ud.shield || !sheet.shield)) {
-      for (const a of ud.abilities) if (a !== 'dex') acParts.push({ kind: a, value: modifiers[a] });
-    }
+    const udParts = ud && (ud.shield || !sheet.shield) ? ud.abilities.filter((a) => a !== 'dex').map((a) => ({ kind: a, value: modifiers[a] })) : [];
+    // Görev KATALOG-1 B: eşyanın zırhsız taban AC'si (`unarmoredBase` + DEX; Kör Nokta Cübbesi 15): Mage Armor gibi taban,
+    // Unarmored Defense'le toplanmaz, yüksek olan geçerli; kalkan üstüne eklenir.
+    const itemBase = Math.max(0, ...fx.map((e) => e.unarmoredBase ?? 0));
+    if (itemBase > 10 + udParts.reduce((n, p) => n + p.value, 0)) acParts.push({ kind: 'base', value: itemBase }, { kind: 'dex', value: modifiers.dex });
+    else acParts.push({ kind: 'base', value: 10 }, { kind: 'dex', value: modifiers.dex }, ...udParts);
     // Kuyruk AS1b: alt soyun zırhsız AC farkı (Saf Kent −1).
     const soyAc = lineageEtki(sheet)?.zirhsizAc;
     if (soyAc) acParts.push({ kind: 'feat', value: soyAc, name: 'Alt soy' });

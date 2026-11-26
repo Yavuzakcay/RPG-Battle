@@ -4,7 +4,7 @@
  * yedek glifi). Testler görsel açmaz: yalnız dosya adları listelenir (`import.meta.glob`, tembel).
  */
 import { beforeAll, describe, expect, it } from 'vitest';
-import { classData, items, loadMonsters, monsters, races, spells, weapons, armor } from '../data';
+import { classData, isMagicItem, items, loadMonsters, monsters, races, spells, weapons, armor } from '../data';
 import { subclassesOf } from '../rules/classFeatures';
 import { classes } from '../data';
 import { setLang } from '../i18n';
@@ -46,11 +46,12 @@ describe('Dungeondex görsel eşlemesi', () => {
     // SRD eşya kimliği oyunda bir ya da birkaç kayda açılır (Potion of Healing → dört iksir; `srd: "magic-items:<kimlik>"`).
     const viaSrd = (ref: string) => { const its = items.filter((i) => i.srd === ref); expect(its.length, ref).toBeGreaterThan(0); for (const i of its) has('esya', i.id); };
     for (const id of srdIds((srdMagic as unknown as { items: Array<{ id: string }> }).items)) viaSrd(`magic-items:${id}`);
-    for (const i of items.filter((x) => !x.srd.startsWith('magic-items'))) has('esya', i.id);
+    for (const i of items.filter((x) => !isMagicItem(x))) has('esya', i.id);
     expect((srdGear as unknown as { gear: unknown[] }).gear.length).toBeGreaterThan(0);
     for (const w of weapons) has('esya', w.id);
     for (const a of armor as Array<{ srd?: string }>) if (a.srd) has('esya', a.srd.split(':')[1]!);
-    expect(Object.keys(E.kategoriler.esya)).toHaveLength(449);
+    // Görev KATALOG-1 A: 449 SRD/oyun eşyası + 125 özgün katalog silahı (yedek ikon); B: + 66 zırh/cübbe/kalkan/imza eşyası; C: + 55 giyilebilir; D: + 76 yüzük, tılsım, taş.
+    expect(Object.keys(E.kategoriler.esya)).toHaveLength(771);
     for (const id of Object.keys((srdMonsters as unknown as { monsters: Record<string, unknown> }).monsters)) has('canavar', id);
     expect(Object.keys(E.kategoriler.canavar)).toHaveLength(monsters.length);
     for (const id of srdIds((srdFeats as unknown as { feats: Array<{ id: string }> }).feats)) has('feat', id);
@@ -84,7 +85,7 @@ describe('Dungeondex görsel eşlemesi', () => {
   });
 
   it('nadirlik rengi yalnız sihirli eşyada; canavar ve jetonlar kendi dosyasına bağlı', () => {
-    for (const it of items) expect(!!E.kategoriler.esya[it.id]?.nadirlikRengi, it.id).toBe(it.srd.startsWith('magic-items'));
+    for (const it of items) expect(!!E.kategoriler.esya[it.id]?.nadirlikRengi, it.id).toBe(isMagicItem(it));
     for (const m of monsters) expect(E.kategoriler.canavar[m.id]!.ref).toBe(`monsters/${m.id}.webp`);
   });
 });

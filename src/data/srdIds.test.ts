@@ -20,6 +20,10 @@ import srdSpecies from '../../data/srd/species.json';
 import racesData from '../../data/races.json';
 import srdBackgrounds from '../../data/srd/backgrounds.json';
 import backgroundsData from '../../data/backgrounds.json';
+import itemsSrdData from '../../data/items-srd.json';
+import itemsKatalog from '../../data/items-katalog.json';
+import silahBagi from '../../data/esya-silah-bagi.json';
+import spells69 from '../../data/spells-69.json';
 
 const SRD: Record<string, Set<string>> = {
   weapons: new Set(srdWeapons.weapons.map((w) => w.id)),
@@ -85,7 +89,48 @@ describe('kimlik kuralı: oyun verisi SRD kayıtlarına bağlı', () => {
       expect(b.skills.map(norm)).toEqual(srd.skills.map(norm));
     }
   });
-  it('eşyalar (sihirli eşya ya da donanım)', () => expect(idProblems(itemsData)).toEqual([]));
+  // Görev KATALOG-1: `loadClassData` katalog eşyalarını aynı diziye (items.json modülü) ekler; SRD'ye bağlı olanlar burada.
+  it('eşyalar (sihirli eşya ya da donanım)', () => expect(idProblems((itemsData as Array<{ id: string; srd?: string; name: string; kaynak?: string }>).filter((i) => !i.kaynak))).toEqual([]));
+  // Görev KATALOG-1: özgün katalog eşyaları SRD'de yok (geçmişlerin `ozgun` kolu gibi); kimlik biçimi, tekillik, ad tekilliği
+  // (eşyalar karakterde adla bağlanır: `itemNames`), PDF kaydı ve silah bağı yine denetlenir.
+  it('KATALOG-1 özgün eşyalar: SRD kaydı yok; kimlik, ad, katalog bilgisi ve silah bağı tutarlı', () => {
+    type K = { id: string; name: string; srd?: string; kaynak?: string; spells?: Array<{ name: string }>;
+      katalog?: { ref: string; tr: string; nadirlik: string; tur: string; taban?: string; ozellikler: Array<{ ad: string; metin: string; durum: string }> } };
+    const kat = (itemsKatalog as unknown as { esyalar: K[] }).esyalar;
+    const others = [...(itemsData as Array<{ id: string; name: string; kaynak?: string }>), ...(itemsSrdData as Array<{ id: string; name: string; kaynak?: string }>), ...weaponsData].filter((x) => !('kaynak' in x && x.kaynak));
+    const ids = new Set(others.map((x) => x.id));
+    const names = new Set(others.map((x) => x.name.toLowerCase()));
+    const refs = new Set<string>();
+    const spellNames = new Set([...spellsMain, ...spells45, ...(spells69 as Array<{ name: string }>)].map((s) => s.name));
+    const bag = (silahBagi as { esyalar: Record<string, string[] | string> }).esyalar;
+    for (const i of kat) {
+      expect(i.id, i.name).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
+      expect(ids.has(i.id), `${i.id}: kimlik yineleniyor`).toBe(false);
+      expect(names.has(i.name.toLowerCase()), `${i.name}: ad yineleniyor`).toBe(false);
+      ids.add(i.id); names.add(i.name.toLowerCase());
+      expect(i.srd, i.id).toBeUndefined();
+      expect(i.kaynak, i.id).toBe('katalog-1');
+      const k = i.katalog!;
+      expect(k, i.id).toBeDefined();
+      expect(k.ref, i.id).toMatch(/^(S1|S2|KY|ZK|GY|YT|TK|BOSS)#\d+[a-z]?$/);
+      expect(refs.has(k.ref), `${k.ref} yineleniyor`).toBe(false); refs.add(k.ref);
+      expect(['olagandisi', 'nadir', 'cokNadir', 'efsanevi', 'yadigar']).toContain(k.nadirlik);
+      expect(['silah', 'zirh', 'kalkan', 'tuketilebilir', 'aksesuar', 'sihirli']).toContain(k.tur);
+      expect(k.tr.length, i.id).toBeGreaterThan(2);
+      for (const o of k.ozellikler) {
+        expect(['calisir', 'kismi', 'planli', 'calismiyor'], `${i.id}/${o.ad}`).toContain(o.durum);
+        expect(o.metin.length, `${i.id}/${o.ad}`).toBeGreaterThan(5);
+      }
+      for (const s of i.spells ?? []) expect(spellNames.has(s.name), `${i.id}: büyü ${s.name}`).toBe(true);
+      // Silah eşyası taban SRD silahına bağlı (KARAR104 A10; K11: karşılığı yoksa en yakın SRD silahı).
+      if (k.tur === 'silah') {
+        const rule = bag[i.id];
+        expect(rule, `${i.id}: esya-silah-bagi satırı yok`).toBeDefined();
+        expect(k.taban && weaponsData.some((w) => w.id === k.taban), `${i.id}: taban ${k.taban}`).toBe(true);
+        if (Array.isArray(rule)) expect(rule, i.id).toContain(k.taban);
+      }
+    }
+  });
   it('silah kimliği SRD silah kimliğiyle aynı (mastery tablosu buna bağlı)', () => {
     for (const w of weaponsData) expect(w.srd).toBe(`weapons:${w.id}`);
   });

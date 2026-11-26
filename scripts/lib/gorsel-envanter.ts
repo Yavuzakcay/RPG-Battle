@@ -10,7 +10,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
-import { armor, classes, classData, items, monsters, races, spells, weapons } from '../../src/data';
+import { armor, classes, classData, isMagicItem, items, monsters, races, spells, weapons } from '../../src/data';
 import type { Spell } from '../../src/data/types';
 import { buildDex, loadDexExtras, type DexCat } from '../../src/dungeondex/catalog';
 import { observeSpell } from '../../src/ui/fx/e2Verify';
@@ -166,12 +166,12 @@ export function itemRows(): GRow[] {
   const out: GRow[] = [];
   for (const it of items) {
     const kind = itemKind(it);
-    const magic = it.srd.startsWith('magic-items');
+    const magic = isMagicItem(it);
     const tier = itemTier(it);
     if (pub(`esya/${it.id}.webp`)) { out.push({ cat: 'esya', id: it.id, ad: it.name, kaynak: 'ikon', ref: `esya/${it.id}.webp`, durum: 'var', ...(magic ? { nadirlikRengi: NADIRLIK_RENKLERI[tier] } : {}), tur: magic ? `sihirli eşya (${tier})` : 'donanım' }); continue; }
     out.push({ cat: 'esya', id: it.id, ad: it.name, kaynak: 'yedek', ref: `yedek:esya-${kind}`, durum: 'yedek',
       ...(magic ? { nadirlikRengi: NADIRLIK_RENKLERI[tier] } : {}),
-      tur: magic ? `sihirli eşya (${tier})` : it.srd.startsWith('tools') ? 'alet' : 'donanım', eksik: `ikon yok (tür yedeği: ${kind})`, oneri: `public/esya/${it.id}.webp` });
+      tur: magic ? `sihirli eşya (${tier})` : it.srd?.startsWith('tools') ? 'alet' : 'donanım', eksik: `ikon yok (tür yedeği: ${kind})`, oneri: `public/esya/${it.id}.webp` });
   }
   const own = (id: string, ad: string, tur: string): boolean => (pub(`esya/${id}.webp`) ? (out.push({ cat: 'esya', id, ad, kaynak: 'ikon', ref: `esya/${id}.webp`, durum: 'var', tur }), true) : false);
   for (const w of weapons) if (!own(w.id, w.name, 'silah')) out.push({ cat: 'esya', id: w.id, ad: w.name, kaynak: 'yedek', ref: 'yedek:esya-silah', durum: 'yedek', tur: 'silah', eksik: 'ikon yok (tür yedeği: silah)', oneri: `public/esya/${w.id}.webp` });

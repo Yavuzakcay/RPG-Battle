@@ -2513,6 +2513,74 @@
      "ad": "warhammer"
     }
    ]
+  },
+  {
+   "dosya": "arti-1.jpg",
+   "kolon": 5,
+   "satir": 3,
+   "zemin": "kose-ornekle",
+   "ogeler": [
+    {
+     "id": "ammunition-1",
+     "ad": "ammunition-1"
+    },
+    {
+     "id": "armor-1",
+     "ad": "armor-1"
+    },
+    {
+     "id": "shield-1",
+     "ad": "shield-1"
+    },
+    {
+     "id": "weapon-1",
+     "ad": "weapon-1"
+    },
+    {
+     "id": "wand-of-the-war-mage-1",
+     "ad": "wand-of-the-war-mage-1"
+    },
+    {
+     "id": "ammunition-2",
+     "ad": "ammunition-2"
+    },
+    {
+     "id": "armor-2",
+     "ad": "armor-2"
+    },
+    {
+     "id": "shield-2",
+     "ad": "shield-2"
+    },
+    {
+     "id": "weapon-2",
+     "ad": "weapon-2"
+    },
+    {
+     "id": "wand-of-the-war-mage-2",
+     "ad": "wand-of-the-war-mage-2"
+    },
+    {
+     "id": "ammunition-3",
+     "ad": "ammunition-3"
+    },
+    {
+     "id": "armor-3",
+     "ad": "armor-3"
+    },
+    {
+     "id": "shield-3",
+     "ad": "shield-3"
+    },
+    {
+     "id": "weapon-3",
+     "ad": "weapon-3"
+    },
+    {
+     "id": "wand-of-the-war-mage-3",
+     "ad": "wand-of-the-war-mage-3"
+    }
+   ]
   }
  ],
  "ayniGorsel": {
