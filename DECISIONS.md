@@ -2,6 +2,36 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev KATALOG-1 A: 125 özgün silah (2026-11-26; kural sürümü ve kayıt sürümü değişmedi)
+
+Kaynak: Silahlar Cilt 1 (40), Cilt 2 (50), Karanlık Yadigârlar #1–35 (35). `data/items-katalog.json`, kimlik EN-AD'dan kebab-case;
+K7: Titanstring Longbow → **Giant-Sinew Longbow** (`giant-sinew-longbow`).
+
+- **Metin birebir.** PDF metni `pdftotext` ham ve `-layout` kiplerinden; "Ne işe yarar", güçler ("Ad: metin" bölümleri), riskler ve
+  kimler kullanamaz cümle cümle ham PDF metniyle karşılaştırıldı: 125 silahta 340 gücün, özetlerin ve risk/kimler cümlelerinin hepsi
+  ham metinde aynen geçiyor (sütun kırılmasıyla bölünen kelimeler ham metne göre birleştirildi; zar, DC, menzil, süre, yük olduğu gibi).
+- **Mekanik yalnız tam karşılığı olanda** (genel kural: motora uydurmak yok):
+  - büyülü bonus `bonus.weapon` ve başlıktaki koşulsuz ek hasar zarı `onHit`: bağlı taban silahta (KARAR104 A10; `esya-silah-bagi.json`'a
+    125 satır, taban = `katalog.taban`);
+  - birebir SRD büyüsü yapan güçler `spells` + `charges` + `recharge` + sabit `dc`/`attack` (Lightning Bolt, Hold Person,
+    Darkness/Moonbeam, Magic Missile, Thunderwave, Scorching Ray, Fireball, Protection from Energy, Bless, Acid Arrow);
+  - tam "+N büyü saldırısı ve DC" `bonus.spell`; kullanıcıya bağlı pasifler (direnç, karanlık görüş, Blinded bağışıklığı, ışık
+    `light`/`lightDim`, STR 19, inisiyatif `zarEtkisi.inisiyatifBonusu`).
+- **Planlı bırakılanlar** (metin kayıtta, `durum: planli`/`kismi`, `not` gerekçeli): silaha özgü olup motorda bütün saldırılara
+  yayılacak etkiler (19–20 kritik, koşullu avantaj), koşul/tetik kancası isteyenler (ışık, Hidden, hedef konsantrasyonu, verilen hasar
+  türü, iyileştirme…), SRD'den farklı büyü sürümleri (3 tur bonus eylemli Haste, 1–2. seviye Dispel, +3 sabit kontrol bonuslu Dispel),
+  eşya büyüsünde yük maliyeti > 1 (motor her yapımda 1 düşer: Blight 2 yük), sınırsız cantrip (eşya büyüsü yükten düşer), yalnız DC ya
+  da yalnız menzilli büyü saldırısı bonusu.
+- **K11:** SRD karşılığı olmayan silahlar en yakın SRD silahına bağlı, fark `katalog.tabanFarki` ve "Silah" gücü `kismi`: katana
+  (Finesse + Vex) → longsword, el/ayak sargısı → mace/flail, simya şişeleri → dart, Işık Biriktiren Çift Mızrak → longsword, Yarık
+  Çökerten Dev Kılıç → maul, Gök Yıldırımı Mızrağı → spear; toplam 20 silahta zar/özellik/ustalık/tür farkı.
+- Sayılar: 340 güç = 125 çalışır, 27 kısmen, 189 planlı. Bütünüyle çalışan silah 2 (Dev Özü Sopası, Asit Oku Asası); diğerlerinde
+  temel istatistik çalışır, en az bir güç planlı. Oluşturucuda katalog silahının işlemesi için taban silah da taşınmalı (bağ yoksa
+  bonus hiçbir silaha gitmez); taban silahı kendiliğinden ekleme (O3'ün oluşturucu kısmı) yapılmadı.
+- Testler: `data.test.ts` eşya sayısı 399 → 524, `gorselEsleme.test.ts` eşya eşlemesi 449 → 574 (125 katalog silahı; görsel
+  kayıtları yedek ikonla elle eklendi, `npm run dd-gorsel` worktree'de yerel `icerik/` olmadığından alt soy kayıtlarını da
+  değiştirdiği için çalıştırılıp geri alındı); `src/battle/katalogA.test.ts`.
+
 ## Görev KATALOG-1 P0: özgün eşya kataloğu altyapısı (2026-11-26; kural sürümü ve kayıt sürümü değişmedi)
 
 Envanter ve kullanıcı kararları K1–K14: `harita/belgeler/KATALOG-1-ENVANTER.md`. Genel kural (kullanıcı): PDF'teki güçler birebir
