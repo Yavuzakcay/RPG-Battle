@@ -1742,6 +1742,115 @@
    ]
   },
   {
+   "dosya": "katalog-imza-01.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "abandoned-phylactery-pendulum",
+     "ad": "Abandoned Phylactery Pendulum",
+     "gorunum": "Tall staff of dark wood and black iron from whose crooked head an empty, cracked crystal phylactery cage hangs on a short chain like a pendulum, the shaft clamped by broken iron oath-shackle bands, a faint pale-teal glow inside the empty cage."
+    },
+    {
+     "id": "robe-of-the-blindspot",
+     "ad": "Robe of the Blindspot",
+     "gorunum": "Long hooded robe of dark charcoal shadow-silk whose hem fades into smoky wisps, an abstract silver rune embroidered on the collar and a clasp shaped like a broken sword blade at the chest."
+    },
+    {
+     "id": "mountain-crushers-chained-monolith",
+     "ad": "Mountain-Crusher's Chained Monolith",
+     "gorunum": "Enormous two-handed weapon made from a broken grey granite pillar wrapped in heavy black iron chains and carved with bands of abstract runes glowing dull amber, a loose chain end trailing from the base."
+    },
+    {
+     "id": "champions-crag-harness",
+     "ad": "Champion's Crag Harness",
+     "gorunum": "Rugged shoulder harness of rough grey rock slabs and broken bronze gladiator shield pieces strapped together with thick brown leather belts, no chest plate."
+    },
+    {
+     "id": "kaltakkirans-paladin-armor",
+     "ad": "Kaltakkıran's Paladin Armor",
+     "gorunum": "Ancient full plate armour of dark steel with a cracked, once-white holy finish, ten empty round gem sockets set in a ring on the breastplate and broken wing-shaped pauldrons."
+    },
+    {
+     "id": "kaltakkirans-maw-chain-greatsword",
+     "ad": "Kaltakkiran's Maw-Chain Greatsword",
+     "gorunum": "Heavy greatsword with a rune-lined spine whose blade is built from razor-notched interlocking segments joined by a hidden chain, ending in a heavy clawed jaw-shaped tip; shown closed as a sword."
+    },
+    {
+     "id": "guardian-dragon-sigil",
+     "ad": "Guardian Dragon Sigil",
+     "gorunum": "Round polished silver-and-gold medallion on a short chain, a coiled dragon relief in the centre surrounded by a ring of ten small gems in red, ice blue, yellow, white, acid green, dark green, gold, black, teal and clear, soft warm golden glow."
+    },
+    {
+     "id": "cracked-elemental-stone",
+     "ad": "Cracked Elemental Stone",
+     "gorunum": "Small rough-cut gemstone with one visible crack running through it, a single strong saturated fiery orange colour, set in a plain dark iron socket ring."
+    },
+    {
+     "id": "awakened-elemental-stone",
+     "ad": "Awakened Elemental Stone",
+     "gorunum": "Small polished faceted gemstone glowing from within, a single strong saturated icy blue colour, no cracks, set in a neat gold socket mount."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-imza-02.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "ember-core",
+     "ad": "Ember Core",
+     "gorunum": "Fist-sized molten core stone, a black crust cracked open to reveal bright orange-red lava inside, a thin heat shimmer above it."
+    },
+    {
+     "id": "frost-heart",
+     "ad": "Frost Heart",
+     "gorunum": "Heart-shaped chunk of eternal glacier ice, clear pale-blue crystal with frost on its surface and a cold white glow at its centre."
+    },
+    {
+     "id": "storm-spire",
+     "ad": "Storm Spire",
+     "gorunum": "Short spindle-shaped spire of pale yellow quartz bound by two copper rings, tiny white-yellow lightning arcs crawling over it."
+    },
+    {
+     "id": "resonance-seal",
+     "ad": "Resonance Seal",
+     "gorunum": "Thick bronze seal disc shaped like the core of an old bell, engraved with concentric ripple rings, a faint blue-white shimmer around its rim."
+    },
+    {
+     "id": "dissolution-drop",
+     "ad": "Dissolution Drop",
+     "gorunum": "Teardrop-shaped gem of bright acid-green liquid inside a thin glassy skin, its surface pitted and fuming a little yellow-green vapour."
+    },
+    {
+     "id": "venom-essence",
+     "ad": "Venom Essence",
+     "gorunum": "Round spore core like a hardened fungus seed in sickly dark green and black, covered in tiny pores leaking dark green mist."
+    },
+    {
+     "id": "blinding-sun-shard",
+     "ad": "Blinding Sun Shard",
+     "gorunum": "Sharp broken shard of golden-white sun crystal radiating a bright warm golden glow."
+    },
+    {
+     "id": "sepulcher-orb",
+     "ad": "Sepulcher Orb",
+     "gorunum": "Small orb of polished black bone-stone with a flickering black and dark-green flame trapped inside, faint abstract carvings on its surface."
+    },
+    {
+     "id": "whisper-crystal",
+     "ad": "Whisper Crystal",
+     "gorunum": "Flat broken shard of mirror-like crystal in a thin silver rim, fine cracks across its face and swirling pale-teal mist reflected inside."
+    },
+    {
+     "id": "void-fracture",
+     "ad": "Void Fracture",
+     "gorunum": "Jagged dark grey-black stone fragment split by a deep fracture, a few tiny pebbles orbiting it inside a faint clear blue-white distortion halo."
+    }
+   ]
+  },
+  {
    "dosya": "katalog-bekleyen-01.jpg",
    "kolon": 4,
    "satir": 4,
@@ -1807,5 +1916,33 @@
    "strange-conduit-ring"
   ],
   "not": "KATALOG-1 karar K7 (BG3'e benzeyen 6 eşya): EN ad kullanıcı onayını bekliyor; kimlik yeni EN addan türetilecek. Tarifler değişmeyen TR ada göre özgün yazıldı; ad seçilince gözden geçirilip sayfa üretilir."
+ },
+ "imza": {
+  "sayfalar": [
+   "katalog-imza-01",
+   "katalog-imza-02"
+  ],
+  "kimlikler": [
+   "abandoned-phylactery-pendulum",
+   "robe-of-the-blindspot",
+   "mountain-crushers-chained-monolith",
+   "champions-crag-harness",
+   "kaltakkirans-paladin-armor",
+   "kaltakkirans-maw-chain-greatsword",
+   "guardian-dragon-sigil",
+   "cracked-elemental-stone",
+   "awakened-elemental-stone",
+   "ember-core",
+   "frost-heart",
+   "storm-spire",
+   "resonance-seal",
+   "dissolution-drop",
+   "venom-essence",
+   "blinding-sun-shard",
+   "sepulcher-orb",
+   "whisper-crystal",
+   "void-fracture"
+  ],
+  "not": "Görev KATALOG-IKON-IMZA: boss dosyalarındaki 19 imza eşyası (Mora 2, Tarvok 2, Kaltakkıran paketi 15; KATALOG-1-ENVANTER.md 3.9). Kimlikler envanterin 'id önerisi'. Seviye 1 ve 2 taşın 10'ar element varyantı birer şablon hücrede (tek doygun ton); varyant kimlikleri B–D'de atanınca ayniGorsel'e eklenir, ayırt etme ESYA-IKON-AYIRT. Görünüm tarifleri yalnız PDF betimlemesinden (malzeme, biçim, renk); güçlere dokunulmadı."
  }
 }

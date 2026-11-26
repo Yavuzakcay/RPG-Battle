@@ -1349,3 +1349,106 @@ CELLS:
 | 4 | `caustic-band` | Yakıcı Asit Yüzüğü | YT#6 |
 | 5 | `callous-glow-ring` | Işık Çağrısı Yüzüğü | YT#7 |
 | 6 | `strange-conduit-ring` | Sıçrayan Akım Yüzüğü | YT#13 |
+
+## 8. İmza sayfaları (boss ganimeti)
+
+Görev KATALOG-IKON-IMZA (2026-11-26, dal `katalog-ikon-imza`, `katalog-ikon`'dan). Bölüm 1'in sayfaları 7 eşya kataloğunun 330 eşyasını kapsar; boss dosyalarındaki **19 imza eşyası** (Mora 2, Tarvok 2, Kaltakkıran paketi 15; `KATALOG-1-ENVANTER.md` 3.9) hiçbir sayfada yoktu. Bu iki sayfa onları ekler. JSON'da `imza` alanı; sayfalar bekleyen sayfadan önce.
+
+- Görünüm tarifleri yalnız PDF betimlemesinden (malzeme, biçim, renk). Güçler, sayılar ve adlar değişmedi; promptlarda eşya ya da oyun adı yok.
+- Seviye 1 (Çatlak) ve Seviye 2 (Uyanmış) element taşının 10'ar varyantı birer şablon hücrede, tek doygun tonla (Sv.1 turuncu, Sv.2 buz mavisi). Varyant kimlikleri B–D'de atanınca `ayniGorsel`'e eklenir; ayırt etme ESYA-IKON-AYIRT (hasar tonu + glif).
+- Macenta kuralı: psişik parıltılar soluk camgöbeği; kuvvet taşı berrak/mavi-beyaz; Koruyucu Ejderha Mührü'nün on taşında mor yok.
+
+| # | Dosya | İçerik | Dolu hücre |
+|---|---|---|---|
+| 24 | `katalog-imza-01.jpg` | boss silah, zırh, tılsım ve Sv.1–2 taş şablonları | 9 |
+| 25 | `katalog-imza-02.jpg` | Kaltakkıran'ın 10 Seviye 3 taşı | 10 |
+
+### 8.1 `katalog-imza-01.jpg` — İmza 1: boss silah, zırh, tılsım ve Sv.1–2 taş şablonları
+
+```text
+Create one square image, 2048 × 2048 px: a sprite sheet of 9 fantasy RPG inventory item icons placed in an invisible 4 × 4 grid (4 columns × 4 rows, every cell exactly 512 × 512 px). Fill the cells left to right, top to bottom, in the numbered order below. Only the first 9 cells get an object; cells 10–16 stay completely empty.
+
+STYLE (identical on every cell):
+- Hand-painted fantasy RPG inventory icon style: clean, bold dark-brown/black ink outlines, painterly cel shading with soft gradients, crisp highlights on metal and gems, rich but not neon colours, light from the upper left.
+- Three-quarter view. Long items (swords, axes, spears, staves, bows, arrows) lie diagonally from lower-left to upper-right; paired items (gloves, boots, wraps) stand side by side as one pair.
+- A magical item may have a thin soft glow hugging its silhouette in the colour named in its description; keep the glow tight (no wide haze, no light rays reaching the cell edge).
+- Exactly one object (or one matched pair) per cell, centred, filling about 75–80 % of the cell, with at least 50 px of empty margin on every side. Nothing may touch the cell border or cross into a neighbouring cell.
+- All icons share the same line weight, lighting and level of detail.
+- If a reference image is attached, copy only its drawing style; ignore its background colour.
+
+BACKGROUND (critical for automatic cutting):
+- The whole background is one flat, uniform pure magenta #FF00FF: no gradient, no texture, no vignette, no noise, no floor, no cast shadow under the objects.
+- Do NOT draw grid lines, cell borders, frames, panels, cards, plaques, labels, captions, numbers, letters, watermarks or signatures. Runes and symbols on objects are abstract marks, never letters or readable text.
+- Do NOT use magenta, pink, purple, violet, lilac or lavender anywhere in the objects or their glows; these colours are reserved for the background. Use other colours instead (deep blue, teal, crimson red, black, grey).
+- Empty cells are plain flat magenta with nothing in them.
+
+CELLS:
+1. Tall staff of dark wood and black iron from whose crooked head an empty, cracked crystal phylactery cage hangs on a short chain like a pendulum, the shaft clamped by broken iron oath-shackle bands, a faint pale-teal glow inside the empty cage.
+2. Long hooded robe of dark charcoal shadow-silk whose hem fades into smoky wisps, an abstract silver rune embroidered on the collar and a clasp shaped like a broken sword blade at the chest.
+3. Enormous two-handed weapon made from a broken grey granite pillar wrapped in heavy black iron chains and carved with bands of abstract runes glowing dull amber, a loose chain end trailing from the base.
+4. Rugged shoulder harness of rough grey rock slabs and broken bronze gladiator shield pieces strapped together with thick brown leather belts, no chest plate.
+5. Ancient full plate armour of dark steel with a cracked, once-white holy finish, ten empty round gem sockets set in a ring on the breastplate and broken wing-shaped pauldrons.
+6. Heavy greatsword with a rune-lined spine whose blade is built from razor-notched interlocking segments joined by a hidden chain, ending in a heavy clawed jaw-shaped tip; shown closed as a sword.
+7. Round polished silver-and-gold medallion on a short chain, a coiled dragon relief in the centre surrounded by a ring of ten small gems in red, ice blue, yellow, white, acid green, dark green, gold, black, teal and clear, soft warm golden glow.
+8. Small rough-cut gemstone with one visible crack running through it, a single strong saturated fiery orange colour, set in a plain dark iron socket ring.
+9. Small polished faceted gemstone glowing from within, a single strong saturated icy blue colour, no cracks, set in a neat gold socket mount.
+10–16. Empty: plain flat magenta, nothing drawn.
+```
+
+| Hücre | `id` | TR ad | Kaynak |
+|---|---|---|---|
+| 1 | `abandoned-phylactery-pendulum` | Kara Malek'in Terk Edilmiş Filakteri Sarkacı | Mora |
+| 2 | `robe-of-the-blindspot` | Kör Nokta Cübbesi | Mora |
+| 3 | `mountain-crushers-chained-monolith` | Dağ Ezen'in Zincirli Dikilitaşı | Tarvok |
+| 4 | `champions-crag-harness` | Şampiyonun Kaya Koşumu | Tarvok |
+| 5 | `kaltakkirans-paladin-armor` | Kaltakkıran'ın Paladin Zırhı | Kaltakkıran |
+| 6 | `kaltakkirans-maw-chain-greatsword` | Kaltakkıran'ın Çeneli Zincir Kılıcı | Kaltakkıran |
+| 7 | `guardian-dragon-sigil` | Koruyucu Ejderha Mührü | Kaltakkıran (Yol A) |
+| 8 | `cracked-elemental-stone` | Çatlak Element Taşı (Sv.1) | Kaltakkıran |
+| 9 | `awakened-elemental-stone` | Uyanmış Element Taşı (Sv.2) | Kaltakkıran |
+
+### 8.2 `katalog-imza-02.jpg` — İmza 2: Kaltakkıran'ın 10 Seviye 3 taşı
+
+```text
+Create one square image, 2048 × 2048 px: a sprite sheet of 10 fantasy RPG inventory item icons placed in an invisible 4 × 4 grid (4 columns × 4 rows, every cell exactly 512 × 512 px). Fill the cells left to right, top to bottom, in the numbered order below. Only the first 10 cells get an object; cells 11–16 stay completely empty.
+
+STYLE (identical on every cell):
+- Hand-painted fantasy RPG inventory icon style: clean, bold dark-brown/black ink outlines, painterly cel shading with soft gradients, crisp highlights on metal and gems, rich but not neon colours, light from the upper left.
+- Three-quarter view. Long items (swords, axes, spears, staves, bows, arrows) lie diagonally from lower-left to upper-right; paired items (gloves, boots, wraps) stand side by side as one pair.
+- A magical item may have a thin soft glow hugging its silhouette in the colour named in its description; keep the glow tight (no wide haze, no light rays reaching the cell edge).
+- Exactly one object (or one matched pair) per cell, centred, filling about 75–80 % of the cell, with at least 50 px of empty margin on every side. Nothing may touch the cell border or cross into a neighbouring cell.
+- All icons share the same line weight, lighting and level of detail.
+- If a reference image is attached, copy only its drawing style; ignore its background colour.
+
+BACKGROUND (critical for automatic cutting):
+- The whole background is one flat, uniform pure magenta #FF00FF: no gradient, no texture, no vignette, no noise, no floor, no cast shadow under the objects.
+- Do NOT draw grid lines, cell borders, frames, panels, cards, plaques, labels, captions, numbers, letters, watermarks or signatures. Runes and symbols on objects are abstract marks, never letters or readable text.
+- Do NOT use magenta, pink, purple, violet, lilac or lavender anywhere in the objects or their glows; these colours are reserved for the background. Use other colours instead (deep blue, teal, crimson red, black, grey).
+- Empty cells are plain flat magenta with nothing in them.
+
+CELLS:
+1. Fist-sized molten core stone, a black crust cracked open to reveal bright orange-red lava inside, a thin heat shimmer above it.
+2. Heart-shaped chunk of eternal glacier ice, clear pale-blue crystal with frost on its surface and a cold white glow at its centre.
+3. Short spindle-shaped spire of pale yellow quartz bound by two copper rings, tiny white-yellow lightning arcs crawling over it.
+4. Thick bronze seal disc shaped like the core of an old bell, engraved with concentric ripple rings, a faint blue-white shimmer around its rim.
+5. Teardrop-shaped gem of bright acid-green liquid inside a thin glassy skin, its surface pitted and fuming a little yellow-green vapour.
+6. Round spore core like a hardened fungus seed in sickly dark green and black, covered in tiny pores leaking dark green mist.
+7. Sharp broken shard of golden-white sun crystal radiating a bright warm golden glow.
+8. Small orb of polished black bone-stone with a flickering black and dark-green flame trapped inside, faint abstract carvings on its surface.
+9. Flat broken shard of mirror-like crystal in a thin silver rim, fine cracks across its face and swirling pale-teal mist reflected inside.
+10. Jagged dark grey-black stone fragment split by a deep fracture, a few tiny pebbles orbiting it inside a faint clear blue-white distortion halo.
+11–16. Empty: plain flat magenta, nothing drawn.
+```
+
+| Hücre | `id` | TR ad | Kaynak |
+|---|---|---|---|
+| 1 | `ember-core` | Kor Çekirdeği (ateş) | Kaltakkıran |
+| 2 | `frost-heart` | Ayaz Kalbi (soğuk) | Kaltakkıran |
+| 3 | `storm-spire` | Fırtına Mili (yıldırım) | Kaltakkıran |
+| 4 | `resonance-seal` | Çınlama Mührü (gürültü) | Kaltakkıran |
+| 5 | `dissolution-drop` | Erime Damlası (asit) | Kaltakkıran |
+| 6 | `venom-essence` | Ağu Özü (zehir) | Kaltakkıran |
+| 7 | `blinding-sun-shard` | Kör Güneş Parçası (ışıltı) | Kaltakkıran |
+| 8 | `sepulcher-orb` | Mezar Küresi (nekrotik) | Kaltakkıran |
+| 9 | `whisper-crystal` | Vesvese Kristali (psişik) | Kaltakkıran |
+| 10 | `void-fracture` | Boşluk Kırığı (kuvvet) | Kaltakkıran |
