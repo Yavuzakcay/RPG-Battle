@@ -54,6 +54,11 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   metniyle eklendi; tepkide hareket olmadığından çoğunlukla etkisiz (panelde not). Kayıt sürümü 26 kaldı (yeni olay türü yok;
   `readied.response` yeni türleri isteğe bağlı alanlarla taşır). Yapay zekâ Ready'yi hâlâ kullanmaz (A27, bu görevin listesinde
   değildi). 103: yalnız saldırı, hareket, büyü.
+- **⚠ a Storm of Vengeance yıldırım hedefleri** (SRD 5.2.1 s. 165 "six different creatures or objects of your choice beneath the
+  cloud"; A1'in ⚠'si): 3. turda büyücüye sıralı çoklu seçimle sorulur (`stormStage.ts`, `askPicks`); adaylar bulutun altındaki bütün
+  yaratıklar (dost da), öneri eski otomatik seçim (büyücünün düşmanlarından merkeze en yakın altı). Kancasız Rng, yapay zekâ ve
+  "Her zaman/Asla" ayarında sonuç aynı (sim imzası değişmez). ⚠ Nesneler hâlâ hedef değil (canavar/nesne hasar yolu ayrı; asit
+  aşaması da nesnelere işlemez).
 
 ## Görev KARAR104: bekleyen kullanıcı kararları SRD 5.2.1'e göre (2026-11-24; kural sürümü 104 `KARAR104_VERSION`, kayıt sürümü 26)
 

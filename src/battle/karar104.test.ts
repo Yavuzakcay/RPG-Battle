@@ -83,10 +83,10 @@ describe('KARAR104 A1: Storm of Vengeance 2–10. tur aşamaları (SRD 5.2.1 s. 
   const cast: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Storm of Vengeance', slotLevel: 9, targetHex: at(10, 5) } as Command;
   const end = (id: string): Command => ({ type: 'end_turn', actorId: id }) as Command;
   /** Yapım + n tam tur (her turda A ve T sırası biter). */
-  const rounds = (v: number, n: number, d20 = 5) => {
+  const rounds = (v: number, n: number, d20 = 5, rng?: Rng) => {
     const cmds: Command[] = [cast];
     for (let i = 0; i < n; i++) cmds.push(end('A'), end('T'));
-    return play(scene104(v, [druid(), foe('T', at(10, 5))]), cmds, hooked(d20));
+    return play(scene104(v, [druid(), foe('T', at(10, 5))]), cmds, rng ?? hooked(d20));
   };
   const dmgOn = (events: BattleEvent[], id: string) => events.filter((e) => (e.type === 'save_resolved' || e.type === 'effect_tick') && e.targetId === id)
     .map((e) => `${(e as { damageType: string }).damageType}:${(e as { appliedDamage: number }).appliedDamage}`);
@@ -112,6 +112,17 @@ describe('KARAR104 A1: Storm of Vengeance 2–10. tur aşamaları (SRD 5.2.1 s. 
     expect(bolt.success).toBe(true);
     expect(bolt.appliedDamage).toBe(20);
     expect(r.events.some((e) => e.type === 'save_resolved' && e.damageType === 'lightning' && e.targetId === 'A')).toBe(false);
+  });
+  it('KARAR104-KALAN: 3. tur yıldırım hedefleri büyücüye sorulur (askPicks; öneri eski otomatik seçim)', () => {
+    const asked: ReactionRequest[] = [];
+    const picks = ['A', null];
+    let i = 0;
+    const r0 = hooked(20) as Rng & { react?: (q: ReactionRequest) => ReactionAnswer | null };
+    r0.react = (q) => { if (q.trigger !== 'choice') return null; asked.push(q); const p = picks[i++]; return p ? { option: 'choice', choice: p } : null; };
+    const r = rounds(NEW, 2, 20, r0);
+    const bolts = r.events.filter((e) => e.type === 'save_resolved' && e.damageType === 'lightning').map((e) => (e as { targetId: string }).targetId);
+    expect(bolts).toEqual(['A']);
+    expect(asked[0]?.suggested).toMatchObject({ choice: 'T' });
   });
   it('103: yalnız yapım turu (aşama yok)', () => {
     const r = rounds(OLD, 4);
