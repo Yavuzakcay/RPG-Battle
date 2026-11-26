@@ -1,0 +1,783 @@
+{
+ "_not": "Görev KATALOG-1 G (harita/belgeler/KATALOG-1-ENVANTER.md 7. bölüm G, K4, K14): Kaltakkıran paketinin anlatım verisi (PDF 'Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi'). Yalnız veri: kod, kural ve savaş etkisi yok; durum 'anlatim', yer 'seruven' (Serüven'de ve Dungeondex'te gösterilecek; uygulama bu dosyayı henüz içe aktarmaz, ana parçaya girmez). Metin PDF'ten birebir (paragraf, madde, tablo hücresi; başlık ve 7. bölüm başlığı üst üste basılı olduğu için altlıktan/harf kümesinden). tr/en: kaydın adı; en PDF'teki motor modülü kimliğinden (Bölüm 8) okunur ad, modülü olmayan kayıtta öneri (enAdOneri). esyalar: data/items-katalog.json kimlikleri. on-muhur.baglar: bölge ↔ Sv.3 taşı ↔ bölge bossu (Mühür Ruhu); boss adı ve unvanı kullanıcının verdiği gibi, PDF adı eskiAd. Eşya güçleri ve eşya metinleri items-katalog.json'da (B, D); Mora, Tarvok ve Kaltakkıran karakter kayıtları K4 ile MC sonrasına, bölge bossu fazları ve stat blokları H parçasına.",
+ "kaynak": "katalog-1",
+ "pdf": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
+ "anlatimlar": [
+  {
+   "id": "kaltakkiran-paketi",
+   "ref": "KK#0",
+   "tr": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
+   "en": "Kaltakkıran's Paladin Armor and Ten Seal Stone System",
+   "enAdOneri": true,
+   "bolum": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
+   "paragraflar": [
+    {
+     "metin": "Bu özel tasarım dosyası, Dice & Hex Serüven modunun ana oyun sonu eksenini kuran Kaltakkıran'ın Paladin Zırhı sistemini bütün kural, prospektüs, boss fazları ve final yollarıyla tanımlar. Oyuncular 3. büyük boss olan Kaltakkıran'ı yendiklerinde, onun üzerindeki mutlak zırh parçalanır: oyuncu elinde yalnızca çatlak gövde kabuğunu ve zırha bağlı Çeneli Zincir Kılıcı'nı tutarken, zırhı besleyen 10 adet Seviye 3 Mühür Taşı kıtanın on farklı bölgesine saçılır ve her biri düştüğü yerin doğasını yozlaştırarak kendi taşını koruyan ayrı bir bölge boss'una dönüşür."
+    }
+   ],
+   "esyalar": [
+    "kaltakkirans-paladin-armor",
+    "kaltakkirans-maw-chain-greatsword",
+    "cracked-elemental-stone-fire",
+    "cracked-elemental-stone-cold",
+    "cracked-elemental-stone-lightning",
+    "cracked-elemental-stone-thunder",
+    "cracked-elemental-stone-acid",
+    "cracked-elemental-stone-poison",
+    "cracked-elemental-stone-radiant",
+    "cracked-elemental-stone-necrotic",
+    "cracked-elemental-stone-psychic",
+    "cracked-elemental-stone-force",
+    "awakened-elemental-stone-fire",
+    "awakened-elemental-stone-cold",
+    "awakened-elemental-stone-lightning",
+    "awakened-elemental-stone-thunder",
+    "awakened-elemental-stone-acid",
+    "awakened-elemental-stone-poison",
+    "awakened-elemental-stone-radiant",
+    "awakened-elemental-stone-necrotic",
+    "awakened-elemental-stone-psychic",
+    "awakened-elemental-stone-force",
+    "ember-core",
+    "frost-heart",
+    "storm-spire",
+    "resonance-seal",
+    "dissolution-drop",
+    "venom-essence",
+    "blinding-sun-shard",
+    "sepulcher-orb",
+    "whisper-crystal",
+    "void-fracture",
+    "guardian-dragon-sigil"
+   ],
+   "durum": "anlatim",
+   "yer": "seruven"
+  },
+  {
+   "id": "kaltakkiran-bes-kural",
+   "ref": "KK#0.1",
+   "tr": "Sistemin Beş Temel Kuralı",
+   "en": "Five Core Rules of the System",
+   "enAdOneri": true,
+   "bolum": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
+   "maddeler": [
+    "Seviye 1 ve 2 Taşlar kıta boyunca bulunabilir ve uygun soketli sıradan/büyülü zırhlara lanetsiz takılır.",
+    "Seviye 3 Taşlar yalnızca Kaltakkıran'ın Paladin Zırhı'na yerleşir; takıldığı an metalle kalıcı olarak kaynaşır, bir daha sökülemez ve zırh giyildiğinde kaynaşmış tüm taşlar aynı anda aktif olur.",
+    "Çeneli Zincir Kılıcı yalnızca zırh giyiliyken çalışır; İyi Final'de zırh Kıta Ejderhası'na geçtiğinde gücü kalıcı olarak söner ve bir Devrim Simgesi olarak kalır, Karanlık Final'de ise tam gücüyle kullanılır.",
+    "Zırhı giymek Kararma Sayacı (0–100) biriktirir; 50'den itibaren iyi seçimler kilitlenir, 100'de zırh bedene mühürlenir.",
+    "Yolculuk zirvesinde oyuncu iki büyük finalden birini seçer: zırhı Kıta Ejderhası'na bırakıp kıtanın ölümsüz koruyucusunu uyandırmak ya da sevdiği insanların bedelini ödeyerek Yeni Düzenin Kaltakkıranı olmak."
+   ],
+   "esyalar": [
+    "kaltakkirans-paladin-armor",
+    "kaltakkirans-maw-chain-greatsword",
+    "ember-core",
+    "frost-heart",
+    "storm-spire",
+    "resonance-seal",
+    "dissolution-drop",
+    "venom-essence",
+    "blinding-sun-shard",
+    "sepulcher-orb",
+    "whisper-crystal",
+    "void-fracture"
+   ],
+   "durum": "anlatim",
+   "yer": "seruven"
+  },
+  {
+   "id": "kaltakkiran",
+   "ref": "KK#1",
+   "tr": "Kaltakkıran",
+   "en": "Kaltakkıran",
+   "bolum": "3. Ana Boss Dosyası — Kaltakkıran (20. Seviye Kırık Kanat)",
+   "paragraflar": [
+    {
+     "metin": "Bir zamanlar düzeni koruyan göksel bir şövalyeyken yeminini kırıp kanatlarını yitiren Kaltakkıran, kaybolan Lich Kara Malek'in çırağı Al-İha Mora ile kader birliği yaparak kıtayı tahakküm altına almıştır. Mora, zırhın tek zaafı olan Kıta Ejderhası'nı yüz yıl boyunca rüya hapsinde tutarken; Kaltakkıran hem kıtanın düzenini kılıçla ezmiş hem de dağda bulunan yetim Dağ Ezen Tarvok'u bir arena canavarına dönüştürmüştür."
+    }
+   ],
+   "not": "K4: kimlik alanı (tür, geçmiş, çoklu sınıf, nitelikler), Kırık Kanat Uyanışı, Çoklu Sınıf Savaş Mimarisi ve Taktik Özet karakter kaydına (MC sonrası); burada yalnız anlatım.",
+   "durum": "anlatim",
+   "yer": "seruven"
+  },
+  {
+   "id": "kaltakkiran-yenilme-anahtari",
+   "ref": "KK#1.1",
+   "tr": "Yenilme Anahtarı",
+   "en": "Key to Defeat",
+   "enAdOneri": true,
+   "bolum": "3. Ana Boss Dosyası — Kaltakkıran (20. Seviye Kırık Kanat)",
+   "kanca": "superiorBeingBetrayal",
+   "paragraflar": [
+    {
+     "baslik": "Kıta Ejderhası'nın İradesi (Psikolojik İhanet)",
+     "metin": "Zırh, Kaltakkıran'ın yarım kalmış göksel gücünü kadim ejderha iradesi karşısında küçümser; duruşu kırıldığı turlarda İhanet Çatlağı açılıp bağışıklıkları düşer (Bölüm 3)."
+    },
+    {
+     "baslik": "B. 3. Boss Kaltakkıran'ı Yenmenin Anahtarı",
+     "metin": "Kaltakkıran savaşında zırh henüz parçalanmamış ve 10 taşla tam bütünlüktedir; düz kaba kuvvetle ona hasar vermek neredeyse imkânsızdır. Parti bu savaşı zırhın kibrini Kaltakkıran'a çevirerek kazanır: (1) Savaş alanındaki kadim ejderha çağrı çanını/mührünü tetiklemek ya da üstün bir varlığın gölgesini arenaya çekmek, (2) Kaltakkıran'ı art arda Prone, Shove, Intimidation veya yüksek kurtarma zarı baskısıyla zayıf düşürüp mutlak hâkimiyet duruşunu kırmak. Duruşu kırıldığı her tur zırh Kaltakkıran'dan şüphe duyup İhanet Çatlağı açar; bağışıklıkları düşen Kaltakkıran hasar alır ve 0 HP'ye indiğinde zırh onu reddederek paramparça olur, 10 Seviye 3 taşı kıtaya savurur."
+    }
+   ],
+   "esyalar": [
+    "kaltakkirans-paladin-armor",
+    "kaltakkirans-maw-chain-greatsword",
+    "ember-core",
+    "frost-heart",
+    "storm-spire",
+    "resonance-seal",
+    "dissolution-drop",
+    "venom-essence",
+    "blinding-sun-shard",
+    "sepulcher-orb",
+    "whisper-crystal",
+    "void-fracture"
+   ],
+   "not": "K14: Kaltakkıran savaşı yalnız anlatım; duruş kırılması ve İhanet Çatlağı motorda yok.",
+   "durum": "anlatim",
+   "yer": "seruven"
+  },
+  {
+   "id": "kararma-sayaci",
+   "ref": "KK#2",
+   "tr": "Kararma Sayacı",
+   "en": "Corruption Track",
+   "bolum": "2. Kararma Sayacı (0–100) ve Karanlık Çekim Kuralları",
+   "kanca": "corruptionTrack",
+   "paragraflar": [
+    {
+     "metin": "Kaltakkıran'ın Paladin Zırhı, taşıyıcısının merhametini ve vicdanını zamanla bastırır. Oyuncu bu zırhı bir sürekli gündelik kıyafet gibi giyemez; hangi zindanda giyip hangi şehir etkileşiminden önce çıkaracağını hesaplamak zorundadır."
+    },
+    {
+     "baslik": "Tek Satır Kural",
+     "metin": "Savaş başına kararma = 2 + (2 × Kaynaşmış Taş); zırhla uzun dinlenme = 5 + (3 × Kaynaşmış Taş). Zırh çıkarılıp çantada taşındığında her uzun dinlenmede Kararma yalnızca −10 düşer (sayaç 100'e ulaştıysa normal arınma durur). Böylece zindanı zırhla bitirip kapıda çıkararak şehre tertemiz dönme istismarı engellenir."
+    }
+   ],
+   "tablolar": [
+    {
+     "baslik": "Kararma Artışı ve Arınma Formülü",
+     "sutunlar": [
+      "Kaynaşmış Taş",
+      "Zırhın Aktif Gücü",
+      "Savaş Sonu Kararma",
+      "Zırhla Uzun Dinlenme",
+      "75+ Çıkarma Zarı"
+     ],
+     "satirlar": [
+      [
+       "0 (Boş Kabuk)",
+       "AC 18, 1 Uyum yuvası",
+       "+2",
+       "+5",
+       "DC 10 WIS"
+      ],
+      [
+       "1–3 Taş",
+       "1–3 elementte Tam Bağışıklık",
+       "+4 / +6 / +8",
+       "+8 / +11 / +14",
+       "DC 11–13 WIS"
+      ],
+      [
+       "4–6 Taş",
+       "4–6 bağışıklık · 5. taşta Fiziksel Direnç + AC 19",
+       "+10 / +12 / +14",
+       "+17 / +20 / +23",
+       "DC 14–16 WIS"
+      ],
+      [
+       "7–9 Taş",
+       "7–9 bağışıklık · Fiziksel Direnç · 2 Uyum",
+       "+16 / +18 / +20",
+       "+26 / +29 / +32",
+       "DC 17–19 WIS"
+      ],
+      [
+       "10 / 10 Taş",
+       "Tüm 13 Türde Tam Bağışıklık · AC 20 · 3 Uyum",
+       "+22",
+       "+35",
+       "DC 20 WIS"
+      ]
+     ]
+    }
+   ],
+   "esyalar": [
+    "kaltakkirans-paladin-armor",
+    "kaltakkirans-maw-chain-greatsword",
+    "ember-core",
+    "frost-heart",
+    "storm-spire",
+    "resonance-seal",
+    "dissolution-drop",
+    "venom-essence",
+    "blinding-sun-shard",
+    "sepulcher-orb",
+    "whisper-crystal",
+    "void-fracture"
+   ],
+   "durum": "anlatim",
+   "yer": "seruven"
+  },
+  {
+   "id": "kararma-esikleri",
+   "ref": "KK#2.1",
+   "tr": "Kararma Eşiklerine Göre Diyalog ve Rol Yapma Etkileri",
+   "en": "Dialogue Alignment Lock",
+   "bolum": "2. Kararma Sayacı (0–100) ve Karanlık Çekim Kuralları",
+   "kanca": "dialogueAlignmentLock",
+   "tablolar": [
+    {
+     "sutunlar": [
+      "Kararma",
+      "Aşama Adı",
+      "Diyalog, Seçim ve İrade Etkisi",
+      "Dünya ve Parti Tepkisi"
+     ],
+     "satirlar": [
+      [
+       "0–24",
+       "Berrak",
+       "Tüm iyi, tarafsız ve karanlık diyalog seçimleri açıktır. Zırh sessizce itaat eder.",
+       "Normal şehir ve müttefik ilişkileri."
+      ],
+      [
+       "25–49",
+       "Fısıltı",
+       "Fedakârlık, merhamet ve bağışlama seçenekleri koyu çatlak çerçeveyle görünür; seçmek için DC 12 WIS kurtarma zarı gerekir (başarısızsa seçenek kilitlenir ve karakter sert bir alternatif seçmek zorunda kalır).",
+       "Kamp diyaloglarında zırhın soğuk yankıları duyulur; hayvanlar huzursuz olur."
+      ],
+      [
+       "50–74",
+       "Gölgelenme",
+       "İyi yöndeki, barışçıl ve bağışlayıcı seçimler tamamen kapanır (üzeri çizili ve kararmış görünür — karakter o merhameti artık düşünemez). Yerine tehdit, tahakküm ve acımasızlık odaklı yeni diyaloglar açılır.",
+       "İyi hizalı müttefikler ve NPC'ler uyarı verir; tüccar indirimleri kapanır."
+      ],
+      [
+       "75–99",
+       "Kaltakkıran'ın İradesi",
+       "İyi seçimler arayüzden tamamen silinir; şehir içi barışçıl görev çözümleri kilitlenir. Zırhı sırtından çıkarmak için günde bir kez DC 10 + Takılı Taş WIS kurtarma zarı gerekir (başarısızsa zırh o gün çıkarılamaz).",
+       "Portre gölgelenir; iyi yeminli müttefikler partiden ayrılma eşiğine gelir."
+      ],
+      [
+       "100",
+       "Mühürlü İrade (Kalıcı Kilit)",
+       "Zırh bedene kalıcı olarak kilitlenir; artık normal yollarla çıkarılamaz, dinlenme veya tapınak duası Kararmayı düşürmez. Kıta Ejderhası Zirvesi'ne çağrı açılır: oyuncu ya Psikolojik İhanet Kırılımı ile zırhı ejderhaya bırakıp arınır ya da bedelini ödeyerek Yeni Düzenin Kaltakkıranı olur (Bölüm 3 ve 7).",
+       "Halk korkuyla dağılır; Kıta Ejderhası zırhın çağrısını uzaktan hisseder."
+      ]
+     ]
+    }
+   ],
+   "esyalar": [
+    "kaltakkirans-paladin-armor"
+   ],
+   "durum": "anlatim",
+   "yer": "seruven"
+  },
+  {
+   "id": "psikolojik-ihanet",
+   "ref": "KK#3",
+   "tr": "Psikolojik İhanet",
+   "en": "Superior Being Betrayal",
+   "bolum": "3. Güçlüyü Seçen Zırh — Psikolojik İhanet ve Kilit Kırılımı",
+   "kanca": "superiorBeingBetrayal",
+   "paragraflar": [
+    {
+     "metin": "Kaltakkıran'ın Paladin Zırhı ve içine kaynaşmış taşlar, taşıyıcılarına sadık birer alet değildir; tıpkı efendisini arayan iradeli bir yadigâr gibi yalnızca mutlak güç ve tahakkümün yanında dururlar. Zırh, karşısında mevcut sahibinden daha baskın bir varlık (örneğin bir Kadim/Yetişkin Ejderha, bir İblis Lordu veya Kaltakkıran'ın kendisi) sezdiği anda sahibini bırakıp o daha güçlü bedene geçmek için kıvranmaya başlar."
+    },
+    {
+     "baslik": "A. Üstün Varlık Çekimi (Savaşta Psikolojik İhanet)",
+     "metin": "Zırhı giyen karakter, kendisinden belirgin biçimde daha kudretli bir Üstün Varlık (Ejderha, Kadim İblis, Lich Hükümdarı veya hikâye zirve boss'u) ile 60 ft içine girdiğinde, zırh sahibinden kopup o varlığa katılmak ister. Savaş başında ve Üstün Varlık her korkunç kükreme/ağır yetenek kullandığında taşıyıcı DC 12 + Kaynaşmış Taş değerinde WIS veya CHA kurtarma zarı atar (Kararma 50+ ise dezavantajlı). Başarısızlık — İhanet Çatlağı: Zırh eklemlerini kilitleyerek taşıyıcının hızını 1 tur yarıya indirir, o tur rastgele 2 kaynaşmış taşın bağışıklığını (ve 10/10 ise fiziksel bağışıklığı) geçici olarak düşürür ve taşıyıcıyı Üstün Varlık'a saldırı zarlarında dezavantajlı kılar."
+    }
+   ],
+   "esyalar": [
+    "kaltakkirans-paladin-armor",
+    "ember-core",
+    "frost-heart",
+    "storm-spire",
+    "resonance-seal",
+    "dissolution-drop",
+    "venom-essence",
+    "blinding-sun-shard",
+    "sepulcher-orb",
+    "whisper-crystal",
+    "void-fracture"
+   ],
+   "durum": "anlatim",
+   "yer": "seruven"
+  },
+  {
+   "id": "kararma-kilidi-kirilimi",
+   "ref": "KK#3.1",
+   "tr": "Kilit Kırılımı",
+   "en": "Lock Break",
+   "enAdOneri": true,
+   "bolum": "3. Güçlüyü Seçen Zırh — Psikolojik İhanet ve Kilit Kırılımı",
+   "kanca": "superiorBeingBetrayal",
+   "paragraflar": [
+    {
+     "baslik": "C. 100 Kararma Kalıcı Kilidinden Kurtulma (Gümüş İğnesiz Psikolojik Çıkış)",
+     "metin": "Kararma 100'e ulaşıp zırh oyuncunun bedenine kilitlendiğinde, bunu çözecek bir tapınak iksiri ya da büyülü iğne yoktur. Kurtulmanın tek yolu zırhın kendi ihanet içgüdüsünü kullanmaktır: Oyuncu Kıta Ejderhası'nın (veya eşdeğer bir Üstün Varlık'ın) karşısına çıkar ve savaş/diyalog içinde bilinçli olarak gücünü bastırıp boyun eğme/zayıflık gösterme seçeneğini seçer. Zırh, taşıyıcısının değersizleştiğine inanıp yeni efendiye atlamak üzere tokalarını ve ruhsal mührünü bir anlığına gevşetir. Tam o eşikte oyuncu DC 18 WIS veya CHA irade zarını geçerse (ya da yolculuktaki bir dostu 5 ft içinden yardım edip avantaj sağlarsa) zırhı sırtından söküp atar; kilit kırılır ve zırh ejderhaya geçerek Bölüm 7 — İki Büyük Final Yolu (Arınma ve Evrim Finali)'ni başlatabilir. Oyuncu zırhı bırakmayı reddederse karanlık taht yolu açılır."
+    }
+   ],
+   "esyalar": [
+    "kaltakkirans-paladin-armor"
+   ],
+   "durum": "anlatim",
+   "yer": "seruven"
+  },
+  {
+   "id": "tas-soket-sistemi",
+   "ref": "KK#4",
+   "tr": "Kalıcı Kaynaşma ve Soket Sistemi",
+   "en": "Permanent Socket Fuse",
+   "bolum": "4. Üç Kademeli Taş ve Zırh Soket Sistemi",
+   "kanca": "permanentSocketFuse",
+   "kancalar": [
+    "permanentSocketFuse",
+    "normalArmorSocket"
+   ],
+   "paragraflar": [
+    {
+     "metin": "Taş ekosistemi oyunun başından sonuna kadar kesintisiz bir ilerleme sunar. Seviye 1 ve 2 taşlar normal zırh soketlerine girerken, Seviye 3 taşlar yalnızca Kaltakkıran'ın Paladin Zırhı'na özeldir."
+    }
+   ],
+   "tablolar": [
+    {
+     "sutunlar": [
+      "Taş Kademesi",
+      "Nereden Bulunur?",
+      "Hangi Zırha Takılır?",
+      "Savunma ve Savaş Etkisi",
+      "Sökme & Lanet"
+     ],
+     "satirlar": [
+      [
+       "Seviye 1 Çatlak Taş",
+       "Sandık, elit ganimet, şehir tüccarları (10 tür)",
+       "1. kademe soketli herhangi bir zırh (Sıra Dışı+)",
+       "O hasar türünden gelen her darbede −3 hasar azaltma",
+       "Demircide değiştirilebilir · Lanetsiz"
+      ],
+      [
+       "Seviye 2 Uyanmış Taş",
+       "Zindan ara boss'ları veya 3× Seviye 1 taşı döverek",
+       "2. kademe soketli zırhlar (Nadir / Çok Nadir)",
+       "O hasar türüne Direnç (yarı hasar) + turda 1 kez silaha +1d4 o tür",
+       "Demircide değiştirilebilir · Lanetsiz"
+      ],
+      [
+       "Seviye 3 Kaltakkıran Parçası",
+       "Yalnızca kıtadaki 10 Bölge Bossu'ndan (her türden 1 adet)",
+       "Yalnızca Kaltakkıran'ın Paladin Zırhı (sıradan zırh çatlar)",
+       "O hasar türüne Tam Bağışıklık (Immunity) + durum koruması + Boss Savaş Sanatı (1/UD)",
+       "Geri sökülemez · Kararmayı hızlandırır"
+      ]
+     ]
+    }
+   ],
+   "esyalar": [
+    "kaltakkirans-paladin-armor",
+    "cracked-elemental-stone-fire",
+    "cracked-elemental-stone-cold",
+    "cracked-elemental-stone-lightning",
+    "cracked-elemental-stone-thunder",
+    "cracked-elemental-stone-acid",
+    "cracked-elemental-stone-poison",
+    "cracked-elemental-stone-radiant",
+    "cracked-elemental-stone-necrotic",
+    "cracked-elemental-stone-psychic",
+    "cracked-elemental-stone-force",
+    "awakened-elemental-stone-fire",
+    "awakened-elemental-stone-cold",
+    "awakened-elemental-stone-lightning",
+    "awakened-elemental-stone-thunder",
+    "awakened-elemental-stone-acid",
+    "awakened-elemental-stone-poison",
+    "awakened-elemental-stone-radiant",
+    "awakened-elemental-stone-necrotic",
+    "awakened-elemental-stone-psychic",
+    "awakened-elemental-stone-force",
+    "ember-core",
+    "frost-heart",
+    "storm-spire",
+    "resonance-seal",
+    "dissolution-drop",
+    "venom-essence",
+    "blinding-sun-shard",
+    "sepulcher-orb",
+    "whisper-crystal",
+    "void-fracture"
+   ],
+   "durum": "anlatim",
+   "yer": "seruven"
+  },
+  {
+   "id": "on-muhur",
+   "ref": "KK#5",
+   "tr": "On Mühür",
+   "en": "Ten Seals",
+   "enAdOneri": true,
+   "bolum": "5. Kaltakkıran'ın 10 Parçası — Seviye 3 Taş Prospektüsleri (#1–#10)",
+   "paragraflar": [
+    {
+     "metin": "Aşağıdaki 10 benzersiz taş, yalnızca Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşabilir. Her taş kendi türünde mutlak bağışıklık (saldırılar, büyüler ve harita yüzeyleri dahil) ve o taşı taşıyan bölge boss'undan miras kalan 1 İmza Boss Savaş Sanatı (uzun dinlenmede 1 kez) kazandırır."
+    },
+    {
+     "baslik": "6. On Bölge Bossu ve %50 Can “Taş Uyanışı” Fazları",
+     "metin": "Kaltakkıran yenilip zırhı parçalandığında her Seviye 3 taş kıtanın bir bölgesine düşer ve bir bölge boss'unu doğurur. Her boss kendi taşının hasar türüne bağışıktır ve canı %50'nin altına düştüğü an göğsündeki Seviye 3 taş çatlayıp taşarak altıgen arenayı kökten değiştiren Taş Uyanışı (Faz 2) geçişini tetikler."
+    }
+   ],
+   "bossSinifi": {
+    "tr": "Mühür Ruhu",
+    "en": "Seal Spirit"
+   },
+   "baglar": [
+    {
+     "sira": 1,
+     "hasarTuru": "fire",
+     "elementTr": "Ateş",
+     "tas": "ember-core",
+     "tasTr": "Kor Çekirdeği",
+     "bolge": "Yanık Demirhane",
+     "boss": {
+      "ad": "Cimbom",
+      "unvan": "Lion of the Hell",
+      "eskiAd": "Erimiş Örs Muhafızı"
+     }
+    },
+    {
+     "sira": 2,
+     "hasarTuru": "cold",
+     "elementTr": "Soğuk",
+     "tas": "frost-heart",
+     "tasTr": "Ayaz Kalbi",
+     "bolge": "Donmuş Geçit",
+     "boss": {
+      "ad": "Wolfgang",
+      "unvan": "Blizzard Wolf",
+      "eskiAd": "Tipi Yutan Dev"
+     }
+    },
+    {
+     "sira": 3,
+     "hasarTuru": "lightning",
+     "elementTr": "Yıldırım",
+     "tas": "storm-spire",
+     "tasTr": "Fırtına Mili",
+     "bolge": "Paratoner Yaylası",
+     "boss": {
+      "ad": "Stormer",
+      "unvan": "Thunder Stallion",
+      "eskiAd": "Şimşek Süvarisi"
+     }
+    },
+    {
+     "sira": 4,
+     "hasarTuru": "thunder",
+     "elementTr": "Gürültü",
+     "tas": "resonance-seal",
+     "tasTr": "Çınlama Mührü",
+     "bolge": "Yankı Kanyonu",
+     "boss": {
+      "ad": "Gongar",
+      "unvan": "Bell Shell Brute",
+      "eskiAd": "Kör Çan Devi"
+     }
+    },
+    {
+     "sira": 5,
+     "hasarTuru": "acid",
+     "elementTr": "Asit",
+     "tas": "dissolution-drop",
+     "tasTr": "Erime Damlası",
+     "bolge": "Sülfür Bataklığı",
+     "boss": {
+      "ad": "Hydraxe",
+      "unvan": "Sulphur Hydra",
+      "eskiAd": "Sülfür Hidrası"
+     }
+    },
+    {
+     "sira": 6,
+     "hasarTuru": "poison",
+     "elementTr": "Zehir",
+     "tas": "venom-essence",
+     "tasTr": "Ağu Özü",
+     "bolge": "Çürük Orman",
+     "boss": {
+      "ad": "Mothra",
+      "unvan": "Spore Moth",
+      "eskiAd": "Spor Hükümdarı"
+     }
+    },
+    {
+     "sira": 7,
+     "hasarTuru": "radiant",
+     "elementTr": "Işıltı",
+     "tas": "blinding-sun-shard",
+     "tasTr": "Güneş Parçası",
+     "bolge": "Terk Edilmiş Katedral",
+     "boss": {
+      "ad": "Lightaur",
+      "unvan": "Bull of Celestial",
+      "eskiAd": "Kırık Hale Şövalyesi"
+     },
+     "tasEskiTr": "Kör Güneş Parçası"
+    },
+    {
+     "sira": 8,
+     "hasarTuru": "necrotic",
+     "elementTr": "Nekrotik",
+     "tas": "sepulcher-orb",
+     "tasTr": "Mezar Küresi",
+     "bolge": "Kemik Ovası",
+     "boss": {
+      "ad": "Cerbones",
+      "unvan": "Crematorium",
+      "eskiAd": "Kemik Toplayıcı Lord"
+     }
+    },
+    {
+     "sira": 9,
+     "hasarTuru": "psychic",
+     "elementTr": "Psişik",
+     "tas": "whisper-crystal",
+     "tasTr": "Vesvese Kristali",
+     "bolge": "Sisli Akademi",
+     "boss": {
+      "ad": "Mirage",
+      "unvan": "Life Stealer",
+      "eskiAd": "Ayna Zihin Avcısı"
+     }
+    },
+    {
+     "sira": 10,
+     "hasarTuru": "force",
+     "elementTr": "Kuvvet",
+     "tas": "void-fracture",
+     "tasTr": "Boşluk Kırığı",
+     "bolge": "Yıkık Gözlemevi",
+     "boss": {
+      "ad": "Darkape",
+      "unvan": "Kong of the Void",
+      "eskiAd": "Yörünge Nöbetçisi"
+     }
+    }
+   ],
+   "esyalar": [
+    "ember-core",
+    "frost-heart",
+    "storm-spire",
+    "resonance-seal",
+    "dissolution-drop",
+    "venom-essence",
+    "blinding-sun-shard",
+    "sepulcher-orb",
+    "whisper-crystal",
+    "void-fracture"
+   ],
+   "not": "Bölge bossu Faz 1/Faz 2 metinleri ve stat blokları H parçasında (S2). Boss adları kullanıcı kararı (2026-11-26); PDF'teki ad yalnız eskiAd.",
+   "durum": "anlatim",
+   "yer": "seruven"
+  },
+  {
+   "id": "iki-final-yolu",
+   "ref": "KK#7",
+   "tr": "İki Büyük Final Yolu — Ölümsüz Koruyucu veya Yeni Düzenin Kaltakkıranı",
+   "en": "Two Great Final Paths",
+   "enAdOneri": true,
+   "bolum": "7. İki Büyük Final Yolu — Ölümsüz Koruyucu veya Yeni Düzenin Kaltakkıranı",
+   "kancalar": [
+    "dragonEvolutionFinale",
+    "bondSacrificeLedger"
+   ],
+   "paragraflar": [
+    {
+     "metin": "On Seviye 3 Taş zırhta birleştiğinde veya Kararma Sayacı 100'e ulaştığında, zırh kıtadaki en kadim varlık olan Kıta Ejderhası'nın varlığını sezerek oyuncuyu Zirve'ye çağırır. Bu eşikte oyun oyuncuya tek bir zorunlu son dayatmaz; biri arınma ve devrim, diğeri mutlak güç ve ağır bedel üzerine kurulu iki büyük final yolu açılır."
+    }
+   ],
+   "tablolar": [
+    {
+     "baslik": "İki Final Yolunun Karşılaştırması",
+     "sutunlar": [
+      "Boyut",
+      "Yol A — Ölümsüz Koruyucu (Ejderha Evrimi)",
+      "Yol B — Yeni Düzenin Kaltakkıranı (Karanlık)"
+     ],
+     "satirlar": [
+      [
+       "Paladin Zırhı",
+       "Kıta Ejderhası'na geçer; karanlık yanıp söner, ejderha kıtanın ölümsüz koruyucusuna evrilir.",
+       "10/10 tam bağışıklık (13 hasar türü) ve AC 20 gücüyle kalıcı olarak oyuncuda kalır."
+      ],
+      [
+       "Çeneli Zincir Kılıcı",
+       "Zırh bağı koptuğundan gücü söner; savaş dışı bir Devrim Simgesi olarak kalır.",
+       "Tam gücüyle zırhla birlikte aktif kalır; Boğucu Kıskaç yükü 3/UD'ye yükselir."
+      ],
+      [
+       "Ödül / Kazanç",
+       "Kararma kalıcı 0 olur + lanetsiz Koruyucu Ejderha Mührü tılsımı kazanılır.",
+       "Oyundaki en yüksek kişisel savaş gücü; tüm kalan içerikte mutlak üstünlük."
+      ],
+      [
+       "Ödenen Bedel",
+       "Mutlak yenilmezlik zırhı ve kılıcından gönüllü vazgeçiş.",
+       "Yolculukta bağ kurulan sevdiği insanların kaybı, parti kopuşu ve yalnız taht."
+      ]
+     ]
+    }
+   ],
+   "esyalar": [
+    "kaltakkirans-paladin-armor",
+    "kaltakkirans-maw-chain-greatsword",
+    "guardian-dragon-sigil"
+   ],
+   "durum": "anlatim",
+   "yer": "seruven"
+  },
+  {
+   "id": "yol-a",
+   "ref": "KK#7A",
+   "tr": "Yol A — Ölümsüz Koruyucu Finali (Kıta Ejderhası Evrimi ve Devrim Simgesi)",
+   "en": "Dragon Evolution Finale",
+   "bolum": "7. İki Büyük Final Yolu — Ölümsüz Koruyucu veya Yeni Düzenin Kaltakkıranı",
+   "kanca": "dragonEvolutionFinale",
+   "paragraflar": [
+    {
+     "baslik": "Ejderhanın Bilgeliği ve Evrimi",
+     "metin": "Oyuncu Psikolojik İhanet Kırılımı ile (veya gönüllü olarak) zırhı Kıta Ejderhası'na teslim ettiğinde, zırh yeni ve daha güçlü efendisine atlar. Ancak Kıta Ejderhası'nın binlerce yıllık kadim WIS iradesi, Kaltakkıran'ın kinini ve taşların karanlık çekimini anında yakıp söndürür; geriye yalnızca on elementin saf dengesi kalır. Zırh sıvı metal gibi ejderhanın pullarına işler, on taş sırt omurgası boyunca dizilir ve yaşlı ejderha efsanevi bir evrim geçirerek tüm hasar türlerini dengeleyen Kıtanın Ölümsüz Koruyucusu formuna yükselir."
+    },
+    {
+     "baslik": "Çeneli Zincir Kılıcı'nın Akıbeti (Devrim Simgesi)",
+     "metin": "Zırh artık ejderhaya bağlandığı için, yalnızca zırhla uyanan Kaltakkıran'ın Çeneli Zincir Kılıcı'nın rün hattı ve zincir mekanizması kalıcı olarak söner. Kılıç bir daha savaşta kullanılmaz; oyuncunun mutlak güç ayartmasına yenilmediğinin ve eski tiranlık düzenini kırdığının anıtı olarak envanterde ya da şehir meydanında bir Devrim Simgesi şeklinde kalır."
+    },
+    {
+     "baslik": "Ejderhanın Armağanı",
+     "metin": "Evrimleşen Kıta Ejderhası, zırhı ve karanlığı üstünden aldığı oyuncuyu eli boş bırakmaz; tüm Kararmayı kalıcı olarak 0'a indirir, kilitli iyi diyalogları açar ve teşekkür nişanesi olarak lanetsiz Koruyucu Ejderha Mührü tılsımını armağan eder."
+    }
+   ],
+   "odul": "guardian-dragon-sigil",
+   "esyalar": [
+    "kaltakkirans-paladin-armor",
+    "kaltakkirans-maw-chain-greatsword",
+    "guardian-dragon-sigil"
+   ],
+   "durum": "anlatim",
+   "yer": "seruven"
+  },
+  {
+   "id": "yol-b",
+   "ref": "KK#7B",
+   "tr": "Yol B — Yeni Düzenin Kaltakkıranı (Karanlık Final ve Sevilenlerin Bedeli)",
+   "en": "Bond Sacrifice Ledger",
+   "bolum": "7. İki Büyük Final Yolu — Ölümsüz Koruyucu veya Yeni Düzenin Kaltakkıranı",
+   "kanca": "bondSacrificeLedger",
+   "paragraflar": [
+    {
+     "baslik": "Mutlak Gücü Sahiplenme",
+     "metin": "Oyuncu zırhı bırakmayı reddedip Kıta Ejderhası'nın çağrısına baş kaldırdığında (veya zirvede karanlık yemini mühürlediğinde) 10/10 taşlı Kaltakkıran'ın Paladin Zırhı ile Çeneli Zincir Kılıcı'nı kalıcı olarak elinde tutar. Kılıcın Boğucu Kıskaç ve Zaaf Akımı yükü 2 → 3 / Uzun Dinlenme olur; oyuncu kıtanın kalan tüm meydan okumalarında bu mutlak yarı-tanrı gücünü sınır tanımadan kullanabilir."
+    },
+    {
+     "baslik": "Sevilenlerin Bedeli",
+     "metin": "Karanlık taht bedava gelmez. Zırhın iradesi merhameti ve bağlılığı tamamen söndürdüğü için, yolculuk boyunca oyuncunun dostluk, sadakat veya sevgi bağı kurduğu en yakın yoldaşlar ve NPC'ler (bondSacrificeLedger) bu dönüşüme karşı çıkar. Karar eşiğinde sevdiği insanlar ya oyuncuyu kalıcı olarak terk eder ya da onu durdurmak için son cephede karşısına dikilir. Oyuncu Yeni Düzenin Kaltakkıranı olabilmek için kendi elleriyle bu bağları koparmak ve sevdiği insanları kaybetme bedelini ödemek zorundadır."
+    },
+    {
+     "baslik": "Yalnız Hükümdarlık",
+     "metin": "Karanlık Final sonrası tüm iyi diyaloglar kalıcı olarak kapalı kalır, şehirler korkuyla boyun eğer ve oyuncu yenilmez zırhı ile kılıcının içinde yapayalnız bir hükümdar olarak oyun sonu dünyasında yoluna devam eder."
+    }
+   ],
+   "esyalar": [
+    "kaltakkirans-paladin-armor",
+    "kaltakkirans-maw-chain-greatsword"
+   ],
+   "durum": "anlatim",
+   "yer": "seruven"
+  },
+  {
+   "id": "sistem-ozeti",
+   "ref": "KK#8",
+   "tr": "Sistem Özeti ve Motor Kancaları",
+   "en": "System Summary and Engine Hooks",
+   "enAdOneri": true,
+   "bolum": "8. Sistem Özeti ve Motor Kancaları (9 Modül)",
+   "paragraflar": [
+    {
+     "metin": "Kaltakkıran paketi toplam 15 özgün parça içerir: 1 Yadigâr Paladin Zırhı, 1 Zırha Kilitli Çeneli Zincir Kılıcı, 2 normal soket taşı şablonu (Seviye 1 ve 2 · 10'ar element varyantlı), 10 benzersiz Seviye 3 Boss Taşı ve 1 Koruyucu Ejderha Mührü. 10 bölge boss'unun tamamı yalnızca kendi Seviye 3 Taşlarını korur; diğer iki ana hikâye boss'unun imza ekipmanları ayrı bir katalogda tasarlanacaktır."
+    }
+   ],
+   "tablolar": [
+    {
+     "sutunlar": [
+      "Sistem Kancası / Modül",
+      "Etkilediği Bileşen",
+      "Motor Görevi"
+     ],
+     "satirlar": [
+      [
+       "permanentSocketFuse",
+       "Paladin Zırhı + 10 Sv.3 Taş",
+       "Taşların zırha geri sökülemez kaynaşması, AC (18→20), Uyum (1→3) ve 10/10 fiziksel bağışıklık ölçeklemesi."
+      ],
+      [
+       "normalArmorSocket",
+       "Sv.1 & Sv.2 Taşlar",
+       "Sıradan/büyülü zırhlara tek soket alanı ve 3× Sv.1 → 1× Sv.2 demirci birleştirme kuralı."
+      ],
+      [
+       "corruptionTrack",
+       "Kararma Sayacı (0–100)",
+       "2 + 2×Taş savaş artışı (+2 kılıçla), 5 + 3×Taş UD artışı, zırhsız −10 düşüş ve 100 kalıcı kilidi."
+      ],
+      [
+       "dialogueAlignmentLock",
+       "Diyalog & NPC Sistemi",
+       "25+ WIS zarlı fısıltı, 50+ üzeri çizili kilitli iyi seçimler, 75+ silinme ve tüccar/parti tepkileri."
+      ],
+      [
+       "superiorBeingBetrayal",
+       "Ejderha & 3. Boss Savaşı",
+       "60 ft Üstün Varlık kontrolü, İhanet Çatlağı (2 bağışıklık düşüşü) ve 100 Kararma psikolojik kilit kırılımı."
+      ],
+      [
+       "adaptiveWeaknessResolver",
+       "Çeneli Zincir Kılıcı",
+       "Saldırı anında hedefin zayıflık/direnç/bağışıklık ve en düşük statını okuyup adaptif büyü/element türünü seçme."
+      ],
+      [
+       "chainFormTether",
+       "Çeneli Zincir Kılıcı",
+       "Yalnızca Paladin Zırhı giyiliyken aktifleştirme, 5 ft / 15 ft form geçişi, sarmal bağı ve İyi Final'de Devrim Simgesi kilidi."
+      ],
+      [
+       "dragonEvolutionFinale",
+       "Yol A — Ölümsüz Koruyucu",
+       "Zırhın Kıta Ejderhası'na geçişi, ejderha evrimi, Kararma sıfırlama, kılıcın sönmesi ve Ejderha Mührü ödülü."
+      ],
+      [
+       "bondSacrificeLedger",
+       "Yol B — Karanlık Final",
+       "Yolculukta bağ kurulan sevdiği insanların takibi, terk ediş/son cephe yüzleşmesi ve 3/UD kılıç yükseltmesi."
+      ]
+     ]
+    }
+   ],
+   "esyalar": [
+    "kaltakkirans-paladin-armor",
+    "kaltakkirans-maw-chain-greatsword",
+    "ember-core",
+    "frost-heart",
+    "storm-spire",
+    "resonance-seal",
+    "dissolution-drop",
+    "venom-essence",
+    "blinding-sun-shard",
+    "sepulcher-orb",
+    "whisper-crystal",
+    "void-fracture",
+    "guardian-dragon-sigil"
+   ],
+   "durum": "anlatim",
+   "yer": "seruven"
+  }
+ ]
+}

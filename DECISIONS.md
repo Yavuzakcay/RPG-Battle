@@ -2,6 +2,29 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev KATALOG-1 G: Kaltakkıran anlatım verisi (2026-11-26; kural sürümü (106) ve kayıt sürümü (27) değişmedi)
+
+Kaynak: "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi" PDF'i. Yalnız veri: kod, kural ve savaş etkisi yok (K4, K14).
+Yeni dosya `data/katalog-anlatim.json`: 14 anlatım kaydı (`durum: anlatim`, `yer: seruven`): paket girişi, beş temel kural,
+Kaltakkıran (yalnız hikâye paragrafı), Yenilme Anahtarı (+ Bölüm 3B), Kararma Sayacı (artış tablosu + tek satır kural), Kararma
+eşikleri (5 aşama), Psikolojik İhanet (Üstün Varlık Çekimi), Kilit Kırılımı (100 Kararma), taş/soket sistemi (3 kademe tablosu),
+On Mühür (bölge ↔ Sv.3 taşı ↔ bölge bossu), iki final yolu (karşılaştırma tablosu), Yol A, Yol B, sistem özeti (9 motor modülü).
+
+- **Kullanıcı kararları (görev başında soruldu):** boss profilinden yalnız anlatım; kimlik alanı, Kırık Kanat Uyanışı, Çoklu Sınıf
+  Savaş Mimarisi ve Taktik Özet K4 karakter kaydına (MC sonrası). Bölüm 6'dan yalnız giriş paragrafı ve bölge–taş bağı; Faz 1/Faz 2
+  ve stat blokları H'ye. Bağdaki boss adları nihai adlar (sınıf **Mühür Ruhu / Seal Spirit**; Cimbom, Wolfgang, Stormer, Gongar,
+  Hydraxe, Mothra, Lightaur, Cerbones, Mirage, Darkape; unvanlar verildiği gibi), PDF adı yalnız `eskiAd`. Veri yeri planın
+  `aciklamalar-tr.json`'u değil ayrı dosya (o dosya SRD kimliğine bağlı, kısa/tek satır testli ve ana parçada). EN: metin yalnız
+  TR; ad Bölüm 8 modül kimliğinden (Corruption Track, Bond Sacrifice Ledger…), modülü olmayanda öneri (`enAdOneri: true`).
+  Işıltı taşı TR adı **Güneş Parçası (Işıltı)** (eşya kaydında `eskiTr: "Kör Güneş Parçası (Işıltı)"`; kimlik ve EN ad aynı).
+  Mothra (Toho) ve "Kong" adlarının tescil riski kullanıcıya söylendi; kullanıcı aynen yazılmasını seçti.
+- **Metin birebir:** paragraf, madde ve tablo hücreleri `pdftotext` ham ve `-table` çıktısından betikle kesildi; bağımsız denetim
+  172 metnin 147'sini ham metinde aynen, 20 tablo hücresini sıralı sözcük olarak buldu; 5 başlık üst üste basılı olduğu için altlıktan
+  ve harf kümesinden (7. bölüm başlığı). Oturum betikleri depoya girmedi.
+- **Tembel:** uygulama dosyayı içe aktarmıyor (Serüven/Dungeondex gösterimi ayrı iş); ana parça 459,74 kB (105 tabanında).
+- Testler: `src/battle/katalogG.test.ts` (kimlik, sayı, Kararma tablosunun tek satır kuralıyla tutarlılığı, bağın eşya kayıtlarıyla
+  eşleşmesi, eski boss adının yalnız `eskiAd`'da olması, Yol A ↔ Koruyucu Ejderha Mührü).
+
 ## Görev SRD-TAMAMLAMA-2: kısa dinlenmede zar türü seçimi; feat seviye ön koşulu karakter seviyesiyle (2026-11-26; kural sürümü 106 ve kayıt sürümleri değişmedi)
 
 Kaynak `harita/belgeler/MC-SRD-DENETIM.md` satır 6 ve 32 (ikisi de "doğru" oldu). İkisi de savaş dışı: savaş durumu ve olaylar
@@ -63,7 +86,6 @@ sürüm beklentisi 104 → 106 (gerekçe: test tabanda 105'te zaten kırıktı; 
 **Regresyon.** `src/sim/srd106Regresyon.test.ts` (MC3 altını `mc3-altin.json`): 75 tek sınıflı savaşçı 106'da altınla aynı; 3 tohum
 Çöl/Kale/Mağara/Orman imzası 105 = altın ve 106 = altın (col `e8d6fb4912c2`, kale `da5306270263`, mağara `ff5e77e70717`, orman
 `84ae57801ea5`). Ana parça 459,74 kB (sınır 465).
-
 ## Görev KATALOG-1 E: 45 özgün tüketilebilir (2026-11-26; kural sürümü ve kayıt sürümü değişmedi)
 
 Kaynak: Savaş Donanımları ve Tüketilebilirler Kataloğu #1–45 (`TK#`: 12 bomba/küre, 12 özel ok, 9 kaplama/zehir, 6 iksir, 5 eliksir,

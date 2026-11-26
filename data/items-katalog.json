@@ -13968,7 +13968,8 @@
    "effects": {},
    "katalog": {
     "ref": "BOSS#15",
-    "tr": "Kör Güneş Parçası (Işıltı)",
+    "tr": "Güneş Parçası (Işıltı)",
+    "eskiTr": "Kör Güneş Parçası (Işıltı)",
     "nadirlik": "efsanevi",
     "tur": "sihirli",
     "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
