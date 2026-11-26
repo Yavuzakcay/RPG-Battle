@@ -14,7 +14,7 @@ import { storedCarryRule } from '../ui/carrySetting';
 import { sheetAvatar } from '../battle/avatar';
 import { newCharacter, characterProblems, type SavedCharacter } from '../rules/builder';
 import { deriveStats } from '../rules/stats';
-import { currentStatus, fontOfMagicStatus, fullStatus, isRested, longRestStatus, magicalCunningStatus, recoveryOptions, shortRestStatus } from '../rules/characterRest';
+import { currentStatus, defaultDiePlan, fontOfMagicStatus, fullStatus, hitDiceLeftBy, isRested, longRestStatus, magicalCunningStatus, recoveryOptions, shortRestStatus } from '../rules/characterRest';
 import { subclassMissing } from '../rules/subclasses';
 import { resourceDef } from '../rules/classFeatures';
 import { masteryOptions, masteryRight, masterySwapLimit, masterySwapProblem, masteryText, masteryWorks, weaponMasteryId } from '../rules/mastery';
@@ -219,6 +219,8 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
   const R = t().player.rest;
   const { sheet } = props.c;
   const [dice, setDice] = useState(1);
+  /** Görev SRD-TAMAMLAMA-2: çoklu sınıfta zar türü → adet (null: öneri, eski davranış: 1 zar büyük zardan). */
+  const [diePick, setDiePick] = useState<Partial<Record<6 | 8 | 10 | 12, number>> | null>(null);
   const [note, setNote] = useState<string | null>(null);
   // Görev B93: Arcane Recovery / Natural Recovery seçimi ('' otomatik, 'skip' kullanma, '3,2' slot seviyeleri).
   const [recoverPick, setRecoverPick] = useState<Record<string, string>>({});
@@ -233,6 +235,10 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
   const curse = s.lanet?.likantrop;
   const cursed = curse ? <small className="error">{(s.lanet?.donustu ? R.cursedTurned : R.cursed)(curse.charAt(0).toUpperCase() + curse.slice(1))}</small> : null;
   const left = sheet.level - s.hitDiceSpent;
+  // Görev SRD-TAMAMLAMA-2 (SRD 5.2.1 s. 25, s. 187): birden çok zar türü varsa harcanacak tür ve adet seçilir.
+  const leftBy = hitDiceLeftBy(sheet, props.c.status);
+  const plan = leftBy ? (diePick ?? defaultDiePlan(sheet, props.c.status, 1) ?? {}) : null;
+  const planTotal = plan ? Object.values(plan).reduce<number>((n, x) => n + (x ?? 0), 0) : 0;
   const resList = Object.entries(s.resources).filter(([id]) => (full.resources[id] ?? 0) > 0);
   const res = plain(resList).map(([id, n]) => `${resourceLabel(id, resourceDef(id)?.name)} ${n}/${full.resources[id]}`).join(', ');
   const resIcons = iconed(resList);
@@ -252,13 +258,28 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
         </>
       ) : (
         <div className="card-actions">
-          <label className="rest-dice">{R.dice}
-            <span className="stepper">
-              <button aria-label="−" disabled={dice <= 0} onClick={() => setDice(dice - 1)}>−</button>
-              <b>{Math.min(dice, left)}</b>
-              <button aria-label="+" disabled={dice >= left} onClick={() => setDice(dice + 1)}>+</button>
+          {leftBy && plan ? (
+            <span className="rest-dice-types" role="group" aria-label={R.diceByType}>
+              <small>{R.diceByType}</small>
+              {([12, 10, 8, 6] as const).filter((d) => leftBy[d] !== undefined).map((d) => (
+                <label key={d} className="rest-dice">d{d} · {R.diceLeft(leftBy[d] ?? 0)}
+                  <span className="stepper">
+                    <button aria-label={`d${d} −`} disabled={(plan[d] ?? 0) <= 0} onClick={() => setDiePick({ ...plan, [d]: (plan[d] ?? 0) - 1 })}>−</button>
+                    <b>{plan[d] ?? 0}</b>
+                    <button aria-label={`d${d} +`} disabled={(plan[d] ?? 0) >= (leftBy[d] ?? 0)} onClick={() => setDiePick({ ...plan, [d]: (plan[d] ?? 0) + 1 })}>+</button>
+                  </span>
+                </label>
+              ))}
             </span>
-          </label>
+          ) : (
+            <label className="rest-dice">{R.dice}
+              <span className="stepper">
+                <button aria-label="−" disabled={dice <= 0} onClick={() => setDice(dice - 1)}>−</button>
+                <b>{Math.min(dice, left)}</b>
+                <button aria-label="+" disabled={dice >= left} onClick={() => setDice(dice + 1)}>+</button>
+              </span>
+            </label>
+          )}
           {(['arcaneRecovery', 'naturalRecovery'] as const).map((id) => {
             const opts = recoveryOptions(sheet, props.c.status, id);
             if (!opts.length) return null;
@@ -271,7 +292,8 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
           })}
           <button onClick={() => {
             const recover = Object.fromEntries(Object.entries(recoverPick).filter(([, v]) => v !== '').map(([k, v]) => [k, v === 'skip' ? null : v.split(',').map(Number)]));
-            const r = shortRestStatus(sheet, props.c.status, Math.min(dice, left), Math.random, recover);
+            const r = shortRestStatus(sheet, props.c.status, plan ? planTotal : Math.min(dice, left), Math.random, recover, plan ?? undefined);
+            setDiePick(null);
             setNote(R.shortDone(r.rolls.join(' + '), r.healed));
             props.onUpdate({ ...props.c, status: r.status });
           }} disabled={s.hp < 1} title={s.hp < 1 ? R.shortNeedsHp : undefined}>{R.short}</button>

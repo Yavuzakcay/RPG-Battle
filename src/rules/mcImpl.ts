@@ -122,8 +122,10 @@ export const MC_IMPL = {
   /**
    * Kısa dinlenme (SRD 5.2.1 s. 25, s. 187): `dice` kadar zar, havuzda kalanlardan büyük zardan başlayarak; her biri zar +
    * CON, en az 1. Türü kayıtlı olmayan harcanmış zarlar (tek sınıftan çoklu sınıfa geçen kayıt) büyük zardan düşülür.
+   * Görev SRD-TAMAMLAMA-2 (SRD s. 25 "track them separately", s. 187 harcanacak zarı oyuncu seçer): `byDie` verilirse (zar türü →
+   * adet) `dice` yerine o plan, her tür kalanına kırpılır; büyük zar önce atılır.
    */
-  shortRest(sheet: Sheet & { level: number }, s: CharacterStatus, st: RestState, dice: number, rng: Rng) {
+  shortRest(sheet: Sheet & { level: number }, s: CharacterStatus, st: RestState, dice: number, rng: Rng, byDie?: Partial<Record<Die, number>>) {
     const pool = MC_IMPL.hitDicePool(sheet);
     const spentBy: Partial<Record<Die, number>> = { ...(MC_IMPL.spentBy(sheet, s.hitDiceSpentBy).hitDiceSpentBy ?? {}) };
     const rolls: number[] = [];
@@ -131,8 +133,9 @@ export const MC_IMPL = {
     const order = ([12, 10, 8, 6] as const).filter((d) => pool[d]);
     let untracked = Math.max(0, s.hitDiceSpent - Object.values(spentBy).reduce((n, x) => n + (x ?? 0), 0));
     for (const d of order) { const take = Math.min(untracked, (pool[d] ?? 0) - (spentBy[d] ?? 0)); if (take > 0) { spentBy[d] = (spentBy[d] ?? 0) + take; untracked -= take; } }
-    for (let i = 0; i < dice; i++) {
-      const d = order.find((x) => (pool[x] ?? 0) - (spentBy[x] ?? 0) > 0);
+    const plan = byDie ? order.flatMap((x) => Array.from({ length: Math.max(0, Math.min(byDie[x] ?? 0, (pool[x] ?? 0) - (spentBy[x] ?? 0))) }, () => x)) : null;
+    for (let i = 0; i < (plan ? plan.length : dice); i++) {
+      const d = plan ? plan[i] : order.find((x) => (pool[x] ?? 0) - (spentBy[x] ?? 0) > 0);
       if (d === undefined) break;
       const roll = rollDie(d, rng);
       rolls.push(roll);
@@ -141,6 +144,20 @@ export const MC_IMPL = {
     }
     const spent = Object.values(spentBy).reduce((n, x) => n + (x ?? 0), 0);
     return { state: { ...st, hp, hitDiceLeft: sheet.level - spent, spellSlots: st.pactMagic ? [...st.maxSpellSlots] : [...st.spellSlots] }, rolls, healed: hp - st.hp, spentBy };
+  },
+
+  /** Görev SRD-TAMAMLAMA-2: zar türü başına kalan HP zarı (`battleHitDice` ile aynı hesap). */
+  hitDiceLeftBy(sheet: Sheet, s: Pick<CharacterStatus, 'hitDiceSpent' | 'hitDiceSpentBy'>): Partial<Record<Die, number>> {
+    return Object.fromEntries(Object.entries(MC_IMPL.battleHitDice(sheet, s).pool).map(([d, n]) => [Number(d), n])) as Partial<Record<Die, number>>;
+  },
+
+  /** Görev SRD-TAMAMLAMA-2: `dice` zarlık eski (büyük zardan) dağılım, zar türü → adet (arayüzün önerisi). */
+  defaultDiePlan(sheet: Sheet, s: Pick<CharacterStatus, 'hitDiceSpent' | 'hitDiceSpentBy'>, dice: number): Partial<Record<Die, number>> {
+    const left = MC_IMPL.hitDiceLeftBy(sheet, s);
+    const out: Partial<Record<Die, number>> = {};
+    let n = Math.max(0, dice);
+    for (const d of [12, 10, 8, 6] as const) { const take = Math.min(n, left[d] ?? 0); if (take > 0) { out[d] = take; n -= take; } }
+    return out;
   },
 
   /** Slot dizisi Pact mı (kısa dinlenmede dolar): yalnız tek büyücü Warlock'sa. */

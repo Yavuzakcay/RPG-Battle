@@ -75,6 +75,13 @@ function prereqLevel(f: SrdFeat): number {
   return m ? Number(m[1]) : 0;
 }
 
+/**
+ * Görev SRD-TAMAMLAMA-2: seviye ön koşulunun ("Level N+") sınandığı seviye. SRD'de karakter seviyesi: çoklu sınıfta toplam
+ * karakter seviyesi (`ctx.charLevel`; yuvanın hangi toplam seviyede alındığı kayıtta yok), tek sınıfta yuvanın seviyesi (yuva o
+ * karakter seviyesinde alındı; eskisi gibi). SRD 5.2.1 feat'lerinde sınıf seviyesi ön koşulu yok.
+ */
+export const prereqLevelAt = (slot: AdvancementSlot, ctx: Pick<FeatCtx, 'charLevel'>): number => ctx.charLevel ?? slot.level;
+
 /** Feat bu yuvaya ve karaktere uygun mu; uygunsa null, değilse nedeni. */
 export function featProblem(f: SrdFeat, slot: AdvancementSlot, ctx: FeatCtx): string | null {
   if (slot.kind === 'style' && f.category !== 'Fighting Style') return I().featNotStyle(f.name);
@@ -82,9 +89,13 @@ export function featProblem(f: SrdFeat, slot: AdvancementSlot, ctx: FeatCtx): st
   // feat'leri de (Magic Initiate, Skilled…) seviye yuvasına alınabilir. Görev TE99 (SRD 5.2.1 s. 87 "Fighting Style Feat
   // (Prerequisite: Fighting Style Feature)"): Fighting Style özelliği olan sınıf ASI/Epic yuvasında da alır.
   const style = f.category === 'Fighting Style' && !!ctx.hasStyle;
-  if (slot.kind === 'asi' && !['General', 'Origin'].includes(f.category) && !style) return I().featNotAsi(f.name);
+  const level = prereqLevelAt(slot, ctx);
+  // Görev SRD-TAMAMLAMA-2 (ASI "another feat of your choice for which you qualify"): seviye ön koşulu tutan Epic Boon ASI
+  // yuvasına da (çoklu sınıfta toplam 19+; tek sınıfta ASI yuvaları 19'un altında, değişmez).
+  const epic = f.category === 'Epic Boon' && prereqLevel(f) > 0 && prereqLevel(f) <= level;
+  if (slot.kind === 'asi' && !['General', 'Origin'].includes(f.category) && !style && !epic) return I().featNotAsi(f.name);
   if (slot.kind === 'epic' && !['Epic Boon', 'General', 'Origin'].includes(f.category) && !style) return I().featNotEpic(f.name);
-  if (prereqLevel(f) > slot.level) return I().featLevel(f.name, prereqLevel(f));
+  if (prereqLevel(f) > level) return I().featLevel(f.name, prereqLevel(f));
   const pre = f.prerequisite ?? '';
   const ab = /(Strength|Dexterity) or (Strength|Dexterity) (\d+)\+/.exec(pre);
   if (ab && Math.max(ctx.scores.str, ctx.scores.dex) < Number(ab[3])) return I().featAbility(f.name, ab[3] as string);
@@ -97,7 +108,9 @@ export function featProblem(f: SrdFeat, slot: AdvancementSlot, ctx: FeatCtx): st
  * Feat ön koşul bağlamı. `casterClass`: Spellcasting özelliği (Görev TE99: SRD 5.2.1 s. 24 çoklu sınıf "the Pact Magic feature
  * … and the Spellcasting feature": Pact Magic Spellcasting sayılmaz; `casterCtx`). `hasStyle`: Fighting Style özelliği.
  */
-export interface FeatCtx { scores: Scores; casterClass: boolean; hasStyle?: boolean }
+export interface FeatCtx { scores: Scores; casterClass: boolean; hasStyle?: boolean;
+  /** Görev SRD-TAMAMLAMA-2: çoklu sınıfta toplam karakter seviyesi (seviye ön koşulu; `prereqLevelAt`). Tek sınıfta yok. */
+  charLevel?: number }
 /** Görev TE99: sınıfın Spellcasting (Pact Magic değil) ve Fighting Style özellikleri. */
 export function casterCtx(classId: string, level: number, subclassId?: string): Pick<FeatCtx, 'casterClass' | 'hasStyle'> {
   const casting = getClass(classId).casting;
@@ -109,6 +122,13 @@ export function casterCtx(classId: string, level: number, subclassId?: string): 
  */
 export function sheetCasterCtx(sheet: { classId: string; level: number; subclassId?: string; classes?: ClassEntry[] }): Pick<FeatCtx, 'casterClass' | 'hasStyle'> {
   return isMulticlass(sheet) ? mcImpl().casterCtx(sheet) : casterCtx(sheet.classId, sheet.level, sheet.subclassId);
+}
+/**
+ * Görev SRD-TAMAMLAMA-2: karakterin tam feat bağlamı; oluşturucunun feat listesi, ASI yuvaları ve sorun denetimi
+ * (`advancementProblems`) bunu kullanır. Çoklu sınıfta `charLevel` toplam seviye.
+ */
+export function sheetFeatCtx(sheet: { classId: string; level: number; subclassId?: string; classes?: ClassEntry[] }, scores: Scores): FeatCtx {
+  return { scores, ...sheetCasterCtx(sheet), ...(isMulticlass(sheet) ? { charLevel: sheet.level } : {}) };
 }
 export function featOptions(slot: AdvancementSlot, ctx: FeatCtx): SrdFeat[] {
   return allFeats().filter((f) => featProblem(f, slot, ctx) === null);

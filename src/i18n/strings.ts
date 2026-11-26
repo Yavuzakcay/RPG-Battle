@@ -58,6 +58,7 @@ const tr = {
       cursedTurned: (kind: string) => `Lanetli: likantropi (${kind}). Savaşta 0 HP'de canavara dönüştü (Game Master'ın denetiminde). Remove Curse gerekir.`,
       short: 'Kısa dinlenme', long: 'Uzun dinlenme', revive: 'Diriltildi say',
       dice: 'Harcanacak HP zarı', spend: (n: number) => `${n} zar harca ve dinlen`,
+      diceByType: 'Harcanacak HP zarı (türe göre)', diceLeft: (n: number) => `kalan ${n}`,
       shortDone: (rolls: string, healed: number) => `Kısa dinlenme: ${rolls || 'zar yok'} → +${healed} HP; kısa dinlenmede yenilenen kaynaklar doldu.`,
       longDone: 'Uzun dinlenme: HP, slotlar ve kaynaklar doldu; HP zarlarının yarısı geri geldi.',
       recovery: (name: string) => `${name} (kısa dinlenmede)`, recoveryAuto: 'Otomatik (en yüksek slot)', recoverySkip: 'Kullanma (sonraya sakla)',

@@ -74,6 +74,19 @@ const moralPart = (s: CharacterStatus): Pick<CharacterStatus, 'moral' | 'moralOl
 /** Görev MC2: çoklu sınıfın can zarı havuzu (zar türü → sayı; aynı türler birleşir). Tek sınıfta null. */
 export const hitDicePool = (sheet: CharacterSheet): Partial<Record<6 | 8 | 10 | 12, number>> | null =>
   (isMultiSheet(sheet) ? mcImpl().hitDicePool(sheet) : null);
+/**
+ * Görev SRD-TAMAMLAMA-2 (SRD 5.2.1 s. 25, s. 187): kısa dinlenmede zar türü seçimi yalnız birden çok zar türü olan çoklu sınıflı
+ * karakterde; zar türü → kalan. Tek sınıfta ya da tek türde (Fighter/Paladin) null.
+ */
+export function hitDiceLeftBy(sheet: CharacterSheet, status: CharacterStatus | undefined): Partial<Record<6 | 8 | 10 | 12, number>> | null {
+  const pool = hitDicePool(sheet);
+  if (!pool || Object.keys(pool).length < 2) return null;
+  return mcImpl().hitDiceLeftBy(sheet, currentStatus(sheet, status));
+}
+/** Görev SRD-TAMAMLAMA-2: `dice` zarlık öneri (eski davranış: büyük zardan), zar türü → adet; seçim yoksa null. */
+export function defaultDiePlan(sheet: CharacterSheet, status: CharacterStatus | undefined, dice: number): Partial<Record<6 | 8 | 10 | 12, number>> | null {
+  return hitDiceLeftBy(sheet, status) ? mcImpl().defaultDiePlan(sheet, currentStatus(sheet, status), dice) : null;
+}
 /** Görev MC2: harcanan zarlar havuza kırpılır; boşsa yazılmaz (alan yok = hiç harcanmamış). Tek sınıfta yok. */
 const spentByPart = (sheet: CharacterSheet, by: CharacterStatus['hitDiceSpentBy']): Pick<CharacterStatus, 'hitDiceSpentBy'> =>
   (isMultiSheet(sheet) ? mcImpl().spentBy(sheet, by) : {});
@@ -181,11 +194,12 @@ export interface RestResult { status: CharacterStatus; rolls: number[]; healed: 
 
 /** Kısa dinlenme: `dice` kadar HP zarı (kalan kadar) harcanır; kısa dinlenmede yenilenen kaynaklar dolar. */
 export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus | undefined, dice: number, rng: Rng,
-  /** Görev B93: slot kurtarma seçimi (kaynak → slot seviyeleri; null: kullanma; yoksa otomatik, en yüksekten). */ recover?: Record<string, number[] | null>): RestResult {
+  /** Görev B93: slot kurtarma seçimi (kaynak → slot seviyeleri; null: kullanma; yoksa otomatik, en yüksekten). */ recover?: Record<string, number[] | null>,
+  /** Görev SRD-TAMAMLAMA-2: çoklu sınıfta harcanacak zar türü → adet (`dice` yerine); yoksa ya da tek sınıfta büyük zardan `dice` kadar. */ byDie?: Partial<Record<6 | 8 | 10 | 12, number>>): RestResult {
   const s = currentStatus(sheet, status);
   // GENEL-SAVAS-DENETIM G1 (SRD 5.2.1 s. 187): kısa dinlenmeye başlamak için en az 1 HP; 0 HP'de hiçbir kazanç yok.
   if (s.dead || s.hp < 1) return { status: s, rolls: [], healed: 0 };
-  const r0 = isMultiSheet(sheet) ? mcImpl().shortRest(sheet, s, restState(sheet, s), dice, rng) : { ...shortRest(restState(sheet, s), dice, rng), spentBy: undefined };
+  const r0 = isMultiSheet(sheet) ? mcImpl().shortRest(sheet, s, restState(sheet, s), dice, rng, byDie) : { ...shortRest(restState(sheet, s), dice, rng), spentBy: undefined };
   // Görev WIZARD: Arcane Recovery (kaynak `arcaneRecovery`, uzun dinlenmede bir kez): toplamı seviyenin yarısını (yukarı)
   // aşmayan, 6. seviyenin altındaki slotlar en yüksekten başlayarak. Görev B93: oyuncu seçer ya da ertelerse kullanılmaz.
   const recovery = arcaneRecovery(sheet, s.resources, r0.state.spellSlots, 'arcaneRecovery', recover?.arcaneRecovery);

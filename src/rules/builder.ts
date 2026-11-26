@@ -15,7 +15,7 @@ import { rollDice, rollTag, type Rng } from './dice';
 import { SKILL_IDS, SKILLS, type Skill } from './skills';
 import { backgroundById, backgroundOf, backgroundSkills, bonusesOf, magicInitiateProblems, otherSkillMax, speciesSkillChoice } from './backgrounds';
 import { MAX_ATTUNED, classSkillProblem, deriveStats, finalScores, spellSlotsFor, type CharacterSheet, type Scores } from './stats';
-import { advancementProblems, featEffects, sheetCasterCtx, sheetFeats } from './advancement';
+import { advancementProblems, featEffects, sheetFeatCtx, sheetFeats } from './advancement';
 import { classesOf, isMultiSheet as isMulticlass, mcImpl } from './mcHook';
 import { classKit, defaultSubclass, gainedFeatures, optionTraining, subclassLevel, subclassesOf, tableValue } from './classFeatures';
 import { masteryProblems } from './mastery';
@@ -498,7 +498,7 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
     // Görev G1: Magic Initiate (Acolyte, Sage) iki cantrip ve bir 1. seviye büyü.
     magicInitiateProblems(s).forEach(push);
     try {
-      advancementProblems(s, { scores: finalScores({ ...s, advancements: [] }), ...sheetCasterCtx(s) }).forEach(push);
+      advancementProblems(s, sheetFeatCtx(s, finalScores({ ...s, advancements: [] }))).forEach(push);
     } catch (e) {
       push(e instanceof Error ? e.message : String(e));
     }

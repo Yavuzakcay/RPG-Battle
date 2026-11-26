@@ -2,6 +2,31 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev SRD-TAMAMLAMA-2: kısa dinlenmede zar türü seçimi; feat seviye ön koşulu karakter seviyesiyle (2026-11-26; kural sürümü 106 ve kayıt sürümleri değişmedi)
+
+Kaynak `harita/belgeler/MC-SRD-DENETIM.md` satır 6 ve 32 (ikisi de "doğru" oldu). İkisi de savaş dışı: savaş durumu ve olaylar
+değişmedi (feat'ler savaşa yine `sheetFeats`'ten girer, geçerlilik denetimi yok), kural sürümü 106, savaş kaydı 27, karakter kaydı 4.
+
+- **Kısa dinlenme** (SRD 5.2.1 s. 25 "track them separately", s. 187): `shortRestStatus` isteğe bağlı `byDie` (zar türü → adet;
+  her tür kalanına kırpılır, büyük zar önce atılır), `hitDiceLeftBy` (yalnız birden çok zar türü olan çoklu sınıfta; tek sınıf ve
+  Fighter/Paladin gibi tek türde null), `defaultDiePlan` (öneri = eski davranış, büyük zardan). Karakterlerim `RestPanel`: o
+  karakterlerde tek sayaç yerine tür başına sayaç (başlangıç 1 zar büyük zardan: tek tıkla eskisi gibi). Game Master kurulumunda
+  kısa dinlenme yok (toplu uzun dinlenme); Serüven/yolculuk kısa dinlenme komutu (`short_rest.dice`) değişmedi, tür yine büyük zardan
+  (komut biçimi ve replay korunur; ayrı iş).
+- **Feat ön koşulu** (SRD "Level N+" karakter seviyesi): `prereqLevelAt(slot, ctx)` = çoklu sınıfta `ctx.charLevel` (toplam
+  karakter seviyesi; kayıtta seviye alma sırası olmadığından bugünkü toplam, kullanıcı kararı), tek sınıfta yuvanın seviyesi (eskisi
+  gibi; Fighter 20'nin 4. seviye yuvasına Epic Boon girmez). ASI yuvası SRD "another feat of your choice for which you qualify":
+  seviye ön koşulu tutan Epic Boon da (çoklu sınıfta toplam 19+; tek sınıfta ASI yuvaları 19'un altında). Ortak bağlam
+  `sheetFeatCtx(sheet, scores)`: oluşturucunun feat listesi ve ASI yuvaları (`Builder.tsx`) ile sorun denetimi (`builder.ts`
+  `advancementProblems`). SRD 5.2.1 feat'lerinde sınıf seviyesi ön koşulu yok (yalnız özellik: Spellcasting, Fighting Style).
+- Dokunulmayanlar (kararlı): AC en yüksek otomatik (K8), ön koşulun alındığı andaki puanla denetlenmemesi, sonraki tur DC'si / YZ Pact.
+- **Test.** `src/rules/srdTamamlama2.test.ts` (11: tür seçimi yalnız çoklu zar türünde, öneri = eski, küçük zar seçimi ve kırpma,
+  tek sınıfta `byDie` yok sayılır, türsüz eski harcanmış zar, `RestPanel` çizimi; feat: sınanan seviye toplam/yuva, toplam 20'de geç
+  ASI yuvasına Epic Boon, toplam 18'de red, tek sınıf Fighter 20 değişmedi, sorun denetimi; eski kayıt: sürüm 3 tek sınıflı ve sürüm 4
+  çoklu sınıflı karakter yüklenir ve dinlenir). MC2'nin 362 durumluk tek sınıf altını değişmeden geçti.
+- `src/battle/te99.test.ts` "içecek/yağ etkisi" sayısı 44 → 50 (gerekçe: KATALOG-1 E 6 `use.kind: effect` eşyası ekledi; test tabanda
+  zaten kırıktı, 50 eşyanın hepsi döngüden geçiyor).
+
 ## Görev SRD-TAMAMLAMA-1: çoklu sınıf SRD denetimi ve küçük SRD düzeltmeleri (2026-11-26; kural sürümü 106, savaş kaydı değişmedi: 27)
 
 **Taban.** `origin/birlesik` `689cd8b4` (kural 105, savaş kaydı 27). Yeni mekanik yok; yalnız SRD 5.2.1 uyumu.

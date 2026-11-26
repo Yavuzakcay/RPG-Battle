@@ -43,7 +43,7 @@ import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLe
 import { findSubclass, genderVisible, isOtherClassSubclass, subclassForGender, subclassMissing, subclassPlainName } from '../rules/subclasses';
 import { wishPickKey } from '../battle/paket/bag';
 import {
-  ASI_FEAT, advancementSlots, casterCtx, sheetAdvancementSlots, sheetCasterCtx, asiCanRaise, asiPointsLeft, asiStep, scoresBeforeSlot, featById, featMechanic, featOptions, featEffects, featProblem, isStyleChoice, slotAlternativeById,
+  ASI_FEAT, advancementSlots, casterCtx, sheetAdvancementSlots, sheetFeatCtx, asiCanRaise, asiPointsLeft, asiStep, scoresBeforeSlot, featById, featMechanic, featOptions, featEffects, featProblem, isStyleChoice, slotAlternativeById,
   originFeats, sheetFeats, type Advancement, type AdvancementSlot, type Scores,
 } from '../rules/advancement';
 import { offHandOptionProblem, offHandProblem } from '../rules/hands';
@@ -1353,7 +1353,7 @@ function withSlot(list: Advancement[], slot: AdvancementSlot, next: Advancement 
 function asiCapableSlots(s: CharacterSheet, scores: Scores): AdvancementSlot[] {
   const asi = featById(ASI_FEAT);
   if (!asi) return [];
-  const ctx = { scores, ...sheetCasterCtx(s) };
+  const ctx = sheetFeatCtx(s, scores);
   return sheetAdvancementSlots(s).filter((x) => x.kind !== 'style' && featProblem(asi, x, ctx) === null);
 }
 
@@ -1415,7 +1415,7 @@ function AdvancementPanel(props: {
   const bg = backgroundOf(s);
   // Görev MC5: çoklu sınıfta yuvalar sınıf başına, kendi seviyesiyle (`Advancement.classId`).
   const slots = sheetAdvancementSlots(s);
-  const ctx = { scores: finalScores({ ...s, advancements: [] }), ...sheetCasterCtx(s) };
+  const ctx = sheetFeatCtx(s, finalScores({ ...s, advancements: [] }));
   const sk = (x: AdvancementSlot) => `${x.classId ?? ''}${x.level}:${x.kind}`;
   const asiOk = new Set(asiCapableSlots(s, ctx.scores).map(sk));
   const list = s.advancements ?? [];

@@ -408,6 +408,7 @@ export const en: Strings = {
       cursedTurned: (kind: string) => `Cursed: lycanthropy (${kind}). Dropped to 0 HP in battle and became a lycanthrope under the Game Master's control. Needs Remove Curse.`,
       short: 'Short rest', long: 'Long rest', revive: 'Mark as revived',
       dice: 'Hit Point Dice to spend', spend: (n: number) => `Spend ${n} dice and rest`,
+      diceByType: 'Hit Point Dice to spend (by type)', diceLeft: (n: number) => `${n} left`,
       shortDone: (rolls: string, healed: number) => `Short rest: ${rolls || 'no dice'} → +${healed} HP; short-rest resources refilled.`,
       longDone: 'Long rest: HP, slots and resources refilled; half of the Hit Point Dice regained.',
       recovery: (name: string) => `${name} (on short rest)`, recoveryAuto: 'Automatic (highest slot)', recoverySkip: "Don't use (save for later)",

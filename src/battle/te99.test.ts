@@ -288,9 +288,9 @@ describe('TE99-13 doğrulanmayan iki satır (F25, D9)', () => {
       expect(moveCostFn(s, s.combatants.A as Combatant)({ col: 2, row: 3 }, { col: 3, row: 3 }), `${size} ${wrestler}`).toBe(cost);
     }
   });
-  it('44 içecek/yağ etkisi (use.kind: effect) kendine kullanılır, etki ya da hasar uygulanır, replay aynı', () => {
+  it('50 içecek/yağ etkisi (KATALOG-1 E ile 44 → 50) (use.kind: effect) kendine kullanılır, etki ya da hasar uygulanır, replay aynı', () => {
     const effectItems = items.filter((i) => i.use?.kind === 'effect');
-    expect(effectItems.length).toBe(44);
+    expect(effectItems.length).toBe(50);
     for (const it of effectItems) {
       const base = arena(NEW, mk('A', { ownerId: 'p1', hp: 60, maxHp: 60, consumables: { [it.id]: 1 } }));
       const r = execute(base, { type: 'use_item', actorId: 'A', itemId: it.id, targetId: 'A' }, P1, () => 0.5);
