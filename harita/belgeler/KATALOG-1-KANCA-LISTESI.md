@@ -1,7 +1,7 @@
-# KATALOG-1: motorun denetleyemediği güçler (A–D)
+# KATALOG-1: motorun denetleyemediği güçler (A–E)
 
 Görev KATALOG-1 D sonu (kullanıcı kararı B-4). `data/items-katalog.json`'daki bütün `planli` ve `kismi` güçler, gerektirdiği kanca türüne göre
-tek listede. Metinler kayıtta PDF'teki gibi; burada yalnız eşya, güç adı, durum ve not. Kategori, güç metni ve notundan anahtar sözcükle
+tek listede (E, KATALOG-1 E sonunda eklendi: kendi beş bölümünde, en sonda; kategori tablosu yalnız A–D). Metinler kayıtta PDF'teki gibi; burada yalnız eşya, güç adı, durum ve not. Kategori, güç metni ve notundan anahtar sözcükle
 atanır (ilk eşleşen); bir güç birden çok kancaya ihtiyaç duyabilir. Üretici: oturum betiği `planliListe.py` (KATALOG-2 planlamasında yeniden üretilir).
 
 | Parça | Kısmen | Planlı |
@@ -10,7 +10,8 @@ atanır (ilk eşleşen); bir güç birden çok kancaya ihtiyaç duyabilir. Üret
 | B | 30 | 93 |
 | C | 11 | 61 |
 | D | 6 | 101 |
-| **Toplam** | **74** | **444** |
+| E | 7 | 38 |
+| **Toplam** | **81** | **482** |
 
 | Kategori | Güç |
 |---|---|
@@ -598,3 +599,73 @@ atanır (ilk eşleşen); bir güç birden çok kancaya ihtiyaç duyabilir. Üret
 | D | YT#35 | Kırağı Mühür Taşı (Frost Sigil Stone) | Tılsım yuvası | kismi | hız +5 ft ve buz/kar zorlu arazi değil (Ice Walk) çalışır; buzda kayıp Prone olmama yok |
 | D | YT#38 | Zehir Mühür Taşı (Venom Sigil Stone) | Tılsım yuvası | planli | yalnız silah saldırı zarına +1 kancası yok |
 | D | YT#41 | Işıltı Özü Mühür Taşı (Radiant Sigil Stone) | Tılsım yuvası | planli | yeni kanca ya da paket ilkeli gerekir (KATALOG-2) |
+
+## E: alanlı fırlatma, yüzey, çekme/itme, süreli durum (O7; kullanıcı kararı: KATALOG-2)
+
+| Parça | Ref | Eşya | Güç | Durum | Not |
+|---|---|---|---|---|---|
+| E | TK#1 | Çöküntü Küresi (Sinkhole Orb) | Nasıl kullanılır | planli | alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2) |
+| E | TK#2 | Sıçrayan Kıvılcım Şişesi (Sparkburst Flask) | Nasıl kullanılır | planli | alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2) |
+| E | TK#3 | Kırağı Küresi (Rimeburst Orb) | Nasıl kullanılır | planli | alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2) |
+| E | TK#4 | Körleştiren Flaş Kapsülü (Flashblind Capsule) | Nasıl kullanılır | planli | alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2) |
+| E | TK#5 | Ağ Kesesi Bombası (Websac Bomb) | Nasıl kullanılır | planli | alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2) |
+| E | TK#6 | Gök Gürültüsü Çivisi (Shrapnel Nailbomb) | Nasıl kullanılır | planli | alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2) |
+| E | TK#7 | Sarsıntı Küresi (Tremor Sphere) | Nasıl kullanılır | planli | alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2) |
+| E | TK#8 | Korku Buhuru Bombası (Dreadcenser Bomb) | Nasıl kullanılır | planli | alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2) |
+| E | TK#9 | Hızlandıran Spor Kesesi (Haste Spore Pod) | Nasıl kullanılır | planli | alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2) |
+| E | TK#10 | Zırh Delen Şarapnel (Armor-Piercing Canister) | Nasıl kullanılır | planli | alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2) |
+| E | TK#11 | Aşk Tozu Şişesi (Enthralling Mist Vial) | Nasıl kullanılır | planli | alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2) |
+| E | TK#12 | Kül Salkım Bombası (Cinder Cluster Bomb) | Nasıl kullanılır | planli | alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2) |
+
+## E: özel oklar (K12: yalnız veri; özel cephane seçimi ve tüketimi)
+
+| Parça | Ref | Eşya | Güç | Durum | Not |
+|---|---|---|---|---|---|
+| E | TK#13 | Su Balonu Oku (Watersplash Arrow) | Nasıl kullanılır | planli | K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2) |
+| E | TK#14 | Buhar Bulutu Oku (Steamveil Arrow) | Nasıl kullanılır | planli | K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2) |
+| E | TK#15 | Kırağı Oku (Hoarfrost Arrow) | Nasıl kullanılır | planli | K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2) |
+| E | TK#16 | Gürleyen İtme Oku (Roaring Knockback Arrow) | Nasıl kullanılır | planli | K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2) |
+| E | TK#17 | Şifa Kesen Ok (Blightbone Arrow) | Nasıl kullanılır | planli | K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2) |
+| E | TK#18 | Sıçrayan Yıldırım Oku (Arcing Bolt Arrow) | Nasıl kullanılır | planli | K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2) |
+| E | TK#19 | Çoklu Hedef Oku (Splitflight Arrow) | Nasıl kullanılır | planli | K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2) |
+| E | TK#20 | Işınlanma Oku (Transposition Arrow) | Nasıl kullanılır | planli | K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2) |
+| E | TK#21 | Büyü Kıran Ok (Spellsever Arrow) | Nasıl kullanılır | planli | K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2) |
+| E | TK#22 | Deviren Küt Ok (Knockdown Blunt Arrow) | Nasıl kullanılır | planli | K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2) |
+| E | TK#23 | Kutsanmış Şifa Oku (Blessed Mending Arrow) | Nasıl kullanılır | planli | K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2) |
+| E | TK#24 | Örtü Aşan Gölge Oku (Shadowpierce Arrow) | Nasıl kullanılır | planli | K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2) |
+
+## E: silah kaplamaları (use.coat yalnız ek zar ve tür; isabet sonrası save'li etki O7)
+
+| Parça | Ref | Eşya | Güç | Durum | Not |
+|---|---|---|---|---|---|
+| E | TK#25 | Keskin Nişan Yağı (Oil of Precision) | Nasıl kullanılır | planli | yalnız kaplanan silahın saldırı zarına +2 (hasarsız) motorda yok: weaponPlus hasara da ekler, zar etkisi bütün saldırılara (büyü dahil) işler; O7 (KATALOG-2) |
+| E | TK#26 | Yanıcı Reçine Yağı (Oil of Combustion) | Nasıl kullanılır | planli | işaretli hedefin ateş hasarı alınca patlaması tetik kancası ister (PDF: yeni kanca); use.coat yalnız isabete ek zar ve tür verir; isabet sonrası save'li etki/durum O7 şema genişlemesini bekler (KATALOG-2) |
+| E | TK#27 | Büyü Bozan Zehir (Magebane Venom) | Nasıl kullanılır | planli | use.coat yalnız isabete ek zar ve tür verir; isabet sonrası save'li etki/durum O7 şema genişlemesini bekler (KATALOG-2) |
+| E | TK#28 | Kundakçı Yağı (Arsonist's Tincture) | Nasıl kullanılır | planli | hedefin ateş direncini geçici bastıran etki yok (PDF: yeni kanca); use.coat yalnız isabete ek zar ve tür verir; isabet sonrası save'li etki/durum O7 şema genişlemesini bekler (KATALOG-2) |
+| E | TK#29 | Ayaz Kaplama Yağı (Hoarfrost Coating) | Nasıl kullanılır | kismi | her silah isabetine +1d4 soğuk 5 tur çalışır (Basic Poison yolu; kaplama bütün silah saldırılarına işler); DC 14 CON −10 ft hız ve su altıgenini dondurma: isabet sonrası save'li etki/durum O7 şema genişlemesini bekler (KATALOG-2) |
+| E | TK#30 | Lanet Yağı (Oil of Hexing) | Nasıl kullanılır | planli | use.coat yalnız isabete ek zar ve tür verir; isabet sonrası save'li etki/durum O7 şema genişlemesini bekler (KATALOG-2) |
+| E | TK#31 | Uyku Özü Zehri (Drowsleep Venom) | Nasıl kullanılır | planli | use.coat yalnız isabete ek zar ve tür verir; isabet sonrası save'li etki/durum O7 şema genişlemesini bekler (KATALOG-2) |
+| E | TK#32 | Sürüngen Felç Salgısı (Crawler Paralytic) | Nasıl kullanılır | planli | use.coat yalnız isabete ek zar ve tür verir; isabet sonrası save'li etki/durum O7 şema genişlemesini bekler (KATALOG-2) |
+| E | TK#33 | Kızıl Solucan Zehri (Crimson Wyrm Toxin) | Nasıl kullanılır | planli | use.coat yalnız isabete ek zar ve tür verir; isabet sonrası save'li etki/durum O7 şema genişlemesini bekler (KATALOG-2) |
+
+## E: iksirler ve çay (mevcut use.effect yolu; eksik kısım notta)
+
+| Parça | Ref | Eşya | Güç | Durum | Not |
+|---|---|---|---|---|---|
+| E | TK#34 | Fiziksel Zırh İksiri (Ironhide Armour Potion) | Nasıl kullanılır | kismi | 12 geçici can çalışır; geçici canın süre sonunda bitmesi motorda yok (use.effect geçici canı kalıcı verir); geçici can sürdükçe B/P/S hasarına −2 her darbede sabit azaltma (O10) ve koşul kancası ister (KATALOG-2) |
+| E | TK#35 | Büyü Zırhı İksiri (Spellward Armour Potion) | Nasıl kullanılır | kismi | 12 geçici can çalışır; geçici canın süre sonunda bitmesi motorda yok (use.effect geçici canı kalıcı verir); "geçici can sürdükçe büyü kurtarma avantajı" koşul kancası ister (KATALOG-2), avantaj verilmedi |
+| E | TK#36 | Çevik Savuşturma İksiri (Nimble Tumble Potion) | Nasıl kullanılır | kismi | 2 tur sana yapılan saldırılar dezavantajlı (attackedDis) ve hareketin fırsat saldırısı tetiklemez (noProvoke) çalışır; Dodge koşulları (hız 0 ya da Blinded iken kapanması) bu etkiye bağlı değil |
+| E | TK#37 | Taş Deri İksiri (Stoneskin Draught) | Nasıl kullanılır | kismi | 20 geçici can, B/P/S direnci, Poisoned/Stunned bağışıklığı ve yarı hız 3 tur çalışır; Burning motorda durum değil (yanma süren etkisi), bağışıklığı yok; geçici canın süre sonunda bitmesi motorda yok (use.effect geçici canı kalıcı verir) |
+| E | TK#38 | Sağlam İrade İksiri (Strong Will Draught) | Nasıl kullanılır | kismi | 3 tur Frightened/Charmed/Blinded bağışıklığı ve 10 geçici can çalışır; üzerindeki bu durumların anında kalkması eşya yolunda yok (cureOnCast yalnız büyüde işler); geçici canın süre sonunda bitmesi motorda yok (use.effect geçici canı kalıcı verir) |
+| E | TK#39 | Melek Uykusu İksiri (Angelic Reprieve Potion) | Nasıl kullanılır | planli | PDF: 2 tur kesintisiz uyku sonrası savaş içi Short Rest + 1–2. sv. yuva yenileme kancası (KATALOG-2) |
+| E | TK#45 | Zümrüt Çay Demlemesi (Emerald Tea Brew) | Nasıl kullanılır | kismi | 2 tur her tur +1 bonus eylem (extraBonus) ve +10 ft yürüme hızı çalışır; eylemsiz (serbest) içme motorda yok: use_item bonus eylem harcar (KATALOG-2) |
+
+## E: eliksirler (K12: yalnız veri; UD'ye dek süre ve tek aktif eliksir, O8)
+
+| Parça | Ref | Eşya | Güç | Durum | Not |
+|---|---|---|---|---|---|
+| E | TK#40 | Kana Susamışlık Eliksiri (Elixir of Bloodlust) | Nasıl kullanılır | planli | K12: eliksirler yalnız veri; uzun dinlenmeye dek süren etki ve "aynı anda tek eliksir" motorda yok (O8, KATALOG-2) |
+| E | TK#41 | Tetikte Olma Eliksiri (Elixir of Vigilance) | Nasıl kullanılır | planli | K12: eliksirler yalnız veri; uzun dinlenmeye dek süren etki ve "aynı anda tek eliksir" motorda yok (O8, KATALOG-2) |
+| E | TK#42 | Keskin Kritik Eliksiri (Elixir of Viciousness) | Nasıl kullanılır | planli | K12: eliksirler yalnız veri; uzun dinlenmeye dek süren etki ve "aynı anda tek eliksir" motorda yok (O8, KATALOG-2) |
+| E | TK#43 | Savaş Büyücüsü Odak Eliksiri (Elixir of Battlemage Focus) | Nasıl kullanılır | planli | K12: eliksirler yalnız veri; uzun dinlenmeye dek süren etki ve "aynı anda tek eliksir" motorda yok (O8, KATALOG-2) |
+| E | TK#44 | Eşsiz Odak Eliksiri (Elixir of Peerless Focus) | Nasıl kullanılır | planli | K12: eliksirler yalnız veri; uzun dinlenmeye dek süren etki ve "aynı anda tek eliksir" motorda yok (O8, KATALOG-2) |

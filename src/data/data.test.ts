@@ -136,9 +136,9 @@ describe('büyüler', () => {
 describe('itemler', () => {
   it('etkiler sayı ve geçerli ability içerir', () => {
     // Kuyruk 19: Poisoner's Kit; görev 7: SRD'nin bütün maceracı eşyaları ve sihirli eşyaları (çeşitleriyle).
-    // Görev KATALOG-1 A: 399 SRD eşyası + 125 özgün katalog silahı (data/items-katalog.json); B: + 60 zırh/cübbe/kalkan + 6 boss imza eşyası; C: + 55 giyilebilir (başlık, pelerin, eldiven, bot); D: + 45 yüzük/tılsım/mühür taşı + 31 Kaltakkıran taşı ve Mühür.
+    // Görev KATALOG-1 A: 399 SRD eşyası + 125 özgün katalog silahı (data/items-katalog.json); B: + 60 zırh/cübbe/kalkan + 6 boss imza eşyası; C: + 55 giyilebilir (başlık, pelerin, eldiven, bot); D: + 45 yüzük/tılsım/mühür taşı + 31 Kaltakkıran taşı ve Mühür; E: + 45 tüketilebilir.
     expect(items.filter((i) => !i.kaynak).length).toBe(399);
-    expect(items.length).toBe(721);
+    expect(items.length).toBe(766);
     for (const it of items) {
       for (const k of Object.keys(it.effects.setAbility ?? {})) expect(isAbility(k)).toBe(true);
     }

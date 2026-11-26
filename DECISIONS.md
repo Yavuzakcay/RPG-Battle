@@ -2,6 +2,32 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev KATALOG-1 E: 45 özgün tüketilebilir (2026-11-26; kural sürümü ve kayıt sürümü değişmedi)
+
+Kaynak: Savaş Donanımları ve Tüketilebilirler Kataloğu #1–45 (`TK#`: 12 bomba/küre, 12 özel ok, 9 kaplama/zehir, 6 iksir, 5 eliksir,
+1 çay). Taban `origin/birlesik` `d565ab84` (kural 105, savaş kaydı 27). Kimlikler envanter önerisiyle aynı (EN-AD'dan kebab-case).
+
+- **Kullanıcı kararları (görev başında soruldu):** plan E satırında O7'yi (fırlatma/kaplama şeması, kural sürümü) sayıyor, 7. bölümün
+  son paragrafı O7'yi KATALOG-2'ye bırakıyordu → **O7 KATALOG-2'de**. Görev metni "O8'e göre kayıt alanı" diyordu, K12 "özel oklar ve
+  eliksirler yalnız veri" → **K12 geçerli**, O8 yapılmadı. Sonuç: savaş kodu, kural sürümü (105) ve kayıt sürümü (27) değişmedi.
+- **Metin birebir:** PDF `pdftotext -table` kipinde iki sütunlu tablo olarak okundu (ham ve `-layout` kipinde 20 parçada bölüm etiketleri
+  kayıyordu); 45 parçanın yedi bölümü de ham PDF metninde aynen geçiyor (betikle denetlendi). Güç olarak tek satır: "Nasıl kullanılır"
+  (tüketilebilirin mekaniği); "Ne işe yarar" `ozet`, riskler, kimler. Bombalarda `menzil` başlıktan; "Etken içerik" ve "Oyundaki durum"
+  A–D gibi kayda girmedi.
+- **Savaşa bağlananlar** (mevcut `use` yolları; hepsi `kismi`, eksik kısım notta): Ayaz Kaplama Yağı (`coat` +1d4 soğuk 5 tur; save'li
+  −10 ft hız ve su dondurma yok), Fiziksel/Büyü Zırhı İksiri (12 geçici can; "geçici can sürdükçe" −2 B/P/S ve büyü kurtarma avantajı
+  yok), Çevik Savuşturma (2 tur `attackedDis` + `noProvoke`; Dodge'un hız 0/Blinded koşulu bu etkide yok), Taş Deri (20 geçici can,
+  B/P/S direnci, Poisoned/Stunned bağışıklığı, yarı hız; Burning durum değil), Sağlam İrade (3 tur Frightened/Charmed/Blinded
+  bağışıklığı + 10 geçici can; anında temizleme yok), Zümrüt Çay (2 tur `extraBonus` 1 + 10 ft; serbest içme yok, bonus eylem harcar).
+  Ortak sapma: `use.effect` geçici canı kalıcı verir, "N tur boyunca" geçici can süre sonunda bitmez.
+- **Planlı (38):** 12 bomba (`use.throw` tek hedefe save, `radiusFt` motorda okunmuyor: alan, yüzey, çekme, süreli durum O7), 12 özel ok
+  (K12), 8 kaplama (Keskin Nişan Yağı: yalnız o silahın saldırısına +2 yolu yok; diğerleri isabet sonrası save'li etki), Melek Uykusu
+  (savaş içi kısa dinlenme), 5 eliksir (K12/O8). Bütünüyle çalışan parça yok.
+- **Bulgu (düzeltilmedi, kapsam dışı):** eşya `use.effect` içindeki `cureOnCast` yalnız büyü yolunda işleniyor (`spells.ts`); SRD
+  Elixir of Health ve Potion of Vitality'nin durum temizlemesi savaşta çalışmıyor. KATALOG-2 ya da ayrı görev.
+- Testler: eşya 721 → 766, görsel eşleme 771 → 816 (45 parçanın ikonu `public/esya/`'da zaten vardı, `kaynak: ikon`);
+  `src/battle/katalogE.test.ts`. Kanca listesi `KATALOG-1-KANCA-LISTESI.md` E bölümleriyle (7 kısmen, 38 planlı).
+
 ## Görev MC5: oluşturucudan çoklu sınıflı karakter; etiketler; Serüven seviye atlama (2026-11-26; kural ve kayıt sürümü değişmedi)
 
 **Birleştirme.** Başlarken `origin/birlesik` `304bcb60` (KARAR104-KALAN; kural 104, kayıt 26) merge edildi. Çakışma: `CLAUDE.md`

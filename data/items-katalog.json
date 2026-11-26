@@ -14138,6 +14138,1352 @@
     "riskler": "Tam bağışıklık (Immunity) yerine esnek direnç sunar; yalnızca Yol A (Ölümsüz Koruyucu Finali) tamamlandığında elde edilir.",
     "kimlerKullanamaz": "Uyum yapmayan karakter tılsımın pasif ve aktif güçlerini açamaz."
    }
+  },
+  {
+   "id": "sinkhole-orb",
+   "name": "Sinkhole Orb",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Fırlatıldığı noktada ani bir çekim boşluğu açan simya küresi: 10 ft yarıçaptaki yaratıkları merkeze çeker, kuvvet hasarı verir ve yere serer.",
+   "effects": {},
+   "weight": 1,
+   "katalog": {
+    "ref": "TK#1",
+    "tr": "Çöküntü Küresi",
+    "nadirlik": "olagandisi",
+    "tur": "tuketilebilir",
+    "yuva": "fırlat: alan/hedef",
+    "fiyatGp": 60,
+    "menzil": "30 ft",
+    "ozet": "Fırlatıldığı noktada ani bir çekim boşluğu açan simya küresi: 10 ft yarıçaptaki yaratıkları merkeze çeker, kuvvet hasarı verir ve yere serer.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Attack eylemindeki saldırılarından birinin yerine 30 ft içinde görebildiğin bir altıgene fırlatılır. Darbeyle kırılıp 10 ft yarıçaplı alanı etkiler; alandaki her yaratık DC 13 STR kurtarma zarı atar, geçemezse 1d6 kuvvet hasarı alır, merkeze doğru 10 ft çekilir ve Prone olur.",
+      "durum": "planli",
+      "not": "alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "Alandaki dost yaratıklar da kurtarma zarı atar; kurtarma zarını geçen hedef hasar almaz, çekilmez ve düşmez. Küre atılınca tükenir.",
+    "kimlerKullanamaz": "Herkes kullanabilir; silah yetkinliği gerekmez."
+   }
+  },
+  {
+   "id": "sparkburst-flask",
+   "name": "Sparkburst Flask",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Sıkıştırılmış elektrik tozu dolu cam şişe: 10 ft yarıçapa yıldırım hasarı yayar ve su yüzeylerine değdiğinde zincirleme şok tepkimesi başlatır.",
+   "effects": {},
+   "weight": 1,
+   "katalog": {
+    "ref": "TK#2",
+    "tr": "Sıçrayan Kıvılcım Şişesi",
+    "nadirlik": "olagandisi",
+    "tur": "tuketilebilir",
+    "yuva": "fırlat: alan/hedef",
+    "fiyatGp": 65,
+    "menzil": "30 ft",
+    "ozet": "Sıkıştırılmış elektrik tozu dolu cam şişe: 10 ft yarıçapa yıldırım hasarı yayar ve su yüzeylerine değdiğinde zincirleme şok tepkimesi başlatır.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Attack eylemindeki saldırılarından birinin yerine 30 ft içinde görebildiğin bir altıgene fırlatılır. 10 ft yarıçaptaki her yaratık DC 13 DEX kurtarma zarı atar; geçemezse 2d6 yıldırım hasarı, geçerse yarı hasar alır. Alandaki su altıgenlerinde yıldırım zinciri (en fazla 7 bağlı su altıgeni) tetiklenir.",
+      "durum": "planli",
+      "not": "alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "Suda tetiklenen yıldırım zinciri aynı sudaki dost yaratıklara da sıçrayabilir; şişe tek kullanımlıktır.",
+    "kimlerKullanamaz": "Herkes kullanabilir."
+   }
+  },
+  {
+   "id": "rimeburst-orb",
+   "name": "Rimeburst Orb",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Sıvı ayaz hapsedilmiş buz küresi: patladığı 10 ft alanı soğuk hasarıyla yakıp iki tur boyunca kaygan buz yüzeyine çevirir.",
+   "effects": {},
+   "weight": 1,
+   "katalog": {
+    "ref": "TK#3",
+    "tr": "Kırağı Küresi",
+    "nadirlik": "olagandisi",
+    "tur": "tuketilebilir",
+    "yuva": "fırlat: alan/hedef",
+    "fiyatGp": 60,
+    "menzil": "30 ft",
+    "ozet": "Sıvı ayaz hapsedilmiş buz küresi: patladığı 10 ft alanı soğuk hasarıyla yakıp iki tur boyunca kaygan buz yüzeyine çevirir.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Attack eylemindeki saldırılarından birinin yerine 30 ft içinde görebildiğin bir altıgene fırlatılır. 10 ft yarıçaptaki her yaratık DC 13 DEX kurtarma zarı atar; geçemezse 2d4 soğuk hasarı alır ve Prone olur (geçerse yarı hasar, düşmez). Alan 2 tur buz yüzeyine dönüşür ve değdiği su altıgenlerini dondurur.",
+      "durum": "planli",
+      "not": "alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "Buz yüzeyi üstünden yürüyen dostları da kaydırıp Prone yapabilir; ateş hasarı değerse buz eriyerek suya döner.",
+    "kimlerKullanamaz": "Herkes kullanabilir."
+   }
+  },
+  {
+   "id": "flashblind-capsule",
+   "name": "Flashblind Capsule",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Magnezyum ve ışık tozu kapsülü: 15 ft yarıçaptaki düşmanları kör eden parlak bir patlama yaratır ve mekanik Construct yapıları sersemletir.",
+   "effects": {},
+   "weight": 1,
+   "katalog": {
+    "ref": "TK#4",
+    "tr": "Körleştiren Flaş Kapsülü",
+    "nadirlik": "nadir",
+    "tur": "tuketilebilir",
+    "yuva": "fırlat: alan/hedef",
+    "fiyatGp": 180,
+    "menzil": "30 ft",
+    "ozet": "Magnezyum ve ışık tozu kapsülü: 15 ft yarıçaptaki düşmanları kör eden parlak bir patlama yaratır ve mekanik Construct yapıları sersemletir.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Attack eylemindeki saldırılarından birinin yerine 30 ft içinde görebildiğin bir altıgene fırlatılır. 15 ft yarıçaptaki her yaratık DC 14 CON kurtarma zarı atar; geçemezse 2d6 ışıltı hasarı alır ve 2 tur Blinded olur (geçerse yarı hasar, körlük yok). Construct türündeki hedefler ek 1d6 gürültü hasarı alır ve başarısızlıkta 1 tur Stunned olur.",
+      "durum": "planli",
+      "not": "alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "15 ft yarıçap içindeki dostlar da kör olabilir; parlak patlama gece gizlenme düzenini bozar.",
+    "kimlerKullanamaz": "Herkes kullanabilir."
+   }
+  },
+  {
+   "id": "websac-bomb",
+   "name": "Websac Bomb",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Yapışkan örümcek ipeği kesesi: patladığı 10 ft alanı üç tur boyunca zorlu ve bağlayıcı ağ yüzeyine çevirir.",
+   "effects": {},
+   "weight": 1,
+   "katalog": {
+    "ref": "TK#5",
+    "tr": "Ağ Kesesi Bombası",
+    "nadirlik": "olagandisi",
+    "tur": "tuketilebilir",
+    "yuva": "fırlat: alan/hedef",
+    "fiyatGp": 55,
+    "menzil": "30 ft",
+    "ozet": "Yapışkan örümcek ipeği kesesi: patladığı 10 ft alanı üç tur boyunca zorlu ve bağlayıcı ağ yüzeyine çevirir.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Attack eylemindeki saldırılarından birinin yerine 30 ft içinde görebildiğin bir altıgene fırlatılır. 10 ft yarıçapta 3 tur süren örümcek ağı (Web) yüzeyi oluşturur (konsantrasyon gerekmez); giren veya orada kalan yaratıklar DC 13 DEX kurtarma zarını geçemezse Restrained olur (eylemle DC 13 STR Athletics ile kurtulur).",
+      "durum": "planli",
+      "not": "alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "Ateş hasarı değdiğinde ağ tutuşarak yanan ağa dönüşür (2d4 ateş); su yüzeyi değdiğinde ağ çözülür.",
+    "kimlerKullanamaz": "Herkes kullanabilir."
+   }
+  },
+  {
+   "id": "shrapnel-nailbomb",
+   "name": "Shrapnel Nailbomb",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Çelik çivilerle dolu demir bomba: 10 ft yarıçapa yoğun delici şarapnel saçar ve kurtarma zarını kaçıranlarda kanama açar.",
+   "effects": {},
+   "weight": 2,
+   "katalog": {
+    "ref": "TK#6",
+    "tr": "Gök Gürültüsü Çivisi",
+    "nadirlik": "nadir",
+    "tur": "tuketilebilir",
+    "yuva": "fırlat: alan/hedef",
+    "fiyatGp": 160,
+    "menzil": "30 ft",
+    "ozet": "Çelik çivilerle dolu demir bomba: 10 ft yarıçapa yoğun delici şarapnel saçar ve kurtarma zarını kaçıranlarda kanama açar.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Attack eylemindeki saldırılarından birinin yerine 30 ft içinde görebildiğin bir altıgene fırlatılır. 10 ft yarıçaptaki her yaratık DC 14 DEX kurtarma zarı atar; geçemezse 3d6 delici hasarı alır ve 2 tur boyunca her tur başında 1d4 delici kanama hasarı yer (geçerse yarı hasar, kanama yok).",
+      "durum": "planli",
+      "not": "alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "Yüksek patlama sesi 100 ft içindeki uyuyan grupları uyandırır; kanama etkisi Construct ve Undead'e işlemez.",
+    "kimlerKullanamaz": "Herkes kullanabilir."
+   }
+  },
+  {
+   "id": "tremor-sphere",
+   "name": "Tremor Sphere",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Ağır taş çekirdekli şok küresi: yere çarptığında 15 ft yarıçaptaki rakipleri sarsarak yere serer ve büyücülerin konsantrasyonunu kırar.",
+   "effects": {},
+   "weight": 2,
+   "katalog": {
+    "ref": "TK#7",
+    "tr": "Sarsıntı Küresi",
+    "nadirlik": "nadir",
+    "tur": "tuketilebilir",
+    "yuva": "fırlat: alan/hedef",
+    "fiyatGp": 175,
+    "menzil": "30 ft",
+    "ozet": "Ağır taş çekirdekli şok küresi: yere çarptığında 15 ft yarıçaptaki rakipleri sarsarak yere serer ve büyücülerin konsantrasyonunu kırar.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Attack eylemindeki saldırılarından birinin yerine 30 ft içinde görebildiğin bir altıgene fırlatılır. 15 ft yarıçaptaki yerdeki (uçmayan) her yaratık DC 14 STR kurtarma zarı atar; geçemezse 2d6 ezici hasarı alır, Prone olur ve bu hasardan doğan konsantrasyon kurtarma zarında dezavantaj alır (geçerse yarı hasar, düşmez).",
+      "durum": "planli",
+      "not": "alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "Uçan ve süzülen hedefleri etkilemez; 15 ft içindeki dost yaratıklar da sarsıntıya yakalanır.",
+    "kimlerKullanamaz": "Herkes kullanabilir."
+   }
+  },
+  {
+   "id": "dreadcenser-bomb",
+   "name": "Dreadcenser Bomb",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kâbus dumanı yayan pirinç buhurdan: 15 ft yarıçaptaki yaratıklara psişik şok vurup onları dehşet içinde geriye kaçırabilir.",
+   "effects": {},
+   "weight": 1,
+   "katalog": {
+    "ref": "TK#8",
+    "tr": "Korku Buhuru Bombası",
+    "nadirlik": "nadir",
+    "tur": "tuketilebilir",
+    "yuva": "fırlat: alan/hedef",
+    "fiyatGp": 190,
+    "menzil": "30 ft",
+    "ozet": "Kâbus dumanı yayan pirinç buhurdan: 15 ft yarıçaptaki yaratıklara psişik şok vurup onları dehşet içinde geriye kaçırabilir.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Attack eylemindeki saldırılarından birinin yerine 30 ft içinde görebildiğin bir altıgene fırlatılır. 15 ft yarıçaptaki her yaratık DC 14 WIS kurtarma zarı atar; geçemezse 1d6 psişik hasarı alır ve 2 tur Frightened olur (kendi turunun sonunda WIS kurtarmasını yenileyebilir).",
+      "durum": "planli",
+      "not": "alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "Frightened bağışıklığı olan düşmanlara korku işlemez; alandaki dostlar da kurtarma zarı atar.",
+    "kimlerKullanamaz": "Herkes kullanabilir."
+   }
+  },
+  {
+   "id": "haste-spore-pod",
+   "name": "Haste Spore Pod",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Yeraltı mantarlarından toplanmış uyarıcı spor kesesi: patladığı noktada iki tur kalan bir bulut açarak içinden geçen dostları konsantrasyonsuz hızlandırır.",
+   "effects": {},
+   "weight": 1,
+   "katalog": {
+    "ref": "TK#9",
+    "tr": "Hızlandıran Spor Kesesi",
+    "nadirlik": "cokNadir",
+    "tur": "tuketilebilir",
+    "yuva": "fırlat: alan/hedef",
+    "fiyatGp": 550,
+    "menzil": "30 ft",
+    "ozet": "Yeraltı mantarlarından toplanmış uyarıcı spor kesesi: patladığı noktada iki tur kalan bir bulut açarak içinden geçen dostları konsantrasyonsuz hızlandırır.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Attack eylemindeki saldırılarından birinin yerine 30 ft içinde görebildiğin bir altıgene fırlatılır. 10 ft yarıçapında 2 tur süren spor bulutu oluşur; buluta giren veya turuna orada başlayan her yaratık 1 tur boyunca Haste etkisi kazanır (+10 ft hız, +2 AC ve 1 ek tek saldırı/Dash/Disengage; bitişte uyuşukluk olmaz).",
+      "durum": "planli",
+      "not": "alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "Bulut dost-düşman ayrımı yapmaz; bulutun içine giren düşmanlar da aynı hızlanma etkisini kazanabilir.",
+    "kimlerKullanamaz": "Herkes kullanabilir."
+   }
+  },
+  {
+   "id": "armor-piercing-canister",
+   "name": "Armor-Piercing Canister",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Sert çekirdekli basınçlı kuşatma kutusu: fiziksel dirençleri yok sayan saf kuvvet patlamasıyla ağır zırhlı hedefleri ve engelleri parçalar.",
+   "effects": {},
+   "weight": 2,
+   "katalog": {
+    "ref": "TK#10",
+    "tr": "Zırh Delen Şarapnel",
+    "nadirlik": "cokNadir",
+    "tur": "tuketilebilir",
+    "yuva": "fırlat: alan/hedef",
+    "fiyatGp": 520,
+    "menzil": "30 ft",
+    "ozet": "Sert çekirdekli basınçlı kuşatma kutusu: fiziksel dirençleri yok sayan saf kuvvet patlamasıyla ağır zırhlı hedefleri ve engelleri parçalar.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Attack eylemindeki saldırılarından birinin yerine 30 ft içinde görebildiğin bir altıgene fırlatılır. 10 ft yarıçaptaki her yaratık DC 15 DEX kurtarma zarı atar; geçemezse 4d6 kuvvet hasarı, geçerse yarı hasar alır. Alandaki kırılabilir nesneler, kapılar ve duvar panelleri (Wall of Stone/Ice) tam hasar alır.",
+      "durum": "planli",
+      "not": "alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "Alandaki dostlar ve kırılması istenmeyen nesneler de patlamadan tam etkilenir; 100 ft gürültü yaratır.",
+    "kimlerKullanamaz": "Herkes kullanabilir."
+   }
+  },
+  {
+   "id": "enthralling-mist-vial",
+   "name": "Enthralling Mist Vial",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Gül ve peri tozu karışımı cam şişe: patladığı 15 ft yarıçaptaki zihni zayıf düşmanları iki tur boyunca büyüleyerek saldırılarını durdurur.",
+   "effects": {},
+   "weight": 1,
+   "katalog": {
+    "ref": "TK#11",
+    "tr": "Aşk Tozu Şişesi",
+    "nadirlik": "cokNadir",
+    "tur": "tuketilebilir",
+    "yuva": "fırlat: alan/hedef",
+    "fiyatGp": 600,
+    "menzil": "30 ft",
+    "ozet": "Gül ve peri tozu karışımı cam şişe: patladığı 15 ft yarıçaptaki zihni zayıf düşmanları iki tur boyunca büyüleyerek saldırılarını durdurur.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Attack eylemindeki saldırılarından birinin yerine 30 ft içinde görebildiğin bir altıgene fırlatılır. 15 ft yarıçaptaki her düşman DC 15 WIS kurtarma zarı atar; geçemezse 2 tur boyunca sana karşı Charmed olur (senin veya dostlarının hasar vermesiyle erken biter).",
+      "durum": "planli",
+      "not": "alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "Charmed bağışıklığı olan yaratıklara (birçok Undead ve Construct) işlemez; alan saldırıları büyüyü anında kırar.",
+    "kimlerKullanamaz": "Herkes kullanabilir."
+   }
+  },
+  {
+   "id": "cinder-cluster-bomb",
+   "name": "Cinder Cluster Bomb",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "İç içe geçmiş altı barut çekirdekli efsanevi kuşatma bombası: 15 ft yarıçapta devasa ateş patlaması yaratır ve tüm alanı yanan alev yüzeyine çevirir.",
+   "effects": {},
+   "weight": 3,
+   "katalog": {
+    "ref": "TK#12",
+    "tr": "Kül Salkım Bombası",
+    "nadirlik": "efsanevi",
+    "tur": "tuketilebilir",
+    "yuva": "fırlat: alan/hedef",
+    "fiyatGp": 1800,
+    "menzil": "30 ft",
+    "ozet": "İç içe geçmiş altı barut çekirdekli efsanevi kuşatma bombası: 15 ft yarıçapta devasa ateş patlaması yaratır ve tüm alanı yanan alev yüzeyine çevirir.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Attack eylemindeki saldırılarından birinin yerine 30 ft içinde görebildiğin bir altıgene fırlatılır. 15 ft yarıçaptaki her yaratık DC 16 DEX kurtarma zarı atar; geçemezse 6d6 ateş hasarı, geçerse yarı hasar alır. Tüm alan 2 tur boyunca alev yüzeyine dönüşür; yağ/gres/ağ yüzeyleri tutuşur, su buharlaşır ve kırılabilir nesneler tam hasar alır.",
+      "durum": "planli",
+      "not": "alanlı fırlatma motorda yok (use.throw tek hedefe save; radiusFt okunmuyor); alan, yüzey, çekme/itme, süreli durum ve tur sonu save O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "Dostlar ve masumlar da 6d6 patlamaya maruz kalır; 120 ft gürültü yayar ve yakındaki barut fıçılarını zincirleme patlatabilir.",
+    "kimlerKullanamaz": "Herkes kullanabilir."
+   }
+  },
+  {
+   "id": "watersplash-arrow",
+   "name": "Watersplash Arrow",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Ucu su keseli taktik ok: normal ok hasarının yanında hedefin çevresini ıslatarak alevleri söndürür ve yıldırım/soğuk kombolarına zemin hazırlar.",
+   "effects": {},
+   "weight": 0.1,
+   "katalog": {
+    "ref": "TK#13",
+    "tr": "Su Balonu Oku",
+    "nadirlik": "olagandisi",
+    "tur": "tuketilebilir",
+    "yuva": "özel ok",
+    "fiyatGp": 35,
+    "ozet": "Ucu su keseli taktik ok: normal ok hasarının yanında hedefin çevresini ıslatarak alevleri söndürür ve yıldırım/soğuk kombolarına zemin hazırlar.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Yay veya arbaletle yapılan bir saldırıda normal cephane yerine ateşlenir (boş bir altıgene de atılabilir). İsabet ettiğinde normal silah hasarını verir ve hedefin 5 ft çevresinde 3 tur süren su yüzeyi oluşturur (mevcut alevleri söndürüp buhara çevirir, Burning durumunu giderir).",
+      "durum": "planli",
+      "not": "K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2)"
+     }
+    ],
+    "riskler": "Ok ateşlendikten sonra tükenir; oluşturulan su yüzeyi yıldırım saldırılarında yakındaki dostlara da zincir kurabilir.",
+    "kimlerKullanamaz": "Yay veya arbalet (Ammunition) silahı taşımayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "steamveil-arrow",
+   "name": "Steamveil Arrow",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Sıcak su ve kireç kapsüllü sis oku: vurulduğu noktada 10 ft yarıçaplı yoğun buhar bulutu açarak düşman okçularının ve büyücülerin görüşünü keser.",
+   "effects": {},
+   "weight": 0.1,
+   "katalog": {
+    "ref": "TK#14",
+    "tr": "Buhar Bulutu Oku",
+    "nadirlik": "olagandisi",
+    "tur": "tuketilebilir",
+    "yuva": "özel ok",
+    "fiyatGp": 40,
+    "ozet": "Sıcak su ve kireç kapsüllü sis oku: vurulduğu noktada 10 ft yarıçaplı yoğun buhar bulutu açarak düşman okçularının ve büyücülerin görüşünü keser.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Yay veya arbalet saldırısında ateşlenir. İsabet ettiğinde normal silah hasarını verir ve hedefin 10 ft çevresinde 2 tur süren yoğun örtü (heavily obscured) buhar yüzeyi oluşturur.",
+      "durum": "planli",
+      "not": "K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2)"
+     }
+    ],
+    "riskler": "Buhar bulutu dost okçuların da arkasını görmesini engeller; rüzgâr kuralı açık haritalarda bulut sürüklenir.",
+    "kimlerKullanamaz": "Yay veya arbalet taşımayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "hoarfrost-arrow",
+   "name": "Hoarfrost Arrow",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Donmuş uçlu element oku: normal ok hasarına soğuk hasarı ekler ve hedefin altını kaygan buza çevirerek ilerleyişini durdurur.",
+   "effects": {},
+   "weight": 0.1,
+   "katalog": {
+    "ref": "TK#15",
+    "tr": "Kırağı Oku",
+    "nadirlik": "olagandisi",
+    "tur": "tuketilebilir",
+    "yuva": "özel ok",
+    "fiyatGp": 55,
+    "ozet": "Donmuş uçlu element oku: normal ok hasarına soğuk hasarı ekler ve hedefin altını kaygan buza çevirerek ilerleyişini durdurur.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Yay veya arbalet saldırısında ateşlenir. İsabet hâlinde normal silah hasarına ek 1d6 soğuk hasarı verir ve hedefin 5 ft çevresinde 2 tur süren buz yüzeyi oluşturur (DC 13 DEX kurtarma zarını geçemeyen Prone olur; su altıgeni donar).",
+      "durum": "planli",
+      "not": "K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2)"
+     }
+    ],
+    "riskler": "Ok ıskalarsa buz yüzeyi yine hedefin altıgeninde oluşur ancak soğuk hasarı vurmaz; dostlar da buzda kayabilir.",
+    "kimlerKullanamaz": "Yay veya arbalet taşımayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "roaring-knockback-arrow",
+   "name": "Roaring Knockback Arrow",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Ses patlamalı uçlu taktik ok: yüksek zemindeki, köprüdeki veya uçurum kenarındaki düşmanları 10 ft uzağa savurur.",
+   "effects": {},
+   "weight": 0.1,
+   "katalog": {
+    "ref": "TK#16",
+    "tr": "Gürleyen İtme Oku",
+    "nadirlik": "olagandisi",
+    "tur": "tuketilebilir",
+    "yuva": "özel ok",
+    "fiyatGp": 65,
+    "ozet": "Ses patlamalı uçlu taktik ok: yüksek zemindeki, köprüdeki veya uçurum kenarındaki düşmanları 10 ft uzağa savurur.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Yay veya arbalet saldırısında ateşlenir. İsabet hâlinde normal silah hasarına ek 1d6 gürültü hasarı verir; hedef ve 5 ft çevresindeki Large veya küçük yaratıklar DC 13 STR kurtarma zarını geçemezse patlama merkezinden 10 ft geri itilir (çarpma hasarı ve uçurum/lav düşüşü geçerlidir).",
+      "durum": "planli",
+      "not": "K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2)"
+     }
+    ],
+    "riskler": "Patlama merkezi çevresindeki dostlar da itilebilir; gürültü hasarı 100 ft yarıçapta uyuyan grupları uyandırır.",
+    "kimlerKullanamaz": "Yay veya arbalet taşımayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "blightbone-arrow",
+   "name": "Blightbone Arrow",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Siyah kemik uçlu anti-şifa oku: yenilenen canavarlara (Troll, Vampire) ve düşman şifacılara karşı iki tur boyunca tüm iyileşmeyi keser.",
+   "effects": {},
+   "weight": 0.1,
+   "katalog": {
+    "ref": "TK#17",
+    "tr": "Şifa Kesen Ok",
+    "nadirlik": "nadir",
+    "tur": "tuketilebilir",
+    "yuva": "özel ok",
+    "fiyatGp": 110,
+    "ozet": "Siyah kemik uçlu anti-şifa oku: yenilenen canavarlara (Troll, Vampire) ve düşman şifacılara karşı iki tur boyunca tüm iyileşmeyi keser.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Yay veya arbalet saldırısında ateşlenir. İsabet ettiğinde normal silah hasarına ek 1d6 nekrotik hasarı verir ve hedef 2 tur boyunca hiçbir kaynaktan (büyü, iksir veya Regeneration) can iyileştirmesi alamaz.",
+      "durum": "planli",
+      "not": "K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2)"
+     }
+    ],
+    "riskler": "Ok ıskalarsa etki uygulanmaz ve cephane tükenir; geçici can (Temporary HP) kazanımını engellemez.",
+    "kimlerKullanamaz": "Yay veya arbalet taşımayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "arcing-bolt-arrow",
+   "name": "Arcing Bolt Arrow",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Bakır sarılı fırtına oku: ana hedefe yıldırım hasarı vurup 10 ft içindeki iki başka düşmana daha elektrik arkı sıçratır.",
+   "effects": {},
+   "weight": 0.1,
+   "katalog": {
+    "ref": "TK#18",
+    "tr": "Sıçrayan Yıldırım Oku",
+    "nadirlik": "nadir",
+    "tur": "tuketilebilir",
+    "yuva": "özel ok",
+    "fiyatGp": 140,
+    "ozet": "Bakır sarılı fırtına oku: ana hedefe yıldırım hasarı vurup 10 ft içindeki iki başka düşmana daha elektrik arkı sıçratır.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Yay veya arbalet saldırısında ateşlenir. İsabet hâlinde normal silah hasarına ek 1d8 yıldırım hasarı verir; ardından hedefin 10 ft içindeki seçilen en fazla 2 başka düşman DC 14 DEX kurtarma zarı atar (geçemezse 1d8, geçerse yarı yıldırım hasarı). Suda yıldırım zinciri tetiklenir.",
+      "durum": "planli",
+      "not": "K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2)"
+     }
+    ],
+    "riskler": "Tek başına duran hedeflere sıçrama hasarı vermez; suda dostlar da zincire girebilir.",
+    "kimlerKullanamaz": "Yay veya arbalet taşımayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "splitflight-arrow",
+   "name": "Splitflight Arrow",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Büyüyle çatallanan kalabalık dağıtıcı ok: ilk hedefe isabet ettiğinde havada bölünerek yakındaki üç düşmana daha sekip hasar vurur.",
+   "effects": {},
+   "weight": 0.1,
+   "katalog": {
+    "ref": "TK#19",
+    "tr": "Çoklu Hedef Oku",
+    "nadirlik": "cokNadir",
+    "tur": "tuketilebilir",
+    "yuva": "özel ok",
+    "fiyatGp": 320,
+    "ozet": "Büyüyle çatallanan kalabalık dağıtıcı ok: ilk hedefe isabet ettiğinde havada bölünerek yakındaki üç düşmana daha sekip hasar vurur.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Yay veya arbalet saldırısında ateşlenir. İlk hedefe isabet ettiğinde normal silah hasarını vurur; ok anında bölünerek ilk hedefin 15 ft içindeki görebildiğin en fazla 3 başka düşmana otomatik olarak sekip silahın temel hasarının yarısını (aşağı yuvarlanır, ek Sneak Attack/Smite hariç) vurur.",
+      "durum": "planli",
+      "not": "K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2)"
+     }
+    ],
+    "riskler": "İlk saldırı zarı ıskalarsa ok bölünmez ve tamamen boşa gider.",
+    "kimlerKullanamaz": "Yay veya arbalet taşımayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "transposition-arrow",
+   "name": "Transposition Arrow",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Uzamsal bağ kurulu hareket oku: atıcıyı okun düştüğü noktaya anında ışınlayarak yüksek surlara, çatıya veya güvenli mesafeye taşır.",
+   "effects": {},
+   "weight": 0.1,
+   "katalog": {
+    "ref": "TK#20",
+    "tr": "Işınlanma Oku",
+    "nadirlik": "nadir",
+    "tur": "tuketilebilir",
+    "yuva": "özel ok",
+    "fiyatGp": 160,
+    "ozet": "Uzamsal bağ kurulu hareket oku: atıcıyı okun düştüğü noktaya anında ışınlayarak yüksek surlara, çatıya veya güvenli mesafeye taşır.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Attack eylemindeki saldırılarından birinin yerine en fazla 60 ft içinde görebildiğin boş bir altıgene (veya bir düşmana) ateşlenir. Boş altıgene atılırsa isabet zarı gerekmez ve anında o altıgene ışınlanırsın; düşmana atılıp isabet ederse normal ok hasarı verir ve hedefin bitişiğindeki boş bir altıgene ışınlanırsın (fırsat saldırısı tetiklemez).",
+      "durum": "planli",
+      "not": "K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2)"
+     }
+    ],
+    "riskler": "60 ft ötesine ışınlanma çalışmaz; varış altıgeninin tehlikeli yüzey ve tuzak kuralları anında işler.",
+    "kimlerKullanamaz": "Yay veya arbalet taşımayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "spellsever-arrow",
+   "name": "Spellsever Arrow",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Gümüş-kurşun alaşımlı anti-büyü oku: düşman büyücüsünün üzerindeki büyülü korumalardan birini söküp atar ve konsantrasyonunu kırar.",
+   "effects": {},
+   "weight": 0.1,
+   "katalog": {
+    "ref": "TK#21",
+    "tr": "Büyü Kıran Ok",
+    "nadirlik": "cokNadir",
+    "tur": "tuketilebilir",
+    "yuva": "özel ok",
+    "fiyatGp": 340,
+    "ozet": "Gümüş-kurşun alaşımlı anti-büyü oku: düşman büyücüsünün üzerindeki büyülü korumalardan birini söküp atar ve konsantrasyonunu kırar.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Yay veya arbalet saldırısında ateşlenir. İsabet hâlinde normal silah hasarına ek 1d6 kuvvet hasarı verir; hedef üzerindeki 1–3. seviye 1 büyülü etkiyi otomatik kaldırır (Dispel Magic) ve bu isabetten doğan konsantrasyon kurtarma zarını dezavantajlı kılar.",
+      "durum": "planli",
+      "not": "K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2)"
+     }
+    ],
+    "riskler": "4. seviye ve üstü büyü etkilerini otomatik kaldırmaz (yalnız konsantrasyon dezavantajı uygular); ok ıskalarsa harcanır.",
+    "kimlerKullanamaz": "Yay veya arbalet taşımayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "knockdown-blunt-arrow",
+   "name": "Knockdown Blunt Arrow",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Ağır demir küt başlıklı av oku: delici yerine ezici darbe vurarak rakipleri yere serer ve havadaki kanatlı düşmanları gökten indirir.",
+   "effects": {},
+   "weight": 0.1,
+   "katalog": {
+    "ref": "TK#22",
+    "tr": "Deviren Küt Ok",
+    "nadirlik": "olagandisi",
+    "tur": "tuketilebilir",
+    "yuva": "özel ok",
+    "fiyatGp": 45,
+    "ozet": "Ağır demir küt başlıklı av oku: delici yerine ezici darbe vurarak rakipleri yere serer ve havadaki kanatlı düşmanları gökten indirir.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Yay veya arbalet saldırısında ateşlenir. Saldırının hasar türü delici yerine ezici olur; isabet alan Large veya küçük hedef DC 13 STR kurtarma zarını geçemezse Prone olur (Hover olmayan uçan yaratık yere düşer ve düşme hasarı alır).",
+      "durum": "planli",
+      "not": "K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2)"
+     }
+    ],
+    "riskler": "Huge ve Gargantuan düşmanları yere seremez; Prone olan yerdeki hedefe uzaktan yapılan sonraki atışlar dezavantajlı olur.",
+    "kimlerKullanamaz": "Yay veya arbalet taşımayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "blessed-mending-arrow",
+   "name": "Blessed Mending Arrow",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kırılgan kutsal su kapsüllü şifa oku: hasar vermeden 60 ft uzaktaki bir dostu iyileştirir ve üzerindeki yanma etkilerini anında söndürür.",
+   "effects": {},
+   "weight": 0.1,
+   "katalog": {
+    "ref": "TK#23",
+    "tr": "Kutsanmış Şifa Oku",
+    "nadirlik": "nadir",
+    "tur": "tuketilebilir",
+    "yuva": "özel ok",
+    "fiyatGp": 130,
+    "ozet": "Kırılgan kutsal su kapsüllü şifa oku: hasar vermeden 60 ft uzaktaki bir dostu iyileştirir ve üzerindeki yanma etkilerini anında söndürür.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Attack eylemindeki saldırılarından birinin yerine 60 ft içinde görebildiğin bir dosta ateşlenir (gönüllü dosta otomatik isabet eder, hasar vermez). Hedef 2d6 + 2 can iyileşir, üzerindeki Burning durumu silinir ve altıgeninde 1 tur su yüzeyi oluşur.",
+      "durum": "planli",
+      "not": "K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2)"
+     }
+    ],
+    "riskler": "Undead ve Construct dostları iyileştirmez; 60 ft ötesine atıldığında şifa kapsülü hedefe ulaşmadan kırılır.",
+    "kimlerKullanamaz": "Yay veya arbalet taşımayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "shadowpierce-arrow",
+   "name": "Shadowpierce Arrow",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Karanlık büyüyle damgalanmış siyah ok: ağır nekrotik hasarı vurur, hedefi kör eder ve vurduğu noktada 5 ft büyülü karanlık bırakır.",
+   "effects": {},
+   "weight": 0.1,
+   "katalog": {
+    "ref": "TK#24",
+    "tr": "Örtü Aşan Gölge Oku",
+    "nadirlik": "cokNadir",
+    "tur": "tuketilebilir",
+    "yuva": "özel ok",
+    "fiyatGp": 310,
+    "ozet": "Karanlık büyüyle damgalanmış siyah ok: ağır nekrotik hasarı vurur, hedefi kör eder ve vurduğu noktada 5 ft büyülü karanlık bırakır.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Yay veya arbalet saldırısında ateşlenir. İsabet ettiğinde normal silah hasarına ek 2d6 nekrotik hasarı verir; hedef DC 15 CON kurtarma zarını geçemezse 1 tur Blinded olur. İsabet edilen altıgende ve 5 ft çevresinde 2 tur süren büyülü karanlık (Darkness; konsantrasyon gerekmez) oluşur.",
+      "durum": "planli",
+      "not": "K12: özel oklar yalnız veri; özel cephane seçimi ve atış başına tüketim motorda yok (KATALOG-2)"
+     }
+    ],
+    "riskler": "Oluşan Darkness alanı dostlarının da hedefi görmesini keser (Blindsight, Truesight veya Devil's Sight yoksa).",
+    "kimlerKullanamaz": "Yay veya arbalet taşımayan karakter kullanamaz."
+   }
+  },
+  {
+   "id": "oil-of-precision",
+   "name": "Oil of Precision",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Berrak dengeleyici simya yağı: bir silaha sürüldüğünde on tur boyunca saldırı zarlarına +2 bonus vererek yüksek AC'li düşmanlara isabeti garantiler.",
+   "effects": {},
+   "weight": 0.5,
+   "katalog": {
+    "ref": "TK#25",
+    "tr": "Keskin Nişan Yağı",
+    "nadirlik": "olagandisi",
+    "tur": "tuketilebilir",
+    "yuva": "silah kaplaması",
+    "fiyatGp": 75,
+    "ozet": "Berrak dengeleyici simya yağı: bir silaha sürüldüğünde on tur boyunca saldırı zarlarına +2 bonus vererek yüksek AC'li düşmanlara isabeti garantiler.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Bonus eylemle elinde tuttuğun bir silaha (veya 10 adet cephaneye) sürülür. 10 tur boyunca o silahla yaptığın saldırı zarlarına +2 bonus kazanırsın (hasar zarını artırmaz).",
+      "durum": "planli",
+      "not": "yalnız kaplanan silahın saldırı zarına +2 (hasarsız) motorda yok: weaponPlus hasara da ekler, zar etkisi bütün saldırılara (büyü dahil) işler; O7 (KATALOG-2)"
+     }
+    ],
+    "riskler": "Aynı silaha başka bir yağ veya zehir sürüldüğünde Keskin Nişan Yağı silinir; hasar zarlarına ekleme yapmaz.",
+    "kimlerKullanamaz": "Herkes kendi silahına sürebilir."
+   }
+  },
+  {
+   "id": "oil-of-combustion",
+   "name": "Oil of Combustion",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Uçucu ateş reçinesi: kaplanmış silahla vurulan hedefleri yanıcı sıvıyla işaretler; hedef ateş hasarı aldığında şiddetli bir patlamayla çevresini yakar.",
+   "effects": {},
+   "weight": 0.5,
+   "katalog": {
+    "ref": "TK#26",
+    "tr": "Yanıcı Reçine Yağı",
+    "nadirlik": "nadir",
+    "tur": "tuketilebilir",
+    "yuva": "silah kaplaması",
+    "fiyatGp": 180,
+    "ozet": "Uçucu ateş reçinesi: kaplanmış silahla vurulan hedefleri yanıcı sıvıyla işaretler; hedef ateş hasarı aldığında şiddetli bir patlamayla çevresini yakar.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Bonus eylemle elindeki silaha sürülür (5 tur sürer). Bu silahla isabet alan hedef 2 tur boyunca Yanıcı Yağ işareti taşır; işaretli hedef herhangi bir kaynaktan ateş hasarı aldığında işaret patlayarak hedefin 5 ft çevresindeki tüm yaratıklara DC 14 DEX kurtarma zarıyla 2d6 ateş hasarı verir (geçerse yarı hasar) ve işaret tüketilir.",
+      "durum": "planli",
+      "not": "işaretli hedefin ateş hasarı alınca patlaması tetik kancası ister (PDF: yeni kanca); use.coat yalnız isabete ek zar ve tür verir; isabet sonrası save'li etki/durum O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "Patlama hedefin 5 ft yanındaki yakın dövüşçü dostları da yakar; ateş kaynağı olmayan partilerde patlama tetiklenmez.",
+    "kimlerKullanamaz": "Herkes kendi silahına sürebilir."
+   }
+  },
+  {
+   "id": "magebane-venom",
+   "name": "Magebane Venom",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Büyü akışını zehirleyen mor özüt: düşman büyücülerin odaklanmasını bozar ve büyü isabetlerini düşürür.",
+   "effects": {},
+   "weight": 0.5,
+   "katalog": {
+    "ref": "TK#27",
+    "tr": "Büyü Bozan Zehir",
+    "nadirlik": "nadir",
+    "tur": "tuketilebilir",
+    "yuva": "silah kaplaması",
+    "fiyatGp": 190,
+    "ozet": "Büyü akışını zehirleyen mor özüt: düşman büyücülerin odaklanmasını bozar ve büyü isabetlerini düşürür.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Bonus eylemle elindeki silaha sürülür (5 tur sürer). Bu silahla isabet alan hedef DC 14 CON kurtarma zarı atar; geçemezse 2 tur boyunca konsantrasyon kurtarma zarlarında dezavantaj alır ve büyü saldırı zarları ile büyü kurtarma zarı DC'sine −2 ceza yer.",
+      "durum": "planli",
+      "not": "use.coat yalnız isabete ek zar ve tür verir; isabet sonrası save'li etki/durum O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "Büyü yapmayan canavarlarda etkisi boşa gider; zehir bağışıklığı olan yaratıklar etkilenmez.",
+    "kimlerKullanamaz": "Herkes kendi silahına sürebilir."
+   }
+  },
+  {
+   "id": "arsonists-tincture",
+   "name": "Arsonist's Tincture",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kükürt ve fosfor karışımlı ağır kaplama: ateş direncine sahip düşmanların korumasını geçici olarak aşındırarak ateş büyülerine açık hâle getirir.",
+   "effects": {},
+   "weight": 0.5,
+   "katalog": {
+    "ref": "TK#28",
+    "tr": "Kundakçı Yağı",
+    "nadirlik": "cokNadir",
+    "tur": "tuketilebilir",
+    "yuva": "silah kaplaması",
+    "fiyatGp": 480,
+    "ozet": "Kükürt ve fosfor karışımlı ağır kaplama: ateş direncine sahip düşmanların korumasını geçici olarak aşındırarak ateş büyülerine açık hâle getirir.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Bonus eylemle elindeki silaha sürülür (5 tur sürer). Ateş hasarına direnci olan bir yaratığa bu silahla isabet ettiğinde hedef DC 15 CON kurtarma zarı atar; geçemezse 2 tur boyunca ateş hasarına karşı direncini kaybeder (normal hasar alır).",
+      "durum": "planli",
+      "not": "hedefin ateş direncini geçici bastıran etki yok (PDF: yeni kanca); use.coat yalnız isabete ek zar ve tür verir; isabet sonrası save'li etki/durum O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "Ateş bağışıklığı (Immunity) olan yaratıklarda (ör. Kızıl Ejderha, Ateş Elementali) direnç kırılmaz; yalnızca Direnç (Resistance) üzerinde çalışır.",
+    "kimlerKullanamaz": "Herkes kendi silahına sürebilir."
+   }
+  },
+  {
+   "id": "hoarfrost-coating",
+   "name": "Hoarfrost Coating",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Soğuk kristal yağı: kaplanan silahın her vuruşuna soğuk hasarı ekler, düşmanları yavaşlatır ve su altıgenlerini buza çevirir.",
+   "effects": {},
+   "weight": 0.5,
+   "use": {
+    "kind": "coat",
+    "action": "bonus",
+    "dice": "1d4",
+    "damageType": "cold",
+    "rounds": 5
+   },
+   "katalog": {
+    "ref": "TK#29",
+    "tr": "Ayaz Kaplama Yağı",
+    "nadirlik": "nadir",
+    "tur": "tuketilebilir",
+    "yuva": "silah kaplaması",
+    "fiyatGp": 150,
+    "ozet": "Soğuk kristal yağı: kaplanan silahın her vuruşuna soğuk hasarı ekler, düşmanları yavaşlatır ve su altıgenlerini buza çevirir.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Bonus eylemle elindeki silaha sürülür (5 tur sürer). Kaplanmış silahın her isabetine +1d4 soğuk hasarı eklenir ve hedef DC 14 CON kurtarma zarını geçemezse 1 tur boyunca yürüme hızı 10 ft azalır (hedef su altıgenindeyse altıgen buz yüzeyine dönüşür).",
+      "durum": "kismi",
+      "not": "her silah isabetine +1d4 soğuk 5 tur çalışır (Basic Poison yolu; kaplama bütün silah saldırılarına işler); DC 14 CON −10 ft hız ve su altıgenini dondurma: isabet sonrası save'li etki/durum O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "Soğuk direnci/bağışıklığı olan düşmanlarda etki azalır; suda oluşan buz yüzeyi yakındaki dostları da kaydırabilir.",
+    "kimlerKullanamaz": "Herkes kendi silahına sürebilir."
+   }
+  },
+  {
+   "id": "oil-of-hexing",
+   "name": "Oil of Hexing",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Karanlık kök özütü: konsantrasyon harcamadan vurulan düşmanların saldırı ve kurtarma zarlarını Bane etkisiyle zayıflatır.",
+   "effects": {},
+   "weight": 0.5,
+   "katalog": {
+    "ref": "TK#30",
+    "tr": "Lanet Yağı",
+    "nadirlik": "olagandisi",
+    "tur": "tuketilebilir",
+    "yuva": "silah kaplaması",
+    "fiyatGp": 80,
+    "ozet": "Karanlık kök özütü: konsantrasyon harcamadan vurulan düşmanların saldırı ve kurtarma zarlarını Bane etkisiyle zayıflatır.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Bonus eylemle elindeki silaha sürülür (5 tur sürer). Bu silahla isabet alan hedef DC 13 CHA kurtarma zarı atar; geçemezse 2 tur boyunca saldırı ve kurtarma zarlarından −1d4 düşer (Bane büyüsüyle üst üste birikmez).",
+      "durum": "planli",
+      "not": "use.coat yalnız isabete ek zar ve tür verir; isabet sonrası save'li etki/durum O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "Zaten Bane büyüsü altındaki bir hedefte iki −1d4 cezası toplanmaz; CHA kurtarması yüksek hedeflerde tutma şansı düşüktür.",
+    "kimlerKullanamaz": "Herkes kendi silahına sürebilir."
+   }
+  },
+  {
+   "id": "drowsleep-venom",
+   "name": "Drowsleep Venom",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Yeraltı mantarlarından damıtılmış koyu mor uyku zehri: tek vuruşta bir rakibi iki tur boyunca derin uykuya yatırarak savaş dışı bırakabilir.",
+   "effects": {},
+   "weight": 0.5,
+   "katalog": {
+    "ref": "TK#31",
+    "tr": "Uyku Özü Zehri",
+    "nadirlik": "nadir",
+    "tur": "tuketilebilir",
+    "yuva": "silah kaplaması",
+    "fiyatGp": 195,
+    "ozet": "Yeraltı mantarlarından damıtılmış koyu mor uyku zehri: tek vuruşta bir rakibi iki tur boyunca derin uykuya yatırarak savaş dışı bırakabilir.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Bonus eylemle elindeki silaha sürülür (5 tur sürer). İsabet alan hedef DC 14 CON kurtarma zarı atar; geçemezse 2 tur boyunca Unconscious olur (herhangi bir hasar alırsa ya da bitişik bir dostu Help eylemiyle sarsarsa uyanır).",
+      "durum": "planli",
+      "not": "use.coat yalnız isabete ek zar ve tür verir; isabet sonrası save'li etki/durum O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "Elf, Undead, Construct ve zehir/uyku bağışıklığı olan yaratıklar etkilenmez; alan hasarı veya kanama uyuyan hedefi hemen uyandırır.",
+    "kimlerKullanamaz": "Herkes kendi silahına sürebilir."
+   }
+  },
+  {
+   "id": "crawler-paralytic",
+   "name": "Crawler Paralytic",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Mağara sürüngenlerinden elde edilen yoğun felç salgısı: zehir hasarı verir ve hedefi bir tur tamamen felç ederek bitişik kritik vuruşlara açar.",
+   "effects": {},
+   "weight": 0.5,
+   "katalog": {
+    "ref": "TK#32",
+    "tr": "Sürüngen Felç Salgısı",
+    "nadirlik": "cokNadir",
+    "tur": "tuketilebilir",
+    "yuva": "silah kaplaması",
+    "fiyatGp": 550,
+    "ozet": "Mağara sürüngenlerinden elde edilen yoğun felç salgısı: zehir hasarı verir ve hedefi bir tur tamamen felç ederek bitişik kritik vuruşlara açar.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Bonus eylemle elindeki silaha sürülür (5 tur sürer). İsabet alan hedef DC 15 CON kurtarma zarı atar; geçemezse 1d6 zehir hasarı alır ve sonraki turunun sonuna kadar Paralyzed olur (5 ft içinden yapılan saldırılar otomatik kritik vurur).",
+      "durum": "planli",
+      "not": "use.coat yalnız isabete ek zar ve tür verir; isabet sonrası save'li etki/durum O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "Zehir ve Paralyzed bağışıklığı olan hedeflere işlemez; tek şişe yüksek maliyetlidir.",
+    "kimlerKullanamaz": "Herkes kendi silahına sürebilir."
+   }
+  },
+  {
+   "id": "crimson-wyrm-toxin",
+   "name": "Crimson Wyrm Toxin",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Dev yeraltı solucanının bezesinden süzülen efsanevi zehir: kaplanmış silahla yapılan her isabette yıkıcı 4d6 zehir hasarı vurur.",
+   "effects": {},
+   "weight": 0.5,
+   "katalog": {
+    "ref": "TK#33",
+    "tr": "Kızıl Solucan Zehri",
+    "nadirlik": "efsanevi",
+    "tur": "tuketilebilir",
+    "yuva": "silah kaplaması",
+    "fiyatGp": 1600,
+    "ozet": "Dev yeraltı solucanının bezesinden süzülen efsanevi zehir: kaplanmış silahla yapılan her isabette yıkıcı 4d6 zehir hasarı vurur.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Bonus eylemle elindeki silaha sürülür (3 tur sürer). Kaplanmış silahla isabet alan her hedef DC 16 CON kurtarma zarı atar; geçemezse 4d6 zehir hasarı alır ve 2 tur Poisoned olur, geçerse 4d6 zehir hasarının yarısını alır.",
+      "durum": "planli",
+      "not": "use.coat yalnız isabete ek zar ve tür verir; isabet sonrası save'li etki/durum O7 şema genişlemesini bekler (KATALOG-2)"
+     }
+    ],
+    "riskler": "Yalnızca 3 tur sürer ve zehir bağışıklığı olan düşmanlara karşı tüm gücü boşa gider; önceden hedef türü denetlenmelidir.",
+    "kimlerKullanamaz": "Herkes kendi silahına sürebilir."
+   }
+  },
+  {
+   "id": "ironhide-armour-potion",
+   "name": "Ironhide Armour Potion",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kaya yosunundan damıtılmış yoğun koruma iksiri: beş tur boyunca geçici can kalkanı kurar ve fiziksel silah darbelerini sabit olarak azaltır.",
+   "effects": {},
+   "weight": 0.5,
+   "use": {
+    "kind": "effect",
+    "action": "bonus",
+    "reachFt": 5,
+    "rounds": 5,
+    "tempHp": "12"
+   },
+   "katalog": {
+    "ref": "TK#34",
+    "tr": "Fiziksel Zırh İksiri",
+    "nadirlik": "olagandisi",
+    "tur": "tuketilebilir",
+    "yuva": "iksir",
+    "fiyatGp": 80,
+    "ozet": "Kaya yosunundan damıtılmış yoğun koruma iksiri: beş tur boyunca geçici can kalkanı kurar ve fiziksel silah darbelerini sabit olarak azaltır.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Bonus eylemle içilir (veya 5 ft içindeki bir dosta içirilir). 5 tur boyunca 12 geçici can kazanırsın ve bu geçici can sürdüğü sürece aldığın tüm ezici, delici ve kesici hasarlar 2 puan azalır.",
+      "durum": "kismi",
+      "not": "12 geçici can çalışır; geçici canın süre sonunda bitmesi motorda yok (use.effect geçici canı kalıcı verir); geçici can sürdükçe B/P/S hasarına −2 her darbede sabit azaltma (O10) ve koşul kancası ister (KATALOG-2)"
+     }
+    ],
+    "riskler": "12 geçici can tükendiği anda −2 hasar azaltma etkisi de sona erer; büyü ve element hasarlarını azaltmaz.",
+    "kimlerKullanamaz": "Herkes içebilir."
+   }
+  },
+  {
+   "id": "spellward-armour-potion",
+   "name": "Spellward Armour Potion",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Fısıltı otundan kaynatılmış mavi koruma iksiri: beş tur boyunca geçici can kalkanı açar ve kalkan sürdükçe büyü kurtarma zarlarında avantaj verir.",
+   "effects": {},
+   "weight": 0.5,
+   "use": {
+    "kind": "effect",
+    "action": "bonus",
+    "reachFt": 5,
+    "rounds": 5,
+    "tempHp": "12"
+   },
+   "katalog": {
+    "ref": "TK#35",
+    "tr": "Büyü Zırhı İksiri",
+    "nadirlik": "olagandisi",
+    "tur": "tuketilebilir",
+    "yuva": "iksir",
+    "fiyatGp": 85,
+    "ozet": "Fısıltı otundan kaynatılmış mavi koruma iksiri: beş tur boyunca geçici can kalkanı açar ve kalkan sürdükçe büyü kurtarma zarlarında avantaj verir.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Bonus eylemle içilir (veya 5 ft içindeki dosta içirilir). 5 tur boyunca 12 geçici can kazanırsın ve bu geçici can sürdüğü sürece büyülere karşı kurtarma zarlarında avantaj alırsın.",
+      "durum": "kismi",
+      "not": "12 geçici can çalışır; geçici canın süre sonunda bitmesi motorda yok (use.effect geçici canı kalıcı verir); \"geçici can sürdükçe büyü kurtarma avantajı\" koşul kancası ister (KATALOG-2), avantaj verilmedi"
+     }
+    ],
+    "riskler": "Geçici can kırıldığında büyü kurtarma avantajı da kalkar; mevcut geçici canla üst üste birikmez.",
+    "kimlerKullanamaz": "Herkes içebilir."
+   }
+  },
+  {
+   "id": "nimble-tumble-potion",
+   "name": "Nimble Tumble Potion",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Cıva berraklığında refleks iksiri: iki tur boyunca düşman saldırılarından çevikçe sıyrılmanı ve fırsat saldırısı yemeden konum değiştirmeni sağlar.",
+   "effects": {},
+   "weight": 0.5,
+   "use": {
+    "kind": "effect",
+    "action": "bonus",
+    "reachFt": 0,
+    "rounds": 2,
+    "effect": {
+     "attackedDis": true,
+     "noProvoke": true
+    }
+   },
+   "katalog": {
+    "ref": "TK#36",
+    "tr": "Çevik Savuşturma İksiri",
+    "nadirlik": "nadir",
+    "tur": "tuketilebilir",
+    "yuva": "iksir",
+    "fiyatGp": 200,
+    "ozet": "Cıva berraklığında refleks iksiri: iki tur boyunca düşman saldırılarından çevikçe sıyrılmanı ve fırsat saldırısı yemeden konum değiştirmeni sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Bonus eylemle içilir. 2 tur boyunca sana yapılan bütün saldırı zarları dezavantajlı olur (Dodge etkisi; hızın 0 değilse ve Blinded değilsen) ve hareketin fırsat saldırısı tetiklemez.",
+      "durum": "kismi",
+      "not": "2 tur sana yapılan saldırılar dezavantajlı (attackedDis) ve hareketin fırsat saldırısı tetiklemez (noProvoke) çalışır; Dodge koşulları (hız 0 ya da Blinded iken kapanması) bu etkiye bağlı değil"
+     }
+    ],
+    "riskler": "Restrained, Grappled veya hız 0 durumlarında savuşturma avantajı kapanır; alan büyülerinin kurtarma zarlarını engellemez.",
+    "kimlerKullanamaz": "Herkes içebilir."
+   }
+  },
+  {
+   "id": "stoneskin-draught",
+   "name": "Stoneskin Draught",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kaya özüyle koyulaştırılmış ağır savunma iksiri: hızdan feragat ederek üç tur boyunca muazzam fiziksel dayanıklılık ve durum bağışıklığı verir.",
+   "effects": {},
+   "weight": 0.5,
+   "use": {
+    "kind": "effect",
+    "action": "bonus",
+    "reachFt": 0,
+    "rounds": 3,
+    "tempHp": "20",
+    "effect": {
+     "resist": [
+      "bludgeoning",
+      "piercing",
+      "slashing"
+     ],
+     "immune": [
+      "Poisoned",
+      "Stunned"
+     ],
+     "speedMult": 0.5
+    }
+   },
+   "katalog": {
+    "ref": "TK#37",
+    "tr": "Taş Deri İksiri",
+    "nadirlik": "cokNadir",
+    "tur": "tuketilebilir",
+    "yuva": "iksir",
+    "fiyatGp": 550,
+    "ozet": "Kaya özüyle koyulaştırılmış ağır savunma iksiri: hızdan feragat ederek üç tur boyunca muazzam fiziksel dayanıklılık ve durum bağışıklığı verir.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Bonus eylemle içilir. 3 tur boyunca 20 geçici can, ezici/delici/kesici hasarlarına direnç ve Burning, Poisoned ile Stunned durumlarına bağışıklık kazanırsın; ancak aynı süre boyunca yürüme hızın yarıya iner.",
+      "durum": "kismi",
+      "not": "20 geçici can, B/P/S direnci, Poisoned/Stunned bağışıklığı ve yarı hız 3 tur çalışır; Burning motorda durum değil (yanma süren etkisi), bağışıklığı yok; geçici canın süre sonunda bitmesi motorda yok (use.effect geçici canı kalıcı verir)"
+     }
+    ],
+    "riskler": "Yarı hız cezası nedeniyle uzaklaşan düşmanları kovalamak zorlaşır; 3 tur dolmadan etki kendi isteğinle iptal edilemez.",
+    "kimlerKullanamaz": "Herkes içebilir."
+   }
+  },
+  {
+   "id": "strong-will-draught",
+   "name": "Strong Will Draught",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Altın ateş çiçeğinden süzülmüş arındırma iksiri: zihinsel etkileri ve körlüğü anında siler, üç tur boyunca yeniden uygulanmasını önler.",
+   "effects": {},
+   "weight": 0.5,
+   "use": {
+    "kind": "effect",
+    "action": "bonus",
+    "reachFt": 5,
+    "rounds": 3,
+    "tempHp": "10",
+    "effect": {
+     "immune": [
+      "Frightened",
+      "Charmed",
+      "Blinded"
+     ]
+    }
+   },
+   "katalog": {
+    "ref": "TK#38",
+    "tr": "Sağlam İrade İksiri",
+    "nadirlik": "nadir",
+    "tur": "tuketilebilir",
+    "yuva": "iksir",
+    "fiyatGp": 220,
+    "ozet": "Altın ateş çiçeğinden süzülmüş arındırma iksiri: zihinsel etkileri ve körlüğü anında siler, üç tur boyunca yeniden uygulanmasını önler.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Bonus eylemle içilir (veya 5 ft içindeki bir dosta içirilir). Üzerindeki Frightened, Charmed ve Blinded durumları anında kalkar ve 3 tur boyunca bu üç duruma karşı bağışıklık ile 10 geçici can kazanırsın.",
+      "durum": "kismi",
+      "not": "3 tur Frightened/Charmed/Blinded bağışıklığı ve 10 geçici can çalışır; üzerindeki bu durumların anında kalkması eşya yolunda yok (cureOnCast yalnız büyüde işler); geçici canın süre sonunda bitmesi motorda yok (use.effect geçici canı kalıcı verir)"
+     }
+    ],
+    "riskler": "Paralyzed, Stunned veya Incapacitated durumundaki karakter kendi başına içemez (dostunun 5 ft yakından içirmesi gerekir).",
+    "kimlerKullanamaz": "Herkes kullanabilir."
+   }
+  },
+  {
+   "id": "angelic-reprieve-potion",
+   "name": "Angelic Reprieve Potion",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Gümüş tüy özlü dinlenme iksiri: iki tur derin uykuya dalma riskini göze alan kullanıcıya savaş içinde tam bir kısa dinlenme ve düşük yuva yenilemesi verir.",
+   "effects": {},
+   "weight": 0.5,
+   "katalog": {
+    "ref": "TK#39",
+    "tr": "Melek Uykusu İksiri",
+    "nadirlik": "cokNadir",
+    "tur": "tuketilebilir",
+    "yuva": "iksir",
+    "fiyatGp": 750,
+    "ozet": "Gümüş tüy özlü dinlenme iksiri: iki tur derin uykuya dalma riskini göze alan kullanıcıya savaş içinde tam bir kısa dinlenme ve düşük yuva yenilemesi verir.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Eylemle içilir. İçtiğin anda 2 tur boyunca Unconscious olursun (konsantrasyonun biter). Bu 2 tur boyunca hasar almadan veya uyandırılmadan kalırsan 2. turun sonunda uyanır, tam bir Kısa Dinlenme (Short Rest) kazanır ve 1–2. seviye harcanmış bütün büyü yuvalarını geri doldurursun.",
+      "durum": "planli",
+      "not": "PDF: 2 tur kesintisiz uyku sonrası savaş içi Short Rest + 1–2. sv. yuva yenileme kancası (KATALOG-2)"
+     }
+    ],
+    "riskler": "Uyurken 5 ft içindeki saldırılar otomatik kritik vurur ve alınan herhangi bir hasar uykuyu bozarak dinlenme ödülünü tamamen iptal eder.",
+    "kimlerKullanamaz": "Herkes içebilir (savaşta güvenli bir köşe veya müttefik koruması gerektirir)."
+   }
+  },
+  {
+   "id": "elixir-of-bloodlust",
+   "name": "Elixir of Bloodlust",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Koyu kırmızı kurt dişi eliksiri: uzun dinlenmeye kadar her düşman öldürdüğünde kullanıcıya geçici can ve anında fazladan bir saldırı/cantrip hakkı açar.",
+   "effects": {},
+   "weight": 0.5,
+   "katalog": {
+    "ref": "TK#40",
+    "tr": "Kana Susamışlık Eliksiri",
+    "nadirlik": "cokNadir",
+    "tur": "tuketilebilir",
+    "yuva": "eliksir (UD'ye dek)",
+    "fiyatGp": 650,
+    "ozet": "Koyu kırmızı kurt dişi eliksiri: uzun dinlenmeye kadar her düşman öldürdüğünde kullanıcıya geçici can ve anında fazladan bir saldırı/cantrip hakkı açar.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Bonus eylemle içilir ve uzun dinlenmeye kadar sürer (aynı anda en fazla 1 Eliksir etkin olabilir). Kendi turunda bir düşmanı 0 HP'ye düşürdüğünde (turda en fazla bir kez) 8 geçici can kazanır ve o tur kullanabileceğin 1 ek sınırlı eylem (Haste ek eylemi: tek silah saldırısı, Dash, Disengage veya Hide) elde edersin.",
+      "durum": "planli",
+      "not": "K12: eliksirler yalnız veri; uzun dinlenmeye dek süren etki ve \"aynı anda tek eliksir\" motorda yok (O8, KATALOG-2)"
+     }
+    ],
+    "riskler": "Başka bir Eliksir içildiğinde etkisi anında silinir; tek hedefli uzun boss savaşlarında öldürme tetiklenmez.",
+    "kimlerKullanamaz": "Herkes içebilir."
+   }
+  },
+  {
+   "id": "elixir-of-vigilance",
+   "name": "Elixir of Vigilance",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Keskin baharatlı gözcü eliksiri: uzun dinlenmeye kadar inisiyatif zarlarını büyük ölçüde yükseltir ve pusu baskınlarına karşı korur.",
+   "effects": {},
+   "weight": 0.5,
+   "katalog": {
+    "ref": "TK#41",
+    "tr": "Tetikte Olma Eliksiri",
+    "nadirlik": "nadir",
+    "tur": "tuketilebilir",
+    "yuva": "eliksir (UD'ye dek)",
+    "fiyatGp": 220,
+    "ozet": "Keskin baharatlı gözcü eliksiri: uzun dinlenmeye kadar inisiyatif zarlarını büyük ölçüde yükseltir ve pusu baskınlarına karşı korur.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Bonus eylemle içilir ve uzun dinlenmeye kadar sürer (aynı anda tek Eliksir). Süre boyunca inisiyatif zarlarına +5 bonus kazanır ve sürpriz/pusu (Surprised) dezavantajından etkilenmezsin.",
+      "durum": "planli",
+      "not": "K12: eliksirler yalnız veri; uzun dinlenmeye dek süren etki ve \"aynı anda tek eliksir\" motorda yok (O8, KATALOG-2)"
+     }
+    ],
+    "riskler": "Başka bir Eliksir içildiğinde yerini yenisine bırakır; savaş başladıktan sonra içilirse o savaşın inisiyatif sırasını geriye dönük değiştirmez.",
+    "kimlerKullanamaz": "Herkes içebilir."
+   }
+  },
+  {
+   "id": "elixir-of-viciousness",
+   "name": "Elixir of Viciousness",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Gölge kökünden damıtılmış keskinlik eliksiri: uzun dinlenmeye kadar bütün saldırı zarlarının kritik vuruş eşiğini düşürür.",
+   "effects": {},
+   "weight": 0.5,
+   "katalog": {
+    "ref": "TK#42",
+    "tr": "Keskin Kritik Eliksiri",
+    "nadirlik": "nadir",
+    "tur": "tuketilebilir",
+    "yuva": "eliksir (UD'ye dek)",
+    "fiyatGp": 240,
+    "ozet": "Gölge kökünden damıtılmış keskinlik eliksiri: uzun dinlenmeye kadar bütün saldırı zarlarının kritik vuruş eşiğini düşürür.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Bonus eylemle içilir ve uzun dinlenmeye kadar sürer (aynı anda tek Eliksir). Süre boyunca yaptığın silah ve büyü saldırılarında d20 zarında 19–20 kritik vuruş sayılır (zaten 19–20 olan bir yetenek/ekipmanla birleşirse 18–20 olur; en düşük sınır 18).",
+      "durum": "planli",
+      "not": "K12: eliksirler yalnız veri; uzun dinlenmeye dek süren etki ve \"aynı anda tek eliksir\" motorda yok (O8, KATALOG-2)"
+     }
+    ],
+    "riskler": "Başka bir Eliksir içildiğinde etkisi biter; kurtarma zarlı alan büyülerinde kritik vuruş olmadığı için fayda vermez.",
+    "kimlerKullanamaz": "Herkes içebilir."
+   }
+  },
+  {
+   "id": "elixir-of-battlemage-focus",
+   "name": "Elixir of Battlemage Focus",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Parlayan göz özütlü yüksek arkan eliksiri: uzun dinlenmeye kadar bütün büyü saldırılarını ve büyü kurtarma zarı zorluğunu +2 yükseltir.",
+   "effects": {},
+   "weight": 0.5,
+   "katalog": {
+    "ref": "TK#43",
+    "tr": "Savaş Büyücüsü Odak Eliksiri",
+    "nadirlik": "cokNadir",
+    "tur": "tuketilebilir",
+    "yuva": "eliksir (UD'ye dek)",
+    "fiyatGp": 580,
+    "ozet": "Parlayan göz özütlü yüksek arkan eliksiri: uzun dinlenmeye kadar bütün büyü saldırılarını ve büyü kurtarma zarı zorluğunu +2 yükseltir.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Bonus eylemle içilir ve uzun dinlenmeye kadar sürer (aynı anda tek Eliksir). Süre boyunca yaptığın bütün büyülerin saldırı zarlarına +2 ve kurtarma zarı DC'sine +2 bonus kazanırsın.",
+      "durum": "planli",
+      "not": "K12: eliksirler yalnız veri; uzun dinlenmeye dek süren etki ve \"aynı anda tek eliksir\" motorda yok (O8, KATALOG-2)"
+     }
+    ],
+    "riskler": "Başka bir Eliksir içildiğinde etkisi silinir; büyü yapmayan sınıflarda hiçbir etki sağlamaz.",
+    "kimlerKullanamaz": "Herkes içebilir; ancak yalnızca büyü yapan karakterler yararlanır."
+   }
+  },
+  {
+   "id": "elixir-of-peerless-focus",
+   "name": "Elixir of Peerless Focus",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Güzelavrat otu yapraklı berraklık eliksiri: uzun dinlenmeye kadar büyü konsantrasyonunu korur ve büyülenme etkilerine karşı iradeyi pekiştirir.",
+   "effects": {},
+   "weight": 0.5,
+   "katalog": {
+    "ref": "TK#44",
+    "tr": "Eşsiz Odak Eliksiri",
+    "nadirlik": "olagandisi",
+    "tur": "tuketilebilir",
+    "yuva": "eliksir (UD'ye dek)",
+    "fiyatGp": 95,
+    "ozet": "Güzelavrat otu yapraklı berraklık eliksiri: uzun dinlenmeye kadar büyü konsantrasyonunu korur ve büyülenme etkilerine karşı iradeyi pekiştirir.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Bonus eylemle içilir ve uzun dinlenmeye kadar sürer (aynı anda tek Eliksir). Süre boyunca konsantrasyonu korumak için attığın CON kurtarma zarlarında ve Charmed durumuna karşı kurtarma zarlarında avantaj kazanırsın.",
+      "durum": "planli",
+      "not": "K12: eliksirler yalnız veri; uzun dinlenmeye dek süren etki ve \"aynı anda tek eliksir\" motorda yok (O8, KATALOG-2)"
+     }
+    ],
+    "riskler": "Başka bir Eliksir içildiğinde etkisi biter; Incapacitated durumunun konsantrasyonu otomatik bozmasını engellemez.",
+    "kimlerKullanamaz": "Herkes içebilir."
+   }
+  },
+  {
+   "id": "emerald-tea-brew",
+   "name": "Emerald Tea Brew",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kraliyet bahçelerinden nadir zümrüt yaprak demlemesi: eylem veya bonus eylem harcamadan içilir ve iki tur boyunca fazladan bir bonus eylem kazandırır.",
+   "effects": {},
+   "weight": 0.5,
+   "use": {
+    "kind": "effect",
+    "action": "bonus",
+    "reachFt": 0,
+    "rounds": 2,
+    "effect": {
+     "extraBonus": 1,
+     "speedFt": 10
+    }
+   },
+   "katalog": {
+    "ref": "TK#45",
+    "tr": "Zümrüt Çay Demlemesi",
+    "nadirlik": "efsanevi",
+    "tur": "tuketilebilir",
+    "yuva": "nadir çay",
+    "fiyatGp": 1500,
+    "ozet": "Kraliyet bahçelerinden nadir zümrüt yaprak demlemesi: eylem veya bonus eylem harcamadan içilir ve iki tur boyunca fazladan bir bonus eylem kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Nasıl kullanılır",
+      "metin": "Kendi turunda hiçbir eylem veya bonus eylem harcamadan (serbest nesne etkileşimi) içilir (savaş başına en fazla 1 fincan). 2 tur boyunca her tur fazladan 1 Bonus Eylem hakkı (extraBonusActions: +1) ve +10 ft yürüme hızı kazanırsın.",
+      "durum": "kismi",
+      "not": "2 tur her tur +1 bonus eylem (extraBonus) ve +10 ft yürüme hızı çalışır; eylemsiz (serbest) içme motorda yok: use_item bonus eylem harcar (KATALOG-2)"
+     }
+    ],
+    "riskler": "Savaşta ikinci bir fincan içilemez; turda yalnızca bir yuvalı büyü harcama (SRD 5.2.1) kuralı sürer ve Slow etkisi ek bonus eylemi engeller.",
+    "kimlerKullanamaz": "Herkes içebilir."
+   }
   }
  ]
 }
