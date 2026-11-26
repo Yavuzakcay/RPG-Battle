@@ -1,0 +1,842 @@
+[
+ {
+  "id": "cim",
+  "file": "cim.jpg",
+  "ham": [
+   1984,
+   2146
+  ],
+  "cikti": [
+   504,
+   512
+  ],
+  "zemin": "#2f8052",
+  "koseler": [
+   "#2c8151",
+   "#308254",
+   "#2f7f50",
+   "#317f52"
+  ],
+  "gurultu": 3,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 2,
+  "silinenParca": 4,
+  "kalanParca": 1,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "cimbom",
+  "file": "cimbom.jpg",
+  "ham": [
+   2120,
+   1984
+  ],
+  "cikti": [
+   512,
+   455
+  ],
+  "zemin": "#fc05f7",
+  "koseler": [
+   "#fc01f8",
+   "#fa0af2",
+   "#fc02fa",
+   "#fc06f9"
+  ],
+  "gurultu": 14,
+  "esik": [
+   34,
+   89
+  ],
+  "icBosluk": 23,
+  "silinenParca": 131,
+  "kalanParca": 1,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "cimbombom",
+  "file": "cimbombom.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   496,
+   512
+  ],
+  "zemin": "#fd01fd",
+  "koseler": [
+   "#fd00fd",
+   "#fe01fc",
+   "#fc01fd",
+   "#fc02fd"
+  ],
+  "gurultu": 4,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 0,
+  "silinenParca": 0,
+  "kalanParca": 4,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "doggie",
+  "file": "doggie.jpg",
+  "ham": [
+   1187,
+   1536
+  ],
+  "cikti": [
+   499,
+   512
+  ],
+  "zemin": "#fc02f1",
+  "koseler": [
+   "#fc01ef",
+   "#fd02f0",
+   "#fa01f1",
+   "#fb03f2"
+  ],
+  "gurultu": 4,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 2,
+  "silinenParca": 178,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "wolfie",
+  "file": "wolfie.jpg",
+  "ham": [
+   1583,
+   1536
+  ],
+  "cikti": [
+   512,
+   466
+  ],
+  "zemin": "#fb03f1",
+  "koseler": [
+   "#fc02f0",
+   "#fb04f0",
+   "#fb02f2",
+   "#fb05f0"
+  ],
+  "gurultu": 7,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 1,
+  "silinenParca": 252,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "wolfgang",
+  "file": "wolfgang.jpg",
+  "ham": [
+   2096,
+   2016
+  ],
+  "cikti": [
+   512,
+   484
+  ],
+  "zemin": "#fb00fd",
+  "koseler": [
+   "#fb00fd",
+   "#fb00fd",
+   "#fb00fd",
+   "#fc01fd"
+  ],
+  "gurultu": 4,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 11,
+  "silinenParca": 25,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "sparkle",
+  "file": "sparkle.jpg",
+  "ham": [
+   1339,
+   1536
+  ],
+  "cikti": [
+   512,
+   507
+  ],
+  "zemin": "#ea0ec1",
+  "koseler": [
+   "#ea10c4",
+   "#ea11c4",
+   "#e90cbe",
+   "#e90cbe"
+  ],
+  "gurultu": 3,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 9,
+  "silinenParca": 9,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "thunderse",
+  "file": "thunderse.jpg",
+  "ham": [
+   1471,
+   1536
+  ],
+  "cikti": [
+   512,
+   506
+  ],
+  "zemin": "#e80fc1",
+  "koseler": [
+   "#ea11c4",
+   "#e610c3",
+   "#e90cbe",
+   "#e80ebd"
+  ],
+  "gurultu": 5,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 2,
+  "silinenParca": 2,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "stormer",
+  "file": "stormer.jpg",
+  "ham": [
+   1330,
+   1251
+  ],
+  "cikti": [
+   512,
+   512
+  ],
+  "zemin": "#fc00fc",
+  "koseler": [
+   "#fb00fd",
+   "#fb00fd",
+   "#fd00fb",
+   "#fd00fb"
+  ],
+  "gurultu": 0,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 47,
+  "silinenParca": 0,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "twinkle",
+  "file": "twinkle.jpg",
+  "ham": [
+   1306,
+   1792
+  ],
+  "cikti": [
+   512,
+   479
+  ],
+  "zemin": "#fc00fb",
+  "koseler": [
+   "#fd00fb",
+   "#fb00fb",
+   "#fb00fb",
+   "#fb00fb"
+  ],
+  "gurultu": 5,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 9,
+  "silinenParca": 112,
+  "kalanParca": 1,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "gongi",
+  "file": "gongi.jpg",
+  "ham": [
+   1402,
+   1792
+  ],
+  "cikti": [
+   500,
+   512
+  ],
+  "zemin": "#fc03fb",
+  "koseler": [
+   "#fe01fc",
+   "#fb03fa",
+   "#fe01fc",
+   "#fa06fb"
+  ],
+  "gurultu": 7,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 8,
+  "silinenParca": 56,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "gongar",
+  "file": "gongar.jpg",
+  "ham": [
+   1359,
+   1251
+  ],
+  "cikti": [
+   512,
+   494
+  ],
+  "zemin": "#fc00fc",
+  "koseler": [
+   "#fb00fd",
+   "#fb00fd",
+   "#fd00fb",
+   "#fd00fb"
+  ],
+  "gurultu": 1,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 3,
+  "silinenParca": 2,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "hydrop",
+  "file": "hydrop.jpg",
+  "ham": [
+   1322,
+   1536
+  ],
+  "cikti": [
+   512,
+   484
+  ],
+  "zemin": "#fd01fd",
+  "koseler": [
+   "#fd00fd",
+   "#fe00fd",
+   "#fc01fd",
+   "#fd02fd"
+  ],
+  "gurultu": 4,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 12,
+  "silinenParca": 15,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "hydras",
+  "file": "hydras.jpg",
+  "ham": [
+   1532,
+   1536
+  ],
+  "cikti": [
+   497,
+   512
+  ],
+  "zemin": "#fc03fc",
+  "koseler": [
+   "#fd00fd",
+   "#fc02fc",
+   "#fd03fd",
+   "#fa05fb"
+  ],
+  "gurultu": 7,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 22,
+  "silinenParca": 36,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "hydraxe",
+  "file": "hydraxe.jpg",
+  "ham": [
+   1511,
+   1472
+  ],
+  "cikti": [
+   512,
+   511
+  ],
+  "zemin": "#f801fb",
+  "koseler": [
+   "#f600f9",
+   "#f801fa",
+   "#f901fc",
+   "#f802fd"
+  ],
+  "gurultu": 4,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 3,
+  "silinenParca": 142,
+  "kalanParca": 1,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "sporlet",
+  "file": "sporlet.jpg",
+  "ham": [
+   1492,
+   1536
+  ],
+  "cikti": [
+   512,
+   355
+  ],
+  "zemin": "#fd01fd",
+  "koseler": [
+   "#fd00fc",
+   "#fe01fc",
+   "#fb00fd",
+   "#fd02fd"
+  ],
+  "gurultu": 4,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 3,
+  "silinenParca": 29,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "mothcoon",
+  "file": "mothcoon.jpg",
+  "ham": [
+   1337,
+   1536
+  ],
+  "cikti": [
+   363,
+   512
+  ],
+  "zemin": "#fc03fc",
+  "koseler": [
+   "#fe01fc",
+   "#fd03fd",
+   "#fc02fd",
+   "#fa05fb"
+  ],
+  "gurultu": 7,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 3,
+  "silinenParca": 98,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "mothraq",
+  "file": "mothraq.jpg",
+  "ham": [
+   2016,
+   2142
+  ],
+  "cikti": [
+   512,
+   484
+  ],
+  "zemin": "#fc02fd",
+  "koseler": [
+   "#fd01fd",
+   "#fc03fd",
+   "#fb01fd",
+   "#fb04fc"
+  ],
+  "gurultu": 4,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 4,
+  "silinenParca": 8,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "lumbo",
+  "file": "lumbo.jpg",
+  "ham": [
+   2752,
+   1536
+  ],
+  "cikti": [
+   458,
+   416
+  ],
+  "zemin": "#fb02fc",
+  "koseler": [
+   "#fb00fd",
+   "#fb03fc",
+   "#fb00fb",
+   "#fa05fa"
+  ],
+  "gurultu": 7,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 0,
+  "silinenParca": 1,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "lighty",
+  "file": "lighty.jpg",
+  "ham": [
+   2752,
+   1536
+  ],
+  "cikti": [
+   412,
+   441
+  ],
+  "zemin": "#fb02fd",
+  "koseler": [
+   "#fb00fd",
+   "#fb02fe",
+   "#fb01fd",
+   "#fa04fc"
+  ],
+  "gurultu": 7,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 0,
+  "silinenParca": 1,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "lightaur",
+  "file": "lightaur.jpg",
+  "ham": [
+   1561,
+   1344
+  ],
+  "cikti": [
+   491,
+   512
+  ],
+  "zemin": "#fc00fc",
+  "koseler": [
+   "#fd00fb",
+   "#fd00fb",
+   "#fb00fd",
+   "#fc01fd"
+  ],
+  "gurultu": 5,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 6,
+  "silinenParca": 92,
+  "kalanParca": 1,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "cerbit",
+  "file": "cerbit.jpg",
+  "ham": [
+   1312,
+   1536
+  ],
+  "cikti": [
+   425,
+   512
+  ],
+  "zemin": "#fc00fd",
+  "koseler": [
+   "#fb00fd",
+   "#fe00fe",
+   "#fb00fd",
+   "#fd01fc"
+  ],
+  "gurultu": 5,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 14,
+  "silinenParca": 138,
+  "kalanParca": 2,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "cerbedo",
+  "file": "cerbedo.jpg",
+  "ham": [
+   1671,
+   1536
+  ],
+  "cikti": [
+   477,
+   512
+  ],
+  "zemin": "#fe01fd",
+  "koseler": [
+   "#fe00fd",
+   "#fe00fe",
+   "#fd02fc",
+   "#fe00fe"
+  ],
+  "gurultu": 4,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 27,
+  "silinenParca": 213,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "cerbones",
+  "file": "cerbones.jpg",
+  "ham": [
+   1610,
+   1344
+  ],
+  "cikti": [
+   496,
+   512
+  ],
+  "zemin": "#fc03fc",
+  "koseler": [
+   "#fd00fb",
+   "#fb03fa",
+   "#fc02fd",
+   "#fb05fc"
+  ],
+  "gurultu": 7,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 22,
+  "silinenParca": 286,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "mirit",
+  "file": "mirit.jpg",
+  "ham": [
+   941,
+   1248
+  ],
+  "cikti": [
+   380,
+   512
+  ],
+  "zemin": "#fc01fc",
+  "koseler": [
+   "#fb00fb",
+   "#fb00fd",
+   "#fb01fb",
+   "#fd04fc"
+  ],
+  "gurultu": 5,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 1,
+  "silinenParca": 94,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "mirath",
+  "file": "mirath.jpg",
+  "ham": [
+   1792,
+   2400
+  ],
+  "cikti": [
+   295,
+   512
+  ],
+  "zemin": "#fb02fc",
+  "koseler": [
+   "#fc00fd",
+   "#fb03fc",
+   "#fb00fd",
+   "#fa04fb"
+  ],
+  "gurultu": 7,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 3,
+  "silinenParca": 4,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "mirage",
+  "file": "mirage.jpg",
+  "ham": [
+   1792,
+   2400
+  ],
+  "cikti": [
+   408,
+   512
+  ],
+  "zemin": "#fc01fc",
+  "koseler": [
+   "#fd00fc",
+   "#fc01fc",
+   "#fb00fd",
+   "#fb04fc"
+  ],
+  "gurultu": 7,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 10,
+  "silinenParca": 1,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "kongcuk",
+  "file": "Kongcuk.jpg",
+  "ham": [
+   1103,
+   1329
+  ],
+  "cikti": [
+   396,
+   512
+  ],
+  "zemin": "#fb00fd",
+  "koseler": [
+   "#fb00fd",
+   "#fb00fd",
+   "#fb00fd",
+   "#fb00fd"
+  ],
+  "gurultu": 0,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 1,
+  "silinenParca": 25,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "kongilla",
+  "file": "Kongilla.jpg",
+  "ham": [
+   1499,
+   1689
+  ],
+  "cikti": [
+   484,
+   512
+  ],
+  "zemin": "#fc01fe",
+  "koseler": [
+   "#fc01fe",
+   "#fc01fe",
+   "#fc01fe",
+   "#fc01fe"
+  ],
+  "gurultu": 0,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 21,
+  "silinenParca": 26,
+  "kalanParca": 6,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "kongark",
+  "file": "Kongark.jpg",
+  "ham": [
+   2058,
+   2048
+  ],
+  "cikti": [
+   512,
+   511
+  ],
+  "zemin": "#fd00fd",
+  "koseler": [
+   "#fb00fd",
+   "#fe01fc",
+   "#fd00fd",
+   "#fd00fd"
+  ],
+  "gurultu": 2,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 23,
+  "silinenParca": 1050,
+  "kalanParca": 12,
+  "kenarSizinti": 0
+ }
+]
