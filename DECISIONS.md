@@ -74,6 +74,18 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   bozgunda yeniden deneme (Normal'de düşenler dahil) olaylarında `wakeHours`, reducer `saat`e ekler; zar Serüven tohumu + dinlenme
   sayısından (Serüven komutları zarsız, replay aynı). Saat yalnız serbest gezintide (`saat`) tutulur: saatsiz eski kayıtta gün
   dinlenme sayısından, eklenecek saat yok (değişmez). Alanlar isteğe bağlı: eski kayıtlar aynen yüklenir.
+- **⚠ e Likantrop laneti savaşta** (A4'ün ⚠'si; SRD 5.2.1 s. 339 Werewolf Bite, aynı metin Wererat/Wereboar/Weretiger/Werebear: "If
+  the cursed target drops to 0 Hit Points, it instead becomes a Werewolf under the GM's control and has 10 Hit Points"): SRD'de savaş
+  içi mekanik var, uygulandı (A4'teki "yalnız işaret" kullanıcı kararının yerine bu görevin "SRD'de savaşta mekaniği varsa uygula"
+  talimatı). 104+ komut sonu (`src/battle/lycanthrope.ts`): bu komutta 0 HP'ye düşen (ölmeyen) lanetli yaratık savaştan çekilir
+  (`retreated` + yeni isteğe bağlı alan `floor: 'likantrop'`; ölüm save'i atmaz, tarafını ayakta tutmaz) ve aynı altıgende Game
+  Master'ın tarafında laneti verenin stat bloğuyla 10 HP'li canavar girer (`H-likantrop`, savaş başındaki canavar kurulumu
+  `lateSummonEvents`; yapay zekâ oynatır). Savaş sonunda karaktere `lanet.donustu` (karakter listesinde "canavara dönüştü" notu);
+  lanet sonraki savaşlara karakter durumundan taşınır (`withStatus`). Kayıt sürümü 26 kaldı (yeni olay türü yok). ⚠ Kalanlar:
+  Shape-Shift (canavarın biçim değiştirme bonus eylemi) yalnız boyut/hız değiştirir, savaş istatistiğine etkisi olmadığından
+  (SRD "Its game statistics, other than its size, are the same") uygulanmadı; dönüşen karakterin Game Master'ın elinden kurtarılması
+  ve Remove Curse savaş dışı (Game Master kaydı siler); savaşı bitiren düşüşte yeni canavar gelmez, yalnız `donustu` yazılır.
+  103: yalnız işaret.
 
 ## Görev KARAR104: bekleyen kullanıcı kararları SRD 5.2.1'e göre (2026-11-24; kural sürümü 104 `KARAR104_VERSION`, kayıt sürümü 26)
 

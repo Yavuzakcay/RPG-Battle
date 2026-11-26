@@ -53,7 +53,7 @@ export interface CharacterStatus {
    * Görev KARAR104 (sürüm 104, A4): savaşta alınan lanet işareti (likantrop: canavar kimliği). Dinlenmeler kaldırmaz; yalnız işaret
    * (biçim değişimi yok). Remove Curse ile kaldırma savaş dışı (Game Master).
    */
-  lanet?: { likantrop: string };
+  lanet?: { likantrop: string; /** KARAR104-KALAN: savaşta 0 HP'de canavara dönüştü (Game Master'ın denetimine geçti). */ donustu?: true };
 }
 
 /** Kuyruk K48: Moral alanları olduğu gibi taşınır (yoksa yazılmaz; eski kayıt aynı). */

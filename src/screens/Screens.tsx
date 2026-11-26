@@ -227,9 +227,9 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
   try { s = currentStatus(sheet, props.c.status); full = fullStatus(sheet); } catch { return null; }
   const drillPanel = drills && <MasteryDrills c={props.c} before={drills} onUpdate={props.onUpdate} onDone={() => setDrills(null)} />;
   if (isRested(sheet, props.c.status)) return note || drillPanel ? <>{note && <small className="ok">{note}</small>}{drillPanel}</> : null;
-  // Görev KARAR104 (A4): likantrop laneti işareti (yalnız bilgi; biçim değişimi yok).
+  // Görev KARAR104 (A4): likantrop laneti işareti; KARAR104-KALAN: savaşta dönüştüyse ayrı metin.
   const curse = s.lanet?.likantrop;
-  const cursed = curse ? <small className="error">{R.cursed(curse.charAt(0).toUpperCase() + curse.slice(1))}</small> : null;
+  const cursed = curse ? <small className="error">{(s.lanet?.donustu ? R.cursedTurned : R.cursed)(curse.charAt(0).toUpperCase() + curse.slice(1))}</small> : null;
   const left = sheet.level - s.hitDiceSpent;
   const resList = Object.entries(s.resources).filter(([id]) => (full.resources[id] ?? 0) > 0);
   const res = plain(resList).map(([id, n]) => `${resourceDef(id)?.name ?? id} ${n}/${full.resources[id]}`).join(', ');

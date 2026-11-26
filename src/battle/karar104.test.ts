@@ -18,7 +18,7 @@ import type { ReactionAnswer, ReactionRequest } from '../rules/reactionChoice';
 import { boundWeaponName, eligibleWeaponsOf } from '../rules/itemBinding';
 import type { CharacterSheet } from '../rules/stats';
 import { getMonster } from '../data';
-import { applyBattleResult } from '../app/partyStatus';
+import { applyBattleResult, withStatus } from '../app/partyStatus';
 import { blankCharacter } from '../rules/builder';
 import { currentStatus, fullStatus, longRestStatus } from '../rules/characterRest';
 import { JOURNEY_RULES, executeJourney, replayJourney } from '../journey/engine';
@@ -169,7 +169,7 @@ describe('KARAR104 A3: boğulma ("is suffocating"; SRD 5.2.1 Suffocation)', () =
   });
 });
 
-describe('KARAR104 A4: likantrop laneti yalnız işaret (kullanıcı kararı)', () => {
+describe('KARAR104 A4: likantrop laneti (A4 işaret; KARAR104-KALAN: 0 HP’de dönüşüm, SRD 5.2.1 s. 339)', () => {
   /** İlk d20 (saldırı) 20, sonrakiler (save) 1. */
   const biteRng = (): Rng => {
     let n = 0;
@@ -193,7 +193,7 @@ describe('KARAR104 A4: likantrop laneti yalnız işaret (kullanıcı kararı)', 
   it('104: Humanoid olmayan (Beast biçimi) lanetlenmez', () => {
     expect(bite(NEW, { creatureType: 'beast' }).state.combatants.H?.effects?.some((e) => e.lycanthropy) ?? false).toBe(false);
   });
-  it('savaş sonunda karaktere `lanet` yazılır; uzun dinlenme kaldırmaz; 0 HP’de biçim değişimi yok', () => {
+  it('savaş sonunda karaktere `lanet` yazılır; uzun dinlenme kaldırmaz; 0 HP’ye düşmeyen taraf değiştirmez', () => {
     const r = bite(NEW);
     const sh = { ...blankCharacter('p1').sheet, name: 'Kahraman' };
     const ch = { ...blankCharacter('p1'), id: 'p1', sheet: sh, status: fullStatus(sh) };
@@ -205,6 +205,28 @@ describe('KARAR104 A4: likantrop laneti yalnız işaret (kullanıcı kararı)', 
     const clean: BattleState = { ...fin, combatants: { ...fin.combatants, H: { ...(fin.combatants.H as Combatant), effects: [] } } };
     expect(applyBattleResult([{ ...ch, status: st }], clean)[0]?.status?.lanet).toEqual({ likantrop: 'werewolf' });
     expect(r.state.combatants.H?.side).toBe('party');
+  });
+  it('KARAR104-KALAN: lanetli 0 HP’ye düşünce Game Master’ın tarafında 10 HP’li Werewolf olur; 103 dönüşmez', () => {
+    const cursed = { id: 'likantropi', name: 'Likantropi', sourceId: 'W', until: 1_000_000, lycanthropy: 'werewolf' };
+    const run = (v: number) => {
+      const s = scene104(v, [wolf(), mk('H', { ownerId: 'p1', hp: 3, maxHp: 30, ac: 5, pos: at(4, 5), effects: [cursed] } as Partial<Combatant>),
+        mk('P', { ownerId: 'p1', hp: 30, maxHp: 30, pos: at(10, 2) })]);
+      const idx = (s.combatants.W as Combatant).attacks.findIndex((a) => a.name === 'Scratch');
+      return play(s, [{ type: 'monster_attack', actorId: 'W', targetId: 'H', attackIndex: idx } as Command], hooked(20));
+    };
+    const now = run(NEW);
+    expect(now.state.combatants.H).toMatchObject({ offFloor: 'likantrop', pos: null });
+    expect(now.state.combatants['H-likantrop']).toMatchObject({ side: 'enemies', hp: 10, pos: at(4, 5), monsterId: 'werewolf' });
+    expect(now.state.status).toBe('active');
+    const old = run(OLD);
+    expect(old.state.combatants['H-likantrop']).toBeUndefined();
+    expect(old.state.combatants.H?.offFloor).toBeUndefined();
+    // Savaş sonu: karaktere `donustu`; sonraki savaşa lanet taşınır.
+    const sh = { ...blankCharacter('p1').sheet, name: 'Kahraman' };
+    const ch = { ...blankCharacter('p1'), id: 'p1', sheet: sh, status: fullStatus(sh) };
+    const st = applyBattleResult([ch], { ...now.state, status: 'finished' })[0]?.status;
+    expect(st?.lanet).toEqual({ likantrop: 'werewolf', donustu: true });
+    expect(withStatus(mk('H'), { sheet: sh, status: { ...fullStatus(sh), lanet: { likantrop: 'werewolf' } } }).effects?.find((e) => e.lycanthropy)?.lycanthropy).toBe('werewolf');
   });
 });
 

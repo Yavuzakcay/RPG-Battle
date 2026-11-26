@@ -89,6 +89,8 @@ import { executeVerticalMove } from './altitude';
 import './hiddenZones';
 // Kuyruk K73c: su altı nefes ve sudan çıkış (komut sonu kancası, sürüm 64+).
 import './underwater';
+// Görev KARAR104-KALAN: likantrop dönüşümü (komut sonu kancası, sürüm 104+).
+import './lycanthrope';
 import { executeDropItem, executePickUp, unconsciousDropEvents } from './heldItems';
 import { allyStoredOwner } from './paket/p11cast';
 import { executeDropBlade } from './s2spells';

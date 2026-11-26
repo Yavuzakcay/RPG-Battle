@@ -2455,7 +2455,7 @@ export type BattleEvent =
   /** Kuyruk S2: gizli alan fark edildi (Spike Growth). */
   | { type: 'zone_spotted'; zoneId: string; by: string[] }
   /** Kuyruk S1: haritadan ayrılanlar (Plane Shift; `offFloor: 'duzlem'`, konum yok, sırada atlanır, tarafı ayakta tutmaz). */
-  | { type: 'retreated'; actorId: string; ids: string[]; label: string }
+  | { type: 'retreated'; actorId: string; ids: string[]; label: string; /** KARAR104-KALAN: çekilme yeri (yoksa `duzlem`; likantropi `likantrop`). */ floor?: string }
   /** Kuyruk K64a (sürüm 48): ele geçirme başladı (bedene etki, ele geçiren `offFloor: 'beden'`). */
   | { type: 'possessed'; possessorId: string; hostId: string; label: string; incap: boolean; until: number }
   /** Kuyruk K64a: ele geçirme bitti; ele geçiren `to` altıgeninde belirir, ev sahibi ona savaş sonuna dek bağışık. */
