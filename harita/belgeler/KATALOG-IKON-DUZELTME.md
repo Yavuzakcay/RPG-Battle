@@ -1,5 +1,7 @@
 # KATALOG-IKON-DUZELTME — kusurlu katalog ikonları için düzeltme sayfaları
 
+> **ERTELENDİ (kullanıcı kararı 2026-11-26): kontakt incelemesinde yeniden üretim gerekmedi; macenta cep ve komşu taşma betikte düzeltildi (KATALOG-IKON-AKTAR-3). Gemini'ye şimdi verilmeyecek; sayfalar seçim için manifestte kalır.**
+
 Görev KATALOG-IKON-AKTAR-2. `node scripts/katalog-ikon-kusur.mjs --duzeltme` üretir (elle düzenlenmez). Kaynak: `harita/belgeler/KATALOG-IKON-KUSUR.md`
 kusur satırları (belirsizler dahil değil). 99 hücre, 7 sayfa; manifestte `katalog-duzeltme-NN` sayfaları en sonda,
 üretilen görsel ilk sayfadaki hücrenin yerine geçer (sonraki sayfa ezer). Görsel yoksa betik sayfayı atlar.

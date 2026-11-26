@@ -4,8 +4,8 @@ Görev KATALOG-IKON-AKTAR-2. `node scripts/katalog-ikon-kusur.mjs` üretir (elle
 (betiğin başındaki açıklama). Eşiği geçen "kusur", eşiğin yarısı ile eşik arası "belirsiz". Bir hücre birden çok satırda olabilir.
 
 - Taranan ikon: 323
-- Kusurlu hücre: 99 (kusur satırı 116: leylak/pembe hale 32, somon hale 38, macenta cep 7, sis 0, kenara dayanan parıltı 39)
-- Belirsiz satır: 40 (leylak/pembe hale 14, somon hale 9, macenta cep 3, sis 9, kenara dayanan parıltı 5)
+- Kusurlu hücre: 94 (kusur satırı 110: leylak/pembe hale 32, somon hale 37, macenta cep 2, sis 0, kenara dayanan parıltı 39)
+- Belirsiz satır: 42 (leylak/pembe hale 15, somon hale 9, macenta cep 2, sis 11, kenara dayanan parıltı 5)
 - Eşikler: leylak/pembe hale %12, somon hale %12, macenta cep 40 px, sis %30, kenara dayanan parıltı %3
 
 | Sayfa | Hücre | Kimlik | Kusur türü | Ölçü | Durum |
@@ -22,11 +22,10 @@ Görev KATALOG-IKON-AKTAR-2. `node scripts/katalog-ikon-kusur.mjs` üretir (elle
 | katalog-silah-02 | 2 | `cinderfrost-katana` | leylak/pembe hale | %34 | kusur |
 | katalog-silah-02 | 4 | `stormbrand` | somon hale | %7 | belirsiz |
 | katalog-silah-02 | 8 | `whispering-rapier` | leylak/pembe hale | %23 | kusur |
-| katalog-silah-02 | 9 | `harmonic-rapier` | macenta cep | 84 px | kusur |
+| katalog-silah-02 | 9 | `harmonic-rapier` | macenta cep | 40 px | kusur |
+| katalog-silah-02 | 9 | `harmonic-rapier` | sis | %16 | belirsiz |
 | katalog-silah-02 | 11 | `windpoise` | leylak/pembe hale | %9 | belirsiz |
-| katalog-silah-02 | 14 | `nightjudge-scimitar` | macenta cep | 357 px | kusur |
 | katalog-silah-02 | 16 | `nebula-wing-scimitar` | leylak/pembe hale | %77 | kusur |
-| katalog-silah-03 | 2 | `gloomfang` | macenta cep | 120 px | kusur |
 | katalog-silah-03 | 8 | `spiteful-dagger` | leylak/pembe hale | %33 | kusur |
 | katalog-silah-03 | 9 | `frostbite-dagger` | leylak/pembe hale | %8 | belirsiz |
 | katalog-silah-04 | 3 | `glacierbreak-maul` | leylak/pembe hale | %66 | kusur |
@@ -82,22 +81,21 @@ Görev KATALOG-IKON-AKTAR-2. `node scripts/katalog-ikon-kusur.mjs` üretir (elle
 | katalog-zirh-01 | 12 | `mindfortress-plate` | leylak/pembe hale | %11 | belirsiz |
 | katalog-zirh-01 | 12 | `mindfortress-plate` | kenara dayanan parıltı | %53 | kusur |
 | katalog-zirh-01 | 15 | `forcewave-chain-mail` | leylak/pembe hale | %55 | kusur |
-| katalog-zirh-02 | 8 | `sparkmesh-chain-shirt` | macenta cep | 45 px | kusur |
+| katalog-zirh-02 | 8 | `sparkmesh-chain-shirt` | somon hale | %10 | belirsiz |
+| katalog-zirh-02 | 8 | `sparkmesh-chain-shirt` | macenta cep | 32 px | belirsiz |
 | katalog-zirh-02 | 9 | `sunburst-breastplate` | somon hale | %99 | kusur |
 | katalog-zirh-02 | 9 | `sunburst-breastplate` | kenara dayanan parıltı | %44 | kusur |
 | katalog-zirh-03 | 1 | `raptor-feather-coat` | somon hale | %76 | kusur |
 | katalog-zirh-03 | 1 | `raptor-feather-coat` | kenara dayanan parıltı | %28 | kusur |
 | katalog-zirh-03 | 2 | `spellblade-coat` | kenara dayanan parıltı | %15 | kusur |
-| katalog-zirh-03 | 3 | `moonshift-hide` | somon hale | %15 | kusur |
 | katalog-zirh-03 | 3 | `moonshift-hide` | kenara dayanan parıltı | %20 | kusur |
 | katalog-zirh-03 | 5 | `spidersilk-armor` | kenara dayanan parıltı | %7 | kusur |
-| katalog-zirh-03 | 6 | `corsair-captains-coat` | somon hale | %10 | belirsiz |
 | katalog-zirh-03 | 6 | `corsair-captains-coat` | kenara dayanan parıltı | %20 | kusur |
-| katalog-zirh-03 | 7 | `minstrels-favor-jerkin` | somon hale | %61 | kusur |
+| katalog-zirh-03 | 7 | `minstrels-favor-jerkin` | somon hale | %100 | kusur |
 | katalog-zirh-03 | 7 | `minstrels-favor-jerkin` | kenara dayanan parıltı | %15 | kusur |
 | katalog-zirh-03 | 9 | `vigil-shroud-robe` | somon hale | %64 | kusur |
 | katalog-zirh-03 | 9 | `vigil-shroud-robe` | kenara dayanan parıltı | %39 | kusur |
-| katalog-zirh-03 | 10 | `weavewoven-robe` | somon hale | %49 | kusur |
+| katalog-zirh-03 | 10 | `weavewoven-robe` | somon hale | %76 | kusur |
 | katalog-zirh-03 | 10 | `weavewoven-robe` | kenara dayanan parıltı | %36 | kusur |
 | katalog-zirh-03 | 11 | `resonant-caster-robe` | somon hale | %66 | kusur |
 | katalog-zirh-03 | 11 | `resonant-caster-robe` | kenara dayanan parıltı | %21 | kusur |
@@ -124,8 +122,6 @@ Görev KATALOG-IKON-AKTAR-2. `node scripts/katalog-ikon-kusur.mjs` üretir (elle
 | katalog-giyilebilir-03 | 13 | `sparkhand-gloves` | somon hale | %12 | belirsiz |
 | katalog-giyilebilir-04 | 3 | `skyvault-boots` | somon hale | %8 | belirsiz |
 | katalog-giyilebilir-04 | 5 | `stormstep-boots` | kenara dayanan parıltı | %21 | kusur |
-| katalog-giyilebilir-04 | 7 | `springvault-boots` | macenta cep | 123 px | kusur |
-| katalog-giyilebilir-04 | 8 | `waterskipper-sandals` | macenta cep | 35 px | belirsiz |
 | katalog-giyilebilir-04 | 10 | `sparkstride-boots` | somon hale | %40 | kusur |
 | katalog-yuzuk-01 | 1 | `shadowspark-ring` | kenara dayanan parıltı | %5 | kusur |
 | katalog-yuzuk-01 | 2 | `high-command-ring` | leylak/pembe hale | %27 | kusur |
@@ -145,7 +141,8 @@ Görev KATALOG-IKON-AKTAR-2. `node scripts/katalog-ikon-kusur.mjs` üretir (elle
 | katalog-yuzuk-01 | 14 | `rootgrip-ring` | kenara dayanan parıltı | %4 | kusur |
 | katalog-yuzuk-02 | 4 | `devouts-medallion` | somon hale | %94 | kusur |
 | katalog-yuzuk-02 | 5 | `spellspark-pendant` | leylak/pembe hale | %27 | kusur |
-| katalog-yuzuk-02 | 6 | `subjugation-pendant` | macenta cep | 211 px | kusur |
+| katalog-yuzuk-02 | 6 | `subjugation-pendant` | leylak/pembe hale | %8 | belirsiz |
+| katalog-yuzuk-02 | 6 | `subjugation-pendant` | macenta cep | 65 px | kusur |
 | katalog-yuzuk-02 | 14 | `silverthread-locket` | somon hale | %88 | kusur |
 | katalog-yuzuk-03 | 3 | `umbral-sigil-stone` | somon hale | %100 | kusur |
 | katalog-yuzuk-03 | 4 | `aether-core-stone` | leylak/pembe hale | %11 | belirsiz |
@@ -160,9 +157,8 @@ Görev KATALOG-IKON-AKTAR-2. `node scripts/katalog-ikon-kusur.mjs` üretir (elle
 | katalog-tuketilebilir-02 | 7 | `splitflight-arrow` | leylak/pembe hale | %26 | kusur |
 | katalog-tuketilebilir-02 | 8 | `transposition-arrow` | leylak/pembe hale | %21 | kusur |
 | katalog-tuketilebilir-02 | 11 | `blessed-mending-arrow` | somon hale | %65 | kusur |
-| katalog-tuketilebilir-02 | 12 | `shadowpierce-arrow` | macenta cep | 76 px | kusur |
+| katalog-tuketilebilir-02 | 12 | `shadowpierce-arrow` | sis | %20 | belirsiz |
 | katalog-tuketilebilir-03 | 1 | `hoarfrost-coating` | leylak/pembe hale | %43 | kusur |
 | katalog-tuketilebilir-03 | 10 | `strong-will-draught` | somon hale | %85 | kusur |
 | katalog-tuketilebilir-03 | 15 | `elixir-of-battlemage-focus` | leylak/pembe hale | %16 | kusur |
-| katalog-bekleyen-01 | 2 | `helldusk-gauntlets` | macenta cep | 35 px | belirsiz |
-| katalog-bekleyen-01 | 6 | `callous-glow-ring` | somon hale | %21 | kusur |
+| katalog-bekleyen-01 | 6 | `lightcall-ring` | somon hale | %21 | kusur |

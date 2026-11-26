@@ -27,6 +27,7 @@ export const KUSUR = {
   kenar: { esik: 0.03, ad: 'kenara dayanan parıltı' },
 };
 const BANT = 3;
+export const ERTELENDI_NOTU = 'ERTELENDİ (kullanıcı kararı 2026-11-26): kontakt incelemesinde yeniden üretim gerekmedi; macenta cep ve komşu taşma betikte düzeltildi (KATALOG-IKON-AKTAR-3). Gemini\'ye şimdi verilmeyecek; sayfalar seçim için manifestte kalır.';
 
 /** 256 px RGBA çıktıdan ölçüler. */
 export function ikonOlcu(rgba, w, h) {
@@ -169,8 +170,10 @@ async function main() {
   // Düzeltme sayfaları: kusurlu hücreler sayfa sırasıyla, 16'lık paketler.
   const sayfalar = [];
   for (let i = 0; i < kusurlu.length; i += 16) sayfalar.push(kusurlu.slice(i, i + 16));
+  // Ertelenmiş düzeltme (kullanıcı kararı; sayfada `ertelendi`) yeniden üretimde korunur.
+  const ertelendi = manifest.sayfalar.some((s) => sayfaAdi(s.dosya).startsWith(DUZELTME_ON) && s.ertelendi);
   const yeniSayfalar = sayfalar.map((p, n) => ({
-    dosya: `${DUZELTME_ON}${String(n + 1).padStart(2, '0')}.jpg`, kolon: 4, satir: 4,
+    dosya: `${DUZELTME_ON}${String(n + 1).padStart(2, '0')}.jpg`, kolon: 4, satir: 4, ...(ertelendi ? { ertelendi: true } : {}),
     not: 'KATALOG-IKON-AKTAR-2 düzeltme sayfası: kusurlu hücrelerin yeniden üretimi (dış parıltı/hale yok). Öğedeki `eskiHucre` ilk sayfadaki yeri.',
     ogeler: p.map((x) => ({ ...x.o, eskiHucre: `${x.sayfa}#${x.hucre}` })),
   }));
@@ -180,6 +183,7 @@ async function main() {
   const doc = [
     '# KATALOG-IKON-DUZELTME — kusurlu katalog ikonları için düzeltme sayfaları',
     '',
+    ...(ertelendi ? [`> **${ERTELENDI_NOTU}**`, ''] : []),
     'Görev KATALOG-IKON-AKTAR-2. `node scripts/katalog-ikon-kusur.mjs --duzeltme` üretir (elle düzenlenmez). Kaynak: `harita/belgeler/KATALOG-IKON-KUSUR.md`',
     `kusur satırları (belirsizler dahil değil). ${kusurlu.length} hücre, ${sayfalar.length} sayfa; manifestte \`${DUZELTME_ON}NN\` sayfaları en sonda,`,
     'üretilen görsel ilk sayfadaki hücrenin yerine geçer (sonraki sayfa ezer). Görsel yoksa betik sayfayı atlar.',

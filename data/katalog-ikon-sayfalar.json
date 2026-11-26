@@ -1784,6 +1784,7 @@
    "dosya": "katalog-duzeltme-01.jpg",
    "kolon": 4,
    "satir": 4,
+   "ertelendi": true,
    "not": "KATALOG-IKON-AKTAR-2 düzeltme sayfası: kusurlu hücrelerin yeniden üretimi (dış parıltı/hale yok). Öğedeki `eskiHucre` ilk sayfadaki yeri.",
    "ogeler": [
     {
@@ -1888,6 +1889,7 @@
    "dosya": "katalog-duzeltme-02.jpg",
    "kolon": 4,
    "satir": 4,
+   "ertelendi": true,
    "not": "KATALOG-IKON-AKTAR-2 düzeltme sayfası: kusurlu hücrelerin yeniden üretimi (dış parıltı/hale yok). Öğedeki `eskiHucre` ilk sayfadaki yeri.",
    "ogeler": [
     {
@@ -1992,6 +1994,7 @@
    "dosya": "katalog-duzeltme-03.jpg",
    "kolon": 4,
    "satir": 4,
+   "ertelendi": true,
    "not": "KATALOG-IKON-AKTAR-2 düzeltme sayfası: kusurlu hücrelerin yeniden üretimi (dış parıltı/hale yok). Öğedeki `eskiHucre` ilk sayfadaki yeri.",
    "ogeler": [
     {
@@ -2096,6 +2099,7 @@
    "dosya": "katalog-duzeltme-04.jpg",
    "kolon": 4,
    "satir": 4,
+   "ertelendi": true,
    "not": "KATALOG-IKON-AKTAR-2 düzeltme sayfası: kusurlu hücrelerin yeniden üretimi (dış parıltı/hale yok). Öğedeki `eskiHucre` ilk sayfadaki yeri.",
    "ogeler": [
     {
@@ -2200,6 +2204,7 @@
    "dosya": "katalog-duzeltme-05.jpg",
    "kolon": 4,
    "satir": 4,
+   "ertelendi": true,
    "not": "KATALOG-IKON-AKTAR-2 düzeltme sayfası: kusurlu hücrelerin yeniden üretimi (dış parıltı/hale yok). Öğedeki `eskiHucre` ilk sayfadaki yeri.",
    "ogeler": [
     {
@@ -2304,6 +2309,7 @@
    "dosya": "katalog-duzeltme-06.jpg",
    "kolon": 4,
    "satir": 4,
+   "ertelendi": true,
    "not": "KATALOG-IKON-AKTAR-2 düzeltme sayfası: kusurlu hücrelerin yeniden üretimi (dış parıltı/hale yok). Öğedeki `eskiHucre` ilk sayfadaki yeri.",
    "ogeler": [
     {
@@ -2408,6 +2414,7 @@
    "dosya": "katalog-duzeltme-07.jpg",
    "kolon": 4,
    "satir": 4,
+   "ertelendi": true,
    "not": "KATALOG-IKON-AKTAR-2 düzeltme sayfası: kusurlu hücrelerin yeniden üretimi (dış parıltı/hale yok). Öğedeki `eskiHucre` ilk sayfadaki yeri.",
    "ogeler": [
     {
@@ -2446,6 +2453,18 @@
    "radiant-sigil-stone"
   ]
  },
+ "cepTemizle": [
+  "subjugation-pendant",
+  "springvault-boots",
+  "waterskipper-sandals",
+  "shadowpierce-arrow",
+  "gloomfang",
+  "harmonic-rapier",
+  "nightjudge-scimitar",
+  "sparkmesh-chain-shirt",
+  "blazing-fist-gauntlets"
+ ],
+ "cepTemizleNot": "KATALOG-IKON-AKTAR-3 (kullanıcı seçimi, kontakt incelemesi): kapalı gölgeli macenta cepler saydam (scripts/esya-ikon.mjs macentaCepleri).",
  "bekleyen": {
   "sayfalar": [
    "katalog-bekleyen-01"

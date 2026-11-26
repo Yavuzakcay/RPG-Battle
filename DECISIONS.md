@@ -152,6 +152,30 @@ etiketi `planli`/`calismiyor` alır; belirsiz yer tahminle doldurulmaz, sorulur.
   enum'lar, yüklü büyü adı, silah eşyasında `esya-silah-bagi.json` satırı ve taban SRD silahı), `src/data/katalog.test.ts`.
 - Dungeondex kartında Türkçe açıklama yoksa PDF'in "Ne işe yarar" paragrafı (`desc.ui`; `Item.text` oluşturucu özetinin yedeği, ham metin sayılmaz). Prospektüs kapsamı `esyaIds().katalog` ayrı listede (SRD paragraf dosyası `data/prospektus/esya-sihirli.json` yalnız SRD eşyaları); A5 sınıflandırması ve SRD kimlik testi katalog eşyalarını saymaz (`loadClassData` onları `items.json` modül dizisine de ekler).
 - Planla fark: O12 (boss yükleyici iskeleti) F'ye kaldı; O3'ün "oluşturucu taban silahı ekler" kısmı A'da değerlendirilir.
+## Görev KATALOG-IKON-AKTAR-3: macenta cep ve komşu hücre taşması betikte (2026-11-26; yalnız görünüm, kural/kayıt sürümü yok)
+
+Kullanıcı kontakt görsellerini inceledi: 99 hücre yeniden üretilmeyecek; `katalog-duzeltme-01…07` manifestte `ertelendi: true`, belgede
+ERTELENDİ notu (kusur betiği işareti korur). İki betik iyileştirmesi (`scripts/esya-ikon.mjs`, yalnız macenta kipi; yeşil 550 ikon bayt
+bayt aynı):
+
+- **Komşu taşması** (`komsuTasmasi`, genel): komşunun ucu hücreye girer ya da kırpım payında durup bu hücrenin yarı saydam parıltısına
+  değer, tam kırpımda tek bileşen olur (zirh-03'te "küçük ayrı bileşen" kuralı hiç tetiklenmedi). Bağlantıyı yalnız opak gövde (α ≥ 250)
+  taşır: hücre içinde etiketlenen gövdeden sınıra değen ve en büyüğün %25'inden küçük olan atılır, korunan iç gövdeye opak yolla
+  ulaşamayan hücre dışı gövde atılır, aradaki yarı saydam pikseller en yakın gövdeye bölüştürülür. Atılan gövde yoksa hiçbir piksel
+  değişmez. Etki: zirh-03 #3, #6, #7, #10 (istenen) + kendiliğinden #1, #2, #12 ve yuzuk-01 #14.
+- **Kapalı macenta cep** (`macentaCepleri`, yalnız manifest `cepTemizle` kimlikleri): zeminin karartılmış tonu (O ≈ s·Z, artık ≤ 28,
+  G ≤ 0,25·min(R, B), s ≥ 0,12), kırpım kenarına değmeyen, 24 px ile kırpımın %4'ü arası bileşen saydam; 1 px geçiş artık ≤ 55.
+  Genel kural denendi, geri alındı: Gemini birçok eşyanın koyu dış çizgisini ve dış zemine açılan gölgeli aralıkları aynı tonla çizmiş;
+  "dış zeminden kopuk" şartı hedef cepleri (yay sarmalı, zincir halkası, ok gölgesi: hepsi dış zemine bağlı) dışarıda bırakıyor, genel
+  kural 300+ ikonun dış çizgisini yiyordu. Liste: yuzuk-02 #6, giyilebilir-04 #7, #8, tuketilebilir-02 #12, silah-03 #2, silah-02 #9,
+  #14, zirh-02 #8, bekleyen-01 #2 (`blazing-fist-gauntlets`; K7 adı KATALOG-1 birleşmesinden).
+- **Açık kalan**: subjugation-pendant halkaları arasındaki açık pembe bant (artık 70–110, zeminin karartılmışı değil: kurala göre nesne
+  rengi), harmonic-rapier tellerinin, springvault yaylarının ve sparkmesh alt kenarının açık pembe karışım pikselleri. ⚠ nightjudge,
+  gloomfang ve shadowpierce'in mor duman/sis parçaları zeminin tam karartılmış tonunda çizildiği için silindi (gri duman kalır); kullanıcı
+  "mor duman korunsun" dediyse bu üç kimlik `cepTemizle`'den çıkarılır.
+- Önce/sonra: `harita/belgeler/ESYA-IKON-KONTROL/katalog-cep-tasma-once-sonra.png` (13 hücre) ve `katalog-tasma-ek-once-sonra.png`
+  (kendiliğinden düzelen 4; klasör git dışı). Kusur raporu (`KATALOG-IKON-KUSUR.md`) yeni çıktılarla yeniden üretildi: kusurlu hücre 99 → 94, belirsiz satır 40 → 42.
+
 ## Görev KATALOG-IKON-AKTAR-2: bütün katalog sayfaları, otomatik kusur taraması ve düzeltme sayfaları (2026-11-26; yalnız görünüm, kural/kayıt sürümü yok)
 
 - **23 sayfa içe aktarıldı**: 330 kimlik (323 hücre + 7 `ayniGorsel` kopyası), `public/esya` + `kucuk/`; ilk turun 59 ikonu bayt bayt aynı

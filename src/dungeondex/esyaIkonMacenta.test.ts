@@ -68,4 +68,30 @@ describe('Eşya ikon hattı: zemin kipi', () => {
     const out = anahtarla(rgb, W, H, MACENTA);
     expect(px(out, 19, 19)).toEqual([230, 60, 210, 255]);
   });
+
+  it('kapalı gölgeli macenta cep: yalnız cepTemizle ile saydam; nesnenin pembe taşı kalır', () => {
+    const rgb = sayfa([128, 128, 128], [128, 128, 128], MACENTA, 15);
+    for (let y = 12; y < 20; y++) for (let x = 12; x < 20; x++) rgb.set([88, 0, 88], (y * W + x) * 3); // zeminin karartılmışı (s ≈ 0,35)
+    for (let y = 22; y < 27; y++) for (let x = 22; x < 27; x++) rgb.set([230, 60, 210], (y * W + x) * 3); // pembe taş
+    const acik = anahtarla(rgb, W, H, MACENTA, false, { x0: 0, y0: 0, x1: W, y1: H }, false, true);
+    expect(px(acik, 15, 15)[3]).toBe(0);
+    expect(px(acik, 24, 24)).toEqual([230, 60, 210, 255]);
+    expect(px(acik, 8, 8)[3]).toBe(255); // gövde
+    expect(px(anahtarla(rgb, W, H, MACENTA), 15, 15)[3]).toBe(255); // listede değilse dokunulmaz
+  });
+
+  it('komşu hücreden taşan parça: kırpım payındaki gövde, parıltıyla bağlı olsa da atılır; asıl nesne kalır', () => {
+    const w = 60; const h = 70; const rgb = new Uint8Array(w * h * 3);
+    for (let i = 0; i < w * h; i++) rgb.set(MACENTA, i * 3);
+    const boya = (x0: number, y0: number, x1: number, y1: number, c: RGB) => {
+      for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) rgb.set(c, (y * w + x) * 3);
+    };
+    boya(10, 30, 50, 62, [128, 128, 128]); // asıl nesne (hücre içinde)
+    boya(20, 0, 40, 8, [128, 128, 128]); // komşunun ucu (kırpım payında, hücre y ≥ 10)
+    boya(28, 8, 32, 30, karisim([128, 128, 128], MACENTA, 0.6)); // yarı saydam köprü (parıltı)
+    const out = anahtarla(rgb, w, h, MACENTA, false, { x0: 0, y0: 10, x1: w, y1: h }, false);
+    const a = (x: number, y: number) => out[(y * w + x) * 4 + 3];
+    expect(a(30, 4)).toBe(0);
+    expect(a(30, 45)).toBe(255);
+  });
 });

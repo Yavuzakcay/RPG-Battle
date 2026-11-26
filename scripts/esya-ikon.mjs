@@ -34,7 +34,11 @@ export const ESIK = { alt: 45, ust: 160, delik: 55, delikMinPx: 3, yesilFark: 20
   /** Macenta kipi: taşkın dolgunun zemine uzaklık sınırı (parıltı halesi 160–200 arası; koyu dış çizgi ≥ 240 durdurur), izdüşüm artığı sınırı. */
   macentaUst: 200, izdusumArtik: 30, kaynakPay: 3, halkaFazla: -40,
   /** Macenta taban rampası: zemine uzaklık alt'tan (45) alt + macentaRampa'ya dek alfa 0 → 1 (zemine yakın yama ve sis silinir). */
-  macentaRampa: 45 };
+  macentaRampa: 45,
+  /** Macenta kapalı cep (manifest `cepTemizle`; O ≈ s·zemin: artık ≤ cepArtik, G ≤ cepG·min(R, B), s ≥ cepS; bileşen cepEnAz px ile
+   *  cepOran·kırpım arası, geçiş kenarı cepKenarArtik) ve komşu hücre taşması (hücre içi bileşen, hücre sınırına değen, en büyük iç
+   *  bileşenin tasmaOran'ından küçük). KATALOG-IKON-AKTAR-3. */
+  cepArtik: 28, cepKenarArtik: 55, cepG: 0.25, cepS: 0.12, cepOran: 0.04, cepEnAz: 24, tasmaOran: 0.25 };
 
 /** Zemin kipi: köşeden okunan zemin rengi macentaysa 'macenta', değilse 'yesil' (önceki sayfaların hepsi). */
 export const zeminKipi = (zemin) => (isMagenta(zemin[0], zemin[1], zemin[2]) ? 'macenta' : 'yesil');
@@ -98,6 +102,96 @@ function macentaAyristir(rgb, w, h, zemin, zeminMi, out) {
     }
     out[i * 4 + 3] = Math.round(a * taban(r, g, b) * 255);
   }
+}
+
+/**
+ * Macenta kipinde kapalı cepler (yalnız manifest `cepTemizle` kimlikleri; KATALOG-IKON-AKTAR-3): nesnenin içinde kalan, anahtarlanmamış
+ * "gölgeli macenta" bölgeler (zemin rengi karartılmış: O ≈ s·Z, artık ≤ cepArtik, G ≤ cepG·min(R, B), s ≥ cepS; 4 komşu bileşen).
+ * Kırpım kenarına değmeyen, cepEnAz px ile kırpımın cepOran'ı arasındaki bileşen saydam olur; 1 px geçiş kenarı gevşek artıkla
+ * (cepKenarArtik) eklenir. Nesnenin pembe/mor taşı, parıltı çekirdeği, mor dumanı zeminin karartılmış tonundan uzaktır (artık ≈ 60): kalır.
+ * Genel kural değil: Gemini bazı eşyaların koyu dış çizgisini de zeminin karartılmış tonuyla çizmiş, kural her ikonda çizgiyi yerdi.
+ */
+function macentaCepleri(rgb, w, h, zemin, zeminMi) {
+  const n = w * h; const [zr, zg, zb] = zemin; const zz = zr * zr + zg * zg + zb * zb;
+  const aday = new Uint8Array(n); const gevsek = new Uint8Array(n);
+  for (let i = 0; i < n; i++) {
+    if (zeminMi[i]) continue;
+    const r = rgb[i * 3]; const g = rgb[i * 3 + 1]; const b = rgb[i * 3 + 2];
+    const s = (r * zr + g * zg + b * zb) / zz;
+    if (s < ESIK.cepS || g > ESIK.cepG * Math.min(r, b)) continue;
+    const artik = Math.hypot(r - s * zr, g - s * zg, b - s * zb);
+    if (artik <= ESIK.cepArtik) aday[i] = 1; else if (artik <= ESIK.cepKenarArtik) gevsek[i] = 1;
+  }
+  const cep = new Uint8Array(n); const gor = new Uint8Array(n); const sinir = ESIK.cepOran * n;
+  for (let i = 0; i < n; i++) {
+    if (!aday[i] || gor[i]) continue;
+    const parca = [i]; gor[i] = 1; let kenar = false;
+    for (let k = 0; k < parca.length; k++) {
+      const p = parca[k]; const x = p % w; const y = (p - x) / w;
+      if (x === 0 || y === 0 || x === w - 1 || y === h - 1) kenar = true;
+      for (const q of [x > 0 ? p - 1 : -1, x < w - 1 ? p + 1 : -1, y > 0 ? p - w : -1, y < h - 1 ? p + w : -1]) {
+        if (q >= 0 && aday[q] && !gor[q]) { gor[q] = 1; parca.push(q); }
+      }
+    }
+    if (!kenar && parca.length >= ESIK.cepEnAz && parca.length <= sinir) for (const p of parca) cep[p] = 1;
+  }
+  const kenarPx = [];
+  for (let i = 0; i < n; i++) {
+    if (!gevsek[i]) continue;
+    const x = i % w;
+    if ((x > 0 && cep[i - 1]) || (x < w - 1 && cep[i + 1]) || (i >= w && cep[i - w]) || (i < n - w && cep[i + w])) kenarPx.push(i);
+  }
+  for (const i of kenarPx) cep[i] = 1;
+  return cep;
+}
+
+/**
+ * Macenta kipinde komşu hücreden taşan parça (KATALOG-IKON-AKTAR-3). Komşunun ucu bu hücreye girebilir ya da kırpım payında durup bu
+ * hücrenin yarı saydam parıltısına değebilir; tam kırpımda tek bileşen olur. Bu yüzden bağlantıyı yalnız opak gövde (`tut` ve α ≥ 250)
+ * taşır: gövde önce asıl hücre (`ic`) içinde 8 komşu etiketlenir, hücre sınırına değen ve en büyük iç gövdenin tasmaOran'ından küçük iç
+ * gövde atılır; korunan iç gövdeye opak yolla ulaşamayan (hücre dışındaki) gövde de atılır. Arada kalan yarı saydam `tut` pikselleri
+ * en yakın gövdeye (jeodezik, 8 komşu) bölüştürülür, atılan gövdeye yakın olanlar onunla gider. Atılan gövde yoksa hiçbir şey değişmez.
+ */
+function komsuTasmasi(tut, out, w, h, ic) {
+  const n = w * h; const iceride = (x, y) => x >= ic.x0 && x < ic.x1 && y >= ic.y0 && y < ic.y1;
+  const govde = new Uint8Array(n);
+  for (let i = 0; i < n; i++) if (tut[i] && out[i * 4 + 3] >= 250) govde[i] = 1;
+  const komsu8 = (p, f) => {
+    const x = p % w; const y = (p - x) / w;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const nx = x + dx; const ny = y + dy;
+      if ((dx || dy) && nx >= 0 && ny >= 0 && nx < w && ny < h) f(ny * w + nx, nx, ny);
+    }
+  };
+  const lab = new Int32Array(n); const alan = [0]; const snr = [false];
+  for (let i = 0; i < n; i++) {
+    const x0 = i % w; const y0 = (i - x0) / w;
+    if (!govde[i] || lab[i] || !iceride(x0, y0)) continue;
+    const id = alan.length; const st = [i]; lab[i] = id; let say = 0; let kenar = false;
+    while (st.length) {
+      const p = st.pop(); say++; const x = p % w; const y = (p - x) / w;
+      if (x === ic.x0 || y === ic.y0 || x === ic.x1 - 1 || y === ic.y1 - 1) kenar = true;
+      komsu8(p, (q, nx, ny) => { if (govde[q] && !lab[q] && iceride(nx, ny)) { lab[q] = id; st.push(q); } });
+    }
+    alan.push(say); snr.push(kenar);
+  }
+  const enBuyuk = Math.max(0, ...alan);
+  const at = (id) => snr[id] && alan[id] < ESIK.tasmaOran * enBuyuk;
+  // Korunan iç gövdeden opak yolla ulaşılan gövde.
+  const ulas = new Uint8Array(n); const st = [];
+  for (let i = 0; i < n; i++) if (lab[i] && !at(lab[i])) { ulas[i] = 1; st.push(i); }
+  while (st.length) komsu8(st.pop(), (q) => { if (govde[q] && !ulas[q] && !(lab[q] && at(lab[q]))) { ulas[q] = 1; st.push(q); } });
+  let atilan = 0;
+  for (let i = 0; i < n; i++) if (govde[i] && !ulas[i]) atilan++;
+  if (!atilan) return;
+  // Yarı saydam `tut` pikselleri en yakın gövdeye: 1 korunan, 2 atılan (çok kaynaklı BFS).
+  const sahip = new Uint8Array(n); const kuyruk = [];
+  for (let i = 0; i < n; i++) if (govde[i]) { sahip[i] = ulas[i] ? 1 : 2; kuyruk.push(i); }
+  for (let k = 0; k < kuyruk.length; k++) {
+    const p = kuyruk[k];
+    komsu8(p, (q) => { if (tut[q] && !sahip[q]) { sahip[q] = sahip[p]; kuyruk.push(q); } });
+  }
+  for (let i = 0; i < n; i++) if (tut[i] && sahip[i] !== 1) tut[i] = 0;
 }
 
 /** '/' → '--' (varyant kimliği dosya adında). */
@@ -244,7 +338,7 @@ function zeminRengi(buf, W, H) {
  * Bir hücreyi anahtarla: RGBA tampon (w×h), bileşen süzgeci uygulanmış. `ic`: asıl hücre (genişletilmiş kırpım içinde); yalnız ağırlık
  * merkezi `ic` içindeki bileşenler tutulur (komşu hücreye taşan uç kesilmez, komşunun parçası girmez).
  */
-export function anahtarla(rgb, w, h, zemin, hepsi = false, ic = { x0: 0, y0: 0, x1: w, y1: h }, tamDespill = false) {
+export function anahtarla(rgb, w, h, zemin, hepsi = false, ic = { x0: 0, y0: 0, x1: w, y1: h }, tamDespill = false, cepTemizle = false) {
   const n = w * h; const [zr, zg, zb] = zemin;
   const kip = zeminKipi(zemin); const tonlu = ZEMIN_TONU[kip];
   const d = new Float32Array(n); const yesil = new Uint8Array(n); // yesil: zemin tonunda (macenta kipinde macenta-pembe)
@@ -290,7 +384,13 @@ export function anahtarla(rgb, w, h, zemin, hepsi = false, ic = { x0: 0, y0: 0, 
     }
     out[i * 4] = clamp(r); out[i * 4 + 1] = clamp(g); out[i * 4 + 2] = clamp(b); out[i * 4 + 3] = Math.round(a * 255);
   }
-  if (kip === 'macenta') macentaAyristir(rgb, w, h, zemin, zeminMi, out);
+  if (kip === 'macenta') {
+    macentaAyristir(rgb, w, h, zemin, zeminMi, out);
+    if (cepTemizle) {
+      const cep = macentaCepleri(rgb, w, h, zemin, zeminMi);
+      for (let i = 0; i < n; i++) if (cep[i]) out[i * 4 + 3] = 0;
+    }
+  }
   // Despill: zemine en çok despillPx uzaklıktaki opak/yarı opak piksellerde G ≤ max(R, B). `tamDespill` (manifest `tamDespill`):
   // bütün nesnede (zemini içinden gösteren cam: yeşilimsi cam nötr olur; yeşil nesnede kullanılmaz) ve yarı saydam parıltı halesinde
   // daha sıkı G ≤ (R + B) / 2: yeşil zemin üstüne çizilmiş altın/kırmızı hale ayrıştırmadan sonra G ≈ R sarı-yeşil kalıyordu.
@@ -332,6 +432,7 @@ export function anahtarla(rgb, w, h, zemin, hepsi = false, ic = { x0: 0, y0: 0, 
   const enBuyuk = Math.max(0, ...alan.filter((_, k) => icte[k]));
   let tut = new Uint8Array(n);
   for (let i = 0; i < n; i++) if (etiket[i] && icte[etiket[i]] && (hepsi || alan[etiket[i]] >= ESIK.bilesenOran * enBuyuk)) tut[i] = 1;
+  if (kip === 'macenta' && !hepsi) komsuTasmasi(tut, out, w, h, ic);
   const cekirdek = tut;
   tut = genislet(genislet(tut, w, h), w, h);
   for (let i = 0; i < n; i++) {
@@ -370,7 +471,7 @@ async function kare(rgba, w, h, kutu, boyut) {
 }
 
 /** Bir sayfanın bütün hücrelerini işle: [{ hucre, id, buyuk, kucuk }] (boş/atlanan hücre id: null). */
-export async function sayfaIsle(dosyaYolu, sayfa, hepsiniTut, tamDespill = new Set()) {
+export async function sayfaIsle(dosyaYolu, sayfa, hepsiniTut, tamDespill = new Set(), cepTemizle = new Set()) {
   const { data, info } = await sharp(dosyaYolu).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const W = info.width; const H = info.height;
   const zemin = zeminRengi(data, W, H);
@@ -387,7 +488,7 @@ export async function sayfaIsle(dosyaYolu, sayfa, hepsiniTut, tamDespill = new S
     const rgb = Buffer.alloc(w * h * 3);
     for (let r = 0; r < h; r++) data.copy(rgb, r * w * 3, ((y + r) * W + x) * 3, ((y + r) * W + x + w) * 3);
     const secili = (set) => set.has(o.id) || (o.kaynak && set.has(o.kaynak));
-    const rgba = anahtarla(rgb, w, h, zemin, secili(hepsiniTut), { x0: c.x - x, y0: c.y - y, x1: c.x - x + c.w, y1: c.y - y + c.h }, secili(tamDespill));
+    const rgba = anahtarla(rgb, w, h, zemin, secili(hepsiniTut), { x0: c.x - x, y0: c.y - y, x1: c.x - x + c.w, y1: c.y - y + c.h }, secili(tamDespill), secili(cepTemizle));
     const kutu = sinirKutusu(rgba, w, h);
     if (!kutu) { out.push({ hucre: k + 1, id: o.id, bos: true }); continue; }
     const kenar = opakKenar(rgba, w, h, { ust: y > 0, alt: y + h < H, sol: x > 0, sag: x + w < W });
@@ -487,6 +588,7 @@ async function main() {
   const kayitsizSet = new Set(kayitsiz);
   const hepsiniTut = new Set(manifest.hepsiniTut ?? []);
   const tamDespill = new Set(manifest.tamDespill ?? []);
+  const cepTemizle = new Set(manifest.cepTemizle ?? []);
   const yoksay = new Set(manifest.yoksay ?? []);
   const belirsizIdler = belirsizKimlikler(manifest, son.keys());
   const OUT = path.join(ROOT, 'public/esya'); const OUTK = path.join(OUT, 'kucuk');
@@ -497,7 +599,7 @@ async function main() {
   for (const s of manifest.sayfalar) {
     const ad = sayfaAdi(s.dosya);
     if (yoksay.has(ad) || !varMi(s.dosya) || (yalniz && !yalniz.includes(ad))) continue;
-    const { out, zemin } = await sayfaIsle(path.join(kaynak, s.dosya), s, hepsiniTut, tamDespill);
+    const { out, zemin } = await sayfaIsle(path.join(kaynak, s.dosya), s, hepsiniTut, tamDespill, cepTemizle);
     for (const c of out) {
       if (!c.id) continue;
       if (c.bos) uyarilar.push(`${ad}#${c.hucre} ${c.id}: hücre boş çıktı`);
