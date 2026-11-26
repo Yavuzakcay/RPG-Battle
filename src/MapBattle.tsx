@@ -45,6 +45,7 @@ import { getMap, maps } from './map/maps';
 import { economyBlock, freeCastResource, preferBonus } from './battle/economy';
 import { readyOn } from './battle/readySurum';
 import { READY_DRAFT, ReadyPanel, type ReadyDraft } from './ui/ReadyPanel';
+import { HOSTILE_COMMANDS, crossProbe } from './ui/crossTarget';
 import { bodyAt, bodyOf, isMultiHex } from './battle/body';
 import { dimLightOn, optionalRules, ruleOf, stuckInBog } from './battle/maprules';
 import { standUpProblem } from './battle/grapple';
@@ -727,6 +728,15 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   // Eylem sonucu (✔ isabet / ✖ ıska, kurtarma…): ~1 sn, yalnızca canlı olaylar.
   const [outcomes, setOutcomes] = useState<Array<OutcomeMark & { id: number; delay: number }>>([]);
   const [toasts, setToasts] = useState<Array<{ id: number; text: string; error?: boolean; discovery?: boolean }>>([]);
+  // Görev OYUNCU-HEDEF-DOST: karşı taraf hedefi (dosta saldırı, düşmana yardım) ilk dokunuşta onay ister; ikinci dokunuş uygular.
+  const [crossArmed, setCrossArmed] = useState<string | null>(null);
+  const confirmCross = (key: string, kind: 'ally' | 'foe', go: () => void): void => {
+    if (crossArmed === key) { setCrossArmed(null); go(); return; }
+    setCrossArmed(key);
+    const item = { id: Math.random(), text: t().battle.crossConfirm[kind] };
+    setToasts((x) => [...x, item].slice(-3));
+    window.setTimeout(() => setToasts((x) => x.filter((y) => y !== item)), TOAST_MS);
+  };
   const pressTimer = useRef<number | null>(null);
   // Eylem düğmesi açıklaması: farede üzerine gelince, dokunmatikte uzun basınca (basış tıklama sayılmaz).
   const [tip, setTip] = useState<string | null>(null);
@@ -1043,7 +1053,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     if (mode === 'shove') {
       // İtilebilecek bitişik hedefler (motorda zarsız denenerek: yere düşürme her zaman denenebilir).
       return new Set(Object.values(state.combatants)
-        .filter((c) => c.side !== actor?.side && execute(state, { type: 'shove', actorId, targetId: c.id, effect: 'prone' }, contextFor(state, actorId), () => 0.5).ok)
+        .filter((c) => c.id !== actorId && !c.civilian && execute(state, { type: 'shove', actorId, targetId: c.id, effect: 'prone' }, contextFor(state, actorId), () => 0.5).ok)
         .map((c) => c.id));
     }
     if (mode === 'feature' && featureKey && actor) {
@@ -1055,7 +1065,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     if (mode === 'strike') {
       // Bonus eylemle Unarmed Strike ya da Flurry vuruşu: motorun kabul ettiği hedefler.
       return new Set(Object.values(state.combatants)
-        .filter((c) => c.side !== actor?.side && execute(state, { type: 'bonus_strike', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
+        // Görev OYUNCU-HEDEF-DOST: dost da (onaylı, `crossSide`).
+        .filter((c) => c.id !== actorId && crossProbe(state, actorId, { type: 'bonus_strike', actorId, targetId: c.id }) !== null)
         .map((c) => c.id));
     }
     if (mode === 'horde' && actor) {
@@ -1067,13 +1078,13 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     if (mode === 'offhand') {
       // Yan el ek saldırısı: motorun kabul ettiği hedefler (zarsız denenerek).
       return new Set(Object.values(state.combatants)
-        .filter((c) => c.side !== actor?.side && execute(state, { type: 'offhand_attack', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
+        .filter((c) => c.id !== actorId && !c.civilian && execute(state, { type: 'offhand_attack', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
         .map((c) => c.id));
     }
     if (mode === 'item' && itemPick) {
       // Kuyruk 43: iksir: kendisi ya da erişimdeki dost (motorda denenerek).
       return new Set(Object.values(state.combatants)
-        .filter((c) => execute(state, { type: 'use_item', actorId, itemId: itemPick, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
+        .filter((c) => crossProbe(state, actorId, { type: 'use_item', actorId, itemId: itemPick, targetId: c.id }) !== null)
         .map((c) => c.id));
     }
     if (mode === 'help') {
@@ -1090,7 +1101,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     }
     if (mode === 'steer' && actor && !steerableSummon(state, actor)?.summon?.hand) return new Set(ramTargets(state, actor).map((c) => c.id));
     if (mode === 'pick' && pickCmd) {
-      return new Set(Object.values(state.combatants).filter((c) => execute(state, pickCmd.make(c.id), contextFor(state, actorId), () => 0.5).ok).map((c) => c.id));
+      return new Set(Object.values(state.combatants).filter((c) => crossProbe(state, actorId, pickCmd.make(c.id)) !== null).map((c) => c.id));
     }
     if (mode === 'followup') {
       // Konsantrasyon büyüsünü sürdürme: motorun kabul ettiği hedefler (zar atılmadan denenir).
@@ -1264,6 +1275,17 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     return loc(mountProblem(state, actor, mounts[0]?.id ?? ''));
   }, [state, actor, mode]);
   const reset = () => { setDiMode(false); setDismountFt(null); setJumpAim(null); setMoveAim(null); setOriginId(null); setMode('idle'); setSpell(null); setAreaAct(null); setSlotPick(null); setMmPick([]); setTargetId(null); setAimHex(null); setAimPts([]); setGateAim(false); setMenuOpen(true); setMoveMenu(false); setSpellTab(null); setSpecialTab(null); };
+  /**
+   * Görev OYUNCU-HEDEF-DOST: komut olduğu gibi yapılabiliyorsa çalışır (hedef dost ve eylem zararlıysa onayla); yalnız `crossSide`
+   * ile yapılabiliyorsa (düşman için tanımlı eylem dosta, dost için tanımlı eylem düşmana) onaydan sonra bayrakla çalışır.
+   */
+  const runCross = (key: string, cmd: Command): void => {
+    const how = crossProbe(state, actorId, cmd);
+    const tid = (cmd as { targetId?: string }).targetId;
+    const ally = !!tid && tid !== actorId && state.combatants[tid]?.side === actor?.side;
+    if (!how || (how === 'plain' && !(ally && HOSTILE_COMMANDS.has(cmd.type)))) { run(cmd); return; }
+    confirmCross(key, ally ? 'ally' : 'foe', () => run(how === 'cross' ? { ...cmd, crossSide: true } as Command : cmd));
+  };
   const run = (cmd0: Command) => {
     const mm = mmPick.filter((x) => x !== 'overchannel' && x !== 'store');
     const cmd: Command = cmd0.type === 'cast_spell' && mmPick.length > 0
@@ -1489,13 +1511,13 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     if (mode === 'pull' && glowing.has(c.id)) run({ type: 'pull', actorId, targetId: c.id });
     if (mode === 'help' && glowing.has(c.id)) run({ type: 'help', actorId, targetId: c.id });
     if (mode === 'stabilize' && glowing.has(c.id)) run({ type: 'stabilize', actorId, targetId: c.id });
-    if (mode === 'item' && itemPick && glowing.has(c.id)) run({ type: 'use_item', actorId, itemId: itemPick, targetId: c.id });
+    if (mode === 'item' && itemPick && glowing.has(c.id)) runCross(`item:${c.id}`, { type: 'use_item', actorId, itemId: itemPick, targetId: c.id });
     // Görev B95-B (97+): yan el saldırısında da seçili Cunning Strike seçenekleri (motor eski sürümde yok sayar).
-    if (mode === 'offhand' && glowing.has(c.id)) run({ type: 'offhand_attack', actorId, targetId: c.id, ...(cunningPicks.length && sinif97On(state) ? { cunning: cunningPicks } : {}) });
+    if (mode === 'offhand' && glowing.has(c.id)) runCross(`offhand:${c.id}`, { type: 'offhand_attack', actorId, targetId: c.id, ...(cunningPicks.length && sinif97On(state) ? { cunning: cunningPicks } : {}) });
     if (mode === 'horde' && glowing.has(c.id)) { const option = hordeOption(c.id); if (option) run({ type: 'horde_breaker', actorId, targetId: c.id, option }); }
-    if (mode === 'strike' && glowing.has(c.id)) run({ type: 'bonus_strike', actorId, targetId: c.id, technique: 'topple' });
+    if (mode === 'strike' && glowing.has(c.id)) runCross(`strike:${c.id}`, { type: 'bonus_strike', actorId, targetId: c.id, technique: 'topple' });
     if (mode === 'followup' && glowing.has(c.id)) run({ type: 'spell_followup', actorId, targetId: c.id });
-    if (mode === 'pick' && pickCmd && glowing.has(c.id)) run(pickCmd.make(c.id));
+    if (mode === 'pick' && pickCmd && glowing.has(c.id)) runCross(`pick:${c.id}`, pickCmd.make(c.id));
     if (mode === 'steer' && glowing.has(c.id) && c.pos) run({ type: 'summon_move', actorId, to: c.pos, ramId: c.id });
     // A1: altıgen seçiminde (nesne fırlatma hedefi) vurgulu yaratık jetonuna dokunmak o altıgeni seçer.
     if (mode === 'pickHex' && pickHexCmd && c.pos && summonKeys.has(hexKey(c.pos))) run(pickHexCmd.make(c.pos));
@@ -1890,11 +1912,16 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     ...abilitiesOf(state, actor).flatMap((a) => {
       const name = getLang() === 'en' ? a.en : a.tr;
       const foe = targetId && state.combatants[targetId]?.side !== actor.side ? targetId : undefined;
+      // Görev OYUNCU-HEDEF-DOST: seçili dost hedef (kendisi değil) onaylı `crossSide` ile (yutma, çekme, hedefli yetenek).
+      const ally = !foe && targetId && targetId !== actorId && state.combatants[targetId]?.side === actor.side ? targetId : undefined;
       const opts: Array<string | undefined> = a.kind === 'grant' && (a.grant?.length ?? 0) > 1 ? a.grant ?? [] : [undefined];
       return opts.map((opt): Item => {
-        const cmd: Command = { type: 'monster_ability', actorId, abilityId: a.id, ...(foe ? { targetId: foe } : {}), ...(opt ? { option: opt } : {}) };
+        const plain: Command = { type: 'monster_ability', actorId, abilityId: a.id, ...(foe ? { targetId: foe } : {}), ...(opt ? { option: opt } : {}) };
+        const crossCmd: Command | null = ally ? { type: 'monster_ability', actorId, abilityId: a.id, targetId: ally, crossSide: true, ...(opt ? { option: opt } : {}) } : null;
+        const cmd = crossCmd && !why(crossCmd) ? crossCmd : plain;
         return { key: `mab-${a.id}${opt ? `-${opt}` : ''}`, label: N.mab(name, opt ? N.mabOpt[opt] ?? opt : undefined),
-          reason: !abilityReady(actor, a) ? N.mabNotReady : why(cmd) ?? undefined, ...(a.cost === 'bonus' ? { cost: 'bonus' as const } : {}), act: () => run(cmd) };
+          reason: !abilityReady(actor, a) ? N.mabNotReady : why(cmd) ?? undefined, ...(a.cost === 'bonus' ? { cost: 'bonus' as const } : {}),
+          act: () => (cmd === crossCmd ? confirmCross(`mab-${a.id}:${ally}`, 'ally', () => run(cmd)) : run(cmd)) };
       });
     }),
     { key: 'end', label: N.end, act: () => run({ type: 'end_turn', actorId }) },
@@ -2833,7 +2860,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                 {choices.map((ch) => (
                   <div className="choice" key={ch.id}>
                     <div><span>{ch.label}</span><small>{ch.detail}</small></div>
-                    <button disabled={!ch.command} onClick={() => ch.command && run(withOrigin(withCunning(withSlot(withChoice(ch.command), slotPick))))}>{mode === 'spell' ? B.cast : B.hit}</button>
+                    <button disabled={!ch.command} onClick={() => { if (!ch.command) return; const go = () => run(withOrigin(withCunning(withSlot(withChoice(ch.command as Command), slotPick))));
+                      if (ch.cross) confirmCross(`${ch.id}:${target.id}`, ch.cross, go); else go(); }}>{mode === 'spell' ? B.cast : B.hit}</button>
                     {!ch.command && <Why msg={ch.detail || Y.noCommand} />}
                     {pvSet.on && ch.command && <Suspense fallback={null}><PreviewCard state={state} cmd={withOrigin(withCunning(withSlot(withChoice(ch.command), slotPick)))} ctx={contextFor(state, actorId)} disc={disc} settings={pvSet} /></Suspense>}
                   </div>
@@ -2908,8 +2936,13 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                   </label>
                 )}
                 <SpellOptions actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />
-                <button className="cta" disabled={picked.length === 0} onClick={() => run({ type: 'cast_spell', actorId, spellName: spell.name, targetIds: picked,
-                  ...(choicePick ? { choice: choicePick } : {}), ...slotFields(slotPick) })}>{E.cast}</button>
+                <button className="cta" disabled={picked.length === 0} onClick={() => {
+                  // Görev OYUNCU-HEDEF-DOST: seçilenlerden biri yalnız `crossSide` ile olabiliyorsa onaylı bayrakla.
+                  const cmd: Command = { type: 'cast_spell', actorId, spellName: spell.name, targetIds: picked, ...(choicePick ? { choice: choicePick } : {}), ...slotFields(slotPick) };
+                  const crossId = picked.find((id) => crossProbe(state, actorId, { type: 'cast_spell', actorId, spellName: spell.name, targetIds: [id], ...(choicePick ? { choice: choicePick } : {}) }) === 'cross');
+                  if (!crossId) { run(cmd); return; }
+                  confirmCross(`effect:${spell.name}:${picked.join(',')}`, state.combatants[crossId]?.side === actor.side ? 'ally' : 'foe', () => run({ ...cmd, crossSide: true } as Command));
+                }}>{E.cast}</button>
                 {picked.length === 0 && <Why msg={Y.pickTarget} />}
               </div>
             );

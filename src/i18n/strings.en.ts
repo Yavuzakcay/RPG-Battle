@@ -1249,6 +1249,7 @@ export const en: Strings = {
     },
   },
   battle: {
+    crossConfirm: { ally: 'Ally target: continue? Tap again to confirm.', foe: 'Enemy target: continue? Tap again to confirm.' },
     wake: {
       damage: 'Wakes if it takes any damage.',
       loud: (ft: number, list: string) => `Wakes on a loud spell or ability within ${ft} ft (${list}).`,

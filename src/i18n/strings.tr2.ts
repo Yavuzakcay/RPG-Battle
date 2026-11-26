@@ -446,6 +446,8 @@ export const TR_EXTRA = {
     grappleEscape: (a: string, skill: string, d20: string, total: number, dc: number, ok: boolean) => `${a} kaçmaya çalıştı: ${skill} zar ${d20}, toplam ${total} / DC ${dc}: ${ok ? 'kurtuldu' : 'kurtulamadı'}.`,
   },
   battle: {
+    /** Görev OYUNCU-HEDEF-DOST: karşı taraf hedefi onayı (ikinci dokunuş). */
+    crossConfirm: { ally: 'Dost hedef: devam? Onaylamak için yeniden dokun.', foe: 'Düşman hedef: devam? Onaylamak için yeniden dokun.' },
     wake: {
       damage: 'Uyanır: herhangi bir hasar alırsa.',
       loud: (ft: number, list: string) => `Uyanır: ${ft} ft içinde gürültülü büyü/yetenek (${list}).`,

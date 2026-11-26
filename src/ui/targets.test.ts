@@ -25,11 +25,12 @@ function arena(patch: Record<string, Partial<Combatant>> = {}): BattleState {
 
 describe('hedef listesi', () => {
   it('ayaktaki bitişik düşmanlar hedef', () => {
-    expect(attackTargets(arena(), 'A').sort()).toEqual(['B', 'C']);
+    // Görev OYUNCU-HEDEF-DOST: dost (P) da hedef (dokununca onay); düşmanlar aynen.
+    expect(attackTargets(arena(), 'A').sort()).toEqual(['B', 'C', 'P']);
   });
   it('0 HP canavar (altıgende kalsa da) hedef değil, seçenek yok', () => {
     const s = arena({ B: { hp: 0 } });
-    expect(attackTargets(s, 'A')).toEqual(['C']);
+    expect(attackTargets(s, 'A').sort()).toEqual(['C', 'P']);
     expect(attackChoices(s, 'A', 'B')).toEqual([]);
   });
   it('ölü karakter hedef değil; ölmekte ya da stabil (baygın) karakter hedef olabilir', () => {
@@ -40,6 +41,6 @@ describe('hedef listesi', () => {
   });
   it('kaybolan çağrılmış yaratık hedef değil', () => {
     const s = arena({ C: { summon: { by: 'X', spell: 'Summon Dragon', level: 5, gone: true } as unknown as Combatant['summon'] } });
-    expect(attackTargets(s, 'A')).toEqual(['B']);
+    expect(attackTargets(s, 'A').sort()).toEqual(['B', 'P']);
   });
 });

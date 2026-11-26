@@ -86,12 +86,13 @@ function techniqueEvents(state: BattleState, actor: Combatant, targetId: string,
  * Bonus eylemle Unarmed Strike: Flurry of Blows'un kalan vuruşu varsa onu (Open Hand Technique uygulanır), yoksa
  * Martial Arts'ın bonus vuruşu. Eylem ekonomisi `economy.ts`'te.
  */
-export function executeBonusStrike(state: BattleState, actor: Combatant, targetId: string, technique: Technique | undefined, rng: Rng): CommandResult {
+export function executeBonusStrike(state: BattleState, actor: Combatant, targetId: string, technique: Technique | undefined, rng: Rng, /** Görev OYUNCU-HEDEF-DOST */ cross = false): CommandResult {
   const why = bonusStrikeProblem(actor);
   if (why) return fail(why);
   const target = state.combatants[targetId];
   if (!target) return fail('Hedef bulunamadı.');
-  if (target.side === actor.side) return fail('Dostuna saldıramazsın.');
+  // Görev OYUNCU-HEDEF-DOST: onaylı dost hedefe Unarmed Strike (SRD hedefi sınırlamıyor).
+  if (target.side === actor.side && !cross) return fail('Dostuna saldıramazsın.');
   const flurry = (actor.economy.flurryLeft ?? 0) > 0;
   const r = weaponAttackEvents(state, actor, target, { ...actor.bonusStrike as NonNullable<Combatant['bonusStrike']>, label: flurry ? 'Flurry of Blows' : 'Unarmed Strike (bonus)' }, rng);
   if (!r.ok) return r;
