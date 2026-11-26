@@ -88,7 +88,8 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   if (!traits?.length) return [...inspired, ...k18];
   const out: ExtraDie[] = [];
   if (traits.includes('stroke-of-luck') && resourceLeft(c, 'strokeOfLuck') > 0) {
-    out.push({ label: 'Stroke of Luck', die: '20', sign: 1, reroll: 'twenty', resource: 'strokeOfLuck', holderId: c.id });
+    // Görev KARAR104 (A5, 104+ `k104` işareti; SRD 5.2.1 "you can turn the roll into a 20"): kullanmadan önce sorulur (Sor/Her zaman/Asla).
+    out.push({ label: 'Stroke of Luck', die: '20', sign: 1, reroll: 'twenty', resource: 'strokeOfLuck', holderId: c.id, ...(c.k104 ? { ask: true, askTrigger: 'boon' as const } : {}) });
   }
   if (on === 'save' && traits.includes('indomitable') && resourceLeft(c, 'indomitable') > 0) {
     // Görev B95-B (97+): başarı imkânsızken seçilmez (kullanım harcanmaz; SRD 5.2.1 s. 48 "can").

@@ -199,6 +199,8 @@ const fail = (error: string): SeruvenResult => ({ ok: false, error });
 export const nodeKey = (page: string, node: string) => `${page}/${node}`;
 
 export const toggleOn = (s: Pick<SeruvenState, 'toggles'>, key: string): boolean => s.toggles[key] ?? SERUVEN.anahtarlar[key]?.default ?? false;
+/** Görev KARAR104 (A11): 0 HP'de uzun dinlenme; anahtar `kolayDinlenme` açıkken ev kuralı (tam), yoksa SRD (1 HP). */
+export const zeroHpRest = (s: Pick<SeruvenState, 'toggles'>): 'srd' | 'ev' => (toggleOn(s, 'kolayDinlenme') ? 'ev' : 'srd');
 
 /** Düğümün yolculuk durağı (senaryo ya da sefer düğümü); verilen seviyede. Yoksa null (gizlenir). */
 export function nodeStop(node: SeruvenNode, level: number, night = false): JourneyStop | null {
@@ -296,7 +298,7 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
       if (state.done.includes(key)) return fail('Zaten alındı.');
       // Kuyruk 32: dinlenme düğümü bir kez uzun dinlenme (mevcut kural; ölü ölü kalır).
       if (stop.kind === 'rest') {
-        return done(state, [{ type: 'seruven_rested', key, statuses: Object.fromEntries(state.party.map((m) => [m.id, longRestStatus(m.sheet, m.status)])) }]);
+        return done(state, [{ type: 'seruven_rested', key, statuses: Object.fromEntries(state.party.map((m) => [m.id, longRestStatus(m.sheet, m.status, undefined, zeroHpRest(state))])) }]);
       }
       return done(state, [{ type: 'seruven_visited', key, gold: stop.reward?.gold ?? 0, potions: stop.reward?.potions ?? 0, items: stop.reward?.items ?? [] }]);
     }
@@ -343,7 +345,7 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
       // Bozgunda (anahtar açıksa) parti uzun dinlenir ve yeniden dener; mevcut dinlenme kuralı (ölü ölü kalır).
       const rested = cmd.outcome === 'lost' && toggleOn(state, 'bozgundaYenidenDene');
       if (rested) {
-        statuses = Object.fromEntries(state.party.map((m) => [m.id, longRestStatus(m.sheet, statusOf(m, cmd.statuses))]));
+        statuses = Object.fromEntries(state.party.map((m) => [m.id, longRestStatus(m.sheet, statusOf(m, cmd.statuses), undefined, zeroHpRest(state))]));
       }
       const evs: SeruvenEvent[] = [{
         type: 'seruven_result', key, outcome: cmd.outcome, statuses, xp: cmd.xp,
@@ -570,7 +572,7 @@ function yerlesimCommand(state: SeruvenState, page: SeruvenPage, cmd: SeruvenCom
     case 'inn_rest': {
       if (!cur || !y?.hub.han) return fail('Burada han yok.');
       if (state.gold < YERLESIM.hanUcreti) return fail('Altın yetmiyor.');
-      return done(state, [{ type: 'seruven_inn', gold: -YERLESIM.hanUcreti, statuses: Object.fromEntries(state.party.map((m) => [m.id, longRestStatus(m.sheet, m.status)])) }]);
+      return done(state, [{ type: 'seruven_inn', gold: -YERLESIM.hanUcreti, statuses: Object.fromEntries(state.party.map((m) => [m.id, longRestStatus(m.sheet, m.status, undefined, zeroHpRest(state))])) }]);
     }
     case 'quest_take': case 'quest_claim': {
       if (!cur || !y?.hub.gorevler.includes(cmd.quest)) return fail('Bu görev burada yok.');

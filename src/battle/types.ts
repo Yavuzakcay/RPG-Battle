@@ -384,6 +384,19 @@ export interface ActiveEffect {
   attackAdv?: boolean;
   berserk?: boolean;
   swallowedBy?: string;
+  /**
+   * Görev KARAR104 (sürüm 104, A3): etki sürerken nefes alamaz (SRD 5.2.1 "is suffocating": Rug of Smothering Smother, Gelatinous
+   * Cube Engulf, Darkmantle örtmesi; `unlessWater` Water Elemental Whelm: su soluyan nefes alır). Nefes sayacı su altıyla aynı
+   * (`underwater.ts` `holdingBreath`).
+   */
+  noBreath?: true | 'unlessWater';
+  /** Görev KARAR104 (sürüm 104, A4): likantrop laneti (canavar kimliği: werewolf, wererat…); yalnız işaret, savaş sonunda karaktere `lanet`. */
+  lycanthropy?: string;
+  /** Görev KARAR104 (sürüm 104, A2): bu etki yapışmadır (yapışan yaratığın kimliği; `attach.ts`); `attachAuto` ayırma zarsız (Stirge). */
+  attachedBy?: string;
+  attachAuto?: boolean;
+  /** Görev KARAR104 (A2, Cloaker): yapışanın üstünde; aldığı hasar kadar bu hedef de hasar alır. */
+  attachShare?: string;
   /** Görev D1 (86+): `at` hasar yutanın tur başında (varsayılan) ya da sonunda; `disgorge` + `since` (Giant Frog): yutulduğu turdan sonraki ilk tur sonunda hasar, ölmezse kusulur. */
   swallow?: { dice: string; type: string; dice2?: string; type2?: string; escapeDamage: number; escapeDc: number; at?: 'start' | 'end'; disgorge?: boolean; since?: number;
     /** Görev WS92 (92+): yutulan midede (konum yutanınki, hücre kaplamaz, dışarıdan Total Cover). */
@@ -809,6 +822,8 @@ export interface Combatant {
   sinif97?: boolean;
   /** KAPSAM103 (kural sürümü 103+): savaş başında konan işaret (Empowered Evocation Wizard büyüsü + INT, Gift of the Depths su soluma). */
   k103?: true;
+  /** Görev KARAR104 (104+): durum görmeyen yardımcılar için savaşçı işareti (eşya isabet ekinin bağlı silahı). */
+  k104?: true;
   /** Görev B94: yalnız savaş kurulumuna dek (startBattle siler): 93 ve altı savaşta geri eklenecek eski slotsuz büyüler. */
   freeSpellsPre94?: Record<string, string>;
   /** Kuyruk K50: imza alt sınıfı (`data/imza.json`; pasifler, saldırı kancası). */
@@ -891,7 +906,7 @@ export interface Combatant {
   fateBy?: string;
   fateFoe?: string;
   /** Kuyruk 19 (SRD denetimi): eşya isabet ekleri, yüklü büyülerin DC/saldırısı (kaynak → değer), yalnızca eşyadan bilinen büyüler. */
-  itemHits?: Array<{ label: string; dice: string; type: string; vs?: string[]; ranged?: boolean; melee?: boolean; critOnly?: boolean; /** Görev TE99 */ ammo?: boolean; weaponId?: string; replaceType?: boolean }>;
+  itemHits?: Array<{ label: string; dice: string; type: string; vs?: string[]; ranged?: boolean; melee?: boolean; critOnly?: boolean; /** Görev TE99 */ ammo?: boolean; weaponId?: string; replaceType?: boolean; /** Görev KARAR104 (A10) */ bound?: string | null }>;
   itemCasts?: Record<string, { dc?: number; attack?: number }>;
   itemOnlySpells?: string[];
   itemTraits?: string[];
@@ -1435,6 +1450,8 @@ export interface SpellZone {
    * merkezden aşağı). Yoksa yerden tepeye (`zoneTopFt`).
    */
   air?: { loFt: number; hiFt: number };
+  /** Görev KARAR104 (sürüm 104): aşamalı alanın (`ZoneSpec.stages`) şu anki aşaması; yapımda 1, büyücünün her sonraki tur başında +1 (`zone_stage`). */
+  stage?: number;
 }
 
 /** Görev Y1: yüzey türleri (`src/battle/surfaces.ts`). */
@@ -1646,6 +1663,8 @@ export interface AttackOption {
   shieldBusy?: boolean;
   /** Görev TE99: kural sürümü 99+ savaşta bu seçeneğin yerine geçen seçenek (eşya bonusu bağı; savaş başında çözülür). */
   te99Alt?: AttackOption;
+  /** Görev KARAR104 (A10): 104+ savaşta seçilen seçenek (silah eşyası bonusu yalnız bağlı silaha). */
+  k104Alt?: AttackOption;
   loading?: boolean;
   ammo?: string;
   /** K13: Wild Shape biçiminin saldırısı (canavar kimliği ve saldırı adı): ek etkileri (rider, süreli etki) canavardaki gibi. */
@@ -2233,7 +2252,7 @@ export type BattleEvent =
     }
   /** Zorla hareket veya lav yükselmesi: HP 0, ölüm kurtarması yok. */
   | { type: 'fell_into_lava'; actorId: string; at: Offset }
-  | { type: 'slot_spent'; actorId: string; level: number; remaining: number; /** Görev MC3: ayrı Pact havuzundan (savaş kaydı 26). */ pact?: true }
+  | { type: 'slot_spent'; actorId: string; level: number; remaining: number; /** Görev MC3: ayrı Pact havuzundan (savaş kaydı 27). */ pact?: true }
   | {
       type: 'save_resolved';
       actorId: string;
@@ -2377,6 +2396,8 @@ export type BattleEvent =
   | { type: 'zone_triggered'; zoneId: string; targetId: string; turn: string }
   /** Kuyruk 19: alanın verdiği hasar bütçeye yazılır (Guardian of Faith). */
   | { type: 'zone_dealt'; zoneId: string; amount: number }
+  /** Görev KARAR104 (sürüm 104, kayıt sürümü 26): aşamalı alan bir sonraki aşamaya geçti (Storm of Vengeance). */
+  | { type: 'zone_stage'; zoneId: string; stage: number }
   | { type: 'zone_panel_damaged'; zoneId: string; hex: Offset; amount: number }
   | { type: 'zone_ended'; zoneId: string; name: string; reason: 'expired' | 'concentration' | 'replaced' | 'dispelled' | 'reacted' | 'destroyed' }
   | { type: 'concentration_started'; actorId: string; spell: string; slotLevel: number; turn: string; targetId?: string; pos?: Offset }

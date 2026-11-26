@@ -83,11 +83,11 @@ Kısmi bağlananların uygulanmayan kısmı:
 | erinyes:Entangling Rope | ipin AC/HP'si ve bonus eylemle serbest bırakma yok. |
 | death-dog:Bite | Uzun dinlenmede HP maksimumu dönmemesi ve 24 saatte bir tekrar save savaş dışı. |
 | roper:Tentacle | dokunaçların AC/HP'si yok. |
-| animated-rug-of-smothering:Smother | 'hasar yerine yakalama' seçimi ve boğulma yok. |
+| animated-rug-of-smothering:Smother | 'hasar yerine yakalama' seçimi yok (boğulma 104'te, KARAR104 A3). |
 | shambling-mound:Engulf | yığının altıgenine girme ve birlikte taşınma yok (sürükleme mevcut yakalama kuralıyla). |
 | invisible-stalker:Vortex | sözlü bileşenli büyü yasağı yok. |
-| water-elemental:Whelm | boğulma yok. |
-| gelatinous-cube:Engulf | boğulma, sözlü bileşen yasağı ve küple birlikte taşınma yok (yutulan hedef alınamaz). |
+| water-elemental:Whelm | boğulma 104'te (KARAR104 A3). |
+| gelatinous-cube:Engulf | sözlü bileşen yasağı ve küple birlikte taşınma yok (yutulan hedef alınamaz); boğulma 104'te (KARAR104 A3). |
 | mummy:Rotting Fist | 24 saatte bir HP maksimumu azalması savaş dışı. |
 | mummy-lord:Rotting Fist | 24 saatte bir HP maksimumu azalması ve uzun dinlenme yasağı savaş dışı. |
 
@@ -95,18 +95,18 @@ Hiç bağlanmayanlar (yeni sistem gerektirir ya da savaş dışı):
 
 | Saldırı | Neden | Boyut |
 |---|---|---|
-| stirge:Proboscis | yapışma (attach) sistemi yok: yapışık kalıp her tur hasar, eylemle sökme | orta |
+| stirge:Proboscis | yapışma (attach) sistemi yok: yapışık kalıp her tur hasar, eylemle sökme (104: uygulandı, KARAR104 A2 `attach.ts`) | orta |
 | sprite:Heart Sight | savaş dışı (duygu/hizalanma bilgisi) | savaş dışı |
-| darkmantle:Crush | yapışma (attach) sistemi yok: hedefe yapışıp birlikte hareket, avantajla örtme | orta |
-| wererat:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (yeni sistem) | büyük |
-| werewolf:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme | büyük |
+| darkmantle:Crush | yapışma (attach) sistemi yok: hedefe yapışıp birlikte hareket, avantajla örtme (104: uygulandı, KARAR104 A2 `attach.ts`) | orta |
+| wererat:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (yeni sistem) (104: lanet işareti, KARAR104 A4; dönüşme yok) | büyük |
+| werewolf:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (104: lanet işareti, KARAR104 A4; dönüşme yok) | büyük |
 | ghost:Possession | **Kuyruk K64a (sürüm 48) uygulandı**: `src/battle/possession.ts`, `data/ele-gecirme.json` (Game Master anahtarı `possession`) | tamam |
 | incubus:Restless Touch | savaş dışı (kısa dinlenme yararı yok) | savaş dışı |
-| wereboar:Gore | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme | büyük |
-| weretiger:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme | büyük |
+| wereboar:Gore | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (104: lanet işareti, KARAR104 A4; dönüşme yok) | büyük |
+| weretiger:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (104: lanet işareti, KARAR104 A4; dönüşme yok) | büyük |
 | barbed-devil:Hurl Flame | yalnızca giyilmeyen yanıcı nesneye; canavar saldırısı nesne hedeflemez | küçük |
-| werebear:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme | büyük |
-| cloaker:Attach | yapışma (attach) sistemi yok: hasar paylaşımı, birlikte hareket | orta |
+| werebear:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (104: lanet işareti, KARAR104 A4; dönüşme yok) | büyük |
+| cloaker:Attach | yapışma (attach) sistemi yok: hasar paylaşımı, birlikte hareket (104: uygulandı, KARAR104 A2 `attach.ts`) | orta |
 | aboleth:Dominate Mind | kalıcı zihin kontrolü + telepati (allegianceSwap bağlantısı ayrı iş; ölüm/uzaklık koşulu) | büyük |
 | horned-devil:Hurl Flame | yalnızca giyilmeyen yanıcı nesneye; canavar saldırısı nesne hedeflemez | küçük |
 | rakshasa:Cursed Touch | savaş dışı (dinlenme yararı yok) | savaş dışı |

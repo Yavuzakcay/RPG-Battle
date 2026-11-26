@@ -10,7 +10,9 @@ import { items, type Item } from '../data';
 import type { ActiveEffect, AttackOption, Combatant } from './types';
 
 
-export type ItemHit = { label: string; dice: string; type: string; vs?: string[]; ranged?: boolean; melee?: boolean; critOnly?: boolean; ammo?: boolean; weaponId?: string; replaceType?: boolean };
+export type ItemHit = { label: string; dice: string; type: string; vs?: string[]; ranged?: boolean; melee?: boolean; critOnly?: boolean; ammo?: boolean; weaponId?: string; replaceType?: boolean;
+  /** Görev KARAR104 (A10, 104+ `k104` işareti): eşyanın bağlı silahı (null: uygun silah yok, ek işlemez); yoksa eski davranış. */
+  bound?: string | null };
 
 /** Bu saldırıya uygulanacak eşya isabet ekleri. */
 export function itemHitsFor(actor: Combatant, option: AttackOption, target: Combatant, natural20 = false): ItemHit[] {
@@ -19,7 +21,9 @@ export function itemHitsFor(actor: Combatant, option: AttackOption, target: Comb
   // `altDamageType`), cephane eki yalnız cephaneli silahta (Ammunition of Slaying), silah eki yalnız o silahta.
   const t99 = !!actor.te99;
   return (actor.itemHits ?? []).filter((h) => (!h.critOnly || natural20) && (!h.vs || h.vs.includes(type)) && (!h.ranged || option.ranged) && (!h.melee || !option.ranged)
-    && !(t99 && (h.replaceType || (h.ammo && !option.ammo) || (h.weaponId && option.weaponId !== h.weaponId))));
+    && !(t99 && (h.replaceType || (h.ammo && !option.ammo) || (h.weaponId && option.weaponId !== h.weaponId)))
+    // Görev KARAR104 (A10, 104+): silah eşyasının eki yalnız bağlı silahla (SRD "made with this magic weapon").
+    && !(actor.k104 && h.bound !== undefined && option.weaponId !== h.bound));
 }
 
 /** Karakterin etkin (ayarlanmış) eşyalarından savaşçı parçaları. */
@@ -29,8 +33,12 @@ export interface ItemParts {
   addSpells: string[]; addResources: Record<string, number>; addFree: Record<string, string>; weaponBonus: number;
   /** Görev TE99: cephane bonusu (Ammunition, +N) ve onun dışındaki silah bonusu ayrı (99+ yalnız cephaneli silaha). */
   ammoBonus: number; weaponBonusNoAmmo: number;
+  /** Görev KARAR104 (A10): bağlanan silah eşyalarının bonusu silah kimliğine göre; bağlanmayan (silah olmayan) eşyaların bonusu `looseBonus`. */
+  boundBonus: Record<string, number>; looseBonus: number;
 }
-export function itemParts(owned: string[], ownerId: string): ItemParts {
+/** Görev KARAR104 (A10): eşyanın bağlı silahı (`rules/itemBinding.ts`); `undefined` bağlanan türden değil, `null` uygun silah yok. */
+export type BindFn = (itemName: string) => string | null | undefined;
+export function itemParts(owned: string[], ownerId: string, bind: BindFn = () => undefined): ItemParts {
   const list = owned.map((n) => items.find((i) => i.name === n)).filter((i): i is Item => !!i);
   const effects: ActiveEffect[] = [];
   const hits: ItemHit[] = [];
@@ -46,7 +54,10 @@ export function itemParts(owned: string[], ownerId: string): ItemParts {
   let ammoBonus = 0;
   let weaponBonusNoAmmo = 0;
   let spellBonus = 0;
+  const boundBonus: Record<string, number> = {};
+  let looseBonus = 0;
   for (const it of list) {
+    const bound = bind(it.name);
     if (it.passive) {
       // Savaşçı alanına giden özel anahtarlar (işaretler, düşme, gizlilik, eldiven tepkisi); kalanı süren etki.
       const { traits: tr, fallReduction: fr, noStealthDis: ns, rangedReduce: rr, ...rest } = it.passive as Record<string, unknown>;
@@ -57,7 +68,12 @@ export function itemParts(owned: string[], ownerId: string): ItemParts {
       if (Object.keys(rest).length) effects.push({ ...(rest as Partial<ActiveEffect>), id: `item:${it.id}`, name: it.name, sourceId: ownerId } as ActiveEffect);
     }
     if (it.onHit) hits.push({ label: it.onHit.label ?? it.name, dice: it.onHit.dice, type: it.onHit.type, ...(it.onHit.vs ? { vs: it.onHit.vs } : {}), ...(it.onHit.ranged ? { ranged: true } : {}), ...(it.onHit.melee ? { melee: true } : {}), ...(it.onHit.critOnly ? { critOnly: true } : {}),
-      ...(it.onHit.ammo ? { ammo: true } : {}), ...(it.onHit.weaponId ? { weaponId: it.onHit.weaponId } : {}), ...(it.onHit.replaceType ? { replaceType: true } : {}) });
+      ...(it.onHit.ammo ? { ammo: true } : {}), ...(it.onHit.weaponId ? { weaponId: it.onHit.weaponId } : {}), ...(it.onHit.replaceType ? { replaceType: true } : {}),
+      ...(bound !== undefined ? { bound } : {}) });
+    if (it.bonus?.weapon && !it.bonus.ammoOnly) {
+      if (bound === undefined) looseBonus = Math.max(looseBonus, it.bonus.weapon);
+      else if (bound) boundBonus[bound] = Math.max(boundBonus[bound] ?? 0, it.bonus.weapon);
+    }
     weaponBonus = Math.max(weaponBonus, it.bonus?.weapon ?? 0);
     if (it.bonus?.ammoOnly) ammoBonus = Math.max(ammoBonus, it.bonus.weapon ?? 0); else weaponBonusNoAmmo = Math.max(weaponBonusNoAmmo, it.bonus?.weapon ?? 0);
     spellBonus = Math.max(spellBonus, it.bonus?.spell ?? 0);
@@ -68,7 +84,7 @@ export function itemParts(owned: string[], ownerId: string): ItemParts {
       for (const sp of it.spells) { addFree[sp.name] ??= res; addSpells.push(sp.name); }
     }
   }
-  return { traits, fallReduction, noStealthDis, ...(rangedReduce ? { rangedReduce } : {}), effects, hits, casts, spellBonus, addSpells, addResources, addFree, weaponBonus, ammoBonus, weaponBonusNoAmmo };
+  return { traits, fallReduction, noStealthDis, ...(rangedReduce ? { rangedReduce } : {}), effects, hits, casts, spellBonus, addSpells, addResources, addFree, weaponBonus, ammoBonus, weaponBonusNoAmmo, boundBonus, looseBonus };
 }
 
 /**

@@ -244,12 +244,12 @@ Her satırın sonucu. **düzeldi (99)**: kural sürümü 99 ve sonrası (98 ve a
 | D23 | Uyum ön şartı: sınıf ya da "by a Spellcaster" | ertelendi (bu turun kapsamı dışında) |
 | D24 | Armor/Shield +1..+3, Ring/Cloak of Protection (+1 AC ve save), Bracers of Defense (+2 z… | değişmedi (tam) |
 | D25 | Yetenek skoru ayarlayan eşyalar: Belt of Giant Strength ×6, Gauntlets of Ogre Power, He… | değişmedi (tam) |
-| D26 | Weapon +1/+2/+3: **o silahla** saldırı ve hasar | ertelendi (eşya ↔ silah bağı yeni şema ister, K-D2) |
+| D26 | Weapon +1/+2/+3: **o silahla** saldırı ve hasar | düzeldi (104, KARAR104 A10: `silahBagi`, ana silah varsayılan) |
 | D27 | Ammunition +1/+2/+3: yalnız o cephaneyle, isabetten sonra büyüsü biter | kısmen düzeldi (99: yalnız cephaneli silah; parçanın tek kullanımı ertelendi) |
 | D28 | Flame Tongue: Bonus Action ile tutuşur, tutuşukken +2d6 Fire, 40 ft parlak + 40 ft loş | ertelendi (bu turun kapsamı dışında) |
 | D29 | Javelin of Lightning: isabette Lightning'e çevir; Lightning Bolt: 120 ft 5 ft çizgi, DC… | kısmen düzeldi (99: +4d6 kalktı, Javelin Lightning türü; Lightning Bolt ertelendi) |
 | D30 | Ammunition of Slaying: seçilen tür, DC 17 CON, 6d10 **Force** (yarı), sonra büyüsüz | kısmen düzeldi (99: yalnız cephaneli silah; tür, DC 17 CON, Force, tek kullanım ertelendi) |
-| D31 | Diğer isabet ekli silahlar (24 `onHit`; Dragon/Giant Slayer, Holy Avenger, Mace of Disr… | ertelendi (eşya ↔ silah bağı, K-D2) |
+| D31 | Diğer isabet ekli silahlar (24 `onHit`; Dragon/Giant Slayer, Holy Avenger, Mace of Disr… | düzeldi (104, KARAR104 A10: ek yalnız bağlı silahla) |
 | D32 | Yüklü büyü eşyaları: Wand of Magic Missiles (1–3 yük, yük başına +1 seviye), Wand of Fi… | kısmen düzeldi (yük kalıcı; yükle yukarı seviye ertelendi) |
 | D33 | Şarjların kalıcılığı ve şafakta yenilenme (1d6+1 vb.), son yükte 1d20 | sürümsüz (yük durumda, veride `recharge`) + 99 tür kaynağı |
 | D34 | Boots of Speed: Bonus Action ile hız ×2 **ve fırsat saldırısına dezavantaj**, toplam 10… | ertelendi (bu turun kapsamı dışında) |

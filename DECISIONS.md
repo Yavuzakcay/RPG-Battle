@@ -2,12 +2,41 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
-## Görev MC3: ortak büyü yuvası, ayrı Pact havuzu, sınıf başına büyü; çoklu sınıf tembel parçada (2026-11-25; kural sürümü 105, savaş kaydı 26)
+## Görev MC3-BIRLESTIR: KARAR104'ün (birlesik `a50fd8ed`) MC dalına birleşmesi (2026-11-26; kural sürümü 105, savaş kaydı 27)
+
+**Sürüm numaraları.** `origin/birlesik` `a50fd8ed` (KARAR104 kodu, ESYA-IKON-AYIRT, KARAR104 kapanış belgeleri) merge edildi
+(rebase yok). Kural sürümü: **104 KARAR104**, **105 MC3**; `data/kural-surumu.json` `surum` 105, not satırı ikisini birlikte
+anlatır (105 MC3, ardından 104 KARAR104). Savaş kaydı: **26 KARAR104** (`zone_stage`), **27 MC3** (`slot_spent.pact`);
+`SAVE_VERSION` 27, `LOADABLE_VERSIONS` 3–27. Kayıt sürümünü sınayan testler (`statusFx`, `areaView`, `s1`, `g1`, `mc3`) 27'ye
+çekildi; gerekçe: MC3'ün olay biçimi KARAR104'ün 26'sının üstüne geldi. CLAUDE.md hafif doğrulama metni iki tarafta da aynıydı
+(değişmedi); kural sürümü ve kayıt sürümü satırları iki işi birlikte anlatır, karakter kayıt sürümü 4 (MC1) korundu.
+
+**Altın değerler yeniden üretildi** (`scripts/mc3-eski-yeni.ts`, MC3 öncesi taban artık `a50fd8ed`; `src/sim/mc3-altin.json`):
+- tek sınıflı 75 savaşçı: yeni kodda 104 ve 105, tabandaki 104 ile aynı; 103, tabandaki 103 ile aynı (ikisi de ilk altınla,
+  `f85717ea`, aynı: KARAR104 savaşçı kurulumunu değiştirmemiş);
+- taban ağacın savaş kaydı (sürüm 26, Çöl, 3 tur, 258 olay) yeni kodla aynı duruma oynar ve yüklenir; `f85717ea`'nın 25
+  sürümlü kaydı da (aynı olay günlüğü, oynatma özeti `68f4dc089a5a` değişmedi) yüklenir;
+- 103 = 104 eşitliği artık sınanmaz (104 KARAR104'ü içerir): test 104 = taban ve 105 = 104.
+- MC2'nin 362 durumluk altını (`cdc8c2a0`) yeniden üretilmeden geçti (KARAR104'ün sürümsüz A11'i, 0 HP uzun dinlenme, MC2
+  derlemindeki durumlara girmiyor).
+
+**100 tohum hızlı regresyon (Çöl/Kale/Mağara/Orman, 5. seviye standart parti).** Yeni kodda 104 ve 105 imzaları birebir aynı
+ve taban 104 ile aynı: col `a2c8ab4ab4e4`, kale `37f46869188f`, mağara `f76f0164847e`, orman `d2cc7015ae54`. İlk altına göre
+(103) yalnız Mağara değişti (`ec2eaaa685ef` → `f76f0164847e`; 3 tohumda `d5c57fa480a7` → `6a427db4ba8e`): KARAR104'ün davranışı
+(Mağara listesinde Darkmantle, A2 yapışma), MC3'le ilgisi yok; düzeltme yapılmadı.
+
+**Paket.** Ana parça 455,81 kB (bu iş için onaylı sınır 465 kB; `scripts/paket-siniri.mjs` sınırı 500).
+
+**Doğrulama.** typecheck, ilgili testler (MC1/MC2/MC3, regresyon 3 tohum, kayıt sürümü testleri, `karar104`, `battleSave`,
+`characterRest`), build, check:harita (92/92), check:ses (15/15). Tam `npm test` çalıştırılmadı (hafif doğrulama modu).
+
+## Görev MC3: ortak büyü yuvası, ayrı Pact havuzu, sınıf başına büyü; çoklu sınıf tembel parçada (2026-11-25; kural sürümü 105, savaş kaydı 27 (MC3-BIRLESTIR'de 26'dan))
 
 **Sürüm numaraları.** Başlarken `origin/birlesik` hâlâ `d8c8ef78`'deydi (yeni commit yok; zaten birleşmişti): kural sürümü 103,
 `SAVE_VERSION` 25; KARAR104 girmemiş. Karara göre (MC2 kaydı) MC3 **105**'i aldı, **104 KARAR104'e ayrılmış** boş kalır (85
 "boş" örneği gibi; sürüm denetimleri "≥ N" olduğundan aradaki boşluk bir şey değiştirmez). Savaş kaydı **26**: KARAR104 henüz
-yokken MC3'ün olay biçimi (`slot_spent.pact`) değişti; **KARAR104 savaş kaydını artırırsa 27'yi alır**. KARAR104 birleşirken
+yokken MC3'ün olay biçimi (`slot_spent.pact`) değişti; **KARAR104 savaş kaydını artırırsa 27'yi alır**. (MC3-BIRLESTIR: KARAR104
+26'yı aldı, MC3 27 oldu; altın değerler `a50fd8ed` tabanında yeniden üretildi, yukarıdaki kayıt.) KARAR104 birleşirken
 `data/kural-surumu.json` `surum` 105'te kalmalı (104 değil), not satırı ikisini birlikte anlatır.
 
 **Paket boyutu (kullanıcı şartı: ana parça ≤ 455 kB).** MC2'de ana parça 461,08 kB'tı. Çoklu sınıfın bütün hesapları ve
@@ -130,6 +159,95 @@ yalnız 2+ sınıfta yazılır; varken `classId`/`subclassId` ilk öğeden, `lev
 3'teki gibi yazılır (yalnız `surum` 4), eski kayıtlar göçsüz yüklenir (test `src/rules/multiclass.test.ts`). Hiçbir hesap
 henüz alanı okumuyor: davranış değişmedi. `src/screens/ck1.test.tsx` kayıt sürümü beklentisi 3 → 4 (sürüm artışı bu görevin
 kendisi).
+## Görev ESYA-IKON-AYIRT: aynı ikonu paylaşan eşya varyantları ayrıştı (2026-11-26; yalnız görünüm, kural/kayıt sürümü yok)
+
+61 kayıt SRD üst kimliğinin tek ikonunu paylaşıyordu (Ammunition/Armor/Shield/Weapon/Wand of the War Mage +1/+2/+3, Armor/Potion/Ring of
+Resistance ×13, Armor of Vulnerability ×3, Crystal Ball ×4). `scripts/esya-ikon-ayirt.mjs` (veri `data/esya-ikon-ayirt.json`) taban
+ikondan 45 kayda ayrı dosya üretir; Crystal Ball kendi çizimiyle kalır (gerçek çizimli kayda dokunulmaz), üç türevi küre rengi + glif alır.
+
+- **+1/+2/+3 (15 kayıt) bu hatta yok** (kullanıcı kararı, aynı gün): ilk sürümdeki nadirlik renkli +N köşe rozeti kaldırıldı; ikonları
+  Gemini'den ayrı bir ikon sayfası olarak gelecek ve `data/esya-ikon-sayfalar.json` ile içe aktarılacak. O zamana dek üç kayıt yine
+  üst kimliğin ikonunu paylaşır (5 grup × 3).
+- **Resistance**: yalnız doygun pikseller (taş, iksir sıvısı, parıltı) hasar türü tonuna döner, metal/deri gövde kalır; köşede hasar
+  glifi (public/glif). 13 tonun bazıları yakın (necrotic/piercing/slashing grimsi, force/thunder mor-lacivert): ayırıcı asıl glif.
+- **Vulnerability**: kırmızımsı ton + glif + sol üstte kırmızı aşağı ok (Resistance'tan ayrışır).
+- **Crystal Ball türevleri**: Mind Reading pembe + psychic, Telepathy mor + enchantment, True Seeing altın + divination (göz) glifi
+  (görev önerisi "ışık" yerine göz: True Seeing görme büyüsü). Gerçek çizim gelirse `esya-ikon-sayfalar.json`'da kendi hücresi olur ve
+  betik o kaydı atlar.
+- **Taban yeri**: üst kimlik oyun kaydı olmadığından public/esya'da yok (ikon hattı yalnız oyun kayıtlarını yazar, artığı siler). Taban
+  `assets/esya-taban/` (256 + kucuk/96; depoda) — `npm run esya-ikon` yazar ve sonunda ayırt aşamasını çalıştırır; ayırt betiği tek başına
+  da çalışır (idempotent, ham sayfa gerekmez).
+- ⚠ Yerelde ham sayfa `assets-ham/esya/duzeltme-9.jpg` adında, manifest `duzeltme-09.jpg` bekliyor: tam `npm run esya-ikon` bu sayfayı
+  eksik sayıp 5 kaydı (healing iksirleri, spyglass) eski görsele döndürür ve `esyaIkon.test.ts` yerelde 449 ≠ 448 verir. Bu görevde
+  düzeltilmedi; o 10 dosya geri alındı.
+
+## Görev KARAR104: bekleyen kullanıcı kararları SRD 5.2.1'e göre (2026-11-24; kural sürümü 104 `KARAR104_VERSION`, kayıt sürümü 26)
+
+Kapsam kullanıcıyla bu oturumda belirlendi (yol haritası dosyası depoda yoktu); kaynak `harita/belgeler/GECE-KUYRUGU-RAPOR.md`
+"Karar gerekli" ve `harita/belgeler/EKSIK-TARAMA.md`. Tek sabit `src/battle/karar104Surum.ts` (`KARAR104_VERSION` 104, `karar104On`);
+103 ve altı (eski kayıt, replay) aynen. Testler `src/battle/karar104.test.ts` (103 ↔ 104 + replay). Sıra küçükten büyüğe, her madde ayrı
+commit: A1, A3, A4, A11, A2, A10, A5. Değişen eski testler: `ruleVersion.test.ts`, `g6.test.ts` (103 → 104); `SAVE_VERSION` 25 → 26
+(`s1`, `g1`, `areaView`, `statusFx`).
+
+- **Ertelendi (kullanıcı kararı, sonraki tura):** A6 SRD-12 sınıf özelliği sapmaları (Cutting Words ıskada, Quivering Palm vazgeçme,
+  Holy Nimbus/Hurl Through Hell yenilenme, Dark One's Own Luck zamanı, Supreme Sneak siper zamanı), A7 Unconscious eşya düşürme + yapay
+  zekânın yerden silah alması (GENEL-SAVAS B40), A8 Swarm'ın başka yaratığın altıgeninde durması (SWARM95), A9 Ready yanıt listesi
+  (Dash/Disengage/Dodge/Help/Hide/Utilize; GENEL-SAVAS A23). Çoklu sınıf kural sürümü 105'e (başka dal), bu göreve girmedi.
+- **A1 Storm of Vengeance 2–10. tur aşamaları** (SRD 5.2.1 s. 165 "At the start of each of your later turns"): büyü verisinde `k104`
+  bloğu (`zone.stages`: tur, save, hasar, `targets`, `persist`), alan yapımda `stage: 1`, büyücünün her tur başında `zone_stage` olayı
+  (`src/battle/stormStage.ts`, `commands.ts` tur başı zinciri; kayıt sürümü 26). 2. tur 4d6 Acid, 3. tur altı yıldırım (DEX, 10d6
+  Lightning, yarı), 4. tur 2d6 Bludgeoning, 5–10. tur 1d6 Cold; 5. turdan sonra alan zorlu arazi, yoğun örtü ve menzilli silah
+  saldırısı yok (saldıran ya da hedef alandaysa otomatik ıska; `zones.ts` `stagedSpec`, `noRangedWeapon`). Hasar aşamada bir kez atılır.
+  ⚠ Yıldırımın altı hedefi oyuncuya sorulmuyor: büyücünün düşmanlarından merkeze en yakın altısı; nesneler (asit, yıldırım) hedef
+  değil; "strong wind" ayrıca uygulanmadı (menzilli silah saldırısı zaten yok). Yapı: 103'te yalnız yapım turu.
+- **A3 boğulma** (SRD 5.2.1 "is suffocating" + Rules Glossary Suffocation): süren etkide `noBreath` (`true`; Water Elemental Whelm
+  `unlessWater`: su soluyan etkilenmez). Rug of Smothering Smother ve Whelm etkisinde (`data/canavar-ekleri-a2.json` `effect.noBreath`),
+  Gelatinous Cube Engulf yutma yolunda (`swallow.noBreath`); Darkmantle örtmesi A2'de. Nefes sayacı su altıyla aynı yol
+  (`underwater.ts` `smothered` → `holdingBreath`: 1 + CON dakika tutar, sonra her tur sonu 1 Exhaustion; etki bitince nefes alır,
+  boğulmadan gelen Exhaustion gider). 103'te etki `noBreath` taşımaz.
+- **A4 likantrop laneti yalnız işaret** (kullanıcı kararı; SRD 5.2.1 Werewolf/Wererat/Wereboar/Weretiger/Werebear ısırığı, CON DC 11–14):
+  `data/canavar-ekleri-a2.json` `lanet` (5 saldırı, `surum` 104), `ridersA2.ts` `lycanthropyEvents`: Humanoid hedef (oyuncu karakteri
+  ya da Humanoid canavar; Beast biçimi değil) save'i başaramazsa süren etki `lycanthropy` (canavar kimliği), başarırsa o yaratığın
+  lanetine 24 saat bağışık. Savaş sonunda karaktere `CharacterStatus.lanet` (`partyStatus.ts`), dinlenmeler kaldırmaz
+  (`characterRest.ts` `moralPart`), karakter listesinde dinlenme panelinde "Lanetli" satırı. ⚠ 0 HP'de canavara dönüşme ve Game
+  Master'ın denetimine geçme yok (bilinçli); Remove Curse ile kaldırma savaş dışı (Game Master kaydı siler).
+- **A11 0 HP'de uzun dinlenme** (GENEL-SAVAS G6/D21; kullanıcı kararı: Normal SRD, Kolay ev kuralı; savaş dışı, sürümsüz):
+  `characterRest.ts` `longRestStatus(…, zeroHp)`: `srd` (varsayılan; SRD 5.2.1 s. 185 "at least 1 Hit Point", s. 18 stabil yaratık
+  1d4 saatte 1 HP) dinlenme başlamaz, karakter 1 HP ile kalkar, başka kazanç yok; `ev` eski davranış (tam). Nerede hangisi: karakter
+  listesi ve Game Master "Hepsini dinlendir" SRD (zorluk yok; listede "1d4 saat sonra 1 HP" notu); yolculuk zorluğa göre
+  (`data/yolculuk/ayarlar.json` `zeroHpLongRest`: Kolay ev, Normal/Zor SRD); Serüven dinlenme düğümü, han ve bozgunda yeniden deneme
+  yeni anahtar `kolayDinlenme` (varsayılan kapalı = SRD). Hapishane başarısızlığı (`dragBack`) sürüklenme saatlerinde önce uyanma
+  (1 HP) sonra uzun dinlenme: sonuç eskisiyle aynı. ⚠ 1d4 saatlik süre yolculuk saatine eklenmiyor; Serüven bozgun tekrarı Normal'de
+  düşenleri 1 HP ile yeniden savaşa sokar (`sim:zincir` ölçülmedi).
+- **A2 yapışma** (SRD 5.2.1 Stirge Proboscis s. 330, Darkmantle Crush s. 279, Cloaker Attach s. 274): yeni modül
+  `src/battle/attach.ts`, kural `data/canavar-ekleri-a2.json` `yapisma` (`surum` 104). Tek doğru kaynak hedefteki süren etki
+  (`attachedBy`); yapışan bağlıyken hedefe bitişik kalır (komut sonunda hedefin yanındaki en yakın boş altıgene `teleported`, yer
+  yoksa düşer), hedef yürürken yapışanın fırsat saldırısı yok (`features.ts`). Yapışan kendi yürüme/atlama komutuyla 5 ft harcayarak
+  ayrılır (`commands.ts` `detachSelfEvents`). Ayırma: hedef `escape` (Darkmantle DC 13, Cloaker DC 14 STR (Athletics); Stirge zarsız
+  `attachAuto`), Stirge ve Cloaker'da 5 ft içindeki dost `help` (`escapeCheck.allyHelp`, yapay zekâ da kullanır). Kısıtlar
+  (`monsters.ts` `attachBlock`): Stirge bağlıyken Proboscis yok, Cloaker Attach'ı başka hedefe yok, Darkmantle yalnız hedefe ve
+  avantajlı (`attachSources`). Stirge 2d4 Necrotic stirge'nin tur başında (`sourceTurnDamage`). Darkmantle avantajlı isabette
+  Medium ya da küçük hedefi örter: Blinded + nefes alamaz (A3 `noBreath`). Cloaker: hedef Blinded; cloaker bütün türlere dirençli
+  (yarı, aşağı) ve komut sonunda aldığı kadar hasar hedefe (`effect_tick`). ⚠ Paylaşılan hasar türsüz (hedefin direnci işlemez);
+  Darkmantle'ın "Speed 0, hız bonusu yok" kısmı ayrıca uygulanmadı (hareket ayrılma sayılır); yapışanın irtifası hedefi izlemez;
+  yapay zekâ bilerek ayrılmaz.
+- **A10 eşya ↔ silah bağı** (KARAR101 5e, TE99 K-D2; kullanıcı kararı: ana silah varsayılan, oyuncu isterse seçer; SRD 5.2.1 s. 253
+  "made with this magic weapon"): uygun silahlar `data/esya-silah-bagi.json` (36 silah eşyası; SRD tür satırından: liste, `any`,
+  `melee`; asalar Quarterstaff, Rod of Lordly Might Mace), karakterde yeni alan `CharacterSheet.silahBagi` (eşya adı → silah adı;
+  yoksa ana silah = sayfadaki ilk uygun silah; geçersiz seçim ana silaha düşer), modül `src/rules/itemBinding.ts`. Savaşta 104+:
+  eşyanın silah bonusu yalnız bağlı silah seçeneğine (`create.ts` `k104Alt`, savaş başında sürüme göre seçilir), isabet eki
+  (`onHit`) yalnız bağlı silahla (`itemHitsFor`, savaşçıda `k104` işareti). Uygun silah taşımayan karakterde eşyanın bonusu ve
+  eki işlemez (oluşturucuda uyarı). Oluşturucu donanım adımında bağlanan eşyanın altında "Bağlı silah" seçimi. Cephane
+  (Ammunition, +N, Slaying) ve Javelin of Lightning TE99 yolunda kaldı. 103 ve altı: bonus her silaha (eski davranış). ⚠ Aynı
+  silahın iki girdisi ayrılmaz (bağ silah adına); kayıt sürümü değişmedi (alan isteğe bağlı).
+- **A5 otomatik seçimler "Sor"a bağlı** (kullanıcı kararı: tepki ayarındaki Sor; kancasız Rng/simülasyon ve yapay zekâ bugünkü
+  otomatik seçimi önerir, imza değişmez): seçim istemi `askChoice` (tetik `choice`; "Her zaman"/"Asla" ayarında öneri) ve yeni sıralı
+  çoklu seçim `rules/choice.ts` `askPicks` (her adımda kalan adaylar, öneri sıradaki otomatik aday, "Seçme" bitirir). 104+:
+  Sculpt Spells (korunacak yaratıklar, `spells.ts`; Careful Spell aynı havuz), Preserve Life (iyileştirme sırası, `cleric.ts`),
+  Land's Aid (save atacaklar + iyileşecek tek yaratık, `druid.ts`), Superior Hunter's Prey (ikinci hedef, `classTraits.ts`),
+  Intimidating Presence (hedefler, `apex.ts`), Stroke of Luck (kullanmadan önce `boon` sorusu, `effectDice.ts`, `k104` işareti).
+  Zaten soran: Bardic Inspiration (98), Improve Fate, Peerless Aim, Heroic Inspiration (99). 103 ve altı: sorusuz eski yol.
+  ⚠ Çok hedefli seçimler sıralı istem (hedef başına bir soru); Land's Aid'de dost da seçilebilir (SRD "of your choice").
 
 ## CELESTIAL-KANAT-IYILESME: Kırık Kanat uçuşu iyileşince melek kanadı ve renkli gövde (2026-11-23; yalnız görünüm, kural/kayıt sürümü değişmedi)
 

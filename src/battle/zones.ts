@@ -58,12 +58,23 @@ import { k73cOn } from './k73cSurum';
 // Tur başı çekme kancaları (Control Water girdabı `girdap.ts` kaydeder) yaprak modülde: döngüsel ilklendirme sırası sorun olmasın.
 import { START_PULL } from './zoneHooks';
 import { te99On } from './te99Surum';
+import { karar104On } from './karar104Surum';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 
 const spellById = (id: string): Spell | undefined => spells.find((s) => s.id === id);
 /** Alanın kuralı: büyü alanında büyü verisi, yüzeyde (Görev Y1) `data/yuzeyler.json`. */
-export const zoneSpecOf = (z: SpellZone): ZoneSpec | undefined =>
+export const zoneSpecOf = (z: SpellZone): ZoneSpec | undefined => stagedSpec(z, baseZoneSpecOf(z));
+/**
+ * Görev KARAR104 (sürüm 104, A1): aşamalı alanda ulaşılan aşamaların kalıcı kuralı (`persist`) alan kuralına eklenir (Storm of
+ * Vengeance 5. turdan sonra zorlu arazi, yoğun örtü, menzilli silah saldırısı yok). `stage` yalnız 104+ alanda yazılır.
+ */
+function stagedSpec(z: SpellZone, spec: ZoneSpec | undefined): ZoneSpec | undefined {
+  if (!spec || !z.stage || !Array.isArray(spec.stages)) return spec;
+  const add = spec.stages.filter((st) => st.persist && st.turn <= (z.stage as number));
+  return add.length ? add.reduce((acc, st) => ({ ...acc, ...st.persist }), spec) : spec;
+}
+const baseZoneSpecOf = (z: SpellZone): ZoneSpec | undefined =>
   z.spec ? z.spec : z.surface ? (surfaceData.kinds as Record<string, { zone: ZoneSpec }>)[z.surface]?.zone
     // Kuyruk 19: alan büyüsünün ardından kalan zemin (`aftermath`; Ice Storm'un dolu taneleri).
     : spellById(z.spellId)?.mechanics.zone ?? spellById(z.spellId)?.mechanics.aftermath ?? spellById(z.spellId)?.mechanics.upgrade?.buffZone
@@ -541,7 +552,10 @@ export function zoneAttackSources(state: BattleState, attacker: Combatant, targe
   if (between) out.push({ effect: 'disadvantage', reason: 'Görülmeyen hedef (arada yoğun örtü)' }, { effect: 'advantage', reason: 'Görülmeyen saldıran (arada yoğun örtü)' });
   // Kuyruk 18 H2: Antilife Shell: dışarıdan içerideki hedefe yakın dövüş ulaşmaz.
   const shell = !ranged ? (state.map.zones ?? []).find((z) => zoneSpecOf(z)?.repel && inZone(state, z, target.pos) && repelled(state, z, attacker)) : undefined;
-  const blocked = wall ?? shell;
+  // Görev KARAR104 (sürüm 104, A1 Storm of Vengeance 5–10. tur): "ranged attacks with weapons are impossible there": saldıran ya da
+  // hedef alandaysa menzilli silah saldırısı ulaşmaz.
+  const storm = ranged && !spell ? (state.map.zones ?? []).find((z) => zoneSpecOf(z)?.noRangedWeapon && (inZone(state, z, attacker.pos) || inZone(state, z, target.pos))) : undefined;
+  const blocked = wall ?? shell ?? storm;
   return { sources: out, ...(blocked ? { autoMiss: blocked.name } : {}) };
 }
 
@@ -709,6 +723,8 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
       ...(spell.concentration && !spec.bead ? { concentration: spell.name } : {}),
       ...(airFt && spell.area ? { air: airSpanFt(spell.area.sizeFt, cylinderHeightFt(spell.mechanics, spec), airFt) } : {}),
       ...(spec.rounds !== undefined ? { until: state.round + spec.rounds - 1 } : {}),
+      // Görev KARAR104 (sürüm 104, A1): aşamalı alan 1. aşamada başlar (`stormStage.ts` büyücünün sonraki tur başlarında ilerletir).
+      ...(Array.isArray(spec.stages) && karar104On(state) ? { stage: 1 } : {}),
       ...(fissureCount ? { fissures: { count: fissureCount, turn: turnKey(state) } } : {}),
       // Kuyruk K67b: Dancing Lights ışık noktaları (taşıma ilk ışıktan ölçülür); birleşik biçim adında.
       ...(danceMax(state, spell) ? { center: hexes[0], ...(cmd.choice === DANCE_COMBINED ? { name: `${spell.name} (birleşik)` } : {}) } : {}),

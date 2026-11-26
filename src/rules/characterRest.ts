@@ -57,11 +57,18 @@ export interface CharacterStatus {
   moral?: number;
   /** Kuyruk K48: Moral 0'da savaş dışında öldü (diriltilince kalkar). */
   moralOlum?: true;
+  /**
+   * Görev KARAR104 (sürüm 104, A4): savaşta alınan lanet işareti (likantrop: canavar kimliği). Dinlenmeler kaldırmaz; yalnız işaret
+   * (biçim değişimi yok). Remove Curse ile kaldırma savaş dışı (Game Master).
+   */
+  lanet?: { likantrop: string };
 }
 
 /** Kuyruk K48: Moral alanları olduğu gibi taşınır (yoksa yazılmaz; eski kayıt aynı). */
-const moralPart = (s: CharacterStatus): Pick<CharacterStatus, 'moral' | 'moralOlum'> =>
-  ({ ...(s.moral !== undefined ? { moral: s.moral } : {}), ...(s.moralOlum ? { moralOlum: true as const } : {}) });
+const moralPart = (s: CharacterStatus): Pick<CharacterStatus, 'moral' | 'moralOlum' | 'lanet'> =>
+  ({ ...(s.moral !== undefined ? { moral: s.moral } : {}), ...(s.moralOlum ? { moralOlum: true as const } : {}),
+    // Görev KARAR104 (A4): lanet işareti dinlenmelerde kalır.
+    ...(s.lanet ? { lanet: { ...s.lanet } } : {}) });
 
 /** Görev MC2: çoklu sınıfın can zarı havuzu (zar türü → sayı; aynı türler birleşir). Tek sınıfta null. */
 export const hitDicePool = (sheet: CharacterSheet): Partial<Record<6 | 8 | 10 | 12, number>> | null =>
@@ -235,11 +242,21 @@ export function arcaneRecovery(sheet: CharacterSheet, resources: Record<string, 
   return { slots: used ? out : slots, used };
 }
 
+/**
+ * Görev KARAR104 (A11, GENEL-SAVAS G6/D21; kullanıcı kararı): 0 HP'de uzun dinlenme. `srd` (Normal, varsayılan; SRD 5.2.1 s. 185 "To
+ * start a Long Rest, you must have at least 1 Hit Point", s. 18 Stabilizing "regains 1 Hit Point after 1d4 hours"): dinlenme başlamaz,
+ * karakter 1 HP ile kalkar, başka kazanç yok (sonraki uzun dinlenme tam). `ev` (Kolay ev kuralı, eski davranış): 0 HP'de de tam uzun
+ * dinlenme. Savaş dışı; kural sürümü gerektirmez.
+ */
+export type ZeroHpRest = 'srd' | 'ev';
+
 /** Uzun dinlenme: HP, slotlar ve bütün kaynaklar dolar; harcanan HP zarlarının tamamı geri gelir (SRD 5.2.1 s. 185). */
 export function longRestStatus(sheet: CharacterSheet, status: CharacterStatus | undefined,
-  /** Görev TE99: eşya yükünün zarlı yenilenmesi (yoksa durumdan tohumlu, tekrarlanabilir). */ rng?: Rng): CharacterStatus {
+  /** Görev TE99: eşya yükünün zarlı yenilenmesi (yoksa durumdan tohumlu, tekrarlanabilir). */ rng?: Rng,
+  /** Görev KARAR104 (A11): 0 HP'de uzun dinlenme kipi (varsayılan SRD). */ zeroHp: ZeroHpRest = 'srd'): CharacterStatus {
   const s = currentStatus(sheet, status);
   if (s.dead) return s;
+  if (s.hp <= 0 && zeroHp === 'srd') return { ...s, hp: 1 };
   const r = longRest(restState(sheet, s));
   return {
     hp: r.hp, hitDiceSpent: sheet.level - r.hitDiceLeft, slots: r.spellSlots, slotMax: s.slotMax ?? [], resourceMax: s.resourceMax ?? {}, hpMax: s.hpMax ?? r.hp,

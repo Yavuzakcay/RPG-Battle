@@ -227,6 +227,9 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
   try { s = currentStatus(sheet, props.c.status); full = fullStatus(sheet); } catch { return null; }
   const drillPanel = drills && <MasteryDrills c={props.c} before={drills} onUpdate={props.onUpdate} onDone={() => setDrills(null)} />;
   if (isRested(sheet, props.c.status)) return note || drillPanel ? <>{note && <small className="ok">{note}</small>}{drillPanel}</> : null;
+  // Görev KARAR104 (A4): likantrop laneti işareti (yalnız bilgi; biçim değişimi yok).
+  const curse = s.lanet?.likantrop;
+  const cursed = curse ? <small className="error">{R.cursed(curse.charAt(0).toUpperCase() + curse.slice(1))}</small> : null;
   const left = sheet.level - s.hitDiceSpent;
   const resList = Object.entries(s.resources).filter(([id]) => (full.resources[id] ?? 0) > 0);
   const res = plain(resList).map(([id, n]) => `${resourceDef(id)?.name ?? id} ${n}/${full.resources[id]}`).join(', ');
@@ -235,6 +238,7 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
   return (
     <div className="rest-panel">
       <small>{R.status(s.hp, full.hp, left, sheet.level)}</small>
+      {cursed}
       {res && <small>{R.resources(res)}</small>}
       {/* Kuyruk E4c: ikonlu kaynaklar "ikon + sayı/üst sınır". */}
       {resIcons.length > 0 && <span className="res-chips">{resIcons.map(([id, n]) => <ResourceChip key={id} id={id} n={n} max={full.resources[id]} showName={sharedIcons(resIcons.map(([x]) => x)).has(id)} />)}</span>}
@@ -288,7 +292,8 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
             return mc ? <button className="ghost" onClick={() => { setNote(R.cunningDone); props.onUpdate({ ...props.c, status: mc }); }}>{R.cunning}</button> : null;
           })()}
           <button onClick={() => {
-            setNote(R.longDone);
+            // Görev KARAR104 (A11): 0 HP'de uzun dinlenme başlamaz (SRD); karakter 1 HP ile kalkar.
+            setNote(s.hp <= 0 ? R.longFromZero : R.longDone);
             if (masteryRight(sheet)) setDrills(sheet.weaponMasteries ?? []);
             props.onUpdate(alignmentLongRest({ ...props.c, status: longRestStatus(sheet, props.c.status) }));
           }}>{R.long}</button>

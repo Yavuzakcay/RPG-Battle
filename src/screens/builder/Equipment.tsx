@@ -14,6 +14,7 @@ import { carryLoad, type CarryLoad, type CarryRule } from '../../rules/carry';
 import { MAX_ATTUNED, armorProficient, type CharacterSheet } from '../../rules/stats';
 import { masteryOptions, masteryRight, masteryText, masteryWorks, weaponMasteryId, weaponProficient } from '../../rules/mastery';
 import { offHandOptionProblem, offHandProblem } from '../../rules/hands';
+import { bindableItem, eligibleWeaponsOf } from '../../rules/itemBinding';
 import { getClass } from '../../data';
 import { ITEM_KINDS, ITEM_TIERS, itemKind, itemTier, type ItemKind, type ItemTier } from '../../rules/itemCategory';
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail } from '../../ui/equipmentText';
@@ -216,7 +217,21 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
           <ul className="eq-list">
             {chosenItems.map((it) => (
               <li key={it.name} className="eq-row on">
-                <span className="eq-main"><b>{it.name}<GlyphBadges list={itemGlyphs(it)} /></b><small>{itemSumNode(it)}</small>{lb(it.weight, it.weightApprox)}</span>
+                <span className="eq-main"><b>{it.name}<GlyphBadges list={itemGlyphs(it)} /></b><small>{itemSumNode(it)}</small>{lb(it.weight, it.weightApprox)}
+                  {/* Görev KARAR104 (A10): silah eşyasının bağlı silahı; varsayılan ana silah (ilk uygun), oyuncu isterse seçer. */}
+                  {bindableItem(it.name) && ((): JSX.Element => {
+                    const ok = eligibleWeaponsOf(s, it.name);
+                    if (!ok.length) return <small className="error">{W.boundNone}</small>;
+                    const pick = s.silahBagi?.[it.name] && ok.includes(s.silahBagi[it.name] as string) ? s.silahBagi[it.name] as string : '';
+                    return <label className="bound-weapon"><small>{W.boundWeapon}</small>
+                      <select value={pick} onChange={(e: { target: { value: string } }) => {
+                        const { [it.name]: _old, ...rest } = s.silahBagi ?? {};
+                        set({ silahBagi: e.target.value ? { ...rest, [it.name]: e.target.value } : rest });
+                      }}>
+                        <option value="">{W.boundMain(ok[0] as string)}</option>
+                        {ok.slice(1).map((w) => <option key={w} value={w}>{w}</option>)}
+                      </select></label>;
+                  })()}</span>
                 <InfoPop text={itemDetail(it)} desc={itemDescPart(it)} />
                 <button className="ghost eq-remove" aria-label={W.removeItem(it.name)} onClick={() => set({ itemNames: toggle(s.itemNames, it.name, false) })}>×</button>
               </li>

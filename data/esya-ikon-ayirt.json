@@ -1,0 +1,73 @@
+{
+  "not": "Görev ESYA-IKON-AYIRT (yalnız görünüm): SRD üst kimliğinden aynı ikonu kopyalayan varyant kayıtlarının ayırt edici ikonları. `npm run esya-ikon:ayirt` (scripts/esya-ikon-ayirt.mjs; `npm run esya-ikon` sonunda da çalışır) taban ikonu `tabanKlasor/<taban>.webp` (256) ve `tabanKlasor/kucuk/<taban>.webp` (96) dosyasından okur (taban dosyalarını `npm run esya-ikon` yazar; üst kimlik oyun kaydı olmadığından public/esya'da yoktur) ve public/esya/<kimlik>.webp + kucuk/<kimlik>.webp yazar. Yalnız aşağıdaki kayıtlara yazar; kendi hücresi (gerçek çizimi) olan kayda dokunmaz (data/esya-ikon-sayfalar.json'da kendi hücresi ya da `ayniGorsel`/üst kimlik kopyası olmayan kayıt). Gruplar: `hasar` renkli öğelere hasar türü tonu (`hasarRenk`) + köşede hasar glifi (public/glif), `zayiflik` aynısı + kırmızımsı ton ve köşede zayıflık işareti, `kure` küreye ton + köşe glifi. Ton: yalnız doygun (`secici.doygunlukMin`…`doygunlukMax`) ve isteğe bağlı açık (`secici.parlaklikMin`) piksellerde, parlaklık korunur, `guc` karışım oranı. `glif.oran`/`isaret.oran`: glif ve zayıflık işaretinin boyu, ikon kenarının oranı (`kucukOran` 96 px kopyada). +1/+2/+3 grupları (Ammunition, Armor, Shield, Weapon, Wand of the War Mage; 15 kayıt) burada yok: ikonları ayrı ikon sayfasından gelecek (kullanıcı kararı 2026-11-26).",
+  "tabanKlasor": "assets/esya-taban",
+  "hasarRenk": {
+    "acid": "#a3e635",
+    "bludgeoning": "#b7791f",
+    "cold": "#7dd3fc",
+    "fire": "#f97316",
+    "force": "#c084fc",
+    "lightning": "#3b82f6",
+    "necrotic": "#2f3e46",
+    "piercing": "#94a3b8",
+    "poison": "#16a34a",
+    "psychic": "#ec4899",
+    "radiant": "#facc15",
+    "slashing": "#e5e7eb",
+    "thunder": "#4f46e5"
+  },
+  "glif": { "oran": 0.42, "kucukOran": 0.46, "kenar": 0.02 },
+  "isaret": { "oran": 0.336, "kucukOran": 0.368, "kenar": 0.03 },
+  "gruplar": [
+    {
+      "taban": "armor-of-resistance",
+      "tur": "hasar",
+      "onek": "armor-of-resistance-",
+      "kose": "sag-alt",
+      "turler": ["acid", "bludgeoning", "cold", "fire", "force", "lightning", "necrotic", "piercing", "poison", "psychic", "radiant", "slashing", "thunder"],
+      "secici": { "doygunlukMin": 0.3, "doygunlukMax": 0.5 },
+      "guc": 0.9
+    },
+    {
+      "taban": "potion-of-resistance",
+      "tur": "hasar",
+      "onek": "potion-of-resistance-",
+      "kose": "sag-alt",
+      "turler": ["acid", "bludgeoning", "cold", "fire", "force", "lightning", "necrotic", "piercing", "poison", "psychic", "radiant", "slashing", "thunder"],
+      "secici": { "doygunlukMin": 0.18, "doygunlukMax": 0.4 },
+      "guc": 0.9
+    },
+    {
+      "taban": "ring-of-resistance",
+      "tur": "hasar",
+      "onek": "ring-of-resistance-",
+      "kose": "sag-alt",
+      "turler": ["acid", "bludgeoning", "cold", "fire", "force", "lightning", "necrotic", "piercing", "poison", "psychic", "radiant", "slashing", "thunder"],
+      "secici": { "doygunlukMin": 0.3, "doygunlukMax": 0.5 },
+      "guc": 0.9
+    },
+    {
+      "taban": "armor-of-vulnerability",
+      "tur": "zayiflik",
+      "onek": "armor-of-vulnerability-",
+      "kose": "sag-alt",
+      "turler": ["bludgeoning", "piercing", "slashing"],
+      "ton": "#c92a2a",
+      "secici": { "doygunlukMin": 0.08, "doygunlukMax": 0.25 },
+      "guc": 0.85,
+      "isaret": { "kose": "sol-ust", "renk": "#c92a2a" }
+    },
+    {
+      "taban": "crystal-ball",
+      "tur": "kure",
+      "kose": "sag-alt",
+      "secici": { "doygunlukMin": 0.0, "doygunlukMax": 0.12, "parlaklikMin": 0.45 },
+      "guc": 0.85,
+      "uyeler": {
+        "crystal-ball-of-mind-reading": { "renk": "#e64980", "glif": "psychic" },
+        "crystal-ball-of-telepathy": { "renk": "#7048e8", "glif": "enchantment" },
+        "crystal-ball-of-true-seeing": { "renk": "#fab005", "glif": "divination" }
+      }
+    }
+  ]
+}

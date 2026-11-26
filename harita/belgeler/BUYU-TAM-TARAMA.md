@@ -28,7 +28,7 @@ bloğu). Bölüm 1 otomatik (`npx vite-node scripts/buyu-tam-tarama.ts`); bölü
 | Earthquake | "its Concentration is broken" veride `breakConcentration` (okunmayan ad); konsantrasyon bozulmuyordu | **102 düzeltildi** (`dropConcentration`) |
 | Conjure Elemental | Alan 10 tur; SRD "Concentration, up to 10 minutes" | **102 düzeltildi** (100 tur) |
 | Mass Cure Wounds | 6 hedef menzil içinde serbest; SRD "in a 30-foot-radius Sphere centered on a point within range" | **102 düzeltildi** (`healSphereFt` 30; `healSphereFits`) |
-| Storm of Vengeance | Yalnız döküm turu (Thunder + Deafened); tur 2–10 aşamaları (asit yağmuru 4d6, 6 yıldırım 10d6, dolu 2d6, rüzgâr/dondurucu yağmur) yok (`stages` okunmuyor) | **eksik, ertelendi** (alan tetikleyicisinde tur aşama sayacı gerekir; bölüm 4) |
+| Storm of Vengeance | 104 (KARAR104): tur 2–10 aşamaları `k104` `zone.stages` (`stormStage.ts`); yıldırım hedefleri otomatik ⚠ | **tam (104)** |
 | Spare the Dying | Cantrip menzil kademesi | tam (GENEL96 `executeRestore` `spare96`; otomatik betik yanıldı) |
 | Eldritch Blast, Shillelagh, True Strike | Cantrip ölçeklemesi | tam (`raysByLevel`, `weaponOverride.dice`, `weaponStrike.extra`) |
 | Freedom of Movement, Hold Person/Monster, Blindness/Deafness | Yukarı slot hedefi; tur sonu save | tam (`effectTargetCount`, `data/condition-effects.json` `saveEnds`) |

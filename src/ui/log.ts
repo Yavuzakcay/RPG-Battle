@@ -403,6 +403,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.floorChanged(n(event.actorId), event.map.id);
     case 'zone_moved':
       return L.zoneMoved(event.hexes.length ? (state.map?.zones?.find((z) => z.id === event.zoneId)?.name ?? '') : '');
+    case 'zone_stage':
+      return L.zoneStage(state.map?.zones?.find((z) => z.id === event.zoneId)?.name ?? '', event.stage);
     case 'zone_dealt':
     case 'zone_panel_damaged':
     case 'zone_triggered':

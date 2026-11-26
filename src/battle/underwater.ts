@@ -20,6 +20,7 @@ import { registerCommandEnd } from './turnHooks';
 import { k73cOn } from './k73cSurum';
 import { breathesWater, breathLimit, deepWaterHex, inWater, submerged, waterOnlyBreather } from './underwaterCore';
 import { ws92On } from './ws92Surum';
+import { karar104On } from './karar104Surum';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
 export { DIVE_MAX_FT, SWIM_FACTOR, deepWaterHex, mapHasDeepWater, inWater, submerged, breathesWater, breathLimit } from './underwaterCore';
@@ -31,7 +32,13 @@ export { DIVE_MAX_FT, SWIM_FACTOR, deepWaterHex, mapHasDeepWater, inWater, subme
 /** Nefesini tutuyor mu: batık ve su solumayan; Görev WS92 (92+): yalnız su altında soluyan sudan dışarıda (karada). */
 function holdingBreath(state: BattleState, c: Combatant): boolean {
   if (submerged(state, c) && !breathesWater(c)) return true;
+  if (smothered(state, c)) return true;
   return ws92On(state) && !!state.map && waterOnlyBreather(c) && !inWater(state, c);
+}
+
+/** Görev KARAR104 (sürüm 104, A3): nefes alamayan etki altında mı (Smother, Engulf, Whelm, Darkmantle örtmesi). */
+export function smothered(state: BattleState, c: Combatant): boolean {
+  return karar104On(state) && !!c.effects?.some((e) => e.noBreath === true || (e.noBreath === 'unlessWater' && !breathesWater(c)));
 }
 
 export function breathTurnEndEvents(state: BattleState, id: string): BattleEvent[] {
@@ -42,7 +49,7 @@ export function breathTurnEndEvents(state: BattleState, id: string): BattleEvent
   if (used <= limit) return [{ type: 'map_effect', rule: 'suAlti', targetId: id, text: `nefesini tutuyor (${used}/${limit} tur)`, mapStatus: { breath: used } }];
   const suff = (c.mapStatus.suffocation ?? 0) + 1;
   return [{ type: 'map_effect', rule: 'suAlti', targetId: id, text: `nefesi tükendi: boğuluyor (Exhaustion +1)`, mapStatus: { breath: used, suffocation: suff } },
-    { type: 'exhaustion_changed', targetId: id, level: Math.min(6, (c.exhaustion ?? 0) + 1), reason: 'boğulma (su altı)' }];
+    { type: 'exhaustion_changed', targetId: id, level: Math.min(6, (c.exhaustion ?? 0) + 1), reason: submerged(state, c) || !smothered(state, c) ? 'boğulma (su altı)' : 'boğulma' }];
 }
 
 /** Nefes alabilen (batık değil) yaratığın sayaçları sıfırlanır; boğulmadan gelen Exhaustion seviyeleri gider. */

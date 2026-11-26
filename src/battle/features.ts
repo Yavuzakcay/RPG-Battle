@@ -9,6 +9,7 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { karar104On } from './karar104Surum';
 import { b98On } from './b98Surum';
 import { sinif97On } from './sinif97Surum';
 import { weapons as WEAPON_LIST } from '../data';
@@ -512,6 +513,8 @@ export function opportunityAttacks(
     const o = current.combatants[id];
     // Addled (Open Hand Technique; Görev P-Monk): sonraki turunun başına dek fırsat saldırısı yapamaz.
     if (!o || o.side === mover.side || o.civilian || !able(o) || o.economy.reaction || o.conditions.includes('Addled') || o.effects?.some((e) => e.noOpportunity)) continue;
+    // Görev KARAR104 (A2): yapışan, yapıştığı hedefle birlikte hareket eder (fırsat saldırısı yok).
+    if (mover.effects?.some((e) => e.attachedBy === o.id) && karar104On(current)) continue;
     const melee = meleeOf(o);
     if (!melee) continue;
     if (step) {

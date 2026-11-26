@@ -128,7 +128,7 @@ interface CharacterSheet {
 | Serüven seviye atlama (`src/journey/seruven.ts` `level_up` → `seruven_leveled`) | Bütün partiye tek seviye | Bekleyen seçim, varsayılan mevcut sınıf (K12); yan sınıf seçeneği yalnız ayna koşulu doğruyken (koşul Serüven sahne/ayna işine bağlı; ayna gelene dek Serüven'de yan sınıf açılmaz). Olay sheet yamasını taşır (replay güvenli) | MC5 |
 | Jeton (`src/battle/avatar.ts:186` `sheetAvatar`) | Irk × cinsiyet × sınıf × alt sınıf × seviye | Başta `lookSheet`: görünüm sınıfı + o sınıfın seviyesi (K11); yeni görsel yok | MC6 |
 | Sim partileri (`data/sim-partiler.json`, `src/sim/balance.ts`) | Tek sınıflı üye | `levels.<N>.classes`; "SRD'ye göre eksiksiz" testi sınıf başına; yeni parti `mc-karma` | MC7 |
-| Kayıt sürümleri | Karakter 3, savaş 25, yolculuk 2, kural 103 | Karakter 4 (MC1); savaş kaydı +1 (`slot_spent.pact`, MC3); kural 105 (MC3/MC4; 104 KARAR104'ün, DECISIONS.md MC2); yolculuk aynı | — |
+| Kayıt sürümleri | Karakter 3, savaş 25, yolculuk 2, kural 103 | Karakter 4 (MC1); savaş kaydı 27 (`slot_spent.pact`, MC3; 26 KARAR104); kural 105 (MC3/MC4; 104 KARAR104'ün, DECISIONS.md MC2); yolculuk aynı | — |
 
 ## 4. Adımlar
 

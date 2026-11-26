@@ -25,13 +25,14 @@ function mc(classes: ClassEntry[], base: Partial<Scores>, extra: Partial<Charact
 }
 
 describe('MC3 sabitler', () => {
-  it('kural sürümü 105 (104 KARAR104\'e ayrıldı), savaş kaydı 26, 25 yüklenir', () => {
+  it('kural sürümü 105 (104 KARAR104), savaş kaydı 27 (26 KARAR104), 25 ve 26 yüklenir', () => {
     expect(MC3_VERSION).toBe(105);
     expect(CURRENT_RULES).toBeGreaterThanOrEqual(105);
     expect(mc3On({ kuralSurumu: 105 })).toBe(true);
     expect(mc3On({ kuralSurumu: 104 })).toBe(false);
-    expect(SAVE_VERSION).toBe(26);
+    expect(SAVE_VERSION).toBe(27);
     expect(LOADABLE_VERSIONS).toContain(25);
+    expect(LOADABLE_VERSIONS).toContain(26);
   });
 });
 

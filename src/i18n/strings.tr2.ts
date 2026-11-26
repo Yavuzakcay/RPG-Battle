@@ -414,6 +414,7 @@ export const TR_EXTRA = {
     zoneCreated: (who: string, spell: string, hexes: number) => `${who}: ${spell} alanı${hexes ? ` (${hexes} altıgen)` : ''} oluştu.`,
     floorChanged: (who: string, map: string) => `${who} merdivenden indi: parti öbür katta (${map}).`,
     zoneMoved: (spell: string) => `${spell} alanı taşındı.`,
+    zoneStage: (spell: string, stage: number) => `${spell}: fırtınanın ${stage}. turu.`,
     zoneEnded: (spell: string) => `${spell} alanı kalktı.`,
     area: (who: string, label: string, size: number, shape: string, names: string) => `${who}: ${label} — ${size} ft ${shape}; etkilenen: ${names || 'kimse'}.`,
     shapeName: { cone: 'koni', line: 'çizgi', sphere: 'küre', cube: 'küp', emanation: 'yayılım', cylinder: 'silindir', wall: 'duvar' } as Record<string, string>,

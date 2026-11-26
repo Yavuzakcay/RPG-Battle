@@ -77,6 +77,8 @@ import { effectTurnEndEvents, effectTurnStartEvents } from './effects';
 import { soyTurnStartEvents } from './soyEtki';
 import { celestialTurnEndEvents, celestialTurnStartEvents } from './celestial';
 import { glideTurnEndEvents, glideTurnStartEvents } from './flightPrim';
+import { stormStageEvents } from './stormStage';
+import { detachSelfEvents } from './attach';
 import { casterEndZoneEvents, casterTurnZoneEvents, movableZoneOf, repelPushEvents, zoneDriftEnterEvents, zoneDriftEvents, zoneTurnEvents } from './zones';
 import { bondEvents, curseSpellEvents, sanctuaryCheck } from './wards';
 import { askChoice } from '../rules/choice';
@@ -831,6 +833,15 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     return finish(state, [...r.events, ...chain.events]);
   }
   if (cmd.type === 'dismount') return executeDismount(state, actor, cmd.to, cmd.toFt);
+  // Görev KARAR104 (sürüm 104, A2): yapışan kendi hareketiyle ayrılır (5 ft), sonra yürür/atlar.
+  if (cmd.type === 'move' || cmd.type === 'jump' || cmd.type === 'shift_move') {
+    const det = detachSelfEvents(state, actor);
+    if (typeof det === 'string') return fail(det);
+    if (det.length) {
+      const r = executeCommand(applyEvents(state, det), cmd, ctx, rng);
+      return r.ok ? { ok: true, state: r.state, events: [...det, ...r.events] } : r;
+    }
+  }
   // Kuyruk 19 (Mounted Combat): binici kendi yürümez; bineği taşır.
   if (actor.riding && (cmd.type === 'move' || cmd.type === 'jump' || cmd.type === 'shift_move')) return fail('Bineğin üstündesin: önce in (bineğin hareketiyle taşınırsın).');
   // Kuyruk MB1 (68+): binicinin kendi tırmanması, dikey hareketi ve aşağı atlaması da yok (bineğin irtifasını izler).
@@ -1126,6 +1137,9 @@ function turnStartChain(state: BattleState, id: string, rng: Rng): { events: Bat
   // Kuyruk 19: büyücünün tur başı alanı (Faithful Hound ısırığı).
   const bite = casterTurnZoneEvents(cur, id, rng);
   push(bite);
+  // Görev KARAR104 (sürüm 104, A1): aşamalı alanların bu tur başındaki aşaması (Storm of Vengeance).
+  const stormStage = stormStageEvents(cur, id, rng);
+  push(stormStage);
   const zoneStart = zoneTurnEvents(cur, id, 'start', rng);
   push(zoneStart);
   const auraStart = auraTriggerEvents(cur, id, 'turnStart', rng);
