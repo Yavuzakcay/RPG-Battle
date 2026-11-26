@@ -19,7 +19,7 @@ export const TR_EXTRA = {
     concWarn: 'Büyüyü tutmak konsantrasyon ister; konsantrasyon bozulursa büyü etkisiz dağılır.',
     concEnds: (s: string) => `Şu anki konsantrasyonun (${s}) biter.`,
     noSpells: 'Hazırlanabilecek (eylem süreli) büyü yok.', target: 'Hedef salınırken seçilir.',
-    dash: 'Dash', disengage: 'Disengage', dodge: 'Kaçın', help: 'Yardım', hide: 'Gizlen', utilize: 'Nesne', object: 'Nesne', noObjects: 'Yanında kullanılacak nesne yok.',
+    dash: 'Dash', disengage: 'Disengage', dodge: 'Kaçın', help: 'Yardım', hide: 'Gizlen', utilize: 'Nesne', object: 'Nesne', objectOption: (name: string, hex: string) => `${name} · ${hex}`, noObjects: 'Yanında kullanılacak nesne yok.',
     disengageNote: 'Tepkiyle hareket edemediğin için çoğunlukla etkisizdir (SRD).',
   },
   /** SD8 (Ayarlar): sade Ayarlar ekranı, Gelişmiş katı ve Game Master kurulumundaki "Oda kuralları". */

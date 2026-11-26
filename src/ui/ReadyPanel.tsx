@@ -11,6 +11,7 @@ import { sinif97On } from '../battle/sinif97Surum';
 import type { Offset } from '../rules/hex';
 import { READY_TRIGGERS, readyProblem, readyResponsesFor } from '../battle/ready';
 import { objectCommand } from './gm/objectActions';
+import { OBJECTS } from '../battle/objectData';
 import { getLang, t } from '../i18n';
 
 export interface ReadyDraft {
@@ -125,7 +126,7 @@ export function ReadyPanel(props: {
         <label>{U.object}
           <select value={d.objectId ?? ''} onChange={(e) => set({ objectId: e.target.value || undefined })}>
             <option value="">—</option>
-            {usable.map((o) => <option key={o.id} value={o.id}>{o.kind} · {props.hexLabel(o.at)}</option>)}
+            {usable.map((o) => <option key={o.id} value={o.id}>{U.objectOption(OBJECTS[o.kind]?.[lang] ?? o.kind, props.hexLabel(o.at))}</option>)}
           </select>
         </label>
       ))}

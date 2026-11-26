@@ -26,7 +26,7 @@ export const en: Strings = {
     concWarn: 'Holding the spell requires Concentration; if your concentration breaks, the spell dissipates without effect.',
     concEnds: (s: string) => `Your current concentration (${s}) ends.`,
     noSpells: 'No spell with a casting time of an action to ready.', target: 'The target is chosen when it is released.',
-    dash: 'Dash', disengage: 'Disengage', dodge: 'Dodge', help: 'Help', hide: 'Hide', utilize: 'Object', object: 'Object', noObjects: 'No object next to you to use.',
+    dash: 'Dash', disengage: 'Disengage', dodge: 'Dodge', help: 'Help', hide: 'Hide', utilize: 'Object', object: 'Object', objectOption: (name: string, hex: string) => `${name} · ${hex}`, noObjects: 'No object next to you to use.',
     disengageNote: 'Mostly no effect: you cannot move with this reaction (SRD).',
   },
   camera: { label: 'Camera', zoomIn: 'Zoom in', zoomOut: 'Zoom out', overview: 'Show all (view only)', follow: 'Follow the creature whose turn it is', minimap: 'Minimap: tap to go there', goEvent: 'Go to off-screen event' },

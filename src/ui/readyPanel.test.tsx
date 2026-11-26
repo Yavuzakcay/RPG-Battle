@@ -19,6 +19,17 @@ const html = (d: ReadyDraft, a = actor()) => renderToStaticMarkup(<ReadyPanel st
   onConfirm={() => {}} onCancel={() => {}} hexLabel={(h) => `${h.col},${h.row}`} />);
 
 describe('Hazırla paneli', () => {
+  it('KARAR104-KALAN: Utilize nesne seçicisinde okunur ad (TR/EN), ham kimlik değil', () => {
+    const a = actor({ pos: { col: 3, row: 3 } });
+    const s104 = { ...state, kuralSurumu: 104, combatants: { ...state.combatants, A: a },
+      map: { ...(state.map ?? { id: 'col' }), tiles: Array.from({ length: 7 }, () => '.'.repeat(15)), objects: [{ id: 'kol', kind: 'lever', at: { col: 3, row: 4 }, hp: 5, state: 'closed' } as never] } } as typeof state;
+    const render = () => renderToStaticMarkup(<ReadyPanel state={s104} actor={a} draft={{ ...READY_DRAFT, kind: 'utilize', objectId: 'kol' }} onDraft={() => {}}
+      onPickHex={() => {}} onConfirm={() => {}} onCancel={() => {}} hexLabel={(h) => `${h.col},${h.row}`} />);
+    expect(render()).toContain('Kol · 3,4');
+    expect(render()).not.toContain('lever ·');
+    setLang('en');
+    try { expect(render()).toContain('Lever · 3,4'); } finally { setLang('tr'); }
+  });
   it('tetikler veriden; saldırı seçeneği; eylemi harcadığı yazılı', () => {
     const m = html({ ...READY_DRAFT, weapon: 'Longsword' });
     for (const tr of READY_TRIGGERS) expect(m).toContain(tr.ad.tr);
