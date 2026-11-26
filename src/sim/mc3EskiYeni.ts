@@ -16,6 +16,7 @@ import { contextFor } from '../ui/session';
 import type { BattleEvent, BattleState, Command } from '../battle/types';
 import { createMapBattle } from '../app/setup';
 import { getMonster } from '../data';
+import { isMultiSheet } from '../rules/mcHook';
 import { partyAt, PARTY_KINDS, playBattle, SCENARIOS, seeded, setupBattle } from './balance';
 
 /** FNV-1a (iki 32 bit tohum) → 12 onaltılık hane. */
@@ -37,6 +38,7 @@ export function combatantHashes(): Record<string, string> {
       let sheets;
       try { sheets = partyAt(level, kind); } catch { continue; }
       sheets.forEach((s, i) => {
+        if (isMultiSheet(s)) return; // Görev MC7: çoklu sınıflı sim üyeleri (`mc-karma`) altında yok.
         const key = `${s.name}/${s.classId}/${level}`;
         if (!(key in out)) out[key] = hash12(JSON.stringify(combatantFromSheet(s, { id: `pc${i + 1}`, ownerId: `p${i + 1}` })));
       });

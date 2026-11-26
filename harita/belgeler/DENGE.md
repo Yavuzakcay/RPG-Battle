@@ -2,6 +2,47 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Not: Görev MC7 (2026-11-26, kural sürümü 105) — çoklu sınıf partisi `mc-karma` ilk ölçüm
+
+Yalnız yeni parti ölçüldü (hafif doğrulama modu): `npm run sim -- 100 col kale magara orman --seviye 5|9 --parti mc-karma`,
+100 tohum. Parti 4 kişi: Kaya Fighter (Champion)/Wizard, Sena Paladin (Devotion)/Warlock, Ilgaz Rogue (Thief)/Ranger, Deniz
+Cleric (Life)/Monk; 5. seviyede 3/2, 9. seviyede 5/4 (veri `data/sim-partiler.json`, DECISIONS.md MC7).
+
+| Seviye | Çöl | Kale | Mağara | Orman | Ort. | Hedef |
+|---|---:|---:|---:|---:|---:|---|
+| 5 | **2** ↓ | **0** ↓ | **13** ↓ | **0** ↓ | 4 | %60–80 (5 kişilik standart listeler) |
+| 9 | **33** ↓ | **2** ↓ | **4** ↓ | **1** ↓ | 10 | %45–65 (Kuyruk 41 Normal listeleri, 4 kişilik partiler) |
+
+Aralık dışı: sekiz satırın hepsi (aşağı). Düzeltme denemesi yapılmadı (kullanıcı talimatı).
+
+**Kontrol (2026-11-26, kural sürümü 105, yalnız ölçüm):** aynı komutla tek sınıflı 4 kişilik `a2-klasik` (Bor Fighter, Tavi
+Cleric, Sela Rogue, Mira Wizard), 100 tohum. 5 kişilik `standart` satırı KARAR104-KALAN ölçümü (104; tek sınıflı partide 105 = 104,
+`mc3Regresyon`).
+
+| Seviye | Parti | Kişi | Çöl | Kale | Mağara | Orman | Ort. |
+|---|---|---:|---:|---:|---:|---:|---:|
+| 5 | standart | 5 | 76 | 37 | 79 | 69 | 65 |
+| 5 | a2-klasik (kontrol) | 4 | 39 | 8 | 54 | 28 | 32 |
+| 5 | mc-karma | 4 | 2 | 0 | 13 | 0 | 4 |
+| 9 | a2-klasik (kontrol) | 4 | 66 | 19 | 43 | 15 | 36 |
+| 9 | mc-karma | 4 | 33 | 2 | 4 | 1 | 10 |
+
+Okuma:
+- 5. seviyede iki etki aşağı yukarı eşit, parti boyutu biraz baskın: 5 → 4 kişi −33 puan (65 → 32), aynı boyutta tek → çoklu
+  sınıf −28 puan (32 → 4).
+- 9. seviyede listeler 4 kişilik olduğundan yalnız bölünmüş sınıf etkisi var: −26 puan (36 → 10). Bölünmüş 5/4 sınıflar bu
+  seviyede büyü düzeyini (Kaya ortak yuvada en çok 2. düzey, Deniz 3. düzey; tek sınıflı Wizard/Cleric 5. düzey) ve 9. seviyenin sınıf
+  özelliklerini kaybediyor.
+- Kontrol partisi de 105'te 9. seviyede hedefin altında (ort. %36, hedef %45–65; Kale ve Orman en düşük); eski ölçümler (Kuyruk 41/
+  K43b: Çöl %80, Kale %21–37, Mağara %51–53, Orman %37–46) daha eski kural sürümlerinde.
+- Hata belirtisi görülmedi: 6 savaşlık tanı sayımında dört üye de iki sınıfının özelliğini kullanıyor (Action Surge, Second Wind,
+  Sacred Weapon, Lay On Hands, Preserve Life, Monk bonus vuruşu ve Focus, ortak yuva ve Pact büyüleri).
+- **Gözlem (yapay zekâya dokunulmadı):** Sena (Paladin 3 / Warlock 2) 6 savaşta hiç silah saldırısı yapmadı; her tur Eldritch Blast
+  ya da başka büyü seçti (Longsword + Sacred Weapon yerine). Yapay zekânın çoklu sınıfa özgü bir tercihi yok; ayrıca incelenmeli.
+- Yapay zekâ karar süresi (`npm run sim:yz-sure -- 3 kale --parti mc-karma`): 611 karar, ort. 21,4 ms, p95 74,8 ms (×4 telefon
+  tahmini 85,6 / 299,3 ms).
+- Tek sınıflı partiler değişmedi: `src/sim/mc3Regresyon.test.ts` (3 tohum, Çöl/Kale/Mağara/Orman) 104 = taban, 105 = 104.
+
 ## Not: OYUNCU-HEDEF-DOST (2026-11-26, kural sürümü değişmedi) — yapay zekâ simülasyon imzası değişmedi
 
 Oyuncu komutunda onaylı dost/düşman hedefi (`crossSide`, DECISIONS.md OYUNCU-HEDEF-DOST) yalnız arayüzün verdiği bayrakla açılır;

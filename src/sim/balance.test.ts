@@ -8,12 +8,18 @@ import { alternativeCantrips, spellOptions } from '../rules/builder';
 import { spells } from '../data';
 import monsterEnvs from '../../data/monster-ortamlari.json';
 import { planProblems } from '../app/setup';
-import { advancementProblems } from '../rules/advancement';
+import { advancementProblems, sheetAdvancementSlots } from '../rules/advancement';
+import { classesOf } from '../rules/multiclass';
+import { mcImpl } from '../rules/mcHook';
+import { classKit, subclassLevel } from '../rules/classFeatures';
+import { spellLimits } from '../rules/builder';
 import { finalScores } from '../rules/stats';
 import { getClass } from '../data';
 import { chooseCommand } from '../battle/ai';
 import { execute } from '../battle';
 import { contextFor } from '../ui/session';
+
+const MC_KINDS = Object.keys(PARTY_KINDS).filter((k) => partyAt(DEFAULT_LEVEL, k).some((s) => (s.classes?.length ?? 0) > 1));
 
 describe('denge simülasyonu', () => {
   it('parti: 5 karakter, 5. seviye, sorunsuz kurulur', () => {
@@ -59,7 +65,8 @@ describe('denge simülasyonu', () => {
   });
   it("partiler eksiksiz (Görev B2): köken feat'i, alt sınıf (3+), 4. seviye ASI, 5. seviyede tablo kadar büyü; yuva sorunu yok", () => {
     // Kuyruk 41: Aşama 2 partileri 7. ve 9. seviyede de eksiksiz (8. seviye ASI, 4.–5. seviye büyüler).
-    const plan = Object.keys(PARTY_KINDS).flatMap((kind) => [1, 3, 5, ...(kind.startsWith('a2-') ? [7, 9] : [])].map((level) => [kind, level] as const));
+    // Görev MC7: çoklu sınıflı parti ayrı testte (sınıf başına).
+    const plan = Object.keys(PARTY_KINDS).filter((kind) => !MC_KINDS.includes(kind)).flatMap((kind) => [1, 3, 5, ...(kind.startsWith('a2-') ? [7, 9] : [])].map((level) => [kind, level] as const));
     for (const [kind, level] of plan) {
       {
         for (const s of partyAt(level, kind)) {
@@ -82,6 +89,42 @@ describe('denge simülasyonu', () => {
         }
       }
     }
+  });
+  it("Görev MC7: çoklu sınıflı parti eksiksiz, sınıf başına (SRD 5.2.1 s. 24–26): ön koşul, alt sınıf, yuvalar, büyü ve Invocation sayısı", () => {
+    expect(MC_KINDS).toEqual(['mc-karma']);
+    for (const level of [5, 9]) {
+      const party = partyAt(level, 'mc-karma');
+      expect(party.map((s) => s.classes?.map((e) => e.classId).join('/'))).toEqual(['fighter/wizard', 'paladin/warlock', 'rogue/ranger', 'cleric/monk']);
+      for (const s of party) {
+        const who = `${s.name} ${level}`;
+        expect(s.level, who).toBe(level);
+        expect(s.originFeat, who).toBeTruthy();
+        const scores = finalScores({ ...s, advancements: [] });
+        expect(mcImpl().problems(s, scores), who).toEqual([]);
+        expect(mcImpl().spellProblems(s, new Set()), who).toEqual([]);
+        expect(advancementProblems(s, { scores, ...mcImpl().casterCtx(s) }), who).toEqual([]);
+        for (const slot of sheetAdvancementSlots(s)) {
+          expect((s.advancements ?? []).some((a) => a.level === slot.level && (a.classId ?? s.classId) === slot.classId), `${who} ${slot.classId} ${slot.level}. seviye yuvası`).toBe(true);
+        }
+        for (const e of classesOf(s)) {
+          const sub = subclassLevel(e.classId);
+          if (sub !== null && e.level >= sub) expect(e.subclassId, `${who} ${e.classId} alt sınıf`).toBeTruthy();
+          const lim = spellLimits(e.classId, e.level, s.featureChoices, s.invocations, e.subclassId);
+          const always = new Set(classKit(e.classId, e.level, e.subclassId, s.featureChoices).alwaysPrepared);
+          const mine = (s.spellNames ?? []).filter((n) => !always.has(n) && mcImpl().spellClassOf(s, n) === e.classId).map((n) => spells.find((x) => x.name === n)!);
+          const opts = new Set(spellOptions(e.classId, e.level, e.subclassId));
+          const pool = spells.filter((x) => x.level > 0 && opts.has(x.name) && !always.has(x.name)).length;
+          expect(mine.filter((x) => x.level === 0).length, `${who} ${e.classId} cantrip`).toBe(lim.cantrips);
+          expect(mine.filter((x) => x.level > 0).length, `${who} ${e.classId} hazır büyü`).toBe(Math.min(lim.prepared, pool));
+          const inv = Number(tableValue(e.classId, e.level, 'Eldritch Invocations') ?? 0);
+          if (inv) expect(s.invocations?.length, `${who} Invocation`).toBe(inv);
+        }
+        const c = combatantFromSheet(s, { id: 'x', ownerId: 'p' });
+        expect(c.level).toBe(level);
+        expect(c.classLevels).toMatchObject(Object.fromEntries(classesOf(s).map((e) => [e.classId, e.level])));
+      }
+    }
+    expect(() => partyAt(3, 'mc-karma')).toThrow();
   });
   it('Frenzy simülasyonda çalışır (Barbarian partisi, 3. ve 5. seviye; sayaç)', () => {
     setPartyKind('barbar');

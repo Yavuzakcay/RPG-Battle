@@ -210,7 +210,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
   // Sınıf değişince avatar beklemeden açılsın: bu tür ve görünümün bütün sınıf jetonları (küçük kopya) boşta indirilir. Jeton çözücüden
   // (`sheetAvatar`, alt sınıfsız: sınıf değişince alt sınıf boşalır): sınıf-genel jetonu kaldırılmış ırkta (Dragonborn) Gariban jetonu.
   useEffect(() => {
-    preloadImages(classes.map((k) => thumbOf(sheetAvatar({ ...s, classId: k.id, subclassId: undefined }).src)).filter((x): x is string => !!x));
+    preloadImages(classes.map((k) => thumbOf(sheetAvatar({ ...s, classes: undefined, classId: k.id, subclassId: undefined }).src)).filter((x): x is string => !!x));
   }, [s.raceId, s.gender, s.level, s.avatar]);
   const raceName = `${race?.name ?? s.raceId}${lineageOf(s) ? ` (${lineageName(lineageOf(s)!, getLang())})` : ''}`;
   const stepLabel = (id: BuilderStep) => W.steps[id] ?? id;

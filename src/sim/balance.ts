@@ -12,6 +12,8 @@ import type { CharacterSheet } from '../rules/stats';
 import type { Ability } from '../rules/abilities';
 import { alternativeCantrips, spellOptions } from '../rules/builder';
 import { classKit } from '../rules/classFeatures';
+import { syncClassFields } from '../rules/multiclass';
+import { isMultiSheet } from '../rules/mcHook';
 import { createMapBattle } from '../app/setup';
 import { contextFor } from '../ui/session';
 
@@ -116,6 +118,13 @@ export function partyAt(level: number = DEFAULT_LEVEL, kind: PartyKind = partyKi
 function memberAt(m: MemberData, level: number): CharacterSheet {
   const patch = m.levels?.[String(level)];
   if (level === DEFAULT_LEVEL && !patch) return m.sheet;
+  // Görev MC7: çoklu sınıflı üye yalnız verisi olan seviyede (sınıf dağılımı veride; kesme yok, veri eksiksiz yazılır).
+  if (isMultiSheet(m.sheet)) {
+    if (!patch) throw new Error(`${m.sheet.name}: çoklu sınıflı üyenin ${level}. seviye verisi yok (levels.${level})`);
+    const sheet = syncClassFields({ ...m.sheet, ...patch });
+    if (sheet.level !== level) throw new Error(`${m.sheet.name}: levels.${level} sınıf seviyeleri toplamı ${sheet.level}`);
+    return sheet;
+  }
   const sheet = { ...m.sheet, ...patch, level };
   // Sınıf listesi ve yuva seçeneğinin (Blessed Warrior) cantrip'leri.
   const allowed = new Set([...spellOptions(sheet.classId, level, sheet.subclassId), ...alternativeCantrips({ ...sheet, advancements: (sheet.advancements ?? []).filter((a) => a.level <= level) }).options]);
