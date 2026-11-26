@@ -59,6 +59,10 @@ kapısı, Thirsting Blade iki durum, K6 savaşçı/durum/eski kayıt/çakışmas
 Restoration, Lifedrinker havuzu ve durum aktarımı). MC2'nin 362 durumluk altını ve MC3 altınları (tek sınıflı savaşçılar 104 = 105,
 26/25 sürümlü kayıtlar, 3 tohum imzası) değişmeden geçti. İlgili 62 test dosyası (682 test) geçti.
 
+**100 tohum hızlı regresyon (tek sınıflı standart parti, 5. seviye).** Yeni kodda 104 ve 105 imzaları Çöl/Kale/Mağara/Orman'da
+birebir aynı ve MC3 altınının tabanıyla (`a50fd8ed`, 104) eşit: col `a2c8ab4ab4e4`, kale `37f46869188f`, mağara `f76f0164847e`,
+orman `d2cc7015ae54` (`scripts/mc3-imza.ts`, sürüm başına ≈ 34 dk). Ana parça 457,19 kB (onaylı sınır 465).
+
 ## Görev MC3-BIRLESTIR: KARAR104'ün (birlesik `a50fd8ed`) MC dalına birleşmesi (2026-11-26; kural sürümü 105, savaş kaydı 27)
 
 **Sürüm numaraları.** `origin/birlesik` `a50fd8ed` (KARAR104 kodu, ESYA-IKON-AYIRT, KARAR104 kapanış belgeleri) merge edildi
