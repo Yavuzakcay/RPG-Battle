@@ -2,6 +2,22 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Not: KARAR104 (2026-11-26, kural sürümü 104) — hızlı regresyon
+
+Kural sürümü 104 (Görev KARAR104): Storm of Vengeance aşamaları, boğulma, likantrop laneti işareti, yapışma (Stirge/Darkmantle/
+Cloaker), eşya ↔ silah bağı, otomatik seçimlerin "Sor"a bağlanması (kancasız Rng öneriyi verir: sim imzası değişmez). Hızlı regresyon
+(100 tohum, 5. seviye standart parti; `$env:KURAL_SURUMU=103/104; npm run sim -- 100 col kale magara orman --seviye 5`):
+
+| Senaryo | 103 | 104 |
+|---|---:|---:|
+| Çöl — Gündüz | %81 | %81 |
+| Kale — Gündüz (Kale ve avlu) | %32 | %32 |
+| Mağara — karanlık | %78 (berabere %4) | %76 (berabere %2) |
+| Orman | %68 | %68 |
+
+103 sütunu KAPSAM103 ölçümüyle aynı. Mağara farkı **kural kaynaklı** (listede Darkmantle: 104'te yapışır, avantajlıyken örter;
+A2). Aralık dışı (hedef %60–80): Kale %32 (103'ten beri), Çöl %81. Düzeltme yapılmadı (hafif doğrulama modu; tam tura).
+
 ## Not: KAPSAM103 (2026-11-21, kural sürümü 103) — ölçülmedi, ölçülecek
 
 Kural sürümü 103 (gece kuyruğu Aşama 4): canavar inisiyatifi SRD stat bloğundan (330 canavarın 110'unda DEX'ten yüksek/farklı;
