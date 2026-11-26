@@ -2,6 +2,29 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev KATALOG-IKON-AKTAR-1: katalog ikonlarının ilk içe aktarma turu (2026-11-26; yalnız görünüm, kural/kayıt sürümü yok)
+
+- **Katalog manifesti hedeftir** (`scripts/esya-ikon.mjs`, kullanıcı kararı): `--manifest <yol>` (varsayılan `data/esya-ikon-sayfalar.json`,
+  davranış aynı). `KATALOG_MANIFESTLER` (`data/katalog-ikon-sayfalar.json`) ve ana dışı `--manifest` kimlikleri oyun kaydı olmadan da
+  `public/esya/<kimlik>.webp` + `kucuk/` olarak yazılır; `ayniGorsel` hücresi bütün hedeflere aynı görseli kopyalar (renk ayırt sonra).
+  Kayıtsız (hiçbir manifestte hedefi olmayan) kimlik özette sayı değil tek tek uyarı.
+- **Silme**: tam çalıştırma, hiçbir manifestin (ana + katalog; bütün sayfalar var sayılarak, `beklenenDosyalar`) hedefi olmayan dosyaları
+  yalnız listeler; `--temizle` ile siler. Eskiden tam çalıştırma yazılmayan her dosyayı siliyordu (katalog dosyaları da giderdi).
+- **Ayırt aşaması** (ESYA-IKON-AYIRT) yalnız ana manifestle çalışır; katalog çalıştırmasında atlanır.
+- **Bekleyen yay**: `titanstring-longbow` → `giant-sinew-longbow` (katalog-1 `items-katalog.json` S1#40 "Dev Kirişli Yay", KATALOG-1 K7 ad
+  önerisi). Diğer beş bekleyen kimlik aynı.
+- **Macenta yaması** (Gemini'nin zemine yakın renkli dikdörtgenleri, silah-07 buz asası): macenta kipinde de yeşildeki uzaklık tabanı;
+  zemine uzaklığı 45'in altı tam saydam, 45–90 rampa (`macentaRampa`). Bağlantısız yama bileşeni bulunmadı (bileşen süzgeci zaten atıyor);
+  görünen dikdörtgenler parıltının düşük alfalı sisiydi. arti-1 bu kuralla yeniden üretildi (görsel aynı, soluk kuyruk kırpıldı).
+- **Denenip geri alınan**: izdüşüm tutmayan pikselde "en az alfa" (renk RGB küpünün sınırına uzatılır). Mavi/sarı parıltıyı düzeltiyor ama
+  beyazımsı haleyi turkuaza, +3 asa/kılıç ucunu yeşile çeviriyordu; fark matı kaldı.
+- **Açık (ilk tur raporu)**: yarı saydam parıltı macenta üstünde belirsiz (renk ile alfa ayrışmıyor): turkuaz/buz parıltısı leylak
+  (zirh-01 #12, silah-07 #3), altın hale somon (silah-07 #11), botların pembe halkası ve şimşek ışıltısı (giyilebilir-04 #5, #10),
+  kapalı küçük cepte gölgeli macenta (yay sarmalı, kayış arası, bot ağzı; giyilebilir-04 #7, #8, #10). Öneri: parıltılı eşyalarda Gemini'ye
+  "dış parıltı/hale yok, ışıltı yalnız silüetin içinde" ya da bu hücreleri yeniden üretmek.
+- Yeşil sayfalar: 39 sayfanın 550 ikonu (1100 dosya) önce/sonra bayt bayt aynı. Boyut: 59 ikon 1201,5 KB (256 px ort. 16,2 KB, 96 px
+  ort. 4,1 KB); 330 ikon ≈ 6,6 MB.
+
 ## Görev ESYA-IKON-ARTI: +1/+2/+3 eşyaları Gemini ikon sayfasından; doğrulama modu daraldı (2026-11-26; yalnız görünüm, kural/kayıt sürümü yok)
 
 - **15 artı eşya** (Ammunition, Armor, Shield, Weapon, Wand of the War Mage × +1/+2/+3) artık üst kimliğin ikonunu paylaşmıyor:

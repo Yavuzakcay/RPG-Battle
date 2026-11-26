@@ -1747,8 +1747,8 @@
    "satir": 4,
    "ogeler": [
     {
-     "id": "titanstring-longbow",
-     "ad": "Titanstring Longbow",
+     "id": "giant-sinew-longbow",
+     "ad": "Giant-Sinew Longbow",
      "gorunum": "Massive heavy longbow of dark laminated wood and horn with thick limbs, a very thick braided pale sinew string, iron caps on the limb tips and a broad leather grip."
     },
     {
@@ -1799,7 +1799,7 @@
    "katalog-bekleyen-01"
   ],
   "kimlikler": [
-   "titanstring-longbow",
+   "giant-sinew-longbow",
    "helldusk-gauntlets",
    "nightwalker-boots",
    "caustic-band",

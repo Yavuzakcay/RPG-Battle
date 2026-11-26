@@ -6,10 +6,14 @@
 // %6'sından küçük bileşenler atılır (`hepsiniTut` hariç). Sayfa sırası = uygulama sırası (sonraki öncekini ezer), `yoksay` okunmaz, eksik sayfa
 // atlanır, `ayniGorsel` bir görseli başka kimliklere kopyalar. Varyant kimliği oyunun açılmış kaydına kuralla eşlenir (`esle`), SRD üst kimliği
 // açılmış kayıtlara kopyalanır (`bagla`); public/esya'ya yalnız oyun kayıtları yazılır, kalanı kayıtsızdır. `tamDespill`: bütün nesnede despill
-// (cam). Zemin kipi köşe renginden: macenta (#FF00FF, `isMagenta`) sayfada anahtar macenta-pembe tonu siler, despill macenta taşmasını
-// (min(R, B) − G) bastırır; nesnenin mavi/altın parıltısı kalır. Yeşil sayfada davranış önceki gibidir. Çıktı her çalıştırmada aynıdır (idempotent; tam çalıştırma artık kaydı olmayan eski dosyaları siler).
+// (cam). Katalog manifestleri (`KATALOG_MANIFESTLER`, ya da `--manifest` ile verilen ana dışı manifest): kimlikleri oyun kaydı olmasa da
+// hedeftir (public/esya/<kimlik>.webp), `ayniGorsel` hücresi bütün hedeflere kopyalanır. Hiçbir manifestte hedefi olmayan kimlik kayıtsızdır
+// (tek tek uyarı, yazılmaz). Zemin kipi köşe renginden: macenta (#FF00FF, `isMagenta`) sayfada anahtar macenta-pembe tonu siler, despill macenta taşmasını
+// (min(R, B) − G) bastırır; nesnenin mavi/altın parıltısı kalır. Yeşil sayfada davranış önceki gibidir. Çıktı her çalıştırmada aynıdır (idempotent). Tam çalıştırma hiçbir manifestin (ana + katalog) hedefi olmayan eski dosyaları
+// listeler, yalnız --temizle ile siler.
 // Kontrol görselleri (hücre no + kimlik): --kontrol → harita/belgeler/ESYA-IKON-KONTROL/<sayfa>.png. --kuru: dosya yazmadan özet.
-// Kullanım: npm run esya-ikon [-- --kontrol] [-- --kaynak <klasör>] [-- --sayfa varyant-1,silah-2]
+// Kullanım: npm run esya-ikon [-- --kontrol] [-- --kaynak <klasör>] [-- --sayfa varyant-1,silah-2] [-- --manifest data/katalog-ikon-sayfalar.json]
+//   [-- --temizle]
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -17,6 +21,9 @@ import sharp from 'sharp';
 import { isMagenta } from './lib/madalyon.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+/** Ana manifest (oyun kayıtlarına bağlanır) ve katalog manifestleri (kimlikleri kayıt olmadan da hedef; silmeye karşı korunur). */
+export const ANA_MANIFEST = 'data/esya-ikon-sayfalar.json';
+export const KATALOG_MANIFESTLER = ['data/katalog-ikon-sayfalar.json'];
 export const BUYUK = 256;
 export const KUCUK = 96;
 /**
@@ -25,7 +32,9 @@ export const KUCUK = 96;
  */
 export const ESIK = { alt: 45, ust: 160, delik: 55, delikMinPx: 3, yesilFark: 20, bilesenOran: 0.06, despillPx: 6, kirpAlfa: 48, tasmaPay: 0.15,
   /** Macenta kipi: taşkın dolgunun zemine uzaklık sınırı (parıltı halesi 160–200 arası; koyu dış çizgi ≥ 240 durdurur), izdüşüm artığı sınırı. */
-  macentaUst: 200, izdusumArtik: 30, kaynakPay: 3, halkaFazla: -40 };
+  macentaUst: 200, izdusumArtik: 30, kaynakPay: 3, halkaFazla: -40,
+  /** Macenta taban rampası: zemine uzaklık alt'tan (45) alt + macentaRampa'ya dek alfa 0 → 1 (zemine yakın yama ve sis silinir). */
+  macentaRampa: 45 };
 
 /** Zemin kipi: köşeden okunan zemin rengi macentaysa 'macenta', değilse 'yesil' (önceki sayfaların hepsi). */
 export const zeminKipi = (zemin) => (isMagenta(zemin[0], zemin[1], zemin[2]) ? 'macenta' : 'yesil');
@@ -39,7 +48,9 @@ const ZEMIN_TONU = {
 /**
  * Macenta kipinde anahtarlanan piksellerin alfası ve rengi. Parıltı halesi tek renk + zemin karışımıdır: piksel, en yakın anahtarlanmamış
  * (nesne) pikselin rengine F izdüşürülür (a = (O − Z)·(F − Z) / |F − Z|², renk F); karışım F ile açıklanmıyorsa (artık > izdusumArtik)
- * fark matı: a = 1 − fazla(O) / fazla(Z), renk ayrıştırılır (fazla = min(R, B) − G). Uzaklık rampası macentada parıltıyı opak pembe bırakıyordu.
+ * fark matı: a = 1 − fazla(O) / fazla(Z), renk ayrıştırılır (fazla = min(R, B) − G). Uzaklık rampası macentada parıltıyı opak pembe
+ * bırakıyordu; yalnız alt sınırı kalır: zemine uzaklığı alt'ın altı tam saydam, alt + macentaRampa'ya dek rampa (Gemini'nin zemine yakın
+ * renkli dikdörtgen yamaları ve sis). ("En az alfa" denendi: beyazımsı haleyi turkuaza, ucu yeşile çeviriyordu; DECISIONS KATALOG-IKON-AKTAR.)
  * Kaynak F anahtarlı bölgeden en az kaynakPay px içerideki nesne pikselidir (hemen bitişik geçiş halkası da zemine bulaşık); o halkadaki
  * fazlası halkaFazla'dan büyük pikseller yalnız izdüşüm tutarsa çözülür, tutmazsa (dış çizgi, nesnenin kendi rengi) olduğu gibi kalır.
  */
@@ -61,6 +72,7 @@ function macentaAyristir(rgb, w, h, zemin, zeminMi, out) {
     for (const q of komsu(p)) if (q >= 0 && kaynak[q] < 0) { kaynak[q] = kaynak[p]; kuyruk[son++] = q; }
   }
   const fazlaZ = Math.max(1, Math.min(zr, zb) - zg);
+  const taban = (r, g, b) => Math.min(1, Math.max(0, (Math.hypot(r - zr, g - zg, b - zb) - ESIK.alt) / ESIK.macentaRampa));
   for (let i = 0; i < n; i++) {
     const halka = !zeminMi[i] && uzak[i] < ESIK.kaynakPay;
     if (!zeminMi[i] && !halka) continue;
@@ -74,7 +86,7 @@ function macentaAyristir(rgb, w, h, zemin, zeminMi, out) {
         const a = Math.min(1, Math.max(0, ((r - zr) * vr + (g - zg) * vg + (b - zb) * vb) / L));
         const artik = Math.hypot(r - (zr + a * vr), g - (zg + a * vg), b - (zb + a * vb));
         if (artik <= ESIK.izdusumArtik) {
-          out[i * 4] = fr; out[i * 4 + 1] = fg; out[i * 4 + 2] = fb; out[i * 4 + 3] = Math.round(a * 255);
+          out[i * 4] = fr; out[i * 4 + 1] = fg; out[i * 4 + 2] = fb; out[i * 4 + 3] = Math.round(a * (halka ? 1 : taban(r, g, b)) * 255);
           continue;
         }
       }
@@ -84,7 +96,7 @@ function macentaAyristir(rgb, w, h, zemin, zeminMi, out) {
     if (a > 0) {
       out[i * 4] = clamp((r - (1 - a) * zr) / a); out[i * 4 + 1] = clamp((g - (1 - a) * zg) / a); out[i * 4 + 2] = clamp((b - (1 - a) * zb) / a);
     }
-    out[i * 4 + 3] = Math.round(a * 255);
+    out[i * 4 + 3] = Math.round(a * taban(r, g, b) * 255);
   }
 }
 
@@ -188,16 +200,25 @@ export function esle(manifest, kayitlar) {
   return { manifest: { ...manifest, sayfalar }, varyant, eslesmeyen, belirsiz };
 }
 
+/** Manifestin bütün kimlikleri: hücre öğeleri + `ayniGorsel` kaynak ve hedefleri. */
+export function manifestKimlikleri(manifest) {
+  const out = new Set();
+  for (const s of manifest.sayfalar ?? []) for (const o of s.ogeler ?? []) if (o?.id) out.add(o.id);
+  for (const [k, hedefler] of Object.entries(manifest.ayniGorsel ?? {})) { out.add(k); for (const h of hedefler) out.add(h); }
+  return out;
+}
+
 /**
  * Planı oyun kayıtlarına bağla. Manifestteki SRD üst kimliği (oyunda kaydı yok ama oyun kayıtlarının `srd`'si) kendi ikonu olmayan bütün
- * açılmış kayıtlara kopyalanır (varyantın kendi ikonu önce gelir). Oyunda kaydı olmayan kalan kimlikler `kayitsiz` (yazılmaz).
+ * açılmış kayıtlara kopyalanır (varyantın kendi ikonu önce gelir). `hedefler` (katalog kimlikleri) kayıt olmadan da yazılır. Kalanlar
+ * `kayitsiz` (yazılmaz).
  */
-export function bagla(son, kayitlar) {
+export function bagla(son, kayitlar, hedefler = new Set()) {
   const oyun = new Set(kayitlar.map((k) => k.id));
   const cikti = new Map(); const ust = []; const kayitsiz = [];
-  for (const [id, sn] of son) if (oyun.has(id)) cikti.set(id, sn);
+  for (const [id, sn] of son) if (oyun.has(id) || hedefler.has(id)) cikti.set(id, sn);
   for (const [id, sn] of son) {
-    if (oyun.has(id)) continue;
+    if (oyun.has(id) || hedefler.has(id)) continue;
     const uyeler = kayitlar.filter((k) => k.srd === id && k.id !== id).map((k) => k.id);
     if (!uyeler.length) { kayitsiz.push(id); continue; }
     const alan = uyeler.filter((u) => !cikti.has(u));
@@ -423,6 +444,19 @@ async function kontrolGorseli(ad, sayfa, sonuc, son, belirsizIdler, kayitsiz, he
   await sharp(dama).composite([...ikonlar, { input: ust, left: 0, top: 0 }]).png({ palette: true, quality: 90, effort: 8 }).toFile(hedef);
 }
 
+/**
+ * Hattın beklenen çıktı dosyaları (`<kimlik>.webp`): her manifestin bütün sayfaları var sayılarak bağlanan kimlikleri. Bu kümedeki dosya
+ * hiçbir çalıştırmada "eski" sayılmaz (yalnız --sayfa ya da tek manifestle çalışılsa da).
+ */
+export function beklenenDosyalar(manifestler, kayitlar, hedefler = new Set()) {
+  const out = new Set();
+  for (const m of manifestler) {
+    const { cikti } = bagla(plan(esle(m, kayitlar).manifest).son, kayitlar, hedefler);
+    for (const id of cikti.keys()) out.add(`${dosyaAdi(id)}.webp`);
+  }
+  return out;
+}
+
 /** Manifestin `belirsiz` metinlerinden geçen kimlikler (kontrol görselinde "?"). */
 export function belirsizKimlikler(manifest, idler) {
   const metin = JSON.stringify(manifest.belirsiz ?? {});
@@ -435,12 +469,19 @@ async function main() {
   const kuru = process.argv.includes('--kuru');
   const kontrol = process.argv.includes('--kontrol');
   const yalniz = arg('--sayfa')?.split(',');
+  const temizle = process.argv.includes('--temizle');
   const kayitlar = oyunKayitlari();
-  const es = esle(JSON.parse(fs.readFileSync(path.join(ROOT, 'data/esya-ikon-sayfalar.json'), 'utf8')), kayitlar);
+  const oku = (yol) => JSON.parse(fs.readFileSync(path.resolve(ROOT, yol), 'utf8'));
+  const goreli = (yol) => path.relative(ROOT, yol).split(path.sep).join('/');
+  const manifestYolu = path.resolve(ROOT, arg('--manifest') ?? ANA_MANIFEST);
+  const anaMi = manifestYolu === path.resolve(ROOT, ANA_MANIFEST);
+  const katalogYollari = [...new Set([...KATALOG_MANIFESTLER.map((y) => path.resolve(ROOT, y)).filter((y) => fs.existsSync(y)), ...(anaMi ? [] : [manifestYolu])])];
+  const katalogHedef = new Set(katalogYollari.flatMap((y) => [...manifestKimlikleri(oku(y))]));
+  const es = esle(oku(manifestYolu), kayitlar);
   const manifest = es.manifest;
   const varMi = (d) => fs.existsSync(path.join(kaynak, d));
   const { son, ezilen, atlanan, etkisiz } = plan(manifest, varMi);
-  const { cikti, ust, kayitsiz } = bagla(son, kayitlar);
+  const { cikti, ust, kayitsiz } = bagla(son, kayitlar, katalogHedef);
   const kayitsizSet = new Set(kayitsiz);
   const hepsiniTut = new Set(manifest.hepsiniTut ?? []);
   const tamDespill = new Set(manifest.tamDespill ?? []);
@@ -465,18 +506,19 @@ async function main() {
     console.log(`${ad}: ${out.filter((c) => c.buyuk).length} ikon, zemin rgb(${zemin.join(',')})`);
     if (kontrol && !kuru) await kontrolGorseli(ad, s, out, son, belirsizIdler, kayitsizSet, path.join(KON, `${ad}.png`));
   }
-  let yazilan = 0; const yazildi = new Set();
+  let yazilan = 0; let katalogYazilan = 0; const yazildi = new Set();
   for (const [id, sn] of cikti) {
     const g = gorsel.get(sn.kaynakId);
     if (!g) continue;
     yazilan++; yazildi.add(`${dosyaAdi(id)}.webp`);
+    if (katalogHedef.has(id)) katalogYazilan++;
     if (kuru) continue;
     fs.writeFileSync(path.join(OUT, `${dosyaAdi(id)}.webp`), g.buyuk);
     fs.writeFileSync(path.join(OUTK, `${dosyaAdi(id)}.webp`), g.kucuk);
   }
   // Görev ESYA-IKON-AYIRT: üst kimlik kopyası paylaşan varyantlar (data/esya-ikon-ayirt.json) taban ikondan ayırt edilir; tabanlar
   // assets/esya-taban'a yazılır (bu çalıştırmada işlenmeyen sayfanın tabanı oradaki kayıttan), ayırt dosyaları kopyaların üstüne yazılır.
-  if (!kuru) {
+  if (!kuru && anaMi) { // ayırt verisi ana manifestin kayıtlarına bağlı; katalog çalıştırmasında atlanır
     const { ayirt, tabanYaz, veriOku } = await import('./esya-ikon-ayirt.mjs');
     const tabanlar = new Map();
     for (const g of veriOku(ROOT).gruplar) {
@@ -486,12 +528,19 @@ async function main() {
     tabanYaz(tabanlar, ROOT);
     await ayirt({ root: ROOT, hat: { BUYUK, KUCUK, cikti }, tabanlar });
   }
-  // Tam çalıştırmada bu hattın önceki çıktısından artık oyun kaydı olmayan dosyalar silinir (idempotent).
-  let silinen = 0;
-  if (!kuru && !yalniz) for (const d of [OUT, OUTK]) for (const f of fs.readdirSync(d)) {
-    if (f.endsWith('.webp') && !yazildi.has(f)) { fs.unlinkSync(path.join(d, f)); silinen++; }
+  // Tam çalıştırmada hiçbir manifestin (ana + katalog) hedefi olmayan dosyalar "eski"dir: listelenir, yalnız --temizle ile silinir.
+  const eski = [];
+  if (!yalniz && fs.existsSync(OUTK)) {
+    const beklenen = beklenenDosyalar([oku(ANA_MANIFEST), ...katalogYollari.map(oku)], kayitlar, katalogHedef);
+    for (const d of [OUT, OUTK]) for (const f of fs.readdirSync(d)) {
+      if (f.endsWith('.webp') && !yazildi.has(f) && !beklenen.has(f)) eski.push(goreli(path.join(d, f)));
+    }
   }
-  console.log(`${yazilan} oyun kaydı yazıldı${kuru ? ' (kuru)' : ''}; varyant eşlendi ${es.varyant.length}, eşleşmeyen ${es.eslesmeyen.length}, belirsiz ${es.belirsiz.length}; üst kimlik kopyası ${ust.length}; kayıtsız ${kayitsiz.length}; eski dosya silindi ${silinen}; ezilen ${ezilen.length}; eksik sayfa ${atlanan.length ? atlanan.join(', ') : 'yok'}`);
+  const sil = temizle && !kuru;
+  if (sil) for (const f of eski) fs.unlinkSync(path.join(ROOT, f));
+  console.log(`${yazilan} kimlik yazıldı (katalog ${katalogYazilan})${kuru ? ' (kuru)' : ''}; manifest ${goreli(manifestYolu)}; varyant eşlendi ${es.varyant.length}, eşleşmeyen ${es.eslesmeyen.length}, belirsiz ${es.belirsiz.length}; üst kimlik kopyası ${ust.length}; eski dosya ${eski.length}${eski.length ? (sil ? ' silindi' : ' (silinmedi; --temizle)') : ''}; ezilen ${ezilen.length}; eksik sayfa ${atlanan.length ? atlanan.join(', ') : 'yok'}`);
+  for (const id of kayitsiz) console.log(`  kayıtsız (yazılmadı): ${id}`);
+  for (const f of eski) console.log(`  eski dosya${sil ? ' silindi' : ''}: ${f}`);
   for (const [id, eski, yeni] of ezilen) console.log(`  ezildi: ${id} ${eski} → ${yeni}`);
   for (const e of etkisiz) console.log(`  ayniGorsel: ${e}`);
   for (const u of uyarilar) console.log(`  uyarı: ${u}`);

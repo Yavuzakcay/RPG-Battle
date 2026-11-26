@@ -16,7 +16,11 @@ export function plan(manifest: Manifest, varMi?: (dosya: string) => boolean): { 
 export function oyunKayitlari(root?: string): Kayit[];
 export function varyantEsle(id: string, kayitlar: Kayit[]): { id?: string; belirsiz?: string[]; yok?: string };
 export function esle(manifest: Manifest, kayitlar: Kayit[]): { manifest: Manifest; varyant: Array<[string, string]>; eslesmeyen: Array<[string, string]>; belirsiz: Array<[string, string[]]> };
-export function bagla(son: Map<string, Konum>, kayitlar: Kayit[]): { cikti: Map<string, Konum>; ust: Array<[string, string[], string[]]>; kayitsiz: string[] };
+export const ANA_MANIFEST: string;
+export const KATALOG_MANIFESTLER: string[];
+export function manifestKimlikleri(manifest: Manifest): Set<string>;
+export function beklenenDosyalar(manifestler: Manifest[], kayitlar: Kayit[], hedefler?: Set<string>): Set<string>;
+export function bagla(son: Map<string, Konum>, kayitlar: Kayit[], hedefler?: Set<string>): { cikti: Map<string, Konum>; ust: Array<[string, string[], string[]]>; kayitsiz: string[] };
 export function zeminKipi(zemin: readonly [number, number, number] | number[]): 'yesil' | 'macenta';
 export function anahtarla(
   rgb: Uint8Array, w: number, h: number, zemin: readonly [number, number, number] | number[], hepsi?: boolean,
