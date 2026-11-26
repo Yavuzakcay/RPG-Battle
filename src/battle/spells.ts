@@ -1,4 +1,5 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
+import { featureLevel } from './classLevel';
 import { b94On } from './b94Surum';
 import { ws92On } from './ws92Surum';
 import { spellComponents } from '../rules/spellComponents';
@@ -1855,7 +1856,7 @@ function executeSmite(state: BattleState, actor: Combatant, cmd: CastCommand, sp
   // Kuyruk 19 (11–20): Smite of Protection (Devotion 15): Divine Smite'tan sonra Paladin ve aurasındaki dostlar sonraki
   // turunun başına dek yarım siperli.
   if (spell.id === 'divine-smite' && actor.traits?.includes('smite-of-protection') && globalRule(state, 'featuresK19')) {
-    const radius = (actor.level ?? 0) >= 18 ? 6 : 2;
+    const radius = featureLevel(actor, 'paladin:aura-of-protection') >= 18 ? 6 : 2;
     // Görev B94 (sürüm 94+, s. 57 "while in your Aura of Protection"): siper aurada kaldıkça (sonradan giren de alır,
     // çıkan kaybeder); Paladin'de tek etki `coverAura`, `cover.ts` `grantedHalfCover` okur.
     if (b94On(state)) {

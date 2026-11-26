@@ -2,6 +2,7 @@
  * Görev WARLOCK (SRD 5.2.1; veriden, kodda sınıf adı yok): Eldritch Smite (`eldritch_smite` komutu, `eldritch-smite`
  * işareti) ve Dark One's Blessing (`dark-ones-blessing` işareti; her komutun sonunda). Saf.
  */
+import { featureLevel } from './classLevel';
 import { rollDice, rollTag, type Rng } from '../rules/dice';
 import { distance } from '../rules/hex';
 import { adjustDamage } from '../rules/damage';
@@ -60,7 +61,8 @@ export function blessingEvents(before: BattleState, after: BattleState, actorId:
   for (const w of holders) {
     const near = (c: Combatant) => !after.map || (!!c.pos && !!w.pos && distance(c.pos, w.pos) <= 2);
     if (!fallen.some((c) => c.side !== w.side && (actorId === w.id || near(c)))) continue;
-    const amount = Math.max(1, w.modifiers.cha + w.level);
+    // Görev MC4: Warlock seviyesiyle.
+    const amount = Math.max(1, w.modifiers.cha + featureLevel(w, 'warlock:dark-ones-blessing'));
     if ((w.tempHp ?? 0) < amount) out.push({ type: 'temp_hp', targetId: w.id, amount, label: "Dark One's Blessing" });
   }
   return out;

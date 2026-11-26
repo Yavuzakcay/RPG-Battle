@@ -9,6 +9,7 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { resourceLevel } from './classLevel';
 import { karar104On } from './karar104Surum';
 import { b98On } from './b98Surum';
 import { sinif97On } from './sinif97Surum';
@@ -441,7 +442,7 @@ export function weaponAttackEvents(
         // Kuyruk K70 (sürüm 54): Beacon of Hope altında en yüksek değer (tek kural `healMax.ts`).
         const roll = beaconMax(state, a1, `1d${hd.die}`, BEACON_K70_VERSION) ?? rollDice(`1d${hd.die}`, rollTag(rng, { kind: 'heal', by: actor.id })).total;
         const amount = Math.max(0, roll + a1.modifiers.con);
-        extra.push({ type: 'hit_die_spent', actorId: actor.id, left: hd.left - 1 },
+        extra.push({ type: 'hit_die_spent', actorId: actor.id, left: hd.left - 1, ...(hd.pool ? { die: hd.die } : {}) },
           { type: 'healed', actorId: actor.id, targetId: actor.id, label: 'Lifedrinker (HP zarı)', amount, targetHpAfter: Math.min(a1.maxHp, a1.hp + amount) });
       }
     }
@@ -680,7 +681,7 @@ export function executeActionSurge(state: BattleState, actor: Combatant): Comman
 export function executeSecondWind(state: BattleState, actor: Combatant, rng: Rng): CommandResult {
   const left = resourceLeft(actor, 'secondWind');
   if (left <= 0) return fail('Second Wind kalmadı.');
-  const roll = { total: healRoll(state, actor, `1d10+${actor.level}`, rng, actor.id) };
+  const roll = { total: healRoll(state, actor, `1d10+${resourceLevel(actor, 'secondWind')}`, rng, actor.id) };
   const hpAfter = applyHealing(actor.hp, actor.maxHp, roll.total);
   const events: BattleEvent[] = [
     { type: 'feature_used', actorId: actor.id, feature: 'secondWind', remaining: left - 1 },

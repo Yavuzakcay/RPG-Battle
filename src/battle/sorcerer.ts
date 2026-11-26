@@ -11,6 +11,7 @@
  *   (Acid/Cold/Fire/Lightning/Poison/Thunder arasında tür). Innate Sorcery yalnızca sınıf büyülerine (`classSpells`).
  * Saf.
  */
+import { resourceLevel } from './classLevel';
 import { spells, type Spell } from '../data';
 import { rollDie, rollTag, type Rng } from '../rules/dice';
 import { resourceDef } from '../rules/classFeatures';
@@ -169,7 +170,7 @@ export function executeFontOfMagic(state: BattleState, actor: Combatant, mode: '
   // Slot yaratma tablosu kaynağın verisinde (SRD 5.2.1 Creating Spell Slots): seviye → [bedel, en düşük seviye].
   const row = resourceDef(POINTS)?.slotCost?.[String(level)];
   if (!row) return fail('En çok 5. seviye slot yaratılır.');
-  if (actor.level < row[1]) return fail(`${level}. seviye slot için Sorcerer seviyesi en az ${row[1]}.`);
+  if (resourceLevel(actor, POINTS) < row[1]) return fail(`${level}. seviye slot için Sorcerer seviyesi en az ${row[1]}.`);
   if (resourceLeft(actor, POINTS) < row[0]) return fail(`${row[0]} Sorcery Point gerekli.`);
   return finish(state, [{ type: 'feature_used', actorId: actor.id, feature: POINTS, remaining: resourceLeft(actor, POINTS) - row[0] },
     { type: 'slot_created', actorId: actor.id, level, ...(buyucu93On(state) ? { extra: true } : {}) }]);

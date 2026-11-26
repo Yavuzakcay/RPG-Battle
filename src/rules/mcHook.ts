@@ -16,6 +16,18 @@ export function classesOf(sheet: Pick<CharacterSheet, 'classId' | 'level' | 'sub
   return [{ classId: sheet.classId, level: sheet.level, ...(sheet.subclassId !== undefined ? { subclassId: sheet.subclassId } : {}) }];
 }
 
+/**
+ * Görev MC4: özellik ya da kaynak anahtarının sınıfı: `sınıf:özellik`, `sınıf/alt sınıf:özellik` ve K6 sınıf ekli kaynak
+ * `kaynak@sınıf` (Channel Divinity). Kodda sınıf adıyla koşul yazmadan sınıf seviyesini bulmak için.
+ */
+export const keyClassOf = (key: string): string => (key.includes('@') ? key.slice(key.indexOf('@') + 1) : key.split(/[:/]/)[0] ?? key);
+
+/** Görev MC4: sayfada sınıfın seviyesi: tek sınıfta karakter seviyesi; çoklu sınıfta o sınıfın seviyesi (yoksa 0). */
+export function sheetClassLevel(sheet: Pick<CharacterSheet, 'classId' | 'level' | 'classes'>, classId: string): number {
+  if (!isMultiSheet(sheet)) return sheet.level;
+  return sheet.classes?.find((e) => e.classId === classId)?.level ?? 0;
+}
+
 let impl: McImpl | null = null;
 /** `loadClassData` çoklu sınıf modülünü kaydeder. */
 export const setMcImpl = (x: McImpl): void => { impl = x; };

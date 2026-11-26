@@ -858,8 +858,11 @@ export interface Combatant {
   possessionImmune?: string[];
   /** Kuyruk 18 H3: Countercharm verebilecek (30 ft, tepkisi hazır) Bard'ın kimliği (reducer `syncAuras` yazar). */
   countercharmBy?: string;
-  /** Kuyruk 19: savaşta harcanabilen HP zarları (Lifedrinker); savaş sonu karaktere yazılır. */
-  hitDice?: { die: number; left: number };
+  /**
+   * Kuyruk 19: savaşta harcanabilen HP zarları (Lifedrinker); savaş sonu karaktere yazılır. Görev MC4: çoklu sınıfta zar türü
+   * başına kalan (`pool`; `die` kalanların en büyüğü, harcama ondan).
+   */
+  hitDice?: { die: number; left: number; pool?: Record<string, number> };
   /** Kuyruk 19: kalıcı azalmalar (canavar ek etkisi; Greater Restoration kaldırır): HP maksimumundan düşen. */
   maxHpLoss?: number;
   /** Kuyruk 19: Dominate: büyücünün tepkisi harcandı, yönetilen yaratık tepki veremez (türetilmiş). */
@@ -1079,6 +1082,11 @@ export interface Combatant {
   packTactics: boolean;
   /** Karakter seviyesi (canavarlarda 0). */
   level: number;
+  /**
+   * Görev MC4 (kural sürümü 105): çoklu sınıflı oyuncu savaşçısında sınıf ve alt sınıf kimliği → o sınıfın seviyesi (sınıf
+   * özellikleri sınıf seviyesiyle; `classLevel.ts`). Tek sınıflı savaşçıda yok (`level` aynı şeydir).
+   */
+  classLevels?: Record<string, number>;
   /** Büyü yapma ability modifier'ı. */
   spellMod: number;
   spellSaveDc: number | null;
@@ -2290,7 +2298,7 @@ export type BattleEvent =
     }
   | { type: 'healed'; actorId: string; targetId: string; label: string; amount: number; targetHpAfter: number; /** Kuyruk P11: iyileştirme zarları (ve paket değişikliği). */ rolls?: number[]; changed?: string }
   /** Kuyruk 19: savaşta HP zarı harcandı (Lifedrinker). */
-  | { type: 'hit_die_spent'; actorId: string; left: number }
+  | { type: 'hit_die_spent'; actorId: string; left: number; /** Görev MC4: çoklu sınıfta harcanan zarın türü (savaş kaydı 27). */ die?: number }
   /** Kuyruk 19: Animate Objects emri (bonus eylem; ekonomi `summonCommand`). */
   | { type: 'summons_commanded'; actorId: string }
   /** Kuyruk 19: savaştan çıkarıldı (kendi düzlemine sürgün). */

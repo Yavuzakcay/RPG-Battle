@@ -2,6 +2,63 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev MC4: çoklu sınıflı savaşçı sınıf başına; savaşta ve dinlenmede sınıf seviyesi (2026-11-26; kural sürümü 105, savaş kaydı 27)
+
+**Sürüm numaraları.** Başlarken `origin/birlesik` `a50fd8ed`'de (yeni commit yok; kural 104 KARAR104, kayıt 26). 105 MC3'le MC
+dalında, henüz yayımlanmadı ve birlesik'te başka iş 105'i almadı: MC4 de **105**'te (plan: "MC3'ün sürümü, araya başka sürüm
+girerse kendi sürümü"). Savaş kaydı **27** (MC3) MC4'ün olay ekini de taşır: `hit_die_spent.die` (isteğe bağlı; eski kayıt aynı
+okunur). Tek sınıflı savaşçı ve 104 ve altı değişmedi (104'te çoklu sınıflı sayfa MC öncesi gibi kurulur, `classLevels` yok).
+
+**Kurulum (`combatantFromSheet`, 105+ çoklu sınıf; `src/rules/mcImpl.ts`).** SRD 5.2.1 s. 25: sınıf özellikleri o sınıfın
+seviyesiyle.
+- Sınıf kiti her sınıfın kendi seviyesiyle çağrılır, birleştirilir (`kit`, `mergeKit`): Extra Attack yığılmaz (en yüksek; Fighter'ın
+  Two/Three Extra Attacks'ı kendi değeri), Sneak Attack, kaynaklar, eylemler, tepkiler, Martial Arts, Rage, Metamagic… kendi
+  sınıfının seviyesinden. Thirsting Blade Extra Attack varken ek saldırı vermez (`pactAttacks` yalnız `inv.attacks` > kitin
+  saldırı sayısıysa; SRD s. 25).
+- Invocation, Invocation veren sınıfın seviyesiyle (`invocations`); Pact silahı ve Martial Arts zarı silah seçeneklerinde de
+  (`weapons.ts`); silah yetkinliği MC2'nin sayfa yetkinliği (`sheetWeaponProficient`).
+- Kaynaklar sınıf başına (`resources`): sınıf kaynağı o sınıfın seviyesiyle; yetkinlik bonusuyla sayılan kaynak (Karadul) toplam
+  seviyeyle; tür/soy kaynağı karakter seviyesiyle. Karakter durumu aynı işlevden (`fullStatus`).
+- **K6** (Channel Divinity sınıfa özgü havuz): birden çok sınıfın verdiği kaynak (yalnız Channel Divinity: Cleric + Paladin)
+  sınıf ekli kimlikle ayrı havuz, `channelDivinity@cleric` / `channelDivinity@paladin` (`renames`); o sınıfın özellikleri kendi
+  havuzundan harcar (`renameKit`). Tanım, ad ve ikon sınıfsız kimlikten (`resourceDef`, `featureName`, `resourceIconOf`).
+  Çakışma yoksa kimlik sınıfsız kalır (Cleric + Fighter: `channelDivinity`). Tek sınıftan çoklu sınıfa geçen kayıtta sınıfsız
+  kimliğin durumu ilk sınıfın havuzu sayılır (`currentStatus`).
+- **K5** (Weapon Mastery, SRD'de açık değil): tek havuz, hak sınıfların en yükseği; menzilli silah, yakın dövüş kısıtı olmayan bir
+  hak veren sınıf varsa seçilebilir (`mergeKit`; `masteryRight` oluşturucu sorunlarında da). Uzun dinlenme değişim sayısı en yüksek
+  hakkı veren sınıfınki.
+- Sınıf görünümünden (`views`: ilk sınıf alanları o sınıfa çekilmiş sayfa): Mystic Arcanum ve kitaptan seçimler (`minClassLevel`
+  o sınıfın seviyesiyle), Ritual Adept, imza ve Karadul özellikleri, paket torbası (birden çok paket alt sınıfının torbası
+  birleşir), imza alt sınıfı.
+- Savaşçıda `classLevels` (sınıf ve alt sınıf kimliği → o sınıfın seviyesi; imza eski kimliği de). Alet yetkinliği ilk sınıfın +
+  sonrakilerin `ek.alet`'i (Rogue: Thieves' Tools). Innate Sorcery'nin "Sorcerer büyüleri": büyünün sınıf bağı (MC3) Innate
+  Sorcery'yi veren sınıfsa.
+- Lifedrinker HP zarı havuzu zar türü başına (`hitDice.pool`, `battleHitDice`; türü kayıtlı olmayan harcanmışlar büyük zardan),
+  harcama kalanların en büyüğünden (`hit_die_spent.die`), savaş sonu `hitDiceSpentBy`'a yazılır (`spentFromPool`). MC2/MC3'te
+  `applyBattleResult` çoklu sınıfın `hitDiceSpentBy`'ını düşürüyordu; artık taşınır.
+
+**Savaşta sınıf seviyesi (`src/battle/classLevel.ts`: `levelIn`, `featureLevel`, `resourceLevel`).** Sınıf, özellik ya da kaynak
+anahtarının önekinden (kodda sınıf adıyla koşul yok); tek sınıflı savaşçıda ve canavarda `level`. Second Wind, Indomitable (save ve
+ölüm save'i), Wild Shape (biçim sınırları, geçici HP), Land's Aid, Divine Spark, Preserve Life, Uncanny Metabolism, Relentless Rage,
+Brutal Strike (17), Font of Magic slot yaratma eşiği, Aura of Protection/Courage/Devotion ve Smite of Protection yarıçapı (18), Dark
+One's Blessing, Deflect Attacks, imza (`imzaLevel`), Karadul, paket `$lvl`/`$lvlYari`/`$lvl2`, seviye tabloları ve uçuş
+(`paketLevel`). Karakter seviyesinde kalanlar (SRD'ye göre doğru): cantrip ölçeklenmesi, Dragonborn nefesi, tür/soy özellikleri,
+Polymorph sınırı, yetkinlik bonusu.
+
+**Dinlenmede sınıf seviyesi (`characterRest.ts` `resourceClassLevel`).** Arcane Recovery (Wizard), Natural Recovery (Druid) bütçesi
+ve seçenekleri, Sorcerous Restoration, Font of Magic slot eşiği, kısa dinlenme `shortFrom` eşiği (`rechargeResources` `levelOf`),
+Tireless ve Eldritch Master her sınıfın özelliğinden; Magical Cunning ayrı Pact havuzu varsa onu doldurur.
+
+**⚠ Yaklaşık / kalan.** Paket ilkelinin sınıf kaynağı başvurusu `channelDivinity` Cleric + Paladin'de sınıfsız kimliği arar (havuz
+yok; paketlerde böyle başvuru yok). İki imza alt sınıfında yalnız ilki; iki paket alt sınıfında torba birleşir ama `altSinif` ilki
+(ikincinin `$lvl`'ı ilkinin sınıf seviyesi). Paket bineğinin `minSeviye`'si karakter seviyesi. Arayüzde iki Channel Divinity aynı
+adla görünür (sınıf etiketi MC5). Kalkanla/zırhla ilgili MC2 kuralları aynen.
+
+**Test.** `src/battle/mc4.test.ts` (14: Rogue 1 / Fighter 4 Sneak Attack 1d6 ve Fighter kaynakları, Extra Attack yığılmaz, 104
+kapısı, Thirsting Blade iki durum, K6 savaşçı/durum/eski kayıt/çakışmasız, K5 iki durum, yardımcılar, Arcane Recovery, Sorcerous
+Restoration, Lifedrinker havuzu ve durum aktarımı). MC2'nin 362 durumluk altını ve MC3 altınları (tek sınıflı savaşçılar 104 = 105,
+26/25 sürümlü kayıtlar, 3 tohum imzası) değişmeden geçti. İlgili 62 test dosyası (682 test) geçti.
+
 ## Görev MC3-BIRLESTIR: KARAR104'ün (birlesik `a50fd8ed`) MC dalına birleşmesi (2026-11-26; kural sürümü 105, savaş kaydı 27)
 
 **Sürüm numaraları.** `origin/birlesik` `a50fd8ed` (KARAR104 kodu, ESYA-IKON-AYIRT, KARAR104 kapanış belgeleri) merge edildi

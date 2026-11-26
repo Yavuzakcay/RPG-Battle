@@ -37,7 +37,7 @@ import { celestialFeatures, withCelestial } from './celestial';
 import { withMorale } from './morale';
 import { karadulFeatures, withKaradul } from './karadul';
 import { imzaFeatures, imzaId, isImza, withImza } from './imza';
-import { itemBag, mergeBags, paketBag } from './paket/bag';
+import { itemBag, mergeBags, paketBag, type PaketBag } from './paket/bag';
 import { paketInitAdv, withPaket } from './paket/core';
 import { withMonsterTraits } from './monsterTraits';
 import { monsterPhase } from './phase';
@@ -59,7 +59,7 @@ import { environmentFor, getMap, resolveMapChoice } from '../map/maps';
 import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type AttackOption, type UsableFeature, type Avatar, type BattleEvent, type BattleState, type ActiveEffect, type Combatant, type DragonWakeMode, type Goals, type GroupState, type MapState, type SleepGroup, type SpellZone, type SurfaceKind } from './types';
 import { civilianLook, defaultCivilianLook } from './civilianLooks';
 import { exhaustionD20Penalty } from '../rules/exhaustion';
-import { isMultiSheet } from '../rules/mcHook';
+import { classesOf, isMultiSheet, keyClassOf, mcImpl, sheetClassLevel } from '../rules/mcHook';
 import { MC3_VERSION } from './mc3Surum';
 import { mcCombatant } from './mc3';
 
@@ -262,13 +262,20 @@ function combatantFromSheetBase(
   ];
   const race = getRace(sheet.raceId);
   const cls = getClass(sheet.classId);
-  const kit = classKit(sheet.classId, sheet.level, sheet.subclassId, sheet.featureChoices);
+  // Görev MC4 (kural sürümü 105; çoklu sınıflı sayfa buraya yalnız 105+ savaşta gelir): sınıf kiti, Invocation ve kaynaklar
+  // her sınıfın kendi seviyesiyle birleşik (`mcImpl.ts`); sınıfa bağlı başka parçalar sınıf görünümünden (`views`).
+  const multi = isMultiSheet(sheet);
+  const views: CharacterSheet[] = multi ? classesOf(sheet).map((e) => ({ ...sheet, classes: undefined, classId: e.classId, level: e.level, subclassId: e.subclassId })) : [sheet];
+  /** Özellik anahtarının sınıfının seviyesi (tek sınıfta karakter seviyesi). */
+  const lvlOf = (key: string | undefined): number => (multi && key ? sheetClassLevel(sheet, keyClassOf(key)) : sheet.level);
+  const kit = multi ? mcImpl().kit(sheet) : classKit(sheet.classId, sheet.level, sheet.subclassId, sheet.featureChoices);
   // Görev WARLOCK: Eldritch Invocations (veriden).
-  const inv = invocationKit(sheet.classId, sheet.level, sheet.invocations);
+  const inv = multi ? mcImpl().invocations(sheet) : invocationKit(sheet.classId, sheet.level, sheet.invocations);
   // Görev K3: soy (soy büyüleri, karanlık görüş, Giant Ancestry); kaynaklar soya göre.
   const lineage = lineageOf(sheet);
   // F1: feat kaynakları (Magic Initiate'in uzun dinlenmede bir kez slotsuz büyüsü) sınıf kaynaklarına eklenir.
-  const resources = { ...classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineage?.id, sheet.subclassId), ...featResources(sheet) };
+  const resources = { ...(multi ? mcImpl().resources(sheet, d.modifiers, sheet.raceId, lineage?.id)
+    : classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineage?.id, sheet.subclassId)), ...featResources(sheet) };
   // Kaynakla slotsuz yapılan büyü her zaman hazır (Favored Enemy → Hunter's Mark).
   const freeSpells = Object.keys(resources).map((id) => resourceDef(id)?.freeSpell).filter((x): x is string => !!x);
   // Her zaman hazır büyüler (Divine Smite, yemin büyüleri; Görev P-Paladin) seçilenlere eklenir.
@@ -285,11 +292,11 @@ function combatantFromSheetBase(
   // Kuyruk 19: Pact of the Tome ritüelleri (her zaman hazır).
   const known3 = [...known2, ...inv.rituals.filter((n) => !known2.includes(n))];
   // Kuyruk 19 (görev 3): Mystic Arcanum gibi bütün sınıf listesinden seçilen büyüler (seçilmezse savaşta işe yarayan ilk).
-  const known4 = [...known3, ...arcanumPicks(sheet).filter((n) => !known3.includes(n))];
+  const known4 = [...known3, ...views.flatMap(arcanumPicks).filter((n, i, a) => !known3.includes(n) && a.indexOf(n) === i)];
   // Görev B93: kitaptan seçilen her zaman hazır büyüler (Spell Mastery, Signature Spells; `spellPicks[].fromBook`).
-  const known5 = [...known4, ...bookPicks(sheet).filter((n) => !known4.includes(n))];
+  const known5 = [...known4, ...views.flatMap(bookPicks).filter((n, i, a) => !known4.includes(n) && a.indexOf(n) === i)];
   // Görev B93: Ritual Adept: kitaptaki SRD ritüel büyüleri hazırlanmadan, yalnız ritüel olarak (`ritualOnly`).
-  const ritualOnly = gainedFeatures(sheet.classId, sheet.level, sheet.subclassId).some((f) => f.mechanic?.ritualFromBook)
+  const ritualOnly = views.some((v) => gainedFeatures(v.classId, v.level, v.subclassId).some((f) => f.mechanic?.ritualFromBook))
     ? (sheet.spellbook ?? []).filter((n) => !known5.includes(n) && srdRitual(n)) : [];
   const known = [...known5, ...ritualOnly];
   // Soy büyülerinin yeteneği (SRD: INT, WIS ya da CHA, soy seçilirken): büyücü sınıfta sınıfın yeteneği, değilse en
@@ -359,7 +366,8 @@ function combatantFromSheetBase(
     // K13: Thirsting Blade yalnızca pact silahıyla (`economy.actionAttacks`).
     ...(inv.attacks > kit.attacksPerAction ? { pactAttacks: inv.attacks } : {}),
     // Kuyruk 19: savaşta HP zarı harcayan özellik (Lifedrinker) varsa HP zarı havuzu (dinlenme durumu `withStatus` ile).
-    ...(inv.traits.includes('lifedrinker') ? { hitDice: { die: cls.hitDie, left: sheet.level } } : {}),
+    // Görev MC4: çoklu sınıfta zar türü başına havuz (`hitDice.pool`; harcama büyük zardan).
+    ...(inv.traits.includes('lifedrinker') ? { hitDice: multi ? mcImpl().battleHitDice(sheet) : { die: cls.hitDie, left: sheet.level } } : {}),
     // Kuyruk 19: Witch Sight (SRD 5.2.1): 30 ft Truesight.
     ...(inv.traits.includes('witch-sight') ? { senses: { truesight: 30 } } : {}),
     bonusActions: kit.bonusActions,
@@ -371,7 +379,7 @@ function combatantFromSheetBase(
     ...(d.itemSaveBonus ? { itemSaveBonus: d.itemSaveBonus } : {}),
     skills: d.skills,
     // Görev TE99: alet yetkinliği (sınıf ve geçmiş verisinden; Thieves' Tools kilit açma).
-    ...((): Partial<Combatant> => { const t = [...new Set([...(cls.tools ?? []), ...(backgroundById(sheet.backgroundId)?.toolId ? [backgroundById(sheet.backgroundId)!.toolId!] : [])])]; return t.length ? { toolProfs: t } : {}; })(),
+    ...((): Partial<Combatant> => { const t = [...new Set([...(multi ? mcImpl().tools(sheet) : cls.tools ?? []), ...(backgroundById(sheet.backgroundId)?.toolId ? [backgroundById(sheet.backgroundId)!.toolId!] : [])])]; return t.length ? { toolProfs: t } : {}; })(),
     ...(d.jack ? { jack: d.jack } : {}),
     // Görev DRUID: bilinen Wild Shape biçimleri (seçilmediyse uygun bütün biçimler).
     ...(sheet.wildShapeForms?.length ? { wildShapeForms: sheet.wildShapeForms } : {}),
@@ -465,11 +473,12 @@ function combatantFromSheetBase(
     ...(kit.frenzy ? { frenzy: true } : {}),
     ...(kit.primalSkills.length > 0 ? { primalSkills: kit.primalSkills as Skill[] } : {}),
     // Savaşta kullanılan sınıf özellikleri (Lay On Hands, Sacred Weapon; veriden).
-    ...((): Partial<Combatant> => { const f = [...kit.usable, ...lineageFeatures(lineage), ...soyFeatures(sheet, d.speed), ...celestialFeatures(sheet.raceId, sheet.level, sheet.celestialAwakening), ...karadulFeatures(sheet), ...imzaFeatures(sheet), ...boonFeatures(featEffects(sheetFeats(sheet)).traits)]; return f.length > 0 ? { features: f } : {}; })(),
+    ...((): Partial<Combatant> => { const f = [...kit.usable, ...lineageFeatures(lineage), ...soyFeatures(sheet, d.speed), ...celestialFeatures(sheet.raceId, sheet.level, sheet.celestialAwakening), ...views.flatMap(karadulFeatures), ...views.flatMap(imzaFeatures), ...boonFeatures(featEffects(sheetFeats(sheet)).traits)]; return f.length > 0 ? { features: f } : {}; })(),
     // Kuyruk K50: imza alt sınıfı (pasifler ve saldırı kancası; kural kapalıysa `withImza` etkisiz bırakır).
-    ...(isImza(sheet.subclassId) && sheet.level >= 3 ? { imza: imzaId(sheet.subclassId) as string } : {}),
+    ...((): Partial<Combatant> => { const v = views.find((x) => isImza(x.subclassId) && x.level >= 3); return v ? { imza: imzaId(v.subclassId) as string } : {}; })(),
     // Görev P0: ek paket ilkelleri ve yaratıkları (veri savaşçıda; düğmeler/pasifler `withPaket`).
-    ...((): Partial<Combatant> => { const bag = paketBag(sheet); return bag ? { paket: bag } : {}; })(),
+    // Görev MC4: çoklu sınıfta her sınıfın paket alt sınıfı kendi seviyesiyle (torbalar birleşir).
+    ...((): Partial<Combatant> => { const bag = views.map((v) => paketBag(v)).reduce<PaketBag | undefined>((a, b) => (a && b ? mergeBags(a, b) : a ?? b), undefined); return bag ? { paket: bag } : {}; })(),
     // Kuyruk 19 (Irresistible Offense): artırılan skor (Overwhelming Strike).
     ...((): Partial<Combatant> => {
       const adv = (sheet.advancements ?? []).find((a) => a.featId === 'boon-of-irresistible-offense');
@@ -483,7 +492,7 @@ function combatantFromSheetBase(
     ...(kit.focusActions.length > 0 ? { focusActions: kit.focusActions } : {}),
     ...(kit.metabolism ? { metabolism: { ...kit.metabolism, max: resources[kit.metabolism.refill] ?? 0 } } : {}),
     ...(kit.deflect ? { deflect: {
-      dice: kit.deflect.dice, bonus: d.modifiers.dex + sheet.level, types: kit.deflect.types,
+      dice: kit.deflect.dice, bonus: d.modifiers.dex + lvlOf(kit.features.find((f) => f.mechanic?.deflect)?.key), types: kit.deflect.types,
       // Geri yöneltme: Focus, iki Martial Arts zarı + DEX, DEX save (DC 8 + WIS + yetkinlik; Monk DC'si).
       ...(kit.deflect.redirect && kit.martialArts ? { redirect: {
         resource: kit.deflect.redirect.resource, save: kit.deflect.redirect.save,
@@ -495,8 +504,11 @@ function combatantFromSheetBase(
     ...(kit.openHand.length > 0 ? { openHand: kit.openHand } : {}),
     // K11: sınıf büyüsü olarak seçilenler (sınıfın SRD listesinde; Innate Sorcery yalnızca bunlara).
     ...((): Partial<Combatant> => {
-      const code = cls.spellCode;
-      const own = code ? (sheet.spellNames ?? []).filter((n) => spells.find((x) => x.name === n)?.classes.includes(code)) : [];
+      // Görev MC4: çoklu sınıfta Innate Sorcery'yi veren sınıfın büyüleri (büyünün sınıf bağıyla, MC3 `spellClassOf`).
+      const innateCls = multi ? keyClassOf(kit.features.find((f) => f.key.endsWith(':innate-sorcery'))?.key ?? '') : sheet.classId;
+      const code = multi ? (innateCls ? getClass(innateCls).spellCode : undefined) : cls.spellCode;
+      const bound = multi ? mcImpl().spellClassMap(sheet) : {};
+      const own = code ? (sheet.spellNames ?? []).filter((n) => spells.find((x) => x.name === n)?.classes.includes(code) && (!multi || bound[n] === innateCls)) : [];
       // Görev B93 (SRD 5.2.1 s. 65; kullanıcı onayı, K11 sapması kalktı): sınıf/alt sınıf özelliğinin her zaman hazır
       // büyüleri (Draconic Spells) Sorcerer büyüsü sayılır; Innate Sorcery sürüm 93+'da bunlara da (`classSpellsAlways`).
       const always = code ? kit.alwaysPrepared.filter((n) => !own.includes(n)) : [];

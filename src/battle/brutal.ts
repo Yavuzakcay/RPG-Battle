@@ -5,6 +5,7 @@
  * Blow (hedefin hızı Barbarian'ın sonraki turunun başına dek −15 ft). Turda bir kez (`traitTurns['brutal-strike']`).
  * Game Master anahtarı `brutalStrike` (global, kural sürümü 14).
  */
+import { featureLevel } from './classLevel';
 import { adjustDamage } from '../rules/damage';
 import { rollDice, rollTag, type Rng } from '../rules/dice';
 import { pushAwayEvents } from './forced';
@@ -19,7 +20,7 @@ export const IMPROVED_BLOWS: BrutalBlow[] = ['staggering', 'sundering'];
 /** Seçilebilen etkiler ve aynı anda kaç tane. */
 export function brutalOptions(actor: Combatant): { blows: BrutalBlow[]; max: number } {
   const improved = !!actor.traits?.includes('improved-brutal-strike');
-  return { blows: improved ? ['forceful', 'hamstring', ...IMPROVED_BLOWS] : ['forceful', 'hamstring'], max: improved && actor.level >= 17 ? 2 : 1 };
+  return { blows: improved ? ['forceful', 'hamstring', ...IMPROVED_BLOWS] : ['forceful', 'hamstring'], max: improved && featureLevel(actor, 'barbarian:improved-brutal-strike') >= 17 ? 2 : 1 };
 }
 
 /** Bu saldırıda Brutal Strike seçilebilir mi (avantaj kaldırma ve dezavantaj denetimi çağıranda). */
@@ -31,7 +32,7 @@ export function brutalReady(state: BattleState, actor: Combatant, option: Attack
 
 export function brutalExtra(target: Combatant, type: string, critical: boolean, rng: Rng, profile: Parameters<typeof adjustDamage>[2], actor?: Combatant): ExtraDamage {
   // Kuyruk 19: Improved Brutal Strike 17. seviyede 2d10.
-  const n = actor?.traits?.includes('improved-brutal-strike') && actor.level >= 17 ? 2 : 1;
+  const n = actor?.traits?.includes('improved-brutal-strike') && featureLevel(actor, 'barbarian:improved-brutal-strike') >= 17 ? 2 : 1;
   const d = rollDice(`${critical ? 2 * n : n}d10`, rollTag(rng, { kind: 'damage' }));
   const adj = adjustDamage(d.total, type, profile);
   void target;

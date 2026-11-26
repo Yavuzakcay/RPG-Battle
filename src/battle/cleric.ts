@@ -1,4 +1,5 @@
 import { karar104On } from './karar104Surum';
+import { featureLevel } from './classLevel';
 import { askPicks } from '../rules/choice';
 import { globalRule } from './ruleControl';
 import { b94On } from './b94Surum';
@@ -127,7 +128,7 @@ export function executeClericFeature(state: BattleState, actor: Combatant, f: Us
 
   if (e.kind === 'divineSpark') {
     const t = state.combatants[cmd.targetId as string] as Combatant;
-    const count = diceAt(actor.level, e.dice);
+    const count = diceAt(featureLevel(actor, f.key), e.dice);
     const choice = cmd.choice ?? (t.side === actor.side ? 'heal' : bestType(t, e.types));
     if (choice === 'heal') {
       const amount = (t.effects?.some((x) => x.maxHeal) && ruleVersion(state) >= 43 ? healRoll(state, t, `${count}d8`, rng, actor.id) : healDice(actor, `${count}d8`, rng)) + wis;
@@ -189,7 +190,7 @@ export function executeClericFeature(state: BattleState, actor: Combatant, f: Us
   }
 
   if (e.kind === 'preserveLife') {
-    let pool = e.perLevel * actor.level;
+    let pool = e.perLevel * featureLevel(actor, f.key);
     const list0 = preserveTargets(state, actor, e.rangeFt).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
     // Görev KARAR104 (A5, 104+; SRD "divided among any creatures"): iyileştirme sırası sorulur; öneri en yaralıdan (eski davranış).
     const order = karar104On(state) ? askPicks(rng, { actorId: actor.id, label: `${f.name}: iyileştirilecek`, options: list0.map((c) => ({ id: c.id, label: c.name })), suggested: list0.map((c) => c.id), max: list0.length }) : null;

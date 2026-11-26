@@ -5,7 +5,8 @@
  */
 import { classes, getClass, spellSlots, spells, type Weapon } from '../data';
 import type { Ability } from './abilities';
-import { classKit, gainedFeatures, optionTraining, packTraining, speedBonus, type ClassKit } from './classFeatures';
+import { classKit, classResources, gainedFeatures, optionTraining, packTraining, resourceDef, speedBonus, type ClassKit } from './classFeatures';
+import { invocationKit, invocationSlots, type InvocationKit } from './invocations';
 import { armorProficient, finalScores, spellSlotsFor, type CharacterSheet, type DerivedStats, type Scores } from './stats';
 import { weaponProficient } from './mastery';
 import { classesOf } from './mcHook';
@@ -148,6 +149,94 @@ export const MC_IMPL = {
     return !!c && getClass(c).casting?.type === 'pact';
   },
 
+  /**
+   * Görev MC4 (K6): birden çok sınıfın verdiği kaynak (Channel Divinity: Cleric ve Paladin) sınıf başına ayrı havuz; kimlik
+   * `kaynak@sınıf` (`resourceDef` aynı tanımı okur). Tek sınıfın verdiği kaynak kimliği değişmez. Sınıf → { kimlik → yeni kimlik }.
+   */
+  renames(sheet: Sheet): Record<string, Record<string, string>> {
+    const list = classesOf(sheet);
+    const by: Record<string, string[]> = {};
+    for (const e of list) for (const id of Object.keys(classResources(e.classId, e.level, {}, undefined, undefined, e.subclassId))) (by[id] ??= []).push(e.classId);
+    const out: Record<string, Record<string, string>> = {};
+    for (const [id, cls] of Object.entries(by)) if (cls.length > 1) for (const c of cls) (out[c] ??= {})[id] = `${id}@${c}`;
+    return out;
+  },
+
+  /**
+   * Görev MC4: savaşçının sınıf kiti, her sınıfın kendi seviyesiyle çağrılıp birleştirilir (SRD 5.2.1 s. 25 "class features
+   * ... based on your level in that class"). Extra Attack yığılmaz (en yüksek; Fighter'ın Two/Three Extra Attacks'ı kendi
+   * değeri), Weapon Mastery K5 (hak en yükseği, menzilli silah yakın dövüş kısıtı olmayan sınıf varsa), K6 kaynak kimlikleri.
+   */
+  kit(sheet: Sheet): ClassKit {
+    const ren = MC_IMPL.renames(sheet);
+    const kits = classesOf(sheet).map((e) => renameKit(classKit(e.classId, e.level, e.subclassId, sheet.featureChoices), ren[e.classId]));
+    return kits.reduce(mergeKit);
+  },
+
+  /** Görev MC4: Eldritch Invocations, Invocation veren sınıfın kendi seviyesiyle (yoksa ilk sınıf: boş kit). */
+  invocations(sheet: Sheet & Pick<CharacterSheet, 'invocations'>): InvocationKit {
+    const list = classesOf(sheet);
+    const e = list.find((x) => invocationSlots(x.classId, x.level)) ?? list[0]!;
+    return invocationKit(e.classId, e.level, sheet.invocations);
+  },
+
+  /**
+   * Görev MC4: sınıf kaynakları her sınıfın kendi seviyesiyle (K6 kimlikleri), yetkinlik bonusuyla sayılan kaynaklar (karakter
+   * seviyesinden) toplam seviyeyle; tür/soy kaynakları karakter seviyesiyle.
+   */
+  resources(sheet: Sheet, mods: Partial<Record<Ability, number>>, raceId?: string, lineageId?: string): Record<string, number> {
+    const list = classesOf(sheet);
+    const total = list.reduce((n, e) => n + e.level, 0);
+    const ren = MC_IMPL.renames(sheet);
+    const out: Record<string, number> = {};
+    for (const [id, n] of Object.entries(classResources(list[0]!.classId, total, mods, raceId, lineageId, list[0]!.subclassId))) if (resourceDef(id)?.race) out[id] = n;
+    for (const e of list) {
+      for (const [id, n0] of Object.entries(classResources(e.classId, e.level, mods, raceId, lineageId, e.subclassId))) {
+        const d = resourceDef(id);
+        if (d?.race) continue;
+        const n = d?.uses.proficiency ? 2 + Math.floor((total - 1) / 4) : n0;
+        const key = ren[e.classId]?.[id] ?? id;
+        out[key] = Math.max(out[key] ?? 0, n);
+      }
+    }
+    return out;
+  },
+
+  /** Görev MC4: sınıf ve alt sınıf kimliği → o sınıfın seviyesi (savaşçıda `classLevels`). */
+  classLevels(sheet: Sheet): Record<string, number> {
+    const out: Record<string, number> = {};
+    for (const e of classesOf(sheet)) { out[e.classId] = e.level; if (e.subclassId) out[e.subclassId] = e.level; }
+    return out;
+  },
+
+  /**
+   * Görev MC4: savaşta HP zarı havuzu (Lifedrinker): zar türü başına kalan (türü kayıtlı olmayan harcanmışlar büyük zardan,
+   * `shortRest` gibi), toplam ve harcanacak zar (kalanların en büyüğü).
+   */
+  battleHitDice(sheet: Sheet, s?: Pick<CharacterStatus, 'hitDiceSpent' | 'hitDiceSpentBy'>): { die: number; left: number; pool: Record<string, number> } {
+    const pool = MC_IMPL.hitDicePool(sheet);
+    const spent: Partial<Record<Die, number>> = { ...(MC_IMPL.spentBy(sheet, s?.hitDiceSpentBy).hitDiceSpentBy ?? {}) };
+    let untracked = Math.max(0, (s?.hitDiceSpent ?? 0) - Object.values(spent).reduce((n, x) => n + (x ?? 0), 0));
+    for (const d of [12, 10, 8, 6] as const) { const take = Math.min(untracked, (pool[d] ?? 0) - (spent[d] ?? 0)); if (take > 0) { spent[d] = (spent[d] ?? 0) + take; untracked -= take; } }
+    const left: Record<string, number> = {};
+    for (const [d, n] of Object.entries(pool)) left[d] = Math.max(0, (n ?? 0) - (spent[Number(d) as Die] ?? 0));
+    const die = Math.max(0, ...Object.entries(left).filter(([, n]) => n > 0).map(([d]) => Number(d))) || Math.max(...Object.keys(pool).map(Number));
+    return { die, left: Object.values(left).reduce((n, x) => n + x, 0), pool: left };
+  },
+
+  /** Görev MC4: savaş sonu: havuzdaki kalandan zar türü başına harcanan (kayda `hitDiceSpentBy`). */
+  spentFromPool(sheet: Sheet, left: Record<string, number>): CharacterStatus['hitDiceSpentBy'] {
+    const pool = MC_IMPL.hitDicePool(sheet);
+    const out: Partial<Record<Die, number>> = {};
+    for (const [d, n] of Object.entries(pool)) { const v = (n ?? 0) - (left[d] ?? n ?? 0); if (v > 0) out[Number(d) as Die] = v; }
+    return out;
+  },
+
+  /** Görev MC4: alet yetkinliği: ilk sınıfın aletleri + sonraki sınıfların "As a Multiclass Character" kutusu (`ek.alet`). */
+  tools(sheet: Sheet): string[] {
+    return [...new Set(classesOf(sheet).flatMap((e, i) => (i === 0 ? getClass(e.classId).tools ?? [] : multiclassInfo(e.classId)?.ek.alet ?? [])))];
+  },
+
   /** Çoklu sınıf sorunları (yapılandırılmış; metni oluşturucu verir). */
   problems(sheet: Sheet, scores: Scores): MulticlassProblem[] {
     return multiclassProblems(sheet, scores, (id) => getClass(id).skillChoices.from);
@@ -242,6 +331,59 @@ export const MC_IMPL = {
   },
 };
 export type McImpl = typeof MC_IMPL;
+
+/** K6: kitin kaynak alanlarını (`resource`, `refill`) sınıf ekli kimliğe çevirir. */
+function renameKit(kit: ClassKit, map: Record<string, string> | undefined): ClassKit {
+  if (!map) return kit;
+  return JSON.parse(JSON.stringify(kit), (k, v: unknown) => ((k === 'resource' || k === 'refill') && typeof v === 'string' && map[v] ? map[v] : v)) as ClassKit;
+}
+
+const uniq = <T,>(xs: T[]): T[] => [...new Set(xs)];
+
+/** İki sınıf kitinin birleşimi (Görev MC4; tek değerli parçalarda ilk sınıfınki, sayılarda kural yorumu alan başında). */
+function mergeKit(a: ClassKit, b: ClassKit): ClassKit {
+  const wm = [a.weaponMastery, b.weaponMastery].filter((x): x is NonNullable<ClassKit['weaponMastery']> => !!x);
+  const best = wm.reduce<ClassKit['weaponMastery']>((m, x) => (!m || x.count > m.count ? x : m), null);
+  return {
+    features: [...a.features, ...b.features],
+    traits: uniq([...a.traits, ...b.traits]),
+    critOn: Math.min(a.critOn, b.critOn),
+    saveProficiencies: uniq([...a.saveProficiencies, ...b.saveProficiencies]),
+    // SRD 5.2.1 s. 25 "Extra Attack": birden çok sınıftan gelen Extra Attack yığılmaz.
+    attacksPerAction: Math.max(a.attacksPerAction, b.attacksPerAction),
+    bonusActions: uniq([...a.bonusActions, ...b.bonusActions]),
+    sneakAttackDice: a.sneakAttackDice + b.sneakAttackDice,
+    expertise: a.expertise + b.expertise,
+    scoreBonus: [...a.scoreBonus, ...b.scoreBonus],
+    expertiseLimited: [...a.expertiseLimited, ...b.expertiseLimited],
+    // Zırhsız AC'nin en yükseği `derive`'da (K8); burada ilk aday.
+    unarmoredDefense: a.unarmoredDefense ?? b.unarmoredDefense,
+    featSlots: [...a.featSlots, ...b.featSlots],
+    // K5 (SRD'de açık değil): tek havuz, hak sınıfların en yükseği; yakın dövüş kısıtı yalnız bütün hak veren sınıflarda varsa.
+    weaponMastery: best ? { ...best, melee: wm.every((x) => x.melee) } : null,
+    rage: a.rage ?? b.rage,
+    saveAdvantages: uniq([...a.saveAdvantages, ...b.saveAdvantages]),
+    reckless: a.reckless || b.reckless,
+    frenzy: a.frenzy || b.frenzy,
+    extraClassSkills: a.extraClassSkills + b.extraClassSkills,
+    primalSkills: uniq([...a.primalSkills, ...b.primalSkills]),
+    alwaysPrepared: uniq([...a.alwaysPrepared, ...b.alwaysPrepared]),
+    usable: [...a.usable, ...b.usable],
+    slotAlternatives: [...a.slotAlternatives, ...b.slotAlternatives],
+    martialArts: a.martialArts ?? b.martialArts,
+    focusActions: [...a.focusActions, ...b.focusActions],
+    metabolism: a.metabolism ?? b.metabolism,
+    deflect: a.deflect ?? b.deflect,
+    fallReduction: Math.max(a.fallReduction, b.fallReduction),
+    stunning: a.stunning ?? b.stunning,
+    openHand: uniq([...a.openHand, ...b.openHand]),
+    reactions: [...a.reactions, ...b.reactions],
+    metamagic: a.metamagic ?? b.metamagic,
+    hpPerLevel: a.hpPerLevel + b.hpPerLevel,
+    resist: uniq([...a.resist, ...b.resist]),
+    extraBonus: a.extraBonus + b.extraBonus,
+  };
+}
 
 const className = (id: string): string => classes.find((k) => k.id === id)?.name ?? id;
 const problemText = (p: MulticlassProblem): string => {

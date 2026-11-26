@@ -10,6 +10,7 @@
  * - Karadul Zehri, Tatlı Tuzak, Ağ Duyusu, Son Öpücük: saldırı kancaları (`features.ts`).
  * Alt sınıf DC'si 8 + yeterlilik + insan biçimindeki CHA. Kural kapalıyken özellikler savaşta yok. Saf.
  */
+import { levelIn } from './classLevel';
 import { as2On } from './as2Surum';
 import data from '../../data/karadul.json';
 import { creatureTypeAt } from './srdD1';
@@ -69,7 +70,7 @@ export function withKaradul(state: BattleState): BattleState {
     if (!isKaradul(c)) { combatants[id] = c; continue; }
     changed = true;
     if (!on) { combatants[id] = { ...c, features: (c.features ?? []).filter((f) => !f.key.startsWith('ev:karadul/')) }; continue; }
-    combatants[id] = c.level >= data.ag.seviye
+    combatants[id] = levelIn(c, KARADUL_ID) >= data.ag.seviye
       ? { ...c, effects: [...(c.effects ?? []), { id: 'ev:karadul/web-sense', name: 'Ağ Duyusu', sourceId: c.id, immune: ['Poisoned'], immuneDamage: ['poison'] }] }
       : c;
   }
@@ -89,7 +90,7 @@ export function karadulProblem(state: BattleState, actor: Combatant, f: UsableFe
     if (actor.shape) return 'Başka bir biçimdesin.';
     if (isIncapacitated(actor.conditions)) return 'Incapacitated iken biçim değiştirilemez.';
     if (resourceLeft(actor, R.orumcek) <= 0) return `${f.name}: kullanım kalmadı (kısa dinlenmede yenilenir).`;
-    return byLevel(data.orumcek.bicimler, actor.level) && getMonster(byLevel(data.orumcek.bicimler, actor.level) as string) ? null : 'Örümcek biçimi bulunamadı.';
+    return byLevel(data.orumcek.bicimler, levelIn(actor, KARADUL_ID)) && getMonster(byLevel(data.orumcek.bicimler, levelIn(actor, KARADUL_ID)) as string) ? null : 'Örümcek biçimi bulunamadı.';
   }
   if (resourceLeft(actor, R.bakis) <= 0) return `${f.name}: kullanım kalmadı (uzun dinlenmede yenilenir).`;
   const t = targetId ? state.combatants[targetId] : undefined;
@@ -126,7 +127,7 @@ export function executeKaradul(state: BattleState, actor: Combatant, f: UsableFe
   if (why) return fail(why);
   if (f.effect.kind === 'karadulSpider') {
     if (actor.shape?.spider) return finish(state, [{ type: 'shape_changed', actorId: actor.id, stats: null, reason: 'bıraktı' }]);
-    const m = getMonster(byLevel(data.orumcek.bicimler, actor.level) as string) as Monster;
+    const m = getMonster(byLevel(data.orumcek.bicimler, levelIn(actor, KARADUL_ID)) as string) as Monster;
     return finish(state, [
       { type: 'feature_used', actorId: actor.id, feature: R.orumcek, remaining: resourceLeft(actor, R.orumcek) - 1 },
       { type: 'shape_changed', actorId: actor.id, stats: spiderStats(m, actor) },
@@ -154,12 +155,12 @@ export function executeKaradul(state: BattleState, actor: Combatant, f: UsableFe
 
 /** Tatlı Tuzak koşulu: örümcek ısırığı, bu tur dönüşüldü, tuzak bu tur kullanılmadı, hedef bu Karadul'un büyüsünde. */
 export function snareReady(state: BattleState, actor: Combatant, target: Combatant, option: AttackOption | undefined): boolean {
-  return option?.weaponId === SPIDER_WEAPON && karadulOn(state) && actor.level >= 6 && charmedBy(target, actor)
+  return option?.weaponId === SPIDER_WEAPON && karadulOn(state) && levelIn(actor, KARADUL_ID) >= 6 && charmedBy(target, actor)
     && actor.traitTurns?.['karadul-transform'] === turnKey(state) && actor.traitTurns?.['karadul-snare'] !== turnKey(state);
 }
 /** Son Öpücük koşulu: sürpriz vuruş + 14. seviye + kullanım. */
 export const kissReady = (state: BattleState, actor: Combatant, target: Combatant, option: AttackOption | undefined): boolean =>
-  snareReady(state, actor, target, option) && actor.level >= data.opucuk.seviye && resourceLeft(actor, R.opucuk) > 0;
+  snareReady(state, actor, target, option) && levelIn(actor, KARADUL_ID) >= data.opucuk.seviye && resourceLeft(actor, R.opucuk) > 0;
 
 /** İfadenin en yüksek değeri (`2d8+3`; kritikte zarlar iki kat). */
 function maxOf(expr: string, critical: boolean): number {
@@ -195,10 +196,10 @@ export function karadulHit(state: BattleState, actor: Combatant, target: Combata
     const adj = adjustDamage(d.total, type, target);
     extras.push({ label, rolls: d.rolls, raw: d.total, applied: adj.amount, type, note: adj.note });
   };
-  const venom = byLevel(data.zehir.zar, actor.level);
+  const venom = byLevel(data.zehir.zar, levelIn(actor, KARADUL_ID));
   if (venom) add('Karadul Zehri', venom, 'poison');
   if (snare) {
-    add('Tatlı Tuzak', byLevel(data.tuzak.zar, actor.level) ?? '2d8', 'poison');
+    add('Tatlı Tuzak', byLevel(data.tuzak.zar, levelIn(actor, KARADUL_ID)) ?? '2d8', 'poison');
     traitTurns['karadul-snare'] = turnKey(state);
   }
   if (maxed) {
@@ -210,7 +211,7 @@ export function karadulHit(state: BattleState, actor: Combatant, target: Combata
     const cr = target.monsterId ? crValue(getMonster(target.monsterId)?.cr ?? '99') : target.level;
     const dealt = adjustDamage(hit.weaponRaw, option.damageType ?? '', target).amount + extras.reduce((n, x) => n + x.applied, 0);
     const left = target.hp - dealt;
-    if (!legendary && cr <= actor.level * data.opucuk.crOran && left > 0 && left < target.maxHp * data.opucuk.canEsigi) {
+    if (!legendary && cr <= levelIn(actor, KARADUL_ID) * data.opucuk.crOran && left > 0 && left < target.maxHp * data.opucuk.canEsigi) {
       extras.push({ label: 'Son Öpücük (ölüm)', rolls: [], raw: left, applied: left, type: '', note: null });
     }
   }

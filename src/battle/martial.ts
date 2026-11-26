@@ -10,6 +10,7 @@
  *   Topple (DEX save, Prone).
  * - Uncanny Metabolism (savaş başında), Deflect Attacks (isabette), Slow Fall (düşmede) ilgili modüllerden çağrılır.
  */
+import { resourceLevel } from './classLevel';
 import { sinif97On } from './sinif97Surum';
 import { globalRule } from './ruleControl';
 import { turnKey } from './economy';
@@ -162,7 +163,7 @@ export function metabolismEvents(c: Combatant, rng: Rng, state?: Pick<BattleStat
   if (resourceLeft(c, m.refill) >= max && c.hp >= c.maxHp) return [];
   // Kuyruk K70 (sürüm 54): Beacon of Hope altında en yüksek değer (tek kural `healMax.ts`; savaş durumu yalnız sürüm için).
   const roll = { total: beaconMax(state, c, m.die, BEACON_K70_VERSION) ?? rollDice(m.die, rollTag(rng, { kind: 'heal', by: c.id })).total };
-  const hpAfter = applyHealing(c.hp, c.maxHp, roll.total + c.level);
+  const hpAfter = applyHealing(c.hp, c.maxHp, roll.total + resourceLevel(c, m.resource));
   return [
     { type: 'feature_used', actorId: c.id, feature: m.resource, remaining: resourceLeft(c, m.resource) - 1 },
     { type: 'feature_used', actorId: c.id, feature: m.refill, remaining: max },

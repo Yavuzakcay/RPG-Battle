@@ -2,6 +2,7 @@
  * Süren etkilerin zar eklentileri (Görev R2): savaşçının üzerindeki etkilerden saldırı, save ya da (beceri) kontrol
  * zarına eklenecek ±zarlar. Saf; zarlar `rules/attack.ts` `rollExtras` ile atılır.
  */
+import { resourceLevel } from './classLevel';
 import { exhaustionD20Penalty } from '../rules/exhaustion';
 import { moraleCheckDice, moraleSaveDice } from './morale';
 import { paketChances } from './paket/sans';
@@ -93,7 +94,7 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   }
   if (on === 'save' && traits.includes('indomitable') && resourceLeft(c, 'indomitable') > 0) {
     // Görev B95-B (97+): başarı imkânsızken seçilmez (kullanım harcanmaz; SRD 5.2.1 s. 48 "can").
-    out.push({ label: 'Indomitable', die: 'd20', sign: 1, reroll: 'd20', rerollBonus: c.level, resource: 'indomitable', holderId: c.id, ...(c.sinif97 ? { skipHopeless: true } : {}) });
+    out.push({ label: 'Indomitable', die: 'd20', sign: 1, reroll: 'd20', rerollBonus: resourceLevel(c, 'indomitable'), resource: 'indomitable', holderId: c.id, ...(c.sinif97 ? { skipHopeless: true } : {}) });
   }
   // Görev WARLOCK: Dark One's Own Luck (Fiend): başarısız kontrol ya da save'e 1d10; tutarsa kullanım harcanır.
   if (on !== 'attack' && traits.includes('dark-ones-own-luck') && resourceLeft(c, 'darkOnesLuck') > 0) {

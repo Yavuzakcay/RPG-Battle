@@ -46,6 +46,7 @@ import type { ActiveEffect, BattleEvent, BattleState, Combatant, Command, ExtraD
 import {
   alive, amount, canPay, costOf, dcOf, dugmeNeeds, dugmeOf, effId, flatNum, formId, formul, kosulOk, markId, passiveBody, resKey, tetikOf,
   auraSpec, p10On, p9On, usedKey, usedThisTurn, val, within, zarBody, type Dugme, type Ilkel, type PaketOzellik,
+  paketLevel,
 } from './core';
 import './p9';
 import './p10';
@@ -252,7 +253,7 @@ function runPrim(state: BattleState, c: Ctx): BattleEvent[] | string {
     case 'ucus': {
       // Kuyruk U1a (sürüm 61+): kademe parametreleri; süre `sureDakika` ya da `sure`; zorunlu inişte kendi turunda uçuş hemen.
       if (!u1aOn(state)) { const body = passiveBody(p, a); return body ? [effect(a, body as Partial<ActiveEffect>)] : []; }
-      const q = ucusAt(p, a.level);
+      const q = ucusAt(p, paketLevel(a));
       const rounds = ucusRounds(q);
       const parent = { ...ucusBody(q, a.speed, (v) => flatNum(v, a)), id, name, sourceId: a.id, icon: '🪽', ...(rounds === null ? {} : { until: state.round + rounds - 1 }) } as ActiveEffect;
       const evs: BattleEvent[] = [{ type: 'effect_added', targetId: a.id, effect: parent }];
@@ -513,7 +514,7 @@ function summonEvents(state: BattleState, c: Ctx): BattleEvent[] | string {
     const { reactions: _r, reactionUses: _u, ...base } = combatantFromMonster(monster, { id, name: `${monster.name} (${a.name})`, height: a.height, kuralSurumu: state.kuralSurumu ?? 1 });
     const initiative = own ? rollDie(20, rollTag(c.rng, { kind: 'initiative', by: id, bonus: abilityModifier(monster.abilities.dex) })) + abilityModifier(monster.abilities.dex) : a.initiative;
     const summon: SummonInfo = {
-      by: a.id, spellId, spell: nameOf(c), turn: own ? 'own' : 'after-owner', level: a.level, ...(conc ? { concentration: true } : {}),
+      by: a.id, spellId, spell: nameOf(c), turn: own ? 'own' : 'after-owner', level: paketLevel(a), ...(conc ? { concentration: true } : {}),
       ...(sure === 'kalici' ? {} : { until: cur.round + sure - 1 }),
       ...(val<boolean>(p, 'sahipOlunceKaybolur') ? { endsOnOwnerDeath: true } : {}),
       ...(!eylemler.includes('saldiri') ? { noAttack: true } : {}),

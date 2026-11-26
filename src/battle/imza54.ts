@@ -6,7 +6,7 @@
  */
 import data from '../../data/imza.json';
 import { ruleVersion } from './ruleVersion';
-import { imzaOn, byLevel, imzaPasifler } from './imzaCore';
+import { imzaOn, byLevel, imzaPasifler, imzaLevel } from './imzaCore';
 import { forcedMove } from './motion';
 import { conjureDebris, forcedMoveObject, throwObject, weightOf } from './objectMotion';
 import { objectAt } from './objectData';
@@ -88,7 +88,7 @@ export function hurlEvents(state: BattleState, actor: Combatant, target: Combata
 export function patienceEvents(state: BattleState, monkId: string, attackerId: string, rng: Rng): BattleEvent[] {
   const m = state.combatants[monkId];
   const a = state.combatants[attackerId];
-  if (!m || !a || !canReact(m) || m.imza !== 'imza_bilge' || m.level < 3 || !k54(state, m.imza)) return [];
+  if (!m || !a || !canReact(m) || m.imza !== 'imza_bilge' || imzaLevel(m) < 3 || !k54(state, m.imza)) return [];
   const free = resourceLeft(m, 'imzaSabir') > 0;
   if (!free && resourceLeft(m, 'focus') < 1) return [];
   const api = strikeApi();
@@ -180,7 +180,7 @@ function miracleEvents(state: BattleState, allyId: string, attackerId: string, d
     evs.push(...tele); cur = applyEvents(cur, tele);
     evs.push({ type: 'healed', actorId: p.id, targetId: a.id, label: 'Yetişen Mucize', amount: 1, targetHpAfter: 1 });
     if (a.moralMax !== undefined && (a.moral ?? a.moralMax) < a.moralMax) evs.push({ type: 'moral_changed', targetId: a.id, delta: a.moralMax - (a.moral ?? 0), moral: a.moralMax, reason: 'toparlama', byId: p.id });
-    const share = Math.min(Math.floor(dealt * prm.pay), p.level * prm.tavanSeviye);
+    const share = Math.min(Math.floor(dealt * prm.pay), imzaLevel(p) * prm.tavanSeviye);
     const me = applyEvents(cur, evs.slice(-1)).combatants[p.id] as Combatant;
     if (share > 0) evs.push(hitEffect(me, 'imza', 'Yetişen Mucize', { damage: String(share), damageType: 'force' }, rng));
     return evs;

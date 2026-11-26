@@ -2,6 +2,7 @@
  * Kuyruk K50: imza alt sınıf çekirdeği (ağır bağımlılık yok; reducer sonu `syncAuras` buradan okur): kural açık mı
  * ve Taht Varlığı aurası (İmparator; içindeki dostlara WIS kurtulma bonusu). Saf.
  */
+import { levelIn } from './classLevel';
 import data from '../../data/imza.json';
 import { gap64 } from './adjacency';
 import { as2On } from './as2Surum';
@@ -32,7 +33,9 @@ export function imzaOn(state: Pick<BattleState, 'houseRules' | 'map' | 'kuralSur
 export function byLevel<T>(table: Record<string, T> | undefined, level: number): T | undefined {
   return Object.entries(table ?? {}).filter(([l]) => level >= Number(l)).sort((a, b) => Number(b[0]) - Number(a[0]))[0]?.[1];
 }
-export const imzaPasifler = (c: Combatant): Pasif[] => PASIF.filter((p) => p.sinif === c.imza && c.level >= p.seviye);
+/** Görev MC4: imza alt sınıfının sınıfının seviyesi (çoklu sınıfta `classLevels`; tek sınıfta karakter seviyesi). */
+export const imzaLevel = (c: Pick<Combatant, 'level' | 'classLevels' | 'imza'>): number => levelIn(c, c.imza);
+export const imzaPasifler = (c: Combatant): Pasif[] => PASIF.filter((p) => p.sinif === c.imza && imzaLevel(c) >= p.seviye);
 
 /** Taht Varlığı: auranın içindeki dostlara WIS kurtulma bonusu (sahibinin seviyesine göre). */
 export function imzaAuraBonus(state: BattleState, c: Combatant, ability: Ability | undefined): number {
@@ -43,9 +46,9 @@ export function imzaAuraBonus(state: BattleState, c: Combatant, ability: Ability
     for (const p of imzaPasifler(o)) {
       const a = p.etki.aura as { yaricapFt: Record<string, number>; save: Record<string, number>; yetenekler: string[] } | undefined;
       if (!a || !a.yetenekler.includes(ability)) continue;
-      const ft = byLevel(a.yaricapFt, o.level) ?? 0;
+      const ft = byLevel(a.yaricapFt, imzaLevel(o)) ?? 0;
       if (state.map && o.pos && c.pos && gap64(state, o, c) * 5 > ft) continue;
-      best = Math.max(best, byLevel(a.save, o.level) ?? 0);
+      best = Math.max(best, byLevel(a.save, imzaLevel(o)) ?? 0);
     }
   }
   return best;

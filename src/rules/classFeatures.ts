@@ -326,8 +326,9 @@ export function speedBonus(classId: string, level: number, armor: ArmorState, su
 
 const featureList = (d: ResourceDef) => (Array.isArray(d.feature) ? d.feature : [d.feature]);
 
-/** Kaynağın tanımı. */
-export const resourceDef = (id: string): ResourceDef | undefined => classData.mechanics.resources[id];
+/** Kaynağın tanımı (Görev MC4, K6: sınıf ekli kimlik `kaynak@sınıf` aynı tanımı okur). */
+export const resourceDef = (id: string): ResourceDef | undefined => classData.mechanics.resources[id]
+  ?? (id.includes('@') ? classData.mechanics.resources[id.slice(0, id.indexOf('@'))] : undefined);
 
 /** Kaynağın en çok kullanım sayısı (sınıf, seviye ve yetenek değiştiricilerine göre). */
 export function resourceMax(id: string, classId: string, level: number, mods: Partial<Record<Ability, number>> = {}, raceId?: string, lineageId?: string, subclassId?: string): number {
@@ -380,6 +381,7 @@ export type RechargeKind = 'short' | 'long' | 'turn';
  */
 export function rechargeResources(
   current: Record<string, number>, max: Record<string, number>, kind: RechargeKind, level: number,
+  /** Görev MC4: çoklu sınıfta kaynağın sınıfının seviyesi (`shortFrom` eşiği; yoksa `level`). */ levelOf?: (id: string) => number,
 ): Record<string, number> {
   const out = { ...current };
   for (const [id, cap] of Object.entries(max)) {
@@ -389,7 +391,7 @@ export function rechargeResources(
     if (d?.depot !== undefined) { if (kind !== 'turn') out[id] = kind === 'long' || now === 0 ? Math.min(cap, d.depot) : now; continue; }
     const rule = d?.recharge[kind];
     if (rule === undefined) continue;
-    if (kind === 'short' && d?.recharge.shortFrom !== undefined && level < d.recharge.shortFrom) continue;
+    if (kind === 'short' && d?.recharge.shortFrom !== undefined && (levelOf ? levelOf(id) : level) < d.recharge.shortFrom) continue;
     out[id] = rule === 'all' ? cap : Math.min(cap, now + rule);
   }
   return out;

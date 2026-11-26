@@ -33,7 +33,8 @@ export { SAVE_KEY, hasSavedBattle };
  * `shieldAc`/`shieldOff`, `walkStreak`, ekonomide `dashFt`).
  * 26: KARAR104 (kural sürümü 104; `zone_stage` olayı, alanda `stage`).
  * 27: Görev MC3 (kural sürümü 105; çoklu sınıf): `slot_spent.pact` (ayrı Pact havuzu), `cast_spell.pact`, savaşçıda `pactSlots`,
- * `spellByClass`, `spellClassOf` (DECISIONS.md MC3).
+ * `spellByClass`, `spellClassOf` (DECISIONS.md MC3); Görev MC4: `hit_die_spent.die` (çoklu sınıf HP zarı havuzu), savaşçıda
+ * `classLevels`, `hitDice.pool`.
  * Eski sürümler oynatılmaz: "yüklenemedi".
  */
 export const SAVE_VERSION = 27;

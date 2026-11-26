@@ -14,7 +14,7 @@ import { classResources, depotStart, rechargeResources, resourceDef } from './cl
 import { longRest, shortRest, type RestState } from './rest';
 import { MAX_EXHAUSTION, exhaustionAfterLongRest } from './exhaustion';
 import { deriveStats, type CharacterSheet } from './stats';
-import { isMultiSheet, mcImpl } from './mcHook';
+import { classesOf, isMultiSheet, keyClassOf, mcImpl, sheetClassLevel } from './mcHook';
 import type { Rng } from './dice';
 
 export interface CharacterStatus {
@@ -81,12 +81,34 @@ const spentByPart = (sheet: CharacterSheet, by: CharacterStatus['hitDiceSpentBy'
 const pactFill = (sheet: CharacterSheet, s: CharacterStatus): Pick<CharacterStatus, 'pactSlots'> =>
   (s.pactSlots === undefined ? {} : { pactSlots: fullStatus(sheet).pactSlots ?? s.pactSlots });
 
+/**
+ * Görev MC4: kaynağın sınıfının seviyesi (SRD 5.2.1 s. 25: sınıf özelliği o sınıfın seviyesiyle). Tek sınıfta karakter
+ * seviyesi; çoklu sınıfta kaynağı veren sınıfınki (K6 `kaynak@sınıf` ekinden ya da özellik anahtarının önekinden).
+ */
+export function resourceClassLevel(sheet: CharacterSheet, id: string): number {
+  if (!isMultiSheet(sheet)) return sheet.level;
+  if (id.includes('@')) return sheetClassLevel(sheet, keyClassOf(id));
+  const f = resourceDef(id)?.feature;
+  for (const k of f ? (Array.isArray(f) ? f : [f]) : []) { const l = sheetClassLevel(sheet, keyClassOf(k)); if (l > 0) return l; }
+  return sheet.level;
+}
+
+/** Görev MC4: kazanılmış sınıf özellikleri (çoklu sınıfta her sınıfınki kendi seviyesiyle). */
+const sheetFeatures = (sheet: CharacterSheet) => (isMultiSheet(sheet)
+  ? classesOf(sheet).flatMap((e) => gainedFeatures(e.classId, e.level, e.subclassId))
+  : gainedFeatures(sheet.classId, sheet.level, sheet.subclassId));
+
+/** Görev MC4: `rechargeResources`'ın sınıf seviyesi (yalnız çoklu sınıfta). */
+const levelOfFor = (sheet: CharacterSheet) => (isMultiSheet(sheet) ? (id: string) => resourceClassLevel(sheet, id) : undefined);
+
 /** Dinlenmiş (tam) durum. */
 export function fullStatus(sheet: CharacterSheet): CharacterStatus {
   const d = deriveStats(sheet);
   // F1: feat kaynakları (Magic Initiate) da uzun dinlenmede dolar.
   // Görev TE99: yüklü eşyaların yükü de durumda (SRD 5.2.1 s. 206 Charges; yenilenme `itemCharges.ts`).
-  const resources = { ...classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineageOf(sheet)?.id, sheet.subclassId), ...featResources(sheet), ...itemResources(sheet) };
+  // Görev MC4: çoklu sınıfta sınıf başına, sınıf seviyesiyle (K6 `kaynak@sınıf`; savaşçıyla aynı işlev).
+  const resources = { ...(isMultiSheet(sheet) ? mcImpl().resources(sheet, d.modifiers, sheet.raceId, lineageOf(sheet)?.id)
+    : classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineageOf(sheet)?.id, sheet.subclassId)), ...featResources(sheet), ...itemResources(sheet) };
   // Kuyruk P12: sayaç kaynağı (paket `yenilenme: depo`) dinlenmiş durumda başlangıç değerinde; en çok değer üst sınır.
   return { hp: d.maxHp, hitDiceSpent: 0, resources: depotStart(resources), slots: [...d.spellSlots], slotMax: [...d.spellSlots], resourceMax: { ...resources }, hpMax: d.maxHp,
     ...(d.pactSlots ? { pactSlots: d.pactSlots.count } : {}) };
@@ -97,10 +119,13 @@ export function currentStatus(sheet: CharacterSheet, status?: CharacterStatus): 
   const full = fullStatus(sheet);
   if (!status) return full;
   const resources: Record<string, number> = {};
+  const first = classesOf(sheet)[0]?.classId;
   for (const [id, max] of Object.entries(full.resourceMax ?? full.resources)) {
-    const left = status.resources[id];
+    // Görev MC4 (K6): tek sınıftan çoklu sınıfa geçen kayıtta sınıfsız kimlik (`channelDivinity`) ilk sınıfın havuzu sayılır.
+    const old = status.resources[id] === undefined && id.includes('@') && keyClassOf(id) === first ? id.slice(0, id.indexOf('@')) : id;
+    const left = status.resources[old];
     // K10: en çok biliniyorsa yalnızca harcanan düşer; yeni kazanılan kaynak dolu gelir.
-    const spent = left === undefined ? 0 : status.resourceMax ? Math.max(0, (status.resourceMax[id] ?? left) - left) : null;
+    const spent = left === undefined ? 0 : status.resourceMax ? Math.max(0, (status.resourceMax[old] ?? left) - left) : null;
     // Kuyruk P12: yeni kazanılan sayaç kaynağı (`depot`) başlangıç değeriyle gelir (`full.resources`; diğerlerinde en çok değer).
     resources[id] = left === undefined ? (full.resources[id] ?? max) : spent === null ? Math.min(max, Math.max(0, left)) : Math.max(0, max - spent);
   }
@@ -173,7 +198,7 @@ export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus |
       // Görev MC3 (SRD 5.2.1 s. 70 Pact Magic: kısa ya da uzun dinlenmede dolar): ayrı Pact havuzu.
       ...pactFill(sheet, s),
       resources: rechargeItems(sheet, sorcerousRestoration(sheet, rechargeResources({ ...s.resources, ...(recovery.used ? { arcaneRecovery: 0 } : {}), ...(natural.used ? { naturalRecovery: 0 } : {}) },
-        max, 'short', sheet.level), max), 'short', rng),
+        max, 'short', sheet.level, levelOfFor(sheet)), max), 'short', rng),
       // Kuyruk 18 H3: Tireless (Ranger 10): kısa dinlenme Exhaustion'ı 1 azaltır.
       ...(tirelessAfter(sheet, s.exhaustion) ? { exhaustion: tirelessAfter(sheet, s.exhaustion) } : {}),
       ...moralPart(s),
@@ -186,7 +211,7 @@ export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus |
 /** Kuyruk 18 H3: Tireless (Ranger 10, SRD 5.2.1): kısa dinlenmeden sonra Exhaustion bir azalır. */
 function tirelessAfter(sheet: CharacterSheet, exhaustion: number | undefined): number {
   const ex = exhaustion ?? 0;
-  return gainedFeatures(sheet.classId, sheet.level, sheet.subclassId).some((f) => f.key === 'ranger:tireless') ? Math.max(0, ex - 1) : ex;
+  return sheetFeatures(sheet).some((f) => f.key === 'ranger:tireless') ? Math.max(0, ex - 1) : ex;
 }
 
 /**
@@ -197,12 +222,19 @@ export function magicalCunningStatus(sheet: CharacterSheet, status: CharacterSta
   const s = currentStatus(sheet, status);
   const max = fullStatus(sheet).slots;
   if (s.dead || (s.resources.magicalCunning ?? 0) <= 0) return null;
+  const master = sheetFeatures(sheet).some((f) => f.key === 'warlock:eldritch-master');
+  // Görev MC4: çoklu sınıfta ayrı Pact havuzu (MC3) varsa Pact yuvaları oradan.
+  const pactMax = fullStatus(sheet).pactSlots;
+  if (pactMax !== undefined && s.pactSlots !== undefined) {
+    const spentP = pactMax - s.pactSlots;
+    if (spentP <= 0) return null;
+    return { ...s, pactSlots: s.pactSlots + (master ? spentP : Math.min(spentP, Math.ceil(pactMax / 2))), resources: { ...s.resources, magicalCunning: 0 } };
+  }
   const i = max.findIndex((n) => n > 0);
   const spent = i < 0 ? 0 : (max[i] ?? 0) - (s.slots[i] ?? 0);
   if (spent <= 0) return null;
   const slots = [...s.slots];
-  // Kuyruk 19 (11–20): Eldritch Master (Warlock 20): Magical Cunning bütün harcanmış Pact slotlarını geri verir.
-  const master = gainedFeatures(sheet.classId, sheet.level, sheet.subclassId).some((f) => f.key === 'warlock:eldritch-master');
+  // Kuyruk 19 (11–20): Eldritch Master (Warlock 20): Magical Cunning bütün harcanmış Pact slotlarını geri verir (yukarıda).
   // Görev B93 (SRD 5.2.1 s. 72): "expended Pact Magic spell slots … equal to no more than half your maximum (round up)":
   // harcananların en çok azami slotun yarısı (yukarı) kadarı (eskiden harcananın yarısı).
   slots[i] = (slots[i] ?? 0) + (master ? spent : Math.min(spent, Math.ceil((max[i] ?? 0) / 2)));
@@ -216,7 +248,7 @@ export function magicalCunningStatus(sheet: CharacterSheet, status: CharacterSta
 export function sorcerousRestoration(sheet: CharacterSheet, resources: Record<string, number>, max: Record<string, number>): Record<string, number> {
   const points = resources.sorceryPoints ?? 0;
   if ((resources.sorcerousRestoration ?? 0) <= 0 || points >= (max.sorceryPoints ?? 0)) return resources;
-  return { ...resources, sorcerousRestoration: 0, sorceryPoints: Math.min(max.sorceryPoints ?? 0, points + Math.floor(sheet.level / 2)) };
+  return { ...resources, sorcerousRestoration: 0, sorceryPoints: Math.min(max.sorceryPoints ?? 0, points + Math.floor(resourceClassLevel(sheet, 'sorcerousRestoration') / 2)) };
 }
 
 /** Görev WIZARD: Arcane Recovery'nin geri verdiği slotlar (kaynak yoksa ya da eksik slot yoksa aynı). */
@@ -224,7 +256,8 @@ export function arcaneRecovery(sheet: CharacterSheet, resources: Record<string, 
   pick?: number[] | null): { slots: number[]; used: boolean } {
   if ((resources[resource] ?? 0) <= 0 || pick === null) return { slots, used: false };
   const max = deriveStats(sheet).spellSlots;
-  let budget = Math.ceil(sheet.level / 2);
+  // Görev MC4: bütçe kaynağı veren sınıfın (Wizard; Natural Recovery'de Druid) seviyesinin yarısı.
+  let budget = Math.ceil(resourceClassLevel(sheet, resource) / 2);
   const out = [...slots];
   // Görev B93 (SRD 5.2.1 s. 78 "you can choose expended spell slots to recover"): seçilen seviyeler (bütçe, 6+ yok, eksik kadar).
   if (pick) {
@@ -263,7 +296,7 @@ export function longRestStatus(sheet: CharacterSheet, status: CharacterStatus | 
     // Görev MC3: ayrı Pact havuzu uzun dinlenmede dolar.
     ...pactFill(sheet, s),
     // Görev TE99: eşya yükleri "daily at dawn" kuralıyla (veride `recharge`; tek kullanımlık eşya dolmaz).
-    ...waitedLongRest(rechargeItems(sheet, rechargeResources(s.resources, fullStatus(sheet).resourceMax ?? fullStatus(sheet).resources, 'long', sheet.level), 'long', rng), s.waits),
+    ...waitedLongRest(rechargeItems(sheet, rechargeResources(s.resources, fullStatus(sheet).resourceMax ?? fullStatus(sheet).resources, 'long', sheet.level, levelOfFor(sheet)), 'long', rng), s.waits),
     // Bitkinlik (SRD 5.2.1): uzun dinlenme 1 seviye azaltır.
     ...(exhaustionAfterLongRest(s.exhaustion) > 0 ? { exhaustion: exhaustionAfterLongRest(s.exhaustion) } : {}),
     ...moralPart(s),
@@ -339,7 +372,7 @@ export function recoveryOptions(sheet: CharacterSheet, status: CharacterStatus |
       walk(lv - 1, left - n * lv, [...have, ...Array(n).fill(lv)], m2);
     }
   };
-  walk(5, Math.ceil(sheet.level / 2), [], missing);
+  walk(5, Math.ceil(resourceClassLevel(sheet, resource) / 2), [], missing);
   return out;
 }
 
@@ -372,7 +405,7 @@ export function fontOfMagicStatus(sheet: CharacterSheet, status: CharacterStatus
     return { ...s, slots, resources: { ...s.resources, sorceryPoints: Math.min(max, points + level) } };
   }
   const row = resourceDef('sorceryPoints')?.slotCost?.[String(level)];
-  if (!row || sheet.level < row[1] || points < row[0]) return null;
+  if (!row || resourceClassLevel(sheet, 'sorceryPoints') < row[1] || points < row[0]) return null;
   const slots = [...s.slots]; slots[level - 1] = (slots[level - 1] ?? 0) + 1;
   return { ...s, slots, resources: { ...s.resources, sorceryPoints: points - row[0] } };
 }

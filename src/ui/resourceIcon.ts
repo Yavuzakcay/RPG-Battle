@@ -17,6 +17,8 @@ export function resourceIconOf(id: string): string | null {
   const direct = (def as { icon?: string } | undefined)?.icon;
   if (direct && ICON_NAMES.includes(direct)) return direct;
   if (KAYNAK[id]) return KAYNAK[id]!;
+  // Görev MC4 (K6): sınıf ekli kaynak (`channelDivinity@paladin`) sınıfsız kimliğin ikonuyla.
+  if (id.includes('@')) return resourceIconOf(id.slice(0, id.indexOf('@')));
   if (id.startsWith('pk-')) for (const d of DESEN) if (d.re.test(def?.name ?? id)) return d.ikon;
   return null;
 }

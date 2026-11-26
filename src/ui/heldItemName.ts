@@ -46,6 +46,8 @@ export const droppableWeapons = (c: Combatant): string[] => heldWeapons(c).filte
 export function groupName(id: string): string {
   const table = t().alarm.groupNames as Record<string, string>;
   if (table[id]) return table[id] as string;
+  // Görev MC4 (K6): sınıf ekli kaynak (`channelDivinity@paladin`): sınıfsız kimliğin adı.
+  if (id.includes('@') && table[id.slice(0, id.indexOf('@'))]) return table[id.slice(0, id.indexOf('@'))] as string;
   const words = id.replace(/([a-zçğıöşü])([A-ZÇĞİÖŞÜ])/g, '$1 $2').replace(/[-_]+/g, ' ').trim().toLocaleLowerCase();
   return words ? words.charAt(0).toLocaleUpperCase() + words.slice(1) : t().alarm.groupFallback;
 }

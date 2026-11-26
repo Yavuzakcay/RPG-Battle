@@ -1,4 +1,5 @@
 /** Hasar uygulanırken ortaya çıkan özel kurallar: Undead Fortitude, Regeneration ve konsantrasyon. */
+import { resourceLevel } from './classLevel';
 import { rollD20, rollDice, rollTag, type Rng } from '../rules/dice';
 import { extrasTotal, rollExtras } from '../rules/attack';
 import { saveDice } from './effectDice';
@@ -73,7 +74,7 @@ export function damageEffects(
     const roll = rollD20(concMode(target), rollTag(rng, { kind: 'save', by: target.id, bonus: target.saves.con }));
     const extra = rollExtras(saveDice(target, 'con'), 'save', rollTag(rng, { by: target.id }));
     const total = roll.kept + target.saves.con + extrasTotal(extra);
-    const hp = 2 * target.level;
+    const hp = 2 * resourceLevel(target, 'relentlessRage');
     effects.push({ kind: 'relentless_rage', dc, natural: roll.kept, total, success: total >= dc, hp });
     if (total >= dc) hpAfter = Math.min(target.maxHp, hp);
   }

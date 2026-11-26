@@ -4,7 +4,8 @@ import { armor, getClass, getRace, weapons, type Weapon } from '../data';
 import { classKit } from '../rules/classFeatures';
 import { deriveStats, type CharacterSheet } from '../rules/stats';
 import { featEffects, sheetFeats } from '../rules/advancement';
-import { activeMasteries, masteryWorks, weaponMasteryId, weaponProficient } from '../rules/mastery';
+import { activeMasteries, masteryWorks, sheetWeaponProficient, weaponMasteryId } from '../rules/mastery';
+import { isMultiSheet, mcImpl } from '../rules/mcHook';
 import { offHandProblem, otherHandFree } from '../rules/hands';
 import type { AttackOption } from './types';
 
@@ -21,13 +22,16 @@ function optionFor(sheet: CharacterSheet, weaponName: string, enchant: number, u
   const ma = use !== 'thrown' ? martialArtsFor(sheet, weapon) : null;
   // Finesse: STR veya DEX'in yükseği. Menzilli: DEX. Diğerleri: STR.
   // Görev WARLOCK: pact silahı (Pact of the Blade; seçilen yakın dövüş silahı): yetkin, saldırı ve hasarda CHA.
-  const pact = !weapon.ranged && use !== 'offhand' && sheet.pactWeapon === weapon.name && invocationKit(sheet.classId, sheet.level, sheet.invocations).pactWeapon;
+  const pact = !weapon.ranged && use !== 'offhand' && sheet.pactWeapon === weapon.name
+    // Görev MC4: çoklu sınıfta Invocation veren sınıfın kendi seviyesiyle.
+    && (isMultiSheet(sheet) ? mcImpl().invocations(sheet) : invocationKit(sheet.classId, sheet.level, sheet.invocations)).pactWeapon;
   const mod = pact ? d.modifiers.cha : weapon.finesse || ma
     ? Math.max(d.modifiers.str, d.modifiers.dex)
     : weapon.ranged
       ? d.modifiers.dex
       : d.modifiers.str;
-  const proficient = pact || weaponProficient(sheet.classId, weapon, sheet.featureChoices, sheet);
+  // Görev MC4: çoklu sınıfta MC2 yetkinliği (ilk sınıf + ek sınıf kutuları); tek sınıfta aynı işlev.
+  const proficient = pact || sheetWeaponProficient(sheet, weapon);
   const feats = featEffects(sheetFeats(sheet));
   const ranged = weapon.ranged || use === 'thrown';
   // Archery (Fighting Style): menzilli silahla saldırıya +2 (fırlatılan yakın dövüş silahı değil).
@@ -111,7 +115,8 @@ const avgDie = (dice: string): number => {
 
 /** Martial Arts geçerli mi (zırh ve kalkan yok, özellik var): zarı; değilse null. */
 function martialArtsDie(sheet: CharacterSheet): { die: string; simpleMelee: boolean; martialLight: boolean; bonusStrike: boolean } | null {
-  const ma = classKit(sheet.classId, sheet.level, sheet.subclassId).martialArts;
+  // Görev MC4: çoklu sınıfta Martial Arts zarı Monk seviyesiyle (birleşik kit).
+  const ma = (isMultiSheet(sheet) ? mcImpl().kit(sheet) : classKit(sheet.classId, sheet.level, sheet.subclassId)).martialArts;
   const unarmored = armor.find((a) => a.name === sheet.armorName)?.type === 'none' && !sheet.shield;
   return ma && unarmored ? ma : null;
 }

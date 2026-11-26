@@ -8,6 +8,7 @@ import type { SavedCharacter } from '../rules/builder';
 import { currentStatus, type CharacterStatus } from '../rules/characterRest';
 import { resourceDef } from '../rules/classFeatures';
 import { isItemResource } from '../rules/itemCharges';
+import { mcImpl } from '../rules/mcHook';
 
 /** Görev TE99: savaşçıda bulunmayınca sıfırlanmayan kaynaklar (eşya yükü, tür kaynağı). */
 const keepWhenAbsent = (id: string): boolean => isItemResource(id) || !!resourceDef(id)?.race;
@@ -22,7 +23,8 @@ export function withStatus(c: Combatant, ch: Pick<SavedCharacter, 'sheet' | 'sta
     // Kuyruk K48: kayıtlı Moral (savaş başında kural kapalıysa `withMorale` siler).
     ...(s.moral !== undefined ? { moral: s.moral } : {}),
     // Kuyruk 19: savaşta harcanan HP zarı (Lifedrinker) kayıtlı durumdan.
-    ...(c.hitDice ? { hitDice: { ...c.hitDice, left: Math.max(0, ch.sheet.level - s.hitDiceSpent) } } : {}),
+    // Görev MC4: çoklu sınıf havuzu zar türü başına (`hitDiceSpentBy`).
+    ...(c.hitDice ? { hitDice: c.hitDice.pool ? mcImpl().battleHitDice(ch.sheet, s) : { ...c.hitDice, left: Math.max(0, ch.sheet.level - s.hitDiceSpent) } } : {}),
     // Görev MC3: çoklu sınıfın ayrı Pact havuzu kayıtlı durumdan.
     ...(c.pactSlots ? { pactSlots: { ...c.pactSlots, left: Math.min(c.pactSlots.max, s.pactSlots ?? c.pactSlots.max) } } : {}) };
 }
@@ -55,6 +57,11 @@ export function applyBattleResult(characters: SavedCharacter[], state: BattleSta
     const next: CharacterStatus = {
       hp: Math.max(0, c.hp),
       hitDiceSpent: c.hitDice ? Math.max(prev.hitDiceSpent, ch.sheet.level - c.hitDice.left) : prev.hitDiceSpent,
+      // Görev MC2/MC4: çoklu sınıfın zar türü başına harcananı (savaşta Lifedrinker havuzundan; yoksa kayıtlı olduğu gibi).
+      ...((): Partial<CharacterStatus> => {
+        const by = c.hitDice?.pool ? mcImpl().spentFromPool(ch.sheet, c.hitDice.pool) : prev.hitDiceSpentBy;
+        return by && Object.keys(by).length ? { hitDiceSpentBy: by } : {};
+      })(),
       // Görev TE99: savaşta olmayan eşya/tür kaynağı (ör. anahtar kapalı) kayıtlı değerinde kalır.
       resources: Object.fromEntries(Object.keys(prev.resources).map((id) => [id, c.resources[id] ?? (keepWhenAbsent(id) ? prev.resources[id] ?? 0 : 0)])),
       // Görev WS92: savaşta kazanılan slot (Wild Resurgence, Nature Magician, Font of Magic) karaktere yazılır; üst sınır

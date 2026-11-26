@@ -10,7 +10,7 @@
  * Saf.
  */
 import { gap64 } from './adjacency';
-import { imzaOn, imzaPasifler } from './imzaCore';
+import { imzaOn, imzaPasifler, imzaLevel } from './imzaCore';
 import { ruleVersion } from './ruleVersion';
 import { registerCommandEnd } from './turnHooks';
 import { isIncapacitated } from '../rules/conditions';
@@ -46,7 +46,7 @@ export const anyBirlik = (state: BattleState): boolean => ruleVersion(state) >= 
 export function unbrokenGuard(state: BattleState, cleric: Combatant): { ownerId: string; hp: number; resource: string } | undefined {
   const prm = pasif(state, cleric, 'unbroken-union')?.yikilmaz as { carpan: number; kaynak: string } | undefined;
   if (!prm || (cleric.resources[prm.kaynak] ?? 0) < 1) return undefined;
-  return { ownerId: cleric.id, hp: prm.carpan * cleric.level, resource: prm.kaynak };
+  return { ownerId: cleric.id, hp: prm.carpan * imzaLevel(cleric), resource: prm.kaynak };
 }
 
 // Ortak Şifa: komut sonu (rahibin büyüsüyle Bağlı dost iyileşti).

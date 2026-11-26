@@ -1128,7 +1128,14 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     }
     case 'hit_die_spent': {
       const c = state.combatants[event.actorId];
-      return c?.hitDice ? withCombatant(state, event.actorId, { hitDice: { ...c.hitDice, left: event.left } }) : state;
+      if (!c?.hitDice) return state;
+      // Görev MC4: çoklu sınıf havuzunda harcanan türden düşülür, sonraki zar kalanların en büyüğü.
+      if (c.hitDice.pool && event.die !== undefined) {
+        const pool = { ...c.hitDice.pool, [event.die]: Math.max(0, (c.hitDice.pool[event.die] ?? 0) - 1) };
+        const die = Math.max(0, ...Object.entries(pool).filter(([, n]) => (n as number) > 0).map(([d]) => Number(d))) || c.hitDice.die;
+        return withCombatant(state, event.actorId, { hitDice: { die, left: event.left, pool } });
+      }
+      return withCombatant(state, event.actorId, { hitDice: { ...c.hitDice, left: event.left } });
     }
     case 'healed': {
       const c = state.combatants[event.targetId];

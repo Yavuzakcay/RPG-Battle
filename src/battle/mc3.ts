@@ -6,6 +6,7 @@
  *   yürütülür. Komut gölge bir durumda çalışır (yalnız büyücünün bu alanları değişir), üretilen olaylar gerçek duruma
  *   uygulanır; Pact'ten harcanan yuva olayda `pact` işaretli (`slot_spent.pact`). Sonradan büyücünün o anki DC'sini okuyan
  *   etkiler (yapımdan sonraki tur) varsayılan sınıfın değerini görür (⚠ DECISIONS.md MC3).
+ * Görev MC4: sınıf seviyeleri (`classLevels`).
  * Tek sınıflı savaşçıda alanlar yok ve bu modül hiçbir şey değiştirmez.
  */
 import type { CharacterSheet } from '../rules/stats';
@@ -13,6 +14,7 @@ import { deriveStats } from '../rules/stats';
 import { mcImpl } from '../rules/mcHook';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
 import { mc3On } from './mc3Surum';
+import { imzaId } from './imzaCore';
 
 /** Çoklu sınıflı sayfanın savaşçısına büyü parçalarını ekler (`combatantFromSheet`, kural sürümü 105+). */
 export function mcCombatant(c: Combatant, sheet: CharacterSheet): Combatant {
@@ -22,8 +24,12 @@ export function mcCombatant(c: Combatant, sheet: CharacterSheet): Combatant {
   // Eşya büyü bonusu (`combatantFromSheet` varsayılan DC/saldırıya ekler) sınıf başına değerlere de.
   const dcBonus = c.spellSaveDc !== null && d.spellSaveDc !== null ? c.spellSaveDc - d.spellSaveDc : 0;
   const atkBonus = c.spellAttack !== null && d.spellAttack !== null ? c.spellAttack - d.spellAttack : 0;
+  // Görev MC4: sınıf/alt sınıf → sınıf seviyesi (imza alt sınıfının eski kimliği de).
+  const levels = mcImpl().classLevels(sheet);
+  for (const e of sheet.classes ?? []) { const z = imzaId(e.subclassId); if (z && levels[z] === undefined) levels[z] = e.level; }
   return {
     ...c,
+    classLevels: levels,
     ...(ab ? { spellMod: d.modifiers[ab] } : {}),
     ...(d.pactSlots ? { pactSlots: { level: d.pactSlots.level, max: d.pactSlots.count, left: d.pactSlots.count } } : {}),
     ...(d.spellByClass ? {

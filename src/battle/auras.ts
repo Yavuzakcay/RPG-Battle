@@ -6,6 +6,7 @@
  * `saveDice` (bütün save'lerin ortak eklentisi) sabit eklenti olarak okur. Game Master anahtarı `auraOfProtection`
  * (global, kural sürümü 14); kapalıyken yalnızca Paladin'in kendi bonusu.
  */
+import { featureLevel } from './classLevel';
 import { inWater } from './underwaterCore';
 import { k73cOn } from './k73cSurum';
 import { anyPaketSans, paketSansOf } from './paket/sans';
@@ -31,7 +32,8 @@ import type { BattleState, Combatant } from './types';
 const TRAIT = 'aura-of-protection';
 /** Kuyruk 19 (11–20): durum bilmeyen yollarda `featuresK19` gereken işaretler (savaşçıda `k19Traits`). */
 const K19_SYNC = ['peerless-skill', 'improved-primal-strike', 'improved-blessed-strikes', 'arcane-apotheosis', 'peerless-aim', 'boon-truesight', 'overcome-defenses'];
-const radiusOf = (p: Combatant): number => ((p.level ?? 0) >= 18 ? 6 : 2);
+// Görev MC4: Aura Expansion Paladin seviyesiyle.
+const radiusOf = (p: Combatant): number => (featureLevel(p, 'paladin:aura-of-protection') >= 18 ? 6 : 2);
 const bonusOf = (p: Combatant): number => Math.max(1, p.modifiers.cha);
 
 /**

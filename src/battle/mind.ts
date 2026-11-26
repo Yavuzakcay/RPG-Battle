@@ -7,6 +7,7 @@
  *   Charmed ve Frightened almaz (reducer).
  * - Mirror Image (`mirrorImageHit`): isabette her kopya için d6, biri 3+ ise kopya vurulur ve yok olur.
  */
+import { featureLevel } from './classLevel';
 import { wardProtects } from './possessionCore';
 import { spells } from '../data';
 import { AXIAL_DIRECTIONS, costsFrom, distance, offsetToAxial, type Offset } from '../rules/hex';
@@ -45,7 +46,7 @@ export function conditionAura(state: BattleState, targetId: string, condition: s
   const trait = condition === 'Frightened' ? 'aura-of-courage' : 'aura-of-devotion';
   return Object.values(state.combatants).some((p) => p.hp > 0 && p.side === t.side && p.traits?.includes(trait) && !isIncapacitated(p.conditions)
     // Kuyruk 19: Aura Expansion (Paladin 18): 30 ft.
-    && (p.id === t.id || (!!p.pos && !!t.pos && distance(p.pos, t.pos) <= ((p.level ?? 0) >= 18 ? 6 : 2))));
+    && (p.id === t.id || (!!p.pos && !!t.pos && distance(p.pos, t.pos) <= (featureLevel(p, 'paladin:aura-of-protection') >= 18 ? 6 : 2))));
 }
 
 /**

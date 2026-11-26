@@ -42,8 +42,11 @@ export const masteryWorks = (id: MasteryId): boolean => {
   return !!m && m.status !== 'missing';
 };
 
-/** Karakterin ustalık hakkı (sınıf ve seviyeden); yoksa null. */
-export const masteryRight = (sheet: CharacterSheet) => classKit(sheet.classId, sheet.level, sheet.subclassId).weaponMastery;
+/**
+ * Karakterin ustalık hakkı (sınıf ve seviyeden); yoksa null. Görev MC4 (K5, SRD'de açık değil): çoklu sınıfta tek havuz, hak
+ * sınıfların en yükseği; menzilli silah, yakın dövüş kısıtı olmayan bir hak veren sınıf varsa seçilebilir.
+ */
+export const masteryRight = (sheet: CharacterSheet) => (isMultiSheet(sheet) ? mcImpl().kit(sheet).weaponMastery : classKit(sheet.classId, sheet.level, sheet.subclassId).weaponMastery);
 
 /** Ustalık için seçilebilecek silahlar: yetkin olunan (ve sınıf kısıtı varsa yakın dövüş) silahlar. */
 export function masteryOptions(sheet: CharacterSheet): Weapon[] {

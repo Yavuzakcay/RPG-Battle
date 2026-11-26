@@ -10,7 +10,7 @@ import { resistImmunityEvent, resistImmunityId } from './auraCore';
 import data from '../../data/imza.json';
 import { gap64 } from './adjacency';
 import { damageProfile as profileOf, fail, finish, isTargetable, type CommandResult } from './common';
-import { byLevel, imzaId, imzaOn, imzaPasifler, isImza } from './imzaCore';
+import { byLevel, imzaId, imzaOn, imzaPasifler, isImza, imzaLevel } from './imzaCore';
 import { saveDice } from './effectDice';
 import { saveMode } from './durations';
 import { damageEffects } from './damage-effects';
@@ -83,8 +83,8 @@ function expr(s: string, c: Combatant): string {
     switch (k) {
       case 'pb': return String(c.proficiency);
       case 'pbHalf': return String(Math.max(1, Math.floor(c.proficiency / 2)));
-      case 'lvl': return String(c.level);
-      case 'lvl2': return String(2 * c.level);
+      case 'lvl': return String(imzaLevel(c));
+      case 'lvl2': return String(2 * imzaLevel(c));
       case 'bardic': return bardicDie(c);
       default: return String(Math.max(0, mod(c, k)));
     }
@@ -96,7 +96,7 @@ const num = (s: string | number | undefined, c: Combatant): number => (typeof s 
 export const imzaTargeted = (key: string): boolean => ['ally', 'allyOrSelf', 'enemy', 'areaEnemies'].includes(IMZA_SPECS[key]?.hedef ?? '');
 /** Kuyruk K54: eylem altıgen ister (`hex`: yalnız altıgen; `hedefVeHex`: önce yaratık, sonra altıgen). */
 export const imzaHex = (key: string): 'hex' | 'after' | null => (IMZA_SPECS[key]?.hedef === 'hex' ? 'hex' : IMZA_SPECS[key]?.hedefVeHex ? 'after' : null);
-const rangeOf = (spec: ImzaSpec, c: Combatant): number | undefined => byLevel(spec.menzilSeviye, c.level) ?? spec.menzilFt;
+const rangeOf = (spec: ImzaSpec, c: Combatant): number | undefined => byLevel(spec.menzilSeviye, imzaLevel(c)) ?? spec.menzilFt;
 
 /** Alt sınıf DC'si: 8 + yeterlilik + listedeki yeteneklerin en yükseği. */
 export const imzaDc = (c: Combatant, dc: Ability[]): number => 8 + c.proficiency + Math.max(...dc.map((a) => mod(c, a)));
@@ -166,7 +166,7 @@ function targetsOf(state: BattleState, actor: Combatant, spec: ImzaSpec, key: st
   const t = targetId ? state.combatants[targetId] : undefined;
   const cap = (list: Combatant[]) => {
     const n0 = spec.enCok === undefined ? Infinity : Math.max(1, num(spec.enCok, actor));
-    const n = n0 * (byLevel(spec.enCokCarpan, actor.level) ?? 1);
+    const n = n0 * (byLevel(spec.enCokCarpan, imzaLevel(actor)) ?? 1);
     return list.slice(0, n);
   };
   const near = (c: Combatant) => (state.map && actor.pos && c.pos ? gap64(state, actor, c) : 0);
@@ -311,7 +311,7 @@ export function executeImza(state: BattleState, actor: Combatant, f: UsableFeatu
   const special = k54Special(state, actor, spec, f.key, targets, to, dc, rng);
   if (typeof special === 'string') return fail(special);
   if (special) return finish(state, [...events, ...special]);
-  const etki = (k54(state) ? spec.etki25 : undefined) ?? byLevel(spec.etkiSeviye, actor.level) ?? spec.etki;
+  const etki = (k54(state) ? spec.etki25 : undefined) ?? byLevel(spec.etkiSeviye, imzaLevel(actor)) ?? spec.etki;
   const applyTo = (t: Combatant, scale: number): void => {
     const sc = (n: number) => (scale === 1 ? n : Math.floor(n * scale));
     const legendary = isLegendary(t);
@@ -324,7 +324,7 @@ export function executeImza(state: BattleState, actor: Combatant, f: UsableFeatu
       const mode = saveMode(dez ? 'disadvantage' : 'normal', t, ab, actor, { ...(spec.hasar?.tur ? { damage: spec.hasar.tur } : {}), genis: true });
       const sv = resolveSave({ extra: saveDice(t, ab), modifier: t.saves[ab], dc, mode }, rollTag(rng, { by: t.id }));
       failed = !sv.success;
-      const dice = spec.hasar ? expr(byLevel(spec.hasar.zar, actor.level) ?? '0', actor) : '';
+      const dice = spec.hasar ? expr(byLevel(spec.hasar.zar, imzaLevel(actor)) ?? '0', actor) : '';
       const dmg = spec.hasar && (failed || spec.yari) ? rollDice(dice, rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };
       const amount = spec.hasar ? saveDamage(t, ab, sv.success, sc(dmg.total), !!spec.yari) : 0;
       const adj = amount > 0 ? adjustDamage(amount, spec.hasar?.tur ?? '', profileOf(t)) : { amount: 0, note: null };
@@ -340,7 +340,7 @@ export function executeImza(state: BattleState, actor: Combatant, f: UsableFeatu
       }
     } else if (spec.hasar && isFoe) {
       // Kurtulmasız hasar (Mantar).
-      const d = rollDice(expr(byLevel(spec.hasar.zar, actor.level) ?? '0', actor), rollTag(rng, { kind: 'damage', by: actor.id }));
+      const d = rollDice(expr(byLevel(spec.hasar.zar, imzaLevel(actor)) ?? '0', actor), rollTag(rng, { kind: 'damage', by: actor.id }));
       const adj = adjustDamage(sc(d.total), spec.hasar.tur, profileOf(t));
       const fx = damageEffects(t, adj.amount, spec.hasar.tur, false, rng);
       applied = adj.amount;
@@ -350,7 +350,7 @@ export function executeImza(state: BattleState, actor: Combatant, f: UsableFeatu
     }
     void applied;
     if (spec.iyilestir) {
-      const h = { total: healRoll(state, t, expr(byLevel(spec.iyilestir, actor.level) ?? '0', actor), rng, actor.id) };
+      const h = { total: healRoll(state, t, expr(byLevel(spec.iyilestir, imzaLevel(actor)) ?? '0', actor), rng, actor.id) };
       const amount = Math.max(0, Math.min(sc(h.total), t.maxHp - t.hp));
       events.push({ type: 'healed', actorId: actor.id, targetId: t.id, label: spec.ad, amount, targetHpAfter: t.hp + amount });
     }
@@ -441,7 +441,7 @@ export function imzaHit(state: BattleState, actor: Combatant, target: Combatant,
       if (gain > 0) out.push({ label: 'İnfaz', rolls: [], raw: gain, applied: adjustDamage(gain, sneak.type, profileOf(target)).amount, type: sneak.type, note: null });
       const dealt = weaponRaw + [...extras, ...out].reduce((s, x) => s + x.applied, 0);
       const left = target.hp - dealt;
-      if (!isLegendary(target) && left > 0 && left < actor.level * 4) {
+      if (!isLegendary(target) && left > 0 && left < imzaLevel(actor) * 4) {
         const dc = imzaDc(actor, ['dex']);
         const sv = resolveSave({ extra: saveDice(target, 'con'), modifier: target.saves.con, dc, mode: saveMode('normal', target, 'con', actor) }, rollTag(rng, { by: target.id }));
         if (!sv.success) out.push({ label: 'İnfaz (ölüm)', rolls: [], raw: left, applied: left, type: '', note: null });

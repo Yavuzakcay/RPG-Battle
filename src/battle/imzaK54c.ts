@@ -11,7 +11,7 @@
  *   (`morale.ts` etki bayrakları).
  * Saf; `rng` enjekte.
  */
-import { imzaOn, imzaPasifler } from './imzaCore';
+import { imzaOn, imzaPasifler, imzaLevel } from './imzaCore';
 import { ruleVersion } from './ruleVersion';
 import { canReact, reactionUsed, registerAllyHit } from './reactions';
 import { registerCommandEnd } from './turnHooks';
@@ -113,7 +113,7 @@ registerCommandEnd((before, next, events, _cmd, rng) => {
       const ans = askReaction(rng, { reactorId: b.id, trigger: 'ally', sourceId: a.id, info: { label: 'Ölümsüz Dize' }, options: [{ id: 'imza-olumsuz-dize', name: 'Ölümsüz Dize' }], suggested: { option: 'imza-olumsuz-dize' } });
       if (ans?.option !== 'imza-olumsuz-dize') continue;
       out.push(used(b, p.kaynak), reactionUsed(b, { id: 'imza-olumsuz-dize', name: 'Ölümsüz Dize' }, 'ally', a.id),
-        { type: 'healed', actorId: b.id, targetId: a.id, label: 'Ölümsüz Dize', amount: 1, targetHpAfter: 1 }, { type: 'temp_hp', targetId: a.id, amount: b.level, label: 'Ölümsüz Dize' });
+        { type: 'healed', actorId: b.id, targetId: a.id, label: 'Ölümsüz Dize', amount: 1, targetHpAfter: 1 }, { type: 'temp_hp', targetId: a.id, amount: imzaLevel(b), label: 'Ölümsüz Dize' });
       break;
     }
   }
@@ -128,7 +128,7 @@ registerCommandEnd((before, next, events, _cmd, rng) => {
       const r = freeRage(g);
       const m = moralEv(g, -1, 'dost');
       out.push(used(g, p.kaynak), reactionUsed(g, { id: 'imza-yas', name: 'Dostunun Yası' }, 'ally', a.id), ...(r ? [r] : []),
-        { type: 'temp_hp', targetId: g.id, amount: 2 * g.level, label: 'Dostunun Yası' }, ...(m ? [m] : []));
+        { type: 'temp_hp', targetId: g.id, amount: 2 * imzaLevel(g), label: 'Dostunun Yası' }, ...(m ? [m] : []));
     }
   }
   // Ölüme direnme sonrası (Death Ward düştü, ayakta): Küllerden Doğan, Ölümsüz Taht.
@@ -140,7 +140,7 @@ registerCommandEnd((before, next, events, _cmd, rng) => {
       for (const a of Object.values(next.combatants)) {
         if (a.id === c.id || a.side !== c.side || !alive(a) || ftOf(c, a) > 30) continue;
         const m = moraleOn(next) ? moralEv(a, 1, 'toparlama', c.id) : null;
-        out.push(m ?? { type: 'temp_hp', targetId: a.id, amount: c.level, label: 'Küllerden Doğan' });
+        out.push(m ?? { type: 'temp_hp', targetId: a.id, amount: imzaLevel(c), label: 'Küllerden Doğan' });
       }
     }
     if (had('imza:imza_imparator/undying-throne') && pasif28(next, c, 'undying-throne-allies')) {

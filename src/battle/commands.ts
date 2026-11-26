@@ -2,6 +2,7 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
+import { resourceLevel } from './classLevel';
 import { executeJumpDown } from './drop';
 import { annotateSaveWhy } from './saveWhy';
 import { executeAirMove } from './airMove';
@@ -158,9 +159,9 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
     if (natural !== 20 && (natural === 1 || natural + bonus < 10) && c.sinif97 && c.traits?.includes('indomitable') && resourceLeft(c, 'indomitable') > 0) {
       const again = rollD20(dsMode, rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
       const nat2 = survivor && again >= 18 ? 20 : again;
-      bonusDice = [{ label: 'Indomitable', die: 'd20', value: nat2 + c.level - natural, resource: 'indomitable', holderId: c.id }];
+      bonusDice = [{ label: 'Indomitable', die: 'd20', value: nat2 + resourceLevel(c, 'indomitable') - natural, resource: 'indomitable', holderId: c.id }];
       natural = nat2;
-      bonus += c.level;
+      bonus += resourceLevel(c, 'indomitable');
     }
     let successes = c.deathSaves.successes;
     let failures = c.deathSaves.failures;

@@ -3,6 +3,7 @@
  * düğme gruplama ve savaş başı kurulumu (`withPaket`). Ağır bağımlılık yok (oluşturucu `create.ts` buradan içe aktarır).
  * Saf; zar `rng` ile.
  */
+import { levelIn } from '../classLevel';
 import { gap64 } from '../adjacency';
 import { isTargetable } from '../common';
 import { turnKey } from '../economy';
@@ -32,6 +33,8 @@ export const tetikOf = (p: Ilkel): Tetik => val<Tetik>(p, 'tetik');
 const mod = (c: Combatant, a: string) => (c.modifiers as Record<string, number>)[a] ?? 0;
 const castMod = (c: Combatant) => c.spellMod || Math.max(mod(c, 'int'), mod(c, 'wis'), mod(c, 'cha'));
 
+/** Görev MC4: paket alt sınıfının sınıfının seviyesi (çoklu sınıfta `classLevels`; tek sınıfta karakter seviyesi). */
+export const paketLevel = (c: Pick<Combatant, 'level' | 'classLevels' | 'paket'>): number => levelIn(c, c.paket?.altSinif);
 /** Seviye tablosundan değer (`{ "3": x, "11": y }`: seviyeye göre en yüksek eşik). */
 function byLevel(v: unknown, level: number): unknown {
   if (typeof v !== 'object' || v === null || Array.isArray(v)) return v;
@@ -39,17 +42,17 @@ function byLevel(v: unknown, level: number): unknown {
 }
 /** Formül → zar ifadesi ya da sayı (belirteçler çözülür; şema sözdizimini doğrulamıştır). */
 export function formul(v: unknown, c: Combatant): string {
-  const x = byLevel(v, c.level);
+  const x = byLevel(v, paketLevel(c));
   if (typeof x === 'number') return String(x);
   if (typeof x !== 'string') return '0';
   const s = x.replace(/\s+/g, '').replace(/\$(pbYari|pb|lvlYari|lvl2|lvl|str|dex|con|int|wis|cha|buyu)/g, (_, k: string) => {
     switch (k) {
       case 'pb': return String(c.proficiency);
       case 'pbYari': return String(Math.max(1, Math.floor(c.proficiency / 2)));
-      case 'lvl': return String(c.level);
+      case 'lvl': return String(paketLevel(c));
       // P12: seviyenin yarısı (aşağı, en az 1).
-      case 'lvlYari': return String(Math.max(1, Math.floor(c.level / 2)));
-      case 'lvl2': return String(2 * c.level);
+      case 'lvlYari': return String(Math.max(1, Math.floor(paketLevel(c) / 2)));
+      case 'lvl2': return String(2 * paketLevel(c));
       case 'buyu': return String(Math.max(0, castMod(c)));
       default: return String(Math.max(0, mod(c, k)));
     }
@@ -193,7 +196,7 @@ export function passiveBody(p: Ilkel, c: Combatant, state?: BattleState): Partia
     }
     case 'zarEtkisi': return zarBody(p, c);
     // Kuyruk U1a (sürüm 61+): kademe parametreleri (`flightPrim.ts`); 60 ve altı yalnız `hizFt`.
-    case 'ucus': return state && u1aOn(state) ? ucusBody(ucusAt(p, c.level), c.speed, (v) => flatNum(v, c))
+    case 'ucus': return state && u1aOn(state) ? ucusBody(ucusAt(p, paketLevel(c)), c.speed, (v) => flatNum(v, c))
       : { fly: p.hizFt === undefined || p.hizFt === 'yurume' ? c.speed : flatNum(p.hizFt, c) };
     case 'hiz': return { speedFt: flatNum(p.artiFt, c) };
     case 'boyut': return { size: 1, ...(p.ekHasar ? { hitDie: formul(p.ekHasar, c) } : {}), ...(typeof p.erisimFt === 'number' ? { reachPlus: p.erisimFt } : {}) };

@@ -9,6 +9,7 @@
  * - Land's Aid (`landsAid` etkisi): 60 ft içinde 10 ft küre, seçilen yaratıklar CON save, Necrotic; bir dost iyileşir.
  * Saf.
  */
+import { featureLevel } from './classLevel';
 import { karar104On } from './karar104Surum';
 import { askChoice, askPicks } from '../rules/choice';
 import { b94On } from './b94Surum';
@@ -148,10 +149,10 @@ export function wildShapeProblem(state: BattleState, actor: Combatant, form: str
   if (form === undefined) return actor.shape ? null : 'Biçimde değilsin.';
   if (isIncapacitated(actor.conditions)) return 'Incapacitated iken biçim değiştirilemez.';
   if (f.resource && resourceLeft(actor, f.resource) <= 0) return `${f.name}: kullanım kalmadı.`;
-  const m = eligibleForms(monsters, f, actor.level, state.kuralSurumu ?? 1).find((x) => x.id === form);
+  const m = eligibleForms(monsters, f, featureLevel(actor, f.key), state.kuralSurumu ?? 1).find((x) => x.id === form);
   if (!m) return 'Bu biçim bu seviyede alınamaz.';
   // Kural sürümü 87: seviyede artık alınamayan ya da Beast olmayan seçili biçimler yok sayılır (kayıtta kalır).
-  const known = ws87On(state) ? validKnownForms(actor.wildShapeForms, f, actor.level, state.kuralSurumu ?? 1) : actor.wildShapeForms ?? [];
+  const known = ws87On(state) ? validKnownForms(actor.wildShapeForms, f, featureLevel(actor, f.key), state.kuralSurumu ?? 1) : actor.wildShapeForms ?? [];
   if (known.length && !known.includes(form)) return 'Bu biçim bilinen biçimlerin arasında değil.';
   return null;
 }
@@ -171,7 +172,7 @@ export function executeWildShape(state: BattleState, actor: Combatant, form: str
   const events: BattleEvent[] = [];
   if (f.resource) events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource, remaining: resourceLeft(actor, f.resource) - 1 });
   events.push({ type: 'shape_changed', actorId: actor.id, stats });
-  events.push({ type: 'temp_hp', targetId: actor.id, amount: actor.level, label: f.name });
+  events.push({ type: 'temp_hp', targetId: actor.id, amount: featureLevel(actor, f.key), label: f.name });
   return finish(state, events);
 }
 
@@ -235,7 +236,7 @@ export function executeLandsAid(state: BattleState, actor: Combatant, f: UsableF
   if (why) return fail(why);
   const e = f.effect;
   if (e.kind !== 'landsAid') return fail('Land\'s Aid yok.');
-  const n = Object.entries(e.dice).filter(([l]) => actor.level >= Number(l)).reduce((m, [, v]) => Math.max(m, v), 0);
+  const n = Object.entries(e.dice).filter(([l]) => featureLevel(actor, f.key) >= Number(l)).reduce((m, [, v]) => Math.max(m, v), 0);
   const inside = (c: Combatant) => !state.map || (!!to && !!c.pos && distance(c.pos, to) * 5 <= e.radiusFt);
   const living = Object.values(state.combatants).filter((c) => c.hp > 0 && !c.civilian && !c.summon?.gone && inside(c));
   const events: BattleEvent[] = [];
@@ -281,9 +282,9 @@ export function evergreenEvents(c: Combatant): BattleEvent[] {
 /** Savaşta seçilebilen biçimler: bilinen biçimler (karakterde seçildiyse) ya da uygun olanlardan en yüksek CR'li ilk N. */
 export function availableForms(monsters: Monster[], c: Combatant, v?: number): Monster[] {
   const f = wildShapeFeature(c);
-  const lim = f ? shapeLimits(f, c.level) : null;
+  const lim = f ? shapeLimits(f, featureLevel(c, f.key)) : null;
   if (!f || !lim) return [];
-  const all = eligibleForms(monsters, f, c.level, v);
+  const all = eligibleForms(monsters, f, featureLevel(c, f.key), v);
   // Kural sürümü 87: geçersiz seçili biçimler sayılmaz; geçerli seçim kalmadıysa seçimsiz gibi en güçlüleri.
   const chosen = all.filter((m) => c.wildShapeForms?.includes(m.id));
   if (c.wildShapeForms?.length && (chosen.length || (v ?? CURRENT_RULES) < WS87_VERSION)) return chosen;
