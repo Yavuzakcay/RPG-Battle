@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## KATALOG-1 F: yarı can fazı (Faz 2) motor kuralı — mekanik donmasına bilinçli istisna (2026-11-26; karar, uygulama henüz yok)
+
+Kullanıcı kararı (2026-11-26): Serüven öncesi mekanik donmasına **bilinçli istisna** olarak, Mühür Ruhu bosslarının "%50 can Taş Uyanışı" fazı gerçek bir motor kuralı olacak.
+
+- İptal edilen yollar: "Game Master elle uygular", "mevcut efsanevi güçlendirme (`buff`) kullanılır" ve "zayıflık hiç kalkmaz".
+- Kural genel ve veriden okunur: canavar kaydında `faz2` bloğu, eşik varsayılan %50. Kodda boss adıyla koşul yazılmaz. Savaşta bir kez tetiklenir, geri dönmez.
+- Tasarım: `harita/belgeler/KATALOG-F-TASARIM.md` "Faz 2 mekaniği". Kural sürümü 107, kayıt sürümü 28 (yeni olay `phase_changed`).
+- Uygulama, tasarım onaylandıktan sonra ayrı görev olarak yapılır. O zamana dek kural ve kayıt sürümü değişmez (106 / 27).
+
 ## Görev KATALOG-1 G: Kaltakkıran anlatım verisi (2026-11-26; kural sürümü (106) ve kayıt sürümü (27) değişmedi)
 
 Kaynak: "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi" PDF'i. Yalnız veri: kod, kural ve savaş etkisi yok (K4, K14).
