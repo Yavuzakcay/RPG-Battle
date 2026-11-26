@@ -2,6 +2,23 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev MC6: çoklu sınıflı karakterin jetonu (2026-11-26; kural ve kayıt sürümü değişmedi)
+
+- **Görünüm sınıfı planın K11'i** (varsayılan seçilmedi, planda yazılıydı): en yüksek seviyeli sınıf, eşitlikte ilk sınıf.
+  Tek yardımcı `src/battle/avatar.ts` `lookSheet`: tek sınıflı sayfayı aynen döner (aynı nesne), çoklu sınıfta `classId`,
+  `subclassId`, `level` görünüm sınıfınınki. `sheetAvatar` bununla çalışır; jetonun bütün yolları (karakter listesi, kâğıt,
+  oluşturucu, savaş `combatantFromSheet`, galeri) `sheetAvatar`'dan geçtiği için başka yere dokunulmadı.
+- **Eşikler görünüm sınıfının seviyesiyle:** Gariban (seviye < 3) ve alt sınıf jetonu, alt sınıfın ikinci formu (`formlar.esik`),
+  alt sınıf kanadı (`hasSubclassWing`) ve rozet etiketi (`CLASS_LABEL`). Örn. Fighter 2 / Wizard 1 (toplam 3) Gariban'da kalır;
+  Fighter 3 (Champion) / Wizard 4 (Evocation) Evocation jetonunu alır.
+- **Irka bağlı görünüm karakter seviyesiyle** (`look.level` toplam): Celestial uyanışı ve soy kanadının seviye eşiği sınıfa değil
+  karaktere bağlı.
+- **Mahkûm kıyafeti** (`prisonerOutfit`) sınıftan bağımsız (kostüm sınıfı veride); değişmedi. Özel avatar her şeyin önünde.
+- Oluşturucunun sınıf küçük resmi önyüklemesi çoklu sınıflı sayfada da sınıf başına (`classes` düşürülerek).
+- **Test** `src/battle/mc6Jeton.test.ts`: 9216 tek sınıflı jeton (ırk/soy × sınıf × cinsiyet × seviye 1/3/5/20 × alt sınıfsız/ilk
+  alt sınıf) MC6 öncesiyle aynı (özet `a2de287d`, `src/battle/mc6Ozet.ts`, `scripts/mc6-jeton-ozet.ts`), K11 seçimi, eşitlik,
+  Gariban eşiği, alt sınıf jetonu, Celestial seviyesi, özel avatar. Ana parça 459,74 kB.
+
 ## Görev MC5: oluşturucudan çoklu sınıflı karakter; etiketler; Serüven seviye atlama (2026-11-26; kural ve kayıt sürümü değişmedi)
 
 **Birleştirme.** Başlarken `origin/birlesik` `304bcb60` (KARAR104-KALAN; kural 104, kayıt 26) merge edildi. Çakışma: `CLAUDE.md`

@@ -20,6 +20,7 @@ import rangerJeton from '../../data/ranger-jeton.json';
 import rogueJeton from '../../data/rogue-jeton.json';
 import genelJeton from '../../data/jeton-genel.json';
 import { cultureSkinTone, hasSubclassWing, hexTint, lineageSkinHex, skinTint } from '../ui/lineageLook';
+import { classesOf, isMultiSheet } from '../rules/mcHook';
 
 /** DROW-PALET: `{ palet: "<anahtar>" }` soyun rengi ırk kaydındaki `paletler.<soy>`'dan, seçim `<anahtar>` alanından. */
 type PaletRef = { palet: string };
@@ -193,7 +194,20 @@ const retiredBaseFile = (classId: string, raceId: string, gender: 'erkek' | 'kad
  * o da yoksa baş harfli rozet (yedek zinciri). Sınıf-genel jetonu kaldırılmış ırkta (Dragonborn) sınıf-genel jeton ne ana görsel
  * ne yedek: alt sınıf jetonu yoksa Gariban, yedek zincirinde de Gariban.
  */
-export function sheetAvatar(sheet: CharacterSheet): Avatar {
+/**
+ * Görev MC6 (karar K11, `harita/belgeler/MULTICLASS-PLAN.md`): jetonun görünüm sınıfı. Tek sınıflı sayfa olduğu gibi (aynı nesne:
+ * jeton birebir aynı). Çoklu sınıfta en yüksek seviyeli sınıf, eşitlikte ilk sınıf; `classId`/`subclassId`/`level` o sınıfınki
+ * (Gariban / alt sınıf jetonu eşiği ve alt sınıf kanadı o sınıfın seviyesi ve alt sınıfıyla). Irka bağlı görünüm (Celestial
+ * uyanışı, soy kanadının seviye eşiği) `sheetAvatar`'da karakter seviyesiyle kalır.
+ */
+export function lookSheet(sheet: CharacterSheet): CharacterSheet {
+  if (!isMultiSheet(sheet)) return sheet;
+  const top = classesOf(sheet).reduce((a, e) => (e.level > a.level ? e : a));
+  return { ...sheet, classId: top.classId, subclassId: top.subclassId, level: top.level };
+}
+
+export function sheetAvatar(full: CharacterSheet): Avatar {
+  const sheet = lookSheet(full);
   const gender = sheet.gender ?? 'erkek';
   const legacy = `avatars/${sheet.raceId}-${sheet.classId}-${gender}.webp`;
   // DRAGONBORN-ESKI-JETON-KALDIR: kaldırılmış ırkta sınıf-genel jetonun yerini sınıfın Gariban jetonu alır (yedek de odur).
@@ -218,7 +232,7 @@ export function sheetAvatar(sheet: CharacterSheet): Avatar {
     })(),
     // Kuyruk AS1c: alt soy görünümü (oran, hale, filtre, kanat) savaş jetonunda da aynı çözücüyle (`lineageLook`).
     ...(!sheet.avatar && (sheet.lineageId || sheet.raceId === 'celestial' || hasSubclassWing(sheet.subclassId))
-      ? { look: { raceId: sheet.raceId, ...(hasSubclassWing(sheet.subclassId) ? { classId: sheet.classId, subclassId: sheet.subclassId } : {}), ...(sheet.lineageId ? { lineageId: sheet.lineageId } : {}), ...(sheet.celestialAwakening ? { celestialAwakening: sheet.celestialAwakening } : {}), level: sheet.level } } : {}),
+      ? { look: { raceId: sheet.raceId, ...(hasSubclassWing(sheet.subclassId) ? { classId: sheet.classId, subclassId: sheet.subclassId } : {}), ...(sheet.lineageId ? { lineageId: sheet.lineageId } : {}), ...(sheet.celestialAwakening ? { celestialAwakening: sheet.celestialAwakening } : {}), level: full.level } } : {}),
   };
 }
 
