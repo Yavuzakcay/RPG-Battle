@@ -3,6 +3,8 @@
  * `item_used` adedi azaltır. Türler:
  * - `heal` (Kuyruk 43): iksir, bonus eylem, kendine ya da 5 ft içindeki dosta iyileşme.
  * - `effect` (Kuyruk 19): içilen/uygulanan iksir ya da Antitoxin: süreli etki, geçici HP ya da (Potion of Poison) hasar.
+ *   Görev SRD-TAMAMLAMA-1 (106+): etkideki `cureOnCast` durumları hemen kalkar (Elixir of Health, Potion of Vitality; büyü
+ *   yolundaki gibi), `use.cureExhaustion` bütün Exhaustion seviyelerini kaldırır; yalnız `cureOnCast` taşıyan etki eklenmez.
  * - `throw` (Kuyruk 19): Attack eyleminde bir saldırının yerine fırlatma (Acid, Alchemist's Fire, Holy Water, Net):
  *   hedef save (DC 8 + DEX + PB ya da sabit), hasar/durum, yanma (`ongoing`), ağdan kurtulma (`escapeCheck`).
  * - `coat` (Kuyruk 19): Basic Poison: sonraki isabetlere ek hasar (1 dakika ya da hasar verene dek).
@@ -22,6 +24,7 @@ import { globalRule } from './ruleControl';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
 import { saveVs } from './te99Surum';
 import { te99On } from './te99Surum';
+import { srd106On } from './srd106Surum';
 
 /** Kullanılabilecek sarf eşyaları (adı, adedi). */
 export function consumablesOf(c: Combatant): Array<{ id: string; name: string; count: number }> {
@@ -85,6 +88,19 @@ export function executeUseItem(state: BattleState, actor: Combatant, itemId: str
       if (save?.success) return finish(state, events);
     }
     if (u.tempHp) events.push({ type: 'temp_hp', targetId: t.id, amount: rollDice(u.tempHp, rollTag(rng, { by: actor.id, kind: 'heal' })).total, label: it.name });
+    if (srd106On(state)) {
+      // SRD 5.2.1 s. 220 (Elixir of Health: "the following conditions end on you"), s. 236 (Potion of Vitality: "removes any
+      // Exhaustion levels you have and ends the Poisoned condition").
+      const { cureOnCast, ...rest } = (u.effect ?? {}) as { cureOnCast?: string[] } & Record<string, unknown>;
+      for (const cond of cureOnCast ?? []) {
+        if (t.conditions.includes(cond)) events.push({ type: 'condition_changed', targetId: t.id, condition: cond, present: false, reason: it.name });
+      }
+      if (u.cureExhaustion && (t.exhaustion ?? 0) > 0) events.push({ type: 'exhaustion_changed', targetId: t.id, level: 0, reason: it.name });
+      if (Object.keys(rest).length) {
+        events.push({ type: 'effect_added', targetId: t.id, effect: { ...(rest as Partial<ActiveEffect>), id: `item:${itemId}`, name: it.name, sourceId: actor.id, until: state.round + u.rounds - 1 } });
+      }
+      return finish(state, events);
+    }
     if (u.effect) {
       events.push({ type: 'effect_added', targetId: t.id, effect: { ...(u.effect as Partial<ActiveEffect>), id: `item:${itemId}`, name: it.name, sourceId: actor.id, until: state.round + u.rounds - 1 } });
     }

@@ -172,7 +172,7 @@ m('potion-of-invisibility', use={'kind': 'effect', 'action': 'bonus', 'reachFt':
 m('potion-of-invulnerability', use={'kind': 'effect', 'action': 'bonus', 'reachFt': 5, 'rounds': 10, 'effect': {'resist': DMG}})
 m('potion-of-poison', use={'kind': 'effect', 'action': 'bonus', 'reachFt': 5, 'rounds': 10, 'damage': '4d6', 'damageType': 'poison', 'save': {'ability': 'con', 'dc': 13}, 'effect': {'grants': ['Poisoned']}})
 m('potion-of-speed', use={'kind': 'effect', 'action': 'bonus', 'reachFt': 5, 'rounds': 10, 'effect': {'speedMult': 2, 'ac': 2, 'saveAdv': ['dex'], 'extraAction': True, 'lethargy': True}})
-m('potion-of-vitality', use={'kind': 'effect', 'action': 'bonus', 'reachFt': 5, 'rounds': 1, 'effect': {'cureOnCast': ['Poisoned']}, 'tempHp': None}, note='Exhaustion ve zehir kalkar')
+m('potion-of-vitality', use={'kind': 'effect', 'action': 'bonus', 'reachFt': 5, 'rounds': 1, 'effect': {'cureOnCast': ['Poisoned']}, 'tempHp': None, 'cureExhaustion': True}, note='Exhaustion ve zehir kalkar')  # SRD-TAMAMLAMA-1: cureExhaustion 106+
 m('quarterstaff-of-the-acrobat', bonus={'weapon': 2}, attune=True)
 m('ring-of-evasion', passive={'traits': ['evasion']}, attune=True)
 m('ring-of-feather-falling', passive={'fallReduction': 999}, attune=True)

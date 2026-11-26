@@ -1,6 +1,7 @@
 import { karar104On } from './karar104Surum';
 import { featureLevel } from './classLevel';
-import { askPicks } from '../rules/choice';
+import { askChoice, askPicks } from '../rules/choice';
+import { srd106On } from './srd106Surum';
 import { globalRule } from './ruleControl';
 import { b94On } from './b94Surum';
 import { buyucu93On } from './buyucu93Surum';
@@ -17,7 +18,9 @@ import { canSee } from './maprules';
  *   (hasar alınca biter). Sear Undead (`sear-undead` işareti): başarısız olanlara WIS değiştiricisi kadar d8 (en az 1)
  *   Radiant.
  * - Preserve Life (`preserveLife`): 30 ft içindeki Bloodied (yarı HP ve altı) yaratıklara 5 × seviye HP dağıtılır;
- *   kimse yarı HP'sinin üstüne çıkmaz. Dağıtım en yaralıdan başlar.
+ *   kimse yarı HP'sinin üstüne çıkmaz. Dağıtım en yaralıdan başlar. Görev SRD-TAMAMLAMA-1 (106+; SRD 5.2.1 s. 38 "Choose
+ *   Bloodied creatures … and divide those Hit Points among them"): aday her taraftan Bloodied yaratık (öneri dostlar),
+ *   yaratık başına miktar sorulur (`preserveAmount`; öneri eski dağıtım: alabildiği kadar).
  * - Blessed Strikes: Divine Strike (`divine-strike`: turda bir silah isabetine +1d8, Improved ile 2d8; Necrotic ya da
  *   Radiant, hedefe daha çok işleyeni) ve Potent Spellcasting (`potent-spellcasting`: cantrip hasarına WIS).
  * - Life Domain: Disciple of Life (`disciple-of-life`), Blessed Healer (`blessed-healer`), Supreme Healing
@@ -112,8 +115,28 @@ function abjureTargets(state: BattleState, actor: Combatant, ft: number, first?:
   return all.slice(0, Math.max(1, actor.modifiers.cha));
 }
 
-const preserveTargets = (state: BattleState, actor: Combatant, ft: number) => Object.values(state.combatants)
-  .filter((c) => c.side === actor.side && !c.civilian && c.life !== 'dead' && c.hp < Math.floor(c.maxHp / 2) && !c.summon?.intangible && within(state, actor, c, ft));
+/** Preserve Life adayları. 105 ve altı: dost taraf; 106+ (SRD "Bloodied creatures"): her taraf, sivil dahil, kaybolan çağrı hariç. */
+const preserveTargets = (state: BattleState, actor: Combatant, ft: number) => {
+  const any = srd106On(state);
+  return Object.values(state.combatants)
+    .filter((c) => (any ? !c.summon?.gone : c.side === actor.side && !c.civilian) && c.life !== 'dead' && c.hp < Math.floor(c.maxHp / 2) && !c.summon?.intangible && within(state, actor, c, ft));
+};
+
+/** Seçilebilen miktarlar (büyükten küçüğe): 12'ye dek her değer, üstünde 5'in katları ve üst sınırın kendisi. */
+export function preserveAmountOptions(cap: number): number[] {
+  if (cap <= 0) return [];
+  const out = cap <= 12 ? Array.from({ length: cap }, (_, i) => i + 1) : [...Array.from({ length: Math.floor((cap - 1) / 5) }, (_, i) => (i + 1) * 5), cap];
+  return out.reverse();
+}
+
+/** Görev SRD-TAMAMLAMA-1 (106+): bu yaratığa verilecek miktar (öneri ve "seçme" varsayılanı üst sınır: eski dağıtım). */
+function preserveAmount(rng: Rng, actor: Combatant, label: string, t: Combatant, cap: number, pool: number): number {
+  const opts = preserveAmountOptions(cap);
+  if (opts.length <= 1) return cap;
+  const id = askChoice(rng, { actorId: actor.id, label: `${label}: ${t.name} (havuz ${pool})`, options: opts.map((n) => ({ id: String(n), label: `${n} HP` })), suggested: String(cap) });
+  const n = Number(id);
+  return id !== null && Number.isInteger(n) && n >= 1 && n <= cap ? n : cap;
+}
 
 /** Cleric özelliğini uygular (kaynak harcanmış sayılarak). */
 export function executeClericFeature(state: BattleState, actor: Combatant, f: UsableFeature, cmd: ClericUse, rng: Rng | undefined): CommandResult {
@@ -192,13 +215,17 @@ export function executeClericFeature(state: BattleState, actor: Combatant, f: Us
   if (e.kind === 'preserveLife') {
     let pool = e.perLevel * featureLevel(actor, f.key);
     const list0 = preserveTargets(state, actor, e.rangeFt).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
+    const v106 = srd106On(state);
+    // 106+: öneri yalnız dostlar (eski aday listesi); düşman ve sivil yalnız oyuncu seçerse.
+    const suggested = (v106 ? list0.filter((c) => c.side === actor.side && !c.civilian) : list0).map((c) => c.id);
     // Görev KARAR104 (A5, 104+; SRD "divided among any creatures"): iyileştirme sırası sorulur; öneri en yaralıdan (eski davranış).
-    const order = karar104On(state) ? askPicks(rng, { actorId: actor.id, label: `${f.name}: iyileştirilecek`, options: list0.map((c) => ({ id: c.id, label: c.name })), suggested: list0.map((c) => c.id), max: list0.length }) : null;
+    const order = karar104On(state) ? askPicks(rng, { actorId: actor.id, label: `${f.name}: iyileştirilecek`, options: list0.map((c) => ({ id: c.id, label: c.name })), suggested, max: list0.length }) : null;
     const list = order ? order.map((id) => list0.find((c) => c.id === id) as Combatant) : list0;
     for (const t of list) {
       if (pool <= 0) break;
-      const give = Math.min(pool, Math.floor(t.maxHp / 2) - Math.max(0, t.hp));
-      if (give <= 0) continue;
+      const cap = Math.min(pool, Math.floor(t.maxHp / 2) - Math.max(0, t.hp));
+      if (cap <= 0) continue;
+      const give = v106 ? preserveAmount(rng, actor, f.name, t, cap, pool) : cap;
       pool -= give;
       const hpAfter = applyHealing(t.hp, t.maxHp, give);
       events.push({ type: 'healed', actorId: actor.id, targetId: t.id, label: f.name, amount: hpAfter - t.hp, targetHpAfter: hpAfter });

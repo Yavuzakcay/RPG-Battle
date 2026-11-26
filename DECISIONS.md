@@ -2,6 +2,43 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev SRD-TAMAMLAMA-1: çoklu sınıf SRD denetimi ve küçük SRD düzeltmeleri (2026-11-26; kural sürümü 106, savaş kaydı değişmedi: 27)
+
+**Taban.** `origin/birlesik` `689cd8b4` (kural 105, savaş kaydı 27). Yeni mekanik yok; yalnız SRD 5.2.1 uyumu.
+
+**Aşama A (belge).** `harita/belgeler/MC-SRD-DENETIM.md`: SRD s. 24–26 ve 12 sınıfın "As a Multiclass Character" kutusu, MC1–MC7
+uygulamasıyla madde madde (35 satır: doğru 25, kısmi 6, eksik 0, doğrulanamadı 2, ev kuralı 2). Kesin davranış sapması yok;
+kısmiler (kısa dinlenmede zar türü seçimi, feat ön koşulu sınıf seviyesiyle, ön koşul son puanla, AC otomatik en yüksek, sonraki
+turlarda büyü DC'si, YZ Pact) seviye alma sırası, arayüz ya da önceki kararlara bağlı; tek yerde veriyle çözülmediği için Aşama B'ye
+alınmadı, kullanıcı kararına bırakıldı.
+
+**Aşama B (kural sürümü 106; `src/battle/srd106Surum.ts` `SRD106_VERSION`, `srd106On`; 105 ve altı aynen).**
+- **Preserve Life** (s. 38 "Choose Bloodied creatures … and divide those Hit Points among them"): aday her taraftan Bloodied
+  yaratık (sivil dahil, kaybolan çağrı hariç; 105'te yalnız dost taraf), sıra KARAR104'teki gibi sorulur, ardından yaratık başına
+  miktar (`askChoice`; seçenekler `preserveAmountOptions`: 12'ye dek her değer, üstünde 5'in katları ve üst sınır). Öneri ve
+  "seçme" cevabı üst sınır = eski otomatik dağıtım; öneri sırası yalnız dostlar. Kancasız Rng'de (YZ, sim) 106 = 105. Yalnız
+  düşman Bloodied iken de kullanılabilir (oyuncu seçimi).
+- **Land's Aid** (s. 46): iyileşecek yaratığın adayları ve canı bu eylemin hasarından sonraki durumdan (`applyEvents`); hasarla
+  ölen aday değil. 105'te aynı yaratık hem save atıp hem iyileşirse iyileşme eylem öncesi candan hesaplanıp hasarı siliyordu.
+  Varsayılan öneride (düşman save, dost iyileşir) değişiklik yok.
+- **Elixir of Health / Potion of Vitality** (s. 220, 236): `use.effect.cureOnCast` eşya yolunda da hemen kalkar
+  (`condition_changed`; büyü yolundaki `cureOnCast` gibi), yeni veri alanı `use.cureExhaustion` (Potion of Vitality) bütün
+  Exhaustion'ı kaldırır (`exhaustion_changed` 0). Yalnız `cureOnCast` taşıyan 1 turluk boş etki artık eklenmez. Durum listeleri
+  SRD metniyle doğrulandı: Elixir Blinded, Deafened, Paralyzed, Poisoned (+ "magical contagions": oyunda hastalık etkisi yok);
+  Vitality Poisoned + Exhaustion (24 saat HP zarı en yüksek: savaş dışı). Veri `data/items-srd.json` ve üretici
+  `scripts/k19-esyalar.py` birlikte. Yeni olay türü yok: savaş kaydı 27 kaldı.
+- Not: KATALOG-1 `strong-will-draught` (özgün) "durumlar anında kalkar" metni için artık `cureOnCast` verisi yeterli; SRD dışı
+  olduğundan bu görevde eklenmedi.
+
+**Test.** `src/battle/srd106.test.ts` (13: Preserve Life seçenekleri, 106 = 105 kancasız, miktar seçimi ve havuz paylaşımı, "seçme"
+üst sınır, 105'te miktar sorusu yok, Bloodied düşman, yalnız düşman Bloodied; Land's Aid 106 = 105 kancasız, aynı yaratık 105/106,
+tam canlı yaratık hasardan sonra aday; Elixir, Vitality ve dosta içirme 105/106, replay). `src/battle/ruleVersion.test.ts` güncel
+sürüm beklentisi 104 → 106 (gerekçe: test tabanda 105'te zaten kırıktı; sürüm artışının kendisi).
+
+**Regresyon.** `src/sim/srd106Regresyon.test.ts` (MC3 altını `mc3-altin.json`): 75 tek sınıflı savaşçı 106'da altınla aynı; 3 tohum
+Çöl/Kale/Mağara/Orman imzası 105 = altın ve 106 = altın (col `e8d6fb4912c2`, kale `da5306270263`, mağara `ff5e77e70717`, orman
+`84ae57801ea5`). Ana parça 459,74 kB (sınır 465).
+
 ## Görev KATALOG-1 E: 45 özgün tüketilebilir (2026-11-26; kural sürümü ve kayıt sürümü değişmedi)
 
 Kaynak: Savaş Donanımları ve Tüketilebilirler Kataloğu #1–45 (`TK#`: 12 bomba/küre, 12 özel ok, 9 kaplama/zehir, 6 iksir, 5 eliksir,

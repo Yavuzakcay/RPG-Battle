@@ -11,6 +11,8 @@
  */
 import { featureLevel } from './classLevel';
 import { karar104On } from './karar104Surum';
+import { srd106On } from './srd106Surum';
+import { applyEvents } from './reduce';
 import { askChoice, askPicks } from '../rules/choice';
 import { b94On } from './b94Surum';
 import { healRoll } from './healMax';
@@ -259,9 +261,13 @@ export function executeLandsAid(state: BattleState, actor: Combatant, f: UsableF
   // Görev B94 (sürüm 94+, SRD 5.2.1 s. 46 "One creature of your choice in that area regains HP"): 0 HP'deki (ölmemiş) dost da
   // iyileşir ve ayağa kalkar; en yaralı (0 HP önce).
   const healable = b94On(state) ? Object.values(state.combatants).filter((c) => c.hp <= 0 && c.life !== 'dead' && !c.civilian && !c.summon?.gone && inside(c)) : [];
-  const ally0 = [...living, ...healable].filter((c) => c.side === actor.side && c.hp < c.maxHp).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
+  // Görev SRD-TAMAMLAMA-1 (106+; SRD 5.2.1 s. 46): iyileşme hasardan sonra; adaylar ve iyileşen can bu eylemin hasarından
+  // sonraki durumdan (hasarla ölen aday değil). 105 ve altı: eylem öncesi can (aynı yaratık hem hasar alıp hem iyileşirse hasar silinirdi).
+  const after = srd106On(state) ? applyEvents(state, events) : state;
+  const pool = [...living, ...healable].map((c) => after.combatants[c.id] ?? c).filter((c) => c.life !== 'dead');
+  const ally0 = pool.filter((c) => c.side === actor.side && c.hp < c.maxHp).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
   // Görev KARAR104 (A5, 104+; "One creature of your choice in that area regains HP"): iyileşecek sorulur; öneri en yaralı dost.
-  const healCands = [...living, ...healable].filter((c) => c.hp < c.maxHp);
+  const healCands = pool.filter((c) => c.hp < c.maxHp);
   const healId = karar104On(state) ? askChoice(rng, { actorId: actor.id, label: `${f.name}: iyileşecek`, options: healCands.map((c) => ({ id: c.id, label: c.name })), suggested: ally0?.id ?? null }) : ally0?.id;
   const ally = healCands.find((c) => c.id === healId);
   if (ally) {

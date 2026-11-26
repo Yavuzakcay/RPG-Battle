@@ -1103,7 +1103,9 @@ export interface Item {
 export type ItemUse =
   | { kind: 'heal'; dice: string; action: 'bonus' | 'action'; reachFt: number }
   /** İçilen/uygulanan: kendine ya da 5 ft içindeki dosta süreli etki (iksirler, Antitoxin), geçici HP ya da hasar (Potion of Poison). */
-  | { kind: 'effect'; action: 'bonus' | 'action'; reachFt: number; rounds: number; effect?: Record<string, unknown>; tempHp?: string; damage?: string; damageType?: string; save?: { ability: 'con'; dc: number } }
+  | { kind: 'effect'; action: 'bonus' | 'action'; reachFt: number; rounds: number; effect?: Record<string, unknown>; tempHp?: string; damage?: string; damageType?: string; save?: { ability: 'con'; dc: number };
+    /** Görev SRD-TAMAMLAMA-1 (106+): bütün Exhaustion seviyelerini kaldırır (Potion of Vitality). */
+    cureExhaustion?: boolean }
   /** Fırlatılan (Attack eyleminde bir saldırının yerine): DEX save (DC 8 + DEX + PB ya da sabit), hasar, durum, yanma. */
   | { kind: 'throw'; rangeFt: number; save: 'dex' | 'str' | 'con'; dc?: number; damage?: string; damageType?: string; vs?: string[]; grants?: string[]; escapeDc?: number; burning?: string; radiusFt?: number }
   /** Silaha sürülen (Basic Poison): sonraki isabetlere ek hasar. */
