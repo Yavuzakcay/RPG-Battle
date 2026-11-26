@@ -1,0 +1,1811 @@
+{
+ "zemin": "#FF00FF",
+ "not": "Görev KATALOG-IKON-HAZIRLIK (yalnız veri; motor kodu yok): docs/katalog'daki 7 eşya kataloğunun 330 eşyası (KATALOG-1-ENVANTER.md, dal katalog-1; boss ve kadim yaratıklar ile boss ganimeti hariç) için Gemini ikon sayfaları. Biçim data/esya-ikon-sayfalar.json ile aynı (dosya, kolon, satir, ogeler[{id, ad}], ayniGorsel), her öğede ek alan `gorunum` (tek cümle İngilizce görsel tarifi; promptlar harita/belgeler/KATALOG-IKON-PROMPTLAR.md). Sayfa = 4 × 4 hücre, sol→sağ, yukarı→aşağı; ogeler 16'dan azsa kalan hücreler sayfa sonunda boştur. Her sayfa tek kategori; sıra silah, zırh/kalkan, giyilebilir, yüzük/tılsım/mühür, tüketilebilir, en sonda bekleyen. `id` geçicidir: PDF'teki EN adın slug'ı (= envanter 'id önerisi'); P0'da gerçek kimlik atanınca eşlenir. Ortak hücreler (element varyantı tekrarları) ilk üyenin kimliğini taşır, kalanlar `ayniGorsel`; ayırt etme sonra ESYA-IKON-AYIRT yöntemiyle (hasar tonu + glif). Zemin macenta #FF00FF: scripts/esya-ikon.mjs bugün yalnız yeşil zemini anahtarlar (bkz. promptlar belgesi 'Zemin ve betik'); bu dosya betiğe bağlanmadı. `bekleyen`: K7 adı kesinleşmemiş eşyaların sayfası, ad onayını bekler.",
+ "sayfalar": [
+  {
+   "dosya": "katalog-silah-01.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "giantbreaker-blade",
+     "ad": "Giantbreaker Blade",
+     "gorunum": "Huge two-handed greatsword with a broad, slightly flared steel blade notched like a giant's broken tooth, a heavy square dark-iron crossguard, a long leather-wrapped grip and a round pommel, faint warm gold glow."
+    },
+    {
+     "id": "starcleave",
+     "ad": "Starcleave",
+     "gorunum": "Two-handed greatsword forged from dark speckled meteorite steel with tiny glinting white star flecks along the blade, a crescent-shaped crossguard and a cool pale-teal glow along the edge."
+    },
+    {
+     "id": "crimson-maw",
+     "ad": "Crimson Maw",
+     "gorunum": "Black-iron greatsword whose wide blade has a jagged, fang-like serrated section near the guard and blood-red channels along the fuller, with a dark red glow."
+    },
+    {
+     "id": "mute-iron",
+     "ad": "Mute Iron",
+     "gorunum": "Plain heavy greatsword of matte dark grey alloy with an unpolished blade that seems to swallow light, a simple bar crossguard wrapped in grey cloth, no glow at all."
+    },
+    {
+     "id": "cinderheart-greatsword",
+     "ad": "Cinderheart Greatsword",
+     "gorunum": "Greatsword with a dark steel blade whose central fuller glows like live embers, thin orange heat cracks along the edge, a soot-blackened iron crossguard and a soft orange glow."
+    },
+    {
+     "id": "shattervow-greatsword",
+     "ad": "Shattervow Greatsword",
+     "gorunum": "Gleaming greatsword whose bright steel blade is covered in fine cracks leaking white light, with a red wax seal disc hanging on a cord from the crossguard."
+    },
+    {
+     "id": "flame-siphon-greatsword",
+     "ad": "Flame-Siphon Greatsword",
+     "gorunum": "Greatsword with a black blade veined with glowing crimson-orange lava-like cracks, thin flames being sucked into the blade, and a dark gold crossguard."
+    },
+    {
+     "id": "frostcrescent-greatsword",
+     "ad": "Frostcrescent Greatsword",
+     "gorunum": "Greatsword with a pale silver blade curving gently like a crescent moon, frost crystals along the edge and a cold blue moonlight glow."
+    },
+    {
+     "id": "corkscrew-executioner-sword",
+     "ad": "Corkscrew Executioner Sword",
+     "gorunum": "Heavy executioner's greatsword with a broad square-tipped blade decorated with red filigree inlay and a spiral corkscrew-shaped crossguard on a long two-handed grip."
+    },
+    {
+     "id": "riftbreaker-greatsword",
+     "ad": "Riftbreaker Greatsword",
+     "gorunum": "Huge sword-shaped slab carved from a single piece of cracked grey ruin stone with worn ancient carvings, small stone chips floating around it and a faint pale-blue gravity glow."
+    },
+    {
+     "id": "horizonlight-greatsword",
+     "ad": "Horizonlight Greatsword",
+     "gorunum": "Greatsword forged from golden bone: an ivory-gold blade with sunrise ray patterns, a winged gold crossguard and a warm radiant gold glow."
+    },
+    {
+     "id": "blackflame-oathblade",
+     "ad": "Blackflame Oathblade",
+     "gorunum": "Wavy flame-shaped flamberge greatsword with a black blade burning with mixed black and white flames along its edges and a silver crossguard."
+    },
+    {
+     "id": "golden-poise-greatsword",
+     "ad": "Golden Poise Greatsword",
+     "gorunum": "Perfectly balanced knight's greatsword with a polished steel blade, a straight gold crossguard and pommel, a gold-wrapped grip and a faint golden shimmer."
+    },
+    {
+     "id": "twin-starblades",
+     "ad": "Twin Starblades",
+     "gorunum": "A matched pair of crossed greatswords forming an X, dark steel blades flecked with glinting white stars, gold crossguards and a faint pale-blue shimmer."
+    },
+    {
+     "id": "whirlwind-katana",
+     "ad": "Whirlwind Katana",
+     "gorunum": "Exceptionally long, slim curved katana with a bright steel blade, a round guard, a long black-and-white wrapped grip and a pale cyan whirlwind spiraling around the blade."
+    },
+    {
+     "id": "mooncut-katana",
+     "ad": "Mooncut Katana",
+     "gorunum": "Katana with a blue-tinted steel blade, a crescent-moon shaped guard, a dark blue wrapped grip and a thin line of pale blue-white light along the edge."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-silah-02.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "bloodtide-katana",
+     "ad": "Bloodtide Katana",
+     "gorunum": "Cursed katana whose dark blade is coated in clotted red blood, with a black guard, a red-wrapped grip and red droplets falling from the tip."
+    },
+    {
+     "id": "cinderfrost-katana",
+     "ad": "Cinderfrost Katana",
+     "gorunum": "Katana with a scale-patterned blade: one half of the edge glows with orange cinders, the other half is frosted icy blue, with a grey-wrapped grip."
+    },
+    {
+     "id": "dirge-blade",
+     "ad": "Dirge Blade",
+     "gorunum": "Longsword with a polished steel blade pierced by a row of small round holes like a flute, a bell-shaped bronze crossguard and soft golden sound ripples around the blade."
+    },
+    {
+     "id": "stormbrand",
+     "ad": "Stormbrand",
+     "gorunum": "Spellsword longsword with a silver-blue blade etched with storm-cloud patterns, a crossguard shaped like two lightning bolts and yellow-white sparks crackling along the edge."
+    },
+    {
+     "id": "webrender-longsword",
+     "ad": "Webrender Longsword",
+     "gorunum": "Longsword with a dark grey blade engraved with a spiderweb pattern, a crossguard shaped like curled spider legs and strands of white sticky silk trailing from the tip."
+    },
+    {
+     "id": "marshals-banner-longsword",
+     "ad": "Marshal's Banner Longsword",
+     "gorunum": "Commander's longsword with a sturdy steel blade, a gold-trimmed hilt and a small square deep-red war banner tied to the crossguard."
+    },
+    {
+     "id": "duelists-signet",
+     "ad": "Duelist's Signet",
+     "gorunum": "Elegant rapier with a long needle-thin blade and a swept silver hilt that curls into a signet ring with a flat seal disc at the guard, black grip, faint smoky grey shimmer."
+    },
+    {
+     "id": "whispering-rapier",
+     "ad": "Whispering Rapier",
+     "gorunum": "Thin rapier with a narrow blade and an open spiral wire cup-hilt shaped like a curled ear, a dark blue grip and faint pale-teal whisper wisps along the blade."
+    },
+    {
+     "id": "harmonic-rapier",
+     "ad": "Harmonic Rapier",
+     "gorunum": "Rapier with a thin steel blade and a lyre-shaped swept hilt with tiny strings across the guard, faint golden musical ripples."
+    },
+    {
+     "id": "crimson-needle-rapier",
+     "ad": "Crimson Needle Rapier",
+     "gorunum": "Needle-thin rapier with a dark red blade dripping bright yellow-green corrosive drops and a crimson cup hilt."
+    },
+    {
+     "id": "windpoise",
+     "ad": "Windpoise",
+     "gorunum": "Light slender scimitar with a gently curved bright steel blade, a small feather-shaped guard and a pale cyan breeze curling around the blade."
+    },
+    {
+     "id": "stride-scimitar",
+     "ad": "Stride Scimitar",
+     "gorunum": "Short balanced scimitar with a sharp curved blade, a guard shaped like a leaping stag's leg, a sand-colored leather grip and faint speed streaks behind it."
+    },
+    {
+     "id": "mirefang-scimitar",
+     "ad": "Mirefang Scimitar",
+     "gorunum": "Scimitar with a mottled green-brown blade, swamp reeds and vines wrapped around the hilt and drops of green poison dripping from the edge."
+    },
+    {
+     "id": "nightjudge-scimitar",
+     "ad": "Nightjudge Scimitar",
+     "gorunum": "Black scimitar with a matte dark blade and a thin silver edge, a guard shaped like a small set of judge's scales, and wisps of shadow."
+    },
+    {
+     "id": "sylvan-voice-scimitar",
+     "ad": "Sylvan Voice Scimitar",
+     "gorunum": "Scimitar with a curved steel blade and a hilt of living wood that sprouts small green leaves, with a vine twisting around the guard."
+    },
+    {
+     "id": "nebula-wing-scimitar",
+     "ad": "Nebula Wing Scimitar",
+     "gorunum": "Light scimitar whose curved blade is shaped like a feathered wing, dark night-blue metal sprinkled with glittering white stars, trailing faint blue-white stardust."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-silah-03.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "blindspot-backhand-blades",
+     "ad": "Blindspot Backhand Blades",
+     "gorunum": "A pair of short reverse-grip curved blades crossed in an X, dark steel with leather-wrapped grips and small knuckle-guard loops."
+    },
+    {
+     "id": "gloomfang",
+     "ad": "Gloomfang",
+     "gorunum": "Short sword with a smoked dark-steel blade tapering into a fang-like point, a black iron guard and grip, and dark shadow smoke clinging to the blade."
+    },
+    {
+     "id": "firstblood-shortsword",
+     "ad": "Firstblood Shortsword",
+     "gorunum": "Light shortsword with a bright steel leaf-shaped blade, a simple brass guard, a red leather grip and a single red drop at the tip."
+    },
+    {
+     "id": "crimson-whisper",
+     "ad": "Crimson Whisper",
+     "gorunum": "Assassin's short sword with a slim deep-red blade, a black hilt with a small ruby pommel and a thin trail of red mist."
+    },
+    {
+     "id": "ambushers-shortsword",
+     "ad": "Ambusher's Shortsword",
+     "gorunum": "Short sword with a dull non-reflective dark blade, a leaf-shaped point, a compact guard and a grip wrapped in mottled green-brown cloth."
+    },
+    {
+     "id": "mindrend-shortsword",
+     "ad": "Mindrend Shortsword",
+     "gorunum": "Narrow short sword with a slightly translucent pale-teal crystal blade and a silver hilt set with a small eye-shaped gem."
+    },
+    {
+     "id": "blooddrinker",
+     "ad": "Blooddrinker",
+     "gorunum": "Curved dagger with a dark steel blade and a deep red channel down its center, an ornate gold crossguard shaped like bat wings, a black grip and a soft crimson glow."
+    },
+    {
+     "id": "spiteful-dagger",
+     "ad": "Spiteful Dagger",
+     "gorunum": "Assassin's dagger with a wavy, wicked kris-style blade, a grip wrapped in black cord and a faint pale-teal haze swirling over the blade."
+    },
+    {
+     "id": "frostbite-dagger",
+     "ad": "Frostbite Dagger",
+     "gorunum": "Parrying dagger with a frost-rimed steel blade, a wide side-ring guard, small ice crystals along the edge and an icy cyan glow."
+    },
+    {
+     "id": "seeping-knife",
+     "ad": "Seeping Knife",
+     "gorunum": "Slender thin knife with a narrow blade marked by a small engraved seal near its base, a plain dark wooden handle and a bead of greenish liquid at the tip."
+    },
+    {
+     "id": "sorrowthorn-dagger",
+     "ad": "Sorrowthorn Dagger",
+     "gorunum": "Curved dagger with a dark blade ending in a thorn-like barb, a grip wrapped in black thorny vine and a teardrop-shaped pale-teal gem in the pommel."
+    },
+    {
+     "id": "nightscout-dagger",
+     "ad": "Nightscout Dagger",
+     "gorunum": "Plain hunting dagger with a blackened blade, a dark leather-wrapped wooden handle and a small owl-head pommel."
+    },
+    {
+     "id": "bloodrite-dagger",
+     "ad": "Bloodrite Dagger",
+     "gorunum": "Ritual dagger with a curved glossy obsidian-black blade, a carved bone hilt and a thin red blood groove."
+    },
+    {
+     "id": "tide-sickle",
+     "ad": "Tide Sickle",
+     "gorunum": "Sickle with a crescent blade of pale blue ice-steel, frost along the edge, a short driftwood handle and a few water droplets."
+    },
+    {
+     "id": "silverneedle-dart",
+     "ad": "Silverneedle Dart",
+     "gorunum": "Slender silver throwing dart engraved with tiny abstract rune marks, with short silver fins and a bright silver shine."
+    },
+    {
+     "id": "ember-perfume-bottle",
+     "ad": "Perfume Bottle (Ember / Storm / Frost; ortak hücre)",
+     "gorunum": "Alchemical perfume-bottle weapon: a thick faceted glass bottle with a brass atomizer bulb and nozzle, filled with one bright saturated orange liquid (single hue, to be recolored per element later), a few small glowing sparks at the nozzle."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-silah-04.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "shellbreaker-maul",
+     "ad": "Shellbreaker Maul",
+     "gorunum": "Massive two-handed maul with a blocky iron head ending in a pointed crushing spike, chips of cracked stone stuck in its face, on a thick wooden haft."
+    },
+    {
+     "id": "shockwave-maul",
+     "ad": "Shockwave Maul",
+     "gorunum": "Heavy two-handed maul with a bulky cylindrical head ringed by iron bands and copper coils, faint concentric shockwave rings around the head."
+    },
+    {
+     "id": "glacierbreak-maul",
+     "ad": "Glacierbreak Maul",
+     "gorunum": "Heavy maul whose head is a block of translucent blue glacier ice bound with iron straps, on a frost-covered haft, with icy cyan mist."
+    },
+    {
+     "id": "earthshatter-maul",
+     "ad": "Earthshatter Maul",
+     "gorunum": "Huge maul with a rough granite head bound by bronze bands, cracks across the stone glowing faint amber, on a thick wooden haft."
+    },
+    {
+     "id": "cinderdrag-maul",
+     "ad": "Cinderdrag Maul",
+     "gorunum": "Giant maul with a red-hot glowing iron head whose underside is scorched and scraped, trailing embers, on a long sooty haft."
+    },
+    {
+     "id": "shadowbloom-maul",
+     "ad": "Shadowbloom Maul",
+     "gorunum": "Heavy maul whose head is a petrified giant sunflower of dark grey stone with stone petals, faint gold light glowing from its center."
+    },
+    {
+     "id": "scarlet-anvil-maul",
+     "ad": "Scarlet Anvil Maul",
+     "gorunum": "Heavy maul with an anvil-shaped head encrusted with jagged red crystals and dripping bright yellow-green acid."
+    },
+    {
+     "id": "embermaw-greataxe",
+     "ad": "Embermaw Greataxe",
+     "gorunum": "Two-handed greataxe whose double head is shaped like an open furnace mouth glowing with orange embers inside, on a soot-blackened iron-banded haft."
+    },
+    {
+     "id": "twinspark-greataxe",
+     "ad": "Twinspark Greataxe",
+     "gorunum": "Two-handed greataxe with twin opposed blades: one etched with glowing orange flame marks, the other with yellow lightning marks, sparks of both colors around the head."
+    },
+    {
+     "id": "sawtooth-wheel-greataxe",
+     "ad": "Sawtooth Wheel Greataxe",
+     "gorunum": "Greataxe whose head is a large circular saw-toothed steel wheel mounted on a long haft, with faint spin lines."
+    },
+    {
+     "id": "homing-forge-greataxe",
+     "ad": "Homing Forge Greataxe",
+     "gorunum": "Forged greataxe with a broad single blade bearing glowing orange forge runes (abstract marks), on a dark iron-shod haft."
+    },
+    {
+     "id": "chainbreaker-warhammer",
+     "ad": "Chainbreaker Warhammer",
+     "gorunum": "Warhammer with a square steel head, broken chain links wrapped around the haft and a shattered shackle hanging below the head, faint pale-blue glow."
+    },
+    {
+     "id": "oathshatter-warhammer",
+     "ad": "Oathshatter Warhammer",
+     "gorunum": "Warhammer with a cracked white marble head bound in steel bands, pale blue force light leaking from the cracks, on a steel haft."
+    },
+    {
+     "id": "pactbound-warhammer",
+     "ad": "Pactbound Warhammer",
+     "gorunum": "Warhammer with a dark steel head bound to its haft by a glowing golden chain of linked abstract runes, small yellow lightning sparks around it."
+    },
+    {
+     "id": "homing-forge-hammer",
+     "ad": "Homing Forge Hammer",
+     "gorunum": "Heavy throwing hammer with a smith's square head stamped with an anvil emblem and forge marks, a short iron haft and a faint orange heat glow."
+    },
+    {
+     "id": "meteor-jaw-war-pick",
+     "ad": "Meteor Jaw War Pick",
+     "gorunum": "Heavy war pick made from a rock monster's huge jawbone with a stone tooth as the spike, bound to a thick wooden haft with iron rings."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-silah-05.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "spellbreaker-battleaxe",
+     "ad": "Spellbreaker Battleaxe",
+     "gorunum": "One-handed battleaxe with a heavy bearded steel head inset with a dull grey anti-magic stone, a dark wooden haft with leather wrap, no glow."
+    },
+    {
+     "id": "scaldstream-battleaxe",
+     "ad": "Scaldstream Battleaxe",
+     "gorunum": "Battleaxe whose dark steel head has a red-hot glowing edge with white steam rising from it, on a leather-wrapped wooden haft."
+    },
+    {
+     "id": "sparkling-handaxe",
+     "ad": "Sparkling Handaxe",
+     "gorunum": "Small throwing handaxe with a bright copper blade edge, a short wooden handle and tiny yellow-white electric sparks on the edge."
+    },
+    {
+     "id": "gale-light-hammer",
+     "ad": "Gale Light Hammer",
+     "gorunum": "Small throwing hammer with a compact steel head engraved with a spiral wind seal, a short wrapped handle and a pale cyan wind swirl."
+    },
+    {
+     "id": "sparkforge-hammer",
+     "ad": "Sparkforge Hammer",
+     "gorunum": "Light hammer with a small square head etched with abstract runes, a short handle and blue-white sparks flying off it."
+    },
+    {
+     "id": "dawnseal-mace",
+     "ad": "Dawnseal Mace",
+     "gorunum": "Flanged steel mace whose head carries a round white-stone seal disc stamped with a rising-sun emblem, white cloth ribbons tied below the head, soft pale-gold glow."
+    },
+    {
+     "id": "thunderclap-mace",
+     "ad": "Thunderclap Mace",
+     "gorunum": "Mace whose head is a hollow ridged bronze bell with flanges, on an iron haft, with pale grey concentric sound rings."
+    },
+    {
+     "id": "scourge-of-torment-mace",
+     "ad": "Scourge of Torment Mace",
+     "gorunum": "Dark iron mace with a head covered in hooked spikes and wrapped in rusty barbed wire, with grey-black smoke."
+    },
+    {
+     "id": "bellringer-mace",
+     "ad": "Bellringer Mace",
+     "gorunum": "Mace whose head is a heavy bronze bell with its clapper visible inside, on a dark wooden haft."
+    },
+    {
+     "id": "sunstar-morningstar",
+     "ad": "Sunstar Morningstar",
+     "gorunum": "Morningstar with a polished gold spherical head bristling with sun-ray spikes, glowing warm white-gold daylight, on a white-wrapped steel haft."
+    },
+    {
+     "id": "four-seasons-flail",
+     "ad": "Four-Seasons Flail",
+     "gorunum": "Flail with three chains on one handle, each ending in a different spiked ball: one burning orange, one icy cyan, one dripping yellow-green acid."
+    },
+    {
+     "id": "brimstone-flail",
+     "ad": "Brimstone Flail",
+     "gorunum": "Chain flail whose spiked iron ball is pitted and crusted with yellow sulfur, dripping dark oily liquid, with faint yellow fumes."
+    },
+    {
+     "id": "frenzied-blood-flail",
+     "ad": "Frenzied Blood Flail",
+     "gorunum": "Brutal flail with a spiked iron ball stained dark red on a heavy chain, the handle wrapped in torn red cloth, with a red aura."
+    },
+    {
+     "id": "stardust-flail",
+     "ad": "Stardust Flail",
+     "gorunum": "Flail with a short handle and two chains, each ending in a glowing pale blue-white star sphere trailing glittering stardust."
+    },
+    {
+     "id": "barbed-chain-whip",
+     "ad": "Barbed Chain Whip",
+     "gorunum": "Coiled whip of linked glowing-hot steel chain covered in small barbs, ending in a hooked barb, with an iron handle and orange ember glow on the links."
+    },
+    {
+     "id": "delvers-war-pick",
+     "ad": "Delver's War Pick",
+     "gorunum": "Miner's war pick with a hardened dark steel pick head, a small lantern hook on its side and a sturdy oak haft with iron bands."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-silah-06.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "vigil-halberd",
+     "ad": "Vigil Halberd",
+     "gorunum": "Long halberd with a broad axe blade, a spear point and a rear hook, on a tall dark wooden shaft with iron bands, a small open-eye emblem on the blade."
+    },
+    {
+     "id": "breeze-glaive",
+     "ad": "Breeze Glaive",
+     "gorunum": "Light glaive with a thin curved blade of pale silvery alloy on a slender pale-wood shaft, fluttering cloth ribbons below the blade and a faint cyan breeze."
+    },
+    {
+     "id": "wyrmbreath-glaive",
+     "ad": "Wyrmbreath Glaive",
+     "gorunum": "Glaive whose curved blade emerges from a carved dragon-head socket, with five small gems (red, blue, yellow, green, white) set in the collar of a long dark shaft."
+    },
+    {
+     "id": "hooklash-glaive",
+     "ad": "Hooklash Glaive",
+     "gorunum": "Glaive with a long curved blade and a large sharp back hook, on a long dark shaft with a coiled chain wrapped below the head."
+    },
+    {
+     "id": "homing-pike",
+     "ad": "Homing Pike",
+     "gorunum": "Long balanced pike with a slim steel point, two small fin-like stabilizers below the head, a polished ash shaft and a faint circular pale-blue swirl."
+    },
+    {
+     "id": "vaulting-pike",
+     "ad": "Vaulting Pike",
+     "gorunum": "Long pike with a slender, slightly bending pole shaft of layered pale wood, a narrow steel point and a padded grip at the middle."
+    },
+    {
+     "id": "windspiral-pike",
+     "ad": "Windspiral Pike",
+     "gorunum": "Long pike with a spiraling twisted bronze point on a long dark wooden shaft, with a pale cyan wind spiral around the tip."
+    },
+    {
+     "id": "lancers-charge-lance",
+     "ad": "Lancer's Charge Lance",
+     "gorunum": "Long knight's lance with a tapered conical steel tip and a large flared hand guard painted blue and white, a small blank pennant tied below the tip."
+    },
+    {
+     "id": "luster-twinblade",
+     "ad": "Luster Twinblade",
+     "gorunum": "Double-ended weapon: a central wrapped grip with a long golden blade at each end shaped like a spread wing, glowing warm gold."
+    },
+    {
+     "id": "tempest-trident",
+     "ad": "Tempest Trident",
+     "gorunum": "Ornate trident with three silver tines, a swirling cloud motif at the socket, a dark blue shaft, and pale cyan wind with small yellow sparks around the tines."
+    },
+    {
+     "id": "tidecaller-trident",
+     "ad": "Tidecaller Trident",
+     "gorunum": "Sea trident with three wave-curled bronze tines, shell and coral decorations at the socket, a weathered sea-green shaft and water spray around the head."
+    },
+    {
+     "id": "bloodrite-trident",
+     "ad": "Bloodrite Trident",
+     "gorunum": "Large trident with three red-steel tines stamped with ritual seal marks, a black shaft, small orange flames and red blood drips at the tines."
+    },
+    {
+     "id": "dusklight-spear",
+     "ad": "Dusklight Spear",
+     "gorunum": "Spear with a dark steel leaf-shaped head inlaid with a silver crescent moon, a black shaft wrapped in silver wire and a soft moonlight-blue glow."
+    },
+    {
+     "id": "skybolt-spear",
+     "ad": "Skybolt Spear",
+     "gorunum": "Ancient spear with a gold-and-bronze head shaped like a dragon's fang, crackling with yellow-white lightning, on a dark shaft."
+    },
+    {
+     "id": "stormbolt-javelin",
+     "ad": "Stormbolt Javelin",
+     "gorunum": "Throwing javelin with a bright steel head shaped like a lightning bolt on a slim pale-wood shaft, crackling with yellow electric light."
+    },
+    {
+     "id": "ribbon-whip-blade",
+     "ad": "Ribbon Whip-Blade",
+     "gorunum": "Flexible whip-sword made of thin linked steel ribbon segments curling in a loose S-shape, ending in a short sword hilt."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-silah-07.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "staff-of-the-confluence",
+     "ad": "Staff of the Confluence",
+     "gorunum": "Grand staff whose top is a knot of twisted silver and gold metal with five small orbs orbiting it (red fire, icy blue, yellow lightning, green acid, pale grey thunder), on a tall dark wooden shaft."
+    },
+    {
+     "id": "ashen-bone-staff",
+     "ad": "Ashen Bone Staff",
+     "gorunum": "Staff of carved pale grey vertebrae bones topped with a small horned skull, dark grey-green smoke curling from its eye sockets."
+    },
+    {
+     "id": "hoarfrost-staff",
+     "ad": "Hoarfrost Staff",
+     "gorunum": "Wizard staff topped with a large cluster of ice crystals, a frost-covered pale wooden shaft, an icy cyan glow and small snowflakes."
+    },
+    {
+     "id": "sparkweave-staff",
+     "ad": "Sparkweave Staff",
+     "gorunum": "Arcane staff wrapped from top to bottom in shiny copper wire coils, topped with a small glass sphere holding a crackling yellow-white spark."
+    },
+    {
+     "id": "purging-wand-staff",
+     "ad": "Purging Wand-Staff",
+     "gorunum": "Short carved wooden wand-staff with flowing wave carvings, a small silver spout-like cap on top and clear water droplets spraying from it."
+    },
+    {
+     "id": "battering-ram-staff",
+     "ad": "Battering Ram Staff",
+     "gorunum": "Heavy staff ending in a cast bronze ram's head with curled horns, on a thick iron-banded oak shaft."
+    },
+    {
+     "id": "archmages-conduit-staff",
+     "ad": "Archmage's Conduit Staff",
+     "gorunum": "Tall grand staff of polished white wood with an ornate gold cage at the top holding a large brilliant blue crystal and swirling blue arcane light."
+    },
+    {
+     "id": "incandescent-ember-staff",
+     "ad": "Incandescent Ember Staff",
+     "gorunum": "Fire mage staff topped with a glowing red-orange ember stone gripped by black iron claws, small flames rising from it, on a charred wooden shaft."
+    },
+    {
+     "id": "sovereigns-staff",
+     "ad": "Sovereign's Staff",
+     "gorunum": "Regal scepter-staff with a small gold crown on top encircling a pale-teal gem, on a white and gold shaft."
+    },
+    {
+     "id": "resonance-staff",
+     "ad": "Resonance Staff",
+     "gorunum": "Staff topped with a silver tuning-fork-shaped head holding a small floating prism crystal, faint concentric rings of red, blue and yellow light."
+    },
+    {
+     "id": "staff-of-arcane-benediction",
+     "ad": "Staff of Arcane Benediction",
+     "gorunum": "Support staff of pale wood with a small golden halo ring floating above its top and white cloth ribbons, soft warm golden glow."
+    },
+    {
+     "id": "acidarrow-staff",
+     "ad": "Acidarrow Staff",
+     "gorunum": "Simple apprentice staff of light wood with a small green glass crystal at the top dripping bright yellow-green acid."
+    },
+    {
+     "id": "unbound-balance-staff",
+     "ad": "Unbound Balance Staff",
+     "gorunum": "Simple monk's bamboo staff with natural segments, cloth wraps at both ends and a small round balance charm hanging from a cord."
+    },
+    {
+     "id": "pitchtorch-club",
+     "ad": "Pitchtorch Club",
+     "gorunum": "War torch club: a thick wooden cudgel with its end wrapped in pitch-soaked rags burning with a bright orange flame, an iron collar below the rags."
+    },
+    {
+     "id": "giantcore-club",
+     "ad": "Giantcore Club",
+     "gorunum": "Light club carved from a petrified giant's bone, grey-white and stone-like with mineral veins, a knobby end and a simple leather grip."
+    },
+    {
+     "id": "silent-needle-blowgun",
+     "ad": "Silent Needle Blowgun",
+     "gorunum": "Long thin blowgun tube of dark polished reed bound with black cord, a small mouthpiece, and three slim green-tipped needle darts tied to its side."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-silah-08.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "skylight-longbow",
+     "ad": "Skylight Longbow",
+     "gorunum": "Tall longbow of white-gold wood with sun-ray carvings on the limbs and a string made of a glowing beam of golden light, bright warm gold glow."
+    },
+    {
+     "id": "deadeye-longbow",
+     "ad": "Deadeye Longbow",
+     "gorunum": "Long sturdy longbow of dark yew with a brass sighting ring mounted above the grip, a green leather grip wrap and iron-tipped limbs."
+    },
+    {
+     "id": "shadowveil-shortbow",
+     "ad": "Shadowveil Shortbow",
+     "gorunum": "Short bow of matte black-stained wood with no shine at all, a dark cord string and limbs wrapped in dark grey cloth strips."
+    },
+    {
+     "id": "banshees-wail-shortbow",
+     "ad": "Banshee's Wail Shortbow",
+     "gorunum": "Short bow of pale grey wood with wailing ghost-face carvings at the limb ends, a thin silvery string and pale ghostly mist."
+    },
+    {
+     "id": "skyfall-heavy-crossbow",
+     "ad": "Skyfall Heavy Crossbow",
+     "gorunum": "Large heavy crossbow of dark steel and wood with a thick prod, a crank winch on the stock, loaded with a grappling-hook bolt trailing a coiled rope."
+    },
+    {
+     "id": "forcebolt-hand-crossbow",
+     "ad": "Forcebolt Hand Crossbow",
+     "gorunum": "Compact one-handed crossbow of dark lacquered wood and steel, loaded with a glowing pale-blue bolt of pure force energy instead of a real bolt."
+    },
+    {
+     "id": "hellcinder-hand-crossbow",
+     "ad": "Hellcinder Hand Crossbow",
+     "gorunum": "One-handed crossbow of blackened iron with horn-shaped limb tips, loaded with a burning bolt trailing orange flame and dark smoke."
+    },
+    {
+     "id": "starstone-sling",
+     "ad": "Starstone Sling",
+     "gorunum": "Leather sling with long braided cords cradling a small round stone that glows pale blue-white like a star, with tiny sparkles."
+    },
+    {
+     "id": "dryleaf-handwraps",
+     "ad": "Dryleaf Handwraps",
+     "gorunum": "A pair of cream linen hand wraps with dried brown leaves pressed into the cloth and loose trailing ends."
+    },
+    {
+     "id": "gale-footwraps",
+     "ad": "Gale Footwraps",
+     "gorunum": "A pair of pale grey linen martial-arts foot wraps with spiral wind seals sewn on, a pale cyan wind swirl around them."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-zirh-01.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "crimson-fiend-plate",
+     "ad": "Crimson Fiend Plate",
+     "gorunum": "Full plate cuirass with pauldrons of crimson-red steel, horned shoulder plates and dark blood stains."
+    },
+    {
+     "id": "royal-remnant-plate",
+     "ad": "Royal Remnant Plate",
+     "gorunum": "Plate cuirass of ivory bone ribs laid over dull steel, a broken crown motif on the chest."
+    },
+    {
+     "id": "verdigris-bastion-plate",
+     "ad": "Verdigris Bastion Plate",
+     "gorunum": "Massive bulky plate armor of thick oxidized blue-green copper blocks with bronze rivets and huge square shoulders."
+    },
+    {
+     "id": "primordial-knight-plate",
+     "ad": "Primordial Knight Plate",
+     "gorunum": "Ancient knight's plate armor covered in overlapping reddish-bronze scales with root-like engraved patterns."
+    },
+    {
+     "id": "solitude-knight-plate",
+     "ad": "Solitude Knight Plate",
+     "gorunum": "Ceremonial dark grey full plate with tall smooth pauldrons, a lone-knight sigil on the chest and a long grey tabard."
+    },
+    {
+     "id": "hellforge-plate",
+     "ad": "Hellforge Plate",
+     "gorunum": "Full plate of black infernal steel with glowing orange forge seams between the plates and small horn details, slight heat shimmer."
+    },
+    {
+     "id": "plate-of-endurance",
+     "ad": "Plate of Endurance",
+     "gorunum": "Very thick full plate cuirass of layered reinforced dull steel plates, broad pauldrons and a sturdy gorget."
+    },
+    {
+     "id": "devouring-bone-plate",
+     "ad": "Devouring Bone Plate",
+     "gorunum": "Aggressive full plate reinforced with curved dragon rib bones wrapping the chest like a ribcage, ivory bones over dark steel."
+    },
+    {
+     "id": "reapers-iron-plate",
+     "ad": "Reaper's Iron Plate",
+     "gorunum": "Heavy black-iron fortress plate with a skull-like chest emblem, scythe-blade trims on the pauldrons and grey-black smoke."
+    },
+    {
+     "id": "marshals-crested-plate",
+     "ad": "Marshal's Crested Plate",
+     "gorunum": "Polished steel ceremonial battle plate with a blue enamel crest emblem on the chest, gold trims and a short blue cape."
+    },
+    {
+     "id": "plate-of-devotion",
+     "ad": "Plate of Devotion",
+     "gorunum": "Temple knight plate of white-enameled steel with a gold holy seal on the chest and blank parchment prayer strips hanging from it."
+    },
+    {
+     "id": "mindfortress-plate",
+     "ad": "Mindfortress Plate",
+     "gorunum": "Heavy enclosed plate of smooth layered steel with a high protective gorget and a calm pale-teal gem set in the chest."
+    },
+    {
+     "id": "dwarven-anvil-splint",
+     "ad": "Dwarven Anvil Splint",
+     "gorunum": "Double-layered splint armor of vertical steel strips with anvil-and-hammer embossing, dwarven geometric patterns and brass rivets."
+    },
+    {
+     "id": "scorched-iron-plate",
+     "ad": "Scorched Iron Plate",
+     "gorunum": "Splint armor of scorched dark iron strips glowing warm orange from within at the seams."
+    },
+    {
+     "id": "forcewave-chain-mail",
+     "ad": "Forcewave Chain Mail",
+     "gorunum": "Chain mail hauberk with concentric rippling rings of pale blue force energy across the steel links."
+    },
+    {
+     "id": "mindward-half-plate",
+     "ad": "Mindward Half Plate",
+     "gorunum": "Half plate of smooth pale steel with a pale-teal glass gem at the center of the chest surrounded by soothing ripple engravings."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-zirh-02.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "bramble-iron-plate",
+     "ad": "Bramble Iron Plate",
+     "gorunum": "Medium breastplate wrapped in spiky iron bramble wire covered with sharp thorns."
+    },
+    {
+     "id": "armor-of-fleetness",
+     "ad": "Armor of Fleetness",
+     "gorunum": "Sleek light-plated medium armor of overlapping teal-enameled plates with swallow-wing shaped shoulder plates."
+    },
+    {
+     "id": "shadowknight-half-plate",
+     "ad": "Shadowknight Half Plate",
+     "gorunum": "Half plate of matte blackened steel with almost no shine over a dark grey padded undercoat."
+    },
+    {
+     "id": "venomcarapace-scale",
+     "ad": "Venomcarapace Scale",
+     "gorunum": "Scale armor of hardened dark green insect chitin plates with poison-yellow edge stripes."
+    },
+    {
+     "id": "stormplate-scale",
+     "ad": "Stormplate Scale",
+     "gorunum": "Scale armor of blue-grey storm alloy scales with thin yellow lightning veins crackling between them."
+    },
+    {
+     "id": "serpentscale-mail",
+     "ad": "Serpentscale Mail",
+     "gorunum": "Light flexible mail of overlapping green-brown lizard scales."
+    },
+    {
+     "id": "barkweave-breastplate",
+     "ad": "Barkweave Breastplate",
+     "gorunum": "Breastplate made of hardened sacred oak bark plates with visible wood grain, bound with leather straps."
+    },
+    {
+     "id": "sparkmesh-chain-shirt",
+     "ad": "Sparkmesh Chain Shirt",
+     "gorunum": "Light chain shirt of shiny copper rings with tiny yellow sparks jumping between the links."
+    },
+    {
+     "id": "sunburst-breastplate",
+     "ad": "Sunburst Breastplate",
+     "gorunum": "Bright silver breastplate with a carved radiating sunburst on the chest and soft golden light."
+    },
+    {
+     "id": "slipstream-chain-shirt",
+     "ad": "Slipstream Chain Shirt",
+     "gorunum": "Fine-ringed chain shirt with a slick oily sheen and a white healer's sash across it."
+    },
+    {
+     "id": "briarwander-hide",
+     "ad": "Briarwander Hide",
+     "gorunum": "Medium hide armor layered with light fur and thick overlapping green and brown leaves."
+    },
+    {
+     "id": "silentblade-scale",
+     "ad": "Silentblade Scale",
+     "gorunum": "Assassin's light armor of small silvery-grey sound-dampening scales sewn onto dark leather."
+    },
+    {
+     "id": "ravenwing-leather",
+     "ad": "Ravenwing Leather",
+     "gorunum": "Studded black leather armor with silver studs, dark charcoal feather embroidery with a blue sheen and wing-shaped shoulder pieces."
+    },
+    {
+     "id": "mossmantle-armor",
+     "ad": "Mossmantle Armor",
+     "gorunum": "Studded leather armor overgrown with living green forest moss and small ferns."
+    },
+    {
+     "id": "sporewarden-leather",
+     "ad": "Sporewarden Leather",
+     "gorunum": "Studded leather armor fitted with bulbous brown and orange mushroom pouches on the shoulders and belt."
+    },
+    {
+     "id": "crimson-stalker-leather",
+     "ad": "Crimson Stalker Leather",
+     "gorunum": "Sharp-edged dark red studded leather armor with angular cuts and blade-like trims."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-zirh-03.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "raptor-feather-coat",
+     "ad": "Raptor Feather Coat",
+     "gorunum": "Light armored coat covered in overlapping glossy black raven feathers, held by leather straps."
+    },
+    {
+     "id": "spellblade-coat",
+     "ad": "Spellblade Coat",
+     "gorunum": "Long battle-mage coat of dark blue leather with brass buttons engraved with abstract runes and reinforced shoulders."
+    },
+    {
+     "id": "moonshift-hide",
+     "ad": "Moonshift Hide",
+     "gorunum": "Druidic hide armor of pale silvery moon-colored fur with crescent-moon motifs."
+    },
+    {
+     "id": "twilight-leather",
+     "ad": "Twilight Leather",
+     "gorunum": "Leather armor dyed deep dusk blue fading into grey, with subtle star-shaped stitching."
+    },
+    {
+     "id": "spidersilk-armor",
+     "ad": "Spidersilk Armor",
+     "gorunum": "Light armor woven from shimmering white-grey spider silk with a faint web pattern."
+    },
+    {
+     "id": "corsair-captains-coat",
+     "ad": "Corsair Captain's Coat",
+     "gorunum": "Flamboyant naval captain's long coat in deep red with gold trims, brass buttons and wide cuffs."
+    },
+    {
+     "id": "minstrels-favor-jerkin",
+     "ad": "Minstrel's Favor Jerkin",
+     "gorunum": "Embroidered bard's jerkin in teal and gold with lute and musical-note embroidery."
+    },
+    {
+     "id": "scarlet-scout-leather",
+     "ad": "Scarlet Scout Leather",
+     "gorunum": "Reinforced studded leather armor in scarlet red with forest-green trim, for scouts."
+    },
+    {
+     "id": "vigil-shroud-robe",
+     "ad": "Vigil Shroud Robe",
+     "gorunum": "Thin pale white hooded robe for death-watch vigils with soft silver trim and a faint warm light."
+    },
+    {
+     "id": "weavewoven-robe",
+     "ad": "Weavewoven Robe",
+     "gorunum": "Ivory robe interlaced with glowing golden threads woven into knot patterns, with a high collar."
+    },
+    {
+     "id": "resonant-caster-robe",
+     "ad": "Resonant Caster Robe",
+     "gorunum": "Shiny robe of rich deep blue silk with gold embroidery and a sparkling sheen."
+    },
+    {
+     "id": "robe-of-supreme-focus",
+     "ad": "Robe of Supreme Focus",
+     "gorunum": "Heavy layered silk robe in calm dark teal with a meditation-circle emblem on the chest."
+    },
+    {
+     "id": "soulmender-monk-vest",
+     "ad": "Soulmender Monk Vest",
+     "gorunum": "Sleeveless monk vest in saffron orange with white embroidered spirit-swirl patterns."
+    },
+    {
+     "id": "tidecaller-robe",
+     "ad": "Tidecaller Robe",
+     "gorunum": "Flowing sea-silk robe in ocean blue-green with wave patterns and small water droplets."
+    },
+    {
+     "id": "nimble-cat-tunic",
+     "ad": "Nimble Cat Tunic",
+     "gorunum": "Short light acrobat's tunic in tan with black stripes and a small cat-face emblem."
+    },
+    {
+     "id": "venomweaver-robe",
+     "ad": "Venomweaver Robe",
+     "gorunum": "Alchemist's robe of dark green waxed cloth with yellow-green trims and small glass vials hanging from the belt."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-zirh-04.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "piercing-knight-shield",
+     "ad": "Piercing Knight Shield",
+     "gorunum": "Steel kite shield with a long sword-like spike blade protruding from its pointed bottom and a sharp center boss."
+    },
+    {
+     "id": "spellmirror-greatshield",
+     "ad": "Spellmirror Greatshield",
+     "gorunum": "Large tall shield whose whole face is a polished gold mirror, with an ornate rim set with small blue gems."
+    },
+    {
+     "id": "one-eyed-mortar-shield",
+     "ad": "One-Eyed Mortar Shield",
+     "gorunum": "Heavy iron greatshield with a short cannon barrel built into its center like a single eye, rivets and a smoking muzzle."
+    },
+    {
+     "id": "flamevisage-greatshield",
+     "ad": "Flamevisage Greatshield",
+     "gorunum": "Heavy shield with a large embossed face of a fiery giant's mask, glowing orange-red eyes and mouth, flames licking its edges."
+    },
+    {
+     "id": "barbed-monolith-shield",
+     "ad": "Barbed Monolith Shield",
+     "gorunum": "Huge rectangular shield like a slab of ancient weathered stone carved with reliefs, studded with steel barbs and spikes."
+    },
+    {
+     "id": "walking-bastion-shield",
+     "ad": "Walking Bastion Shield",
+     "gorunum": "Tall tower shield shaped like a miniature fortress gate with a crenellated top edge, stone-grey steel, a small portcullis relief and a soft blue ward glow."
+    },
+    {
+     "id": "deflector-knight-shield",
+     "ad": "Deflector Knight Shield",
+     "gorunum": "Knight's heater shield with a mirror-polished steel face and a sloped ridge down the middle, a few bent arrows glancing off it with blue sparks."
+    },
+    {
+     "id": "dreadwall-shield",
+     "ad": "Dreadwall Shield",
+     "gorunum": "Dark iron shield with an embossed horned dread-mask face with hollow eye sockets and drifting dark smoke."
+    },
+    {
+     "id": "sunward-shield",
+     "ad": "Sunward Shield",
+     "gorunum": "Round carved bronze shield with a sun-disc and radiating ray pattern, faint golden glow."
+    },
+    {
+     "id": "cinderback-shield",
+     "ad": "Cinderback Shield",
+     "gorunum": "Iron heater shield with grill-like slits through which orange flames rise from within, soot-blackened rim."
+    },
+    {
+     "id": "shadecloak-greatshield",
+     "ad": "Shadecloak Greatshield",
+     "gorunum": "Long oval shield draped in dark grey shadow that drifts off its edges like smoke."
+    },
+    {
+     "id": "briarvine-shield",
+     "ad": "Briarvine Shield",
+     "gorunum": "Round wooden shield woven from living roots and branches with green leaves and thorny briar vines around the rim."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-giyilebilir-01.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "starstone-crown",
+     "ad": "Starstone Crown",
+     "gorunum": "Heavy wizard's crown carved from pale grey stone, set with a central glowing blue star-shaped gem."
+    },
+    {
+     "id": "silvertear-mask",
+     "ad": "Silvertear Mask",
+     "gorunum": "Face mask of liquid silver with a smooth flowing surface and a single silver teardrop under one eye."
+    },
+    {
+     "id": "pale-blood-mask",
+     "ad": "Pale Blood Mask",
+     "gorunum": "War medic's pale porcelain half-mask with thin red crack lines and a small red drop on the cheek."
+    },
+    {
+     "id": "fungal-crown",
+     "ad": "Fungal Crown",
+     "gorunum": "Crown woven from living underground mushrooms in tan and orange-brown, with softly glowing pale mushroom caps."
+    },
+    {
+     "id": "snow-witch-hat",
+     "ad": "Snow Witch Hat",
+     "gorunum": "Wide-brimmed white winter witch hat with a fur band, frost on the brim and small snowflakes."
+    },
+    {
+     "id": "vigilant-drake-helm",
+     "ad": "Vigilant Drake Helm",
+     "gorunum": "War helm covered in overlapping gold dragon scales, with a dragon-snout visor and two small swept-back horns."
+    },
+    {
+     "id": "focus-surge-helm",
+     "ad": "Focus Surge Helm",
+     "gorunum": "Battle-mage steel helm engraved with abstract runes, with a blue gem set in the brow."
+    },
+    {
+     "id": "weavebound-circlet",
+     "ad": "Weavebound Circlet",
+     "gorunum": "Thin silver circlet with a pure blue focus stone at the front."
+    },
+    {
+     "id": "apex-stalker-helm",
+     "ad": "Apex Stalker Helm",
+     "gorunum": "Hunter's helm shaped like a raptor bird's head with a hooked beak visor and feather crest."
+    },
+    {
+     "id": "crimson-fury-circlet",
+     "ad": "Crimson Fury Circlet",
+     "gorunum": "Horned dark iron circlet with red cloth wraps around the band."
+    },
+    {
+     "id": "stormsong-hat",
+     "ad": "Stormsong Hat",
+     "gorunum": "Wide-brimmed storm-grey hat with a yellow lightning-bolt-shaped feather in its band."
+    },
+    {
+     "id": "diadem-of-spellstrike",
+     "ad": "Diadem of Spellstrike",
+     "gorunum": "Copper diadem with a tiny crossed-swords motif at the front and a small glowing spark gem."
+    },
+    {
+     "id": "dawnmender-circlet",
+     "ad": "Dawnmender Circlet",
+     "gorunum": "Healer's circlet wrapped in gold wire with a pale warm sunrise-orange gem at the front."
+    },
+    {
+     "id": "mindshield-helm",
+     "ad": "Mindshield Helm",
+     "gorunum": "Thick padded steel war helm with a reinforced brow ridge and cheek guards."
+    },
+    {
+     "id": "sparkcrest-circlet",
+     "ad": "Sparkcrest Circlet",
+     "gorunum": "Light copper circlet engraved with abstract runes and a small yellow spark at the front."
+    },
+    {
+     "id": "quickwit-cowl",
+     "ad": "Quickwit Cowl",
+     "gorunum": "Light brown leather runner's cap with small wing-shaped patches over the ears."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-giyilebilir-02.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "shadowtracker-hood",
+     "ad": "Shadowtracker Hood",
+     "gorunum": "Dark charcoal hooded cowl with a deep shadowed opening and a short shoulder cape."
+    },
+    {
+     "id": "embercrown-hood",
+     "ad": "Embercrown Hood",
+     "gorunum": "Fire mage's deep red hood embroidered with orange flame patterns."
+    },
+    {
+     "id": "shadowstep-cloak",
+     "ad": "Shadowstep Cloak",
+     "gorunum": "Long black cloak with a high collar, its lower edge dissolving into wisps of dark shadow smoke."
+    },
+    {
+     "id": "weavefold-cloak",
+     "ad": "Weavefold Cloak",
+     "gorunum": "Heavy deep blue silk cloak whose folds shimmer with faint swirling magic-absorbing patterns."
+    },
+    {
+     "id": "stormwing-cloak",
+     "ad": "Stormwing Cloak",
+     "gorunum": "Wide storm-grey cloak whose edges are made of wind-blown feathers."
+    },
+    {
+     "id": "fleshrender-cloak",
+     "ad": "Fleshrender Cloak",
+     "gorunum": "Thick leather cloak with bulging yellow-green acid gland sacs along the hem, dripping acid."
+    },
+    {
+     "id": "shadeblood-mantle",
+     "ad": "Shadeblood Mantle",
+     "gorunum": "Dark blood-red velvet ambush mantle with a deep hood."
+    },
+    {
+     "id": "frostmist-cloak",
+     "ad": "Frostmist Cloak",
+     "gorunum": "Thick wool cloak covered in white frost rime with a cold icy mist."
+    },
+    {
+     "id": "cindermoth-cloak",
+     "ad": "Cindermoth Cloak",
+     "gorunum": "Cloak with an ember moth-wing pattern in orange and black, small glowing embers along the edge."
+    },
+    {
+     "id": "thunderskin-cloak",
+     "ad": "Thunderskin Cloak",
+     "gorunum": "Cloak of taut drum-hide leather with drumhead ring patterns and a thick braided cord clasp."
+    },
+    {
+     "id": "steamshell-cloak",
+     "ad": "Steamshell Cloak",
+     "gorunum": "Damp green-grey cloak threaded with moss fibers, steam gently rising from it."
+    },
+    {
+     "id": "trailblazer-cloak",
+     "ad": "Trailblazer Cloak",
+     "gorunum": "Light tan messenger cloak with a swept, wind-blown hem and a small running-boot clasp."
+    },
+    {
+     "id": "menders-mantle",
+     "ad": "Mender's Mantle",
+     "gorunum": "Healer's short shoulder mantle in pale green with small herb pouches and dried herb bundles."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-giyilebilir-03.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "soulcatcher-gauntlets",
+     "ad": "Soulcatcher Gauntlets",
+     "gorunum": "Pair of fingerless martial-arts gauntlets with white jade knuckle beads and a small glowing pale-teal spirit-wisp orb on the back of each hand."
+    },
+    {
+     "id": "compass-gloves",
+     "ad": "Compass Gloves",
+     "gorunum": "Pair of tactical leather gloves embroidered with compass-rose direction marks on the backs."
+    },
+    {
+     "id": "spellquick-gloves",
+     "ad": "Spellquick Gloves",
+     "gorunum": "Pair of thin, elegant silk wizard gloves in pale blue with fine silver stitching."
+    },
+    {
+     "id": "daredevil-bracers",
+     "ad": "Daredevil Bracers",
+     "gorunum": "Pair of armored steel bracers for front-line spellcasters with a small blue focus gem set in each."
+    },
+    {
+     "id": "skythunder-gloves",
+     "ad": "Skythunder Gloves",
+     "gorunum": "Pair of leather gloves stitched with storm patterns, faint blue-white thunder ripples around them."
+    },
+    {
+     "id": "slingmaster-gloves",
+     "ad": "Slingmaster Gloves",
+     "gorunum": "Pair of throwing gloves with grippy padded fingertips and crossed leather straps."
+    },
+    {
+     "id": "luminous-gauntlets",
+     "ad": "Luminous Gauntlets",
+     "gorunum": "Pair of gauntlets plated in bright sun-silver that glow with warm white-gold light."
+    },
+    {
+     "id": "twinhand-gloves",
+     "ad": "Twinhand Gloves",
+     "gorunum": "Pair of perfectly balanced brown leather fighting gloves with matching brass knuckle plates on both hands."
+    },
+    {
+     "id": "winterclaw-gloves",
+     "ad": "Winterclaw Gloves",
+     "gorunum": "Pair of frosted gloves with icy claw-like fingertips and an icy cyan glow."
+    },
+    {
+     "id": "warding-healer-gloves",
+     "ad": "Warding Healer Gloves",
+     "gorunum": "Pair of white temple healer's gloves with protective padded steel cuffs and a small gold holy symbol."
+    },
+    {
+     "id": "ichorous-gloves",
+     "ad": "Ichorous Gloves",
+     "gorunum": "Pair of thick alchemist's gloves stained with dripping yellow-green acid."
+    },
+    {
+     "id": "dexterous-silk-gloves",
+     "ad": "Dexterous Silk Gloves",
+     "gorunum": "Pair of thin silk gloves woven with fine silver thread, sleek and shiny."
+    },
+    {
+     "id": "sparkhand-gloves",
+     "ad": "Sparkhand Gloves",
+     "gorunum": "Pair of brawler's gloves with copper knuckle plates and tiny yellow sparks jumping across them."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-giyilebilir-04.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "boots-of-unyielding",
+     "ad": "Boots of Unyielding",
+     "gorunum": "Pair of heavy marching boots with very thick soles and iron toe caps."
+    },
+    {
+     "id": "frostspike-boots",
+     "ad": "Frostspike Boots",
+     "gorunum": "Pair of glacier boots with spiked iron cleats on the soles and frosted fur cuffs."
+    },
+    {
+     "id": "skyvault-boots",
+     "ad": "Skyvault Boots",
+     "gorunum": "Pair of heavy jumping boots with red-hot glowing soles and small flames."
+    },
+    {
+     "id": "rushstrike-boots",
+     "ad": "Rushstrike Boots",
+     "gorunum": "Pair of assault boots with mechanical heel locks and clasps, sleek dark leather."
+    },
+    {
+     "id": "stormstep-boots",
+     "ad": "Stormstep Boots",
+     "gorunum": "Pair of boots with trembling layered soles and faint concentric sound rings below them."
+    },
+    {
+     "id": "steadyfocus-boots",
+     "ad": "Steadyfocus Boots",
+     "gorunum": "Pair of spellcaster boots weighted with grey lead plates at the heels and ankles."
+    },
+    {
+     "id": "springvault-boots",
+     "ad": "Springvault Boots",
+     "gorunum": "Pair of boots with springy coiled-spring soles."
+    },
+    {
+     "id": "waterskipper-sandals",
+     "ad": "Waterskipper Sandals",
+     "gorunum": "Pair of copper-soled sandals with leather straps, small ripples of water beneath them."
+    },
+    {
+     "id": "windstep-sandals",
+     "ad": "Windstep Sandals",
+     "gorunum": "Pair of light cloth sandals for monks with simple wraps."
+    },
+    {
+     "id": "sparkstride-boots",
+     "ad": "Sparkstride Boots",
+     "gorunum": "Pair of light leather boots with crackling yellow static sparks around them."
+    },
+    {
+     "id": "mirestrider-boots",
+     "ad": "Mirestrider Boots",
+     "gorunum": "Pair of wide-soled waterproof swamp boots, tall and slick."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-yuzuk-01.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "shadowspark-ring",
+     "ad": "Shadowspark Ring",
+     "gorunum": "Polished black ring set with a dark smoky stone that has a tiny white spark inside."
+    },
+    {
+     "id": "high-command-ring",
+     "ad": "High Command Ring",
+     "gorunum": "Heavy black-iron signet ring with a square ruby set flush into its face and a tiny engraved crown."
+    },
+    {
+     "id": "gamblers-edge-ring",
+     "ad": "Gambler's Edge Ring",
+     "gorunum": "Gold ring whose setting holds a tiny ivory six-sided die."
+    },
+    {
+     "id": "dazzling-halo-ring",
+     "ad": "Dazzling Halo Ring",
+     "gorunum": "Gold ring set with a radiant yellow sun crystal surrounded by a small halo of light rays."
+    },
+    {
+     "id": "snowburst-ring",
+     "ad": "Snowburst Ring",
+     "gorunum": "Silver ring inlaid with an icy blue glacier sapphire, frost on the band."
+    },
+    {
+     "id": "spellstrike-ring",
+     "ad": "Spellstrike Ring",
+     "gorunum": "Two interlinked bands, one steel and one copper, fused into a single double ring."
+    },
+    {
+     "id": "eversight-shadow-ring",
+     "ad": "Eversight Shadow Ring",
+     "gorunum": "Dark ring with a glossy black obsidian stone shaped like an eye."
+    },
+    {
+     "id": "whispering-promise-ring",
+     "ad": "Whispering Promise Ring",
+     "gorunum": "Gold priest's ring with engraved prayer lines (abstract marks) and a small white pearl."
+    },
+    {
+     "id": "sparkswall-ring",
+     "ad": "Sparkswall Ring",
+     "gorunum": "Ring of grounded copper wire wrapped around a clear glass stone."
+    },
+    {
+     "id": "flinging-ring",
+     "ad": "Flinging Ring",
+     "gorunum": "Plain light iron ring with a small throwing-axe emblem."
+    },
+    {
+     "id": "elemental-infusion-ring",
+     "ad": "Elemental Infusion Ring",
+     "gorunum": "Battle-mage ring surrounded by five tiny gems: red, blue, yellow, green and white."
+    },
+    {
+     "id": "venomthorn-ring",
+     "ad": "Venomthorn Ring",
+     "gorunum": "Alchemist's ring carved with green thorns, a small green poison drop gem."
+    },
+    {
+     "id": "locksmiths-ring",
+     "ad": "Locksmith's Ring",
+     "gorunum": "Simple silver ring with a tiny lockpick and key motif."
+    },
+    {
+     "id": "rootgrip-ring",
+     "ad": "Rootgrip Ring",
+     "gorunum": "Ring made of twisted living tree root with a small green bud."
+    },
+    {
+     "id": "fracture-ring",
+     "ad": "Fracture Ring",
+     "gorunum": "Ring with a cracked clear quartz stone and faint sound-ripple lines."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-yuzuk-02.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "lifespring-amulet",
+     "ad": "Lifespring Amulet",
+     "gorunum": "Ruby amulet veined with gold, hanging on a gold chain, warm red glow."
+    },
+    {
+     "id": "spellwell-amulet",
+     "ad": "Spellwell Amulet",
+     "gorunum": "Crystal pendant on a silver chain with a pure arcane blue spark trapped inside."
+    },
+    {
+     "id": "rebirth-idol-amulet",
+     "ad": "Rebirth Idol Amulet",
+     "gorunum": "Small emerald phoenix idol rising from ashes, hanging on a dark chain."
+    },
+    {
+     "id": "devouts-medallion",
+     "ad": "Devout's Medallion",
+     "gorunum": "Gold medallion stamped with a divine sun seal on a gold chain."
+    },
+    {
+     "id": "spellspark-pendant",
+     "ad": "Spellspark Pendant",
+     "gorunum": "Wizard pendant with a twin knot of two sapphires on a silver chain."
+    },
+    {
+     "id": "subjugation-pendant",
+     "ad": "Subjugation Pendant",
+     "gorunum": "Thin silver pendant shaped like a surgical needle with fine nerve-like silver lines."
+    },
+    {
+     "id": "feyward-amulet",
+     "ad": "Feyward Amulet",
+     "gorunum": "Protective amulet of woven fey silver filigree around a pale green moonstone."
+    },
+    {
+     "id": "brandbreaker-amulet",
+     "ad": "Brandbreaker Amulet",
+     "gorunum": "Tactical amulet bearing a glowing red-hot iron branding seal on a leather cord."
+    },
+    {
+     "id": "venomkiss-pendant",
+     "ad": "Venomkiss Pendant",
+     "gorunum": "Alchemical pendant inlaid with a curved snake fang and a green venom drop."
+    },
+    {
+     "id": "torment-conduit-amulet",
+     "ad": "Torment Conduit Amulet",
+     "gorunum": "Focus pendant with a cage holding four tiny swirling elemental motes (fire, ice, lightning, acid)."
+    },
+    {
+     "id": "clearmind-pendant",
+     "ad": "Clearmind Pendant",
+     "gorunum": "Pendant with a smooth calm grey-blue meditation stone on a cord."
+    },
+    {
+     "id": "miststep-pendant",
+     "ad": "Miststep Pendant",
+     "gorunum": "Silver locket-capsule pendant with silver mist leaking from it."
+    },
+    {
+     "id": "dreadwing-charm",
+     "ad": "Dreadwing Charm",
+     "gorunum": "Survival charm shaped like a raven's claw on a cord with a few black feathers."
+    },
+    {
+     "id": "silverthread-locket",
+     "ad": "Silverthread Locket",
+     "gorunum": "Round field medic's silver locket with a white cross-shaped embossing and a silver needle and thread wrapped around it."
+    },
+    {
+     "id": "emberheart-talisman",
+     "ad": "Emberheart Talisman",
+     "gorunum": "Battle talisman carved from black volcanic glass with a glowing orange heart inside."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-yuzuk-03.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "ember-sigil-stone",
+     "ad": "Sigil Stone (Ember / Frost / Storm / Stone / Venom; ortak hücre)",
+     "gorunum": "Faceted sigil stone gem in a small silver seal-shaped setting, the gem drawn in one bright saturated fire-red hue (single color, to be recolored per element later) with a glowing elemental core."
+    },
+    {
+     "id": "masterwork-sigil-stone",
+     "ad": "Masterwork Sigil Stone",
+     "gorunum": "Sigil stone of polished pure steel with a sharpened faceted iron core, gleaming metallic grey."
+    },
+    {
+     "id": "umbral-sigil-stone",
+     "ad": "Essence Sigil Stone (Umbral / Radiant; ortak hücre)",
+     "gorunum": "Larger essence sigil stone: an elongated faceted crystal in an ornate gold setting, drawn in one bright saturated warm golden-white hue (single color, to be recolored per element later) with a glowing core."
+    },
+    {
+     "id": "aether-core-stone",
+     "ad": "Aether Core Stone",
+     "gorunum": "Sphere of pure swirling cyan-white energy held in a gold clawed setting, legendary radiance."
+    },
+    {
+     "id": "mounting-of-power",
+     "ad": "Mounting of Power",
+     "gorunum": "Gold-inlaid empty gem mounting frame with an ornate setting and clasps."
+    },
+    {
+     "id": "mystical-mounting",
+     "ad": "Mystical Mounting",
+     "gorunum": "Carved pure silver gem mounting frame with an ornate open setting."
+    },
+    {
+     "id": "ancient-imbuement-relic",
+     "ad": "Ancient Imbuement Relic",
+     "gorunum": "Ancient weathered stone relic with glowing blue engraved patterns, a one-use imbuement charm."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-tuketilebilir-01.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "sinkhole-orb",
+     "ad": "Sinkhole Orb",
+     "gorunum": "Small alchemical sphere of dark brass with a swirling vortex of dark blue gravity in a glass window."
+    },
+    {
+     "id": "sparkburst-flask",
+     "ad": "Sparkburst Flask",
+     "gorunum": "Corked glass flask filled with sparkling yellow-white electric dust."
+    },
+    {
+     "id": "rimeburst-orb",
+     "ad": "Rimeburst Orb",
+     "gorunum": "Glass sphere filled with swirling icy cyan liquid frost."
+    },
+    {
+     "id": "flashblind-capsule",
+     "ad": "Flashblind Capsule",
+     "gorunum": "Small capsule of white paper and brass filled with bright magnesium light powder, glowing at the seams."
+    },
+    {
+     "id": "websac-bomb",
+     "ad": "Websac Bomb",
+     "gorunum": "Sticky pouch of white spider silk bundled tight, with webbing strands."
+    },
+    {
+     "id": "shrapnel-nailbomb",
+     "ad": "Shrapnel Nailbomb",
+     "gorunum": "Iron bomb studded with protruding steel nails and a lit fuse."
+    },
+    {
+     "id": "tremor-sphere",
+     "ad": "Tremor Sphere",
+     "gorunum": "Heavy shock sphere with a stone core and iron bands, faint shock rings."
+    },
+    {
+     "id": "dreadcenser-bomb",
+     "ad": "Dreadcenser Bomb",
+     "gorunum": "Brass censer bomb leaking dark grey nightmare smoke."
+    },
+    {
+     "id": "haste-spore-pod",
+     "ad": "Haste Spore Pod",
+     "gorunum": "Bulbous fungal spore pod in orange and tan with puffs of golden spores."
+    },
+    {
+     "id": "armor-piercing-canister",
+     "ad": "Armor-Piercing Canister",
+     "gorunum": "Hard-cored pressurized metal canister for sieges, with rivets and a valve."
+    },
+    {
+     "id": "enthralling-mist-vial",
+     "ad": "Enthralling Mist Vial",
+     "gorunum": "Glass vial filled with deep red rose petals and golden fairy dust."
+    },
+    {
+     "id": "cinder-cluster-bomb",
+     "ad": "Cinder Cluster Bomb",
+     "gorunum": "Large cluster bomb of six linked black powder spheres with fuses."
+    },
+    {
+     "id": "oil-of-precision",
+     "ad": "Oil of Precision",
+     "gorunum": "Small glass vial of clear, glistening balancing oil with a cork stopper."
+    },
+    {
+     "id": "oil-of-combustion",
+     "ad": "Oil of Combustion",
+     "gorunum": "Clay jar of volatile orange fire resin with a bubbling surface."
+    },
+    {
+     "id": "magebane-venom",
+     "ad": "Magebane Venom",
+     "gorunum": "Small vial of dark navy-blue spell-poisoning extract with a skull-shaped stopper."
+    },
+    {
+     "id": "arsonists-tincture",
+     "ad": "Arsonist's Tincture",
+     "gorunum": "Heavy flask of sulfur and phosphorus mixture, yellow-orange, smoking slightly."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-tuketilebilir-02.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "watersplash-arrow",
+     "ad": "Watersplash Arrow",
+     "gorunum": "Arrow with a small water-filled bladder tied at its tip, blue water sloshing inside."
+    },
+    {
+     "id": "steamveil-arrow",
+     "ad": "Steamveil Arrow",
+     "gorunum": "Arrow with a capsule of hot water and lime at its tip, steam curling from it."
+    },
+    {
+     "id": "hoarfrost-arrow",
+     "ad": "Hoarfrost Arrow",
+     "gorunum": "Arrow with a frozen icy blue tip and frost on the shaft."
+    },
+    {
+     "id": "roaring-knockback-arrow",
+     "ad": "Roaring Knockback Arrow",
+     "gorunum": "Arrow with a hollow whistling flared tip and faint sound rings."
+    },
+    {
+     "id": "blightbone-arrow",
+     "ad": "Blightbone Arrow",
+     "gorunum": "Arrow with a black bone tip and a dark grey smoky aura."
+    },
+    {
+     "id": "arcing-bolt-arrow",
+     "ad": "Arcing Bolt Arrow",
+     "gorunum": "Arrow wrapped in copper wire with yellow lightning arcing at the tip."
+    },
+    {
+     "id": "splitflight-arrow",
+     "ad": "Splitflight Arrow",
+     "gorunum": "Arrow whose head splits into three glowing pale-blue magical prongs."
+    },
+    {
+     "id": "transposition-arrow",
+     "ad": "Transposition Arrow",
+     "gorunum": "Arrow with a glowing pale-blue spiral portal ring around its shaft."
+    },
+    {
+     "id": "spellsever-arrow",
+     "ad": "Spellsever Arrow",
+     "gorunum": "Arrow with a silver-and-lead alloy tip engraved with anti-magic marks."
+    },
+    {
+     "id": "knockdown-blunt-arrow",
+     "ad": "Knockdown Blunt Arrow",
+     "gorunum": "Hunting arrow with a heavy blunt iron knob head."
+    },
+    {
+     "id": "blessed-mending-arrow",
+     "ad": "Blessed Mending Arrow",
+     "gorunum": "Arrow with a fragile glass capsule of holy water at its tip and a soft golden glow."
+    },
+    {
+     "id": "shadowpierce-arrow",
+     "ad": "Shadowpierce Arrow",
+     "gorunum": "Black arrow branded with dark marks, wisps of shadow trailing behind."
+    },
+    {
+     "id": "emerald-tea-brew",
+     "ad": "Emerald Tea Brew",
+     "gorunum": "Small porcelain teacup with a saucer filled with bright emerald-green tea and a few floating leaves."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-tuketilebilir-03.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "hoarfrost-coating",
+     "ad": "Hoarfrost Coating",
+     "gorunum": "Small flask of glistening icy blue crystal oil with frost on the glass."
+    },
+    {
+     "id": "oil-of-hexing",
+     "ad": "Oil of Hexing",
+     "gorunum": "Small vial of dark root extract with a gnarled root stopper."
+    },
+    {
+     "id": "drowsleep-venom",
+     "ad": "Drowsleep Venom",
+     "gorunum": "Small vial of dark navy-blue sleep poison distilled from mushrooms."
+    },
+    {
+     "id": "crawler-paralytic",
+     "ad": "Crawler Paralytic",
+     "gorunum": "Small vial of thick yellow paralytic secretion with a cave-lizard emblem."
+    },
+    {
+     "id": "crimson-wyrm-toxin",
+     "ad": "Crimson Wyrm Toxin",
+     "gorunum": "Legendary vial of glowing crimson worm toxin with a fang-shaped stopper."
+    },
+    {
+     "id": "ironhide-armour-potion",
+     "ad": "Ironhide Armour Potion",
+     "gorunum": "Thick round potion bottle of dense grey-green stone-moss potion with a stone stopper."
+    },
+    {
+     "id": "spellward-armour-potion",
+     "ad": "Spellward Armour Potion",
+     "gorunum": "Potion bottle of blue protective potion brewed with whisper herbs, small leaves floating."
+    },
+    {
+     "id": "nimble-tumble-potion",
+     "ad": "Nimble Tumble Potion",
+     "gorunum": "Slim potion vial of mercury-clear silvery reflex potion."
+    },
+    {
+     "id": "stoneskin-draught",
+     "ad": "Stoneskin Draught",
+     "gorunum": "Heavy squat bottle of thick earthy brown stone-skin potion."
+    },
+    {
+     "id": "strong-will-draught",
+     "ad": "Strong Will Draught",
+     "gorunum": "Potion bottle of glowing golden liquid with a small golden fire flower inside."
+    },
+    {
+     "id": "angelic-reprieve-potion",
+     "ad": "Angelic Reprieve Potion",
+     "gorunum": "Potion bottle of pale silver liquid with a silver feather floating in it."
+    },
+    {
+     "id": "elixir-of-bloodlust",
+     "ad": "Elixir of Bloodlust",
+     "gorunum": "Elixir bottle of dark red liquid with a wolf fang tied to its neck."
+    },
+    {
+     "id": "elixir-of-vigilance",
+     "ad": "Elixir of Vigilance",
+     "gorunum": "Elixir bottle of sharp amber spicy liquid with a small eye emblem."
+    },
+    {
+     "id": "elixir-of-viciousness",
+     "ad": "Elixir of Viciousness",
+     "gorunum": "Elixir bottle of dark shadow-root distillate, black liquid with a faint teal shimmer."
+    },
+    {
+     "id": "elixir-of-battlemage-focus",
+     "ad": "Elixir of Battlemage Focus",
+     "gorunum": "Elixir bottle of glowing blue arcane liquid with a small eye-shaped glass stopper."
+    },
+    {
+     "id": "elixir-of-peerless-focus",
+     "ad": "Elixir of Peerless Focus",
+     "gorunum": "Elixir bottle of clear liquid with floating green herb leaves."
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-bekleyen-01.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "titanstring-longbow",
+     "ad": "Titanstring Longbow",
+     "gorunum": "Massive heavy longbow of dark laminated wood and horn with thick limbs, a very thick braided pale sinew string, iron caps on the limb tips and a broad leather grip."
+    },
+    {
+     "id": "helldusk-gauntlets",
+     "ad": "Helldusk Gauntlets",
+     "gorunum": "Pair of war gauntlets with blackened iron knuckle plates glowing orange from within like cooling forge metal, leather cuffs wrapped in brass wire."
+    },
+    {
+     "id": "nightwalker-boots",
+     "ad": "Nightwalker Boots",
+     "gorunum": "Pair of tall soft charcoal suede boots with silver toe caps and a stitched star-map pattern, wisps of blue-grey shadow at the heels."
+    },
+    {
+     "id": "caustic-band",
+     "ad": "Caustic Band",
+     "gorunum": "Thick bronze band holding a single emerald-green droplet-shaped gem in a claw setting, a bead of bright green acid on the band."
+    },
+    {
+     "id": "callous-glow-ring",
+     "ad": "Callous Glow Ring",
+     "gorunum": "Hunter's ring of bone and gold with an amber cabochon glowing like a small lantern."
+    },
+    {
+     "id": "strange-conduit-ring",
+     "ad": "Strange Conduit Ring",
+     "gorunum": "Focus ring with a smoky blue-grey quartz stone with a tiny pale-teal spark inside, on a dark silver band."
+    }
+   ]
+  }
+ ],
+ "ayniGorsel": {
+  "ember-perfume-bottle": [
+   "storm-perfume-bottle",
+   "frost-perfume-bottle"
+  ],
+  "ember-sigil-stone": [
+   "frost-sigil-stone",
+   "storm-sigil-stone",
+   "stone-sigil-stone",
+   "venom-sigil-stone"
+  ],
+  "umbral-sigil-stone": [
+   "radiant-sigil-stone"
+  ]
+ },
+ "bekleyen": {
+  "sayfalar": [
+   "katalog-bekleyen-01"
+  ],
+  "kimlikler": [
+   "titanstring-longbow",
+   "helldusk-gauntlets",
+   "nightwalker-boots",
+   "caustic-band",
+   "callous-glow-ring",
+   "strange-conduit-ring"
+  ],
+  "not": "KATALOG-1 karar K7 (BG3'e benzeyen 6 eşya): EN ad kullanıcı onayını bekliyor; kimlik yeni EN addan türetilecek. Tarifler değişmeyen TR ada göre özgün yazıldı; ad seçilince gözden geçirilip sayfa üretilir."
+ }
+}
