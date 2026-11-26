@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev KARAR104-KALAN: KARAR104'ün ertelenen ve ⚠ maddeleri (2026-11-26; kural sürümü 104'e eklendi, kayıt sürümü 26)
+
+- **Kural sürümü (kullanıcı kararı):** yeni sürüm açılmadı; düzeltmeler 104'e eklendi (104 çıkalı saatler oldu, 104'te kayıtlı
+  gerçek savaş yok). Her düzeltme `karar104On` ile kapılı; 103 ve altı aynen (`karar104.test.ts` her madde için 103 ↔ 104).
+- **A6 Cutting Words ıskada** (SRD 5.2.1 s. 35 "makes a damage roll"): ıskada da hasar zarı atan büyü saldırısında (Acid Arrow
+  `halfOnMiss`, Potent Cantrip) Bard'ın tepkisi `cuttingWordsDamage` ile; zar toplamdan yarıya bölünmeden önce düşer (`spells.ts`).
+  Silah saldırısında ıskada hasar zarı yok (Graze sabit değiştirici: zar değil). 103'te ıskada tetik yok.
+
 ## Görev KARAR104: bekleyen kullanıcı kararları SRD 5.2.1'e göre (2026-11-24; kural sürümü 104 `KARAR104_VERSION`, kayıt sürümü 26)
 
 Kapsam kullanıcıyla bu oturumda belirlendi (yol haritası dosyası depoda yoktu); kaynak `harita/belgeler/GECE-KUYRUGU-RAPOR.md`

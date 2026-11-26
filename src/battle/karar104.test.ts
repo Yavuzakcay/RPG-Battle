@@ -345,3 +345,20 @@ describe('KARAR104 A5: otomatik seçimler "Sor"a bağlı (öneri = eski otomatik
     expect(luck()?.ask).toBeUndefined();
   });
 });
+
+describe('KARAR104-KALAN A6: SRD-12 sınıf özelliği sapmaları', () => {
+  it('Cutting Words ıskada atılan hasar zarında (Acid Arrow yarı hasar): 104 zar yarıya bölünmeden düşer; 103 tetik yok', () => {
+    const bardSheet: CharacterSheet = { ...blankCharacter('b').sheet, name: 'Lira', classId: 'bard', subclassId: 'college-of-lore', level: 5,
+      baseScores: { str: 8, dex: 14, con: 12, int: 10, wis: 10, cha: 16 } };
+    const miss = (v: number) => {
+      const bard = { ...combatantFromSheet(bardSheet, { id: 'D', ownerId: 'p1' }), pos: at(4, 6) };
+      const parts = [mk('B', { side: 'enemies', spellNames: ['Acid Arrow'], spellAttack: 0, spellSlots: [4, 3], pos: at(8, 5) }),
+        mk('C', { ownerId: 'p1', hp: 30, maxHp: 30, ac: 30, pos: at(4, 5) }), bard];
+      const { state, events } = play(scene104(v, parts), [{ type: 'cast_spell', actorId: 'B', spellName: 'Acid Arrow', targetId: 'C', slotLevel: 2 } as Command], hooked(5));
+      return { hp: state.combatants.C!.hp, used: events.some((e) => e.type === 'reaction_used' && e.actorId === 'D') };
+    };
+    // Acid Arrow 4d4 = 12; Bard d8 = 5 → ⌊(12 − 5) / 2⌋ = 3; 103: ⌊12 / 2⌋ = 6.
+    expect(miss(NEW)).toEqual({ hp: 27, used: true });
+    expect(miss(OLD)).toEqual({ hp: 24, used: false });
+  });
+});
