@@ -399,6 +399,18 @@ async function main() {
     fs.writeFileSync(path.join(OUT, `${dosyaAdi(id)}.webp`), g.buyuk);
     fs.writeFileSync(path.join(OUTK, `${dosyaAdi(id)}.webp`), g.kucuk);
   }
+  // Görev ESYA-IKON-AYIRT: üst kimlik kopyası paylaşan varyantlar (data/esya-ikon-ayirt.json) taban ikondan ayırt edilir; tabanlar
+  // assets/esya-taban'a yazılır (bu çalıştırmada işlenmeyen sayfanın tabanı oradaki kayıttan), ayırt dosyaları kopyaların üstüne yazılır.
+  if (!kuru) {
+    const { ayirt, tabanYaz, veriOku } = await import('./esya-ikon-ayirt.mjs');
+    const tabanlar = new Map();
+    for (const g of veriOku(ROOT).gruplar) {
+      const sn = son.get(g.taban); const gr = sn && gorsel.get(sn.kaynakId);
+      if (gr) tabanlar.set(g.taban, { buyuk: gr.buyuk, kucuk: gr.kucuk });
+    }
+    tabanYaz(tabanlar, ROOT);
+    await ayirt({ root: ROOT, hat: { BUYUK, KUCUK, cikti }, tabanlar });
+  }
   // Tam çalıştırmada bu hattın önceki çıktısından artık oyun kaydı olmayan dosyalar silinir (idempotent).
   let silinen = 0;
   if (!kuru && !yalniz) for (const d of [OUT, OUTK]) for (const f of fs.readdirSync(d)) {

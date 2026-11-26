@@ -86,6 +86,27 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   (SRD "Its game statistics, other than its size, are the same") uygulanmadı; dönüşen karakterin Game Master'ın elinden kurtarılması
   ve Remove Curse savaş dışı (Game Master kaydı siler); savaşı bitiren düşüşte yeni canavar gelmez, yalnız `donustu` yazılır.
   103: yalnız işaret.
+## Görev ESYA-IKON-AYIRT: aynı ikonu paylaşan eşya varyantları ayrıştı (2026-11-26; yalnız görünüm, kural/kayıt sürümü yok)
+
+61 kayıt SRD üst kimliğinin tek ikonunu paylaşıyordu (Ammunition/Armor/Shield/Weapon/Wand of the War Mage +1/+2/+3, Armor/Potion/Ring of
+Resistance ×13, Armor of Vulnerability ×3, Crystal Ball ×4). `scripts/esya-ikon-ayirt.mjs` (veri `data/esya-ikon-ayirt.json`) taban
+ikondan 45 kayda ayrı dosya üretir; Crystal Ball kendi çizimiyle kalır (gerçek çizimli kayda dokunulmaz), üç türevi küre rengi + glif alır.
+
+- **+1/+2/+3 (15 kayıt) bu hatta yok** (kullanıcı kararı, aynı gün): ilk sürümdeki nadirlik renkli +N köşe rozeti kaldırıldı; ikonları
+  Gemini'den ayrı bir ikon sayfası olarak gelecek ve `data/esya-ikon-sayfalar.json` ile içe aktarılacak. O zamana dek üç kayıt yine
+  üst kimliğin ikonunu paylaşır (5 grup × 3).
+- **Resistance**: yalnız doygun pikseller (taş, iksir sıvısı, parıltı) hasar türü tonuna döner, metal/deri gövde kalır; köşede hasar
+  glifi (public/glif). 13 tonun bazıları yakın (necrotic/piercing/slashing grimsi, force/thunder mor-lacivert): ayırıcı asıl glif.
+- **Vulnerability**: kırmızımsı ton + glif + sol üstte kırmızı aşağı ok (Resistance'tan ayrışır).
+- **Crystal Ball türevleri**: Mind Reading pembe + psychic, Telepathy mor + enchantment, True Seeing altın + divination (göz) glifi
+  (görev önerisi "ışık" yerine göz: True Seeing görme büyüsü). Gerçek çizim gelirse `esya-ikon-sayfalar.json`'da kendi hücresi olur ve
+  betik o kaydı atlar.
+- **Taban yeri**: üst kimlik oyun kaydı olmadığından public/esya'da yok (ikon hattı yalnız oyun kayıtlarını yazar, artığı siler). Taban
+  `assets/esya-taban/` (256 + kucuk/96; depoda) — `npm run esya-ikon` yazar ve sonunda ayırt aşamasını çalıştırır; ayırt betiği tek başına
+  da çalışır (idempotent, ham sayfa gerekmez).
+- ⚠ Yerelde ham sayfa `assets-ham/esya/duzeltme-9.jpg` adında, manifest `duzeltme-09.jpg` bekliyor: tam `npm run esya-ikon` bu sayfayı
+  eksik sayıp 5 kaydı (healing iksirleri, spyglass) eski görsele döndürür ve `esyaIkon.test.ts` yerelde 449 ≠ 448 verir. Bu görevde
+  düzeltilmedi; o 10 dosya geri alındı.
 
 ## Görev KARAR104: bekleyen kullanıcı kararları SRD 5.2.1'e göre (2026-11-24; kural sürümü 104 `KARAR104_VERSION`, kayıt sürümü 26)
 
