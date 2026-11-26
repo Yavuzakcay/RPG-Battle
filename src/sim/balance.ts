@@ -203,11 +203,23 @@ function yzOf(): BattleState['yz'] | undefined {
   return { ...(eski ? { eski: true } : {}), ...(party || enemies ? { zorluk: { ...(party ? { party } : {}), ...(enemies ? { enemies } : {}) } } : {}) };
 }
 
+/**
+ * KATALOG-1 F (yalnız sim): hazırlıklı parti kolu. Savaş başında parti üyelerine süresiz direnç etkisi (`resist`; mevcut
+ * etki alanı, oyun mekaniği değil). `null`: kapalı (dirençsiz kol).
+ */
+let partyResist: string[] | null = null;
+export const setPartyResist = (types: string[] | null) => { partyResist = types?.length ? types : null; };
+const withPartyResist = (st: BattleState): BattleState => (!partyResist ? st : {
+  ...st,
+  combatants: Object.fromEntries(Object.entries(st.combatants).map(([id, c]) => [id, c.side !== 'party' || c.civilian ? c
+    : { ...c, effects: [...(c.effects ?? []).filter((e) => e.id !== 'sim:hazirlik'), { id: 'sim:hazirlik', name: 'Hazırlık (sim)', sourceId: id, resist: [...partyResist!] }] }])),
+});
+
 export function setupBattle(s: Scenario, rng: Rng, level: number = DEFAULT_LEVEL): BattleState {
   const alarm = (st: BattleState): BattleState => (!st.groups?.length || alarmMode === 'normal' ? st
     : alarmMode === 'yok' ? { ...st, alarmEnabled: false } : { ...st, groups: st.groups.map((g) => ({ ...g, state: 'alarmed' as const })) });
   const yz = yzOf();
-  const flag = (st: BattleState): BattleState => alarm({ ...(surfaceReactions ? st : { ...st, yuzeyEtkilesimi: false }), ...(yz ? { yz } : {}) });
+  const flag = (st: BattleState): BattleState => withPartyResist(alarm({ ...(surfaceReactions ? st : { ...st, yuzeyEtkilesimi: false }), ...(yz ? { yz } : {}) }));
   if (!s.map) return flag(startBattle('sim', 'd-z-zemin', participants(s, level), rng).state);
   const session = createMapBattle(participants(s, level), { ...s.map, mirrored: false, ...(simHouseRules ? { houseRules: simHouseRules } : {}) }, rng);
   const gm = { playerId: 'gm', isGm: true };

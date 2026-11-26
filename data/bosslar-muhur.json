@@ -1,0 +1,3017 @@
+{
+  "_not": "KATALOG-1 F Aşama 2: Mühür Ruhu bossları (Sv.3) ve evrim çizgileri (Sv.1, Sv.2), 30 kayıt. scripts/katalog-f-bosslar.mjs üretir, elle düzenlenmez. Tasarım harita/belgeler/KATALOG-F-TASARIM.md. Görsel henüz yok (`gorsel: null`; BOSS-GORSEL-1 ayrı); jeton yedek görünümle çizilir. Saldırı ekleri kayıtta `riders` (loadMonsters ortak tabloya ekler).",
+  "canavarlar": [
+    {
+      "id": "cimbombom",
+      "name": "Cimbombom, Lion of the Hell",
+      "size": "H",
+      "ac": 19,
+      "hp": 627,
+      "speed": 50,
+      "abilities": {
+        "str": 30,
+        "dex": 16,
+        "con": 30,
+        "int": 10,
+        "wis": 18,
+        "cha": 22
+      },
+      "saves": {
+        "dex": 11,
+        "con": 18,
+        "wis": 12
+      },
+      "darkvision": 120,
+      "cr": "26",
+      "attacks": [
+        {
+          "name": "Bite",
+          "bonus": 12,
+          "damage": "2d8+10 Piercing plus 7d10 Fire damage.",
+          "damageDice": "2d8+10",
+          "damageType": "piercing",
+          "ranged": false,
+          "reachFt": 10,
+          "repeat": 1
+        },
+        {
+          "name": "Claw",
+          "bonus": 12,
+          "damage": "2d8+10 Slashing plus 7d10 Fire damage.",
+          "damageDice": "2d8+10",
+          "damageType": "slashing",
+          "ranged": false,
+          "reachFt": 10,
+          "repeat": 2
+        },
+        {
+          "name": "Hellfire Roar",
+          "bonus": 0,
+          "damage": "Dex Saving Throw: DC 21. Failure: 19d10 Fire damage. Success: Half damage.",
+          "damageDice": "19d10",
+          "damageType": "fire",
+          "save": {
+            "ability": "dex",
+            "dc": 21,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "cone",
+            "sizeFt": 60,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Legendary Resistance (3/Day). Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "fire"
+      ],
+      "vulnerabilities": [
+        "cold"
+      ],
+      "unsupported": [],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "fire",
+      "kademe": 3,
+      "cizgi": "ates",
+      "eskiAd": "Erimiş Örs Muhafızı",
+      "unvan": {
+        "tr": "Cehennem Aslanı",
+        "en": "Lion of the Hell"
+      },
+      "ganimet": "ember-core",
+      "ortam": [
+        "volkanik-demirhane",
+        "lav-tapinagi",
+        "derinlikler-lav-salonu",
+        "volkan"
+      ],
+      "gorsel": null,
+      "faz2": {
+        "zayiflikKaldir": [
+          "cold"
+        ],
+        "nefesDoldur": true,
+        "nefesAlan": 1.25,
+        "not": {
+          "tr": "Taş Uyanışı: Kor Çekirdeği yarılıyor; alev artık soğukla sönmüyor.",
+          "en": "Stone Awakening: the Ember Core splits; cold no longer quenches the flame."
+        }
+      },
+      "gmNot": "Taş Uyanışı (PDF): arena kenarındaki altıgenleri 3 tur alev yüzeyi yap (place_surface); her tur başında bossun 15 ft içindekilere 2d6 ateş uygula.",
+      "riders": {
+        "Bite": {
+          "extra": [
+            {
+              "dice": "7d10",
+              "type": "fire"
+            }
+          ],
+          "status": "uygulandı"
+        },
+        "Claw": {
+          "extra": [
+            {
+              "dice": "7d10",
+              "type": "fire"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
+        "bolum": "§5–§6",
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
+      }
+    },
+    {
+      "id": "cim",
+      "name": "Cim",
+      "size": "S",
+      "ac": 14,
+      "hp": 75,
+      "speed": 40,
+      "abilities": {
+        "str": 16,
+        "dex": 14,
+        "con": 14,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "3",
+      "attacks": [
+        {
+          "name": "Bite",
+          "bonus": 5,
+          "damage": "1d8+3 Piercing plus 1d6 Fire damage.",
+          "damageDice": "1d8+3",
+          "damageType": "piercing",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 2
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "fire"
+      ],
+      "vulnerabilities": [
+        "cold"
+      ],
+      "unsupported": [],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "fire",
+      "kademe": 1,
+      "cizgi": "ates",
+      "ganimet": "cracked-elemental-stone-fire",
+      "ortam": [
+        "volkanik-demirhane",
+        "lav-tapinagi",
+        "derinlikler-lav-salonu",
+        "volkan"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Bite": {
+          "extra": [
+            {
+              "dice": "1d6",
+              "type": "fire"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    },
+    {
+      "id": "cimbom",
+      "name": "Cimbom",
+      "size": "L",
+      "ac": 17,
+      "hp": 190,
+      "speed": 50,
+      "abilities": {
+        "str": 22,
+        "dex": 14,
+        "con": 20,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "10",
+      "attacks": [
+        {
+          "name": "Bite",
+          "bonus": 8,
+          "damage": "2d8+6 Piercing plus 3d8 Fire damage.",
+          "damageDice": "2d8+6",
+          "damageType": "piercing",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 2
+        },
+        {
+          "name": "Lesser Hellfire Roar",
+          "bonus": 0,
+          "damage": "Dex Saving Throw: DC 16. Failure: 5d6 Fire damage. Success: Half damage.",
+          "damageDice": "5d6",
+          "damageType": "fire",
+          "save": {
+            "ability": "dex",
+            "dc": 16,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "cone",
+            "sizeFt": 30,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "fire"
+      ],
+      "vulnerabilities": [
+        "cold"
+      ],
+      "unsupported": [],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "fire",
+      "kademe": 2,
+      "cizgi": "ates",
+      "ganimet": "awakened-elemental-stone-fire",
+      "ortam": [
+        "volkanik-demirhane",
+        "lav-tapinagi",
+        "derinlikler-lav-salonu",
+        "volkan"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Bite": {
+          "extra": [
+            {
+              "dice": "3d8",
+              "type": "fire"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    },
+    {
+      "id": "darkape",
+      "name": "Darkape, Kong of the Void",
+      "size": "H",
+      "ac": 19,
+      "hp": 578,
+      "speed": 40,
+      "abilities": {
+        "str": 30,
+        "dex": 14,
+        "con": 30,
+        "int": 8,
+        "wis": 16,
+        "cha": 14
+      },
+      "saves": {
+        "str": 18,
+        "con": 18,
+        "wis": 11
+      },
+      "darkvision": 120,
+      "cr": "25",
+      "attacks": [
+        {
+          "name": "Fist",
+          "bonus": 12,
+          "damage": "2d8+10 Bludgeoning plus 6d10 Force damage.",
+          "damageDice": "2d8+10",
+          "damageType": "bludgeoning",
+          "ranged": false,
+          "reachFt": 10,
+          "repeat": 2
+        },
+        {
+          "name": "Grab",
+          "bonus": 12,
+          "damage": "2d8+10 Bludgeoning plus 6d10 Force damage.",
+          "damageDice": "2d8+10",
+          "damageType": "bludgeoning",
+          "ranged": false,
+          "reachFt": 10,
+          "repeat": 1
+        },
+        {
+          "name": "Void Roar",
+          "bonus": 0,
+          "damage": "Str Saving Throw: DC 21. Failure: 18d10 Force damage. Success: Half damage.",
+          "damageDice": "18d10",
+          "damageType": "force",
+          "save": {
+            "ability": "str",
+            "dc": 21,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "cone",
+            "sizeFt": 60,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Legendary Resistance (3/Day). Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "force"
+      ],
+      "vulnerabilities": [
+        "psychic"
+      ],
+      "unsupported": [
+        "Hız: Climb 30 ft"
+      ],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "force",
+      "kademe": 3,
+      "cizgi": "kuvvet",
+      "eskiAd": "Yörünge Nöbetçisi",
+      "unvan": {
+        "tr": "Boşluğun Kongu",
+        "en": "Kong of the Void"
+      },
+      "ganimet": "void-fracture",
+      "ortam": [
+        "dag-karakol",
+        "kanyon-koprusu",
+        "isinlanma-salonu"
+      ],
+      "gorsel": null,
+      "faz2": {
+        "zayiflikKaldir": [
+          "psychic"
+        ],
+        "nefesDoldur": true,
+        "nefesAlan": 1.25,
+        "not": {
+          "tr": "Taş Uyanışı: Boşluk Kırığı göğsünde açılıyor; artık hiçbir ses aklına ulaşmıyor.",
+          "en": "Stone Awakening: the Void Fracture opens in its chest; no voice reaches its mind now."
+        }
+      },
+      "gmNot": "Taş Uyanışı (PDF): düşük yerçekimi (itme/çekme +5 ft, elle); her 2 turda bir herkesi merkeze 15 ft çek.",
+      "riders": {
+        "Fist": {
+          "extra": [
+            {
+              "dice": "6d10",
+              "type": "force"
+            }
+          ],
+          "status": "uygulandı"
+        },
+        "Grab": {
+          "extra": [
+            {
+              "dice": "6d10",
+              "type": "force"
+            }
+          ],
+          "grapple": {
+            "escapeDc": 21,
+            "restrained": false
+          },
+          "status": "uygulandı"
+        },
+        "Void Roar": {
+          "prone": {
+            "save": {
+              "ability": "str",
+              "dc": 21
+            }
+          },
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
+        "bolum": "§5–§6",
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
+      }
+    },
+    {
+      "id": "darkit",
+      "name": "Darkit",
+      "size": "S",
+      "ac": 14,
+      "hp": 75,
+      "speed": 30,
+      "abilities": {
+        "str": 16,
+        "dex": 14,
+        "con": 14,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "3",
+      "attacks": [
+        {
+          "name": "Fist",
+          "bonus": 5,
+          "damage": "1d8+3 Bludgeoning plus 1d6 Force damage.",
+          "damageDice": "1d8+3",
+          "damageType": "bludgeoning",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 2
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "force"
+      ],
+      "vulnerabilities": [
+        "psychic"
+      ],
+      "unsupported": [
+        "Hız: Climb 30 ft"
+      ],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "force",
+      "kademe": 1,
+      "cizgi": "kuvvet",
+      "ganimet": "cracked-elemental-stone-force",
+      "ortam": [
+        "dag-karakol",
+        "kanyon-koprusu",
+        "isinlanma-salonu"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Fist": {
+          "extra": [
+            {
+              "dice": "1d6",
+              "type": "force"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    },
+    {
+      "id": "darkath",
+      "name": "Darkath",
+      "size": "L",
+      "ac": 16,
+      "hp": 170,
+      "speed": 40,
+      "abilities": {
+        "str": 20,
+        "dex": 14,
+        "con": 18,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "9",
+      "attacks": [
+        {
+          "name": "Fist",
+          "bonus": 7,
+          "damage": "2d8+5 Bludgeoning plus 2d10 Force damage.",
+          "damageDice": "2d8+5",
+          "damageType": "bludgeoning",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 2
+        },
+        {
+          "name": "Lesser Void Roar",
+          "bonus": 0,
+          "damage": "Str Saving Throw: DC 16. Failure: 4d6 Force damage. Success: Half damage.",
+          "damageDice": "4d6",
+          "damageType": "force",
+          "save": {
+            "ability": "str",
+            "dc": 16,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "cone",
+            "sizeFt": 30,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "force"
+      ],
+      "vulnerabilities": [
+        "psychic"
+      ],
+      "unsupported": [
+        "Hız: Climb 30 ft"
+      ],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "force",
+      "kademe": 2,
+      "cizgi": "kuvvet",
+      "ganimet": "awakened-elemental-stone-force",
+      "ortam": [
+        "dag-karakol",
+        "kanyon-koprusu",
+        "isinlanma-salonu"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Fist": {
+          "extra": [
+            {
+              "dice": "2d10",
+              "type": "force"
+            }
+          ],
+          "status": "uygulandı"
+        },
+        "Lesser Void Roar": {
+          "prone": {
+            "save": {
+              "ability": "str",
+              "dc": 16
+            }
+          },
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    },
+    {
+      "id": "cerbones",
+      "name": "Cerbones, Crematorium",
+      "size": "H",
+      "ac": 19,
+      "hp": 527,
+      "speed": 50,
+      "abilities": {
+        "str": 30,
+        "dex": 14,
+        "con": 28,
+        "int": 10,
+        "wis": 16,
+        "cha": 16
+      },
+      "saves": {
+        "con": 16,
+        "wis": 10
+      },
+      "darkvision": 120,
+      "cr": "24",
+      "attacks": [
+        {
+          "name": "Bite",
+          "bonus": 12,
+          "damage": "1d8+10 Piercing plus 6d10 Necrotic damage.",
+          "damageDice": "1d8+10",
+          "damageType": "piercing",
+          "ranged": false,
+          "reachFt": 10,
+          "repeat": 3
+        },
+        {
+          "name": "Crematorium Breath",
+          "bonus": 0,
+          "damage": "Con Saving Throw: DC 21. Failure: 16d10 Necrotic damage. Success: Half damage.",
+          "damageDice": "16d10",
+          "damageType": "necrotic",
+          "save": {
+            "ability": "con",
+            "dc": 21,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "cone",
+            "sizeFt": 60,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Legendary Resistance (3/Day). Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "necrotic"
+      ],
+      "vulnerabilities": [
+        "radiant"
+      ],
+      "unsupported": [],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "necrotic",
+      "kademe": 3,
+      "cizgi": "nekrotik",
+      "eskiAd": "Kemik Toplayıcı Lord",
+      "unvan": {
+        "tr": "Krematoryum",
+        "en": "Crematorium"
+      },
+      "ganimet": "sepulcher-orb",
+      "ortam": [
+        "orman-kemik-acikligi",
+        "derinlikler-mezar-labirenti"
+      ],
+      "gorsel": null,
+      "faz2": {
+        "zayiflikKaldir": [
+          "radiant"
+        ],
+        "nefesDoldur": true,
+        "nefesAlan": 1.25,
+        "not": {
+          "tr": "Taş Uyanışı: Mezar Küresi kararıyor; ışık artık kemiğe işlemiyor.",
+          "en": "Stone Awakening: the Sepulcher Orb darkens; light no longer pierces the bone."
+        }
+      },
+      "gmNot": "Taş Uyanışı (PDF): her tur başında arenanın çevresinden 2 iskelet (Skeleton) çağır; bossun saldırılarına +1d8 kara alev ve 10 ft içindeki iyileşmeleri yarıya indir (elle).",
+      "riders": {
+        "Bite": {
+          "extra": [
+            {
+              "dice": "6d10",
+              "type": "necrotic"
+            }
+          ],
+          "drainMax": {
+            "type": "necrotic"
+          },
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
+        "bolum": "§5–§6",
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
+      }
+    },
+    {
+      "id": "cerbit",
+      "name": "Cerbit",
+      "size": "S",
+      "ac": 14,
+      "hp": 75,
+      "speed": 40,
+      "abilities": {
+        "str": 16,
+        "dex": 14,
+        "con": 14,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "3",
+      "attacks": [
+        {
+          "name": "Bite",
+          "bonus": 5,
+          "damage": "1d8+3 Piercing plus 1d6 Necrotic damage.",
+          "damageDice": "1d8+3",
+          "damageType": "piercing",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 2
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "necrotic"
+      ],
+      "vulnerabilities": [
+        "radiant"
+      ],
+      "unsupported": [],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "necrotic",
+      "kademe": 1,
+      "cizgi": "nekrotik",
+      "ganimet": "cracked-elemental-stone-necrotic",
+      "ortam": [
+        "orman-kemik-acikligi",
+        "derinlikler-mezar-labirenti"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Bite": {
+          "extra": [
+            {
+              "dice": "1d6",
+              "type": "necrotic"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    },
+    {
+      "id": "cerbedo",
+      "name": "Cerbedo",
+      "size": "L",
+      "ac": 16,
+      "hp": 170,
+      "speed": 50,
+      "abilities": {
+        "str": 20,
+        "dex": 14,
+        "con": 18,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "9",
+      "attacks": [
+        {
+          "name": "Bite",
+          "bonus": 7,
+          "damage": "2d8+5 Piercing plus 2d10 Necrotic damage.",
+          "damageDice": "2d8+5",
+          "damageType": "piercing",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 2
+        },
+        {
+          "name": "Lesser Crematorium Breath",
+          "bonus": 0,
+          "damage": "Con Saving Throw: DC 16. Failure: 4d6 Necrotic damage. Success: Half damage.",
+          "damageDice": "4d6",
+          "damageType": "necrotic",
+          "save": {
+            "ability": "con",
+            "dc": 16,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "cone",
+            "sizeFt": 30,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "necrotic"
+      ],
+      "vulnerabilities": [
+        "radiant"
+      ],
+      "unsupported": [],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "necrotic",
+      "kademe": 2,
+      "cizgi": "nekrotik",
+      "ganimet": "awakened-elemental-stone-necrotic",
+      "ortam": [
+        "orman-kemik-acikligi",
+        "derinlikler-mezar-labirenti"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Bite": {
+          "extra": [
+            {
+              "dice": "2d10",
+              "type": "necrotic"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    },
+    {
+      "id": "mirage",
+      "name": "Mirage, Life Stealer",
+      "size": "M",
+      "ac": 19,
+      "hp": 525,
+      "speed": 40,
+      "abilities": {
+        "str": 30,
+        "dex": 18,
+        "con": 22,
+        "int": 20,
+        "wis": 16,
+        "cha": 22
+      },
+      "saves": {
+        "dex": 11,
+        "int": 12,
+        "cha": 13
+      },
+      "darkvision": 120,
+      "cr": "24",
+      "attacks": [
+        {
+          "name": "Soul Claw",
+          "bonus": 12,
+          "damage": "1d8+10 Slashing plus 6d10 Psychic damage.",
+          "damageDice": "1d8+10",
+          "damageType": "slashing",
+          "ranged": false,
+          "reachFt": 10,
+          "repeat": 3
+        },
+        {
+          "name": "Mind Wave",
+          "bonus": 0,
+          "damage": "Int Saving Throw: DC 21. Failure: 16d10 Psychic damage. Success: Half damage.",
+          "damageDice": "16d10",
+          "damageType": "psychic",
+          "save": {
+            "ability": "int",
+            "dc": 21,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "cone",
+            "sizeFt": 60,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Legendary Resistance (3/Day). Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "psychic"
+      ],
+      "vulnerabilities": [
+        "force"
+      ],
+      "unsupported": [
+        "Durum bağışıklığı: Charmed, Frightened"
+      ],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "psychic",
+      "kademe": 3,
+      "cizgi": "psisik",
+      "eskiAd": "Ayna Zihin Avcısı",
+      "unvan": {
+        "tr": "Can Hırsızı",
+        "en": "Life Stealer"
+      },
+      "ganimet": "whisper-crystal",
+      "ortam": [
+        "col-sutun-harabesi",
+        "isinlanma-salonu",
+        "beyaz-sehir-saray-avlusu"
+      ],
+      "gorsel": null,
+      "faz2": {
+        "zayiflikKaldir": [
+          "force"
+        ],
+        "nefesDoldur": true,
+        "nefesAlan": 1.25,
+        "not": {
+          "tr": "Taş Uyanışı: Vesvese Kristali çatlıyor; suretlerin hangisinin gerçek olduğunu artık kuvvet de göstermiyor.",
+          "en": "Stone Awakening: the Whisper Crystal cracks; not even force reveals which image is real."
+        }
+      },
+      "gmNot": "Taş Uyanışı (PDF): psişik sis (anlatım); boss 2–3 gerçekçi suret yaratır (Mirror Image); her tur başında bir oyuncuya Frightened (set_condition).",
+      "riders": {
+        "Soul Claw": {
+          "extra": [
+            {
+              "dice": "6d10",
+              "type": "psychic"
+            }
+          ],
+          "conditionSave": {
+            "ability": "wis",
+            "dc": 21
+          },
+          "conditions": [
+            {
+              "condition": "Charmed",
+              "owner": "source",
+              "end": "turnEnd"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
+        "bolum": "§5–§6",
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
+      }
+    },
+    {
+      "id": "mirit",
+      "name": "Mirit",
+      "size": "S",
+      "ac": 14,
+      "hp": 75,
+      "speed": 35,
+      "abilities": {
+        "str": 16,
+        "dex": 14,
+        "con": 14,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "3",
+      "attacks": [
+        {
+          "name": "Soul Claw",
+          "bonus": 5,
+          "damage": "1d8+3 Slashing plus 1d6 Psychic damage.",
+          "damageDice": "1d8+3",
+          "damageType": "slashing",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 2
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "psychic"
+      ],
+      "vulnerabilities": [
+        "force"
+      ],
+      "unsupported": [],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "psychic",
+      "kademe": 1,
+      "cizgi": "psisik",
+      "ganimet": "cracked-elemental-stone-psychic",
+      "ortam": [
+        "col-sutun-harabesi",
+        "isinlanma-salonu",
+        "beyaz-sehir-saray-avlusu"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Soul Claw": {
+          "extra": [
+            {
+              "dice": "1d6",
+              "type": "psychic"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    },
+    {
+      "id": "mirath",
+      "name": "Mirath",
+      "size": "M",
+      "ac": 16,
+      "hp": 170,
+      "speed": 40,
+      "abilities": {
+        "str": 20,
+        "dex": 14,
+        "con": 18,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "9",
+      "attacks": [
+        {
+          "name": "Soul Claw",
+          "bonus": 7,
+          "damage": "2d8+5 Slashing plus 2d10 Psychic damage.",
+          "damageDice": "2d8+5",
+          "damageType": "slashing",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 2
+        },
+        {
+          "name": "Lesser Mind Wave",
+          "bonus": 0,
+          "damage": "Int Saving Throw: DC 16. Failure: 4d6 Psychic damage. Success: Half damage.",
+          "damageDice": "4d6",
+          "damageType": "psychic",
+          "save": {
+            "ability": "int",
+            "dc": 16,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "cone",
+            "sizeFt": 30,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "psychic"
+      ],
+      "vulnerabilities": [
+        "force"
+      ],
+      "unsupported": [
+        "Durum bağışıklığı: Charmed, Frightened"
+      ],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "psychic",
+      "kademe": 2,
+      "cizgi": "psisik",
+      "ganimet": "awakened-elemental-stone-psychic",
+      "ortam": [
+        "col-sutun-harabesi",
+        "isinlanma-salonu",
+        "beyaz-sehir-saray-avlusu"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Soul Claw": {
+          "extra": [
+            {
+              "dice": "2d10",
+              "type": "psychic"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    },
+    {
+      "id": "gongar",
+      "name": "Gongar, Bell Shell Brute",
+      "size": "H",
+      "ac": 20,
+      "hp": 465,
+      "speed": 30,
+      "abilities": {
+        "str": 28,
+        "dex": 10,
+        "con": 28,
+        "int": 6,
+        "wis": 14,
+        "cha": 10
+      },
+      "saves": {
+        "str": 16,
+        "con": 16
+      },
+      "darkvision": 120,
+      "cr": "23",
+      "attacks": [
+        {
+          "name": "Bell Slam",
+          "bonus": 11,
+          "damage": "1d8+9 Bludgeoning plus 6d10 Thunder damage.",
+          "damageDice": "1d8+9",
+          "damageType": "bludgeoning",
+          "ranged": false,
+          "reachFt": 10,
+          "repeat": 2
+        },
+        {
+          "name": "Shell Ram",
+          "bonus": 11,
+          "damage": "1d8+9 Bludgeoning plus 6d10 Thunder damage.",
+          "damageDice": "1d8+9",
+          "damageType": "bludgeoning",
+          "ranged": false,
+          "reachFt": 10,
+          "repeat": 1
+        },
+        {
+          "name": "Bell Roar",
+          "bonus": 0,
+          "damage": "Con Saving Throw: DC 20. Failure: 15d10 Thunder damage. Success: Half damage.",
+          "damageDice": "15d10",
+          "damageType": "thunder",
+          "save": {
+            "ability": "con",
+            "dc": 20,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "cone",
+            "sizeFt": 60,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Legendary Resistance (3/Day). Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "thunder"
+      ],
+      "vulnerabilities": [
+        "lightning"
+      ],
+      "unsupported": [
+        "Durum bağışıklığı: Deafened",
+        "Duyu: Blindsight 60 ft"
+      ],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "thunder",
+      "kademe": 3,
+      "cizgi": "gurultu",
+      "eskiAd": "Kör Çan Devi",
+      "unvan": {
+        "tr": "Çan Kabuklu Vahşi",
+        "en": "Bell Shell Brute"
+      },
+      "ganimet": "resonance-seal",
+      "ortam": [
+        "col-kanyon-nehri",
+        "col-sutun-harabesi",
+        "kanyon-koprusu"
+      ],
+      "gorsel": null,
+      "faz2": {
+        "zayiflikKaldir": [
+          "lightning"
+        ],
+        "nefesDoldur": true,
+        "nefesAlan": 1.25,
+        "not": {
+          "tr": "Taş Uyanışı: Çınlama Mührü kabuğu kaplıyor; yıldırım artık metale tutunmuyor.",
+          "en": "Stone Awakening: the Resonance Seal coats the shell; lightning no longer clings to the metal."
+        }
+      },
+      "gmNot": "Taş Uyanışı (PDF): her tur başında bossun 10 ft içindekiler DC 15 CON yoksa Prone (set_condition); siper sütunları yıkılmaya başlar (anlatım).",
+      "riders": {
+        "Bell Slam": {
+          "extra": [
+            {
+              "dice": "6d10",
+              "type": "thunder"
+            }
+          ],
+          "status": "uygulandı"
+        },
+        "Shell Ram": {
+          "extra": [
+            {
+              "dice": "6d10",
+              "type": "thunder"
+            }
+          ],
+          "conditions": [
+            {
+              "condition": "Deafened",
+              "saveEnds": {
+                "ability": "con",
+                "dc": 20
+              },
+              "maxRounds": 10
+            }
+          ],
+          "status": "uygulandı"
+        },
+        "Bell Roar": {
+          "prone": {
+            "save": {
+              "ability": "con",
+              "dc": 20
+            }
+          },
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
+        "bolum": "§5–§6",
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
+      }
+    },
+    {
+      "id": "twinkle",
+      "name": "Twinkle",
+      "size": "S",
+      "ac": 14,
+      "hp": 75,
+      "speed": 25,
+      "abilities": {
+        "str": 16,
+        "dex": 14,
+        "con": 14,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "3",
+      "attacks": [
+        {
+          "name": "Bell Slam",
+          "bonus": 5,
+          "damage": "1d8+3 Bludgeoning plus 1d6 Thunder damage.",
+          "damageDice": "1d8+3",
+          "damageType": "bludgeoning",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 2
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "thunder"
+      ],
+      "vulnerabilities": [
+        "lightning"
+      ],
+      "unsupported": [
+        "Duyu: Blindsight 30 ft"
+      ],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "thunder",
+      "kademe": 1,
+      "cizgi": "gurultu",
+      "ganimet": "cracked-elemental-stone-thunder",
+      "ortam": [
+        "col-kanyon-nehri",
+        "col-sutun-harabesi",
+        "kanyon-koprusu"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Bell Slam": {
+          "extra": [
+            {
+              "dice": "1d6",
+              "type": "thunder"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    },
+    {
+      "id": "gongi",
+      "name": "Gongi",
+      "size": "L",
+      "ac": 16,
+      "hp": 170,
+      "speed": 30,
+      "abilities": {
+        "str": 20,
+        "dex": 14,
+        "con": 18,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "9",
+      "attacks": [
+        {
+          "name": "Bell Slam",
+          "bonus": 7,
+          "damage": "2d8+5 Bludgeoning plus 2d10 Thunder damage.",
+          "damageDice": "2d8+5",
+          "damageType": "bludgeoning",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 2
+        },
+        {
+          "name": "Lesser Bell Roar",
+          "bonus": 0,
+          "damage": "Con Saving Throw: DC 16. Failure: 4d6 Thunder damage. Success: Half damage.",
+          "damageDice": "4d6",
+          "damageType": "thunder",
+          "save": {
+            "ability": "con",
+            "dc": 16,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "cone",
+            "sizeFt": 30,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "thunder"
+      ],
+      "vulnerabilities": [
+        "lightning"
+      ],
+      "unsupported": [
+        "Durum bağışıklığı: Deafened",
+        "Duyu: Blindsight 60 ft"
+      ],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "thunder",
+      "kademe": 2,
+      "cizgi": "gurultu",
+      "ganimet": "awakened-elemental-stone-thunder",
+      "ortam": [
+        "col-kanyon-nehri",
+        "col-sutun-harabesi",
+        "kanyon-koprusu"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Bell Slam": {
+          "extra": [
+            {
+              "dice": "2d10",
+              "type": "thunder"
+            }
+          ],
+          "status": "uygulandı"
+        },
+        "Lesser Bell Roar": {
+          "prone": {
+            "save": {
+              "ability": "con",
+              "dc": 16
+            }
+          },
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    },
+    {
+      "id": "lightaur",
+      "name": "Lightaur, Bull of Celestial",
+      "size": "L",
+      "ac": 19,
+      "hp": 432,
+      "speed": 50,
+      "abilities": {
+        "str": 28,
+        "dex": 12,
+        "con": 26,
+        "int": 10,
+        "wis": 18,
+        "cha": 20
+      },
+      "saves": {
+        "con": 15,
+        "wis": 11,
+        "cha": 12
+      },
+      "darkvision": 120,
+      "cr": "23",
+      "attacks": [
+        {
+          "name": "Gore",
+          "bonus": 11,
+          "damage": "1d8+9 Piercing plus 6d10 Radiant damage.",
+          "damageDice": "1d8+9",
+          "damageType": "piercing",
+          "ranged": false,
+          "reachFt": 10,
+          "repeat": 1
+        },
+        {
+          "name": "Hoof",
+          "bonus": 11,
+          "damage": "1d8+9 Bludgeoning plus 6d10 Radiant damage.",
+          "damageDice": "1d8+9",
+          "damageType": "bludgeoning",
+          "ranged": false,
+          "reachFt": 10,
+          "repeat": 2
+        },
+        {
+          "name": "Celestial Breath",
+          "bonus": 0,
+          "damage": "Con Saving Throw: DC 20. Failure: 15d10 Radiant damage. Success: Half damage.",
+          "damageDice": "15d10",
+          "damageType": "radiant",
+          "save": {
+            "ability": "con",
+            "dc": 20,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "cone",
+            "sizeFt": 60,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Legendary Resistance (3/Day). Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "regeneration": 10,
+      "resistances": [],
+      "immunities": [
+        "radiant"
+      ],
+      "vulnerabilities": [
+        "necrotic"
+      ],
+      "unsupported": [
+        "Durum bağışıklığı: Blinded",
+        "Trait: Illumination"
+      ],
+      "creatureType": "celestial",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "radiant",
+      "kademe": 3,
+      "cizgi": "isilti",
+      "eskiAd": "Kırık Hale Şövalyesi",
+      "unvan": {
+        "tr": "Göksel Boğa",
+        "en": "Bull of Celestial"
+      },
+      "ganimet": "blinding-sun-shard",
+      "ortam": [
+        "kasaba-demirci-tapinak",
+        "buzul-tapinak",
+        "lav-tapinagi"
+      ],
+      "gorsel": null,
+      "faz2": {
+        "zayiflikKaldir": [
+          "necrotic"
+        ],
+        "nefesDoldur": true,
+        "nefesAlan": 1.25,
+        "not": {
+          "tr": "Taş Uyanışı: Kör Güneş Parçası tavanı yırtıyor; artık hiçbir gölge onu yaralamıyor.",
+          "en": "Stone Awakening: the Blinding Sun Shard tears the ceiling; no shadow can wound it now."
+        }
+      },
+      "gmNot": "Taş Uyanışı (PDF): katedral tavanı açılır, harita parlak ışıkla dolar (anlatım); her tur başında bossun 15 ft içindekiler DC 15 CON yoksa 1 tur Blinded (set_condition).",
+      "riders": {
+        "Gore": {
+          "extra": [
+            {
+              "dice": "6d10",
+              "type": "radiant"
+            }
+          ],
+          "conditionSave": {
+            "ability": "con",
+            "dc": 20
+          },
+          "conditions": [
+            {
+              "condition": "Blinded",
+              "owner": "source",
+              "end": "turnEnd"
+            }
+          ],
+          "charge": {
+            "feet": 20,
+            "prone": true,
+            "save": {
+              "ability": "str",
+              "dc": 20
+            }
+          },
+          "status": "uygulandı"
+        },
+        "Hoof": {
+          "extra": [
+            {
+              "dice": "6d10",
+              "type": "radiant"
+            }
+          ],
+          "status": "uygulandı"
+        },
+        "Celestial Breath": {
+          "conditionSave": {
+            "ability": "con",
+            "dc": 20
+          },
+          "conditions": [
+            {
+              "condition": "Blinded",
+              "owner": "source",
+              "end": "turnEnd"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
+        "bolum": "§5–§6",
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
+      }
+    },
+    {
+      "id": "lumbo",
+      "name": "Lumbo",
+      "size": "S",
+      "ac": 14,
+      "hp": 75,
+      "speed": 40,
+      "abilities": {
+        "str": 16,
+        "dex": 14,
+        "con": 14,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "3",
+      "attacks": [
+        {
+          "name": "Gore",
+          "bonus": 5,
+          "damage": "1d8+3 Piercing plus 1d6 Radiant damage.",
+          "damageDice": "1d8+3",
+          "damageType": "piercing",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 2
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "radiant"
+      ],
+      "vulnerabilities": [
+        "necrotic"
+      ],
+      "unsupported": [
+        "Trait: Illumination"
+      ],
+      "creatureType": "celestial",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "radiant",
+      "kademe": 1,
+      "cizgi": "isilti",
+      "ganimet": "cracked-elemental-stone-radiant",
+      "ortam": [
+        "kasaba-demirci-tapinak",
+        "buzul-tapinak",
+        "lav-tapinagi"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Gore": {
+          "extra": [
+            {
+              "dice": "1d6",
+              "type": "radiant"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    },
+    {
+      "id": "lighty",
+      "name": "Lighty",
+      "size": "L",
+      "ac": 16,
+      "hp": 170,
+      "speed": 50,
+      "abilities": {
+        "str": 20,
+        "dex": 14,
+        "con": 18,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "9",
+      "attacks": [
+        {
+          "name": "Gore",
+          "bonus": 7,
+          "damage": "2d8+5 Piercing plus 2d10 Radiant damage.",
+          "damageDice": "2d8+5",
+          "damageType": "piercing",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 2
+        },
+        {
+          "name": "Lesser Celestial Breath",
+          "bonus": 0,
+          "damage": "Con Saving Throw: DC 16. Failure: 4d6 Radiant damage. Success: Half damage.",
+          "damageDice": "4d6",
+          "damageType": "radiant",
+          "save": {
+            "ability": "con",
+            "dc": 16,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "cone",
+            "sizeFt": 30,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "regeneration": 5,
+      "resistances": [],
+      "immunities": [
+        "radiant"
+      ],
+      "vulnerabilities": [
+        "necrotic"
+      ],
+      "unsupported": [
+        "Durum bağışıklığı: Blinded"
+      ],
+      "creatureType": "celestial",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "radiant",
+      "kademe": 2,
+      "cizgi": "isilti",
+      "ganimet": "awakened-elemental-stone-radiant",
+      "ortam": [
+        "kasaba-demirci-tapinak",
+        "buzul-tapinak",
+        "lav-tapinagi"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Gore": {
+          "extra": [
+            {
+              "dice": "2d10",
+              "type": "radiant"
+            }
+          ],
+          "status": "uygulandı"
+        },
+        "Lesser Celestial Breath": {
+          "conditions": [
+            {
+              "condition": "Blinded",
+              "owner": "source",
+              "end": "turnEnd"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    },
+    {
+      "id": "hydraxe",
+      "name": "Hydraxe, Sulphur Hydra",
+      "size": "H",
+      "ac": 19,
+      "hp": 419,
+      "speed": 30,
+      "abilities": {
+        "str": 28,
+        "dex": 12,
+        "con": 28,
+        "int": 4,
+        "wis": 12,
+        "cha": 8
+      },
+      "saves": {
+        "con": 16
+      },
+      "darkvision": 120,
+      "cr": "22",
+      "attacks": [
+        {
+          "name": "Bite",
+          "bonus": 11,
+          "damage": "1d8+9 Piercing plus 5d10 Acid damage.",
+          "damageDice": "1d8+9",
+          "damageType": "piercing",
+          "ranged": false,
+          "reachFt": 10,
+          "repeat": 3
+        },
+        {
+          "name": "Sulphur Spray",
+          "bonus": 0,
+          "damage": "Dex Saving Throw: DC 20. Failure: 13d10 Acid damage. Success: Half damage.",
+          "damageDice": "13d10",
+          "damageType": "acid",
+          "save": {
+            "ability": "dex",
+            "dc": 20,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "line",
+            "sizeFt": 60,
+            "widthFt": 10,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Legendary Resistance (3/Day). Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "acid"
+      ],
+      "vulnerabilities": [
+        "fire"
+      ],
+      "unsupported": [],
+      "creatureType": "fiend",
+      "swim": 40,
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "acid",
+      "kademe": 3,
+      "cizgi": "asit",
+      "eskiAd": "Sülfür Hidrası",
+      "unvan": {
+        "tr": "Sülfür Hidrası",
+        "en": "Sulphur Hydra"
+      },
+      "ganimet": "dissolution-drop",
+      "ortam": [
+        "batak-cukur",
+        "batak-adalar",
+        "batak-kale",
+        "bataklik"
+      ],
+      "gorsel": null,
+      "faz2": {
+        "zayiflikKaldir": [
+          "fire"
+        ],
+        "nefesDoldur": true,
+        "nefesAlan": 1.25,
+        "not": {
+          "tr": "Taş Uyanışı: Erime Damlası boyunlara yayılıyor; ateş artık dağlamıyor.",
+          "en": "Stone Awakening: the Dissolution Drop spreads through the necks; fire no longer cauterizes."
+        }
+      },
+      "gmNot": "Taş Uyanışı (PDF): kopan başın 10 ft çevresi kalıcı asit yüzeyi (place_surface); her yakın dövüş isabetinde saldırana 1d8 asit (elle).",
+      "riders": {
+        "Bite": {
+          "extra": [
+            {
+              "dice": "5d10",
+              "type": "acid"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
+        "bolum": "§5–§6",
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
+      }
+    },
+    {
+      "id": "hydrop",
+      "name": "Hydrop",
+      "size": "S",
+      "ac": 13,
+      "hp": 60,
+      "speed": 20,
+      "abilities": {
+        "str": 16,
+        "dex": 14,
+        "con": 14,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "2",
+      "attacks": [
+        {
+          "name": "Bite",
+          "bonus": 5,
+          "damage": "1d10+3 Piercing plus 2d6 Acid damage.",
+          "damageDice": "1d10+3",
+          "damageType": "piercing",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 1
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": false,
+      "resistances": [],
+      "immunities": [
+        "acid"
+      ],
+      "vulnerabilities": [
+        "fire"
+      ],
+      "unsupported": [],
+      "creatureType": "fiend",
+      "swim": 30,
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "acid",
+      "kademe": 1,
+      "cizgi": "asit",
+      "ganimet": "cracked-elemental-stone-acid",
+      "ortam": [
+        "batak-cukur",
+        "batak-adalar",
+        "batak-kale",
+        "bataklik"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Bite": {
+          "extra": [
+            {
+              "dice": "2d6",
+              "type": "acid"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    },
+    {
+      "id": "hydras",
+      "name": "Hydras",
+      "size": "L",
+      "ac": 16,
+      "hp": 150,
+      "speed": 30,
+      "abilities": {
+        "str": 20,
+        "dex": 14,
+        "con": 18,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "8",
+      "attacks": [
+        {
+          "name": "Bite",
+          "bonus": 7,
+          "damage": "2d8+5 Piercing plus 2d8 Acid damage.",
+          "damageDice": "2d8+5",
+          "damageType": "piercing",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 2
+        },
+        {
+          "name": "Lesser Sulphur Spray",
+          "bonus": 0,
+          "damage": "Dex Saving Throw: DC 16. Failure: 4d6 Acid damage. Success: Half damage.",
+          "damageDice": "4d6",
+          "damageType": "acid",
+          "save": {
+            "ability": "dex",
+            "dc": 16,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "line",
+            "sizeFt": 30,
+            "widthFt": 10,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "acid"
+      ],
+      "vulnerabilities": [
+        "fire"
+      ],
+      "unsupported": [],
+      "creatureType": "fiend",
+      "swim": 40,
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "acid",
+      "kademe": 2,
+      "cizgi": "asit",
+      "ganimet": "awakened-elemental-stone-acid",
+      "ortam": [
+        "batak-cukur",
+        "batak-adalar",
+        "batak-kale",
+        "bataklik"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Bite": {
+          "extra": [
+            {
+              "dice": "2d8",
+              "type": "acid"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    },
+    {
+      "id": "mothraq",
+      "name": "Mothraq, Spore Moth",
+      "size": "H",
+      "ac": 19,
+      "hp": 421,
+      "speed": 20,
+      "fly": 60,
+      "abilities": {
+        "str": 28,
+        "dex": 18,
+        "con": 26,
+        "int": 8,
+        "wis": 14,
+        "cha": 10
+      },
+      "saves": {
+        "dex": 11,
+        "con": 15
+      },
+      "darkvision": 120,
+      "cr": "22",
+      "attacks": [
+        {
+          "name": "Proboscis",
+          "bonus": 11,
+          "damage": "1d8+9 Piercing plus 5d10 Poison damage.",
+          "damageDice": "1d8+9",
+          "damageType": "piercing",
+          "ranged": false,
+          "reachFt": 10,
+          "repeat": 1
+        },
+        {
+          "name": "Wing",
+          "bonus": 11,
+          "damage": "1d8+9 Bludgeoning plus 5d10 Poison damage.",
+          "damageDice": "1d8+9",
+          "damageType": "bludgeoning",
+          "ranged": false,
+          "reachFt": 10,
+          "repeat": 2
+        },
+        {
+          "name": "Spore Storm",
+          "bonus": 0,
+          "damage": "Con Saving Throw: DC 20. Failure: 13d10 Poison damage. Success: Half damage.",
+          "damageDice": "13d10",
+          "damageType": "poison",
+          "save": {
+            "ability": "con",
+            "dc": 20,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "cone",
+            "sizeFt": 60,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Legendary Resistance (3/Day). Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "poison"
+      ],
+      "vulnerabilities": [
+        "radiant"
+      ],
+      "unsupported": [
+        "Durum bağışıklığı: Poisoned"
+      ],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "poison",
+      "kademe": 3,
+      "cizgi": "zehir",
+      "eskiAd": "Spor Hükümdarı",
+      "unvan": {
+        "tr": "Spor Güvesi",
+        "en": "Spore Moth"
+      },
+      "ganimet": "venom-essence",
+      "ortam": [
+        "derinlikler-mantar-magarasi",
+        "orman-kemik-acikligi",
+        "orman-heykel-golu"
+      ],
+      "gorsel": null,
+      "faz2": {
+        "zayiflikKaldir": [
+          "radiant"
+        ],
+        "nefesDoldur": true,
+        "nefesAlan": 1.25,
+        "not": {
+          "tr": "Taş Uyanışı: Ağu Özü kanatlara işliyor; ışık artık sporları yakmıyor.",
+          "en": "Stone Awakening: the Venom Essence seeps into the wings; light no longer burns the spores."
+        }
+      },
+      "gmNot": "Taş Uyanışı (PDF): arenaya 3 hareketli zehir bulutu (place_surface); bossun kendi turunda 20 ft içindeki ölü düşmanlar spor hizmetkârına döner (Game Master çağırır).",
+      "riders": {
+        "Proboscis": {
+          "extra": [
+            {
+              "dice": "5d10",
+              "type": "poison"
+            }
+          ],
+          "conditions": [
+            {
+              "condition": "Poisoned",
+              "saveEnds": {
+                "ability": "con",
+                "dc": 20
+              },
+              "maxRounds": 10
+            }
+          ],
+          "status": "uygulandı"
+        },
+        "Wing": {
+          "extra": [
+            {
+              "dice": "5d10",
+              "type": "poison"
+            }
+          ],
+          "status": "uygulandı"
+        },
+        "Spore Storm": {
+          "conditions": [
+            {
+              "condition": "Poisoned",
+              "owner": "source",
+              "end": "turnEnd"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
+        "bolum": "§5–§6",
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
+      }
+    },
+    {
+      "id": "sporlet",
+      "name": "Sporlet",
+      "size": "S",
+      "ac": 13,
+      "hp": 60,
+      "speed": 10,
+      "fly": 30,
+      "abilities": {
+        "str": 16,
+        "dex": 14,
+        "con": 14,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "2",
+      "attacks": [
+        {
+          "name": "Proboscis",
+          "bonus": 5,
+          "damage": "1d10+3 Piercing plus 2d6 Poison damage.",
+          "damageDice": "1d10+3",
+          "damageType": "piercing",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 1
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": false,
+      "resistances": [],
+      "immunities": [
+        "poison"
+      ],
+      "vulnerabilities": [
+        "radiant"
+      ],
+      "unsupported": [
+        "Durum bağışıklığı: Poisoned"
+      ],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "poison",
+      "kademe": 1,
+      "cizgi": "zehir",
+      "ganimet": "cracked-elemental-stone-poison",
+      "ortam": [
+        "derinlikler-mantar-magarasi",
+        "orman-kemik-acikligi",
+        "orman-heykel-golu"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Proboscis": {
+          "extra": [
+            {
+              "dice": "2d6",
+              "type": "poison"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    },
+    {
+      "id": "mothcoon",
+      "name": "Mothcoon",
+      "size": "L",
+      "ac": 16,
+      "hp": 150,
+      "speed": 20,
+      "fly": 50,
+      "abilities": {
+        "str": 20,
+        "dex": 14,
+        "con": 18,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "8",
+      "attacks": [
+        {
+          "name": "Proboscis",
+          "bonus": 7,
+          "damage": "2d8+5 Piercing plus 2d8 Poison damage.",
+          "damageDice": "2d8+5",
+          "damageType": "piercing",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 2
+        },
+        {
+          "name": "Lesser Spore Storm",
+          "bonus": 0,
+          "damage": "Con Saving Throw: DC 16. Failure: 4d6 Poison damage. Success: Half damage.",
+          "damageDice": "4d6",
+          "damageType": "poison",
+          "save": {
+            "ability": "con",
+            "dc": 16,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "cone",
+            "sizeFt": 30,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "poison"
+      ],
+      "vulnerabilities": [
+        "radiant"
+      ],
+      "unsupported": [
+        "Durum bağışıklığı: Poisoned"
+      ],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "poison",
+      "kademe": 2,
+      "cizgi": "zehir",
+      "ganimet": "awakened-elemental-stone-poison",
+      "ortam": [
+        "derinlikler-mantar-magarasi",
+        "orman-kemik-acikligi",
+        "orman-heykel-golu"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Proboscis": {
+          "extra": [
+            {
+              "dice": "2d8",
+              "type": "poison"
+            }
+          ],
+          "status": "uygulandı"
+        },
+        "Lesser Spore Storm": {
+          "conditions": [
+            {
+              "condition": "Poisoned",
+              "owner": "source",
+              "end": "turnEnd"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    },
+    {
+      "id": "stormer",
+      "name": "Stormer, Thunder Stallion",
+      "size": "L",
+      "ac": 19,
+      "hp": 338,
+      "speed": 90,
+      "abilities": {
+        "str": 28,
+        "dex": 20,
+        "con": 26,
+        "int": 8,
+        "wis": 14,
+        "cha": 12
+      },
+      "saves": {
+        "dex": 12,
+        "con": 15
+      },
+      "darkvision": 120,
+      "cr": "21",
+      "attacks": [
+        {
+          "name": "Hoof",
+          "bonus": 11,
+          "damage": "2d8+9 Bludgeoning plus 7d10 Lightning damage.",
+          "damageDice": "2d8+9",
+          "damageType": "bludgeoning",
+          "ranged": false,
+          "reachFt": 10,
+          "repeat": 2
+        },
+        {
+          "name": "Lightning Gale",
+          "bonus": 0,
+          "damage": "Dex Saving Throw: DC 20. Failure: 12d10 Lightning damage. Success: Half damage.",
+          "damageDice": "12d10",
+          "damageType": "lightning",
+          "save": {
+            "ability": "dex",
+            "dc": 20,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "line",
+            "sizeFt": 100,
+            "widthFt": 10,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Legendary Resistance (3/Day). Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "bonusActions": [
+        "dash",
+        "disengage"
+      ],
+      "resistances": [],
+      "immunities": [
+        "lightning"
+      ],
+      "vulnerabilities": [],
+      "unsupported": [],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "lightning",
+      "kademe": 3,
+      "cizgi": "yildirim",
+      "eskiAd": "Şimşek Süvarisi",
+      "unvan": {
+        "tr": "Gök Gürültüsü Aygırı",
+        "en": "Thunder Stallion"
+      },
+      "ganimet": "storm-spire",
+      "ortam": [
+        "dag-kayalik",
+        "dag-kopru",
+        "dag-nobetci",
+        "dag"
+      ],
+      "gorsel": null,
+      "faz2": {
+        "geciciCan": 42,
+        "nefesDoldur": true,
+        "nefesAlan": 1.25,
+        "not": {
+          "tr": "Taş Uyanışı: Fırtına Mili yeleye saplanıyor; gök artık onun için çakıyor, fırtına onu bir zırh gibi sarıyor.",
+          "en": "Stone Awakening: the Storm Spire pierces the mane; the sky strikes for it now, wrapping it like armor."
+        }
+      },
+      "gmNot": "Taş Uyanışı (PDF): yağmur şiddetlenir, rastgele su altıgenleri açılır (place_surface su); her turun sonunda en yüksek irtifadaki ya da metal zırhlı hedefe yıldırım (Game Master seçer).",
+      "riders": {
+        "Hoof": {
+          "extra": [
+            {
+              "dice": "7d10",
+              "type": "lightning"
+            }
+          ],
+          "charge": {
+            "feet": 20,
+            "prone": true,
+            "save": {
+              "ability": "str",
+              "dc": 20
+            }
+          },
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
+        "bolum": "§5–§6",
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
+      }
+    },
+    {
+      "id": "sparkle",
+      "name": "Sparkle",
+      "size": "S",
+      "ac": 13,
+      "hp": 60,
+      "speed": 60,
+      "abilities": {
+        "str": 16,
+        "dex": 14,
+        "con": 14,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "2",
+      "attacks": [
+        {
+          "name": "Hoof",
+          "bonus": 5,
+          "damage": "1d10+3 Bludgeoning plus 2d6 Lightning damage.",
+          "damageDice": "1d10+3",
+          "damageType": "bludgeoning",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 1
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": false,
+      "bonusActions": [
+        "disengage"
+      ],
+      "resistances": [],
+      "immunities": [
+        "lightning"
+      ],
+      "vulnerabilities": [],
+      "unsupported": [],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "lightning",
+      "kademe": 1,
+      "cizgi": "yildirim",
+      "ganimet": "cracked-elemental-stone-lightning",
+      "ortam": [
+        "dag-kayalik",
+        "dag-kopru",
+        "dag-nobetci",
+        "dag"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Hoof": {
+          "extra": [
+            {
+              "dice": "2d6",
+              "type": "lightning"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    },
+    {
+      "id": "thunderse",
+      "name": "Thunderse",
+      "size": "L",
+      "ac": 16,
+      "hp": 150,
+      "speed": 70,
+      "abilities": {
+        "str": 20,
+        "dex": 14,
+        "con": 18,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "8",
+      "attacks": [
+        {
+          "name": "Hoof",
+          "bonus": 7,
+          "damage": "2d8+5 Bludgeoning plus 2d8 Lightning damage.",
+          "damageDice": "2d8+5",
+          "damageType": "bludgeoning",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 2
+        },
+        {
+          "name": "Lesser Lightning Gale",
+          "bonus": 0,
+          "damage": "Dex Saving Throw: DC 16. Failure: 4d6 Lightning damage. Success: Half damage.",
+          "damageDice": "4d6",
+          "damageType": "lightning",
+          "save": {
+            "ability": "dex",
+            "dc": 16,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "line",
+            "sizeFt": 50,
+            "widthFt": 10,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "lightning"
+      ],
+      "vulnerabilities": [],
+      "unsupported": [],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "lightning",
+      "kademe": 2,
+      "cizgi": "yildirim",
+      "ganimet": "awakened-elemental-stone-lightning",
+      "ortam": [
+        "dag-kayalik",
+        "dag-kopru",
+        "dag-nobetci",
+        "dag"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Hoof": {
+          "extra": [
+            {
+              "dice": "2d8",
+              "type": "lightning"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    },
+    {
+      "id": "wolfgang",
+      "name": "Wolfgang, Blizzard Wolf",
+      "size": "H",
+      "ac": 19,
+      "hp": 319,
+      "speed": 50,
+      "abilities": {
+        "str": 26,
+        "dex": 14,
+        "con": 26,
+        "int": 8,
+        "wis": 14,
+        "cha": 10
+      },
+      "saves": {
+        "con": 14,
+        "wis": 8
+      },
+      "darkvision": 120,
+      "cr": "20",
+      "attacks": [
+        {
+          "name": "Bite",
+          "bonus": 10,
+          "damage": "1d8+8 Piercing plus 6d10 Cold damage.",
+          "damageDice": "1d8+8",
+          "damageType": "piercing",
+          "ranged": false,
+          "reachFt": 10,
+          "repeat": 1
+        },
+        {
+          "name": "Claw",
+          "bonus": 10,
+          "damage": "1d8+8 Slashing plus 6d10 Cold damage.",
+          "damageDice": "1d8+8",
+          "damageType": "slashing",
+          "ranged": false,
+          "reachFt": 10,
+          "repeat": 1
+        },
+        {
+          "name": "Blizzard Breath",
+          "bonus": 0,
+          "damage": "Con Saving Throw: DC 19. Failure: 10d10 Cold damage. Success: Half damage.",
+          "damageDice": "10d10",
+          "damageType": "cold",
+          "save": {
+            "ability": "con",
+            "dc": 19,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "cone",
+            "sizeFt": 60,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Legendary Resistance (3/Day). Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "cold"
+      ],
+      "vulnerabilities": [
+        "fire"
+      ],
+      "unsupported": [
+        "Hız: Climb 30 ft",
+        "Trait: Ice Walk"
+      ],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "cold",
+      "kademe": 3,
+      "cizgi": "soguk",
+      "eskiAd": "Tipi Yutan Dev",
+      "unvan": {
+        "tr": "Tipi Kurdu",
+        "en": "Blizzard Wolf"
+      },
+      "ganimet": "frost-heart",
+      "ortam": [
+        "buzul-kayalik",
+        "buzul-acik",
+        "buzul-tapinak",
+        "buzul-kamp"
+      ],
+      "gorsel": null,
+      "faz2": {
+        "zayiflikKaldir": [
+          "fire"
+        ],
+        "nefesDoldur": true,
+        "nefesAlan": 1.25,
+        "not": {
+          "tr": "Taş Uyanışı: Ayaz Kalbi kükrüyor; alev artık buzunu eritmiyor.",
+          "en": "Stone Awakening: the Frost Heart roars; flame no longer melts its ice."
+        }
+      },
+      "gmNot": "Taş Uyanışı (PDF): haritanın yarısı kaygan buz yüzeyine döner (place_surface buz); tipi görüş menzilini 30 ft'e düşürür (anlatım); buz üstündekilere boss avantajla vurur (elle).",
+      "riders": {
+        "Bite": {
+          "extra": [
+            {
+              "dice": "6d10",
+              "type": "cold"
+            }
+          ],
+          "conditionSave": {
+            "ability": "str",
+            "dc": 19
+          },
+          "conditions": [
+            {
+              "condition": "Restrained",
+              "owner": "source",
+              "end": "turnEnd"
+            }
+          ],
+          "status": "uygulandı"
+        },
+        "Claw": {
+          "extra": [
+            {
+              "dice": "6d10",
+              "type": "cold"
+            }
+          ],
+          "status": "uygulandı"
+        },
+        "Blizzard Breath": {
+          "conditions": [
+            {
+              "condition": "Restrained",
+              "owner": "source",
+              "end": "turnEnd"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
+        "bolum": "§5–§6",
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
+      }
+    },
+    {
+      "id": "doggie",
+      "name": "Doggie",
+      "size": "S",
+      "ac": 13,
+      "hp": 60,
+      "speed": 40,
+      "abilities": {
+        "str": 16,
+        "dex": 14,
+        "con": 14,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "2",
+      "attacks": [
+        {
+          "name": "Bite",
+          "bonus": 5,
+          "damage": "1d10+3 Piercing plus 2d6 Cold damage.",
+          "damageDice": "1d10+3",
+          "damageType": "piercing",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 1
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": false,
+      "resistances": [],
+      "immunities": [
+        "cold"
+      ],
+      "vulnerabilities": [
+        "fire"
+      ],
+      "unsupported": [
+        "Trait: Ice Walk"
+      ],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "cold",
+      "kademe": 1,
+      "cizgi": "soguk",
+      "ganimet": "cracked-elemental-stone-cold",
+      "ortam": [
+        "buzul-kayalik",
+        "buzul-acik",
+        "buzul-tapinak",
+        "buzul-kamp"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Bite": {
+          "extra": [
+            {
+              "dice": "2d6",
+              "type": "cold"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    },
+    {
+      "id": "wolfie",
+      "name": "Wolfie",
+      "size": "L",
+      "ac": 16,
+      "hp": 150,
+      "speed": 50,
+      "abilities": {
+        "str": 20,
+        "dex": 14,
+        "con": 18,
+        "int": 6,
+        "wis": 12,
+        "cha": 8
+      },
+      "darkvision": 60,
+      "cr": "8",
+      "attacks": [
+        {
+          "name": "Bite",
+          "bonus": 7,
+          "damage": "2d8+5 Piercing plus 2d8 Cold damage.",
+          "damageDice": "2d8+5",
+          "damageType": "piercing",
+          "ranged": false,
+          "reachFt": 5,
+          "repeat": 2
+        },
+        {
+          "name": "Lesser Blizzard Breath",
+          "bonus": 0,
+          "damage": "Con Saving Throw: DC 16. Failure: 4d6 Cold damage. Success: Half damage.",
+          "damageDice": "4d6",
+          "damageType": "cold",
+          "save": {
+            "ability": "con",
+            "dc": 16,
+            "halfOnSave": true
+          },
+          "area": {
+            "shape": "cone",
+            "sizeFt": 30,
+            "origin": "self",
+            "targets": "all"
+          },
+          "recharge": 5,
+          "repeat": 0,
+          "ranged": false
+        }
+      ],
+      "traits": "Mühür Ruhu (KATALOG-1 F).",
+      "multiattack": true,
+      "resistances": [],
+      "immunities": [
+        "cold"
+      ],
+      "vulnerabilities": [
+        "fire"
+      ],
+      "unsupported": [
+        "Hız: Climb 30 ft",
+        "Trait: Ice Walk"
+      ],
+      "creatureType": "fiend",
+      "kaynak": "katalog-1",
+      "sinif": "muhur-ruhu",
+      "element": "cold",
+      "kademe": 2,
+      "cizgi": "soguk",
+      "ganimet": "awakened-elemental-stone-cold",
+      "ortam": [
+        "buzul-kayalik",
+        "buzul-acik",
+        "buzul-tapinak",
+        "buzul-kamp"
+      ],
+      "gorsel": null,
+      "riders": {
+        "Bite": {
+          "extra": [
+            {
+              "dice": "2d8",
+              "type": "cold"
+            }
+          ],
+          "status": "uygulandı"
+        },
+        "Lesser Blizzard Breath": {
+          "conditions": [
+            {
+              "condition": "Restrained",
+              "owner": "source",
+              "end": "turnEnd"
+            }
+          ],
+          "status": "uygulandı"
+        }
+      },
+      "katalog": {
+        "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
+      }
+    }
+  ]
+}

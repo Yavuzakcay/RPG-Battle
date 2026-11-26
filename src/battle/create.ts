@@ -575,8 +575,9 @@ export function combatantFromMonster(
 ): Combatant {
   const v = opts.kuralSurumu ?? defaultRuleVersion();
   const monster = monsterAt(monster0, v);
-  const type = creatureTypeAt(monster.id, v);
-  const swimFt = swimSpeedAt(monster.id, v);
+  // KATALOG-1 F: özgün katalog canavarında (SRD tablosunda yok) tür ve yüzme hızı kendi kaydından.
+  const type = creatureTypeAt(monster.id, v) ?? monster.creatureType;
+  const swimFt = swimSpeedAt(monster.id, v) ?? monster.swim;
   const mods = {} as Scores;
   for (const a of ABILITIES) mods[a as Ability] = abilityModifier(monster.abilities[a]);
   const who = { skills: monster.skills ?? {}, modifiers: mods };

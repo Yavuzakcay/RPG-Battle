@@ -39,6 +39,8 @@ export const environments = environmentsJson as Environment[];
  * Liste aynı dizi nesnesidir (yüklenince içi dolar); yüklenmeden `getMonster` "yüklenmedi" hatası verir.
  */
 export const monsters: Monster[] = [];
+/** KATALOG-1 F: özgün katalog canavarları (Mühür Ruhu bossları ve evrimleri; `data/bosslar-muhur.json`), `loadMonsters` doldurur. */
+export const katalogMonsters: Monster[] = [];
 /**
  * Canavar saldırı ek etkileri (`data/attack-riders.json`, battle/riders.ts okur). Yalnızca canavarlarla
  * birlikte gerekir; aynı tembel yüklemede doldurulur.
@@ -49,10 +51,16 @@ export const monsterSpells: Record<string, unknown> = {};
 let monstersLoading: Promise<Monster[]> | null = null;
 export const monstersLoaded = () => monsters.length > 0;
 export function loadMonsters(): Promise<Monster[]> {
-  monstersLoading ??= Promise.all([import('../../data/monsters.json'), import('../../data/attack-riders.json'), import('../../data/canavar-buyuleri.json')]).then(([m, r, sp]) => {
+  monstersLoading ??= Promise.all([import('../../data/monsters.json'), import('../../data/attack-riders.json'), import('../../data/canavar-buyuleri.json'), import('../../data/bosslar-muhur.json')]).then(([m, r, sp, k]) => {
     if (monsters.length === 0) monsters.push(...(m.default as Monster[]));
     Object.assign(monsterSpells, sp.default);
     Object.assign(attackRiders, (r.default as { attacks: Record<string, unknown> }).attacks);
+    // KATALOG-1 F: Mühür Ruhu katalog canavarları ayrı dizide (SRD listesi 330 kalır); saldırı ekleri ortak tabloya.
+    if (katalogMonsters.length === 0) {
+      const list = (k.default as unknown as { canavarlar: Monster[] }).canavarlar;
+      katalogMonsters.push(...list);
+      for (const c of list) for (const [atk, spec] of Object.entries(c.riders ?? {})) attackRiders[`${c.id}:${atk}`] = spec;
+    }
     return monsters;
   });
   return monstersLoading;
@@ -180,5 +188,5 @@ export const getClass = (id: string) => byId(classes, id, 'Sınıf');
 export const getEnvironment = (id: string) => byId(environments, id, 'Ortam');
 export const getMonster = (id: string) => {
   if (!monstersLoaded()) throw new Error('Canavar verisi henüz yüklenmedi (önce loadMonsters).');
-  return byId(monsters, id, 'Canavar');
+  return katalogMonsters.find((m) => m.id === id) ?? byId(monsters, id, 'Canavar');
 };

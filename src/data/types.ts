@@ -1192,6 +1192,14 @@ export interface Monster {
   id: string;
   /** Görev KATALOG-F0: yarı can fazı (107+). */
   faz2?: Faz2Block;
+  /**
+   * KATALOG-1 F: özgün katalog canavarı (`data/bosslar-muhur.json`; SRD tablosu `canavar-turleri.json`/`yuzme-hizi.json` dışında):
+   * yaratık türü ve yüzme hızı (ft) kendi kaydında; saldırı ekleri `riders` (anahtar saldırı adı, `attack-riders.json` biçimi).
+   */
+  creatureType?: string;
+  swim?: number;
+  kaynak?: string;
+  riders?: Record<string, unknown>;
   name: string;
   /** KAPSAM103 (kural sürümü 103+): SRD stat bloğundaki "Initiative +X" (`scripts/srd-canavar.mjs`; yoksa DEX değiştiricisi). */
   initiative?: number;
