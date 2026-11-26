@@ -526,7 +526,9 @@ Etkilenen metinler:
 - Düşman tarafında karakter sayfasıyla savaşçı kurma yolu yok: `combatantFromSheet` yalnız parti için çağrılıyor (`app/setup.ts`, `app/journeyBattle.ts`).
 - Alt sınıflar yerel pakette var (`icerik/ek-wizard.json` Aldatma, `ek-sorcerer.json` Ceren Ürperten ve İlahi Kan, `ek-warlock.json` Hortlak ve Kargışçı, `ek-barbarian.json` Heybet Yolu, `ek-fighter.json` Pehlivan, `ek-paladin.json` Asi). Paket depo dışı; APK'da yok (AS2 ürün sorunu).
 
-**Öneri:** üç ana boss **düz canavar stat bloğu** olarak girer. AC/HP, saldırılar, büyüler (`canavar-buyuleri.json`), tepkiler (`monster-reactions.json`), yetenekler (`canavar-yetenekleri.json`) ve efsanevi eylemler (`efsanevi.json`) veriden gelir. Çoklu sınıf yapısı yalnız Dungeondex anlatımı olur. MC birleşip "düşman karakter sayfası" yolu yazılırsa yeniden değerlendirilir.
+**Karar K4 (2026-11-26):** üç ana boss ne karakter ne boss stat bloğu olarak şimdi girmez; multiclass işi bittikten sonra ayrıca kurulur. İmza eşyaları B–D'de katalog eşyası olarak girer. Aşağıdaki öneri arşivdir.
+
+**Öneri (arşiv):** üç ana boss **düz canavar stat bloğu** olarak girer. AC/HP, saldırılar, büyüler (`canavar-buyuleri.json`), tepkiler (`monster-reactions.json`), yetenekler (`canavar-yetenekleri.json`) ve efsanevi eylemler (`efsanevi.json`) veriden gelir. Çoklu sınıf yapısı yalnız Dungeondex anlatımı olur. MC birleşip "düşman karakter sayfası" yolu yazılırsa yeniden değerlendirilir.
 
 Kaba can hesabı (≈145 / ≈239 / ≈191) bu kadim yaratıkların (740–1.850) çok altında; PDF bunu bağışıklık ve fazlarla telafi ediyor. CR verilmediği için denge simi zorunlu.
 
@@ -830,14 +832,58 @@ Ortak hazırlık **P0** önce gelir; sonra A–E paralel değil sıralı (her bi
 | **C** Giyilebilir (55) | 31 çalışır; 24 kanca (tetik/koşul) | P0, O5 (yuva) | aynı + `builder.ts` `characterIssues`, `strings*.ts` `issues` | oluşturucu testleri, ekran görüntüsü (tek) | yuva kuralı eski kayıtları "sorunlu" gösterir |
 | **D** Yüzük, tılsım, mühür taşı (45 + Sv.1/Sv.2 taşı + Mühür) | 26 çalışır; 16 kanca; taşlar bağımsız tılsım; 3 zanaat eklentisi yalnız veri | P0, O5, karar K3 | aynı | srdIds, savaş testi (tılsım modu) | taş modu kararı (K3) |
 | **E** Tüketilebilir (45) | 9 çalışır; 24 kanca (O7/O8); 12 ok sistem (yalnız veri + `offCombat` notu) | P0; O7 (kural sürümü), O8 | aynı + `items.ts`, `types.ts` `ItemUse`, `battleSave.ts` (O8 kayıt alanı) | items testleri, savaş testi | O7 kural sürümü; ok sistemi büyük iş |
-| **F** Bosslar ve yaratıklar | Kıta I, Anka, Yıldız-Kâbusu (31 → 19 ya da yeni kademe), mücevher ejderhaları (veri tamamlanınca), Mora/Tarvok/Kaltakkıran düz stat bloğu, 10 bölge bossu (stat tasarımı); efsanevi eylemler; fazlar planlı | P0 (O12); karar K1, K2, K4, K5, K6, K7 | `data/katalog-bosslar.json`, `data/efsanevi.json`, `data/canavar-yetenekleri.json`, `data/monster-reactions.json`, `src/data/index.ts`, Game Master seçici, `public/monsters/` | boss senaryosu `data/sim-boss.json` + `npm run sim:boss -- 100` (yeni boss, 100 tohum), `check:harita` | stat bloğu tasarımı PDF'te eksik (bölge bossları, mücevher); 37/31 altıgen yeni kademe kararı |
-| **G** Kaltakkıran sistem verisi | zırh, kılıç, 10 Sv.3 taş, Mühür: veri + prospektüs; Kararma, kaynaşma, İhanet, finaller yalnız anlatım (Serüven'de notu) | P0, D | `data/items-katalog.json`, `data/aciklamalar-tr.json`, Serüven anlatım verisi (`data/seruven.json` düğüm metinleri) | srdIds, Dungeondex açılış | "yalnız veri" sınırı: kod yazılmaz, oyuncu zırhın gücünü savaşta göremez (beklenen) |
+| **F** Kadim yaratıklar (K4 sonrası kapsam) | Kıta I (758 HP, 19 altıgen), Anka (738 HP, Huge 7), Yıldız-Kâbusu (943 HP, 31 → Gargantuan 19), 5 mücevher ejderhası Genç (Large) + Yetişkin (Huge), eksik stat blokları tasarlanır ve onaya gelir (K13); Kıta II yalnız sahne varlığı kaydı (1.410 HP, 19 altıgen, sim dışı); güçler PDF'teki gibi, karşılığı olmayan `planli`; efsanevi eylem ekleme yok (K6) | P0 (O12); K7 ad listesi onayı; K13 tasarım onayı | `data/katalog-bosslar.json`, `data/efsanevi.json`, `data/canavar-yetenekleri.json`, `data/monster-reactions.json`, `src/data/index.ts`, Game Master seçici, `public/monsters/` | `check:harita`; denge simi yalnız savaşılan yeni yaratıklar için, 100 tohum | PDF'te eksik ya da çelişen stat yerleri: tahmin yok, rapora soru |
+| **G** Kaltakkıran anlatım verisi | Kararma Sayacı, kaynaşma, İhanet, iki final yolu, `bondSacrificeLedger`: yalnız veri/anlatım ("Serüven'de"); Kaltakkıran savaşı yalnız anlatım (K14). Zırh, kılıç, On Mühür ve diğer imza eşyalar artık B–D'de katalog eşyası | P0, D | Serüven anlatım verisi, `data/aciklamalar-tr.json` | Dungeondex açılış | kod yazılmaz |
+| — Mora, Tarvok, Kaltakkıran karakter kaydı | **ertelendi (K4)**: normal karakter ya da boss stat bloğu değil; multiclass işi bittikten sonra ayrıca kurulur. 10 bölge bossu da F kapsamı dışında | MC birleşmesi | – | – | – |
 
-**Önerilen sıra:** P0 → A → B (O3b ile) → C → D → E → G → F. F, stat tasarımı ve kararlar (K1–K7) geldiğinde herhangi bir yerde başlayabilir. Kanca kümeleri (O7, O9, O10, O11) ayrı "KATALOG-2 kanca" görevleri olarak kural sürümüyle gelir. A–E'de bu kancaların gerektirdiği özellikler önce `planli` etiketiyle girer, kanca gelince `calisir` olur.
+**Sıra (kullanıcı kararı 2026-11-26):** P0 → A, her parça ayrı commit, her parçadan sonra kısa rapor ve onay bekleme. B–E ve F onaydan sonra. İmza eşyalar (Mora 2, Tarvok 2, Kaltakkıran zırhı, Çeneli Zincir Kılıcı, Sv.1/Sv.2 taşları, On Mühür (Sv.3), Koruyucu Ejderha Mührü) kullanıcı kararıyla B–D'de normal katalog eşyası olarak girer; üç imza silah (Sarkaç, Dikilitaş, Zincir Kılıcı) da A'ya değil B–D'ye. Öneri: zırh/koşum/cübbe ve eşlik eden silah B'de birlikte, taşlar ve Mühür D'de (açık soru S1). Kanca kümeleri (O7, O9, O10, O11) ayrı "KATALOG-2 kanca" görevleri olarak kural sürümüyle gelir; A–E'de karşılığı olmayan özellik metniyle kayıtta kalır ve `planli`/`calismiyor` etiketi alır.
 
 **Doğrulama maliyeti** (hafif mod): her parçada typecheck + srdIds + ilgili test + build + `check:harita` + `check:ses`. Denge ölçümü yalnız F'de (yeni boss, 100 tohum). A–E için tek temsilci savaş testi. Tam `npm test` akşam.
 
-## 8. KARAR BEKLEYENLER
+## 8. KARARLAR (kullanıcı, 2026-11-26)
+
+Aşama 1 onaylandı.
+
+**Genel kural**: PDF'teki güçler birebir korunur. Eşya ve yaratık özelliklerinin metni, sayıları (zar, DC, menzil, süre, şarj) ve etkileri PDF'teki gibi veriye girer; sadeleştirme, dengeleme, kırpma ya da "motora uysun" diye değiştirme yok. Motorda karşılığı olmayan güç metniyle kayıtta durur, yalnız `calismiyor`/`planli` etiketi alır. K7 yeniden adlandırması yalnız adı, K2 boyut küçültmesi yalnız boyutu değiştirir. PDF'te belirsiz ya da kendi içinde çelişen yer varsa tahmin yürütülmez, raporda sorulur.
+
+| Karar | Sonuç |
+|---|---|
+| K1 | HP SRD formülüyle: Kıta I 758, Anka 738, Yıldız-Kâbusu 943, Kıta II 1.410. 2. faz havuzları (Anka +450, Yıldız-Kâbusu +550) PDF'te formülsüz, yazıldığı gibi |
+| K2 | Yeni boyut kademesi yok, en çok 19 altıgen. Kadim yaratıklarda boyut küçülür, güçler aynen kalır: Yıldız-Kâbusu ve Kıta II Gargantuan 19; mücevher ejderhası Genç Large, Yetişkin Huge |
+| K3 | Mühür taşları yalnız tılsım modu; zanaat eklentileri (YT 43–45) yalnız veri |
+| K4 | Mora, Tarvok, Kaltakkıran normal karakter ya da boss stat bloğu değil; güçleri imza silah/zırhlarından gelir. Karakter kayıtları şimdi yapılmaz, multiclass işi bittikten sonra ayrıca kurulur. İmza silah/zırhlar (Kaltakkıran zırhı ve On Mühür dahil) B–D'de normal katalog eşyası; özel güçleri eşya özelliği olarak yazılır, karşılığı olmayanlar `calismiyor`/`planli`, kırpma yok |
+| K5 | Kıta Ejderhası II sahne varlığı, sim dışı |
+| K6 | Efsanevi direnç/eylem eklenmez |
+| K7 | Yeniden adlandırma: BG3'e benzeyen 6 eşya, Kadim Yaratıklar'daki Tolkien/FF/Elden Ring adları; mücevher ejderhası kümesi yeniden tasarlanır. Adları Claude önerir, kullanıcı seçer |
+| K8 | Kataloğun +N'i sihirli bonus, kalkanın kendi +2'sine eklenir (bölüm 2.2 "Taban" sütunundaki Shield +N, B parçasında buna göre düzeltilir); belirsiz parçada metne bakılıp karar yazılır |
+| K9 | Katalog fiyatları aynen; ekonomi Serüven'e |
+| K10 | Yuva kuralı oluşturucuya girmez (O5 düştü) |
+| K11 | SRD karşılığı olmayan silahlar en yakın SRD silahına bağlanır, fark "kanca" etiketiyle |
+| K12 | Özel oklar ve eliksirler yalnız veri |
+| K13 | Eksik stat blokları yalnız kadim yaratıklar için tasarlanır, kullanıcı onaylar; mücevher nefes DC'si tablodaki sabit değer |
+| K14 | Kaltakkıran savaşı yalnız anlatım |
+
+**Açık sorular** (parça başlarken sorulacak):
+
+- S1: üç imza silah (Sarkaç, Dikilitaş, Zincir Kılıcı) B–D'nin hangisine girer?
+- S2: bölge bossları (B13–B22) F dışında; ne zaman ve hangi görevle?
+
+### 8.1 K7 ad önerileri: BG3'e benzeyen 6 eşya
+
+Yalnız EN-AD değişir, TR ad ve güçler aynı kalır. Öneriler TR adın birebir çevirisidir (kataloğun kendi EN-AD kuralı). Kadim Yaratıklar adları ve mücevher kümesi F başlarken önerilecek.
+
+| Parça | TR ad (değişmez) | Şimdiki EN-AD | Öneri a (önerilen) | Öneri b |
+|---|---|---|---|---|
+| S1 40 | Dev Kirişli Yay | Titanstring Longbow | Giant-Sinew Longbow | Heavy-Strung Longbow |
+| GY 27 | Alevli Yumruk Eldiveni | Helldusk Gauntlets | Blazing Fist Gauntlets | Emberfist Gauntlets |
+| GY 39 | Karanlık Adım Çizmeleri | Nightwalker Boots | Darkstep Boots | Boots of the Dark Step |
+| YT 6 | Yakıcı Asit Yüzüğü | Caustic Band | Searing Acid Ring | Acidburn Ring |
+| YT 7 | Işık Çağrısı Yüzüğü | Callous Glow Ring | Lightcall Ring | Ring of the Calling Light |
+| YT 13 | Sıçrayan Akım Yüzüğü | Strange Conduit Ring | Leaping Current Ring | Arcing Current Ring |
+
+Not: "Flaming Fist" (birebir çeviri) Baldur's Gate'in paralı asker örgütünün adı olduğu için önerilmedi. Kimlik (id) yeni EN-AD'dan türetilir (ör. `giant-sinew-longbow`).
+
+### 8.2 Karar öncesi sorular (arşiv)
 
 1. **K1 HP tutarsızlıkları**: Kıta I 740 mı 758 mi; Anka 780 mi 738 mi; Yıldız-Kâbusu 1.150 mi 943 mü (ya da zar sayısı artırılarak 1.150 korunur mu); Kıta II 1.850 mi 1.410 mu? Öneri: SRD kuralıyla hesaplanan değer (758 / 738 / 943 / 1.410), sahne varlığı Kıta II hariç.
 2. **K2 Boyut kademesi**: 37 (Kıta II) ve 31 (Yıldız-Kâbusu) altıgen için yeni bir boyut kademesi (3 halka = 37, kural sürümü, `multiHex` kapsamı) yazılsın mı, yoksa ikisi de Gargantuan 19'da mı kalsın? Mücevher Yetişkin Huge (7) mi Gargantuan (19) mu? Genç Large (3) doğru mu?
