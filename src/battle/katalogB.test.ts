@@ -17,7 +17,7 @@ import { kosulOk, passiveBody } from './paket/core';
 
 type K = { id: string; name: string; effects: Record<string, number>; katalog: { ref: string; tur: string; taban: string; ozellikler: Array<{ ad: string; durum: string }> } };
 const kat = (katalog as unknown as { esyalar: K[] }).esyalar;
-const B = kat.filter((x) => /^(ZK#|BOSS#)/.test(x.katalog.ref) || (/^KY#/.test(x.katalog.ref) && Number(x.katalog.ref.slice(3)) >= 36));
+const B = kat.filter((x) => /^(ZK#|BOSS#)/.test(x.katalog.ref) || (/^KY#/.test(x.katalog.ref) && Number(x.katalog.ref.slice(3)) >= 36 && ![45, 46, 47, 48, 54].includes(Number(x.katalog.ref.slice(3)))));
 const sheet = (itemNames: string[], patch: Partial<CharacterSheet> = {}) => ({ ...blankCharacter('p1').sheet, name: 'Savaşçı', classId: 'fighter', level: 5,
   weapons: [{ name: 'Dagger' }], itemNames, ...patch }) as CharacterSheet;
 const ac = (sh: CharacterSheet) => combatantFromSheet(sh, { id: 'A', ownerId: 'p1' }).ac;

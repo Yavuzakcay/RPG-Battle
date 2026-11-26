@@ -7073,7 +7073,11 @@
     ],
     "immune": [
      "Stunned"
-    ]
+    ],
+    "retort": {
+     "dice": "1d4",
+     "type": "lightning"
+    }
    },
    "katalog": {
     "ref": "ZK#14",
@@ -7100,8 +7104,8 @@
      {
       "ad": "Şok Yansıması",
       "metin": "5 ft içinden sana isabet eden yakın dövüş saldırganı 1d4 yıldırım hasarı alır (su altıgenindeyse bağlı su altıgenlerinde yıldırım zinciri tetiklenir).",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "kismi",
+      "not": "1d4 yıldırım karşılığı çalışır (retort: 5 ft içinden yakın dövüş isabeti hasar verince); su altıgeninde yıldırım zinciri yok"
      }
     ],
     "riskler": "Su altıgeninde tetiklenen Şok Yansıması zinciri aynı sudaki dost yaratıklara da sıçrayabilir; Stealth dezavantajı taşır.",
@@ -7807,12 +7811,18 @@
      {
       "ad": "Sıcak Zırh",
       "metin": "5 ft içinden sana yakın dövüş darbesi vuran düşman her isabette 1d4 ateş hasarı alır (saldırgan yağ veya ağ üzerindeyse tutuşturur).",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "kismi",
+      "not": "1d4 ateş karşılığı çalışır (retort: her yakın dövüş isabeti hasar verince); yağ/ağ üstündeki saldırganı tutuşturma yok"
      }
     ],
     "riskler": "STR 15 altında hız −10 ft düşer; yansıtılan ateş kullanıcıya veya yanındaki dostlara sıçrayabilecek yağ yüzeylerini tutuşturabilir.",
     "kimlerKullanamaz": "Ağır zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz."
+   },
+   "passive": {
+    "retort": {
+     "dice": "1d4",
+     "type": "fire"
+    }
    }
   },
   {
@@ -9504,6 +9514,1875 @@
     ],
     "riskler": "Zırh giyilmeden kullanılamadığı için bu kılıcı çekmek her zaman Kararma bedelini göze almak demektir; kullanıldığı her savaş zırhın Kararma artışına +2 daha ekler. Bir hedef sarmalanmışken başka düşmana vurmak için önce sarmal bırakılmalıdır. Final Akıbeti: Yol A'da (Ölümsüz Koruyucu) zırh Kıta Ejderhası'na geçtiğinde kılıcın tüm karanlık gücü kalıcı olarak söner ve kılıç savaş dışı bir Devrim Simgesi olarak kalır; Yol B'de (Yeni Kaltakkıran) ise tam gücüyle ve 3/UD Boğucu Kıskaç yüküyle sınırsızca kullanılır.",
     "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'nı giymeyen hiç kimse bu kılıcı savaşta kullanamaz. Zırh giyiliyken dahi Martial silah yetkinliği olmayan karakter yetkinlik bonusunu ekleyemez; STR 13 altında dezavantaj alır."
+   }
+  },
+  {
+   "id": "vigilant-drake-helm",
+   "name": "Vigilant Drake Helm",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Altın ejderha pullarıyla işlenmiş efsanevi savaş miğferi: kritik vuruş ve sersemleme bağışıklığı verir, her tur can yeniler ve bir düşmanı av olarak işaretleyebilir.",
+   "weight": 3.0,
+   "effects": {
+    "acBonus": 1,
+    "saveBonus": 1
+   },
+   "passive": {
+    "noCrit": true,
+    "immune": [
+     "Stunned"
+    ]
+   },
+   "katalog": {
+    "ref": "GY#1",
+    "tr": "Gözcü Ejderha Miğferi",
+    "nadirlik": "efsanevi",
+    "tur": "aksesuar",
+    "yuva": "başlık",
+    "fiyatGp": 24000,
+    "bonus": "Ek AC: +1",
+    "ozet": "Altın ejderha pullarıyla işlenmiş efsanevi savaş miğferi: kritik vuruş ve sersemleme bağışıklığı verir, her tur can yeniler ve bir düşmanı av olarak işaretleyebilir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılıyken +1 AC, tüm kurtarma zarlarına +1 bonus, kritik vuruş bağışıklığı (kritikler normal isabet sayılır) ve Stunned durumuna bağışıklık kazanırsın.",
+      "durum": "calisir",
+      "not": "+1 AC, tüm kurtarma +1, kritikler normal isabet (noCrit), Stunned bağışıklığı"
+     },
+     {
+      "ad": "Ejderha Dirilişi",
+      "metin": "Savaşta kendi turunun başında 1d4 can iyileşirsin (0 HP'deyken çalışmaz).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Av İşareti (1 yük, KD)",
+      "metin": "Bonus eylemle 30 ft içindeki bir düşmanı 3 tur boyunca işaretlersin; işaretli hedefe saldırı zarların avantajlı olur ve o düşman 0 HP'ye düştüğünde 10 geçici can kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Ejderha Dirilişi 0 HP'ye düşmüş veya ölmekte olan karakteri ayağa kaldırmaz; başlık yuvasında başka taç veya miğferle birlikte takılamaz.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter hiçbir koruma ve iyileşme özelliğini açamaz."
+   }
+  },
+  {
+   "id": "focus-surge-helm",
+   "name": "Focus Surge Helm",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Savaş büyücüleri için hazırlanmış rünlü miğfer: silahla isabet ettirdiğinde bir sonraki büyünün kurtarma zarı zorluğunu ve büyü isabetini güçlendirir.",
+   "weight": 2.0,
+   "effects": {},
+   "passive": {
+    "saveMod": {
+     "con": 1
+    }
+   },
+   "katalog": {
+    "ref": "GY#2",
+    "tr": "Odak Kıvılcımı Miğferi",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "başlık",
+    "fiyatGp": 7600,
+    "ozet": "Savaş büyücüleri için hazırlanmış rünlü miğfer: silahla isabet ettirdiğinde bir sonraki büyünün kurtarma zarı zorluğunu ve büyü isabetini güçlendirir.",
+    "ozellikler": [
+     {
+      "ad": "Vuruştan Odak",
+      "metin": "Kendi turunda bir düşmana silah saldırısıyla isabet ettiğinde (turda en fazla bir kez) bir sonraki turunun sonuna kadar yapacağın ilk büyünün büyü kurtarma zarı DC'sine ve büyü saldırı zarına +2 bonus kazanırsın (üst üste birikmez). Ayrıca CON kurtarma zarlarına +1 bonus alırsın.",
+      "durum": "kismi",
+      "not": "CON kurtarma +1 çalışır; silah isabetinden sonra ilk büyüye DC/saldırı +2 kancası yok"
+     }
+    ],
+    "riskler": "Bonus yalnızca tek bir sonraki büyüde harcanır ve silah saldırısı yapılmayan turlarda tetiklenmez.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter odak bonusunu alamaz; büyü yapmayan sınıflar yalnız +1 CON kurtarma bonusundan yararlanır."
+   }
+  },
+  {
+   "id": "shadowtracker-hood",
+   "name": "Shadowtracker Hood",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Gözetleme ve gece pususu için dokunmuş koyu kukuleta: algı ile inisiyatifi artırır, loş/karanlıkta kritik eşiği düşürür ve görünmezleri ortaya çıkarabilir.",
+   "weight": 1.0,
+   "effects": {},
+   "paket": {
+    "ilkeller": [
+     {
+      "tur": "zarEtkisi",
+      "tetik": "pasif",
+      "inisiyatifBonusu": 2
+     }
+    ]
+   },
+   "katalog": {
+    "ref": "GY#3",
+    "tr": "Gölge İzci Başlığı",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "başlık",
+    "fiyatGp": 7200,
+    "ozet": "Gözetleme ve gece pususu için dokunmuş koyu kukuleta: algı ile inisiyatifi artırır, loş/karanlıkta kritik eşiği düşürür ve görünmezleri ortaya çıkarabilir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılıyken inisiyatif zarlarına +2 ve Perception kontrollerine +2 bonus kazanırsın.",
+      "durum": "kismi",
+      "not": "inisiyatif +2 çalışır; Perception +2 (beceri bonusu) yok"
+     },
+     {
+      "ad": "Karanlık Keskinliği",
+      "metin": "Loş veya karanlık ışık düzeyindeki bir altıgende dururken d20 saldırı zarında 19–20 kritik vuruş sayılır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Görünmezi Seç (1 yük, UD)",
+      "metin": "Bonus eylemle 10 tur boyunca See Invisibility etkisi kazanırsın (konsantrasyon gerekmez).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Gündüz açık alanlarda veya parlak ışık altında 19–20 kritik avantajı devre dışı kalır.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter kritik, algı ve See Invisibility özelliklerini kullanamaz."
+   }
+  },
+  {
+   "id": "weavebound-circlet",
+   "name": "Weavebound Circlet",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Saf büyü odak taşıyla süslü ince gümüş taç: büyü saldırı zarlarını ve büyü kurtarma zarı zorluğunu doğrudan yükseltir.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#4",
+    "tr": "Örgü Tacı",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "başlık",
+    "uyumKosulu": "Büyücü",
+    "fiyatGp": 7800,
+    "ozet": "Saf büyü odak taşıyla süslü ince gümüş taç: büyü saldırı zarlarını ve büyü kurtarma zarı zorluğunu doğrudan yükseltir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takıp uyum yaptığın sürece büyü saldırı zarlarına +2 bonus ve büyü kurtarma zarı DC'sine +1 bonus kazanırsın. Ayrıca Arcana kontrollerine +1 bonus eklenir.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Savunma, can veya direnç sağlamaz; tüm değeri saldırı ve kontrol büyülerinin tutarlılığına odaklanır.",
+    "kimlerKullanamaz": "Spellcasting veya Pact Magic özelliği olmayan karakterler bu taçla uyum yapamaz."
+   }
+  },
+  {
+   "id": "embercrown-hood",
+   "name": "Embercrown Hood",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Kızıl nakışlı ateş büyücüsü başlığı: ateş direnci kazandırır ve ateş hasarı verdikten sonra bir sonraki büyünün kurtarma zarı zorluğunu artırır.",
+   "weight": 1.0,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "fire"
+    ]
+   },
+   "katalog": {
+    "ref": "GY#5",
+    "tr": "Alev Yutan Başlık",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "başlık",
+    "uyumKosulu": "Büyücü",
+    "fiyatGp": 6900,
+    "ozet": "Kızıl nakışlı ateş büyücüsü başlığı: ateş direnci kazandırır ve ateş hasarı verdikten sonra bir sonraki büyünün kurtarma zarı zorluğunu artırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Ateş hasarına direnç kazanırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Kor Odaklanması",
+      "metin": "Kendi turunda bir büyü veya silahla ateş hasarı verdiğinde (turda en fazla bir kez) sonraki turunun sonuna kadar yapacağın ilk büyünün kurtarma zarı DC'sine +2 bonus alırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Ateş bağışıklığı olan düşmanlara karşı ateş hasarı 0 düştüğünde Kor Odaklanması tetiklenmez.",
+    "kimlerKullanamaz": "Spellcasting veya Pact Magic özelliği olmayan karakterler uyum yapamaz."
+   }
+  },
+  {
+   "id": "apex-stalker-helm",
+   "name": "Apex Stalker Helm",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Yırtıcı kuş gagası biçimli avcı miğferi: korku bağışıklığı, 60 ft karanlık görüşü ve yüksek zeminden yapılan menzilli atışlarda isabet bonusu sağlar.",
+   "weight": 2.0,
+   "effects": {},
+   "passive": {
+    "immune": [
+     "Frightened"
+    ],
+    "darkvision": 60
+   },
+   "katalog": {
+    "ref": "GY#6",
+    "tr": "Yırtıcı Miğfer",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "başlık",
+    "fiyatGp": 1800,
+    "ozet": "Yırtıcı kuş gagası biçimli avcı miğferi: korku bağışıklığı, 60 ft karanlık görüşü ve yüksek zeminden yapılan menzilli atışlarda isabet bonusu sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılıyken Frightened durumuna bağışıklık ve 60 ft Darkvision kazanırsın (daha uzun karanlık görüşün varsa korunur).",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Kaya Gözcüsü",
+      "metin": "Hedeften en az 10 ft daha yüksek bir zemindeyken menzilli saldırı zarlarına +1 bonus alırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Düz zeminli haritalarda Kaya Gözcüsü isabet bonusu devreye girmez.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter bağışıklık, karanlık görüşü ve yüksek zemin bonusunu alamaz."
+   }
+  },
+  {
+   "id": "crimson-fury-circlet",
+   "name": "Crimson Fury Circlet",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Ön cephe savaşçıları ve barbarlar için boynuzlu demir çember: yaralıyken yakın dövüş saldırılarına isabet ve nekrotik hasarı ekler, saldırısız turlarda can yakar.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#7",
+    "tr": "Kızıl Hiddet Tacı",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "başlık",
+    "fiyatGp": 1500,
+    "ozet": "Ön cephe savaşçıları ve barbarlar için boynuzlu demir çember: yaralıyken yakın dövüş saldırılarına isabet ve nekrotik hasarı ekler, saldırısız turlarda can yakar.",
+    "ozellikler": [
+     {
+      "ad": "Yaralı Öfke",
+      "metin": "Mevcut canın en yüksek canının altındayken (en az 1 hasar almışsan) yakın dövüş silah ve silahsız saldırılarına +1 isabet ve +2 nekrotik hasarı eklenir.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Sönmeyen Hırs",
+      "metin": "Savaşta kendi turunu hiçbir düşmana hasar vermeden bitirirsen 1d4 nekrotik hasarı alırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Düşmanlardan uzak kalınan veya kontrol büyüsüne yakalanılan turlarda 1d4 kendine hasar konsantrasyon bozabilir ya da düşük canda tehlikeli olabilir.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Yaralı Öfke bonusunu alamaz."
+   }
+  },
+  {
+   "id": "stormsong-hat",
+   "name": "Stormsong Hat",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Fırtına rünlü geniş kenarlı şapka: gürültü veya yıldırım hasarı verdiğinde sonraki büyünün zorluğunu artırır ve fırtına haritalarında görüş/atış direnci sağlar.",
+   "weight": 1.0,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "thunder"
+    ]
+   },
+   "katalog": {
+    "ref": "GY#8",
+    "tr": "Gök Gürültüsü Şapkası",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "başlık",
+    "uyumKosulu": "Büyücü",
+    "fiyatGp": 1600,
+    "ozet": "Fırtına rünlü geniş kenarlı şapka: gürültü veya yıldırım hasarı verdiğinde sonraki büyünün zorluğunu artırır ve fırtına haritalarında görüş/atış direnci sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Gürültü hasarına direnç kazanırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Fırtına Yükselişi",
+      "metin": "Kendi turunda bir düşmana gürültü veya yıldırım hasarı verdiğinde (turda en fazla bir kez) sonraki turunun sonuna kadar yapacağın ilk büyünün kurtarma zarı DC'sine +1 ve hasarına +1d4 gürültü hasarı eklenir.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Gürültü ve yıldırım kaynağı olmayan büyü listelerinde yalnızca pasif gürültü direnci sağlar.",
+    "kimlerKullanamaz": "Spellcasting veya Pact Magic özelliği olmayan karakterler uyum yapamaz."
+   }
+  },
+  {
+   "id": "diadem-of-spellstrike",
+   "name": "Diadem of Spellstrike",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Savaş büyücüleri ve hibrit sınıflar için işlenmiş bakır taç: bir düşmana herhangi bir durum uyguladığında sonraki silah darbesine büyücülük yeteneğini katar.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#9",
+    "tr": "Kutsama Tacı",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "başlık",
+    "fiyatGp": 1850,
+    "ozet": "Savaş büyücüleri ve hibrit sınıflar için işlenmiş bakır taç: bir düşmana herhangi bir durum uyguladığında sonraki silah darbesine büyücülük yeteneğini katar.",
+    "ozellikler": [
+     {
+      "ad": "Büyüsel Ahenk",
+      "metin": "Kendi turunda bir düşmana bir durum (ör. Prone, Frightened, Blinded, Poisoned, Restrained veya Slow/Sap/Vex işareti) uyguladığında, bir sonraki turunun sonuna kadar yapacağın ilk isabetli silah saldırısına büyücülük yeteneği değiştiricini (en az +1, en fazla +5) ek hasar olarak eklersin (turda en fazla bir kez yenilenir).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Büyücülük yeteneği olmayan karakterlerde (ör. büyücüsüz Fighter) yalnız asgari +1 hasar ekler.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Büyüsel Ahenk pasifini açamaz."
+   }
+  },
+  {
+   "id": "dawnmender-circlet",
+   "name": "Dawnmender Circlet",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Şifacı rahipler ve ozanlar için altın sargılı çember: başka bir dostu iyileştirdiğinde şifanın bir yankısını kullanıcıya döndürerek ayakta kalmasını sağlar.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#10",
+    "tr": "Göksel Şifa Çemberi",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "başlık",
+    "fiyatGp": 1300,
+    "ozet": "Şifacı rahipler ve ozanlar için altın sargılı çember: başka bir dostu iyileştirdiğinde şifanın bir yankısını kullanıcıya döndürerek ayakta kalmasını sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Şifa Yankısı",
+      "metin": "Bir büyü, sınıf özelliği veya iksirle senden başka en az bir dost yaratığı iyileştirdiğinde (turda en fazla bir kez) sen de 1d6 can iyileşirsin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Yalnızca kendine yapılan iyileştirmelerde tetiklenmez; çok hedefli alan şifasında (Mass Healing Word) tur başına yalnızca bir kez 1d6 verir.",
+    "kimlerKullanamaz": "Herkes takabilir; ancak dost iyileştirme araçları olmayan karakterlerde pasif çalışmaz."
+   }
+  },
+  {
+   "id": "mindshield-helm",
+   "name": "Mindshield Helm",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kalın destekli çelik savaş başlığı: düşmanların kritik vuruşlarını normal isabete çevirir ve WIS kurtarma zarlarını güçlendirir.",
+   "weight": 3.0,
+   "effects": {},
+   "passive": {
+    "noCrit": true,
+    "saveMod": {
+     "wis": 1
+    }
+   },
+   "katalog": {
+    "ref": "GY#11",
+    "tr": "Düşünce Siperi Miğferi",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "başlık",
+    "fiyatGp": 520,
+    "ozet": "Kalın destekli çelik savaş başlığı: düşmanların kritik vuruşlarını normal isabete çevirir ve WIS kurtarma zarlarını güçlendirir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılıyken sana yapılan kritik vuruşlar normal isabet sayılır (ek hasar zarları atılmaz) ve WIS kurtarma zarlarına +1 bonus kazanırsın.",
+      "durum": "calisir",
+      "not": "kritikler normal isabet (noCrit), WIS kurtarma +1"
+     }
+    ],
+    "riskler": "Doğal 20 atışı yine otomatik isabet sayılır; yalnızca çift zarlı kritik hasarı engellenir.",
+    "kimlerKullanamaz": "Zırh sayılmadığı için herkes takabilir; başlık yuvasında tek eşya taşınır."
+   }
+  },
+  {
+   "id": "quickwit-cowl",
+   "name": "Quickwit Cowl",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Öncü koşucular için hafif deri başlık: savaşın ilk iki turunda yürüme hızını belirgin biçimde artırarak konum üstünlüğü kurmayı kolaylaştırır.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#12",
+    "tr": "Hızlı Akıl Başlığı",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "başlık",
+    "fiyatGp": 400,
+    "ozet": "Öncü koşucular için hafif deri başlık: savaşın ilk iki turunda yürüme hızını belirgin biçimde artırarak konum üstünlüğü kurmayı kolaylaştırır.",
+    "ozellikler": [
+     {
+      "ad": "İlk İvme",
+      "metin": "Her savaşın 1. ve 2. turlarında yürüme hızın +10 ft artar ve inisiyatif zarlarına +1 bonus alırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "3. turdan itibaren hız bonusu biter; uçuş veya yüzme hızını artırmaz.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "sparkcrest-circlet",
+   "name": "Sparkcrest Circlet",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Bakır rünlü hafif çember: yıldırım veya gürültü hasarı verdiğinde taşıyıcıyı kısa süreli statik bir geçici can kalkanıyla sarar.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#13",
+    "tr": "Kıvılcım Çemberi",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "başlık",
+    "fiyatGp": 380,
+    "ozet": "Bakır rünlü hafif çember: yıldırım veya gürültü hasarı verdiğinde taşıyıcıyı kısa süreli statik bir geçici can kalkanıyla sarar.",
+    "ozellikler": [
+     {
+      "ad": "Statik Kalkan",
+      "metin": "Kendi turunda yıldırım veya gürültü hasarı verdiğinde (turda en fazla bir kez) 4 geçici can kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Geçici can üst üste birikmez; yıldırım/gürültü kaynağı olmayan karakterlerde etkisiz kalır.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "shadowstep-cloak",
+   "name": "Shadowstep Cloak",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Gece suikastçılarının efsanevi siyah pelerini: düşman öldürüldüğünde kullanıcıyı bir tur görünmez kılar ve loş/karanlık altıgenler arasında ışınlanma sağlar.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#14",
+    "tr": "Gölge Yürüyüşü Pelerini",
+    "nadirlik": "efsanevi",
+    "tur": "aksesuar",
+    "yuva": "pelerin",
+    "fiyatGp": 22500,
+    "ozet": "Gece suikastçılarının efsanevi siyah pelerini: düşman öldürüldüğünde kullanıcıyı bir tur görünmez kılar ve loş/karanlık altıgenler arasında ışınlanma sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Ölüm Perdesi",
+      "metin": "Kendi turunda bir düşmanı 0 HP'ye düşürdüğünde (turda en fazla bir kez) bir sonraki turunun sonuna kadar Invisible olursun (saldırı veya büyüyle biter).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Gölge Adımı (1 yük, KD)",
+      "metin": "Loş veya karanlık ışık düzeyindeki bir altıgendeyken bonus eylemle 30 ft içinde görebildiğin başka bir loş/karanlık boş altıgene ışınlanırsın; varışta o tur yapacağın ilk saldırı avantajlı olur.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Gündüz parlak ışık altındaki haritalarda Gölge Adımı tetiklenemez; Truesight ve Blindsight görünmezliği deler.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Ölüm Perdesi ve Gölge Adımı güçlerini kullanamaz."
+   }
+  },
+  {
+   "id": "weavefold-cloak",
+   "name": "Weavefold Cloak",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Büyü emici ağır ipek pelerin: büyü DC ve saldırı zarlarını artırır, tepkiyle gelen element hasarını yarılayıp bir sonraki saldırıya geri aktarır.",
+   "weight": 1.0,
+   "effects": {},
+   "bonus": {
+    "spell": 1
+   },
+   "katalog": {
+    "ref": "GY#15",
+    "tr": "Örgü Kıvrımı Pelerini",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "pelerin",
+    "uyumKosulu": "Büyücü",
+    "fiyatGp": 7800,
+    "ozet": "Büyü emici ağır ipek pelerin: büyü DC ve saldırı zarlarını artırır, tepkiyle gelen element hasarını yarılayıp bir sonraki saldırıya geri aktarır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Büyü saldırı zarlarına +1 ve büyü kurtarma zarı DC'sine +1 bonus verir.",
+      "durum": "calisir",
+      "not": "büyü saldırısı ve DC +1 (bonus.spell)"
+     },
+     {
+      "ad": "Element Emme (2 yük, UD 1d2)",
+      "metin": "Asit, ateş, soğuk, yıldırım veya gürültü hasarı aldığında tepkiyle 1 yük harcayarak o darbenin hasarını yarıya indirirsin (o türe direnç); bir sonraki turunun sonuna kadar yapacağın ilk isabetli saldırıya +1d6 o elementten hasar eklenir.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Element Emme tepki hakkını harcadığı için o tur Shield veya Counterspell yapılamaz; fiziksel ve nekrotik/psişik hasarlara işlemez.",
+    "kimlerKullanamaz": "Spellcasting veya Pact Magic özelliği olmayan karakterler uyum yapamaz."
+   }
+  },
+  {
+   "id": "stormwing-cloak",
+   "name": "Stormwing Cloak",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Rüzgâr tüylü geniş pelerin: +1 AC ve düşme direnci verir; kısa dinlenmede bir kez yerden süzülerek zorlu zemini ve tuzakları aşmanı sağlar.",
+   "weight": 2.0,
+   "effects": {
+    "acBonus": 1
+   },
+   "katalog": {
+    "ref": "GY#16",
+    "tr": "Kuzgun Kanadı Pelerini",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "pelerin",
+    "fiyatGp": 7000,
+    "bonus": "Ek AC: +1",
+    "ozet": "Rüzgâr tüylü geniş pelerin: +1 AC ve düşme direnci verir; kısa dinlenmede bir kez yerden süzülerek zorlu zemini ve tuzakları aşmanı sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılıyken +1 AC kazanır ve düşme hasarına direnç alırsın.",
+      "durum": "kismi",
+      "not": "+1 AC çalışır; düşme hasarına direnç yok"
+     },
+     {
+      "ad": "Yel Süzülüşü (1 yük, KD)",
+      "metin": "Bonus eylemle 3 tur boyunca yerden 5 ft yükseklikte süzülürsün (U1a süzülme kuralı: zorlu zemin, sığ su, buz, çamur, tuzak ve zemin harita mekaniklerinden etkilenmezsin; lav, alev ve derin su kuralları sürer).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Süzülme 5 ft ile sınırlıdır; 10 ft yüksekliğindeki duvarları aşamaz ve derin su ile lav üstünde güvenlik sağlamaz.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter +1 AC, düşme direnci ve Yel Süzülüşü gücünü kullanamaz."
+   }
+  },
+  {
+   "id": "fleshrender-cloak",
+   "name": "Fleshrender Cloak",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Asit bezeleriyle işlenmiş kalın deri pelerin: asit direnci sağlar ve sana yakın dövüşte vuran her saldırgana yakıcı asit sıçratır.",
+   "weight": 2.0,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "acid"
+    ],
+    "retort": {
+     "dice": "1d6",
+     "type": "acid"
+    }
+   },
+   "katalog": {
+    "ref": "GY#17",
+    "tr": "Asit Püskürten Pelerin",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "pelerin",
+    "fiyatGp": 6400,
+    "ozet": "Asit bezeleriyle işlenmiş kalın deri pelerin: asit direnci sağlar ve sana yakın dövüşte vuran her saldırgana yakıcı asit sıçratır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Asit hasarına direnç kazanırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Aşındıran Karşılık",
+      "metin": "5 ft içinden sana yakın dövüş saldırısıyla isabet eden her yaratık anında 1d6 asit hasarı alır (tepkisiz).",
+      "durum": "calisir",
+      "not": "Fire Shield yolu (retort): 5 ft içinden yakın dövüş isabeti hasar verince saldırgana 1d6 asit"
+     }
+    ],
+    "riskler": "Menzilli saldırılara ve 10 ft Reach silahlarına karşı hasar yansıtmaz; asit bağışıklığı olan yaratıklarda etkisizdir.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter asit direnci ve Aşındıran Karşılık pasifini alamaz."
+   }
+  },
+  {
+   "id": "shadeblood-mantle",
+   "name": "Shadeblood Mantle",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Koyu kadife pusu pelerini: gizliyken kritik vuruş eşiğini düşürür ve loş/karanlık altıgenlerde taşıyıcıya ek savunma verir.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#18",
+    "tr": "Kanlı Gölge Örtüsü",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "pelerin",
+    "fiyatGp": 1650,
+    "ozet": "Koyu kadife pusu pelerini: gizliyken kritik vuruş eşiğini düşürür ve loş/karanlık altıgenlerde taşıyıcıya ek savunma verir.",
+    "ozellikler": [
+     {
+      "ad": "Pusu Keskinliği",
+      "metin": "Gizli (Hidden) durumdayken yaptığın saldırılarda d20 zarında 19–20 kritik vuruş sayılır. Loş veya karanlık ışık düzeyindeki bir altıgende dururken +1 AC kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Gündüz parlak haritalarda +1 AC kapanır; gizlilik açığa çıktığında kritik eşiği normale döner.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter gölge pasiflerini alamaz."
+   }
+  },
+  {
+   "id": "frostmist-cloak",
+   "name": "Frostmist Cloak",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Kırağı tutan kalın yün pelerin: soğuk direnci kazandırır ve yakın dövüşte vurulduğunda saldırganı dondurucu soğukla yavaşlatır.",
+   "weight": 2.0,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "cold"
+    ],
+    "retort": {
+     "dice": "1d4",
+     "type": "cold"
+    }
+   },
+   "katalog": {
+    "ref": "GY#19",
+    "tr": "Buzul Sis Pelerini",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "pelerin",
+    "fiyatGp": 1550,
+    "ozet": "Kırağı tutan kalın yün pelerin: soğuk direnci kazandırır ve yakın dövüşte vurulduğunda saldırganı dondurucu soğukla yavaşlatır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Soğuk hasarına direnç kazanırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Ayaz Tepkisi",
+      "metin": "5 ft içinden yakın dövüş darbesi aldığında saldırgan 1d4 soğuk hasarı alır ve turda en fazla bir kez DC 13 CON kurtarma zarını geçemezse sonraki turunun sonuna kadar hızı 10 ft azalır (su altıgenindeyse altıgen buza döner).",
+      "durum": "kismi",
+      "not": "1d4 soğuk karşılığı çalışır (retort); turda bir DC 13 CON hız −10 ft ve su altıgenini buza çevirme yok"
+     }
+    ],
+    "riskler": "Suda oluşan buz yüzeyi senin yürüyüş yolunu da kayganlaştırabilir.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter soğuk direnci ve Ayaz Tepkisi pasifini alamaz."
+   }
+  },
+  {
+   "id": "cindermoth-cloak",
+   "name": "Cindermoth Cloak",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Köz kanat desenli ateş pelerini: ateş direnci verir ve sana yakın dövüşte isabet eden saldırganı kıvılcımla ateşe verir.",
+   "weight": 1.0,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "fire"
+    ]
+   },
+   "katalog": {
+    "ref": "GY#20",
+    "tr": "Kül Güvesi Pelerini",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "pelerin",
+    "fiyatGp": 1500,
+    "ozet": "Köz kanat desenli ateş pelerini: ateş direnci verir ve sana yakın dövüşte isabet eden saldırganı kıvılcımla ateşe verir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Ateş hasarına direnç kazanırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Köz Kıvılcımı",
+      "metin": "5 ft içinden sana yakın dövüş hasarı veren yaratık (turda en fazla bir kez) DC 14 DEX kurtarma zarını geçemezse Burning durumuna girer (her tur başı 1d4 ateş hasarı; eylemle Prone olup söndürülür).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Yanan düşman yağ veya ağ yüzeyi üstündeyse çevreyi tutuşturabilir; ateş bağışıklarında Burning oluşmaz.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter ateş direnci ve Köz Kıvılcımı pasifini alamaz."
+   }
+  },
+  {
+   "id": "thunderskin-cloak",
+   "name": "Thunderskin Cloak",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Kalın gergin derili ses pelerini: gürültü direnci sağlar ve yakın dövüşte vurulduğunda saldırganı çınlayan bir darbeyle sağır edebilir.",
+   "weight": 2.0,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "thunder"
+    ],
+    "retort": {
+     "dice": "1d4",
+     "type": "thunder"
+    }
+   },
+   "katalog": {
+    "ref": "GY#21",
+    "tr": "Gök Gürültüsü Örtüsü",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "pelerin",
+    "fiyatGp": 1450,
+    "ozet": "Kalın gergin derili ses pelerini: gürültü direnci sağlar ve yakın dövüşte vurulduğunda saldırganı çınlayan bir darbeyle sağır edebilir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Gürültü hasarına direnç kazanırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Çınlayan Deri",
+      "metin": "5 ft içinden yakın dövüş darbesi aldığında saldırgan 1d4 gürültü hasarı alır ve turda bir kez DC 14 CON kurtarma zarını geçemezse sonraki turunun sonuna kadar Deafened olur.",
+      "durum": "kismi",
+      "not": "1d4 gürültü karşılığı çalışır (retort); turda bir DC 14 CON Deafened yok"
+     }
+    ],
+    "riskler": "Yansıtılan gürültü hasarı sızma haritalarında uyuyan grupları uyandırabilir.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter gürültü direnci ve Çınlayan Deri pasifini alamaz."
+   }
+  },
+  {
+   "id": "steamshell-cloak",
+   "name": "Steamshell Cloak",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Nemli yosun iplikli kaçış pelerini: kısa dinlenmede bir kez darbe anında çevresinde görüş kesen buhar bulutu açarak kendini korur.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#22",
+    "tr": "Buhar Perdesi Pelerini",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "pelerin",
+    "fiyatGp": 450,
+    "ozet": "Nemli yosun iplikli kaçış pelerini: kısa dinlenmede bir kez darbe anında çevresinde görüş kesen buhar bulutu açarak kendini korur.",
+    "ozellikler": [
+     {
+      "ad": "Buhar Kaçışı (1 yük, KD)",
+      "metin": "Bir saldırı sana isabet ettiğinde tepkiyle bu saldırıya karşı +2 AC kazanır ve 5 ft çevrende 2 tur süren buhar yüzeyi (yoğun örtü) oluşturursun.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "+2 AC kritik vuruşları ıskaya çeviremez; oluşan buhar senin de uzağı görmeni kısıtlar.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "trailblazer-cloak",
+   "name": "Trailblazer Cloak",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Hafif ulak ve keşif pelerini: Dash eylemiyle koşulduğunda taşıyıcıyı koruyan rüzgâr perdesi örerek geçiş güvenliğini artırır.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#23",
+    "tr": "İvme Pelerini",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "pelerin",
+    "fiyatGp": 420,
+    "ozet": "Hafif ulak ve keşif pelerini: Dash eylemiyle koşulduğunda taşıyıcıyı koruyan rüzgâr perdesi örerek geçiş güvenliğini artırır.",
+    "ozellikler": [
+     {
+      "ad": "Koşu Perdesi",
+      "metin": "Kendi turunda Dash (eylem veya bonus eylem) yaptığında bir sonraki turunun başına kadar +1 AC kazanırsın ve sana yapılan fırsat saldırıları dezavantajlı olur.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Dash yapılmayan turlarda pelerin pasif savunma vermez; normal saldırılara dezavantaj sağlamaz.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "menders-mantle",
+   "name": "Mender's Mantle",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Otacı ve simyacıların şifalı pelerini: düşmana zehir uyguladığında yaşam özünü kullanıcıya geri çevirir ve panzehir direnci sağlar.",
+   "weight": 1.0,
+   "effects": {},
+   "passive": {
+    "saveAdvAgainst": [
+     "Poisoned"
+    ]
+   },
+   "katalog": {
+    "ref": "GY#24",
+    "tr": "Şifacı Omuz Örtüsü",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "pelerin",
+    "fiyatGp": 400,
+    "ozet": "Otacı ve simyacıların şifalı pelerini: düşmana zehir uyguladığında yaşam özünü kullanıcıya geri çevirir ve panzehir direnci sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Poisoned durumuna karşı kurtarma zarlarında avantaj kazanırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Zehirden Şifa",
+      "metin": "Kendi turunda bir düşmana zehir hasarı verdiğinde veya onu Poisoned yaptığında (turda en fazla bir kez) 1d4 can iyileşirsin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Zehir bağışıklığı olan düşmanlara karşı Zehirden Şifa tetiklenmez.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "soulcatcher-gauntlets",
+   "name": "Soulcatcher Gauntlets",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Keşişler ve silahsız savaşçılar için efsanevi eldiven: dayanıklılığı artırır, yumruklara yüksek kuvvet hasarı ekler ve her tur isabette şifa veya avantaj seçtirir.",
+   "weight": 2.0,
+   "effects": {},
+   "onHit": {
+    "dice": "1d8",
+    "type": "force",
+    "weaponId": "unarmed-strike",
+    "label": "Ruh Yakalayan Eldiven"
+   },
+   "katalog": {
+    "ref": "GY#25",
+    "tr": "Ruh Yakalayan Eldiven",
+    "nadirlik": "efsanevi",
+    "tur": "aksesuar",
+    "yuva": "eldiven",
+    "fiyatGp": 25000,
+    "ozet": "Keşişler ve silahsız savaşçılar için efsanevi eldiven: dayanıklılığı artırır, yumruklara yüksek kuvvet hasarı ekler ve her tur isabette şifa veya avantaj seçtirir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Uyum hâlindeyken CON skorun +2 artar (en fazla 20). Bütün Unarmed Strike isabetlerine ek 1d8 kuvvet hasarı eklenir.",
+      "durum": "kismi",
+      "not": "Unarmed Strike isabetine 1d8 kuvvet çalışır; CON +2 (en fazla 20) yok"
+     },
+     {
+      "ad": "Ruh Akışı",
+      "metin": "Kendi turunda ilk kez bir Unarmed Strike isabet ettirdiğinde ikisinden birini seçersin — Ruh Şifası: 1d8 can iyileşirsin; ya da Ruh Odağı: bu tur yapacağın bir sonraki saldırı zarın avantajlı olur.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Silah saldırıları Ruh Akışı ve +1d8 kuvvet bonusunu tetiklemez; CON artışı 20 tavanını aşamaz.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter CON artışı ve silahsız vuruş güçlerini alamaz."
+   }
+  },
+  {
+   "id": "compass-gloves",
+   "name": "Compass Gloves",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Yön rünleriyle nakışlı taktik eldiveni: çeviklik kurtarmalarını güçlendirir ve dostları ya da düşmanları savaş alanında kısa mesafede ışınlayabilir.",
+   "weight": 1.0,
+   "effects": {},
+   "passive": {
+    "saveMod": {
+     "dex": 1
+    }
+   },
+   "katalog": {
+    "ref": "GY#26",
+    "tr": "Pusula Eldiveni",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "eldiven",
+    "fiyatGp": 7400,
+    "ozet": "Yön rünleriyle nakışlı taktik eldiveni: çeviklik kurtarmalarını güçlendirir ve dostları ya da düşmanları savaş alanında kısa mesafede ışınlayabilir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "DEX kurtarma zarlarına +1 bonus kazanırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Konum Kaydır (2 yük, UD 1d2)",
+      "metin": "Eylemle 1 yük harcayarak 30 ft içinde görebildiğin bir yaratığı seçersin. Gönüllü bir dost ya da DC 15 WIS kurtarma zarını geçemeyen bir düşman, seçtiğin noktadan 20 ft içindeki görebildiğin boş bir altıgene ışınlanır (fırsat saldırısı tetiklemez; varış altıgeninin zemin ve yüzey kuralları işler).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Invisible yaratıklar ve görüş dışındaki boş altıgenler hedeflenemez; düşman kurtarma zarını geçerse yük harcanır.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Konum Kaydır gücünü ve +1 DEX kurtarma bonusunu kullanamaz."
+   }
+  },
+  {
+   "id": "blazing-fist-gauntlets",
+   "name": "Blazing Fist Gauntlets",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Kızgın demir boğumlu savaş eldiveni: büyü saldırı ve DC'sini artırır, silah ve silahsız saldırılara ateş hasarı katar ve yumruklarla kanama açabilir.",
+   "weight": 2.0,
+   "effects": {},
+   "bonus": {
+    "spell": 1
+   },
+   "passive": {
+    "saveMod": {
+     "str": 1
+    }
+   },
+   "katalog": {
+    "ref": "GY#27",
+    "tr": "Alevli Yumruk Eldiveni",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "eldiven",
+    "fiyatGp": 8000,
+    "ozet": "Kızgın demir boğumlu savaş eldiveni: büyü saldırı ve DC'sini artırır, silah ve silahsız saldırılara ateş hasarı katar ve yumruklarla kanama açabilir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılıyken büyü saldırı zarlarına +1, büyü kurtarma zarı DC'sine +1 ve STR kurtarma zarlarına +1 bonus alırsın. Silah saldırıların ek 1d4 ateş hasarı, Unarmed Strike saldırıların ise ek 1d6 ateş hasarı verir.",
+      "durum": "kismi",
+      "not": "büyü saldırısı/DC +1 ve STR kurtarma +1 çalışır; silaha 1d4, Unarmed Strike'a 1d6 ateş eki yok (eşyada tek isabet eki)"
+     },
+     {
+      "ad": "Kızgın Tırnak",
+      "metin": "Unarmed Strike isabetinde turda bir kez hedef DC 15 CON kurtarma zarını geçemezse 2 tur boyunca her tur başında 1d4 kesici kanama hasarı alır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Eklenen ateş hasarı bitişikteki yağ veya ağ yüzeylerini tutuşturabilir; kanama Construct ve Undead'e işlemez.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter ateş hasarı ve büyü bonuslarını alamaz."
+   }
+  },
+  {
+   "id": "spellquick-gloves",
+   "name": "Spellquick Gloves",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "İnce ipek büyücü eldiveni: büyü saldırılarına +1 ekler ve kısa dinlenmede bir kez normalde eylem isteyen bir cantrip'i bonus eylemle yapmanı sağlar.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#28",
+    "tr": "Hızlı Büyü Eldiveni",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "eldiven",
+    "uyumKosulu": "Büyücü",
+    "fiyatGp": 6800,
+    "ozet": "İnce ipek büyücü eldiveni: büyü saldırılarına +1 ekler ve kısa dinlenmede bir kez normalde eylem isteyen bir cantrip'i bonus eylemle yapmanı sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Büyü saldırı zarlarına +1 bonus kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Hızlı Cantrip (1 yük, KD)",
+      "metin": "Normalde 1 Eylem döküm süresine sahip bildiğin bir cantrip'i bonus eylemle yaparsın (aynı tur eyleminle başka bir büyü ya da saldırı yapmaya devam edebilirsin).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Yalnızca cantrip'lerde çalışır; 1. seviye ve üstü büyülerde Quickened Spell yerine geçmez.",
+    "kimlerKullanamaz": "Spellcasting veya Pact Magic özelliği olmayan karakterler uyum yapamaz."
+   }
+  },
+  {
+   "id": "daredevil-bracers",
+   "name": "Daredevil Bracers",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Cephede dövüşen büyücüler için zırhlı bileklik: büyü saldırılarına +1 verir ve 5 ft içinde düşman varken menzilli büyü saldırılarındaki dezavantajı kaldırır.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#29",
+    "tr": "Büyülü Hedef Eldiveni",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "eldiven",
+    "uyumKosulu": "Büyücü",
+    "fiyatGp": 6500,
+    "ozet": "Cephede dövüşen büyücüler için zırhlı bileklik: büyü saldırılarına +1 verir ve 5 ft içinde düşman varken menzilli büyü saldırılarındaki dezavantajı kaldırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Büyü saldırı zarlarına +1 bonus alırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Yakın Nişan",
+      "metin": "5 ft içinde aksiyon yapabilen bir düşman varken yaptığın menzilli büyü saldırılarında (ör. Fire Bolt, Scorching Ray, Eldritch Blast) yakın düşman dezavantajı almazsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Yakın Nişan yalnızca büyü saldırıları içindir; yay ve arbalet gibi menzilli silah saldırılarında dezavantaj sürer.",
+    "kimlerKullanamaz": "Spellcasting veya Pact Magic özelliği olmayan karakterler uyum yapamaz."
+   }
+  },
+  {
+   "id": "skythunder-gloves",
+   "name": "Skythunder Gloves",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Fırtına rünlü deri eldiven: yıldırım, gürültü veya ışıltı hasarı verildiğinde hedefte ses sarsıntısı oluşturarak hızını kırar ve ek gürültü hasarı vurur.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#30",
+    "tr": "Yankı Göğü Eldiveni",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "eldiven",
+    "fiyatGp": 1700,
+    "ozet": "Fırtına rünlü deri eldiven: yıldırım, gürültü veya ışıltı hasarı verildiğinde hedefte ses sarsıntısı oluşturarak hızını kırar ve ek gürültü hasarı vurur.",
+    "ozellikler": [
+     {
+      "ad": "Yankı Çatlağı",
+      "metin": "Kendi turunda ilk kez bir düşmana yıldırım, gürültü veya ışıltı hasarı verdiğinde hedef DC 14 CON kurtarma zarı atar; geçemezse 1d4 gürültü hasarı alır ve sonraki turunun sonuna kadar hızı 10 ft azalır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Yıldırım, gürültü veya ışıltı hasarı üretemeyen karakterlerde etkisizdir; Deafened hedefler yine de hız cezasından etkilenir.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Yankı Çatlağı pasifini açamaz."
+   }
+  },
+  {
+   "id": "slingmaster-gloves",
+   "name": "Slingmaster Gloves",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Parmak uçları kavrayıcı kayışlı fırlatma eldiveni: bütün fırlatılan silah ve doğaçlama nesne atışlarına ek hasar ekler.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#31",
+    "tr": "Fırlatma Ustası Eldiveni",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "eldiven",
+    "fiyatGp": 1400,
+    "ozet": "Parmak uçları kavrayıcı kayışlı fırlatma eldiveni: bütün fırlatılan silah ve doğaçlama nesne atışlarına ek hasar ekler.",
+    "ozellikler": [
+     {
+      "ad": "Güçlü Savurma",
+      "metin": "Thrown özellikli bir silahla yaptığın menzilli fırlatma saldırılarına ve Nesne Fırlat (object_use throw) atışlarına +1d4 ek hasar (saldırının hasar türünde) eklersin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Aynı silahla yapılan yakın dövüş saldırılarında ve yay/arbalet atışlarında bu bonus uygulanmaz.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "luminous-gauntlets",
+   "name": "Luminous Gauntlets",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Güneş gümüşü kaplı eldiven: ışıltı hasarı verilen hedefi kısa süreliğine parlatarak gizliliğini açar ve bir sonraki saldırısını zayıflatır.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#32",
+    "tr": "Işıltı Saçan Eldiven",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "eldiven",
+    "fiyatGp": 1550,
+    "ozet": "Güneş gümüşü kaplı eldiven: ışıltı hasarı verilen hedefi kısa süreliğine parlatarak gizliliğini açar ve bir sonraki saldırısını zayıflatır.",
+    "ozellikler": [
+     {
+      "ad": "Parlayan İz",
+      "metin": "Kendi turunda ilk kez bir düşmana ışıltı hasarı verdiğinde hedef bir sonraki turunun sonuna kadar 5 ft parlak ışık yayar (Invisible avantajından yararlanamaz) ve yapacağı ilk saldırı zarında dezavantaj alır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Işıltı hasarı vermeyen saldırılarda çalışmaz; yayılan 5 ft ışık hedefin çevresini aydınlattığı için gece saklanan müttefikleri görünür kılabilir.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Parlayan İz pasifini açamaz."
+   }
+  },
+  {
+   "id": "twinhand-gloves",
+   "name": "Twinhand Gloves",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Çift silahlı dövüşçüler için kusursuz dengelenmiş eldiven: Two-Weapon Fighting stilini açmadan da ikincil el saldırısının hasarına yetenek değiştiricisini ekler.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#33",
+    "tr": "İki El Dengesi Eldiveni",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "eldiven",
+    "fiyatGp": 1450,
+    "ozet": "Çift silahlı dövüşçüler için kusursuz dengelenmiş eldiven: Two-Weapon Fighting stilini açmadan da ikincil el saldırısının hasarına yetenek değiştiricisini ekler.",
+    "ozellikler": [
+     {
+      "ad": "Çift El Ustalığı",
+      "metin": "İkincil el (offhand_attack, Nick dahil) Light silah saldırılarının hasarına pozitif yetenek değiştiricini (STR veya DEX) eklersin. Ayrıca Sleight of Hand kontrollerine +1 bonus alırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Zaten Two-Weapon Fighting feat'ine sahip karakterlerde yan el bonusu ikiye katlanmaz (yetenek değiştiricisi yalnızca bir kez eklenir).",
+    "kimlerKullanamaz": "Herkes takabilir; ancak yan el silahı kullanmayanlar yalnız +1 Sleight of Hand bonusundan yararlanır."
+   }
+  },
+  {
+   "id": "winterclaw-gloves",
+   "name": "Winterclaw Gloves",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Kırağı parmaklı soğuk büyücüsü eldiveni: soğuk hasarı verilen hedefin çeviklik kurtarmalarını bozar ve altındaki zemini kaygan buza çevirebilir.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#34",
+    "tr": "Kış Pençesi Eldiveni",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "eldiven",
+    "fiyatGp": 1600,
+    "ozet": "Kırağı parmaklı soğuk büyücüsü eldiveni: soğuk hasarı verilen hedefin çeviklik kurtarmalarını bozar ve altındaki zemini kaygan buza çevirebilir.",
+    "ozellikler": [
+     {
+      "ad": "Donan Ayaklar",
+      "metin": "Kendi turunda ilk kez bir düşmana soğuk hasarı verdiğinde hedef DC 14 CON kurtarma zarı atar; geçemezse sonraki turunun sonuna kadar DEX kurtarma zarlarında dezavantaj alır ve bulunduğu altıgen 2 tur boyunca buz yüzeyine dönüşür.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Oluşan buz yüzeyi hedefin yanına yaklaşan dostları da kaydırabilir; ateş hasarı değerse buz eriyerek suya döner.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Donan Ayaklar pasifini açamaz."
+   }
+  },
+  {
+   "id": "warding-healer-gloves",
+   "name": "Warding Healer Gloves",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Tapınak şifacılarının koruyucu eldiveni: iyileştirdiği dostları bir tur boyunca fiziksel silahlara karşı dirençle kaplar.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#35",
+    "tr": "Şifacı Zırh Eldiveni",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "eldiven",
+    "fiyatGp": 1800,
+    "ozet": "Tapınak şifacılarının koruyucu eldiveni: iyileştirdiği dostları bir tur boyunca fiziksel silahlara karşı dirençle kaplar.",
+    "ozellikler": [
+     {
+      "ad": "Kutsanmış Zırh",
+      "metin": "Bir büyü, sınıf özelliği veya iksirle senden başka bir dostu iyileştirdiğinde, o dost senin bir sonraki turunun başına kadar ezici, delici ve kesici hasarlara karşı direnç kazanır (kendine yapılan iyileştirmelerde tetiklenmez).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Element veya büyü hasarlarına karşı direnç sağlamaz ve şifacının kendisine uygulanmaz.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Kutsanmış Zırh pasifini açamaz."
+   }
+  },
+  {
+   "id": "ichorous-gloves",
+   "name": "Ichorous Gloves",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Simyacı eldiveni: bir düşmana asit hasarı verdiğinde hedefin bitişiğindeki diğer düşmanlara da yakıcı asit sıçratır.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#36",
+    "tr": "Asit İzi Eldiveni",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "eldiven",
+    "fiyatGp": 440,
+    "ozet": "Simyacı eldiveni: bir düşmana asit hasarı verdiğinde hedefin bitişiğindeki diğer düşmanlara da yakıcı asit sıçratır.",
+    "ozellikler": [
+     {
+      "ad": "Asit Sıçraması",
+      "metin": "Kendi turunda ilk kez bir yaratığa asit hasarı verdiğinde, o hedefin 5 ft çevresindeki diğer düşmanlar 1d4 asit hasarı alır (save yok; dost yaratıklar etkilenmez).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Tek başına duran hedeflere karşı ek hasar üretmez; asit hasarı kaynağı olmayan karakterlerde etkisizdir.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "dexterous-silk-gloves",
+   "name": "Dexterous Silk Gloves",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "İnce gümüş iplikli ipek eldiven: taşıyıcının DEX puanını 18'e sabitleyerek savunmasını, inisiyatifini ve çeviklik kontrollerini tek parçayla yükseltir.",
+   "weight": 1.0,
+   "effects": {
+    "setAbility": {
+     "dex": 18
+    }
+   },
+   "katalog": {
+    "ref": "GY#37",
+    "tr": "Büyülü Çeviklik Eldiveni",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "eldiven",
+    "fiyatGp": 650,
+    "ozet": "İnce gümüş iplikli ipek eldiven: taşıyıcının DEX puanını 18'e sabitleyerek savunmasını, inisiyatifini ve çeviklik kontrollerini tek parçayla yükseltir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılı ve uyumlu olduğun sürece DEX skorun 18 olur (mevcut DEX skorun 18 veya daha yüksekse etki etmez). Ayrıca silah saldırı zarlarına +1 bonus kazanırsın.",
+      "durum": "kismi",
+      "not": "DEX 18 sabitlemesi çalışır (zaten 18+ ise etkisiz); silah saldırısına +1 yok"
+     }
+    ],
+    "riskler": "DEX skoru zaten 18+ olan karakterler yalnız +1 saldırı bonusundan yararlanır; uyum kesilirse AC ve inisiyatif düşer.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter DEX sabitlemesi ve +1 saldırı bonusunu alamaz."
+   }
+  },
+  {
+   "id": "sparkhand-gloves",
+   "name": "Sparkhand Gloves",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Bakır boğumlu dövüş eldiveni: metal zırhlı veya su içindeki düşmanlara yapılan silahsız vuruşlara avantaj ve ek yıldırım hasarı verir.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#38",
+    "tr": "Kıvılcım Eldiveni",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "eldiven",
+    "fiyatGp": 450,
+    "ozet": "Bakır boğumlu dövüş eldiveni: metal zırhlı veya su içindeki düşmanlara yapılan silahsız vuruşlara avantaj ve ek yıldırım hasarı verir.",
+    "ozellikler": [
+     {
+      "ad": "İletken Darbe",
+      "metin": "Metal zırh giyen veya su altıgeninde duran hedeflere yapılan Unarmed Strike saldırıların avantajlı olur ve isabette ek 1d4 yıldırım hasarı verir (su altıgeninde yıldırım zinciri tetiklenir).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Su altıgenindeki yıldırım zinciri aynı suda duran kullanıcıya veya dostlara sıçrayabilir; silah saldırılarına uygulanmaz.",
+    "kimlerKullanamaz": "Herkes takabilir; ancak en yüksek verimi Monk ve silahsız savaşçılar alır."
+   }
+  },
+  {
+   "id": "darkstep-boots",
+   "name": "Darkstep Boots",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Gölgeler arasında kayan efsanevi çizmeler: buz, yağ, gres, ağ ve bitkisel bağlarda takılmaz, hız kazandırır ve kısa dinlenmede bir kez Misty Step yaptırır.",
+   "weight": 2.0,
+   "effects": {},
+   "passive": {
+    "speedFt": 5
+   },
+   "spells": [
+    {
+     "name": "Misty Step",
+     "level": 2
+    }
+   ],
+   "charges": 1,
+   "recharge": "all",
+   "katalog": {
+    "ref": "GY#39",
+    "tr": "Karanlık Adım Çizmeleri",
+    "nadirlik": "efsanevi",
+    "tur": "aksesuar",
+    "yuva": "bot",
+    "fiyatGp": 21500,
+    "ozet": "Gölgeler arasında kayan efsanevi çizmeler: buz, yağ, gres, ağ ve bitkisel bağlarda takılmaz, hız kazandırır ve kısa dinlenmede bir kez Misty Step yaptırır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Yürüme hızın +5 ft artar.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Karanlık Denge",
+      "metin": "Buz, yağ, gres ve ağ (Web) yüzeyleri ile Entangle alanları sana zorlu arazi sayılmaz; bu yüzeylerden kaynaklanan Prone ve Restrained etkilerine bağışıklık kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Gece Sıçraması (1 yük, KD)",
+      "metin": "Bonus eylemle 2. seviye Misty Step (30 ft görebildiğin boş altıgene ışınlanma) yaparsın.",
+      "durum": "kismi",
+      "not": "2. seviye Misty Step slotsuz çalışır; eşya yükü yalnız uzun dinlenmede yenilenir (kısa dinlenme yok)"
+     }
+    ],
+    "riskler": "Lav, alev ve derin su hasarlarına karşı koruma sağlamaz; yalnızca kayma ve bağlanma yüzeylerini aşar.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter yüzey bağışıklığı, hız ve Misty Step özelliklerini kullanamaz."
+   }
+  },
+  {
+   "id": "boots-of-unyielding",
+   "name": "Boots of Unyielding",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Kalın tabanlı ağır yürüyüş çizmeleri: +10 ft hız verir, zorlu arazide yavaşlamaz ve felç/bağlanma ile zorla itilmelere karşı güçlü direnç sağlar.",
+   "weight": 3.0,
+   "effects": {},
+   "passive": {
+    "speedFt": 10,
+    "saveAdvAgainst": [
+     "Paralyzed",
+     "Restrained"
+    ]
+   },
+   "katalog": {
+    "ref": "GY#40",
+    "tr": "Sarsılmaz İnat Çizmeleri",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "bot",
+    "fiyatGp": 8200,
+    "ozet": "Kalın tabanlı ağır yürüyüş çizmeleri: +10 ft hız verir, zorlu arazide yavaşlamaz ve felç/bağlanma ile zorla itilmelere karşı güçlü direnç sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Yürüme hızın +10 ft artar ve normal zorlu arazide yürürken ek hareket maliyeti ödemezsin. Paralyzed ve Restrained durumlarına karşı kurtarma zarlarında avantaj, zorla itilme/çekilme etkilerine karşı STR kurtarma zarlarında avantaj kazanırsın.",
+      "durum": "kismi",
+      "not": "hız +10 ft ve Paralyzed/Restrained kurtarma avantajı çalışır; zorlu arazi muafiyeti ve itilmeye karşı STR avantajı yok"
+     }
+    ],
+    "riskler": "Paralyzed ve Restrained'a tam bağışıklık vermez (yalnız avantaj sağlar); 3 lb ağırlığı diğer çizmelerden fazladır.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter hız, zorlu arazi ve kurtarma avantajlarını alamaz."
+   }
+  },
+  {
+   "id": "frostspike-boots",
+   "name": "Frostspike Boots",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Çivili tabanlı buzul çizmeleri: buzda kaymama bağışıklığı ve soğuk direnci verir, kısa mesafeli ışınlanmayla varış çevresini buza çevirir.",
+   "weight": 2.0,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "cold"
+    ],
+    "iceWalker": true
+   },
+   "katalog": {
+    "ref": "GY#41",
+    "tr": "Buz Çivili Avcı Çizmeleri",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "bot",
+    "fiyatGp": 6800,
+    "ozet": "Çivili tabanlı buzul çizmeleri: buzda kaymama bağışıklığı ve soğuk direnci verir, kısa mesafeli ışınlanmayla varış çevresini buza çevirir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Soğuk hasarına direnç kazanırsın; buz ve kar altıgenleri sana zorlu arazi sayılmaz ve buzda kayarak Prone olmazsın.",
+      "durum": "kismi",
+      "not": "soğuk direnci ve buz/kar zorlu arazi değil (Ice Walk) çalışır; buzda kayıp Prone olmama yok"
+     },
+     {
+      "ad": "Ayaz Adımı (2 yük, UD 1d2)",
+      "metin": "Bonus eylemle 15 ft içinde görebildiğin boş bir altıgene ışınlanırsın; varış altıgeninin 5 ft çevresinde 2 tur süren buz yüzeyi oluşur ve bu alandaki düşmanlar DC 14 DEX kurtarma zarını geçemezse Prone olur.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Varışta oluşan buz yüzeyi yakındaki dostları da kaydırabilir; ince buz kırılması (Buzul haritası) ağır zırh ağırlığından yine tetiklenebilir.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter soğuk direnci ve Ayaz Adımı güçlerini kullanamaz."
+   }
+  },
+  {
+   "id": "skyvault-boots",
+   "name": "Skyvault Boots",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Kızgın tabanlı ağır sıçrama çizmeleri: başarısız bir kurtarma zarını tepkiyle destekler ve alevli patlamayla 30 ft ışınlanma sağlar.",
+   "weight": 3.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#42",
+    "tr": "Gök Sıçrayışı Çizmeleri",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "bot",
+    "fiyatGp": 7900,
+    "ozet": "Kızgın tabanlı ağır sıçrama çizmeleri: başarısız bir kurtarma zarını tepkiyle destekler ve alevli patlamayla 30 ft ışınlanma sağlar.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Zorla itilme etkilerine karşı STR kurtarma zarlarında avantaj kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Sarsılmaz Adım (1 yük, UD)",
+      "metin": "Bir kurtarma zarında başarısız olduğunda tepkiyle o zara +4 ekleyerek sonucu değiştirmeyi deneyebilirsin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Kor Sıçrayışı (1 yük, KD)",
+      "metin": "Bonus eylemle 30 ft içinde görebildiğin boş bir altıgene ışınlanırsın; varış noktasının 5 ft çevresindeki düşmanlar DC 15 DEX kurtarma zarı atar, geçemezse 2d6 ateş hasarı, geçerse yarı hasar alır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Kor Sıçrayışı varışındaki ateş patlaması çevredeki yağ ve ağ yüzeylerini tutuşturur; +4 tepkisi yalnızca kurtarma zarlarında çalışır.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter kurtarma desteği ve Kor Sıçrayışı güçlerini kullanamaz."
+   }
+  },
+  {
+   "id": "rushstrike-boots",
+   "name": "Rushstrike Boots",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Topuk kilidi tıklatılarak açılan saldırı çizmeleri: bonus eylemle hızlı koşu sağlar ve koşu sırasında düşman fırsat saldırılarını bozar.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#43",
+    "tr": "Süratli Akın Çizmeleri",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "bot",
+    "fiyatGp": 1500,
+    "ozet": "Topuk kilidi tıklatılarak açılan saldırı çizmeleri: bonus eylemle hızlı koşu sağlar ve koşu sırasında düşman fırsat saldırılarını bozar.",
+    "ozellikler": [
+     {
+      "ad": "Topuk İvmesi (2 yük, UD 1d2)",
+      "metin": "Bonus eylemle 1 yük harcayarak Dash yaparsın ve o turun sonuna kadar sana yapılan fırsat saldırıları dezavantajlı olur.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Fırsat saldırılarını tamamen engellemez (Disengage değildir); yalnızca dezavantaj uygular.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "stormstep-boots",
+   "name": "Stormstep Boots",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Titreyen tabanlı ses çizmeleri: bir düşmana herhangi bir durum uyguladığında hedefin ayaklarının altında yankı patlaması yaratıp onu yere serebilir.",
+   "weight": 2.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#44",
+    "tr": "Yankı Adımı Çizmeleri",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "bot",
+    "fiyatGp": 1750,
+    "ozet": "Titreyen tabanlı ses çizmeleri: bir düşmana herhangi bir durum uyguladığında hedefin ayaklarının altında yankı patlaması yaratıp onu yere serebilir.",
+    "ozellikler": [
+     {
+      "ad": "Sarsan Yankı",
+      "metin": "Kendi turunda ilk kez bir düşmana bir durum (ör. Blinded, Frightened, Poisoned, Restrained, Slow/Sap) uyguladığında hedef DC 14 CON kurtarma zarı atar; geçemezse 1d4 gürültü hasarı alır ve Prone olur.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Zaten Prone durumundaki hedeflere yalnızca 1d4 gürültü hasarı ekler; durum uygulamayan düz saldırılarda tetiklenmez.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Sarsan Yankı pasifini açamaz."
+   }
+  },
+  {
+   "id": "steadyfocus-boots",
+   "name": "Steadyfocus Boots",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Kurşun ağırlıklı büyücü çizmeleri: konsantrasyon sürdürürken kullanıcıyı yere serilmekten ve zorla itilmekten tamamen korur.",
+   "weight": 2.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#45",
+    "tr": "Büyü Dengesi Çizmeleri",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "bot",
+    "fiyatGp": 1600,
+    "ozet": "Kurşun ağırlıklı büyücü çizmeleri: konsantrasyon sürdürürken kullanıcıyı yere serilmekten ve zorla itilmekten tamamen korur.",
+    "ozellikler": [
+     {
+      "ad": "Köklü Odak",
+      "metin": "Herhangi bir büyüye konsantrasyon sürdürdüğün sürece Prone durumuna ve zorla itilme/ çekilme etkilerine bağışıklık kazanırsın; yürüme hızın da +5 ft artar.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Konsantrasyon büyüsü etkin değilken çizmeler hiçbir koruma veya hız bonusu sağlamaz.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Köklü Odak pasifini alamaz."
+   }
+  },
+  {
+   "id": "springvault-boots",
+   "name": "Springvault Boots",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Esnek yaylı tabanlı hücum çizmeleri: zıplama mesafesini artırır ve atlayış inişlerinde çevresine sarsıntı dalgası yayar.",
+   "weight": 2.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#46",
+    "tr": "Zıplama Yayı Çizmeleri",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "bot",
+    "fiyatGp": 1350,
+    "ozet": "Esnek yaylı tabanlı hücum çizmeleri: zıplama mesafesini artırır ve atlayış inişlerinde çevresine sarsıntı dalgası yayar.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Acrobatics kontrollerine +1 bonus alır, Long Jump ve High Jump mesafene +5 ft eklersin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Gümleyen İniş",
+      "metin": "Kendi turunda en fazla bir kez, jump komutuyla yere indiğinde 5 ft çevrendeki tüm düşmanlar 1d4 gürültü hasarı alır (save yok).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "İniş sarsıntısı yalnızca jump komutuyla tetiklenir; gürültüsü uyuyan grupları uyandırabilir.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "waterskipper-sandals",
+   "name": "Waterskipper Sandals",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Kıyı ve göl savaşları için bakır tabanlı sandalet: su üzerinde takılmadan yürümeyi sağlar ve sudan toplanan yükü sonraki saldırıya yıldırım olarak aktarır.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#47",
+    "tr": "Suda Yürüyen Sandalet",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "bot",
+    "fiyatGp": 1600,
+    "ozet": "Kıyı ve göl savaşları için bakır tabanlı sandalet: su üzerinde takılmadan yürümeyi sağlar ve sudan toplanan yükü sonraki saldırıya yıldırım olarak aktarır.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Sığ ve derin su altıgenlerinde normal hareket maliyetiyle yürürsün (ağır zırh batma kuralına girmezsin).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Fırtına Suyu",
+      "metin": "Su altıgeninde veya su yüzeyinde turuna başladığında bir sonraki isabetli saldırına +1d4 yıldırım hasarı eklenir (turda bir kez).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Su Üstünde (1 yük, UD)",
+      "metin": "Bonus eylemle 10 tur boyunca Water Walk etkisi kazanırsın (derin su yüzeyinde yürürsün).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Su üzerinde durmak düşman yıldırım saldırılarında su zincirine yakalanma riski doğurur.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Fırtına Suyu ve Water Walk güçlerini kullanamaz."
+   }
+  },
+  {
+   "id": "windstep-sandals",
+   "name": "Windstep Sandals",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Zırhsız dövüşçüler ve keşişler için hafif bez sandaletler: yürüme hızını artırır ve bilgelik odaklı silahsız vuruşlara ek hasar katar.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#48",
+    "tr": "Keşişin Hızlı Sandaletleri",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "bot",
+    "fiyatGp": 560,
+    "ozet": "Zırhsız dövüşçüler ve keşişler için hafif bez sandaletler: yürüme hızını artırır ve bilgelik odaklı silahsız vuruşlara ek hasar katar.",
+    "ozellikler": [
+     {
+      "ad": "Bilge Adım",
+      "metin": "Hiçbir zırh ve kalkan taşımıyorken yürüme hızın +5 ft artar ve Unarmed Strike hasar zarlarına WIS değiştiricinin yarısını (aşağı yuvarlanır, en az +1, en fazla +3) eklersin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Herhangi bir zırh veya kalkan kuşanıldığında hem hız hem silahsız hasar bonusu devre dışı kalır.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Bilge Adım pasifini alamaz."
+   }
+  },
+  {
+   "id": "sparkstride-boots",
+   "name": "Sparkstride Boots",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Sürtünmeyle elektrik toplayan hafif deri çizmeler: Dash ile koşulduğunda bir sonraki saldırıyı yıldırım kıvılcımıyla güçlendirir.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#49",
+    "tr": "Kıvılcım Çizmeleri",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "bot",
+    "fiyatGp": 450,
+    "ozet": "Sürtünmeyle elektrik toplayan hafif deri çizmeler: Dash ile koşulduğunda bir sonraki saldırıyı yıldırım kıvılcımıyla güçlendirir.",
+    "ozellikler": [
+     {
+      "ad": "Koşu Kıvılcımı",
+      "metin": "Kendi turunda Dash (eylem veya bonus eylem) yaptığında bir sonraki turunun sonuna kadar yapacağın ilk saldırı zarına +1 bonus ve isabet ederse ek 1d4 yıldırım hasarı kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Saldırı ıskalarsa +1 isabet harcanır ve ek yıldırım hasarı boşa gider; üst üste birikmez.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "mirestrider-boots",
+   "name": "Mirestrider Boots",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Geniş tabanlı su geçirmez bataklık çizmeleri: çamur, sığ su ve batakta yavaşlamadan yürütür ve batıran çamurda saplanmayı önler.",
+   "weight": 2.0,
+   "effects": {},
+   "katalog": {
+    "ref": "GY#50",
+    "tr": "Bataklık Geçidi Çizmeleri",
+    "nadirlik": "olagandisi",
+    "tur": "aksesuar",
+    "yuva": "bot",
+    "fiyatGp": 400,
+    "ozet": "Geniş tabanlı su geçirmez bataklık çizmeleri: çamur, sığ su ve batakta yavaşlamadan yürütür ve batıran çamurda saplanmayı önler.",
+    "ozellikler": [
+     {
+      "ad": "Sağlam Taban",
+      "metin": "Çamur, sığ su (n) ve derin batak (b) altıgenlerinde yürürken zorlu arazi ek maliyeti ödemezsin. Batıran çamur (sinkMud) ve bataktan çıkma Athletics kontrollerinde avantaj kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Derin batak zehir hasarına ve boğulma sayacına karşı tam bağışıklık vermez; yalnızca yürüyüş ve çıkma kontrollerini kolaylaştırır.",
+    "kimlerKullanamaz": "Herkes takabilir."
+   }
+  },
+  {
+   "id": "starstone-crown",
+   "name": "Starstone Crown",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Akademi taşından yontulmuş ağır büyücü başlığı: can dayanıklılığından ödün vererek zekâyı ve büyü kurtarma zarı zorluğunu belirgin biçimde yükseltir.",
+   "weight": 3.0,
+   "effects": {},
+   "katalog": {
+    "ref": "KY#45",
+    "tr": "Yıldız Taşı Tacı",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "başlık",
+    "fiyatGp": 1600,
+    "ozet": "Akademi taşından yontulmuş ağır büyücü başlığı: can dayanıklılığından ödün vererek zekâyı ve büyü kurtarma zarı zorluğunu belirgin biçimde yükseltir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılı ve uyumlu olduğun sürece INT skorun +2 artar (en fazla 20) ve büyü kurtarma zarı DC'sine +1 bonus kazanırsın.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Taş Ağırlığı",
+      "metin": "Başlığı taktığın sürece en yüksek canın (Maks. HP) 10 puan azalır.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Düşük seviyeli ve az canlı büyücülerde −10 Maks. HP tek darbede düşme riskini ciddi biçimde büyütür.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter INT ve büyü DC bonusunu alamaz."
+   }
+  },
+  {
+   "id": "silvertear-mask",
+   "name": "Silvertear Mask",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Sıvı gümüşten dökülmüş akışkan maske: fiziksel silah darbelerini hafifletme bedeliyle karizmayı ve büyüsel çekiciliği güçlendirir.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "KY#46",
+    "tr": "Gümüş Damla Maskesi",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "başlık",
+    "fiyatGp": 1500,
+    "ozet": "Sıvı gümüşten dökülmüş akışkan maske: fiziksel silah darbelerini hafifletme bedeliyle karizmayı ve büyüsel çekiciliği güçlendirir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılı ve uyumlu olduğun sürece CHA skorun +2 artar (en fazla 20) ve Persuasion/Deception kontrollerine +1 eklersin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     },
+     {
+      "ad": "Sıvı Bilek",
+      "metin": "Maske takılıyken yaptığın fiziksel silah saldırılarının hasarından −2 düşülür (en az 1 hasar).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Kılıç-büyü hibritleri ve Paladinler için −2 silah hasarı ciddi kayıptır; saf büyücü ve destek ozanları için idealdir.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter CHA bonusunu alamaz."
+   }
+  },
+  {
+   "id": "pale-blood-mask",
+   "name": "Pale Blood Mask",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Savaş hekimlerinin soluk porselen maskesi: yakın çevrede herhangi bir yaratık kanama hasarı aldığında taşıyıcıyı ölümcül bir saldırı coşkusuna sokar.",
+   "weight": 1.0,
+   "effects": {},
+   "katalog": {
+    "ref": "KY#47",
+    "tr": "Soluk Kan Maskesi",
+    "nadirlik": "cokNadir",
+    "tur": "aksesuar",
+    "yuva": "başlık",
+    "fiyatGp": 7400,
+    "ozet": "Savaş hekimlerinin soluk porselen maskesi: yakın çevrede herhangi bir yaratık kanama hasarı aldığında taşıyıcıyı ölümcül bir saldırı coşkusuna sokar.",
+    "ozellikler": [
+     {
+      "ad": "Kan Coşkusu",
+      "metin": "Sana 20 ft mesafe içinde herhangi bir yaratık (düşman, dost veya kendin) kanama (bleed) hasarı aldığında, bir sonraki turunun sonuna kadar bütün saldırı zarlarına +2 ve silah hasar zarlarına +1d4 bonus kazanırsın (süre yeni kanamayla tazelenir, üst üste binmez).",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Construct ve Undead gibi kanamayan düşmanlara karşı tek başına tetiklenmez; kanama üreten silah veya takım sinerjisi gerektirir.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Kan Coşkusu pasifini açamaz."
+   }
+  },
+  {
+   "id": "fungal-crown",
+   "name": "Fungal Crown",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Canlı yeraltı mantarlarından örülmüş taç: yakın çevrede zehir veya asit tepkimesi tetiklendiğinde taşıyıcıya güç ve geçici can kazandırır.",
+   "weight": 2.0,
+   "effects": {},
+   "katalog": {
+    "ref": "KY#48",
+    "tr": "Mantar Taç Başlığı",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "başlık",
+    "fiyatGp": 1750,
+    "ozet": "Canlı yeraltı mantarlarından örülmüş taç: yakın çevrede zehir veya asit tepkimesi tetiklendiğinde taşıyıcıya güç ve geçici can kazandırır.",
+    "ozellikler": [
+     {
+      "ad": "Spor Beslenmesi",
+      "metin": "Sana 20 ft mesafe içinde herhangi bir yaratık Poisoned durumuna girdiğinde veya bir asit/zehir yüzeyinden hasar aldığında (turda en fazla bir kez) 6 geçici can kazanırsın ve sonraki turunun sonuna kadar yapacağın ilk isabetli saldırıya +1d6 zehir hasarı eklenir.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Zehir ve asit kaynağı olmayan ortamlarda hiçbir bonus vermez; geçici can üst üste binmez.",
+    "kimlerKullanamaz": "Uyum yapmayan karakter Spor Beslenmesi pasifini açamaz."
+   }
+  },
+  {
+   "id": "snow-witch-hat",
+   "name": "Snow Witch Hat",
+   "kaynak": "katalog-1",
+   "attunement": true,
+   "text": "Geniş kenarlı beyaz kış şapkası: soğuk büyülerinin isabetini, kurtarma zarı zorluğunu ve donma etkisini belirgin biçimde keskinleştirir.",
+   "weight": 1.0,
+   "effects": {},
+   "passive": {
+    "resist": [
+     "cold"
+    ]
+   },
+   "katalog": {
+    "ref": "KY#54",
+    "tr": "Kar Cadısı Şapkası",
+    "nadirlik": "nadir",
+    "tur": "aksesuar",
+    "yuva": "başlık",
+    "uyumKosulu": "Büyücü",
+    "fiyatGp": 1700,
+    "ozet": "Geniş kenarlı beyaz kış şapkası: soğuk büyülerinin isabetini, kurtarma zarı zorluğunu ve donma etkisini belirgin biçimde keskinleştirir.",
+    "ozellikler": [
+     {
+      "ad": "Temel etki",
+      "metin": "Takılı ve uyumlu olduğun sürece soğuk hasarına direnç kazanırsın.",
+      "durum": "calisir"
+     },
+     {
+      "ad": "Kış İradesi",
+      "metin": "Soğuk hasarı veren büyü ve cantrip'lerinin kurtarma zarı DC'sine +1 bonus ve turda bir kez hasarına +1d4 soğuk hasarı eklersin.",
+      "durum": "planli",
+      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+     }
+    ],
+    "riskler": "Soğuk dışındaki diğer büyü türlerine herhangi bir bonus sağlamaz.",
+    "kimlerKullanamaz": "Spellcasting veya Pact Magic özelliği olmayan karakterler bu şapkayla uyum yapamaz."
    }
   }
  ]

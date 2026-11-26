@@ -2,6 +2,30 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev KATALOG-1 C: 55 özgün giyilebilir (2026-11-26; kural sürümü ve kayıt sürümü değişmedi)
+
+Kaynak: Giyilebilir Kataloğu #1–50 (`GY#`: 13 başlık, 11 pelerin, 14 eldiven, 12 bot) ve Karanlık Yadigârlar başlıkları #45–48, #54
+(`KY#`). Tür `aksesuar` (oluşturucuda Aksesuar grubu). K7: Helldusk Gauntlets → **Blazing Fist Gauntlets**, Nightwalker Boots →
+**Darkstep Boots** (kimlik yeni addan; TR ad ve güçler aynı).
+
+- **Metin birebir** (A/B yöntemi): 55 parçada özet, 87 güç, riskler ve kimler kullanamaz ham PDF metninde aynen; etiket sütunu kaymış
+  16 parçada risk/kimler başlangıç satırı elle. İlk adsız paragraf "Temel etki" gücü.
+- **Birebir mekanikler:** başlıktaki "Ek AC" `effects.acBonus` (zırhsız da), direnç, Frightened/Stunned bağışıklığı, kritik
+  bağışıklığı (`noCrit`), tüm kurtarma +1 (`saveBonus`), tek yetenek kurtarma (`saveMod`), Poisoned/Paralyzed/Restrained'a karşı
+  avantaj (`saveAdvAgainst`), karanlık görüş 60, hız (`speedFt`), Ice Walk (`iceWalker`), inisiyatif +2 (paket), eşit büyü bonusu
+  (`bonus.spell`), DEX 18 (`setAbility`, Gauntlets of Ogre Power yolu), Unarmed Strike isabetine 1d8 kuvvet (`onHit.weaponId`),
+  2. seviye Misty Step (eşya büyüsü), "5 ft içinden yakın dövüşle isabet edene N hasar" karşılığı (`passive.retort`, Fire Shield yolu;
+  yakın dövüş isabeti hasar verince, 5 ft).
+- **B'ye ek:** aynı karşılık yolu B'nin iki gücüne de bağlandı (Kızgın Demir Plakası 1d4 ateş, Ebedi Fırtına Pul Zırhı 1d4 yıldırım;
+  ikisi `kismi`: tutuşturma ve su zinciri yok). B sayıları: 68 çalışır, 30 kısmen, 93 planlı.
+- **Planlı:** tetikli/koşullu güçlerin çoğu (verilen hasar türü, durum uygulama, ışık, Dash, iyileştirme, kanama, ilk turlar),
+  beceri bonusu, yetenek skoru +2 (en fazla 20), en yüksek can −10, tur başı zarla yenilenme (motorda `regen` sabit sayı), yalnız
+  saldırı ya da yalnız DC büyü bonusu, düşme hasarına direnç, KD (kısa dinlenme) yükü (motor eşya yükünü yalnız uzun dinlenmede
+  yeniler: Misty Step `kismi`), SRD'den farklı süreli büyü etkileri (10 tur See Invisibility / Water Walk).
+- Sayılar: 87 güç = 15 çalışır, 11 kısmen, 61 planlı. Bütünüyle çalışan: Düşünce Siperi Miğferi (GY#11), Asit Püskürten Pelerin (GY#17).
+- Testler: eşya 590 → 645, görsel eşleme 640 → 695 (55 yedek `esya-aksesuar` ikonu); `katalogB.test.ts` filtresi C'nin KY
+  başlıklarını dışlar; `src/battle/katalogC.test.ts`.
+
 ## Görev KATALOG-1 B onayı: kullanıcı kararları (2026-11-26)
 
 - K8 kalkanları aynen: "+2 AC sağlar" sihirli +2, "Toplam +3 AC" sihirli +1 (kalkanın kendi +2'si üstüne).
