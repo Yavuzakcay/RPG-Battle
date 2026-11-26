@@ -47,7 +47,7 @@ describe('KATALOG-1 F: Mühür Ruhu verisi', () => {
   it('Cimbombom zirvede: CR, HP, saldırı sayısı', () => {
     const top = bosses.find((b) => b.id === 'cimbombom')!;
     expect(crNumber(top.cr)).toBe(26);
-    const count = (m: Monster) => m.attacks.filter((a) => a.repeat > 0).reduce((n, a) => n + a.repeat, 0);
+    const count = (m: Monster) => m.attacks.filter((a) => (a.repeat ?? 0) > 0).reduce((n, a) => n + (a.repeat ?? 0), 0);
     for (const b of bosses.filter((x) => x.id !== 'cimbombom')) {
       expect(crNumber(b.cr), b.id).toBeLessThan(26);
       expect(b.hp, b.id).toBeLessThan(top.hp);

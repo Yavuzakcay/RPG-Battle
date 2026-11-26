@@ -50,7 +50,7 @@ Sıra:
 - **Bağlamalar** (mevcut dosyalar, yeni anahtar): `efsanevi.json`, `canavar-yetenekleri.json`, `canavar-ekleri-a2.json`, `multiattack.json`. Ayrıca `unsupported` (durum bağışıklığı, duyular) ve `traits` ("Legendary Resistance (3/Day)").
 - **Yeni kod:** yalnızca yükleyici. `loadMonsters()` boss dosyasını tembel yükler; yaratık türü kayıttan okunur. Ana parçaya girmez.
 - **Ortam:** `monster-ortamlari.json`, `tema: "Mühür Ruhları"`. Düğüm yerleşimi Serüven'e kalır.
-- **Görsel:** `public/boss/<kimlik>.webp`. Ham görseller depo dışında `assets-ham/boss/`: 26/30 var, `mirit`, `mirath`, `darkit`, `darkath` eksik. Görsel yoksa `Avatar`'ın `onError` yedeği devreye girer.
+- **Görsel:** `public/boss/<kimlik>.webp`. Ham görseller depo dışında `assets-ham/boss/`: 26/30 var, `mirit`, `mirath`, `kongcuk`, `kongilla` eksik. Görsel yoksa `Avatar`'ın `onError` yedeği devreye girer.
 
 | # | Element | Çizgi (Sv.1 → Sv.2 → Sv.3) | Boss | `eskiAd` | Sv.3 ganimeti | Tür | `ortam` |
 |---|---|---|---|---|---|---|---|
@@ -63,7 +63,7 @@ Sıra:
 | 7 | Işıltı | `lumbo` → `lighty` → `lightaur` | Lightaur, Bull of Celestial | Kırık Hale Şövalyesi | `blinding-sun-shard` | Celestial | `kasaba-demirci-tapinak`, `buzul-tapinak`, `lav-tapinagi` |
 | 8 | Nekrotik | `cerbit` → `cerbedo` → `cerbones` | Cerbones, Crematorium | Kemik Toplayıcı Lord | `sepulcher-orb` | Fiend | `orman-kemik-acikligi`, `derinlikler-mezar-labirenti` |
 | 9 | Psişik | `mirit` → `mirath` → `mirage` | Mirage, Life Stealer | Ayna Zihin Avcısı | `whisper-crystal` | Fiend | `col-sutun-harabesi`, `isinlanma-salonu`, `beyaz-sehir-saray-avlusu` |
-| 10 | Kuvvet | `darkit` → `darkath` → `darkape` | Darkape, Kong of the Void | Yörünge Nöbetçisi | `void-fracture` | Fiend | `dag-karakol`, `kanyon-koprusu`, `isinlanma-salonu` |
+| 10 | Kuvvet | `kongcuk` → `kongilla` → `kongark` | Kongark, Kong of the Void | Yörünge Nöbetçisi | `void-fracture` | Fiend | `dag-karakol`, `kanyon-koprusu`, `isinlanma-salonu` |
 
 **Ganimet:** Sv.1 `cracked-elemental-stone-<tür>`, Sv.2 `awakened-elemental-stone-<tür>`, Sv.3 yukarıdaki taş. PDF §4 ile çelişmiyor: Sv.1 "elit ganimet", Sv.2 "zindan ara boss'ları", Sv.3 "yalnızca 10 Bölge Bossu". Motor ganimet düşürmez; taş Serüven düğümünün `reward.items` alanıyla verilir.
 
@@ -73,7 +73,7 @@ Sıra:
 
 | Boyut | Boss | Harita |
 |---|---|---|
-| Huge | Cimbombom, Wolfgang, Gongar, Hydraxe, Mothraq, Cerbones, Darkape | 21×11 ve üstü |
+| Huge | Cimbombom, Wolfgang, Gongar, Hydraxe, Mothraq, Cerbones, Kongark | 21×11 ve üstü |
 | Large | Stormer, Lightaur | 15×7 ve üstü |
 | Medium | Mirage | 15×7 ve üstü |
 
@@ -277,7 +277,7 @@ Bloklarda "vuruş" Multiattack'ın tek saldırısıdır; ortalama parantez için
   - `gmNot` (PDF): kenar altıgenler 3 tur alev yüzeyi (`place_surface`); her tur başı 15 ft'e 2d6 ateş dalgası.
   - Anlatım: "Göğsündeki Kor Çekirdeği yarılıyor; alev artık soğukla sönmüyor."
 
-### 5.2 `darkape`: Darkape, Kong of the Void (Kuvvet, CR 25)
+### 5.2 `kongark`: Kongark, Kong of the Void (Kuvvet, CR 25)
 
 - **Kimlik:** Huge Fiend; eskiAd Yörünge Nöbetçisi.
 - **HP / AC / hız:** 578 HP (35d12+350) / AC 19 / 40 ft, tırmanma 40.
@@ -521,7 +521,7 @@ Hepsi `gmNot`'a ve `faz2.not` metnine yazılır.
 | Boss | Hamle sırası (Faz 2) | Nefesin yönü | Öne çıkan efsanevi eylem | Faz 2 anlatımı (Game Master okur) |
 |---|---|---|---|---|
 | Cimbombom | Önce nefes (dolu), sonra Bite → Claw → Claw; Pounce'la arkaya geçer | Kenara sıkışmış gruba, alev yüzeyine doğru | Kuyruk Süpürmesi (arkasındakiler) | "Kor Çekirdeği yarılıyor; yele alev sütununa dönüşüyor. Soğuk artık onu söndürmüyor." |
-| Darkape | Grab → Fist → Fist: önce tutar, sonra döver | Uçurum ya da duvar kenarına doğru: Prone ve itme düşürür | Yerçekimi Halkası (yakındakileri yere çakar) | "Boşluk Kırığı göğsünde açılıyor; düşünceler ona ulaşmıyor, yerçekimi onu dinliyor." |
+| Kongark | Grab → Fist → Fist: önce tutar, sonra döver | Uçurum ya da duvar kenarına doğru: Prone ve itme düşürür | Yerçekimi Halkası (yakındakileri yere çakar) | "Boşluk Kırığı göğsünde açılıyor; düşünceler ona ulaşmıyor, yerçekimi onu dinliyor." |
 | Cerbones | Üç ısırık aynı hedefe (en yaralı), sonra nefes | İyileştiricinin ve onun yanındakilerin üstüne (noHeal) | Kül Halesi (yakına) | "Üç ağız aynı anda kükrüyor; ışık artık kemiğe işlemiyor, kül havayı dolduruyor." |
 | Mirage | Misty Step → nefes → üç pençe: arkadan vurur | Büyücülerin toplandığı arka hatta (Charmed) | Ayna Çığlığı (Stunned) | "Suretler çoğalıyor; kılıç da büyü de artık gerçek olanı ayırmıyor." |
 | Gongar | Shell Ram → Slam → Slam: önce sağır eder, sonra iter | Dar geçide ya da sütunlara doğru: itme + Prone | Kabuk Dönüşü (çevresini yere serer) | "Çan kabuğu tek bir uzun notayla çınlıyor; yıldırım artık metale tutunmuyor." |
@@ -538,7 +538,7 @@ Sıra Serüven'in doğudan batıya akışını izler: Buzul → Dağ → Orman v
 | CR | Boss | Gerekçe |
 |---|---|---|
 | 26 | Cimbombom | Final; her değerin tavanı |
-| 25 | Darkape | Volkan portalından önceki son eşik |
+| 25 | Kongark | Volkan portalından önceki son eşik |
 | 24 | Cerbones, Mirage | **Paylaşılan:** Derinliklerin iki kapısı, sırası serbest |
 | 23 | Gongar, Lightaur | **Paylaşılan:** Çöl kanyonu ve katedral aynı aşamada |
 | 22 | Hydraxe, Mothraq | **Paylaşılan:** Orman ve Bataklık komşu, ikisi de yıpratma bossu |
@@ -556,11 +556,11 @@ Faz tetiği ve zayıflığın kalkması artık §3'te (KATALOG-F0). Kalanlar:
 | Canavar eylemiyle yüzey | 5 | `place_surface` (Game Master) | Canavar `save` yeteneğine `surface` |
 | PDF Faz 2 arena dönüşümü (buz, yağmur, sis, ışık, yerçekimi, çağırma) | 10 | `gmNot` | Faz bloğuna `harita`/`cagir` alanları (ayrı görev) |
 | Kalıcı bulut, direnç aşma | Mothraq | anlık save | `zone` + `ignoreResist` |
-| Zorla hareket bağışıklığı | Gongar, Darkape | yok | `forcedImmune` |
+| Zorla hareket bağışıklığı | Gongar, Kongark | yok | `forcedImmune` |
 | Dokunana asit | Hydraxe | elle | `meleeRetaliate` |
 | Silindir alan, karanlık dağıtma | Lightaur | küre | canavar alanına `cylinder` |
 | İyileşme yarılama, maks. HP bağışıklığı | Cerbones | elle | aurada `healMult` |
-| Tek eylemde çek + vur | Darkape | iki yetenek | yetenekte `then` |
+| Tek eylemde çek + vur | Kongark | iki yetenek | yetenekte `then` |
 | Uzaktakini seçen ışın | 10 | yapay zekâ en yakını seçer | `rays` hedef kipi `far` |
 | Sahte gölge çağırma | Mirage | `summon` Shadow | — |
 | Hamle değişimi (örn. "kuyruk önce") | 10 | `gmNot` | yapay zekâ önceliği alanı |
@@ -608,7 +608,7 @@ PDF'te yok, kullanıcının tasarımı. Kimlik = dosya adı. Görünen ad kimli�
 | Işıltı | **`lumbo`** CR 3, Small, 40 ft; 2 Gore; `illumination` 10; zayıflık nekrotik; Celestial | **`lighty`** CR 9, Large, 50 ft; Gore (Blinded) → Hoof; `regeneration` 5; 30 ft koni CON + Blinded; Celestial |
 | Nekrotik | **`cerbit`** CR 3, Small, 40 ft; 2 Bite; zayıflık ışıltı | **`cerbedo`** CR 9, Large, 50 ft; 2 Bite (`monsterDrain`); 30 ft koni CON + noHeal |
 | Psişik | **`mirit`** CR 3, Small, 35 ft; 2 Soul Claw; zayıflık kuvvet | **`mirath`** CR 9, Medium, 40 ft; Soul Claw (Charmed, WIS 16) → Soul Claw; Misty Step 1/gün; 30 ft koni INT (Stunned yok) |
-| Kuvvet | **`darkit`** CR 3, Small, 30 ft, tırmanma 30; 2 Fist (5 ft itme); zayıflık psişik | **`darkath`** CR 9, Large, 40 ft, tırmanma 40; Fist (10 ft itme) → Grab (Grappled DC 16); 15 ft çekme; 30 ft koni STR + Prone |
+| Kuvvet | **`kongcuk`** CR 3, Small, 30 ft, tırmanma 30; 2 Fist (5 ft itme); zayıflık psişik | **`kongilla`** CR 9, Large, 40 ft, tırmanma 40; Fist (10 ft itme) → Grab (Grappled DC 16); 15 ft çekme; 30 ft koni STR + Prone |
 
 - Sv.1: ilk dört bölge (Buzul, Dağ, Orman, Bataklık) CR 2, diğerleri CR 3.
 - Sv.2: ilk dört bölge CR 8, diğerleri CR 9, Cimbom CR 10.
@@ -631,7 +631,7 @@ Faz 2'nin mekanik kısmını (zayıflık, nefes, alan, Stormer'ın geçici canı
 | Sıra | Boss | CR | HP | Etkin HP | Vuruş (ort.) | Saldırı | Faz 1 tur hasarı ham / **dirençli** | Faz 2 tur hasarı ham / **dirençli** | Ağırlıklı dirençli (DMG bandı) | Dayanıklılık Faz 1 → Faz 2 | Zayıflık (Faz 2'de) | Faz 2 değişimi |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | **1** | **Cimbombom** | **26** | **627** | **654** | **57,5** | **3** | **349 / 218** | **410 / 256** | **239** (231–248) | 251 → 314 | soğuk (kalkar) | nefes dolar, 75 ft |
-| 2 | Darkape | 25 | 578 | 610 | 52 | 3 | 320 / 200 | 378 / 236 | 220 (213–230) | 231 → 289 | psişik (kalkar) | nefes dolar, 75 ft |
+| 2 | Kongark | 25 | 578 | 610 | 52 | 3 | 320 / 200 | 378 / 236 | 220 (213–230) | 231 → 289 | psişik (kalkar) | nefes dolar, 75 ft |
 | 3 | Cerbones | 24 | 527 | 564 | 47,5 | 3 | 285 / 178 | 336 / 210 | 196 (195–212) | 211 → 264 | ışıltı (kalkar) | nefes dolar, 75 ft |
 | 3 | Mirage | 24 | 525 | 563 | 47,5 | 3 | 285 / 178 | 336 / 210 | 196 (195–212) | 210 → 263 | kuvvet (kalkar) | nefes dolar, 75 ft |
 | 5 | Gongar | 23 | 465 | 509 | 46,5 | 3 | 276 / 173 | 324 / 203 | 189 (177–194) | 186 → 233 | yıldırım (kalkar) | nefes dolar, 75 ft |
@@ -644,7 +644,7 @@ Faz 2'nin mekanik kısmını (zayıflık, nefes, alan, Stormer'ın geçici canı
 - **Bütün bosslarda Faz 2 dayanıklılığı Faz 1'in 1,25 katı:** zayıflığın kalkmasından ya da Stormer'ın geçici canından, bir kez.
 - **Faz 2 hasarı Faz 1'in ≈ 1,17 katı:** nefesten.
 - Ek AC, saldırı, hasar zarı ve efsanevi hak yok; çift telafi yok.
-- **Cimbombom bütün sütunlarda zirvede:** HP, etkin HP, vuruş başı hasar, saldırı sayısı, nefes (19d10), iki fazın tur hasarı ve ağırlıklı hasar. Aynı fazlar karşılaştırıldığında her boss Cimbombom'un altında kalır: Darkape Faz 1'de 200 < 218, Faz 2'de 236 < 256. Bir bossun Faz 2'si Cimbombom'un Faz 1'ini aşabilir (Darkape 236 > 218), ama o anda Cimbombom da Faz 2'deyse 256'dır.
+- **Cimbombom bütün sütunlarda zirvede:** HP, etkin HP, vuruş başı hasar, saldırı sayısı, nefes (19d10), iki fazın tur hasarı ve ağırlıklı hasar. Aynı fazlar karşılaştırıldığında her boss Cimbombom'un altında kalır: Kongark Faz 1'de 200 < 218, Faz 2'de 236 < 256. Bir bossun Faz 2'si Cimbombom'un Faz 1'ini aşabilir (Kongark 236 > 218), ama o anda Cimbombom da Faz 2'deyse 256'dır.
 
 ## 11. Kadim yaratıklar (K5: F2)
 

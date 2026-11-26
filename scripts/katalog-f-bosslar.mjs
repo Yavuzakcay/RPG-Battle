@@ -33,7 +33,7 @@ const B = [
     ganimet: 'ember-core', ortam: ['volkanik-demirhane', 'lav-tapinagi', 'derinlikler-lav-salonu', 'volkan'],
     not: { tr: 'Taş Uyanışı: Kor Çekirdeği yarılıyor; alev artık soğukla sönmüyor.', en: 'Stone Awakening: the Ember Core splits; cold no longer quenches the flame.' },
     gmNot: 'Taş Uyanışı (PDF): arena kenarındaki altıgenleri 3 tur alev yüzeyi yap (place_surface); her tur başında bossun 15 ft içindekilere 2d6 ateş uygula.' },
-  { id: 'darkape', ad: 'Darkape', unvan: { tr: 'Boşluğun Kongu', en: 'Kong of the Void' }, eskiAd: 'Yörünge Nöbetçisi', cizgi: 'kuvvet', el: 'force', vuln: 'psychic', cr: '25', size: 'H', hp: 578, ac: 19,
+  { id: 'kongark', ad: 'Kongark', unvan: { tr: 'Boşluğun Kongu', en: 'Kong of the Void' }, eskiAd: 'Yörünge Nöbetçisi', cizgi: 'kuvvet', el: 'force', vuln: 'psychic', cr: '25', size: 'H', hp: 578, ac: 19,
     speed: 40, climb: true, ab: { str: 30, dex: 14, con: 30, int: 8, wis: 16, cha: 14 }, saves: { str: 18, con: 18, wis: 11 }, pb: 8, atkB: 12, dc: 21,
     ma: [['Fist', '2d8+10', 'bludgeoning', 2], ['Grab', '2d8+10', 'bludgeoning', 1]], elHit: '6d10', riders: { Grab: { grapple: { escapeDc: 21, restrained: false } } },
     br: breath('Void Roar', cone(60), 'str', 21, '18d10', 'force'), brRider: { prone: { save: { ability: 'str', dc: 21 } } },
@@ -133,7 +133,7 @@ const L = {
   isilti: [{ id: 'lumbo', cr: 3, speed: 40, illumination: true }, { id: 'lighty', cr: 9, speed: 50, br: ['cone', 30, 'con', 'Blinded'], regen: 5 }],
   nekrotik: [{ id: 'cerbit', cr: 3, speed: 40 }, { id: 'cerbedo', cr: 9, speed: 50, br: ['cone', 30, 'con'] }],
   psisik: [{ id: 'mirit', cr: 3, speed: 35 }, { id: 'mirath', cr: 9, speed: 40, size: 'M', br: ['cone', 30, 'int'] }],
-  kuvvet: [{ id: 'darkit', cr: 3, speed: 30, climb: true }, { id: 'darkath', cr: 9, speed: 40, climb: true, br: ['cone', 30, 'str', 'Prone'] }],
+  kuvvet: [{ id: 'kongcuk', cr: 3, speed: 30, climb: true }, { id: 'kongilla', cr: 9, speed: 40, climb: true, br: ['cone', 30, 'str', 'Prone'] }],
 };
 const ATK_NAMES = { ates: ['Bite', 'piercing'], soguk: ['Bite', 'piercing'], yildirim: ['Hoof', 'bludgeoning'], gurultu: ['Bell Slam', 'bludgeoning'], asit: ['Bite', 'piercing'],
   zehir: ['Proboscis', 'piercing'], isilti: ['Gore', 'piercing'], nekrotik: ['Bite', 'piercing'], psisik: ['Soul Claw', 'slashing'], kuvvet: ['Fist', 'bludgeoning'] };

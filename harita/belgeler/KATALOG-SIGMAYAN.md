@@ -11,18 +11,18 @@ Mühür Ruhu verisinde (`data/bosslar-muhur.json`, üretici `scripts/katalog-f-b
 | Hepsi | Menzilli efsanevi ışının uzaktakini seçmesi | `rays` en yakın görüneni seçer | `rays` hedef kipi `far` |
 | Hepsi | Faz 2 hamle sırası değişimi ("kuyruk önce") | Yapay zekâ önceliği veride yok | Yapay zekâ önceliği alanı |
 | Mothraq | Kalıcı zehir bulutu, zehir direncini aşma | Canavar yeteneği kalıcı alan ve direnç aşma yapamaz | `zone` + `ignoreResist` |
-| Gongar, Darkape | Zorla itilmeye/çekilmeye bağışıklık | Canavar pasifi yok | `forcedImmune` |
+| Gongar, Kongark | Zorla itilmeye/çekilmeye bağışıklık | Canavar pasifi yok | `forcedImmune` |
 | Hydraxe | Yakın dövüşte saldırana asit | Dokunana hasar yalnız Fire Aura (1d10 ateş) | `meleeRetaliate {dice, type}` |
 | Lightaur | 40 ft silindir, karanlık dağıtma | Canavar alanında silindir yok | Canavar alanına `cylinder` |
 | Cerbones | İyileşmeyi yarıya indirme, maks. HP/noHeal bağışıklığı | Aura alanı yok | Aurada `healMult` |
-| Darkape | Yıldız Çöküşü'nde "önce çek, sonra vur" tek eylemde | Yetenek tek adımlı | Yetenekte `then` |
+| Kongark | Yıldız Çöküşü'nde "önce çek, sonra vur" tek eylemde | Yetenek tek adımlı | Yetenekte `then` |
 | Mirage | Sahte gölge çağırma | — | `summon` (Faz 1, PDF) |
 
 ## Yaklaşık yazılanlar (veride var, tasarımdan farkı)
 
 | Yaratık | Tasarım | Veride | Fark |
 |---|---|---|---|
-| Darkape | Yıldız Çöküşü: 30 ft çek + 10 ft 6d6 + Prone | Sanat 10 ft 6d6 + Prone; ayrı bonus eylem "Çekim" 15 ft | Çekme ayrı eylem |
+| Kongark | Yıldız Çöküşü: 30 ft çek + 10 ft 6d6 + Prone | Sanat 10 ft 6d6 + Prone; ayrı bonus eylem "Çekim" 15 ft | Çekme ayrı eylem |
 | Hydraxe | Isırıkta zırh aşındırma (AC −1) | Yok | A2 aşındırma biçimi bu görevde bağlanmadı |
 | Cimbombom | Bite'ta yanma (tur başı 2d6) | Yok | A2 `dot` bu görevde bağlanmadı |
 | Wolfgang | Claw'da hız yarı | Yok; efsanevi Ayaz Halesi hızı yarıya indirir | — |

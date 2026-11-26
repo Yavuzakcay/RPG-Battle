@@ -115,47 +115,47 @@
       "katalog": true
     },
     {
-      "id": "darkit",
-      "ad": "Darkit (Sv.1)",
+      "id": "kongcuk",
+      "ad": "Kongcuk (Sv.1)",
       "senaryo": "k29-dag-karakol",
       "seviye": 3,
       "normal": {
-        "darkit": 2
+        "kongcuk": 2
       },
       "kolay": {
-        "darkit": 1
+        "kongcuk": 1
       },
       "element": "force",
       "cizgi": "kuvvet",
       "katalog": true
     },
     {
-      "id": "darkath",
-      "ad": "Darkath (Sv.2)",
+      "id": "kongilla",
+      "ad": "Kongilla (Sv.2)",
       "senaryo": "k29-dag-karakol",
       "seviye": 9,
       "normal": {
-        "darkath": 1,
-        "darkit": 2
+        "kongilla": 1,
+        "kongcuk": 2
       },
       "kolay": {
-        "darkath": 1
+        "kongilla": 1
       },
       "element": "force",
       "cizgi": "kuvvet",
       "katalog": true
     },
     {
-      "id": "darkape",
-      "ad": "Darkape (Sv.3)",
+      "id": "kongark",
+      "ad": "Kongark (Sv.3)",
       "senaryo": "k29-dag-karakol",
       "seviye": 20,
       "normal": {
-        "darkape": 1,
-        "darkath": 1
+        "kongark": 1,
+        "kongilla": 1
       },
       "kolay": {
-        "darkape": 1
+        "kongark": 1
       },
       "element": "force",
       "cizgi": "kuvvet",

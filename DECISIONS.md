@@ -2,6 +2,10 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## KATALOG-1 F: Kuvvet çizgisinin adı (2026-11-27; kural ve kayıt sürümü değişmedi)
+
+Kullanıcı kararı: Kuvvet çizgisi Kongcuk → Kongilla → Kongark (kimlikler `kongcuk`, `kongilla`, `kongark`; unvan "Kong of the Void" aynı). Tarihçe notu: önceki tasarım kimlikleri bu çizgi için başka adlardı; veri, belge, sim satırları ve testler yeni kimliklere geçirildi (`scripts/katalog-f-bosslar.mjs` yeniden üretir). Zehir bossu Mothraq (`mothraq`).
+
 ## KATALOG-1 F / KATALOG-F0: yarı can fazı (Faz 2) motor kuralı — mekanik donmasına bilinçli istisna (2026-11-26; kural sürümü 107, kayıt sürümü 28)
 
 Kullanıcı kararı (2026-11-26): Serüven öncesi mekanik donmasına **bilinçli istisna** olarak, Mühür Ruhu bosslarının "%50 can Taş Uyanışı" fazı gerçek bir motor kuralı olacak.
@@ -30,7 +34,7 @@ On Mühür (bölge ↔ Sv.3 taşı ↔ bölge bossu), iki final yolu (karşıla�
 - **Kullanıcı kararları (görev başında soruldu):** boss profilinden yalnız anlatım; kimlik alanı, Kırık Kanat Uyanışı, Çoklu Sınıf
   Savaş Mimarisi ve Taktik Özet K4 karakter kaydına (MC sonrası). Bölüm 6'dan yalnız giriş paragrafı ve bölge–taş bağı; Faz 1/Faz 2
   ve stat blokları H'ye. Bağdaki boss adları nihai adlar (sınıf **Mühür Ruhu / Seal Spirit**; Cimbombom (Sv.2 Cimbom, Sv.1 Cim), Wolfgang, Stormer, Gongar,
-  Hydraxe, Mothraq, Lightaur, Cerbones, Mirage, Darkape; unvanlar verildiği gibi), PDF adı yalnız `eskiAd`. Veri yeri planın
+  Hydraxe, Mothraq, Lightaur, Cerbones, Mirage, Kongark; unvanlar verildiği gibi), PDF adı yalnız `eskiAd`. Veri yeri planın
   `aciklamalar-tr.json`'u değil ayrı dosya (o dosya SRD kimliğine bağlı, kısa/tek satır testli ve ana parçada). EN: metin yalnız
   TR; ad Bölüm 8 modül kimliğinden (Corruption Track, Bond Sacrifice Ledger…), modülü olmayanda öneri (`enAdOneri: true`).
   Işıltı taşı TR adı **Güneş Parçası (Işıltı)** (eşya kaydında `eskiTr: "Kör Güneş Parçası (Işıltı)"`; kimlik ve EN ad aynı).

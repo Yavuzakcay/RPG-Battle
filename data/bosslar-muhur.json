@@ -291,8 +291,8 @@
       }
     },
     {
-      "id": "darkape",
-      "name": "Darkape, Kong of the Void",
+      "id": "kongark",
+      "name": "Kongark, Kong of the Void",
       "size": "H",
       "ac": 19,
       "hp": 578,
@@ -437,8 +437,8 @@
       }
     },
     {
-      "id": "darkit",
-      "name": "Darkit",
+      "id": "kongcuk",
+      "name": "Kongcuk",
       "size": "S",
       "ac": 14,
       "hp": 75,
@@ -506,8 +506,8 @@
       }
     },
     {
-      "id": "darkath",
-      "name": "Darkath",
+      "id": "kongilla",
+      "name": "Kongilla",
       "size": "L",
       "ac": 16,
       "hp": 170,
