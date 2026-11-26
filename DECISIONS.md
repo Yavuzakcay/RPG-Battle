@@ -12,12 +12,12 @@ On Mühür (bölge ↔ Sv.3 taşı ↔ bölge bossu), iki final yolu (karşıla�
 
 - **Kullanıcı kararları (görev başında soruldu):** boss profilinden yalnız anlatım; kimlik alanı, Kırık Kanat Uyanışı, Çoklu Sınıf
   Savaş Mimarisi ve Taktik Özet K4 karakter kaydına (MC sonrası). Bölüm 6'dan yalnız giriş paragrafı ve bölge–taş bağı; Faz 1/Faz 2
-  ve stat blokları H'ye. Bağdaki boss adları nihai adlar (sınıf **Mühür Ruhu / Seal Spirit**; Cimbom, Wolfgang, Stormer, Gongar,
-  Hydraxe, Mothra, Lightaur, Cerbones, Mirage, Darkape; unvanlar verildiği gibi), PDF adı yalnız `eskiAd`. Veri yeri planın
+  ve stat blokları H'ye. Bağdaki boss adları nihai adlar (sınıf **Mühür Ruhu / Seal Spirit**; Cimbombom (Sv.2 Cimbom, Sv.1 Cim), Wolfgang, Stormer, Gongar,
+  Hydraxe, Mothraq, Lightaur, Cerbones, Mirage, Darkape; unvanlar verildiği gibi), PDF adı yalnız `eskiAd`. Veri yeri planın
   `aciklamalar-tr.json`'u değil ayrı dosya (o dosya SRD kimliğine bağlı, kısa/tek satır testli ve ana parçada). EN: metin yalnız
   TR; ad Bölüm 8 modül kimliğinden (Corruption Track, Bond Sacrifice Ledger…), modülü olmayanda öneri (`enAdOneri: true`).
   Işıltı taşı TR adı **Güneş Parçası (Işıltı)** (eşya kaydında `eskiTr: "Kör Güneş Parçası (Işıltı)"`; kimlik ve EN ad aynı).
-  Mothra (Toho) ve "Kong" adlarının tescil riski kullanıcıya söylendi; kullanıcı aynen yazılmasını seçti.
+  Zehir bossunun adı telif nedeniyle **Mothraq** (kullanıcı düzeltmesi); "Kong" adının tescil riski kullanıcıya söylendi, aynen kaldı.
 - **Metin birebir:** paragraf, madde ve tablo hücreleri `pdftotext` ham ve `-table` çıktısından betikle kesildi; bağımsız denetim
   172 metnin 147'sini ham metinde aynen, 20 tablo hücresini sıralı sözcük olarak buldu; 5 başlık üst üste basılı olduğu için altlıktan
   ve harf kümesinden (7. bölüm başlığı). Oturum betikleri depoya girmedi.
