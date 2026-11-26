@@ -96,7 +96,7 @@ export type JourneyEvent =
   | { type: 'battle_recorded'; stopId: string; outcome: 'won' | 'lost'; statuses: Record<string, CharacterStatus>; xp: number; gold: number; potions: number; flags?: string[] }
   | { type: 'leveled'; level: number }
   | { type: 'short_rested'; statuses: Record<string, CharacterStatus>; rolls: Record<string, number[]>; hour: number; free?: string }
-  | { type: 'long_rested'; statuses: Record<string, CharacterStatus>; hour: number }
+  | { type: 'long_rested'; statuses: Record<string, CharacterStatus>; hour: number; /** KARAR104-KALAN: 0 HP'den kalkış (1d4 saat, `hour`a dahil). */ wakeHours?: number }
   | { type: 'advanced'; stop: number; hour: number; revived: string[] }
   | { type: 'potion_drunk'; memberId: string; rolls: number[]; hp: number }
   | { type: 'journey_finished'; result: 'won' | 'lost' }

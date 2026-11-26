@@ -6,6 +6,12 @@ import { askReaction } from './reactionChoice';
  * Zar eklentisi (Görev R2; Bless +1d4, Bane −1d4): d20'nin ardından atılır, toplama eklenir (doğal 20/1 değişmez).
  * `label` günlükte görünen kaynak (büyü adı); `effectId`/`holderId` tek kullanımlık etkinin tüketilmesi için.
  */
+/** "NdM" (+ sabit) zar ifadesinin en büyük değeri; çözülemezse 0. */
+function diceMax(expr: string): number {
+  const m = /^(\d*)d(\d+)\s*([+-]\s*\d+)?$/.exec(expr.replace(/\s+/g, ''));
+  return m ? Number(m[1] || 1) * Number(m[2]) + Number((m[3] ?? '0').replace(/\s+/g, '')) : 0;
+}
+
 export interface ExtraDie {
   label: string; die: string; sign: 1 | -1; effectId?: string; holderId?: string; single?: boolean;
   /** Görev B98 (sürüm 98+, Bardic Inspiration): zarı kullanmadan önce taşıyana sorulur (`askReaction`, tetik `inspire`; öneri: kullan). */
@@ -33,6 +39,9 @@ export interface ExtraDie {
   rerollBonus?: number;
   /** Görev B95-B (97+): `d20` yeniden atışı en iyi zarla (20) bile başarıya yetmiyorsa seçilmez (kaynak harcanmaz; Indomitable). */
   skipHopeless?: boolean;
+  /** Görev KARAR104-KALAN A6 (Dark One's Own Luck, SRD 5.2.1 s. 76 "add 1d10 to your roll"): `onFail` zarı tutmasa da kaynak
+   * harcanır (eskiden yalnız tutarsa); `skipHopeless` ile zarın en büyüğü bile yetmiyorsa sunulmaz. */
+  spendAlways?: boolean;
   resource?: string;
   /** Kuyruk 18 H3: yalnızca bu durumlara karşı save'de (Countercharm: Charmed, Frightened). */
   against?: string[];
@@ -93,7 +102,7 @@ export function secondChance(
   // Kuyruk 19 (`plus`, Burst of Ingenuity): sabit ek yalnızca başarıya çevirecekse seçilir.
   const x = (extra ?? []).find((e) => e.reroll && !['floor', 'onSuccess', 'worse', 'set', 'natFloor', 'setSpoil', 'forceFail'].includes(e.reroll) && (!e.onNatural1 || fail.natural === 1) && (!e.against || e.against.some((c) => fail.against?.includes(c)))
     && (e.reroll !== 'plus' || fail.total + (e.rerollBonus ?? 0) >= fail.need)
-    && !(e.skipHopeless && fail.total - fail.natural + 20 + (e.rerollBonus ?? 0) < fail.need));
+    && !(e.skipHopeless && (e.reroll === 'onFail' ? fail.total + diceMax(e.die) : fail.total - fail.natural + 20 + (e.rerollBonus ?? 0)) < fail.need));
   if (!x) return null;
   // Görev B98 (sürüm 98+, SRD 5.2.1 s. 31 "it can roll the die"): taşıyan d20 sonucunu görünce karar verir; kullanmazsa zar
   // atılmaz, etki kalır ve sıradaki ikinci şans denenir. Öneri (yapay zekâ, kancasız Rng): kullan (eski davranış).
@@ -122,7 +131,7 @@ export function secondChance(
     const failed = fail.kind === 'attack' ? fail.natural !== 20 && total < fail.need : total < fail.need;
     const kept = failed && x.keepOnFail === 'target' ? (({ single: _s, effectId: _e, ...r }) => r)(base as typeof base & { single?: boolean; effectId?: string }) : base;
     const refund = failed && x.keepOnFail === 'source' && x.refundTo && x.refundRes ? { refund: { holderId: x.refundTo, resource: x.refundRes } } : {};
-    return { total, natural: fail.natural, entry: { ...kept, die: x.die, value: v, ...(total >= fail.need && x.resource ? { resource: x.resource } : {}), ...refund } };
+    return { total, natural: fail.natural, entry: { ...kept, die: x.die, value: v, ...((total >= fail.need || x.spendAlways) && x.resource ? { resource: x.resource } : {}), ...refund } };
   }
   const natural = x.reroll === 'twenty' ? 20 : rollD20(x.rerollMode ?? fail.mode, rollTag(rng, { kind: fail.kind, bonus: fail.bonus })).kept;
   const total = fail.total - fail.natural + natural + (x.rerollBonus ?? 0);

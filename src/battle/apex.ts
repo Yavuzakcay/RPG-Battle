@@ -14,7 +14,7 @@
  *   yeniden kullanmak (bonus eylem, kaynak harcamaz) onu 60 ft taşır.
  */
 import { karar104On } from './karar104Surum';
-import { askPicks } from '../rules/choice';
+import { askChoice, askPicks } from '../rules/choice';
 import { distance, withinRange, type Offset } from '../rules/hex';
 import { rollDice, rollTag, type Rng } from '../rules/dice';
 import { resolveSave } from '../rules/attack';
@@ -33,7 +33,7 @@ import { b94On } from './b94Surum';
 import { resourceLeft, type ActiveEffect, type BattleEvent, type BattleState, type Combatant, type UsableFeature } from './types';
 import { te99On } from './te99Surum';
 
-type Use = { feature: string; targetId?: string; to?: Offset };
+type Use = { feature: string; targetId?: string; to?: Offset; choice?: string };
 export const APEX_KINDS = ['fearAura', 'nimbus', 'wings', 'quiveringPalm', 'sanctuary', 'blinkStep', 'shadowMerge', 'selfEffect'] as const;
 export const isApex = (f: UsableFeature): boolean => (APEX_KINDS as readonly string[]).includes(f.effect.kind);
 
@@ -65,9 +65,9 @@ function payment(actor: Combatant, f: UsableFeature): { resource: string; cost: 
  * Davranışın ekonomisi: Quivering Palm'ı tetiklemek eylem, işaretlemek eylemsiz; Nature's Sanctuary taşımak bonus.
  * `economy.ts` bunu sorar (yoksa özelliğin türü).
  */
-export function apexCost(state: BattleState, actor: Combatant, f: UsableFeature): 'action' | 'bonus' | 'free' {
+export function apexCost(state: BattleState, actor: Combatant, f: UsableFeature, choice?: string): 'action' | 'bonus' | 'free' {
   const e = f.effect;
-  if (e.kind === 'quiveringPalm') return quiveringOf(state, actor).length > 0 && !palmHit(actor) ? 'action' : 'free';
+  if (e.kind === 'quiveringPalm') return quiveringOf(state, actor).length > 0 && (!palmHit(actor) || palmEnding(state, choice)) ? 'action' : 'free';
   if (e.kind === 'sanctuary') return sanctuaryOf(state, actor, f.key) ? 'bonus' : 'action';
   return f.type;
 }
@@ -86,11 +86,12 @@ export function apexProblem(state: BattleState, actor: Combatant, f: UsableFeatu
   }
   if (e.kind === 'quiveringPalm') {
     const hit = actor.economy.meleeHit;
-    if (palmHit(actor)) {
+    if (palmHit(actor) && !(palmEnding(state, cmd.choice) && quiveringOf(state, actor).length > 0)) {
       if (resourceLeft(actor, f.resource ?? '') < e.cost) return `${e.cost} Focus gerekli.`;
       return null;
     }
-    if (quiveringOf(state, actor).length > 0) return actor.economy.action ? 'Eylemin kalmadı.' : null;
+    // Görev KARAR104-KALAN A6 (104+): Attack eyleminde kalan saldırıdan vazgeçerek de bitirilir (`economy.ts`).
+    if (quiveringOf(state, actor).length > 0) return actor.economy.action && !(karar104On(state) && actor.economy.attacksLeft > 0) ? 'Eylemin kalmadı.' : null;
     return 'Önce bu tur bir Unarmed Strike ile vurmalısın.';
   }
   // Kuyruk 19 (Epic Boon): Blink Steps: Attack ya da Magic eylemi bu tur kullanıldıysa (sonraki turuna dek bir).
@@ -199,7 +200,7 @@ export function executeApex(state: BattleState, actor: Combatant, f: UsableFeatu
   }
   if (e.kind === 'quiveringPalm') {
     const hit = actor.economy.meleeHit;
-    if (hit && palmHit(actor)) {
+    if (hit && palmHit(actor) && !(palmEnding(state, cmd.choice) && quiveringOf(state, actor).length > 0)) {
       const t = state.combatants[hit.targetId];
       if (!t || t.hp <= 0) return fail('Hedef bulunamadı.');
       const dc = actor.stunning?.dc ?? 8 + actor.proficiency + actor.modifiers.wis;
@@ -280,9 +281,26 @@ function wardOf(actor: Combatant): string[] {
  * (SRD: cehennemde savrulur; burada yerinde Incapacitated). Yapay zekâ ve oyuncu için kendiliğinden (öneri: hep).
  */
 export function hurlEvents(state: BattleState, actor: Combatant, target: Combatant, rng: Rng): BattleEvent[] {
-  if (!on(state) || !actor.traits?.includes('hurl-through-hell') || target.hp <= 0 || resourceLeft(actor, 'hurlThroughHell') <= 0) return [];
+  if (!on(state) || !actor.traits?.includes('hurl-through-hell') || target.hp <= 0) return [];
+  const v104 = karar104On(state);
+  // Görev KARAR104-KALAN A6 (104+, SRD 5.2.1 s. 76): "Once per turn … you can try"; kullanım yoksa "expend a Pact Magic spell slot
+  // (no action required) to restore your use". Oyuncuya sorulur (tetik `choice`); öneri: kullanım varsa kullan (eski otomatik
+  // davranış), yalnız slotla ödenecekse kullanma (sim ve "Sor" dışı ayar eskisiyle aynı). 103: her isabette kendiliğinden.
+  if (v104 && actor.traitTurns?.[HURL] === turnKey(state)) return [];
+  const left = resourceLeft(actor, 'hurlThroughHell');
+  const slot = v104 && left <= 0 ? actor.spellSlots.findIndex((n) => n > 0) : -1;
+  if (left <= 0 && slot < 0) return [];
+  if (v104) {
+    const pick = askChoice(rng, { actorId: actor.id, sourceId: target.id, label: `Hurl Through Hell: ${target.name}`,
+      options: [{ id: left > 0 ? 'hurl' : 'hurl-slot', label: left > 0 ? 'hurl' : 'hurl-slot' }], suggested: left > 0 ? 'hurl' : null });
+    if (!pick) return [];
+  }
   const dc = actor.spellSaveDc ?? 8 + actor.proficiency + actor.modifiers.cha;
-  const events: BattleEvent[] = [{ type: 'feature_used', actorId: actor.id, feature: 'hurlThroughHell', remaining: resourceLeft(actor, 'hurlThroughHell') - 1 }];
+  const events: BattleEvent[] = left > 0
+    ? [{ type: 'feature_used', actorId: actor.id, feature: 'hurlThroughHell', remaining: left - 1 }]
+    // Slot harcanır, kullanım geri gelir ve aynı anda harcanır (kaynak 0'da kalır).
+    : [{ type: 'slot_spent', actorId: actor.id, level: slot + 1, remaining: (actor.spellSlots[slot] ?? 1) - 1 }];
+  if (v104) events.push({ type: 'trait_turn', actorId: actor.id, trait: HURL, key: turnKey(state) });
   const save = resolveSave({ extra: saveDice(target, 'cha'), modifier: target.saves.cha, dc, mode: saveMode('normal', target, 'cha', actor) }, rollTag(rng, { by: target.id }));
   const fiend = target.creatureType?.toLowerCase() === 'fiend';
   const d = !save.success && !fiend ? rollDice('8d10', rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };
@@ -294,9 +312,18 @@ export function hurlEvents(state: BattleState, actor: Combatant, target: Combata
     damageRolls: d.rolls, rawDamage: d.total, appliedDamage: adj.amount, damageType: 'psychic', damageNote: adj.note,
     targetHpAfter: fx.hpAfter, effects: fx.effects, conditionsAdded: [], ...(save.extra ? { bonusDice: save.extra } : {}),
   });
-  if (!save.success && fx.hpAfter > 0) events.push(timedCondition(state, target.id, { condition: 'Incapacitated', owner: 'source', end: 'turnEnd' }, actor.id, 'Hurl Through Hell'));
+  // Görev KARAR104-KALAN A6 (104+, "the target disappears … Incapacitated until the end of your next turn, when it returns to the
+  // space it previously occupied or the nearest unoccupied space"): Banishment gibi savaştan geçici çıkış (hedef alınamaz,
+  // altıgeni boş; dönüşte dolu altıgende kalmaz `unstack`). 103: yerinde Incapacitated.
+  if (!save.success && fx.hpAfter > 0 && v104) {
+    events.push({ type: 'effect_added', targetId: target.id, effect: { id: `${HURL}:${actor.id}`, name: 'Hurl Through Hell', sourceId: actor.id,
+      banished: true, ethereal: true, grants: ['Incapacitated'], endAfterSourceTurn: state.round, until: state.round + 2, icon: '🔥' } });
+  } else if (!save.success && fx.hpAfter > 0) events.push(timedCondition(state, target.id, { condition: 'Incapacitated', owner: 'source', end: 'turnEnd' }, actor.id, 'Hurl Through Hell'));
   return events;
 }
+const HURL = 'hurl-through-hell';
+/** `economy.ts` `turnKey` ile aynı (döngüsel içe aktarma olmasın diye burada). */
+const turnKey = (state: BattleState) => `${state.round}:${state.turnIndex}${state.timeStopTurn ? `:t${state.timeStopTurn}` : ''}`;
 
 // ------------------------------------------------------------------ Overchannel (Evoker 14)
 
@@ -343,6 +370,12 @@ export function overchannelAfter(state: BattleState, actor: Combatant, slotLevel
   }
   return events;
 }
+
+/**
+ * Görev KARAR104-KALAN A6 (104+): `choice: 'end'` bu tur Unarmed Strike isabeti olsa da titreşimi bitirir (kurmaz). 103'te isabet
+ * varken komut hep kurar.
+ */
+export const palmEnding = (state: BattleState, choice?: string): boolean => karar104On(state) && choice === 'end';
 
 /** Quivering Palm'ı kuran isabet: 97+ (Görev B95-B, bizim alt sınıf metni "Unarmed Strike isabetinde") yalnız Unarmed Strike; eskide Martial Arts isabeti. */
 function palmHit(actor: Combatant): boolean {

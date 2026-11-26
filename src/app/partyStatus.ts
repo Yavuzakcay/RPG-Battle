@@ -19,6 +19,8 @@ export function withStatus(c: Combatant, ch: Pick<SavedCharacter, 'sheet' | 'sta
   // Görev TE99: durumda olmayan savaşçı kaynakları (yeni eşya, kayıt öncesi kaynak) korunur; eskiden hepsi siliniyordu
   // (yüklü eşya ikinci savaşta yüksüz kalıyordu: TUR-FEAT-ESYA-DENETIM D33).
   return { ...c, hp: Math.max(1, s.hp), resources: { ...c.resources, ...s.resources }, spellSlots: [...s.slots], ...(s.exhaustion ? { exhaustion: s.exhaustion } : {}),
+    // Görev KARAR104-KALAN: likantrop laneti savaşa taşınır (savaşta 104+ dönüşüm; 103'te etkisiz işaret).
+    ...(s.lanet?.likantrop && !c.effects?.some((e) => e.lycanthropy) ? { effects: [...(c.effects ?? []), { id: 'likantropi', name: `Likantropi (${s.lanet.likantrop})`, sourceId: '', until: 1_000_000, lycanthropy: s.lanet.likantrop }] } : {}),
     // Kuyruk K48: kayıtlı Moral (savaş başında kural kapalıysa `withMorale` siler).
     ...(s.moral !== undefined ? { moral: s.moral } : {}),
     // Kuyruk 19: savaşta harcanan HP zarı (Lifedrinker) kayıtlı durumdan.
@@ -74,7 +76,9 @@ export function applyBattleResult(characters: SavedCharacter[], state: BattleSta
       // Görev KARAR104 (sürüm 104, A4): savaşta lanetlenen (likantrop) karaktere işaret; önceki işaret kalır.
       ...((): Partial<CharacterStatus> => {
         const kind = c.life !== 'dead' ? c.effects?.find((e) => e.lycanthropy)?.lycanthropy : undefined;
-        return kind ? { lanet: { likantrop: kind } } : prev.lanet ? { lanet: { ...prev.lanet } } : {};
+        // KARAR104-KALAN: 0 HP'de canavara dönüşen (savaştan `likantrop` çekilmesi ya da savaşı bitiren düşüş) işaretlenir.
+        const turned = !!kind && (c.offFloor === 'likantrop' || c.hp <= 0) ? { donustu: true as const } : {};
+        return kind ? { lanet: { likantrop: kind, ...(prev.lanet?.donustu ? { donustu: true as const } : {}), ...turned } } : prev.lanet ? { lanet: { ...prev.lanet } } : {};
       })(),
     };
     return { ...ch, status: next };

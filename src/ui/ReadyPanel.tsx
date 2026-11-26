@@ -9,12 +9,16 @@ import type { BattleState, Combatant, Command, CunningOption } from '../battle';
 import { cunningOptions } from '../battle/classTraits';
 import { sinif97On } from '../battle/sinif97Surum';
 import type { Offset } from '../rules/hex';
-import { READY_TRIGGERS, readyProblem } from '../battle/ready';
+import { READY_TRIGGERS, readyProblem, readyResponsesFor } from '../battle/ready';
+import { objectCommand } from './gm/objectActions';
+import { OBJECTS } from '../battle/objectData';
 import { getLang, t } from '../i18n';
 
 export interface ReadyDraft {
   trigger: string; sourceId?: string; hex?: Offset;
-  kind: 'attack' | 'move' | 'spell';
+  /** Görev KARAR104-KALAN A9 (104+): eylem yanıtları da. */
+  kind: 'attack' | 'move' | 'spell' | 'dash' | 'disengage' | 'dodge' | 'help' | 'hide' | 'utilize';
+  objectId?: string;
   weapon?: string; attackIndex?: number; to?: Offset;
   /** Görev B95-B (97+): hazırlanan silah saldırısının Cunning Strike seçenekleri. */
   cunning?: CunningOption[];
@@ -28,7 +32,14 @@ export function readySpells(actor: Combatant) {
 }
 
 /** Taslaktan komut (eksikse null). */
-export function readyCommand(actor: Combatant, d: ReadyDraft): Extract<Command, { type: 'ready' }> | null {
+/** Görev KARAR104-KALAN A9: bitişik nesnenin varsayılan etkileşimi (oyuncu menüsüyle aynı seçim, `objectCommand`). */
+function utilizeOf(state: BattleState, actor: Combatant, objectId: string) {
+  const o = state.map?.objects?.find((x) => x.id === objectId);
+  const c = o ? objectCommand(state, actor, o) : null;
+  return c?.type === 'object_use' ? c : null;
+}
+
+export function readyCommand(actor: Combatant, d: ReadyDraft, state?: BattleState): Extract<Command, { type: 'ready' }> | null {
   const base = { type: 'ready' as const, actorId: actor.id, trigger: d.trigger, ...(d.sourceId ? { sourceId: d.sourceId } : {}), ...(d.hex ? { hex: d.hex } : {}) };
   if (d.kind === 'attack') {
     const option = actor.weaponOptions.find((o) => o.label === d.weapon);
@@ -37,6 +48,12 @@ export function readyCommand(actor: Combatant, d: ReadyDraft): Extract<Command, 
     return null;
   }
   if (d.kind === 'move') return d.to ? { ...base, response: { kind: 'move', to: d.to } } : null;
+  if (d.kind === 'dash') return d.to ? { ...base, response: { kind: 'dash', to: d.to } } : null;
+  if (d.kind === 'disengage' || d.kind === 'dodge' || d.kind === 'help' || d.kind === 'hide') return { ...base, response: { kind: d.kind } };
+  if (d.kind === 'utilize') {
+    const use = state && d.objectId ? utilizeOf(state, actor, d.objectId) : null;
+    return use ? { ...base, response: { kind: 'utilize', objectId: use.objectId, action: use.action, ...(use.to ? { to: use.to } : {}) } } : null;
+  }
   return d.spellName ? { ...base, response: { kind: 'spell', spellName: d.spellName, ...(d.slotLevel ? { slotLevel: d.slotLevel } : {}) } } : null;
 }
 
@@ -57,7 +74,9 @@ export function ReadyPanel(props: {
   const castables = readySpells(actor);
   const spell = castables.find((s) => s.name === d.spellName);
   const slots = spell && spell.level > 0 ? actor.spellSlots.map((n, i) => ({ level: i + 1, n })).filter((x) => x.level >= spell.level && x.n > 0) : [];
-  const cmd = readyCommand(actor, d);
+  const cmd = readyCommand(actor, d, state);
+  const kinds = readyResponsesFor(state).map((r) => r.id);
+  const usable = (state.map?.objects ?? []).filter((o) => !!utilizeOf(state, actor, o.id));
   const problem = props.blocked ?? (cmd ? readyProblem(state, actor, cmd) : null);
   const conc = actor.concentration && !actor.concentration.spell.startsWith('ready:') ? actor.concentration.spell : null;
   return (
@@ -79,7 +98,7 @@ export function ReadyPanel(props: {
       </label>
       <fieldset className="ready-kinds">
         <legend>{U.response}</legend>
-        {(['attack', 'move', 'spell'] as const).map((k) => (
+        {kinds.map((k) => (
           <button key={k} type="button" className={d.kind === k ? 'on' : 'ghost'} aria-pressed={d.kind === k} onClick={() => set({ kind: k })}>{U[k]}</button>
         ))}
       </fieldset>
@@ -103,7 +122,16 @@ export function ReadyPanel(props: {
           ))}
         </fieldset>
       )}
-      {d.kind === 'move' && (
+      {d.kind === 'utilize' && (usable.length === 0 ? <p className="mute">{U.noObjects}</p> : (
+        <label>{U.object}
+          <select value={d.objectId ?? ''} onChange={(e) => set({ objectId: e.target.value || undefined })}>
+            <option value="">—</option>
+            {usable.map((o) => <option key={o.id} value={o.id}>{U.objectOption(OBJECTS[o.kind]?.[lang] ?? o.kind, props.hexLabel(o.at))}</option>)}
+          </select>
+        </label>
+      ))}
+      {d.kind === 'disengage' && <p className="mute">{U.disengageNote}</p>}
+      {(d.kind === 'move' || d.kind === 'dash') && (
         <button type="button" className="ghost" onClick={() => props.onPickHex('to')}>{U.pickTo} · {d.to ? U.hexSet(props.hexLabel(d.to)) : U.unset}</button>
       )}
       {d.kind === 'spell' && (castables.length === 0 ? <p className="mute">{U.noSpells}</p> : (

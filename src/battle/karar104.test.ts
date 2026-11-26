@@ -6,21 +6,31 @@ import { execute } from './commands';
 import { combatantFromMonster, combatantFromSheet } from './index';
 import { itemHitsFor } from './itemEffects';
 import { superiorPreyEvents } from './classTraits';
-import { attackDice } from './effectDice';
+import { attackDice, saveDice } from './effectDice';
+import { secondChance } from '../rules/attack';
+import { revealEvent, supremeSneakEndEvents } from './stealth';
+import { teleportProblem } from './teleport';
+import { pushOutcome } from './forced';
+import { arrivalOccupant } from './movement';
+import { speedHexes } from './reduce';
 import { askPicks } from '../rules/choice';
 import type { ReactionAnswer, ReactionRequest } from '../rules/reactionChoice';
 import { boundWeaponName, eligibleWeaponsOf } from '../rules/itemBinding';
 import type { CharacterSheet } from '../rules/stats';
 import { getMonster } from '../data';
-import { applyBattleResult } from '../app/partyStatus';
+import { applyBattleResult, withStatus } from '../app/partyStatus';
 import { blankCharacter } from '../rules/builder';
 import { currentStatus, fullStatus, longRestStatus } from '../rules/characterRest';
-import { JOURNEY_RULES } from '../journey/engine';
-import { zeroHpRest } from '../journey/seruven';
+import { JOURNEY_RULES, executeJourney, replayJourney } from '../journey/engine';
+import ilkGun from '../../data/yolculuk/ilk-gun.json';
+import type { JourneyCommand, JourneyEvent, JourneyRoute, JourneyState } from '../journey/types';
+import { reduceSeruven, zeroHpRest, type SeruvenState } from '../journey/seruven';
+import { zeroHpWakeHours } from '../rules/characterRest';
 import { dragBack } from '../journey/hapishane';
 import { startBattle } from './create';
 import { replay } from './index';
-import { GM, mk, P1 } from './fixtures';
+import { GM, mk, P1, sword } from './fixtures';
+import { chooseCommand } from './ai';
 import { KARAR104_VERSION, karar104On } from './karar104Surum';
 import { CURRENT_RULES } from './ruleVersion';
 import { distance } from '../rules/hex';
@@ -77,10 +87,10 @@ describe('KARAR104 A1: Storm of Vengeance 2–10. tur aşamaları (SRD 5.2.1 s. 
   const cast: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Storm of Vengeance', slotLevel: 9, targetHex: at(10, 5) } as Command;
   const end = (id: string): Command => ({ type: 'end_turn', actorId: id }) as Command;
   /** Yapım + n tam tur (her turda A ve T sırası biter). */
-  const rounds = (v: number, n: number, d20 = 5) => {
+  const rounds = (v: number, n: number, d20 = 5, rng?: Rng) => {
     const cmds: Command[] = [cast];
     for (let i = 0; i < n; i++) cmds.push(end('A'), end('T'));
-    return play(scene104(v, [druid(), foe('T', at(10, 5))]), cmds, hooked(d20));
+    return play(scene104(v, [druid(), foe('T', at(10, 5))]), cmds, rng ?? hooked(d20));
   };
   const dmgOn = (events: BattleEvent[], id: string) => events.filter((e) => (e.type === 'save_resolved' || e.type === 'effect_tick') && e.targetId === id)
     .map((e) => `${(e as { damageType: string }).damageType}:${(e as { appliedDamage: number }).appliedDamage}`);
@@ -106,6 +116,17 @@ describe('KARAR104 A1: Storm of Vengeance 2–10. tur aşamaları (SRD 5.2.1 s. 
     expect(bolt.success).toBe(true);
     expect(bolt.appliedDamage).toBe(20);
     expect(r.events.some((e) => e.type === 'save_resolved' && e.damageType === 'lightning' && e.targetId === 'A')).toBe(false);
+  });
+  it('KARAR104-KALAN: 3. tur yıldırım hedefleri büyücüye sorulur (askPicks; öneri eski otomatik seçim)', () => {
+    const asked: ReactionRequest[] = [];
+    const picks = ['A', null];
+    let i = 0;
+    const r0 = hooked(20) as Rng & { react?: (q: ReactionRequest) => ReactionAnswer | null };
+    r0.react = (q) => { if (q.trigger !== 'choice') return null; asked.push(q); const p = picks[i++]; return p ? { option: 'choice', choice: p } : null; };
+    const r = rounds(NEW, 2, 20, r0);
+    const bolts = r.events.filter((e) => e.type === 'save_resolved' && e.damageType === 'lightning').map((e) => (e as { targetId: string }).targetId);
+    expect(bolts).toEqual(['A']);
+    expect(asked[0]?.suggested).toMatchObject({ choice: 'T' });
   });
   it('103: yalnız yapım turu (aşama yok)', () => {
     const r = rounds(OLD, 4);
@@ -148,7 +169,7 @@ describe('KARAR104 A3: boğulma ("is suffocating"; SRD 5.2.1 Suffocation)', () =
   });
 });
 
-describe('KARAR104 A4: likantrop laneti yalnız işaret (kullanıcı kararı)', () => {
+describe('KARAR104 A4: likantrop laneti (A4 işaret; KARAR104-KALAN: 0 HP’de dönüşüm, SRD 5.2.1 s. 339)', () => {
   /** İlk d20 (saldırı) 20, sonrakiler (save) 1. */
   const biteRng = (): Rng => {
     let n = 0;
@@ -172,7 +193,7 @@ describe('KARAR104 A4: likantrop laneti yalnız işaret (kullanıcı kararı)', 
   it('104: Humanoid olmayan (Beast biçimi) lanetlenmez', () => {
     expect(bite(NEW, { creatureType: 'beast' }).state.combatants.H?.effects?.some((e) => e.lycanthropy) ?? false).toBe(false);
   });
-  it('savaş sonunda karaktere `lanet` yazılır; uzun dinlenme kaldırmaz; 0 HP’de biçim değişimi yok', () => {
+  it('savaş sonunda karaktere `lanet` yazılır; uzun dinlenme kaldırmaz; 0 HP’ye düşmeyen taraf değiştirmez', () => {
     const r = bite(NEW);
     const sh = { ...blankCharacter('p1').sheet, name: 'Kahraman' };
     const ch = { ...blankCharacter('p1'), id: 'p1', sheet: sh, status: fullStatus(sh) };
@@ -184,6 +205,28 @@ describe('KARAR104 A4: likantrop laneti yalnız işaret (kullanıcı kararı)', 
     const clean: BattleState = { ...fin, combatants: { ...fin.combatants, H: { ...(fin.combatants.H as Combatant), effects: [] } } };
     expect(applyBattleResult([{ ...ch, status: st }], clean)[0]?.status?.lanet).toEqual({ likantrop: 'werewolf' });
     expect(r.state.combatants.H?.side).toBe('party');
+  });
+  it('KARAR104-KALAN: lanetli 0 HP’ye düşünce Game Master’ın tarafında 10 HP’li Werewolf olur; 103 dönüşmez', () => {
+    const cursed = { id: 'likantropi', name: 'Likantropi', sourceId: 'W', until: 1_000_000, lycanthropy: 'werewolf' };
+    const run = (v: number) => {
+      const s = scene104(v, [wolf(), mk('H', { ownerId: 'p1', hp: 3, maxHp: 30, ac: 5, pos: at(4, 5), effects: [cursed] } as Partial<Combatant>),
+        mk('P', { ownerId: 'p1', hp: 30, maxHp: 30, pos: at(10, 2) })]);
+      const idx = (s.combatants.W as Combatant).attacks.findIndex((a) => a.name === 'Scratch');
+      return play(s, [{ type: 'monster_attack', actorId: 'W', targetId: 'H', attackIndex: idx } as Command], hooked(20));
+    };
+    const now = run(NEW);
+    expect(now.state.combatants.H).toMatchObject({ offFloor: 'likantrop', pos: null });
+    expect(now.state.combatants['H-likantrop']).toMatchObject({ side: 'enemies', hp: 10, pos: at(4, 5), monsterId: 'werewolf' });
+    expect(now.state.status).toBe('active');
+    const old = run(OLD);
+    expect(old.state.combatants['H-likantrop']).toBeUndefined();
+    expect(old.state.combatants.H?.offFloor).toBeUndefined();
+    // Savaş sonu: karaktere `donustu`; sonraki savaşa lanet taşınır.
+    const sh = { ...blankCharacter('p1').sheet, name: 'Kahraman' };
+    const ch = { ...blankCharacter('p1'), id: 'p1', sheet: sh, status: fullStatus(sh) };
+    const st = applyBattleResult([ch], { ...now.state, status: 'finished' })[0]?.status;
+    expect(st?.lanet).toEqual({ likantrop: 'werewolf', donustu: true });
+    expect(withStatus(mk('H'), { sheet: sh, status: { ...fullStatus(sh), lanet: { likantrop: 'werewolf' } } }).effects?.find((e) => e.lycanthropy)?.lycanthropy).toBe('werewolf');
   });
 });
 
@@ -206,6 +249,36 @@ describe('KARAR104 A11: 0 HP’de uzun dinlenme (SRD 5.2.1 s. 185, s. 18; Normal
     expect(zeroHpRest({ toggles: {} })).toBe('srd');
     expect(zeroHpRest({ toggles: { kolayDinlenme: true } })).toBe('ev');
     expect(currentStatus(sh, dragBack(sh, { ...down(), dead: true })).hp).toBe(fullStatus(sh).hp);
+  });
+  it('KARAR104-KALAN: 0 HP’den kalkış 1d4 saat yolculuk saatine eklenir (Normal SRD); Kolay’da ve 0 HP yokken eklenmez', () => {
+    const R0 = ilkGun as unknown as JourneyRoute;
+    const R: JourneyRoute = { ...R0, stops: [R0.stops[0]!, { ...R0.stops[1]!, travelHours: 20 }, ...R0.stops.slice(2)] };
+    const party = [{ id: 'a', name: 'Bor', sheet: { ...sh, classId: 'fighter' } }, { id: 'b', name: 'Mira', sheet: sh }];
+    const run = (difficulty: 'normal' | 'kolay', hpA: number) => {
+      let st: JourneyState | null = null;
+      const evs: JourneyEvent[] = [];
+      const step = (c: JourneyCommand) => { const x = executeJourney(st, c, () => 0.5); if (!x.ok) throw new Error(x.error); st = x.state; evs.push(...x.events); };
+      step({ type: 'start', id: 'j', route: R, seed: 1, difficulty, progression: 'milestone', party } as JourneyCommand);
+      const cur = st as unknown as JourneyState;
+      step({ type: 'battle_result', outcome: 'won', statuses: Object.fromEntries(cur.party.map((m) => [m.id, { ...m.status, hp: m.id === 'a' ? hpA : m.status.hp }])), xp: 0 } as JourneyCommand);
+      step({ type: 'advance' } as JourneyCommand);
+      step({ type: 'long_rest' } as JourneyCommand);
+      expect(replayJourney(evs)).toEqual(st);
+      return st as unknown as JourneyState;
+    };
+    // Kancasız zar 0,5 → 1d4 = 3. Başlangıç 8 + yürüyüş 20 + uzun dinlenme 8.
+    expect(run('normal', 0)).toMatchObject({ hour: 39 });
+    expect(run('normal', 0).party[0]!.status.hp).toBe(1);
+    expect(run('normal', 5)).toMatchObject({ hour: 36 });
+    expect(run('kolay', 0)).toMatchObject({ hour: 36 });
+    expect(zeroHpWakeHours([{ ...down() }], 'srd', () => 0.99)).toBe(4);
+    expect(zeroHpWakeHours([{ ...down(), dead: true }], 'srd', () => 0.99)).toBe(0);
+  });
+  it('KARAR104-KALAN: Serüven dinlenmesinde kalkış saati `saat` varsa eklenir; saatsiz (eski) kayıtta değişmez', () => {
+    const base = { party: [], done: [], rests: 2, flags: [], toggles: {}, night: [], items: [], gold: 0, potions: 0, xp: 0, page: 'p', at: 'giris' } as unknown as SeruvenState;
+    expect(reduceSeruven({ ...base, saat: 50 }, { type: 'seruven_inn', gold: 0, statuses: {}, wakeHours: 3 })).toMatchObject({ saat: 53, rests: 3 });
+    expect(reduceSeruven(base, { type: 'seruven_inn', gold: 0, statuses: {}, wakeHours: 3 })?.saat).toBeUndefined();
+    expect(reduceSeruven({ ...base, saat: 50 }, { type: 'seruven_rested', key: 'k', statuses: {}, wakeHours: 2 })).toMatchObject({ saat: 52 });
   });
 });
 
@@ -258,6 +331,24 @@ describe('KARAR104 A2: yapışma (Stirge, Darkmantle, Cloaker; SRD 5.2.1)', () =
     expect(attachOf(p.state)?.grants).toBeUndefined();
     expect(attachOf(p.state)?.noBreath).toBeUndefined();
   });
+  it('KARAR104-KALAN Darkmantle: bağlıyken hızı 0, Dash eki yok; kendi turunda 5 ft ile ayrılıp normal hızla yürür; ayırılınca hız döner', () => {
+    const plain = scene104(NEW, [beast('darkmantle', 'D', at(3, 5)), hero()]);
+    const p = play(plain, [atk(plain, 'D', 'Crush')], hooked(20));
+    const D = (s: BattleState) => s.combatants.D as Combatant;
+    expect(speedHexes(D(p.state))).toBe(0);
+    const fresh = { ...p.state, combatants: { ...p.state.combatants, D: { ...D(p.state), economy: { ...FRESH_ECONOMY } } } };
+    const dashed = play(fresh, [{ type: 'dash', actorId: 'D' } as Command], hooked(20)).state;
+    expect(speedHexes(D(dashed))).toBe(0);
+    // Ayrılma (5 ft) + yürüme: hız etkisi kalkar, kalan hareket taban hızdan.
+    const away = play(p.state, [{ type: 'move', actorId: 'D', to: at(2, 5) } as Command], hooked(20)).state;
+    expect(attachOf(away)).toBeUndefined();
+    expect(D(away).effects?.some((e) => e.attachHold)).toBe(false);
+    expect(D(away).pos).toEqual(at(2, 5));
+    // Hedef kaçınca (escape) hız etkisi de kalkar.
+    const freed = play({ ...p.state, turnIndex: p.state.order.indexOf('H') }, [{ type: 'escape', actorId: 'H' } as Command], hooked(20)).state;
+    expect(attachOf(freed)).toBeUndefined();
+    expect(speedHexes(D(freed))).toBeGreaterThan(0);
+  });
   it('104 Cloaker: hedef Blinded; cloaker aldığı hasarı yarıya indirir, hedef aynı miktarı alır', () => {
     const s = scene104(NEW, [beast('cloaker', 'C', at(3, 5)), hero(), beast('ogre', 'O', at(3, 4), 'party')]);
     const r = play(s, [atk(s, 'C', 'Attach')], hooked(20));
@@ -269,6 +360,18 @@ describe('KARAR104 A2: yapışma (Stirge, Darkmantle, Cloaker; SRD 5.2.1)', () =
     const lost = c0 - hit.state.combatants.C!.hp;
     expect(lost).toBe(Math.floor(raw.rawDamage / 2));
     expect(hp0 - hit.state.combatants.H!.hp).toBe(lost);
+  });
+  it('KARAR104-KALAN: Cloaker’ın paylaştığı hasar türlü (Bludgeoning): hedefin direnci ve zayıflığı işler', () => {
+    for (const [p, f] of [[{ resistances: ['bludgeoning'] }, (n: number) => Math.floor(n / 2)], [{ vulnerabilities: ['bludgeoning'] }, (n: number) => n * 2]] as const) {
+      const s = scene104(NEW, [beast('cloaker', 'C', at(3, 5)), hero(p as unknown as Partial<Combatant>), beast('ogre', 'O', at(3, 4), 'party')]);
+      const r = play(s, [atk(s, 'C', 'Attach')], hooked(20));
+      const hp0 = r.state.combatants.H!.hp;
+      const c0 = r.state.combatants.C!.hp;
+      const hit = play({ ...r.state, turnIndex: r.state.order.indexOf('O') }, [atk(r.state, 'O', 'Greatclub', 'C')], hooked(20));
+      const lost = c0 - hit.state.combatants.C!.hp;
+      expect(hp0 - hit.state.combatants.H!.hp).toBe(f(lost));
+      expect(hit.events.find((e) => e.type === 'effect_tick' && e.targetId === 'H')).toMatchObject({ damageType: 'bludgeoning' });
+    }
   });
 });
 
@@ -345,3 +448,205 @@ describe('KARAR104 A5: otomatik seçimler "Sor"a bağlı (öneri = eski otomatik
     expect(luck()?.ask).toBeUndefined();
   });
 });
+
+describe('KARAR104-KALAN A6: SRD-12 sınıf özelliği sapmaları', () => {
+  it('Cutting Words ıskada atılan hasar zarında (Acid Arrow yarı hasar): 104 zar yarıya bölünmeden düşer; 103 tetik yok', () => {
+    const bardSheet: CharacterSheet = { ...blankCharacter('b').sheet, name: 'Lira', classId: 'bard', subclassId: 'college-of-lore', level: 5,
+      baseScores: { str: 8, dex: 14, con: 12, int: 10, wis: 10, cha: 16 } };
+    const miss = (v: number) => {
+      const bard = { ...combatantFromSheet(bardSheet, { id: 'D', ownerId: 'p1' }), pos: at(4, 6) };
+      const parts = [mk('B', { side: 'enemies', spellNames: ['Acid Arrow'], spellAttack: 0, spellSlots: [4, 3], pos: at(8, 5) }),
+        mk('C', { ownerId: 'p1', hp: 30, maxHp: 30, ac: 30, pos: at(4, 5) }), bard];
+      const { state, events } = play(scene104(v, parts), [{ type: 'cast_spell', actorId: 'B', spellName: 'Acid Arrow', targetId: 'C', slotLevel: 2 } as Command], hooked(5));
+      return { hp: state.combatants.C!.hp, used: events.some((e) => e.type === 'reaction_used' && e.actorId === 'D') };
+    };
+    // Acid Arrow 4d4 = 12; Bard d8 = 5 → ⌊(12 − 5) / 2⌋ = 3; 103: ⌊12 / 2⌋ = 6.
+    expect(miss(NEW)).toEqual({ hp: 27, used: true });
+    expect(miss(OLD)).toEqual({ hp: 24, used: false });
+  });
+  it('Quivering Palm: 104 Attack eyleminde bir saldırıdan vazgeçerek bitirilir; 103 isabet turunda bitirilemez', () => {
+    const QP = 'monk/warrior-of-the-open-hand:quivering-palm';
+    const monkSheet: CharacterSheet = { ...blankCharacter('m').sheet, name: 'Su', classId: 'monk', subclassId: 'warrior-of-the-open-hand', level: 17,
+      baseScores: { str: 10, dex: 16, con: 12, int: 8, wis: 16, cha: 8 }, armorName: 'Zırhsız', weapons: [{ name: 'Quarterstaff' }] };
+    const end = (v: number) => {
+      const monk = { ...combatantFromSheet(monkSheet, { id: 'A', ownerId: 'p1' }), pos: at(3, 5) };
+      const s0 = scene104(v, [monk, mk('B', { side: 'enemies', hp: 300, maxHp: 300, ac: 1, saves: { str: 0, dex: 0, con: -20, int: 0, wis: 0, cha: 0 }, pos: at(4, 5) })]);
+      const fist = s0.combatants.A!.weaponOptions.find((x) => x.label === 'Unarmed Strike')!;
+      const set = play(s0, [{ type: 'attack', actorId: 'A', targetId: 'B', option: fist } as Command, { type: 'use_feature', actorId: 'A', feature: QP } as Command], hooked(15)).state;
+      expect(set.combatants.B!.effects?.some((x) => x.quivering)).toBe(true);
+      const r = execute(set, { type: 'use_feature', actorId: 'A', feature: QP, choice: 'end' } as Command, P1, hooked(15));
+      return r.ok ? { left: r.state.combatants.A!.economy.attacksLeft, hp: r.state.combatants.B!.hp, quivering: r.state.combatants.B!.effects?.some((x) => x.quivering) } : r.error;
+    };
+    // 10d12 = 70 (save başarısız).
+    expect(end(NEW)).toMatchObject({ left: 0, quivering: false });
+    expect((end(NEW) as { hp: number }).hp).toBeLessThan(300 - 69);
+    // 103: `choice` yok sayılır, isabet turunda komut titreşimi yeniden kurar (bitirme ancak eylemle, sonraki turlarda).
+    expect(end(OLD)).toMatchObject({ left: 1, hp: 290, quivering: true });
+  });
+  describe('Hurl Through Hell (SRD 5.2.1 s. 76)', () => {
+    const lock = (res: number, slots: number[]) => mk('A', { ownerId: 'p1', level: 14, spellNames: ['Eldritch Blast'], spellAttack: 30, spellSaveDc: 30,
+      spellSlots: slots, traits: ['hurl-through-hell'], resources: { hurlThroughHell: res }, k19Traits: true, pos: at(3, 5) } as Partial<Combatant>);
+    const foe = () => mk('B', { side: 'enemies', hp: 300, maxHp: 300, saves: { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: -20 }, pos: at(6, 5) });
+    const blast: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Eldritch Blast', targetId: 'B' } as Command;
+    const hurls = (ev: BattleEvent[]) => ev.filter((e) => e.type === 'save_resolved' && e.label === 'Hurl Through Hell').length;
+    const picking = (choice: string | null): Rng => {
+      const r = hooked(15) as Rng & { react?: (q: ReactionRequest) => ReactionAnswer | null };
+      r.react = (q) => (q.trigger === 'choice' && choice ? { option: 'choice', choice } : null);
+      return r;
+    };
+    it('104: hedef kaybolur (hedef alınamaz, Incapacitated), Warlock’un sonraki turunun sonunda aynı altıgene döner; turda bir', () => {
+      const { state, events } = play(scene104(NEW, [lock(1, [0, 0, 0, 0, 3]), foe()]), [blast], hooked(15));
+      expect(hurls(events)).toBe(1);
+      const b = state.combatants.B!;
+      expect(b.effects?.find((e) => e.banished)).toMatchObject({ ethereal: true, grants: ['Incapacitated'] });
+      expect(b.conditions).toContain('Incapacitated');
+      const end = (id: string) => ({ type: 'end_turn', actorId: id }) as Command;
+      const after = play(state, [end('A'), end('B'), end('A')], hooked(15)).state.combatants.B!;
+      expect(after.effects?.some((e) => e.banished)).toBe(false);
+      expect(after.conditions).not.toContain('Incapacitated');
+      expect(after.pos).toEqual(at(6, 5));
+    });
+    it('104: kullanım yokken Pact slotuyla yenilenir (soruda seçilirse; öneri kullanmamak); 103: kullanım yoksa yok', () => {
+      const slotUse = play(scene104(NEW, [lock(0, [0, 0, 0, 0, 3]), foe()]), [blast], picking('hurl-slot'));
+      expect(hurls(slotUse.events)).toBe(1);
+      expect(slotUse.state.combatants.A!.spellSlots[4]).toBe(2);
+      expect(slotUse.state.combatants.A!.resources.hurlThroughHell).toBe(0);
+      expect(hurls(play(scene104(NEW, [lock(0, [0, 0, 0, 0, 3]), foe()]), [blast], hooked(15)).events)).toBe(0);
+      expect(hurls(play(scene104(OLD, [lock(0, [0, 0, 0, 0, 3]), foe()]), [blast], picking('hurl-slot')).events)).toBe(0);
+    });
+    it('104: oyuncu "Seçme" derse kullanılmaz; 103: sorusuz, hedef yerinde Incapacitated (ortadan kalkmaz)', () => {
+      expect(hurls(play(scene104(NEW, [lock(1, [0, 0, 0, 0, 3]), foe()]), [blast], picking(null)).events)).toBe(0);
+      const old = play(scene104(OLD, [lock(1, [0, 0, 0, 0, 3]), foe()]), [blast], picking(null));
+      expect(hurls(old.events)).toBe(1);
+      expect(old.state.combatants.B!.effects?.some((e) => e.banished) ?? false).toBe(false);
+      expect(old.state.combatants.B!.conditions).toContain('Incapacitated');
+    });
+  });
+  it("Dark One's Own Luck: 104 sorulur ve eklenince harcanır (tutmasa da), yetmeyecekse sunulmaz; 103 sorusuz, yalnız tutarsa", () => {
+    const lock = (k104?: true) => mk('A', { traits: ['dark-ones-own-luck'], resources: { darkOnesLuck: 2 }, ...(k104 ? { k104 } : {}) });
+    const fail = (total: number, need: number) => ({ total, natural: 8, bonus: 0, need, mode: 'normal' as const, kind: 'save' as const });
+    const luck = (c: Combatant) => saveDice(c, 'wis').filter((x) => x.label === "Dark One's Own Luck");
+    // Kancalı Rng: 1d10 = 6.
+    const r6 = hooked(10);
+    // Toplam 10, gereken 17: +6 tutmaz. 104: kaynak yine harcanır; 103: harcanmaz.
+    expect(secondChance(luck(lock(true)), fail(10, 17), r6)?.entry).toMatchObject({ value: 6, resource: 'darkOnesLuck' });
+    expect(secondChance(luck(lock()), fail(10, 17), r6)?.entry.resource).toBeUndefined();
+    // Gereken 21: 1d10 en çok 10 → 104'te sunulmaz (soru yok); 103'te atılır.
+    expect(secondChance(luck(lock(true)), fail(10, 21), r6)).toBeNull();
+    expect(secondChance(luck(lock()), fail(10, 21), r6)).not.toBeNull();
+    // 104: soru "Seçme" → kullanılmaz.
+    const no = hooked(10) as Rng & { react?: (q: ReactionRequest) => ReactionAnswer | null };
+    const asked: ReactionRequest[] = [];
+    no.react = (q) => { asked.push(q); return null; };
+    expect(secondChance(luck(lock(true)), fail(10, 14), no)).toBeNull();
+    expect(asked[0]?.trigger).toBe('boon');
+  });
+  it('Supreme Sneak: 104 saldırıda açığa çıkmaz, siper turun sonunda (bütün düşmanlara ¾/tam); 103 saldırı anında hedefe göre', () => {
+    const thief = () => mk('A', { ownerId: 'p1', traits: ['supreme-sneak'], hidden: { dc: 20 }, pos: at(2, 5) } as Partial<Combatant>);
+    const walled = (v: number, wall: boolean) => {
+      const s = scene104(v, [thief(), mk('B', { side: 'enemies', hp: 60, maxHp: 60, pos: at(8, 5) })]);
+      return wall ? { ...s, map: { ...s.map!, tiles: s.map!.tiles.map((r) => '....#' + r.slice(5)) } } : s;
+    };
+    const cmd = { type: 'attack', actorId: 'A', targetId: 'B', option: { label: 'Dagger' }, cunning: ['stealth'] } as unknown as Command;
+    expect(revealEvent(walled(NEW, false), walled(NEW, false), cmd)).toMatchObject({ type: 'trait_turn', trait: 'supreme-sneak', key: '1:0' });
+    const marked = (s: BattleState) => ({ ...s, combatants: { ...s.combatants, A: { ...s.combatants.A!, traitTurns: { 'supreme-sneak': '1:0' } } } });
+    expect(supremeSneakEndEvents(marked(walled(NEW, true)), 'A')).toEqual([]);
+    expect(supremeSneakEndEvents(marked(walled(NEW, false)), 'A')).toMatchObject([{ type: 'revealed', actorId: 'A' }]);
+    // İşaret yoksa (bu tur Stealth Attack yok) dokunmaz; 103'te tur sonu denetimi yok, saldırı anında açığa çıkar (siper yok).
+    expect(supremeSneakEndEvents(walled(NEW, false), 'A')).toEqual([]);
+    expect(supremeSneakEndEvents(marked(walled(OLD, false)), 'A')).toEqual([]);
+    expect(revealEvent(walled(OLD, false), walled(OLD, false), cmd)).toMatchObject({ type: 'revealed' });
+  });
+});
+
+describe('KARAR104-KALAN A8: Swarm varışta da altıgen paylaşır (SRD 5.2.1 "can occupy another creature’s space and vice versa")', () => {
+  const scene = (v: number) => scene104(v, [{ ...combatantFromMonster(getMonster('swarm-of-rats'), { id: 'S', kuralSurumu: v }), side: 'enemies' as const, pos: at(3, 5) },
+    mk('A', { ownerId: 'p1', hp: 30, maxHp: 30, pos: at(5, 5) }), mk('B', { ownerId: 'p1', hp: 30, maxHp: 30, pos: at(4, 5) })]);
+  it('ışınlanma: 104 sürü dolu altıgene ışınlanır; 103 "dolu"', () => {
+    const sw = (s: BattleState) => s.combatants.S as Combatant;
+    expect(teleportProblem(scene(NEW), sw(scene(NEW)), at(5, 5), { rangeFt: 60, sight: false })).toBeNull();
+    expect(teleportProblem(scene(OLD), sw(scene(OLD)), at(5, 5), { rangeFt: 60, sight: false })).toMatch(/dolu/);
+  });
+  it('itme: 104 sürü başka yaratığın altıgenine itilir, başkası sürünün altıgenine; 103 arkada yaratık var', () => {
+    for (const [v, ok] of [[NEW, true], [OLD, false]] as const) {
+      const s = scene(v);
+      expect(pushOutcome(s, s.combatants.S as Combatant, at(3, 5), at(4, 5)).ok).toBe(ok);
+      expect(pushOutcome(s, s.combatants.B as Combatant, at(4, 5), at(3, 5)).ok).toBe(ok);
+      // Sürü olmayan sürü olmayanın altıgenine girmez (her iki sürümde).
+      expect(arrivalOccupant(s, s.combatants.B as Combatant, at(5, 5))?.id).toBe('A');
+    }
+  });
+});
+
+describe('KARAR104-KALAN A9: Ready yanıt listesi (SRD 5.2.1 s. 186 "the action you will take")', () => {
+  const scene = (v: number, objects: NonNullable<BattleState['map']>['objects'] = []) => {
+    const s = scene104(v, [mk('A', { ownerId: 'p1', hp: 30, maxHp: 30, pos: at(3, 5) }), mk('B', { side: 'enemies', hp: 60, maxHp: 60, pos: at(10, 5) })]);
+    return { ...s, map: { ...s.map!, objects } };
+  };
+  const readyCmd = (response: object, trigger = 'yakina-gelir'): Command => ({ type: 'ready', actorId: 'A', trigger, response } as Command);
+  const approach = (s: BattleState, to = at(5, 5)) => {
+    const a = execute(s, { type: 'end_turn', actorId: 'A' } as Command, P1, hooked(10));
+    if (!a.ok) throw new Error(a.error);
+    const m = execute(a.state, { type: 'move', actorId: 'B', to } as Command, GM, hooked(10));
+    if (!m.ok) throw new Error(m.error);
+    expect(replay([{ type: 'battle_started', state: s }, ...a.events, ...m.events] as BattleEvent[])).toEqual(m.state);
+    return m;
+  };
+  it('Dodge: 104 tetikte Kaçın durumu; 103 yanıt reddedilir', () => {
+    const r = execute(scene(NEW), readyCmd({ kind: 'dodge' }), P1, hooked(10));
+    if (!r.ok) throw new Error(r.error);
+    const m = approach(r.state);
+    expect(m.events.some((e) => e.type === 'ready_released')).toBe(true);
+    expect(m.state.combatants.A!.conditions).toContain('Dodge');
+    const old = execute(scene(OLD), readyCmd({ kind: 'dodge' }), P1, hooked(10));
+    expect(old.ok ? '' : old.error).toMatch(/104/);
+  });
+  it('Help: 104 tetikleyen bitişik düşmana Yardım (hedef salınırken)', () => {
+    const r = execute(scene(NEW), readyCmd({ kind: 'help' }, 'erisime-girer'), P1, hooked(10));
+    if (!r.ok) throw new Error(r.error);
+    const m = approach(r.state, at(4, 5));
+    expect(m.events.some((e) => e.type === 'ready_released')).toBe(true);
+    expect(m.events.some((e) => e.type === 'condition_changed' && e.targetId === 'B' && e.present)).toBe(true);
+  });
+  it('Utilize: 104 SRD örneği gibi tetikte kolu çeker; Hide, Disengage, Dash komutları kabul edilir', () => {
+    const lever = { id: 'kol', kind: 'lever', at: at(3, 6), hp: 5, state: 'closed' } as never;
+    const r = execute(scene(NEW, [lever]), readyCmd({ kind: 'utilize', objectId: 'kol', action: 'pull' }), P1, hooked(10));
+    if (!r.ok) throw new Error(r.error);
+    const m = approach(r.state);
+    expect(m.events.some((e) => e.type === 'ready_released')).toBe(true);
+    expect(m.state.map!.objects!.find((o) => o.id === 'kol')?.state).not.toBe('closed');
+    for (const response of [{ kind: 'hide' }, { kind: 'disengage' }, { kind: 'dash', to: at(2, 5) }]) {
+      expect(execute(scene(NEW), readyCmd(response), P1, hooked(10)).ok).toBe(true);
+      expect(execute(scene(OLD), readyCmd(response), P1, hooked(10)).ok).toBe(false);
+    }
+  });
+});
+
+describe('KARAR104-KALAN A7: Unconscious elindekini düşürür (SRD 5.2.1 s. 191), yapay zekâ yerden alır', () => {
+  const blade = { ...sword, weaponId: 'longsword' };
+  const scene = (v: number) => scene104(v, [mk('B', { side: 'enemies', hp: 60, maxHp: 60, weaponOptions: [blade], pos: at(4, 5) }),
+    mk('A', { ownerId: 'p1', hp: 1, maxHp: 30, weaponOptions: [blade], pos: at(3, 5) }), mk('C', { ownerId: 'p1', hp: 30, maxHp: 30, pos: at(10, 2) })]);
+  const hit = (v: number) => play(scene(v), [{ type: 'attack', actorId: 'B', targetId: 'A', option: blade } as Command], hooked(15));
+  it('104: 0 HP’ye düşen (Unconscious) silahını altıgenine düşürür; 103: elinde kalır', () => {
+    const now = hit(NEW);
+    expect(now.state.combatants.A!.conditions).toContain('Unconscious');
+    expect(now.events.some((e) => e.type === 'item_dropped' && e.actorId === 'A' && e.item === 'longsword')).toBe(true);
+    expect(now.state.combatants.A!.weaponOptions.some((o) => o.weaponId === 'longsword')).toBe(false);
+    expect(now.state.map!.objects!.some((o) => o.kind === 'droppedItem' && o.item === 'longsword')).toBe(true);
+    const old = hit(OLD);
+    expect(old.events.some((e) => e.type === 'item_dropped')).toBe(false);
+    expect(old.state.combatants.A!.weaponOptions.some((o) => o.weaponId === 'longsword')).toBe(true);
+  });
+  it('104: uyanan yapay zekâ yaratığı kendi silahını yerden alır (serbest etkileşim)', () => {
+    const down = hit(NEW).state;
+    const a = down.combatants.A!;
+    const up: BattleState = { ...down, turnIndex: down.order.indexOf('A'),
+      combatants: { ...down.combatants, A: { ...a, hp: 10, life: 'alive', conditions: a.conditions.filter((c) => c !== 'Unconscious' && c !== 'Prone'), economy: { ...FRESH_ECONOMY } } } };
+    const cmd = chooseCommand(up);
+    expect(cmd).toMatchObject({ type: 'pick_up', actorId: 'A' });
+    const r = execute(up, cmd, P1, hooked(10));
+    if (!r.ok) throw new Error(r.error);
+    expect(r.state.combatants.A!.weaponOptions.some((o) => o.weaponId === 'longsword')).toBe(true);
+  });
+});
+

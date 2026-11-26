@@ -28,7 +28,7 @@ import { auraStepEvents } from './features';
 import { zoneStepEvents } from './zones';
 import { enterHexEvents, fallEffect, hitEffect, isBog, ruleOf } from './maprules';
 import { fallReactions } from './reactions';
-import { hexLabel, occupantAt, terrainAt } from './movement';
+import { arrivalOccupant, hexLabel, occupantAt, terrainAt } from './movement';
 import { bodyAt, bodyOf, gap, isMultiHex } from './body';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant } from './types';
@@ -87,7 +87,7 @@ export function pushOutcome(state: BattleState, target: Combatant, from: Offset,
     let lava = false;
     for (const h of bodyAt(state, target, to)) {
       if (!isInside(h, sizeOf(state))) return { ok: false, reason: 'harita dışı' };
-      const o = occupantAt(state, h, target.id, moverBand(state, target));
+      const o = arrivalOccupant(state, target, h, moverBand(state, target));
       if (o) return { ok: false, reason: `arkada ${o.name} var` };
       const th = terrainAt(state, h);
       if (k69 && th.char === 'u' && !flies(target) && fissureDepthAt(state, h) > 0) { if (!pit || distance(h, to) < distance(pit, to)) pit = h; continue; }
@@ -102,7 +102,8 @@ export function pushOutcome(state: BattleState, target: Combatant, from: Offset,
   }
   const t = terrainAt(state, to);
   const here = terrainAt(state, from);
-  const other = occupantAt(state, to, target.id, moverBand(state, target));
+  // Görev KARAR104-KALAN A8 (104+): itilen sürü başka yaratığın altıgenine (ya da sürünün altıgenine başkası) girer.
+  const other = arrivalOccupant(state, target, to, moverBand(state, target));
   if (other) return { ok: false, reason: `arkada ${other.name} var` };
   // Kuyruk K72 (sürüm 60+): duruş yüzeyindeki (sur tepesi, kat) uçmayan yaratık: aynı yükseklikteki yüzeye itilir; kenardan
   // itilirse alttaki en yüksek yüzeye tek düşme (`fall`); yüzeysiz geçilmez altıgen (daha yüksek duvar) iteni durdurur.
