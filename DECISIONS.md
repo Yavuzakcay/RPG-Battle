@@ -98,7 +98,8 @@ commit: A1, A3, A4, A11, A2, A10, A5. Değişen eski testler: `ruleVersion.test.
 - **Ertelendi (kullanıcı kararı, sonraki tura):** A6 SRD-12 sınıf özelliği sapmaları (Cutting Words ıskada, Quivering Palm vazgeçme,
   Holy Nimbus/Hurl Through Hell yenilenme, Dark One's Own Luck zamanı, Supreme Sneak siper zamanı), A7 Unconscious eşya düşürme + yapay
   zekânın yerden silah alması (GENEL-SAVAS B40), A8 Swarm'ın başka yaratığın altıgeninde durması (SWARM95), A9 Ready yanıt listesi
-  (Dash/Disengage/Dodge/Help/Hide/Utilize; GENEL-SAVAS A23). Çoklu sınıf kural sürümü 105'e (başka dal), bu göreve girmedi.
+  (Dash/Disengage/Dodge/Help/Hide/Utilize; GENEL-SAVAS A23). Çoklu sınıf kural sürümü 105'e (başka dal), bu göreve girmedi. **Hepsi KARAR104-KALAN'da
+  kapandı (aynı sürüm 104; yukarıdaki bölüm); A1, A2, A4 ve A11'in ⚠'leri de.**
 - **A1 Storm of Vengeance 2–10. tur aşamaları** (SRD 5.2.1 s. 165 "At the start of each of your later turns"): büyü verisinde `k104`
   bloğu (`zone.stages`: tur, save, hasar, `targets`, `persist`), alan yapımda `stage: 1`, büyücünün her tur başında `zone_stage` olayı
   (`src/battle/stormStage.ts`, `commands.ts` tur başı zinciri; kayıt sürümü 26). 2. tur 4d6 Acid, 3. tur altı yıldırım (DEX, 10d6
