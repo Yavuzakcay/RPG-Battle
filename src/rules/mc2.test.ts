@@ -17,7 +17,7 @@ import { fullStatus, hitDicePool, isRested, longRestStatus, shortRestStatus } fr
 import { characterIssues, classScoped, newCharacter } from './builder';
 import { syncClassFields } from './multiclass';
 
-const singles = (): CharacterSheet[] => Object.keys(PARTY_KINDS).flatMap((k) => [1, 3, 5, 11, 20].flatMap((lv) => { try { return partyAt(lv, k); } catch { return []; } }));
+const singles = (): CharacterSheet[] => Object.keys(PARTY_KINDS).flatMap((k) => [1, 3, 5, 11, 20].flatMap((lv) => { try { return partyAt(lv, k); } catch { return []; } }).filter((s) => (s.classes?.length ?? 0) <= 1)); // MC7: çoklu sınıflı sim üyeleri hariç
 const scores10: Scores = { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 };
 /** Çoklu sınıflı sayfa (yeni karakter tabanı, zırhsız; skorlar verilen). */
 function mc(classes: ClassEntry[], base: Partial<Scores> = {}, extra: Partial<CharacterSheet> = {}): CharacterSheet {

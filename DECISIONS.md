@@ -2,6 +2,26 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev MC7: çoklu sınıf simülasyon partisi `mc-karma` ve ilk denge ölçümü (2026-11-26; kural ve kayıt sürümü değişmedi)
+
+- **Parti planın MC7 satırındaki gibi** (`harita/belgeler/MULTICLASS-PLAN.md`): 4 kişi, Kaya Fighter (Champion) / Wizard,
+  Sena Paladin (Oath of Devotion) / Warlock, Ilgaz Rogue (Thief) / Ranger, Deniz Cleric (Life Domain) / Monk. 5. seviyede ilk sınıf
+  3 / ikinci 2, 9. seviyede 5 / 4 (ilk sınıf Extra Attack ya da 5. seviye özelliğini alır, ikinci sınıf 4. seviye ASI'sini ve 3.
+  seviye alt sınıfını). Standart dizi, ön koşullar karşılanır (s. 24), geçmişsiz (eski sim üyeleri gibi), köken feat'i var.
+- **Veri biçimi:** `data/sim-partiler.json` üyede `sheet.classes`; 9. seviye `levels.9` içinde `classes` dahil bütün seçimler.
+  `src/sim/balance.ts` `memberAt`: çoklu sınıflı üye yalnız verisi olan seviyede kurulur (5 ve 9); kesme yok (veri eksiksiz yazılır),
+  başka seviye istenirse hata. Tek sınıflı üyelerin yolu aynı.
+- **Eksiksizlik testi sınıf başına** (`src/sim/balance.test.ts`): ön koşul ve yetkinlik sorunları (`mcImpl().problems`), büyü bağı
+  ve sayısı (`spellProblems`), yuva sorunları; her sınıfın yuvası (Fighting Style, 4. seviye ASI) dolu; alt sınıf seviyesine gelen her
+  sınıfta alt sınıf; sınıf başına cantrip ve hazır büyü tablo kadar (her zaman hazırlar hariç), Warlock Invocation tablo kadar;
+  savaşçıda sınıf seviyeleri. Sena'nın Protection from Evil and Good'u iki listede, `spellClass` ile Warlock'a bağlı.
+- **Tek sınıf altınları:** MC2 ve MC3 "eski = yeni" özetleri tek sınıflı sim üyelerini sayar; çoklu sınıflı üyeler dışarıda (anahtar
+  sayısı aynı kaldı). MC3 3 tohumluk imza aynı.
+- **Ölçüm** (`harita/belgeler/DENGE.md` "Görev MC7"): 100 tohum, Çöl/Kale/Mağara/Orman. 5. seviye %2/%0/%13/%0, 9. seviye
+  %33/%2/%4/%1; sekiz satırın hepsi aralık dışı (aşağı). Düzeltme denemesi yapılmadı. 5. seviyede listeler 5 kişilik partiye göre
+  olduğundan boyut etkisi ayrılamıyor; 9. seviyede aynı listelerle tek sınıflı 4 kişilik partiler belirgin biçimde daha güçlü
+  (bölünmüş sınıflarda büyü düzeyi ve 9. seviye özellikleri yok). Tanı sayımında hata belirtisi yok. Yapay zekâ karar süresi normal.
+
 ## Görev MC6: çoklu sınıflı karakterin jetonu (2026-11-26; kural ve kayıt sürümü değişmedi)
 
 - **Görünüm sınıfı planın K11'i** (varsayılan seçilmedi, planda yazılıydı): en yüksek seviyeli sınıf, eşitlikte ilk sınıf.

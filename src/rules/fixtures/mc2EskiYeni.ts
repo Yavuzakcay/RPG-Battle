@@ -58,6 +58,7 @@ export function mc2Corpus(): Record<string, string> {
       let sheets: CharacterSheet[];
       try { sheets = partyAt(level, kind); } catch { continue; }
       for (const s of sheets) {
+        if ((s.classes?.length ?? 0) > 1) continue; // Görev MC7: çoklu sınıflı sim üyeleri (`mc-karma`) tek sınıf kapsamında değil.
         const key = `sim/${s.name}/${s.classId}/${level}`;
         if (!(key in out)) out[key] = JSON.stringify(sheetCase(s));
       }

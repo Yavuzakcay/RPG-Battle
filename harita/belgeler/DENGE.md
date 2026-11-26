@@ -2,6 +2,31 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Not: Görev MC7 (2026-11-26, kural sürümü 105) — çoklu sınıf partisi `mc-karma` ilk ölçüm
+
+Yalnız yeni parti ölçüldü (hafif doğrulama modu): `npm run sim -- 100 col kale magara orman --seviye 5|9 --parti mc-karma`,
+100 tohum. Parti 4 kişi: Kaya Fighter (Champion)/Wizard, Sena Paladin (Devotion)/Warlock, Ilgaz Rogue (Thief)/Ranger, Deniz
+Cleric (Life)/Monk; 5. seviyede 3/2, 9. seviyede 5/4 (veri `data/sim-partiler.json`, DECISIONS.md MC7).
+
+| Seviye | Çöl | Kale | Mağara | Orman | Ort. | Hedef |
+|---|---:|---:|---:|---:|---:|---|
+| 5 | **2** ↓ | **0** ↓ | **13** ↓ | **0** ↓ | 4 | %60–80 (5 kişilik standart listeler) |
+| 9 | **33** ↓ | **2** ↓ | **4** ↓ | **1** ↓ | 10 | %45–65 (Kuyruk 41 Normal listeleri, 4 kişilik partiler) |
+
+Aralık dışı: sekiz satırın hepsi (aşağı). Düzeltme denemesi yapılmadı (kullanıcı talimatı). Okuma:
+- 5. seviye listeleri 5 kişilik standart partiye göre; 4 kişilik bir partinin bu listelerle tek sınıflı ölçümü yok, yani sonucun ne
+  kadarı parti boyutundan ne kadarı çoklu sınıftan bilinmiyor. Karşılaştırma için aynı komutla 4 kişilik tek sınıflı bir partinin
+  (`a2-klasik`) 5. seviye ölçümü gerekir (yapılmadı: eski partinin ölçümü kapsam dışı).
+- 9. seviyede aynı listelerle tek sınıflı 4 kişilik partiler kayıtlı (`a2-klasik` Normal: Çöl %80, Kale %21–37, Mağara %51–53,
+  Orman %37–46; eski kural sürümlerinde ölçüldü). `mc-karma` belirgin biçimde zayıf: 5/4 bölünmüş sınıflar 9. seviyede büyü düzeyi kaybediyor (Kaya ortak
+  yuvada en çok 2. düzey, Deniz 3. düzey; tek sınıflı Wizard/Cleric 5. düzey) ve 9. seviyenin sınıf özellikleri yok.
+- Hata belirtisi görülmedi: 6 savaşlık tanı sayımında dört üye de iki sınıfının özelliğini kullanıyor (Action Surge, Second Wind,
+  Sacred Weapon, Lay On Hands, Preserve Life, Monk bonus vuruşu ve Focus, ortak yuva ve Pact büyüleri). Gözlem: Sena 6 savaşta
+  silah saldırısı yapmadı (Eldritch Blast ve büyüyü seçiyor); yapay zekânın çoklu sınıfa özgü bir tercihi yok.
+- Yapay zekâ karar süresi (`npm run sim:yz-sure -- 3 kale --parti mc-karma`): 611 karar, ort. 21,4 ms, p95 74,8 ms (×4 telefon
+  tahmini 85,6 / 299,3 ms).
+- Tek sınıflı partiler değişmedi: `src/sim/mc3Regresyon.test.ts` (3 tohum, Çöl/Kale/Mağara/Orman) 104 = taban, 105 = 104.
+
 ## Not: OYUNCU-HEDEF-DOST (2026-11-26, kural sürümü değişmedi) — yapay zekâ simülasyon imzası değişmedi
 
 Oyuncu komutunda onaylı dost/düşman hedefi (`crossSide`, DECISIONS.md OYUNCU-HEDEF-DOST) yalnız arayüzün verdiği bayrakla açılır;
