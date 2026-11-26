@@ -1,4 +1,4 @@
-// Dungeondex eşya ikon hattı (`npm run esya-ikon`): data/esya-ikon-sayfalar.json + assets-ham/esya/<sayfa>.jpg (yeşil zemin) →
+// Dungeondex eşya ikon hattı (`npm run esya-ikon`): data/esya-ikon-sayfalar.json + assets-ham/esya/<sayfa>.jpg (yeşil ya da macenta zemin) →
 // public/esya/<kimlik>.webp (256 px) ve public/esya/kucuk/<kimlik>.webp (96 px). Varyant kimliğinde '/' dosya adında '--' olur.
 // Kurallar: sayfa kolon × satır hücreye bölünür (manifestte `hucre: "kare ~N px"` varsa N px kare hücre, sol üstten); zemin rengi sayfanın
 // dört köşesinden örneklenir; anahtar kenardan başlar (taşkın dolgu), kapalı deliklerde yalnız zemine çok yakın yeşil silinir (cam iç hacmi
@@ -6,13 +6,15 @@
 // %6'sından küçük bileşenler atılır (`hepsiniTut` hariç). Sayfa sırası = uygulama sırası (sonraki öncekini ezer), `yoksay` okunmaz, eksik sayfa
 // atlanır, `ayniGorsel` bir görseli başka kimliklere kopyalar. Varyant kimliği oyunun açılmış kaydına kuralla eşlenir (`esle`), SRD üst kimliği
 // açılmış kayıtlara kopyalanır (`bagla`); public/esya'ya yalnız oyun kayıtları yazılır, kalanı kayıtsızdır. `tamDespill`: bütün nesnede despill
-// (cam). Çıktı her çalıştırmada aynıdır (idempotent; tam çalıştırma artık kaydı olmayan eski dosyaları siler).
+// (cam). Zemin kipi köşe renginden: macenta (#FF00FF, `isMagenta`) sayfada anahtar macenta-pembe tonu siler, despill macenta taşmasını
+// (min(R, B) − G) bastırır; nesnenin mavi/altın parıltısı kalır. Yeşil sayfada davranış önceki gibidir. Çıktı her çalıştırmada aynıdır (idempotent; tam çalıştırma artık kaydı olmayan eski dosyaları siler).
 // Kontrol görselleri (hücre no + kimlik): --kontrol → harita/belgeler/ESYA-IKON-KONTROL/<sayfa>.png. --kuru: dosya yazmadan özet.
 // Kullanım: npm run esya-ikon [-- --kontrol] [-- --kaynak <klasör>] [-- --sayfa varyant-1,silah-2]
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
+import { isMagenta } from './lib/madalyon.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const BUYUK = 256;
@@ -21,7 +23,70 @@ export const KUCUK = 96;
  * Anahtar eşikleri (zemine RGB uzaklığı): altı tam saydam, üstü tam opak, arası yarı saydam. Delik eşiği daha sıkı. kirpAlfa: sınır kutusu
  * eşiği (yaygın parıltının soluk kuyruğu kırpılır); tasmaPay: hücre kırpımına her yönden eklenen pay (hücre kenarı oranı).
  */
-export const ESIK = { alt: 45, ust: 160, delik: 55, delikMinPx: 3, yesilFark: 20, bilesenOran: 0.06, despillPx: 6, kirpAlfa: 48, tasmaPay: 0.15 };
+export const ESIK = { alt: 45, ust: 160, delik: 55, delikMinPx: 3, yesilFark: 20, bilesenOran: 0.06, despillPx: 6, kirpAlfa: 48, tasmaPay: 0.15,
+  /** Macenta kipi: taşkın dolgunun zemine uzaklık sınırı (parıltı halesi 160–200 arası; koyu dış çizgi ≥ 240 durdurur), izdüşüm artığı sınırı. */
+  macentaUst: 200, izdusumArtik: 30, kaynakPay: 3, halkaFazla: -40 };
+
+/** Zemin kipi: köşeden okunan zemin rengi macentaysa 'macenta', değilse 'yesil' (önceki sayfaların hepsi). */
+export const zeminKipi = (zemin) => (isMagenta(zemin[0], zemin[1], zemin[2]) ? 'macenta' : 'yesil');
+
+/** Zemin tonu (taşkın dolgu ve delik adayı; gevşek, uzaklık eşiğiyle birlikte): yeşilde G baskın, macentada macenta fazlası min(R, B) − G > 0. */
+const ZEMIN_TONU = {
+  yesil: (r, g, b) => g > r + ESIK.yesilFark && g > b + ESIK.yesilFark,
+  macenta: (r, g, b) => Math.min(r, b) - g > 0,
+};
+
+/**
+ * Macenta kipinde anahtarlanan piksellerin alfası ve rengi. Parıltı halesi tek renk + zemin karışımıdır: piksel, en yakın anahtarlanmamış
+ * (nesne) pikselin rengine F izdüşürülür (a = (O − Z)·(F − Z) / |F − Z|², renk F); karışım F ile açıklanmıyorsa (artık > izdusumArtik)
+ * fark matı: a = 1 − fazla(O) / fazla(Z), renk ayrıştırılır (fazla = min(R, B) − G). Uzaklık rampası macentada parıltıyı opak pembe bırakıyordu.
+ * Kaynak F anahtarlı bölgeden en az kaynakPay px içerideki nesne pikselidir (hemen bitişik geçiş halkası da zemine bulaşık); o halkadaki
+ * fazlası halkaFazla'dan büyük pikseller yalnız izdüşüm tutarsa çözülür, tutmazsa (dış çizgi, nesnenin kendi rengi) olduğu gibi kalır.
+ */
+function macentaAyristir(rgb, w, h, zemin, zeminMi, out) {
+  const n = w * h; const [zr, zg, zb] = zemin;
+  const komsu = (p) => { const x = p % w; return [x > 0 ? p - 1 : -1, x < w - 1 ? p + 1 : -1, p >= w ? p - w : -1, p < n - w ? p + w : -1]; };
+  // Anahtarlı bölgeye uzaklık (nesne içinde, kaynakPay'e dek).
+  const uzak = new Uint8Array(n).fill(255); const kuyruk = new Int32Array(n); let bas = 0; let son = 0;
+  for (let i = 0; i < n; i++) if (zeminMi[i]) { uzak[i] = 0; kuyruk[son++] = i; }
+  while (bas < son) {
+    const p = kuyruk[bas++];
+    if (uzak[p] >= ESIK.kaynakPay) continue;
+    for (const q of komsu(p)) if (q >= 0 && uzak[q] === 255) { uzak[q] = uzak[p] + 1; kuyruk[son++] = q; }
+  }
+  const kaynak = new Int32Array(n).fill(-1); bas = 0; son = 0;
+  for (let i = 0; i < n; i++) if (uzak[i] >= ESIK.kaynakPay) { kaynak[i] = i; kuyruk[son++] = i; }
+  while (bas < son) {
+    const p = kuyruk[bas++];
+    for (const q of komsu(p)) if (q >= 0 && kaynak[q] < 0) { kaynak[q] = kaynak[p]; kuyruk[son++] = q; }
+  }
+  const fazlaZ = Math.max(1, Math.min(zr, zb) - zg);
+  for (let i = 0; i < n; i++) {
+    const halka = !zeminMi[i] && uzak[i] < ESIK.kaynakPay;
+    if (!zeminMi[i] && !halka) continue;
+    const r = rgb[i * 3]; const g = rgb[i * 3 + 1]; const b = rgb[i * 3 + 2];
+    if (halka && Math.min(r, b) - g <= ESIK.halkaFazla) continue;
+    const k = kaynak[i];
+    if (k >= 0) {
+      const fr = rgb[k * 3]; const fg = rgb[k * 3 + 1]; const fb = rgb[k * 3 + 2];
+      const vr = fr - zr; const vg = fg - zg; const vb = fb - zb; const L = vr * vr + vg * vg + vb * vb;
+      if (L >= 1) {
+        const a = Math.min(1, Math.max(0, ((r - zr) * vr + (g - zg) * vg + (b - zb) * vb) / L));
+        const artik = Math.hypot(r - (zr + a * vr), g - (zg + a * vg), b - (zb + a * vb));
+        if (artik <= ESIK.izdusumArtik) {
+          out[i * 4] = fr; out[i * 4 + 1] = fg; out[i * 4 + 2] = fb; out[i * 4 + 3] = Math.round(a * 255);
+          continue;
+        }
+      }
+    }
+    if (halka) continue;
+    const a = Math.min(1, Math.max(0, 1 - (Math.min(r, b) - g) / fazlaZ));
+    if (a > 0) {
+      out[i * 4] = clamp((r - (1 - a) * zr) / a); out[i * 4 + 1] = clamp((g - (1 - a) * zg) / a); out[i * 4 + 2] = clamp((b - (1 - a) * zb) / a);
+    }
+    out[i * 4 + 3] = Math.round(a * 255);
+  }
+}
 
 /** '/' → '--' (varyant kimliği dosya adında). */
 export const dosyaAdi = (id) => id.replace(/\//g, '--');
@@ -158,15 +223,17 @@ function zeminRengi(buf, W, H) {
  */
 export function anahtarla(rgb, w, h, zemin, hepsi = false, ic = { x0: 0, y0: 0, x1: w, y1: h }, tamDespill = false) {
   const n = w * h; const [zr, zg, zb] = zemin;
-  const d = new Float32Array(n); const yesil = new Uint8Array(n);
+  const kip = zeminKipi(zemin); const tonlu = ZEMIN_TONU[kip];
+  const d = new Float32Array(n); const yesil = new Uint8Array(n); // yesil: zemin tonunda (macenta kipinde macenta-pembe)
   for (let i = 0; i < n; i++) {
     const r = rgb[i * 3]; const g = rgb[i * 3 + 1]; const b = rgb[i * 3 + 2];
     d[i] = Math.hypot(r - zr, g - zg, b - zb);
-    yesil[i] = g > r + ESIK.yesilFark && g > b + ESIK.yesilFark ? 1 : 0;
+    yesil[i] = tonlu(r, g, b) ? 1 : 0;
   }
   const zeminMi = new Uint8Array(n); // 1: anahtarlanan bölge (alfa < 1)
   const yigin = [];
-  const it = (i) => { if (!zeminMi[i] && yesil[i] && d[i] < ESIK.ust) { zeminMi[i] = 1; yigin.push(i); } };
+  const ust = kip === 'macenta' ? ESIK.macentaUst : ESIK.ust;
+  const it = (i) => { if (!zeminMi[i] && yesil[i] && d[i] < ust) { zeminMi[i] = 1; yigin.push(i); } };
   const yay = () => {
     while (yigin.length) {
       const p = yigin.pop(); const x = p % w; const y = (p - x) / w;
@@ -200,14 +267,22 @@ export function anahtarla(rgb, w, h, zemin, hepsi = false, ic = { x0: 0, y0: 0, 
     }
     out[i * 4] = clamp(r); out[i * 4 + 1] = clamp(g); out[i * 4 + 2] = clamp(b); out[i * 4 + 3] = Math.round(a * 255);
   }
+  if (kip === 'macenta') macentaAyristir(rgb, w, h, zemin, zeminMi, out);
   // Despill: zemine en çok despillPx uzaklıktaki opak/yarı opak piksellerde G ≤ max(R, B). `tamDespill` (manifest `tamDespill`):
   // bütün nesnede (zemini içinden gösteren cam: yeşilimsi cam nötr olur; yeşil nesnede kullanılmaz) ve yarı saydam parıltı halesinde
   // daha sıkı G ≤ (R + B) / 2: yeşil zemin üstüne çizilmiş altın/kırmızı hale ayrıştırmadan sonra G ≈ R sarı-yeşil kalıyordu.
+  // Macenta kipinde taşma (1, 0, 1) yönündedir: min(R, B) − G fazlası R ve B'den düşülür (beyaz/gümüş kenar nötr, mavi parıltıda R,
+  // altın parıltıda B zaten G'nin altında: dokunulmaz); `tamDespill` macentada aynı kural.
   let bant = zeminMi;
   for (let k = 0; k < ESIK.despillPx; k++) bant = genislet(bant, w, h);
   for (let i = 0; i < n; i++) {
     const a = out[i * 4 + 3];
     if ((!tamDespill && !bant[i]) || a === 0) continue;
+    if (kip === 'macenta') {
+      const e = Math.min(out[i * 4], out[i * 4 + 2]) - out[i * 4 + 1];
+      if (e > 0) { out[i * 4] -= e; out[i * 4 + 2] -= e; }
+      continue;
+    }
     const m = tamDespill && zeminMi[i] && a < 255 ? (out[i * 4] + out[i * 4 + 2]) / 2 : Math.max(out[i * 4], out[i * 4 + 2]);
     if (out[i * 4 + 1] > m) out[i * 4 + 1] = Math.round(m);
   }
