@@ -78,7 +78,7 @@ Durum sözlüğü: **tam** · **kısmi** · **yok** · **bilinçli sapma** (DECI
 | A23 | Greater DI: Wish; Wish seçilirse 2d4 Long Rest | Wish 20. seviyede her zaman hazır ve DI ile slotsuz (`extraNames`); **2d4 Long Rest bekleme sayacı yok** (DI normal uzun dinlenmede döner) | kısmi — **bilinen** | `class-features.json` 1649; `spells69.ts` 214–235 | 3156 |
 | A24 | Disciple of Life: slotla iyileştiren büyü, hedefe +2+slot | Tek hedef (`spells.ts` 784), çok hedef (1204) ve yukarı slotla; slotsuz yapımda yok (probe: DI ile Cure Wounds bonussuz, doğru). **Mass Heal** havuz yolunda (`spells69.ts` `massHealEvents`) ve Power Word Heal'de yok (Heal 6. seviye ve Mass Cure Wounds tamam, probe) | kısmi | probe; `cleric.test.ts` | 4614 |
 | A25 | Blessed Healer: başkasını slotla iyileştirince +2+slot (yalnızca iyileştirme olduysa) | `healSelfAfter`: hedef başkasıysa tetiklenir; **hedef tam canlıysa (0 iyileştirme) yine tetikleniyor** (probe: C 30/30 → A +3). Mass Heal/Power Word Heal yolunda yok (probe: PWH'de A'ya iyileştirme yok) | kısmi | probe; `cleric.ts` 224–229 | 4614 |
-| A26 | Preserve Life: Magic action, CD harcar, 5×seviye HP, 30 ft Bloodied, **bölüşümü oyuncu yapar**, en çok yarı HP, kendisi dahil | Eylem + CD harcar, 30 ft, Bloodied (yarı HP altı; tam yarıdaki zaten alamaz), kendisi dahil, 0 HP'deki dahil (probe: 15 HP), yarı HP sınırı; dağıtım **otomatik** (en yaralıdan) | kısmi (bilinçli) | probe; `cleric.ts` 104–106, 183–193 | 4614 |
+| A26 | Preserve Life: Magic action, CD harcar, 5×seviye HP, 30 ft Bloodied, **bölüşümü oyuncu yapar**, en çok yarı HP, kendisi dahil | Eylem + CD harcar, 30 ft, Bloodied (yarı HP altı; tam yarıdaki zaten alamaz), kendisi dahil, 0 HP'deki dahil (probe: 15 HP), yarı HP sınırı; dağıtım **otomatik** (en yaralıdan) | kısmi (bilinçli) → **kapandı (104, DECISIONS KARAR104 A5)** ⚠ | probe; `cleric.ts` 104–106, 183–193 | 4614 |
 | A27 | Supreme Healing: büyü ve CD iyileştirme zarlarında en yüksek değer | `healDice`: `NdM(±K)` kalıbında en yüksek (Divine Spark dahil); Cure Wounds/Heal doğru. Karma zar ifadesinde sessizce zar atar (kod okuması) | tam | `cleric.test.ts` | 4614 |
 | A28 | Domain büyüleri her zaman hazır (3/5/7/9) | `alwaysPrepared` 4 seviye, 7 ve 9 Kuyruk 19'da eklendi; hazırlanan sayıya girmez | tam | `cleric.test.ts` (3, 5); `srd-alt-siniflar.json`; 7/9 veri okuması | 4614, 4609 |
 | A29 | Cleric büyü listesi SRD ile aynı | 109 = 109; eksik/fazla yok (probe: SRD `classes` ↔ oyun `Clr` karşılaştırması; seviye dağılımı 7/15/17/19/9/13/11/8/5/5) | tam | probe | — |
@@ -143,7 +143,7 @@ Sıra etkiye göre. "Sürüm" sütunu: kural sürümü 79'dan sonra tek toplu s�
 | 6 | Mass Heal ve Power Word Heal: Disciple of Life ve Blessed Healer; Blessed Healer'ı "gerçekten iyileştirme oldu" koşuluna bağla | Düşük-orta (17. seviye ve üstü) | 80 | 1–2 saat |
 | 7 | Improved Potent Spellcasting: yalnız hasar verildiyse geçici HP (olaylardan hasar kontrolü) | Düşük | 80 | 1 saat |
 | 8 | Divine Spark: kendine hedef ve görüş denetimi; arayüzde "iyileştir / Necrotic / Radiant" seçimi | Düşük-orta | Kural kısmı 80, arayüz sürümsüz | 2–3 saat |
-| 9 | Preserve Life oyuncu bölüşümü (seçim arayüzü) | Düşük | Sürümsüz (YZ otomatik kalır) | 4+ saat |
+| 9 | Preserve Life oyuncu bölüşümü (seçim arayüzü) | Düşük — **kapandı (104, KARAR104 A5)** | Sürümsüz (YZ otomatik kalır) | 4+ saat |
 | 10 | Bilinenler: Divine Intervention hazırlanmamış büyü (arayüz: tüm Cleric listesi, DI yalnız Magic eylemi), Greater DI 2d4 sayacı (savaş dışı dinlenme sayacı), Potent'te Cleric listesi süzmesi | Bilinen, ürün kararı | 80 (DI), sürümsüz (sayaç) | Karar bekliyor |
 | 11 | E: SD2 TR kısa menü adları ↔ SD4 "adlar İngilizce" kararını netleştir; Life Domain TR adını tek yere bağla; Cleric özellik açıklamalarının TR kaynağını `describeTr` ile doğrula | Düşük | Sürümsüz | 1–2 saat |
 | 12 | Test boşlukları (kalıcı teste çevrilecek probe'lar): Turn Undead bağışıklık/kaynak bitişi/OA ve Divine Strike, Mass Heal, Blessed Healer tam canlı hedef, DI hazırlanmamış, B7 sayım, C5 Serüven taşıma | — | — | 2 saat |
@@ -170,3 +170,9 @@ Probe'larla denenip doğrulanan **doğru** davranışlar (regresyon için not): 
 - A23 / C3 Greater Divine Intervention: Wish'ten sonra 2d4 uzun dinlenme: **düzeldi** (savaşta sürümlü 93: `<kaynak>:bekle` kaydı; dinlenme sürümsüz: `CharacterStatus.waits`, `longRestStatus`; veri `ResourceDef.wait`).
 - A24 / A25 Disciple of Life Mass Heal yolunda (iyileşen her yaratığa 2 + slot, havuz dışı, tam canı aşmaz), Blessed Healer Mass Heal ve Power Word Heal'de, yalnız gerçekten iyileşen (canı eksik) başka hedefte: **düzeldi** (sürümlü 93; alt sınıf: bizim sürüm metniyle motor uyumu). Power Word Heal "bütün HP" verdiği için Disciple of Life'ın ek HP'si orada etkisiz (tam can).
 - Dokunulmayanlar (bilinçli sapma, kullanıcı kararı): A3, A11, A18, A26, E5; E2 (TR kısa menü adları ↔ SD4) karar bekliyor.
+
+## KARAR104 / KARAR104-KALAN (kural sürümü 104; 2026-11-26 belge güncellemesi)
+
+Kod okunarak doğrulandı (`karar104On` kapısı; 103 ve altı eski davranış). Test çalıştırılmadı.
+
+- **A26 Preserve Life bölüşümü** (DECISIONS KARAR104 A5, sürüm 104): iyileştirme sırası oyuncuya sorulur (`rules/choice.ts` `askPicks`, `cleric.ts` `preserveLife` dalı; öneri en yaralıdan, eski davranış; "Seçme" bitirir). ⚠ Bölüşüm sırayla: sıradaki yaratık yarı HP'sine dek alır, ara miktar seçilmez. Özel test yok (`askPicks` genel testi `karar104.test.ts` "askPicks"). Yapay zekâ ve simülasyon öneriyi alır (D1 aynen).

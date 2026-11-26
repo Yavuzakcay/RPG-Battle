@@ -1,3 +1,5 @@
+> Tarihsel: güncel durum için harita/belgeler/SRD-KAPSAM-OZET.md
+
 # Envanter: eşyalar
 
 > A0 envanter denetimi (2026-11-05, dal `wip/a0`, kural sürümü 27). Salt-okunur: oyun kodu, veri ve testler değişmedi. Yoklama betikleri repo dışında çalıştırıldı (aşağıda "Yöntem").

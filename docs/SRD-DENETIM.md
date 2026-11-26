@@ -1,3 +1,5 @@
+> Tarihsel: güncel durum için harita/belgeler/SRD-KAPSAM-OZET.md
+
 # SRD 5.2.1 tam denetim (Kuyruk 19, görev 7)
 
 Üretim: `npx vite-node scripts/srd-denetim.ts`. Durum: **tam** (oyunda kural gibi çalışır), **kısmi**, **yok**, **savaş dışı** (savaşta mekanik karşılığı yok; gerekçe notta). Kuyruk 19 eklentileri Game Master anahtarı `srdK19` (kural sürümü 16) ile.

@@ -1,3 +1,5 @@
+> Tarihsel: güncel durum için harita/belgeler/SRD-KAPSAM-OZET.md
+
 # Mekanik durum tablosu (Kuyruk 18 sonu)
 
 Üretim: `npx vite-node scripts/mekanik-durum.ts`. Bütün oyun büyüleri (0–5. seviye; 6.+ seviye büyü oyunda yok) ve 1–10. seviye sınıf + SRD alt sınıf özellikleri (oyunun seviye sınırı 10). Durum: **tam**, **tam (yaklaşık)** (çalışır; sapması notta), **savaş dışı** (kart etiketi, Game Master notu ya da hikâye), **eksik** (oyunda çalışmıyor).

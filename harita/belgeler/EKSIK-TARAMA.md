@@ -28,21 +28,23 @@ kaydıdır: bayat satırları kapanmış konuları gösterir, belge düzeltilmed
 
 Ölçüt: Serüven'in her savaşında görülen, SRD'de olan ve oyunu yanlış oynatan açıklar; denge ölçümü gerektirenler işaretli.
 
+> **2026-11-26 belge güncellemesi:** 104–105'te kapanan maddeler "kapandı (sürüm N)" ile işaretlendi; her biri DECISIONS.md'deki karar ve kodda ilgili modül okunarak doğrulandı (test çalıştırılmadı, betik yeniden üretilmedi). Aşağıdaki otomatik bölümler sürüm 103 hâlidir.
+
 1. **Denge yeniden ölçümü (101 `nightVision` varsayılan açık, 103 canavar inisiyatifi):** Kale %32, gece senaryoları ölçülmedi (DENGE.md).
-2. **Storm of Vengeance 2–10. tur aşamaları** (BUYU-TAM-TARAMA §4.1): 9. seviye büyü yalnız ilk turunu yapıyor.
-3. **Yapışma eki** (Stirge, Darkmantle, Cloaker; KAPSAM103): erken seviye düşmanlardan Stirge sık; yapışık kalıp her tur hasar yok.
-4. **Boğulma / "nefes alamaz"** (Rug of Smothering, Water Elemental Whelm, Gelatinous Cube Engulf): tek `noBreath` etkisi.
-5. **Likantrop laneti** (5 canavar): 0 HP'de canavara dönüşme; en azından savaş sonu "lanetli" işareti.
-6. **Eşya ↔ silah bağı** (Weapon +N, Flame Tongue, Javelin of Lightning; TE99 K-D2, KARAR101 5e): büyülü silah bonusu hangi silaha.
-7. **Yapay zekâ Ready ve Dash dengesi** (GENEL-SAVAS-DENETIM A27, A45): YZ Ready kullanmıyor.
-8. **Ready yanıt listesi** (A23): yalnız tek saldırı / hareket / büyü; Utilize, Help, Dash yanıtı yok.
-9. **0 HP'de uzun dinlenme** (G6/D21; bilinçli sapma): Serüven bozgun akışı SRD'den sapıyor.
-10. **Unconscious eşya düşürme** (B40): YZ'nin yerden silah alması gerekiyor.
+2. **Storm of Vengeance 2–10. tur aşamaları** (BUYU-TAM-TARAMA §4.1): 9. seviye büyü yalnız ilk turunu yapıyor. — **kapandı (sürüm 104; DECISIONS KARAR104 A1; `stormStage.ts`)**
+3. **Yapışma eki** (Stirge, Darkmantle, Cloaker; KAPSAM103): erken seviye düşmanlardan Stirge sık; yapışık kalıp her tur hasar yok. — **kapandı (sürüm 104; DECISIONS KARAR104 A2; `attach.ts`)**
+4. **Boğulma / "nefes alamaz"** (Rug of Smothering, Water Elemental Whelm, Gelatinous Cube Engulf): tek `noBreath` etkisi. — **kapandı (sürüm 104; DECISIONS KARAR104 A3; `underwater.ts` `smothered`)**
+5. **Likantrop laneti** (5 canavar): 0 HP'de canavara dönüşme; en azından savaş sonu "lanetli" işareti. — **kapandı (sürüm 104; DECISIONS KARAR104 A4 + KARAR104-KALAN; `lycanthrope.ts`: lanet, 0 HP'de Game Master'ın tarafında 10 HP'li canavar)**
+6. **Eşya ↔ silah bağı** (Weapon +N, Flame Tongue, Javelin of Lightning; TE99 K-D2, KARAR101 5e): büyülü silah bonusu hangi silaha. — **kapandı (sürüm 104; DECISIONS KARAR104 A10; `rules/itemBinding.ts`, `data/esya-silah-bagi.json`; Javelin of Lightning TE99 yolunda)**
+7. **Yapay zekâ Ready ve Dash dengesi** (GENEL-SAVAS-DENETIM A27, A45): YZ Ready kullanmıyor. — **açık** (`ai.ts`'te Ready yok; R3)
+8. **Ready yanıt listesi** (A23): yalnız tek saldırı / hareket / büyü; Utilize, Help, Dash yanıtı yok. — **kapandı (sürüm 104; DECISIONS KARAR104-KALAN A9; `data/hazirla.json` `surum: 104`, `readyResponsesFor`)**; tetik yorumu kısmi kalır
+9. **0 HP'de uzun dinlenme** (G6/D21; bilinçli sapma): Serüven bozgun akışı SRD'den sapıyor. — **kapandı (sürüm 104; DECISIONS KARAR104 A11 + KARAR104-KALAN; `characterRest.ts` `zeroHp`, `zeroHpWakeHours`; Kolay ev kuralı)**
+10. **Unconscious eşya düşürme** (B40): YZ'nin yerden silah alması gerekiyor. — **kapandı (sürüm 104; DECISIONS KARAR104-KALAN A7; `heldItems.ts` `unconsciousDropEvents`, `ownDroppedNear`)**
 11. **Oyuncu seçimleri yerine otomatik seçimler** (Preserve Life, Land's Aid, Sculpt Spells, Superior Hunter's Prey, Intimidating
-    Presence; Stroke of Luck, Peerless Aim): `askChoice` kalıbıyla.
-12. **Cutting Words ıskada, Dark One's Own Luck** (Bard/Warlock tepki zamanlaması).
-13. **Maliyetli materyal** (Revivify 300 GP …): Serüven ekonomisiyle doğrudan ilgili.
-14. **Çoklu sınıf kararı** (Multiclassing): Serüven seviye atlamasında soru çıkacak.
+    Presence; Stroke of Luck, Peerless Aim): `askChoice` kalıbıyla. — **kapandı (sürüm 104; DECISIONS KARAR104 A5; `rules/choice.ts` `askPicks`; Peerless Aim 99'dan beri soruyor)**
+12. **Cutting Words ıskada, Dark One's Own Luck** (Bard/Warlock tepki zamanlaması). — **kapandı (sürüm 104; DECISIONS KARAR104-KALAN A6; `spells.ts` `cuttingWordsDamage` ıskada, `ExtraDie.spendAlways`)**
+13. **Maliyetli materyal** (Revivify 300 GP …): Serüven ekonomisiyle doğrudan ilgili. — **açık** (DECISIONS'ta karar yok)
+14. **Çoklu sınıf kararı** (Multiclassing): Serüven seviye atlamasında soru çıkacak. — **kapandı (sürüm 105; DECISIONS MC1–MC5; `mc3Surum.ts`, savaş kaydı 27)** ⚠ uygulama sonrası SRD s. 24–26 denetimi yok
 15. **"Var-test edilmiş" sınama açığı:** örneklemde satırların ≈ %42'si kuralı gerçekten sınıyor (SRD-KAPSAM Aşama 5 notu); Serüven
     öncesi tam test turunda yüzeysel testler kural testine çevrilmeli.
 

@@ -108,11 +108,11 @@ En önemli bulgular:
 |---|---|---|---|---|---|
 | F1 | Dark One's Blessing: düşmanı 0 HP'ye düşürünce (ya da yakınındaki başkası, ≤ 10 ft) CHA + Warlock seviyesi geçici HP, en az 1 (s. 76) | Her komutun sonunda önce/sonra karşılaştırması; 10 ft = 2 altıgen; daha yüksek geçici HP varsa değişmez | tam | `warlock.test` (CHA + 5); `warlock.ts` `blessingEvents` | Görev WARLOCK |
 | F2 | Fiend Spells tablosu: 3 (Burning Hands, Command, Scorching Ray, Suggestion), 5 (Fireball, Stinking Cloud), 7 (Fire Shield, Wall of Fire), 9 (Geas, Insect Plague) (s. 76) | Fikstürde aynı; 3/5/7/9'da her zaman hazır, hazır sayısına girmez | tam | PDF tablosu ↔ fikstür; geçici test: 3. sv 4 büyü, 5. sv +2, 9. sv hepsi | Görev WARLOCK; Kuyruk 19 (7/9 satırları) |
-| F3 | Dark One's Own Luck: kontrol ya da save'e +1d10, **zarı gördükten sonra**, CHA (en az 1) kez, tur başına yalnız zar başına bir, uzun dinlenmede yenilenir (s. 76) | Başarısız kontrol/save'e 1d10; **tutarsa kullanım harcanır** (tutmazsa harcanmaz); saldırı zarına eklenmez; kaynak `max(1, CHA)` | sapma | `warlock.test`; `effectDice.ts:92` (`reroll: onFail`) | Görev WARLOCK **[bilinen]** (ikinci şans kalıbı; SRD'de tutmasa da kullanım harcanır) |
+| F3 | Dark One's Own Luck: kontrol ya da save'e +1d10, **zarı gördükten sonra**, CHA (en az 1) kez, tur başına yalnız zar başına bir, uzun dinlenmede yenilenir (s. 76) | Başarısız kontrol/save'e 1d10; **tutarsa kullanım harcanır** (tutmazsa harcanmaz); saldırı zarına eklenmez; kaynak `max(1, CHA)` | sapma → **kapandı (104, DECISIONS KARAR104-KALAN A6)** | `warlock.test`; `effectDice.ts:92` (`reroll: onFail`) | Görev WARLOCK **[bilinen]** (ikinci şans kalıbı; SRD'de tutmasa da kullanım harcanır) |
 | F4 | Fiendish Resilience (10.): Force dışı bir tür, dinlenmede değişir (s. 76) | Seçilen türe direnç savaş başında | tam / sapma C7 | `warlock.test` | Görev WARLOCK |
-| F5 | Hurl Through Hell: **attack roll** isabeti, CHA save (büyü DC), başarısızsa 8d10 Psychic (Fiend değilse) ve Incapacitated, sonraki turunun sonuna dek, ortadan kalkar, geri döner (s. 76) | Silah isabetinde otomatik (karar sorulmaz), save, 8d10, Incapacitated var; hedef **yerinde** kalır | sapma | `apex.ts` `hurlEvents`; geçici test (silah isabeti: kaynak 1→0, Incapacitated ✓) | Kuyruk 19 **[bilinen]** |
+| F5 | Hurl Through Hell: **attack roll** isabeti, CHA save (büyü DC), başarısızsa 8d10 Psychic (Fiend değilse) ve Incapacitated, sonraki turunun sonuna dek, ortadan kalkar, geri döner (s. 76) | Silah isabetinde otomatik (karar sorulmaz), save, 8d10, Incapacitated var; hedef **yerinde** kalır | sapma → **kapandı (104, DECISIONS KARAR104-KALAN A6)** | `apex.ts` `hurlEvents`; geçici test (silah isabeti: kaynak 1→0, Incapacitated ✓) | Kuyruk 19 **[bilinen]** |
 | F5b | Hurl: **büyü saldırısı** (Eldritch Blast) isabeti de tetikler | Tetiklenmiyor: kancayı yalnız silah saldırısı yolu çağırıyor | **yok [YENİ]** | geçici test: 14. sv Eldritch Blast isabeti → kaynak 1'de kalır, Incapacitated yok; `grep hurlEvents` yalnız `features.ts:415` | — |
-| F5c | Hurl: slotla yenileme ("Pact slotu harca, eylem yok, kullanım geri gelir") | Yok | kısmi **[YENİ]** | `grep hurlThroughHell`: yalnız `apex.ts` ve kaynak tanımı | DECISIONS yalnız "uzun dinlenmede bir" yazar |
+| F5c | Hurl: slotla yenileme ("Pact slotu harca, eylem yok, kullanım geri gelir") | Yok | kısmi **[YENİ]** → **kapandı (104, DECISIONS KARAR104-KALAN A6)** | `grep hurlThroughHell`: yalnız `apex.ts` ve kaynak tanımı | DECISIONS yalnız "uzun dinlenmede bir" yazar |
 
 ## D. Yapay zekâ
 
@@ -122,7 +122,7 @@ En önemli bulgular:
 | D2 | Thirsting Blade: pact silahı sonrası ek saldırılar puana girer, pact dışı silaha geçmez | `ai.ts:352–354`, `economy.pactOnly` | tam | `warlock.test` | K13 |
 | D3 | Eldritch Smite: hedef 20+ HP ya da kritik; slot açıksa | `ai.ts:1924–1934` | tam | kod | Görev WARLOCK |
 | D4 | Arcanum ve slotsuz büyüler `freeCast` ile öncelikli | `ai.ts:330, 1924` | tam | kod | Kuyruk 19 |
-| D5 | Hurl Through Hell kararı | Karar yok, isabette otomatik (oyuncu gibi) | sapma | `apex.ts` | Kuyruk 19 **[bilinen]** |
+| D5 | Hurl Through Hell kararı | Karar yok, isabette otomatik (oyuncu gibi) | sapma → **kapandı (104, DECISIONS KARAR104-KALAN A6)** | `apex.ts` | Kuyruk 19 **[bilinen]** |
 | D6 | Slotsuz Invocation büyülerinin (Levitate, Jump, Invisibility, False Life) YZ kullanımı | **denenmedi**; `castable` `freeCast`'i sayar, ama bu büyülerin değerlendirmesi ayrıca doğrulanmadı | kısmi (denenmedi) **[YENİ]** | — | — |
 | D7 | Magical Cunning, Contact Patron: YZ kullanmaz (savaş dışı) | — | sapma (uygun) | — | — |
 | D8 | Denge ölçümü | Sim partisi `buyucu` (Mor: Warlock 9. sv); `k18-warlock` ile `sim:imza`; Warlock'lu karma ölçüm DENGE.md'de | tam | `data/sim-partiler.json`; DECISIONS H9 | **[bilinen]** |
@@ -179,3 +179,10 @@ En önemli bulgular:
 - C9 seviye atlayınca Pact slot seviyesi değişirse harcanan sayısı taşınır: **düzeldi** (sürümsüz; `characterRest.ts` `pactShift`).
 - C1 / C7 Serüven: A2 ile (bkz. A).
 - **Ertelendi / dokunulmadı:** C6 Magical Cunning'i Serüven ve kurulum dinlenmesine taşımak (düşük; kısa dinlenme Pact slotlarını zaten doldurur), A22 Water Breathing sayacı (savaş dışı, etkisiz), D6 YZ slotsuz Invocation büyüleri (denenmedi, ayrı YZ ölçümü), F3 Dark One's Own Luck (alt sınıf; bizim metin "d10 eklersin", denge ölçümü gerektirir), bilinçli sapmalar (A3, A10, A11, A21, B5, B10, B12, C7 dışı, D5).
+
+## KARAR104 / KARAR104-KALAN (kural sürümü 104; 2026-11-26 belge güncellemesi)
+
+Kod okunarak doğrulandı (`karar104On` kapısı; 103 ve altı eski davranış). Test çalıştırılmadı.
+
+- **F3 Dark One's Own Luck** (DECISIONS KARAR104-KALAN A6, sürüm 104): sahibine sorulur (tetik `boon`), 1d10 tutmasa da kullanım gider (`ExtraDie.spendAlways`, `rules/attack.ts`), en iyi 10 bile yetmiyorsa sunulmaz (`skipHopeless`; `effectDice.ts`, savaşçıda `k104`). Test `src/battle/karar104.test.ts` "Dark One's Own Luck: 104 sorulur ve eklenince harcanır".
+- **F5 / F5c / D5 Hurl Through Hell** (DECISIONS KARAR104-KALAN A6, sürüm 104): isabette sorulur (`askChoice`), turda bir (`traitTurns['hurl-through-hell']`), kullanım yoksa Pact slotuyla yenilenir, hedef Banishment gibi kaybolur ve Warlock'un sonraki turunun sonunda döner (`apex.ts` `hurlEvents`). Test `src/battle/karar104.test.ts` "Hurl Through Hell (SRD 5.2.1 s. 76)". Yapay zekâ öneriyi alır (kullanım varsa kullan).

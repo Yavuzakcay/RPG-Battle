@@ -1,3 +1,5 @@
+> Tarihsel: güncel durum için harita/belgeler/SRD-KAPSAM-OZET.md
+
 # Envanter özeti (A0)
 
 > 2026-11-05, dal `wip/a0` (wip/k54b'den), kural sürümü 27. **Salt-okunur denetim:** oyun kodu, veri ve testler değişmedi. Soru: "veride var ama savaşta gerçekten çalışıyor mu?"

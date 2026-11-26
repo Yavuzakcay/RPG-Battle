@@ -84,7 +84,7 @@ Tarih: 2026-11-20. Yalnız denetim: kod, veri ve test değişmedi. Emin olunmaya
 | A22 | Horde Breaker: turda bir, aynı silahla, 5 ft içindeki **farklı ve bu tur saldırmadığın** yaratığa | Ayrı komut `horde_breaker`: bu tur saldırılan yaratığın 5 ft yakınında farklı hedef, turda bir. **"Saldırmadığın" ve "aynı silah" şartı yok** (probe: önceden saldırılmış B'ye kabul; Shortsword'dan sonra Longbow kabul) | **düzeldi (B94)** ← kısmi **[YENİ, hata]** | `classTraits.ts:185-194`; probe | 6297 |
 | A23 | Escape the Horde: fırsat saldırıları ona dezavantajlı | `traitSources` `opportunity` bağlamında dezavantaj | tam | `classTraits.ts:39`; `classTraits.test.ts:270-277` | Görev F |
 | A24 | Multiattack Defense: onu vuran yaratığın bu turdaki diğer saldırıları dezavantajlı | İsabette `mdefense` işareti saldırana, tur sonuna dek; ıskada yok | tam | `classTraits.ts:66-69`; `classTraits.test.ts` | Görev F |
-| A25 | Superior Hunter's Prey: HM hasarı turda bir, ilk hedefin 30 ft yakınında görülen **farklı** yaratığa | Turda bir; 30 ft (probe: 5 ft'teki E1'e verildi, 45 ft'teki E2'ye verilmedi); aynı zar ve tür; ikinci hedef **otomatik** (en düşük HP'li düşman), oyuncu seçimi yok | kısmi | `classTraits.ts:158-173`; probe | 4512 |
+| A25 | Superior Hunter's Prey: HM hasarı turda bir, ilk hedefin 30 ft yakınında görülen **farklı** yaratığa | Turda bir; 30 ft (probe: 5 ft'teki E1'e verildi, 45 ft'teki E2'ye verilmedi); aynı zar ve tür; ikinci hedef **otomatik** (en düşük HP'li düşman), oyuncu seçimi yok | kısmi → **kapandı (104, DECISIONS KARAR104 A5)** | `classTraits.ts:158-173`; probe | 4512 |
 | A26 | Superior Hunter's Defense: **hasar aldığında** tepki: o hasara ve aynı türdeki diğer hasara tur sonuna dek direnç | Saldırı isabetinde (yarılama + `shd-<tür>` direnç etkisi, `turnEndOf`) ve alan save hasarında (`hunterDefenseEvents`); karar önerisi yalnız ağır hasarda (≥ max(5, HP/3)). Süren hasar, bölge, düşme ve otomatik isabet (Magic Missile) tetiklemiyor (kod okuması) | kısmi | probe: HP 20'de 13 hasar → 6, etki `shd-slashing`, tepki harcandı; HP 124'te hiç kullanılmadı; `reactions.ts:62-72, 199-209, 329-336` | 4512, 6449 (eski) |
 | A27 | Subclass özellikleri etkin seviyede (3/7/11/15) | `gainedFeatures` seviyeye göre | tam | fikstür `srd-alt-siniflar.json:932`; `classTraits.test.ts:80-93` | AS2 |
 | A28 | Ranger büyü listesi (48 büyü; 13/15/12/5/3) | SRD ↔ oyun `Rgr` birebir aynı: 48 = 48, eksik/fazla yok | tam | probe (`data/srd/spells.json` ↔ `data/spells*.json`) | — |
@@ -150,7 +150,7 @@ Sıra etkiye göre. "Sürüm" sütunu: yeni kural sürümü gerekiyorsa **günce
 | 2 | **Horde Breaker şartları** (A22): "bu tur saldırmadığın yaratık" ve "aynı silah" denetimi | Orta (SRD'den cömert) | Güncel sürümün bir fazlası, tek sabit | 1–2 saat |
 | 3 | **YZ Tireless ve Nature's Veil kullansın** (D4): canı düşükken geçici HP (ya da bonus eylem boşken Veil), YZ-only karar | Orta (YZ Ranger 10+ zayıf; sim imzası değişir, denge ölçümü gerekir) | Güncel sürümün bir fazlası, tek sabit (YZ kararı) | 2–3 saat + 3–4 senaryolu hızlı regresyon |
 | 4 | **Superior Hunter's Defense tetiği** (A26): süren hasar, bölge, düşme ve otomatik isabet büyüsünde de | Düşük-orta | Güncel sürümün bir fazlası, tek sabit | 2–3 saat |
-| 5 | **Superior Hunter's Prey hedef seçimi** (A25): ikinci hedefi oyuncu seçsin (otomatik en düşük HP'li yerine) | Düşük | Sürümsüz arayüz + komutta isteğe bağlı `choice` | 2 saat |
+| 5 | **Superior Hunter's Prey hedef seçimi** (A25): ikinci hedefi oyuncu seçsin (otomatik en düşük HP'li yerine) | Düşük — **kapandı (104, KARAR104 A5)** | Sürümsüz arayüz + komutta isteğe bağlı `choice` | 2 saat |
 | 6 | **Roving duvar tırmanışı ve yüzme maliyeti** (A13): probe testleri yaz, gerekirse düzelt | Düşük (doğrulama) | Doğrulamaya bağlı | 1–2 saat |
 | 7 | **Slot seçici Favored Enemy** (E4): HM için "Slotsuz: Favored Enemy (N hak)" düğmesi, düşük seviye slotla yapma yolu | Düşük | Sürümsüz | 1 saat |
 | 8 | **Belge ve metin**: DECISIONS 6449 "tur sonuna dek direnç yok" kaydını güncelle (Kuyruk 19'da eklendi); SD2 TR menü adları ↔ SD4 çelişkisini netleştir (E1); Ranger özellik açıklamalarının TR kaynağını `describeTr` ile doğrula (E5) | Düşük | Sürümsüz | 1–2 saat |
@@ -184,3 +184,9 @@ Görev B98 (2026-11-20; kural sürümü 98 `B98_VERSION`, 97 ve altı eski davra
 | Satır | Şimdi | Sürüm |
 |---|---|---|
 | E1 | Düzeldi: TR menü/ipucu adları SRD İngilizce (Tireless, Nature's Veil, Steady Aim, Horde Breaker; SD4) | sürümsüz |
+
+## KARAR104 / KARAR104-KALAN (kural sürümü 104; 2026-11-26 belge güncellemesi)
+
+Kod okunarak doğrulandı (`karar104On` kapısı; 103 ve altı eski davranış). Test çalıştırılmadı.
+
+- **A25 Superior Hunter's Prey ikinci hedef** (DECISIONS KARAR104 A5, sürüm 104): ikinci hedef oyuncuya sorulur (`classTraits.ts` `askChoice`; öneri en az HP'li, eski davranış). Test `src/battle/karar104.test.ts` "Superior Hunter's Prey: 104'te ikinci hedef sorulur".

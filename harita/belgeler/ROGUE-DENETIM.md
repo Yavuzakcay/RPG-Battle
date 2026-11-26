@@ -91,7 +91,7 @@ Tarih: 2026-11-20. Yalnız denetim: kod, veri ve test değişmedi. Güncel kural
 | A32 | Fast Hands (fikstür): bonus eylemle Sleight of Hand, Utilize ya da büyülü eşya Magic eylemi | 3'te Utilize bonus eylem (2'de eylem); Sleight of Hand ve Magic eylemi yok (fikstür `effect` notu "savaş dışı" diyor, EN açıklaması Magic'i sayıyor). Bonus boşsa her zaman bonus harcanır | kısmi **[bilinen]** | P5; `economy.ts:302-304`; fikstür 1077-1094 | 4640 |
 | A33 | Second-Story Work, Climber (fikstür) | `climber` → `climbs()` tırmanma maliyeti yok | tam | P1; `flight.ts:78` | 6398 |
 | A34 | Second-Story Work, Jumper (fikstür notu "DEX skoruyla") | Motor `second-story-work` işaretini arıyor, gerçek Thief'te yok: DEX 17 / STR 8 → 8 ft | yok **[YENİ, hata]** | P1; `movement.ts:669-676`; fikstür 1110; `k19feat3.test.ts:34` (elle işaret) | 4639 |
-| A35 | Supreme Sneak (fikstür notu: Stealth Attack, ¾/tam siperde saldırı anında) | Seçenek `stealth` 1d6; gizli kalır | tam (fikstür notuna göre; SRD tur sonu ⚠) | `classTraits.ts:102`; `k18h3.test.ts:215` | 4745 |
+| A35 | Supreme Sneak (fikstür notu: Stealth Attack, ¾/tam siperde saldırı anında) | Seçenek `stealth` 1d6; gizli kalır | tam (fikstür notuna göre; SRD tur sonu ⚠) → **kapandı: SRD tur sonu (104, DECISIONS KARAR104-KALAN A6)** | `classTraits.ts:102`; `k18h3.test.ts:215` | 4745 |
 | A36 | Use Magic Device (fikstür notu: şarjda 1d6 = 6 harcanmaz; ayarlanma, parşömen savaş dışı) | `use-magic-device` + `feature_used item:` → 1d6 | doğrulanmadı | `spells.ts:449-454` (kod; test yok) | 4524 |
 | A37 | Thief's Reflexes: ilk turda iki tur (inisiyatif − 10) | `nextActor` yansıma turu, sıra kaldığı yerden | tam | `common.ts:36-50`; `k19tier4b.test.ts:98-115` | 4603 |
 | A38 | Alt sınıf özellikleri 3/9/13/17 | İşaretler seviyede geliyor (3: fast-hands, climber; 9: supreme-sneak; 13: use-magic-device; 17: thiefs-reflexes) | tam | P1 | AS2 |
@@ -194,3 +194,9 @@ Sıra etkiye göre. "Sürüm" sütunu: savaş davranışı değişiyorsa **günc
 - Test: `src/battle/b95rogue.test.ts`.
 
 **C) Ertelendi, karar gerekli.** Stroke of Luck (SRD 5.2.1 s. 63) oyuncuya sorulsun mu ve 20'ye çevrilen saldırı kritik sayılsın mı (s. 6 "Rolling 20" yorumu); yapay zekânın Cunning Strike seçeneklerini kullanması (s. 63; YZ davranışı denge değiştirir, denge turuna kalır).
+
+## KARAR104 / KARAR104-KALAN (kural sürümü 104; 2026-11-26 belge güncellemesi)
+
+Kod okunarak doğrulandı (`karar104On` kapısı; 103 ve altı eski davranış). Test çalıştırılmadı.
+
+- **A35 Supreme Sneak** (DECISIONS KARAR104-KALAN A6, sürüm 104): Stealth Attack saldırı anında açığa çıkarmaz (işaret `traitTurns['supreme-sneak']`); Thief turunu bitirirken görüş hattı olan her canlı düşmana göre ¾ ya da tam siperde değilse açığa çıkar (`stealth.ts` `supremeSneakEndEvents`, `commands.ts` tur sonu zinciri). 96–103'teki GENEL96 C12 açığa çıkışı 104'te atlanır. ⚠ "Behind cover" bütün düşmanlara göre (A17 yorumu). Test `src/battle/karar104.test.ts` "Supreme Sneak: 104 saldırıda açığa çıkmaz". E3 (Stealth Attack adı) bu görevde denetlenmedi.
