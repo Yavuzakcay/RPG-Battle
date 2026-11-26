@@ -2,6 +2,14 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Not: OYUNCU-HEDEF-DOST (2026-11-26, kural sürümü değişmedi) — yapay zekâ simülasyon imzası değişmedi
+
+Oyuncu komutunda onaylı dost/düşman hedefi (`crossSide`, DECISIONS.md OYUNCU-HEDEF-DOST) yalnız arayüzün verdiği bayrakla açılır;
+yapay zekâ bayrak vermez. Hızlı regresyon (100 tohum, 5. seviye standart parti; `$env:KURAL_SURUMU=104; npm run sim -- 100 col kale
+magara orman --seviye 5`) aşağıdaki KARAR104-KALAN 104 sütunuyla **bütün sütunlarda birebir aynı**: Çöl %76 (berabere %4, ort. tur
+8.3, ölen 0.59), Kale %37 (8.2, 0.53), Mağara %79 (berabere %3, 8.1, 0.46), Orman %69 (6.1, 0.22). Yapay zekâ simülasyon imzası
+değişmedi.
+
 ## Not: KARAR104-KALAN (2026-11-26, kural sürümü 104'e eklendi) — hızlı regresyon
 
 KARAR104'ün ertelenenleri ve ⚠'leri 104'e eklendi (DECISIONS.md KARAR104-KALAN): Cutting Words ıskada, Quivering Palm, Hurl Through
