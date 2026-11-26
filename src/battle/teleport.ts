@@ -8,7 +8,7 @@ import { moverBand } from './cells';
 import { distance, neighbors, type Offset } from '../rules/hex';
 import { sightBlockedBetween } from './cover';
 import { canSee } from './maprules';
-import { bodyFitProblem, hexLabel, occupantAt, placeProblem, stackFitProblem } from './movement';
+import { arrivalOccupant, bodyFitProblem, hexLabel, placeProblem, stackFitProblem } from './movement';
 import { reachToHex } from './body';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
@@ -26,7 +26,8 @@ export function teleportProblem(state: BattleState, actor: Combatant, to: Offset
   const d = reachToHex(state, actor, to);
   if (d * 5 > spec.rangeFt) return `${hexLabel(to)} menzil dışında (en çok ${spec.rangeFt} ft).`;
   // Kuyruk K71c (sürüm 58+): ışınlananın kendi düzeyleri (havadaki yerdekinin üstüne gelir).
-  const other = occupantAt(state, to, actor.id, moverBand(state, actor));
+  // Görev KARAR104-KALAN A8 (104+): sürü paylaşımı varışta da (`arrivalOccupant`).
+  const other = arrivalOccupant(state, actor, to, moverBand(state, actor));
   if (other) return `${hexLabel(to)} dolu (${other.name}).`;
   const fit = bodyFitProblem(state, actor, to);
   if (fit) return fit;

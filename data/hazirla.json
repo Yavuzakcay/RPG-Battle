@@ -13,6 +13,12 @@
   "yanitlar": [
     { "id": "attack", "ad": { "tr": "Tek saldırı", "en": "One attack" }, "not": "SRD: Extra Attack yalnız kendi turunda Attack eyleminde (s.48); Multiattack de eylemdir, hazırlanan saldırı tektir." },
     { "id": "move", "ad": { "tr": "Hızın kadar hareket", "en": "Move up to your Speed" } },
-    { "id": "spell", "ad": { "tr": "Büyü (eylem süreli)", "en": "Spell (casting time: action)" } }
+    { "id": "spell", "ad": { "tr": "Büyü (eylem süreli)", "en": "Spell (casting time: action)" } },
+    { "id": "dash", "surum": 104, "ad": { "tr": "Dash (hızın kadar hareket)", "en": "Dash (move up to your Speed)" }, "not": "KARAR104-KALAN A9: SRD 5.2.1 s.186 \"the action you will take\". Tepkiyle başkasının turunda hareket hakkı yok; Dash'in ek hareketi kadar (hız) yürür (move yanıtıyla aynı yol)." },
+    { "id": "disengage", "surum": 104, "ad": { "tr": "Disengage", "en": "Disengage" }, "not": "Bu turun geri kalanında fırsat saldırısı yok; tepkide hareket olmadığından çoğunlukla etkisiz (SRD metniyle)." },
+    { "id": "dodge", "surum": 104, "ad": { "tr": "Kaçın (Dodge)", "en": "Dodge" } },
+    { "id": "help", "surum": 104, "ad": { "tr": "Yardım (Help)", "en": "Help" }, "not": "Hedef salınırken seçilir (Help eyleminin geçerli hedefleri)." },
+    { "id": "hide", "surum": 104, "ad": { "tr": "Gizlen (Hide)", "en": "Hide" } },
+    { "id": "utilize", "surum": 104, "ad": { "tr": "Nesne kullan (Utilize)", "en": "Utilize an object" }, "not": "SRD örneği: \"If the cultist steps on the trapdoor, I'll pull the lever\"." }
   ]
 }

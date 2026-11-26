@@ -55,6 +55,7 @@ const tr = {
       rested: 'Dinlenmiş.', dead: 'Öldü (dinlenme diriltmez).', down: '0 HP: savaşa girmeden önce dinlenmeli.', shortNeedsHp: 'Kısa dinlenme için en az 1 HP gerekir (uzun dinlenme ya da iyileştirme).',
       longFromZero: '0 HP: uzun dinlenme başlamadı; 1d4 saat sonra 1 HP ile kalktı (SRD). Tam iyileşme için bir uzun dinlenme daha.',
       cursed: (kind: string) => `Lanetli: likantropi (${kind}). Dinlenme kaldırmaz; Remove Curse gerekir.`,
+      cursedTurned: (kind: string) => `Lanetli: likantropi (${kind}). Savaşta 0 HP'de canavara dönüştü (Game Master'ın denetiminde). Remove Curse gerekir.`,
       short: 'Kısa dinlenme', long: 'Uzun dinlenme', revive: 'Diriltildi say',
       dice: 'Harcanacak HP zarı', spend: (n: number) => `${n} zar harca ve dinlen`,
       shortDone: (rolls: string, healed: number) => `Kısa dinlenme: ${rolls || 'zar yok'} → +${healed} HP; kısa dinlenmede yenilenen kaynaklar doldu.`,
@@ -779,7 +780,7 @@ const tr = {
     } as Record<string, (...a: never[]) => string>,
     slot: (n: number): string => `${n}. seviye slot`,
     /** Görev Z2: Cutting Words zarın uygulanacağı yer (zar atılmadan seçilir). */
-    choice: { attack: 'saldırı zarından düş', damage: 'hasardan düş' } as Record<string, string>,
+    choice: { attack: 'saldırı zarından düş', damage: 'hasardan düş', hurl: 'kullan', 'hurl-slot': 'Pact slotu harca (kullanım geri gelir)' } as Record<string, string>,
     /** Kuyruk S1: büyünün seçim istemi. */
     choiceTitle: (who: string): string => `Seçim: ${who}`,
     choiceLine: (label: string): string => `${label}: birini seç.`,

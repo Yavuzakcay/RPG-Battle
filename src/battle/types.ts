@@ -397,6 +397,9 @@ export interface ActiveEffect {
   attachAuto?: boolean;
   /** Görev KARAR104 (A2, Cloaker): yapışanın üstünde; aldığı hasar kadar bu hedef de hasar alır. */
   attachShare?: string;
+  /** Görev KARAR104-KALAN (Darkmantle Crush "Its Speed becomes 0, it can't benefit from any bonus to its Speed"): yapışanın hız
+   * etkisi (`speedMult: 0`), değer hedefin kimliği; yapışma bitince ya da kendi 5 ft'iyle ayrılınca kalkar. */
+  attachHold?: string;
   /** Görev D1 (86+): `at` hasar yutanın tur başında (varsayılan) ya da sonunda; `disgorge` + `since` (Giant Frog): yutulduğu turdan sonraki ilk tur sonunda hasar, ölmezse kusulur. */
   swallow?: { dice: string; type: string; dice2?: string; type2?: string; escapeDamage: number; escapeDc: number; at?: 'start' | 'end'; disgorge?: boolean; since?: number;
     /** Görev WS92 (92+): yutulan midede (konum yutanınki, hücre kaplamaz, dışarıdan Total Cover). */
@@ -797,7 +800,12 @@ export type ReadyResponse =
   | { kind: 'attack'; option?: AttackOption; attackIndex?: number; /** Görev B95-B (97+): hazırlanan saldırının Cunning Strike seçenekleri. */ cunning?: CunningOption[] }
   | { kind: 'move'; to: Offset }
   /** `slotLevel` hazırlarken harcanan slot (cantrip'te null). */
-  | { kind: 'spell'; spellName: string; slotLevel?: number | null };
+  | { kind: 'spell'; spellName: string; slotLevel?: number | null }
+  /** Görev KARAR104-KALAN A9 (104+, SRD 5.2.1 s. 186 "the action you will take"): Dash (hızın kadar hareket, `to`), Disengage,
+   * Dodge, Help (hedef salınırken), Hide, Utilize (nesne ve etkileşim). */
+  | { kind: 'dash'; to: Offset }
+  | { kind: 'disengage' } | { kind: 'dodge' } | { kind: 'help' } | { kind: 'hide' }
+  | { kind: 'utilize'; objectId: string; action: ObjectAction; to?: Offset };
 /** Kurulmuş hazırlık (`readied` olayı). Tutulan büyünün konsantrasyon adı `ready:<büyü>`. */
 export interface ReadiedAction { trigger: string; sourceId?: string; hex?: Offset; response: ReadyResponse; round: number }
 export interface Combatant {
@@ -2447,7 +2455,7 @@ export type BattleEvent =
   /** Kuyruk S2: gizli alan fark edildi (Spike Growth). */
   | { type: 'zone_spotted'; zoneId: string; by: string[] }
   /** Kuyruk S1: haritadan ayrılanlar (Plane Shift; `offFloor: 'duzlem'`, konum yok, sırada atlanır, tarafı ayakta tutmaz). */
-  | { type: 'retreated'; actorId: string; ids: string[]; label: string }
+  | { type: 'retreated'; actorId: string; ids: string[]; label: string; /** KARAR104-KALAN: çekilme yeri (yoksa `duzlem`; likantropi `likantrop`). */ floor?: string }
   /** Kuyruk K64a (sürüm 48): ele geçirme başladı (bedene etki, ele geçiren `offFloor: 'beden'`). */
   | { type: 'possessed'; possessorId: string; hostId: string; label: string; incap: boolean; until: number }
   /** Kuyruk K64a: ele geçirme bitti; ele geçiren `to` altıgeninde belirir, ev sahibi ona savaş sonuna dek bağışık. */

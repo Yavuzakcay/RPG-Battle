@@ -19,6 +19,8 @@ export const TR_EXTRA = {
     concWarn: 'Büyüyü tutmak konsantrasyon ister; konsantrasyon bozulursa büyü etkisiz dağılır.',
     concEnds: (s: string) => `Şu anki konsantrasyonun (${s}) biter.`,
     noSpells: 'Hazırlanabilecek (eylem süreli) büyü yok.', target: 'Hedef salınırken seçilir.',
+    dash: 'Dash', disengage: 'Disengage', dodge: 'Kaçın', help: 'Yardım', hide: 'Gizlen', utilize: 'Nesne', object: 'Nesne', objectOption: (name: string, hex: string) => `${name} · ${hex}`, noObjects: 'Yanında kullanılacak nesne yok.',
+    disengageNote: 'Tepkiyle hareket edemediğin için çoğunlukla etkisizdir (SRD).',
   },
   /** SD8 (Ayarlar): sade Ayarlar ekranı, Gelişmiş katı ve Game Master kurulumundaki "Oda kuralları". */
   settingsUi: {
@@ -269,7 +271,8 @@ export const TR_EXTRA = {
     readyReleased: (a: string, trig: string) => `${a} hazırlanan eylemini kullanıyor (${trig}).`,
     readyLapsed: (a: string, why: string) => `${a}: hazırlık bitti (${why}).`,
     readyWhy: { turnStart: 'sonraki turu başladı', concentration: 'konsantrasyon bozuldu, tutulan büyü etkisiz dağıldı', incapacitated: 'etkisiz hâle geldi', died: 'düştü', gone: 'haritadan ayrıldı' } as Record<string, string>,
-    readyResp: { attack: (w: string) => `tek saldırı (${w})`, move: 'hareket', spell: (sp: string) => `büyü (${sp})` },
+    readyResp: { attack: (w: string) => `tek saldırı (${w})`, move: 'hareket', spell: (sp: string) => `büyü (${sp})`,
+      action: { dash: 'Dash', disengage: 'Disengage', dodge: 'Kaçın', help: 'Yardım', hide: 'Gizlen', utilize: 'nesne kullan' } as Record<string, string> },
     help: (reason: string, target: string) => `${reason}: ${target} hedefine karşı tarafının ilk saldırısı avantajlı.`,
     timerSave: (ab: string, dc: number) => `; her tur sonunda ${ab} DC ${dc} ile kurtulur`,
     timerTurn: (owner: string | null, start: boolean) => ` (${owner ?? 'kendi'} sonraki turunun ${start ? 'başına' : 'sonuna'} dek)`,
@@ -503,7 +506,7 @@ export const TR_EXTRA = {
       choicePick: 'Seçim', tacticalPick: 'Tactical Master', tacticalOpt: { own: 'Silahın ustalığı', push: 'Push', sap: 'Sap', slow: 'Slow' } as Record<string, string>, pushPick: 'Push ustalığı', pushOpt: { auto: 'Son saldırıda it', push: 'Her isabette it', push5: 'Her isabette 5 ft it', skip: 'İtme' } as Record<string, string>,
       bonusStrike: 'Yumruk atışı', flurryStrike: (n: number) => `Flurry of Blows (${n})`, stunning: 'Stunning Strike', eldritchSmite: 'Eldritch Smite',
       shapeOn: (name: string, _cr: string) => `Wild Shape: ${name}`, shapeOff: (_name: string) => 'Normal hâle dön',
-      mount: 'Bineğe bin', dismount: 'Binekten in', natureMagician: (n: number, l: number) => `Nature Magician: ${l}. seviye slot (${n} hak)`, resurgeShape: 'Wild Resurgence: slot → Wild Shape', resurgeSlot: 'Wild Resurgence: Wild Shape → slot',
+      quiveringEnd: 'Quivering Palm: titreşimi bitir', mount: 'Bineğe bin', dismount: 'Binekten in', natureMagician: (n: number, l: number) => `Nature Magician: ${l}. seviye slot (${n} hak)`, resurgeShape: 'Wild Resurgence: slot → Wild Shape', resurgeSlot: 'Wild Resurgence: Wild Shape → slot',
       focusName: { 'flurry-of-blows': 'Flurry of Blows', 'patient-defense': 'Patient Defense', 'step-of-the-wind': 'Step of the Wind' } as Record<string, string>,
       fontToPoints: (l: number) => `Font of Magic: slot → Sorcery Point (${l}. sv)`, fontToSlot: (l: number) => `Font of Magic: Sorcery Point → slot (${l}. sv)`,
     },

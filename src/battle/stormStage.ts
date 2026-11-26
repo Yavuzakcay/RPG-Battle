@@ -3,13 +3,14 @@
  * Vengeance: "At the start of each of your later turns, the storm produces different effects"). Kural büyü verisinde
  * (`zone.stages`, `k104` bloğu); alan 1. aşamada açılır, büyücünün her tur başında `zone_stage` ile bir artar.
  * - Hasar altındakilerin hepsine bir kez atılır (SRD "Damage against Multiple Targets"); save'li aşamada yarı hasar.
- * - `targets` (3. tur, altı yıldırım): büyücünün düşmanlarından, alanın merkezine en yakın en çok N farklı yaratık (⚠ seçim
- *   oyuncuya sorulmuyor; nesneler hedef alınmaz).
+ * - `targets` (3. tur, altı yıldırım): en çok N farklı yaratık büyücüye sorulur (`askPicks`; öneri büyücünün düşmanlarından
+ *   alanın merkezine en yakın N; KARAR104-KALAN). ⚠ Nesneler hedef alınmaz.
  * - `persist` (5–10. tur): o aşamaya girilince alan kuralına eklenir (`zones.ts` `stagedSpec`): zorlu arazi, yoğun örtü,
  *   menzilli silah saldırısı yok. Nesnelere asit hasarı (2. tur) uygulanmaz (⚠).
  * 103 ve altında alan `stage` taşımaz: yalnız yapım turu (eski davranış).
  */
 import { rollDice, rollTag, type Rng } from '../rules/dice';
+import { askPicks } from '../rules/choice';
 import { distance, type Offset } from '../rules/hex';
 import type { ZoneSpec } from '../data';
 import { altitudeInZone } from './altitude';
@@ -41,9 +42,17 @@ export function stormStageEvents(state: BattleState, casterId: string, rng: Rng)
       && altitudeInZone(s, z, spec, c) && affects(s, z, spec, c));
     if (st.targets) {
       const center: Offset | undefined = z.center ?? z.hexes[Math.floor(z.hexes.length / 2)];
-      inside = inside.filter((c) => c.side !== z.side)
-        .sort((a, b) => (center ? distance(a.pos as Offset, center) - distance(b.pos as Offset, center) : 0) || a.id.localeCompare(b.id))
-        .slice(0, st.targets);
+      const near = (a: { id: string; pos: Offset | null }, b: { id: string; pos: Offset | null }) =>
+        (center ? distance(a.pos as Offset, center) - distance(b.pos as Offset, center) : 0) || a.id.localeCompare(b.id);
+      // Öneri = eski otomatik seçim: büyücünün düşmanlarından merkeze en yakın N.
+      const auto = inside.filter((c) => c.side !== z.side).sort(near).slice(0, st.targets);
+      // Görev KARAR104-KALAN (⚠ kapandı; SRD "six different creatures … of your choice beneath the cloud"): büyücüye sorulur
+      // (`askPicks`, Sor ayarı; kancasız Rng, yapay zekâ ve "Her zaman/Asla"da öneri aynen). Adaylar bulutun altındaki bütün
+      // yaratıklar (dost da seçilebilir), önce öneri sırası.
+      const cands = [...auto, ...inside.filter((c) => !auto.includes(c)).sort(near)];
+      const picked = askPicks(rng, { actorId: casterId, label: `${z.name}: yıldırım hedefi`, options: cands.map((c) => ({ id: c.id, label: c.name })),
+        suggested: auto.map((c) => c.id), max: st.targets });
+      inside = picked.map((id) => cands.find((c) => c.id === id)).filter((c): c is (typeof cands)[number] => !!c);
     }
     if (!inside.length) continue;
     const rolled = rollDice(st.damage, rollTag(rng, { kind: 'damage', by: casterId }));

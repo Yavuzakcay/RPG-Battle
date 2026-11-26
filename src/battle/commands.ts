@@ -55,7 +55,7 @@ import {
 } from './features';
 import { executeMonsterAttack, executeMultiattack } from './monsters';
 import { executeJump, executeMove, executePlace, executeStartBattle } from './movement';
-import { executeHide, executeSearch, noticeEvents, revealEvent, attackRevealEvents } from './stealth';
+import { executeHide, executeSearch, noticeEvents, revealEvent, attackRevealEvents, supremeSneakEndEvents } from './stealth';
 import { executeDistract } from './distract';
 import { executeUseItem } from './items';
 import { executeSkillCheck } from './checks';
@@ -89,7 +89,9 @@ import { executeVerticalMove } from './altitude';
 import './hiddenZones';
 // Kuyruk K73c: su altı nefes ve sudan çıkış (komut sonu kancası, sürüm 64+).
 import './underwater';
-import { executeDropItem, executePickUp } from './heldItems';
+// Görev KARAR104-KALAN: likantrop dönüşümü (komut sonu kancası, sürüm 104+).
+import './lycanthrope';
+import { executeDropItem, executePickUp, unconsciousDropEvents } from './heldItems';
 import { allyStoredOwner } from './paket/p11cast';
 import { executeDropBlade } from './s2spells';
 import { spendSlot } from './slots';
@@ -329,6 +331,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Kuyruk K48: Moral tam modu (dost düştü, korku; 0'da çökme, ≥ 1'de çökmenin bitmesi).
   const morale = moraleAfterEvents(state, next, events);
   if (morale.length) { next = applyEvents(next, morale); events = [...events, ...morale]; }
+  // Görev KARAR104-KALAN A7 (104+): bu komutta Unconscious olan elindekini düşürür.
+  const knocked = unconsciousDropEvents(state, next);
+  if (knocked.length) { next = applyEvents(next, knocked); events = [...events, ...knocked]; }
   const reveal = revealEvent(state, next, cmd);
   if (reveal) { next = applyEvents(next, [reveal]); events = [...events, reveal]; }
   // GENEL96 C12 (sürüm 96+): saldırı zarı atan başka gizlenmişler (bonus vuruş, tepki, Ready, takip saldırısı).
@@ -562,7 +567,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const steed = controlledMountOf(state, state.combatants[cmd.actorId]);
     if (steed && state.order[state.turnIndex] === cmd.actorId) return executeCommand(state, { ...cmd, actorId: steed.id }, ctx, rng);
   }
-  const outOfTurn0 = (cmd.type === 'cast_spell' && (isReactionSpell(cmd.spellName) || !!cmd.fromReady)) || cmd.type === 'initiative_swap';
+  const outOfTurn0 = (cmd.type === 'cast_spell' && (isReactionSpell(cmd.spellName) || !!cmd.fromReady)) || cmd.type === 'initiative_swap' || readyInner;
   // Kuyruk MB2 (74+): kontrollü binek binicisinin turunda, binicinin kararıyla oynar (yalnız hareket, Dash, Disengage, Dodge).
   const ctrl = controlledGate(state, cmd, ctx, outOfTurn0);
   if (ctrl && 'error' in ctrl) return fail(ctrl.error);
@@ -1027,6 +1032,8 @@ function turnEndChain(state: BattleState, id: string, rng: Rng, global: boolean)
   // Tur sonu harita etkileri (sıcak, soğuk, alevde bitirme) sırası biten için.
   const ending = turnEndMapEvents(cur, cur.combatants[id] as Combatant, rng);
   push(ending);
+  // Görev KARAR104-KALAN A6 (104+): Supreme Sneak siperi turun sonunda.
+  push(supremeSneakEndEvents(cur, id));
   // Turunu düşman yayılımında (Spirit Guardians) bitiren save yapar.
   const aura = auraTurnEndEvents(cur, cur.combatants[id] as Combatant, rng);
   push(aura);
@@ -1165,4 +1172,10 @@ function controlledGate(state: BattleState, cmd: Command, ctx: CommandContext, o
 }
 
 // Hazırla (Ready, sürüm 90): tutulan büyü salınırken iç komut (sıra ve eylem ekonomisi dışında; slot hazırlarken harcandı).
-registerReadyCast((s, cmd, rng) => executeCommand(s, cmd, { isGm: true, playerId: s.combatants[cmd.actorId]?.ownerId ?? null }, rng));
+/** Görev KARAR104-KALAN A9: Hazırla yanıtının iç komutu (eşzamanlı; yalnız salma sırasında doğru): sıra dışı çalışır. */
+let readyInner = false;
+registerReadyCast((s, cmd, rng) => {
+  const prev = readyInner;
+  readyInner = true;
+  try { return executeCommand(s, cmd, { isGm: true, playerId: s.combatants[(cmd as { actorId: string }).actorId]?.ownerId ?? null }, rng); } finally { readyInner = prev; }
+});
