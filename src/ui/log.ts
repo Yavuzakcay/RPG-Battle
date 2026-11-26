@@ -266,7 +266,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'readied': {
       const r = event.readied.response;
       const resp = r.kind === 'attack' ? L.readyResp.attack(r.option?.label ?? state.combatants[event.actorId]?.attacks[r.attackIndex ?? 0]?.name ?? '?')
-        : r.kind === 'move' ? L.readyResp.move : L.readyResp.spell(r.spellName);
+        : r.kind === 'move' ? L.readyResp.move : r.kind === 'spell' ? L.readyResp.spell(r.spellName) : L.readyResp.action[r.kind] ?? r.kind;
       return L.readied(n(event.actorId), readyTriggerName(event.readied.trigger), resp);
     }
     case 'ready_released':

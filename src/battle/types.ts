@@ -797,7 +797,12 @@ export type ReadyResponse =
   | { kind: 'attack'; option?: AttackOption; attackIndex?: number; /** Görev B95-B (97+): hazırlanan saldırının Cunning Strike seçenekleri. */ cunning?: CunningOption[] }
   | { kind: 'move'; to: Offset }
   /** `slotLevel` hazırlarken harcanan slot (cantrip'te null). */
-  | { kind: 'spell'; spellName: string; slotLevel?: number | null };
+  | { kind: 'spell'; spellName: string; slotLevel?: number | null }
+  /** Görev KARAR104-KALAN A9 (104+, SRD 5.2.1 s. 186 "the action you will take"): Dash (hızın kadar hareket, `to`), Disengage,
+   * Dodge, Help (hedef salınırken), Hide, Utilize (nesne ve etkileşim). */
+  | { kind: 'dash'; to: Offset }
+  | { kind: 'disengage' } | { kind: 'dodge' } | { kind: 'help' } | { kind: 'hide' }
+  | { kind: 'utilize'; objectId: string; action: ObjectAction; to?: Offset };
 /** Kurulmuş hazırlık (`readied` olayı). Tutulan büyünün konsantrasyon adı `ready:<büyü>`. */
 export interface ReadiedAction { trigger: string; sourceId?: string; hex?: Offset; response: ReadyResponse; round: number }
 export interface Combatant {

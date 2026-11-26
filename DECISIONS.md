@@ -38,6 +38,15 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   yerleştirmesi (`movement.ts` `executePlace`) tek giriş `arrivalOccupant`'tan: sürü dolu altıgene, sürü olmayan yalnız sürülerin
   altıgenine girer (`swarmShareOk` aynen). Çağırma varışı motorun seçtiği boş altıgen olduğu için değişmedi. 103: varışta sürünün
   altıgeni dolu.
+- **A9 Ready yanıt listesi** (SRD 5.2.1 s. 186 "decide what … the action you will take", GENEL-SAVAS A23): 104+ yanıtlara Dash,
+  Disengage, Dodge, Help, Hide, Utilize eklendi (`data/hazirla.json` `yanitlar` `surum: 104`, `ready.ts` `readyResponsesFor`; tür
+  `ReadyResponse`). Salma eylemin kendi yürütücüsünden (eylem ekonomisi yok, tepki harcanır; iç komut sıra dışı çalışır,
+  `commands.ts` `readyInner`): Dodge Kaçın durumu, Hide Gizlen zarı, Help hedefi salınırken (Help'in geçerli hedefleri), Utilize
+  bitişik nesnenin varsayılan etkileşimi (SRD örneği kolu çekmek; arayüzde nesne seçimi, `objectCommand`). Dash: tepkide başkasının
+  turunda hareket hakkı olmadığından Dash'in verdiği ek hareket kadar (hız) yürür, "move" yanıtıyla aynı yol. Disengage SRD
+  metniyle eklendi; tepkide hareket olmadığından çoğunlukla etkisiz (panelde not). Kayıt sürümü 26 kaldı (yeni olay türü yok;
+  `readied.response` yeni türleri isteğe bağlı alanlarla taşır). Yapay zekâ Ready'yi hâlâ kullanmaz (A27, bu görevin listesinde
+  değildi). 103: yalnız saldırı, hareket, büyü.
 
 ## Görev KARAR104: bekleyen kullanıcı kararları SRD 5.2.1'e göre (2026-11-24; kural sürümü 104 `KARAR104_VERSION`, kayıt sürümü 26)
 

@@ -479,3 +479,48 @@ describe('KARAR104-KALAN A8: Swarm varışta da altıgen paylaşır (SRD 5.2.1 "
     }
   });
 });
+
+describe('KARAR104-KALAN A9: Ready yanıt listesi (SRD 5.2.1 s. 186 "the action you will take")', () => {
+  const scene = (v: number, objects: NonNullable<BattleState['map']>['objects'] = []) => {
+    const s = scene104(v, [mk('A', { ownerId: 'p1', hp: 30, maxHp: 30, pos: at(3, 5) }), mk('B', { side: 'enemies', hp: 60, maxHp: 60, pos: at(10, 5) })]);
+    return { ...s, map: { ...s.map!, objects } };
+  };
+  const readyCmd = (response: object, trigger = 'yakina-gelir'): Command => ({ type: 'ready', actorId: 'A', trigger, response } as Command);
+  const approach = (s: BattleState, to = at(5, 5)) => {
+    const a = execute(s, { type: 'end_turn', actorId: 'A' } as Command, P1, hooked(10));
+    if (!a.ok) throw new Error(a.error);
+    const m = execute(a.state, { type: 'move', actorId: 'B', to } as Command, GM, hooked(10));
+    if (!m.ok) throw new Error(m.error);
+    expect(replay([{ type: 'battle_started', state: s }, ...a.events, ...m.events] as BattleEvent[])).toEqual(m.state);
+    return m;
+  };
+  it('Dodge: 104 tetikte Kaçın durumu; 103 yanıt reddedilir', () => {
+    const r = execute(scene(NEW), readyCmd({ kind: 'dodge' }), P1, hooked(10));
+    if (!r.ok) throw new Error(r.error);
+    const m = approach(r.state);
+    expect(m.events.some((e) => e.type === 'ready_released')).toBe(true);
+    expect(m.state.combatants.A!.conditions).toContain('Dodge');
+    const old = execute(scene(OLD), readyCmd({ kind: 'dodge' }), P1, hooked(10));
+    expect(old.ok ? '' : old.error).toMatch(/104/);
+  });
+  it('Help: 104 tetikleyen bitişik düşmana Yardım (hedef salınırken)', () => {
+    const r = execute(scene(NEW), readyCmd({ kind: 'help' }, 'erisime-girer'), P1, hooked(10));
+    if (!r.ok) throw new Error(r.error);
+    const m = approach(r.state, at(4, 5));
+    expect(m.events.some((e) => e.type === 'ready_released')).toBe(true);
+    expect(m.events.some((e) => e.type === 'condition_changed' && e.targetId === 'B' && e.present)).toBe(true);
+  });
+  it('Utilize: 104 SRD örneği gibi tetikte kolu çeker; Hide, Disengage, Dash komutları kabul edilir', () => {
+    const lever = { id: 'kol', kind: 'lever', at: at(3, 6), hp: 5, state: 'closed' } as never;
+    const r = execute(scene(NEW, [lever]), readyCmd({ kind: 'utilize', objectId: 'kol', action: 'pull' }), P1, hooked(10));
+    if (!r.ok) throw new Error(r.error);
+    const m = approach(r.state);
+    expect(m.events.some((e) => e.type === 'ready_released')).toBe(true);
+    expect(m.state.map!.objects!.find((o) => o.id === 'kol')?.state).not.toBe('closed');
+    for (const response of [{ kind: 'hide' }, { kind: 'disengage' }, { kind: 'dash', to: at(2, 5) }]) {
+      expect(execute(scene(NEW), readyCmd(response), P1, hooked(10)).ok).toBe(true);
+      expect(execute(scene(OLD), readyCmd(response), P1, hooked(10)).ok).toBe(false);
+    }
+  });
+});
+
