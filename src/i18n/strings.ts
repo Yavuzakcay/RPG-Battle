@@ -779,7 +779,7 @@ const tr = {
     } as Record<string, (...a: never[]) => string>,
     slot: (n: number): string => `${n}. seviye slot`,
     /** Görev Z2: Cutting Words zarın uygulanacağı yer (zar atılmadan seçilir). */
-    choice: { attack: 'saldırı zarından düş', damage: 'hasardan düş' } as Record<string, string>,
+    choice: { attack: 'saldırı zarından düş', damage: 'hasardan düş', hurl: 'kullan', 'hurl-slot': 'Pact slotu harca (kullanım geri gelir)' } as Record<string, string>,
     /** Kuyruk S1: büyünün seçim istemi. */
     choiceTitle: (who: string): string => `Seçim: ${who}`,
     choiceLine: (label: string): string => `${label}: birini seç.`,

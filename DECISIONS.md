@@ -9,6 +9,29 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **A6 Cutting Words ıskada** (SRD 5.2.1 s. 35 "makes a damage roll"): ıskada da hasar zarı atan büyü saldırısında (Acid Arrow
   `halfOnMiss`, Potent Cantrip) Bard'ın tepkisi `cuttingWordsDamage` ile; zar toplamdan yarıya bölünmeden önce düşer (`spells.ts`).
   Silah saldırısında ıskada hasar zarı yok (Graze sabit değiştirici: zar değil). 103'te ıskada tetik yok.
+- **A6 Quivering Palm vazgeçme** (SRD 5.2.1 s. 52 "when you take the Attack action on your turn, you can forgo one of the attacks to
+  end the vibrations"): 104+ bitirmek Attack eyleminin bir saldırısı (`economy.ts`; kalan saldırı varsa ondan düşer, yoksa Attack
+  eylemi başlar ve kalanlar sürer). "Take an action" yolu bundan hep kötü olduğundan ayrı düğme yok. Aynı tur Unarmed Strike isabeti
+  varken komut kurar; bitirmek için `use_feature` `choice: 'end'` (`apex.ts` `palmEnding`; arayüzde "Quivering Palm: titreşimi
+  bitir"). 103: bitirmek eylem, isabet turunda bitirilemez. Yapay zekâ hâlâ kullanmaz (MONK-DENETIM D6).
+- **A6 Hurl Through Hell** (SRD 5.2.1 s. 76; alt sınıf dış pakette, kullanıcının kitapçık metninde slot yenilemesi yok, SRD esas
+  alındı): 104+ `apex.ts` `hurlEvents`: (1) "you can try": oyuncuya sorulur (`askChoice`, tetik `choice`; öneri kullanım varsa kullan
+  = eski otomatik davranış), (2) "Once per turn" (`traitTurns['hurl-through-hell']`), (3) kullanım yoksa Pact Magic slotu harcanıp
+  kullanım geri gelir ve harcanır (eylemsiz; öneri kullanmamak: sim ve "Sor" dışı ayarda eskisiyle aynı), (4) hedef "disappears":
+  Banishment'ın geçici çıkış etkisi (`banished` + `ethereal`, `grants: Incapacitated`, `endAfterSourceTurn`), Warlock'un sonraki
+  turunun sonunda biter ve hedef eski altıgenine ya da en yakın boş altıgene döner (reducer `unstack`). 103: her isabette sorusuz,
+  hedef yerinde Incapacitated, slot yenilemesi yok.
+- **A6 Holy Nimbus yenilenmesi:** B94'te zaten SRD 5.2.1 s. 57 ile aynı (kullanım yoksa 5. seviye slot eylemsiz harcanır, uzun
+  dinlenmede kullanım döner; slot savaş dışında harcanmaz ama sonuç aynı: kullanım yalnız savaşta işe yarar). Değişiklik yok.
+- **A6 Dark One's Own Luck** (SRD 5.2.1 s. 76 "you can use this feature to add 1d10 … after seeing the roll", kullanım eklenince
+  harcanır): 104+ (`k104` işareti) sahibine sorulur (tetik `boon`, öneri kullan), 1d10 tutmasa da kullanım gider (`ExtraDie.spendAlways`),
+  en iyi 10 bile yetmiyorsa hiç sunulmaz (`skipHopeless`, `onFail` zarında zarın en büyüğüyle). 103: sorusuz, yalnız tutarsa harcanır.
+- **A6 Supreme Sneak** (SRD 5.2.1 s. 64 "doesn't end that condition on you if you end the turn behind Three-Quarters Cover or Total
+  Cover"): 104+ Stealth Attack saldırı anında açığa çıkarmaz (`revealEvent` yerine işaret `traitTurns['supreme-sneak']`); Thief turunu
+  bitirirken görüş hattı olan her canlı düşmana göre ¾ ya da tam siperde değilse açığa çıkar (`stealth.ts` `supremeSneakEndEvents`,
+  tur sonu zinciri). ⚠ "Behind cover" kime göre yazmıyor: Hide'ın bütün düşmanlar yorumu (bilinçli sapma A17) alındı. Bulunan eski
+  hata: 96–103'te GENEL96 C12 `attackRevealEvents` Stealth Attack yapanı yine açığa çıkarıyordu (özellik fiilen işlemiyordu); 104'te
+  aynı komutun açığa çıkışı atlanır. 103 ve altı dokunulmadı (replay).
 
 ## Görev KARAR104: bekleyen kullanıcı kararları SRD 5.2.1'e göre (2026-11-24; kural sürümü 104 `KARAR104_VERSION`, kayıt sürümü 26)
 

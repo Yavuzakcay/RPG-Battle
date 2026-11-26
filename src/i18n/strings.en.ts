@@ -1304,7 +1304,7 @@ export const en: Strings = {
       choicePick: 'Choice', tacticalPick: 'Tactical Master', tacticalOpt: { own: 'Weapon\'s mastery', push: 'Push', sap: 'Sap', slow: 'Slow' } as Record<string, string>, pushPick: 'Push mastery', pushOpt: { auto: 'Push on last attack', push: 'Push on every hit', push5: 'Push 5 ft on every hit', skip: 'Do not push' } as Record<string, string>,
       bonusStrike: 'Punch', flurryStrike: (n: number) => `Flurry of Blows (${n})`, stunning: 'Stunning Strike', eldritchSmite: 'Eldritch Smite',
       shapeOn: (name: string, _cr: string) => `Wild Shape: ${name}`, shapeOff: (_name: string) => 'Return to normal',
-      mount: 'Mount', dismount: 'Dismount', natureMagician: (n: number, l: number) => `Nature Magician: level ${l} slot (${n} uses)`, resurgeShape: 'Wild Resurgence: slot → Wild Shape', resurgeSlot: 'Wild Resurgence: Wild Shape → slot',
+      quiveringEnd: 'Quivering Palm: end the vibrations', mount: 'Mount', dismount: 'Dismount', natureMagician: (n: number, l: number) => `Nature Magician: level ${l} slot (${n} uses)`, resurgeShape: 'Wild Resurgence: slot → Wild Shape', resurgeSlot: 'Wild Resurgence: Wild Shape → slot',
       focusName: { 'flurry-of-blows': 'Flurry of Blows', 'patient-defense': 'Patient Defense', 'step-of-the-wind': 'Step of the Wind' } as Record<string, string>,
       fontToPoints: (l: number) => `Font of Magic: slot → Sorcery Points (lvl ${l})`, fontToSlot: (l: number) => `Font of Magic: Sorcery Points → slot (lvl ${l})`,
     },
@@ -1695,7 +1695,7 @@ export const en: Strings = {
       giant: (label: string) => `Hit: use ${label}?`,
     } as Record<string, (...a: never[]) => string>,
     slot: (n: number) => `level ${n} slot`,
-    choice: { attack: 'subtract from the attack roll', damage: 'subtract from the damage' } as Record<string, string>,
+    choice: { attack: 'subtract from the attack roll', damage: 'subtract from the damage', hurl: 'use', 'hurl-slot': 'expend a Pact Magic slot (restores the use)' } as Record<string, string>,
     /** Kuyruk S1: spell choice prompt. */
     choiceTitle: (who: string): string => `Choice: ${who}`,
     choiceLine: (label: string): string => `${label}: pick one.`,

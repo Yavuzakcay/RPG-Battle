@@ -6,7 +6,9 @@ import { execute } from './commands';
 import { combatantFromMonster, combatantFromSheet } from './index';
 import { itemHitsFor } from './itemEffects';
 import { superiorPreyEvents } from './classTraits';
-import { attackDice } from './effectDice';
+import { attackDice, saveDice } from './effectDice';
+import { secondChance } from '../rules/attack';
+import { revealEvent, supremeSneakEndEvents } from './stealth';
 import { askPicks } from '../rules/choice';
 import type { ReactionAnswer, ReactionRequest } from '../rules/reactionChoice';
 import { boundWeaponName, eligibleWeaponsOf } from '../rules/itemBinding';
@@ -360,5 +362,98 @@ describe('KARAR104-KALAN A6: SRD-12 sınıf özelliği sapmaları', () => {
     // Acid Arrow 4d4 = 12; Bard d8 = 5 → ⌊(12 − 5) / 2⌋ = 3; 103: ⌊12 / 2⌋ = 6.
     expect(miss(NEW)).toEqual({ hp: 27, used: true });
     expect(miss(OLD)).toEqual({ hp: 24, used: false });
+  });
+  it('Quivering Palm: 104 Attack eyleminde bir saldırıdan vazgeçerek bitirilir; 103 isabet turunda bitirilemez', () => {
+    const QP = 'monk/warrior-of-the-open-hand:quivering-palm';
+    const monkSheet: CharacterSheet = { ...blankCharacter('m').sheet, name: 'Su', classId: 'monk', subclassId: 'warrior-of-the-open-hand', level: 17,
+      baseScores: { str: 10, dex: 16, con: 12, int: 8, wis: 16, cha: 8 }, armorName: 'Zırhsız', weapons: [{ name: 'Quarterstaff' }] };
+    const end = (v: number) => {
+      const monk = { ...combatantFromSheet(monkSheet, { id: 'A', ownerId: 'p1' }), pos: at(3, 5) };
+      const s0 = scene104(v, [monk, mk('B', { side: 'enemies', hp: 300, maxHp: 300, ac: 1, saves: { str: 0, dex: 0, con: -20, int: 0, wis: 0, cha: 0 }, pos: at(4, 5) })]);
+      const fist = s0.combatants.A!.weaponOptions.find((x) => x.label === 'Unarmed Strike')!;
+      const set = play(s0, [{ type: 'attack', actorId: 'A', targetId: 'B', option: fist } as Command, { type: 'use_feature', actorId: 'A', feature: QP } as Command], hooked(15)).state;
+      expect(set.combatants.B!.effects?.some((x) => x.quivering)).toBe(true);
+      const r = execute(set, { type: 'use_feature', actorId: 'A', feature: QP, choice: 'end' } as Command, P1, hooked(15));
+      return r.ok ? { left: r.state.combatants.A!.economy.attacksLeft, hp: r.state.combatants.B!.hp, quivering: r.state.combatants.B!.effects?.some((x) => x.quivering) } : r.error;
+    };
+    // 10d12 = 70 (save başarısız).
+    expect(end(NEW)).toMatchObject({ left: 0, quivering: false });
+    expect((end(NEW) as { hp: number }).hp).toBeLessThan(300 - 69);
+    // 103: `choice` yok sayılır, isabet turunda komut titreşimi yeniden kurar (bitirme ancak eylemle, sonraki turlarda).
+    expect(end(OLD)).toMatchObject({ left: 1, hp: 290, quivering: true });
+  });
+  describe('Hurl Through Hell (SRD 5.2.1 s. 76)', () => {
+    const lock = (res: number, slots: number[]) => mk('A', { ownerId: 'p1', level: 14, spellNames: ['Eldritch Blast'], spellAttack: 30, spellSaveDc: 30,
+      spellSlots: slots, traits: ['hurl-through-hell'], resources: { hurlThroughHell: res }, k19Traits: true, pos: at(3, 5) } as Partial<Combatant>);
+    const foe = () => mk('B', { side: 'enemies', hp: 300, maxHp: 300, saves: { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: -20 }, pos: at(6, 5) });
+    const blast: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Eldritch Blast', targetId: 'B' } as Command;
+    const hurls = (ev: BattleEvent[]) => ev.filter((e) => e.type === 'save_resolved' && e.label === 'Hurl Through Hell').length;
+    const picking = (choice: string | null): Rng => {
+      const r = hooked(15) as Rng & { react?: (q: ReactionRequest) => ReactionAnswer | null };
+      r.react = (q) => (q.trigger === 'choice' && choice ? { option: 'choice', choice } : null);
+      return r;
+    };
+    it('104: hedef kaybolur (hedef alınamaz, Incapacitated), Warlock’un sonraki turunun sonunda aynı altıgene döner; turda bir', () => {
+      const { state, events } = play(scene104(NEW, [lock(1, [0, 0, 0, 0, 3]), foe()]), [blast], hooked(15));
+      expect(hurls(events)).toBe(1);
+      const b = state.combatants.B!;
+      expect(b.effects?.find((e) => e.banished)).toMatchObject({ ethereal: true, grants: ['Incapacitated'] });
+      expect(b.conditions).toContain('Incapacitated');
+      const end = (id: string) => ({ type: 'end_turn', actorId: id }) as Command;
+      const after = play(state, [end('A'), end('B'), end('A')], hooked(15)).state.combatants.B!;
+      expect(after.effects?.some((e) => e.banished)).toBe(false);
+      expect(after.conditions).not.toContain('Incapacitated');
+      expect(after.pos).toEqual(at(6, 5));
+    });
+    it('104: kullanım yokken Pact slotuyla yenilenir (soruda seçilirse; öneri kullanmamak); 103: kullanım yoksa yok', () => {
+      const slotUse = play(scene104(NEW, [lock(0, [0, 0, 0, 0, 3]), foe()]), [blast], picking('hurl-slot'));
+      expect(hurls(slotUse.events)).toBe(1);
+      expect(slotUse.state.combatants.A!.spellSlots[4]).toBe(2);
+      expect(slotUse.state.combatants.A!.resources.hurlThroughHell).toBe(0);
+      expect(hurls(play(scene104(NEW, [lock(0, [0, 0, 0, 0, 3]), foe()]), [blast], hooked(15)).events)).toBe(0);
+      expect(hurls(play(scene104(OLD, [lock(0, [0, 0, 0, 0, 3]), foe()]), [blast], picking('hurl-slot')).events)).toBe(0);
+    });
+    it('104: oyuncu "Seçme" derse kullanılmaz; 103: sorusuz, hedef yerinde Incapacitated (ortadan kalkmaz)', () => {
+      expect(hurls(play(scene104(NEW, [lock(1, [0, 0, 0, 0, 3]), foe()]), [blast], picking(null)).events)).toBe(0);
+      const old = play(scene104(OLD, [lock(1, [0, 0, 0, 0, 3]), foe()]), [blast], picking(null));
+      expect(hurls(old.events)).toBe(1);
+      expect(old.state.combatants.B!.effects?.some((e) => e.banished) ?? false).toBe(false);
+      expect(old.state.combatants.B!.conditions).toContain('Incapacitated');
+    });
+  });
+  it("Dark One's Own Luck: 104 sorulur ve eklenince harcanır (tutmasa da), yetmeyecekse sunulmaz; 103 sorusuz, yalnız tutarsa", () => {
+    const lock = (k104?: true) => mk('A', { traits: ['dark-ones-own-luck'], resources: { darkOnesLuck: 2 }, ...(k104 ? { k104 } : {}) });
+    const fail = (total: number, need: number) => ({ total, natural: 8, bonus: 0, need, mode: 'normal' as const, kind: 'save' as const });
+    const luck = (c: Combatant) => saveDice(c, 'wis').filter((x) => x.label === "Dark One's Own Luck");
+    // Kancalı Rng: 1d10 = 6.
+    const r6 = hooked(10);
+    // Toplam 10, gereken 17: +6 tutmaz. 104: kaynak yine harcanır; 103: harcanmaz.
+    expect(secondChance(luck(lock(true)), fail(10, 17), r6)?.entry).toMatchObject({ value: 6, resource: 'darkOnesLuck' });
+    expect(secondChance(luck(lock()), fail(10, 17), r6)?.entry.resource).toBeUndefined();
+    // Gereken 21: 1d10 en çok 10 → 104'te sunulmaz (soru yok); 103'te atılır.
+    expect(secondChance(luck(lock(true)), fail(10, 21), r6)).toBeNull();
+    expect(secondChance(luck(lock()), fail(10, 21), r6)).not.toBeNull();
+    // 104: soru "Seçme" → kullanılmaz.
+    const no = hooked(10) as Rng & { react?: (q: ReactionRequest) => ReactionAnswer | null };
+    const asked: ReactionRequest[] = [];
+    no.react = (q) => { asked.push(q); return null; };
+    expect(secondChance(luck(lock(true)), fail(10, 14), no)).toBeNull();
+    expect(asked[0]?.trigger).toBe('boon');
+  });
+  it('Supreme Sneak: 104 saldırıda açığa çıkmaz, siper turun sonunda (bütün düşmanlara ¾/tam); 103 saldırı anında hedefe göre', () => {
+    const thief = () => mk('A', { ownerId: 'p1', traits: ['supreme-sneak'], hidden: { dc: 20 }, pos: at(2, 5) } as Partial<Combatant>);
+    const walled = (v: number, wall: boolean) => {
+      const s = scene104(v, [thief(), mk('B', { side: 'enemies', hp: 60, maxHp: 60, pos: at(8, 5) })]);
+      return wall ? { ...s, map: { ...s.map!, tiles: s.map!.tiles.map((r) => '....#' + r.slice(5)) } } : s;
+    };
+    const cmd = { type: 'attack', actorId: 'A', targetId: 'B', option: { label: 'Dagger' }, cunning: ['stealth'] } as unknown as Command;
+    expect(revealEvent(walled(NEW, false), walled(NEW, false), cmd)).toMatchObject({ type: 'trait_turn', trait: 'supreme-sneak', key: '1:0' });
+    const marked = (s: BattleState) => ({ ...s, combatants: { ...s.combatants, A: { ...s.combatants.A!, traitTurns: { 'supreme-sneak': '1:0' } } } });
+    expect(supremeSneakEndEvents(marked(walled(NEW, true)), 'A')).toEqual([]);
+    expect(supremeSneakEndEvents(marked(walled(NEW, false)), 'A')).toMatchObject([{ type: 'revealed', actorId: 'A' }]);
+    // İşaret yoksa (bu tur Stealth Attack yok) dokunmaz; 103'te tur sonu denetimi yok, saldırı anında açığa çıkar (siper yok).
+    expect(supremeSneakEndEvents(walled(NEW, false), 'A')).toEqual([]);
+    expect(supremeSneakEndEvents(marked(walled(OLD, false)), 'A')).toEqual([]);
+    expect(revealEvent(walled(OLD, false), walled(OLD, false), cmd)).toMatchObject({ type: 'revealed' });
   });
 });

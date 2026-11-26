@@ -55,7 +55,7 @@ import {
 } from './features';
 import { executeMonsterAttack, executeMultiattack } from './monsters';
 import { executeJump, executeMove, executePlace, executeStartBattle } from './movement';
-import { executeHide, executeSearch, noticeEvents, revealEvent, attackRevealEvents } from './stealth';
+import { executeHide, executeSearch, noticeEvents, revealEvent, attackRevealEvents, supremeSneakEndEvents } from './stealth';
 import { executeDistract } from './distract';
 import { executeUseItem } from './items';
 import { executeSkillCheck } from './checks';
@@ -1027,6 +1027,8 @@ function turnEndChain(state: BattleState, id: string, rng: Rng, global: boolean)
   // Tur sonu harita etkileri (sıcak, soğuk, alevde bitirme) sırası biten için.
   const ending = turnEndMapEvents(cur, cur.combatants[id] as Combatant, rng);
   push(ending);
+  // Görev KARAR104-KALAN A6 (104+): Supreme Sneak siperi turun sonunda.
+  push(supremeSneakEndEvents(cur, id));
   // Turunu düşman yayılımında (Spirit Guardians) bitiren save yapar.
   const aura = auraTurnEndEvents(cur, cur.combatants[id] as Combatant, rng);
   push(aura);

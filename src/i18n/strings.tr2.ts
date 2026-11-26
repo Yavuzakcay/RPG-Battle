@@ -503,7 +503,7 @@ export const TR_EXTRA = {
       choicePick: 'Seçim', tacticalPick: 'Tactical Master', tacticalOpt: { own: 'Silahın ustalığı', push: 'Push', sap: 'Sap', slow: 'Slow' } as Record<string, string>, pushPick: 'Push ustalığı', pushOpt: { auto: 'Son saldırıda it', push: 'Her isabette it', push5: 'Her isabette 5 ft it', skip: 'İtme' } as Record<string, string>,
       bonusStrike: 'Yumruk atışı', flurryStrike: (n: number) => `Flurry of Blows (${n})`, stunning: 'Stunning Strike', eldritchSmite: 'Eldritch Smite',
       shapeOn: (name: string, _cr: string) => `Wild Shape: ${name}`, shapeOff: (_name: string) => 'Normal hâle dön',
-      mount: 'Bineğe bin', dismount: 'Binekten in', natureMagician: (n: number, l: number) => `Nature Magician: ${l}. seviye slot (${n} hak)`, resurgeShape: 'Wild Resurgence: slot → Wild Shape', resurgeSlot: 'Wild Resurgence: Wild Shape → slot',
+      quiveringEnd: 'Quivering Palm: titreşimi bitir', mount: 'Bineğe bin', dismount: 'Binekten in', natureMagician: (n: number, l: number) => `Nature Magician: ${l}. seviye slot (${n} hak)`, resurgeShape: 'Wild Resurgence: slot → Wild Shape', resurgeSlot: 'Wild Resurgence: Wild Shape → slot',
       focusName: { 'flurry-of-blows': 'Flurry of Blows', 'patient-defense': 'Patient Defense', 'step-of-the-wind': 'Step of the Wind' } as Record<string, string>,
       fontToPoints: (l: number) => `Font of Magic: slot → Sorcery Point (${l}. sv)`, fontToSlot: (l: number) => `Font of Magic: Sorcery Point → slot (${l}. sv)`,
     },
