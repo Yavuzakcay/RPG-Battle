@@ -2,6 +2,27 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev KATALOG-1 P0: özgün eşya kataloğu altyapısı (2026-11-26; kural sürümü ve kayıt sürümü değişmedi)
+
+Envanter ve kullanıcı kararları K1–K14: `harita/belgeler/KATALOG-1-ENVANTER.md`. Genel kural (kullanıcı): PDF'teki güçler birebir
+(metin, zar, DC, menzil, süre, yük); sadeleştirme, dengeleme, kırpma yok; motorda karşılığı olmayan güç metniyle kayıtta durur, durum
+etiketi `planli`/`calismiyor` alır; belirsiz yer tahminle doldurulmaz, sorulur.
+
+- `Item.srd` isteğe bağlı; özgün eşyada yok, `kaynak: 'katalog-1'` (özgün geçmişlerin `ozgun` deseni). Sihirli eşya sorgusu tek yerde
+  `isMagicItem` (`src/data/index.ts`); `srd.startsWith('magic-items')` çağrıları (Dungeondex, prospektüs, görsel envanter, ikon raporu,
+  testler) buna geçti. `scripts/esya-ikon.mjs` katalog eşyalarını SRD kimliksiz kayıt olarak okur.
+- PDF bilgisi `Item.katalog` (`KatalogEsya`): kaynak sırası (`ref`), TR ad, nadirlik (Yadigâr dahil; görünümde Efsanevi kademesi),
+  tür, yuva, uyum koşulu, fiyat (`null` = satılamaz), taban silah/zırh ve K11 farkı, hasar, ustalık, özellikler, "Ne işe yarar"
+  (`ozet`), riskler, kimler kullanamaz ve her güç için `ozellikler[]` (ad, PDF metni, durum, not). Savaş etkisi yine `Item`'ın
+  mevcut alanlarında (bonus, onHit, passive, paket, spells/charges/recharge, use); yeni savaş kodu yok.
+- Veri `data/items-katalog.json` (`esyalar`), `loadClassData` tembel yükler, `items`'a ekler (ana parça 453,85 kB / 500 kB).
+- `itemKind`/`itemTier` önce `katalog` alanına bakar. Dungeondex prospektüsü katalog eşyasında bölümleri `katalog`'dan kurar; her güç
+  "ad · durum" satırı, "Oyundaki durum" rozeti hepsi çalışırsa "Savaşta çalışır", bir kısmı "Kısmen", hiçbiri "Yalnız açıklama".
+- Test: `src/data/srdIds.test.ts` katalog kolu (kimlik biçimi ve tekilliği, EN-AD tekilliği (eşyalar adla bağlanır), `ref` biçimi,
+  enum'lar, yüklü büyü adı, silah eşyasında `esya-silah-bagi.json` satırı ve taban SRD silahı), `src/data/katalog.test.ts`.
+- Dungeondex kartında Türkçe açıklama yoksa PDF'in "Ne işe yarar" paragrafı (`desc.ui`; `Item.text` oluşturucu özetinin yedeği, ham metin sayılmaz). Prospektüs kapsamı `esyaIds().katalog` ayrı listede (SRD paragraf dosyası `data/prospektus/esya-sihirli.json` yalnız SRD eşyaları); A5 sınıflandırması ve SRD kimlik testi katalog eşyalarını saymaz (`loadClassData` onları `items.json` modül dizisine de ekler).
+- Planla fark: O12 (boss yükleyici iskeleti) F'ye kaldı; O3'ün "oluşturucu taban silahı ekler" kısmı A'da değerlendirilir.
+
 ## Görev KARAR104: bekleyen kullanıcı kararları SRD 5.2.1'e göre (2026-11-24; kural sürümü 104 `KARAR104_VERSION`, kayıt sürümü 26)
 
 Kapsam kullanıcıyla bu oturumda belirlendi (yol haritası dosyası depoda yoktu); kaynak `harita/belgeler/GECE-KUYRUGU-RAPOR.md`

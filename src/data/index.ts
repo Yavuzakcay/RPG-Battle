@@ -27,6 +27,11 @@ export const weapons = weaponsJson as Weapon[];
  */
 export const spells: Spell[] = [];
 export const items = itemsJson as Item[];
+/**
+ * Görev KATALOG-1: sihirli eşya mı (SRD büyülü eşya kaydı ya da özgün katalog eşyası). `Item.srd` artık isteğe bağlı;
+ * `srd.startsWith('magic-items')` yerine bu sorgu kullanılır.
+ */
+export const isMagicItem = (i: Pick<Item, 'srd' | 'kaynak'>): boolean => !!i.srd?.startsWith('magic-items') || i.kaynak === 'katalog-1';
 export const environments = environmentsJson as Environment[];
 /**
  * Canavarlar (330 kayıt, ~480 KB) açılışta yüklenmez: `loadMonsters()` dinamik import ile doldurur.
@@ -113,8 +118,8 @@ export function loadClassData(): Promise<void> {
     import('../../data/srd/weapons.json'), import('../../data/subclasses.json'), import('../../data/spells-45.json'),
     import('../../data/items-srd.json'), import('../../data/spells-69.json'), import('../../data/karadul.json'), import('../../data/imza.json'),
     import('../../data/spells.json'), import('../../data/buyu-betimleme.json'), import('../../data/aciklamalar-tr.json'),
-    import('../../data/aciklamalar-en.json'),
-  ]).then(([p, m, f, w, sc, s45, isrd, s69, kd, imza, s03, bet, atr, aen]) => {
+    import('../../data/aciklamalar-en.json'), import('../../data/items-katalog.json'),
+  ]).then(([p, m, f, w, sc, s45, isrd, s69, kd, imza, s03, bet, atr, aen, ikat]) => {
     if (classDataLoaded()) return;
     // Kuyruk B2: büyü betimlemeleri (yalnız görünüm; ana parçaya girmez, sınıf verisiyle tembel gelir).
     const { _aciklama: _a, ...descriptions } = bet.default as unknown as SpellDescriptions & { _aciklama?: unknown };
@@ -128,6 +133,9 @@ export function loadClassData(): Promise<void> {
     // Kuyruk 19 (görev 7): SRD'nin geri kalan eşyaları (ana parça sınırı; oluşturucu ve savaştan önce yüklenir).
     const moreItems = (isrd.default as unknown as Item[]).filter((x) => !items.some((y) => y.id === x.id));
     items.push(...moreItems);
+    // Görev KATALOG-1: Dice & Hex özgün eşya kataloğu (SRD dışı; `kaynak: 'katalog-1'`, PDF birebir; tembel, ana parçaya girmez).
+    const katalog = ((ikat.default as unknown as { esyalar: Item[] }).esyalar ?? []).filter((x) => !items.some((y) => y.id === x.id));
+    items.push(...katalog);
     // Kuyruk 40: 4.–5. seviye büyüler (yalnızca 7+ seviye karakterler; ana parça sınırı) sınıf verisiyle gelir.
     // Kuyruk 19 (görev 3): 6.–9. seviye büyüler (`data/spells-69.json`, scripts/k19-buyu-69.py).
     // Kuyruk K57: 0–3. seviye büyüler önce (sıra eskisi gibi: 0–3, 4–5, 6–9).

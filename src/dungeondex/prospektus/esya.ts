@@ -5,7 +5,7 @@
  * Saf modül: React, DOM, localStorage yok; metinler parametreyle gelen dil tablosundan. SRD'nin İngilizce ham metni
  * (`Item.text`) ve sayfa numarası hiç kullanılmaz.
  */
-import { armor, items, weapons } from '../../data';
+import { armor, isMagicItem, items, weapons } from '../../data';
 import type { Armor, Item, Weapon } from '../../data';
 import type { Lang, Strings } from '../../i18n';
 import silahJson from '../../../data/prospektus/esya-silah.json';
@@ -42,17 +42,19 @@ export function findEsya(id: string): { tur: EsyaTur; weapon?: Weapon; armor?: A
   const a = (armor as Array<Armor & { srd?: string }>).find((x) => armorId(x) === id);
   if (a) return { tur: 'zirh', armor: a };
   const i = items.find((x) => x.id === id);
-  if (i) return { tur: i.srd.startsWith('magic-items') ? 'sihirli' : 'donanim', item: i };
+  if (i) return { tur: isMagicItem(i) ? 'sihirli' : 'donanim', item: i };
   return null;
 }
 
 /** Bütün eşya kimlikleri (kapsam testi ve kabuk için): silah, zırh, donanım, sihirli eşya. */
-export function esyaIds(): Record<EsyaTur, string[]> {
+export function esyaIds(): Record<EsyaTur, string[]> & { katalog: string[] } {
   return {
     silah: weapons.map((w) => w.id),
     zirh: (armor as Array<Armor & { srd?: string }>).flatMap((a) => armorId(a) ?? []),
-    donanim: items.filter((i) => !i.srd.startsWith('magic-items')).map((i) => i.id),
-    sihirli: items.filter((i) => i.srd.startsWith('magic-items')).map((i) => i.id),
+    donanim: items.filter((i) => !isMagicItem(i)).map((i) => i.id),
+    // Görev KATALOG-1: özgün katalog eşyaları ayrı (prospektüsleri `Item.katalog`'dan; SRD paragraf dosyasında yok).
+    sihirli: items.filter((i) => isMagicItem(i) && !i.katalog).map((i) => i.id),
+    katalog: items.filter((i) => !!i.katalog).map((i) => i.id),
   };
 }
 
@@ -119,6 +121,31 @@ export function esyaProspektus(id: string, L: ProStrings, lang: Lang): ProSectio
     S.maliyet.push(...row(L.l.cost, k.maliyet));
     weight = a.weight;
     tone = 'ok';
+  } else if (hit.item?.katalog) {
+    // Görev KATALOG-1: özgün katalog eşyası. Bölümler PDF'ten birebir (`Item.katalog`); her güç durum etiketiyle.
+    const it = hit.item;
+    const k = it.katalog!;
+    const T = true;
+    S.ne.push(...par(k.ozet));
+    for (const o of k.ozellikler) S.nasil.push({ label: `${o.ad} · ${L.katDurum[o.durum] ?? o.durum}`, text: o.not ? `${o.metin} (${o.not})` : o.metin, trOnly: tr || undefined });
+    S.etken.push(...row(L.l.category, k.yuva, T));
+    S.etken.push(...row(L.l.rarity, L.katNadirlik[k.nadirlik] ?? k.nadirlik));
+    if (it.attunement) S.etken.push(...row(L.l.attune, k.uyumKosulu ? `${L.v.attune} (${k.uyumKosulu})` : L.v.attune, !!k.uyumKosulu));
+    S.etken.push(...row(L.l.bonus, k.bonus, T));
+    S.etken.push(...row(L.l.damage, k.hasar, T));
+    S.etken.push(...row(L.l.range, k.menzil, T));
+    if (k.silahOzellikleri?.length) S.etken.push(...row(L.l.props, k.silahOzellikleri.join(', ')));
+    S.etken.push(...row(L.l.mastery, k.ustalik));
+    S.etken.push(...row(L.l.base, k.taban));
+    S.etken.push(...row(L.l.baseDiff, k.tabanFarki, T));
+    if (it.charges) S.etken.push(...row(L.l.charges, String(it.charges)));
+    S.risk.push(...par(k.riskler));
+    S.kimler.push(...par(k.kimlerKullanamaz));
+    S.maliyet.push(...row(L.l.cost, k.fiyatGp === null ? L.priceless : `${k.fiyatGp} GP`));
+    weight = it.weight;
+    const n = k.ozellikler.length, ok = k.ozellikler.filter((o) => o.durum === 'calisir').length;
+    tone = n === 0 || ok === n ? 'ok' : ok > 0 || k.ozellikler.some((o) => o.durum === 'kismi') ? 'part' : 'none';
+    S.durum.push({ label: L.l.source, text: L.katKaynak(k.ref) });
   } else if (hit.item) {
     const it = hit.item;
     const magic = hit.tur === 'sihirli';

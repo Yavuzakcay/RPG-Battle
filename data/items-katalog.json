@@ -1,0 +1,4 @@
+{
+ "_not": "Görev KATALOG-1 (harita/belgeler/KATALOG-1-ENVANTER.md): Dice & Hex özgün eşya kataloğu, SRD dışı (srd alanı yok, kaynak 'katalog-1'). PDF'teki güçler birebir (metin, zar, DC, menzil, süre, yük); motorda karşılığı olan kısım Item alanlarında (bonus, onHit, passive, paket, spells/charges/recharge), olmayan katalog.ozellikler'de durum 'planli'/'calismiyor'. Silah eşyaları data/esya-silah-bagi.json ile taban SRD silahına bağlanır (KARAR104 A10). loadClassData tembel yükler (ana parçaya girmez).",
+ "esyalar": []
+}

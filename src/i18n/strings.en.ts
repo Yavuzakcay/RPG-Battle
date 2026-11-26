@@ -232,7 +232,11 @@ export const en: Strings = {
       l: { damage: 'Damage', twoHand: 'two-handed', range: 'Range', reach: 'Reach', mastery: 'Mastery', props: 'Properties', ac: 'AC', save: 'Saving throw',
         area: 'Area', burning: 'Burning', conditions: 'Conditions', escape: 'Escape', heal: 'Healing', tempHp: 'Temporary HP', duration: 'Duration', coat: 'Coats a weapon',
         bonus: 'Magic bonus', onHit: 'On hit', spells: 'Stored spells', charges: 'Charges', attune: 'Attunement', cost: 'Cost', weight: 'Weight', rarity: 'Rarity',
-        don: 'Don / doff', strength: 'Strength requirement', stealth: 'Stealth', category: 'Category', reason: 'Note', diff: 'Differs in game', fixedDc: 'Fixed DC', setAbility: 'Ability score' },
+        don: 'Don / doff', strength: 'Strength requirement', stealth: 'Stealth', category: 'Category', reason: 'Note', diff: 'Differs in game', fixedDc: 'Fixed DC', setAbility: 'Ability score',
+        base: 'Base weapon / armor', baseDiff: 'Base difference (not in the game yet)', attuneBy: 'Attunement requirement', source: 'Source', features: 'Working / not working powers' },
+      katNadirlik: { olagandisi: 'Uncommon', nadir: 'Rare', cokNadir: 'Very Rare', efsanevi: 'Legendary', yadigar: 'Artifact' } as Record<string, string>,
+      katDurum: { calisir: 'works', kismi: 'partly works', planli: 'planned (not in the game yet)', calismiyor: 'not working' } as Record<string, string>,
+      katKaynak: (ref: string) => `Dice & Hex original item catalog (${ref})`, priceless: 'Cannot be sold / priceless',
       v: {
         dexMod: 'DEX', dexMax: (n: number) => `DEX (max ${n})`, shield: (n: number) => `+${n} (shield)`,
         minutes: (a: number, b: number) => `${a} min to don, ${b} min to doff`, stealthDis: 'Disadvantage on Dexterity (Stealth) checks',

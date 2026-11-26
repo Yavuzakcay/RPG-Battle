@@ -1014,11 +1014,55 @@ export interface ItemEffects {
   shieldAcBonus?: number;
 }
 
+/**
+ * Görev KATALOG-1 (P0): özgün katalog eşyasının bir özelliği, PDF'teki metin ve sayılarla birebir. `durum` motorun bugünkü
+ * karşılığı (alt sınıf AS2 deseni): `calisir` veriden çalışır, `kismi` bir parçası çalışır, `planli`/`calismiyor` metin olarak
+ * kayıtta durur, savaşta etkisi yok. `not` hangi kancanın gerektiğini söyler.
+ */
+export type KatalogDurum = 'calisir' | 'kismi' | 'planli' | 'calismiyor';
+export interface KatalogOzellik { ad: string; metin: string; durum: KatalogDurum; not?: string }
+/** Görev KATALOG-1: özgün katalog eşyasının PDF'ten gelen bilgileri (Dungeondex prospektüsü ve oluşturucu için; savaş etkisi `Item` alanlarında). */
+export interface KatalogEsya {
+  /** Kaynak katalog ve sıra (`harita/belgeler/KATALOG-1-ENVANTER.md`): S1#1, S2#41, KY#3, ZK#5, GY#7, YT#9, TK#12, BOSS#… */
+  ref: string;
+  /** Türkçe ad (EN-AD `Item.name`). */
+  tr: string;
+  nadirlik: 'olagandisi' | 'nadir' | 'cokNadir' | 'efsanevi' | 'yadigar';
+  tur: 'silah' | 'zirh' | 'kalkan' | 'tuketilebilir' | 'aksesuar' | 'sihirli';
+  /** PDF başlığındaki sınıf/yuva ("Savaş silahı (yakın dövüş)", "başlık", "yüzük"…). */
+  yuva: string;
+  /** Uyum koşulu ("Büyücü", "Druid"); yoksa yalnız `Item.attunement`. */
+  uyumKosulu?: string;
+  /** GP; `null` = satılamaz / paha biçilemez. */
+  fiyatGp: number | null;
+  /** Bağlanan SRD silahı (`data/weapons.json` kimliği) ya da zırh adı; K11: SRD karşılığı yoksa en yakın SRD silahı. */
+  taban?: string;
+  /** K11: taban silahla istatistik farkı (motorda karşılığı yok; kanca). */
+  tabanFarki?: string;
+  hasar?: string;
+  ustalik?: string;
+  silahOzellikleri?: string[];
+  menzil?: string;
+  bonus?: string;
+  /** PDF "Ne işe yarar" paragrafı (birebir). */
+  ozet?: string;
+  ozellikler: KatalogOzellik[];
+  riskler?: string;
+  kimlerKullanamaz?: string;
+}
+
 export interface Item {
   /** Sabit kimlik (değişmez; Dungeondex vb. açıklamalar buna bağlanır). */
   id: string;
-  /** SRD 5.2.1 karşılığı: `<dosya>:<kimlik>` (data/srd/<dosya>.json). */
-  srd: string;
+  /**
+   * SRD 5.2.1 karşılığı: `<dosya>:<kimlik>` (data/srd/<dosya>.json). Görev KATALOG-1: özgün katalog eşyasında yok
+   * (`kaynak: 'katalog-1'`); sihirli eşya sorgusu `isMagicItem`.
+   */
+  srd?: string;
+  /** Görev KATALOG-1: SRD dışı özgün eşyanın kaynağı (`data/items-katalog.json`). */
+  kaynak?: 'katalog-1';
+  /** Görev KATALOG-1: PDF bilgileri (yalnız `kaynak: 'katalog-1'`). */
+  katalog?: KatalogEsya;
   name: string;
   attunement: boolean;
   /** Görev K5: ağırlık (lb); `weightApprox` SRD'de ağırlığı yazmayan eşyada varsayım (DECISIONS.md). */

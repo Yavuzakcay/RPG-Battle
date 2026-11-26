@@ -7,7 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
-import { armor, items, loadClassData, weapons } from '../src/data';
+import { armor, isMagicItem, items, loadClassData, weapons } from '../src/data';
 import { bagla, dosyaAdi, esle, oyunKayitlari, plan, sayfaAdi } from './esya-ikon.mjs';
 
 await loadClassData();
@@ -21,7 +21,7 @@ const ikonVar = (id: string) => fs.existsSync(path.join(ROOT, 'public/esya', `${
 
 type Kayit = { id: string; ad: string; tur: string };
 const oyun: Kayit[] = [
-  ...items.map((i) => ({ id: i.id, ad: i.name, tur: i.srd.startsWith('magic-items') ? 'sihirli' : 'donanım' })),
+  ...items.map((i) => ({ id: i.id, ad: i.name, tur: isMagicItem(i) ? 'sihirli' : 'donanım' })),
   ...weapons.map((w) => ({ id: w.id, ad: w.name, tur: 'silah' })),
   ...(armor as Array<{ name: string; srd?: string }>).filter((a) => a.srd).map((a) => ({ id: String(a.srd).split(':')[1]!, ad: a.name, tur: 'zırh' })),
 ];
@@ -34,9 +34,10 @@ const kayitsizDuz = kayitsiz.filter((id: string) => !id.includes('/')).sort();
 const yeniden = Object.entries((ham.yenidenUretilecek ?? {}) as Record<string, string>);
 
 // SRD 258 ↔ oyun 319: oyun sihirli kaydı srd kimliğine göre gruplanır.
-const sihirli = items.filter((i) => i.srd.startsWith('magic-items'));
+// Görev KATALOG-1: yalnız SRD kayıtlı sihirli eşyalar (özgün katalog eşyasının SRD kimliği yok).
+const sihirli = items.filter((i) => i.srd?.startsWith('magic-items'));
 const grup = new Map<string, typeof sihirli>();
-for (const i of sihirli) { const k = i.srd.split(':')[1]!; grup.set(k, [...(grup.get(k) ?? []), i]); }
+for (const i of sihirli) { const k = i.srd!.split(':')[1]!; grup.set(k, [...(grup.get(k) ?? []), i]); }
 const srdIdler = new Set(srd.items.map((x) => x.id));
 const acilan = [...grup].filter(([k, v]) => v.length > 1 || (v.length === 1 && v[0]!.id !== k)).sort();
 const srdDisi = [...grup.keys()].filter((k) => !srdIdler.has(k));
