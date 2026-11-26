@@ -862,6 +862,13 @@ Aşama 1 onaylandı.
 | K12 | Özel oklar ve eliksirler yalnız veri |
 | K13 | Eksik stat blokları yalnız kadim yaratıklar için tasarlanır, kullanıcı onaylar; mücevher nefes DC'si tablodaki sabit değer |
 | K14 | Kaltakkıran savaşı yalnız anlatım |
+| B-1 | K8 kalkanları aynen: "+2 AC sağlar" sihirli +2, "Toplam +3 AC" sihirli +1 |
+| B-2 | Ad ile istatistik çelişirse istatistik esas; ad ve ikon aynı (A: Yakarış Uzun Yayı Shortbow, Kızıl İğne Mızrağı Rapier, Işık Biriktiren Çift Mızrak kesici, Yarık Çökerten Dev Kılıç Maul) |
+| B-3 | Görünen ad her yerde "Kaltakkıran" (kimlik ve güçler aynı) |
+| B-4 | Çeneli Zincir Kılıcı +3 planlı; motorun denetleyemediği güçlerin tek listesi D sonunda |
+| B-5 | Kör Nokta Cübbesi "temel AC 15 + DEX" taban AC (Mage Armor gibi), Unarmored Defense'le toplanmaz, yüksek olan |
+| S1 (cevap) | Üç imza silah zırh/koşum/cübbe eşleriyle B'de |
+| S2 (cevap) | 10 bölge bossu F'den sonra ayrı parça H, aynı kurallarla |
 
 **Açık sorular** (parça başlarken sorulacak):
 

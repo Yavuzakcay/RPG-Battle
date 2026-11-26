@@ -1007,6 +1007,8 @@ export interface ItemEffects {
   saveBonus?: number;
   /** Zırhsız ve kalkansızken ek AC (Bracers of Defense gibi). */
   unarmoredAcBonus?: number;
+  /** Görev KATALOG-1 B: zırhsızken taban AC = bu + DEX (Mage Armor gibi; Unarmored Defense'le toplanmaz, yüksek olan; kalkan eklenir). */
+  unarmoredBase?: number;
   /** Skoru en az bu değere çeker (Gauntlets of Ogre Power gibi). */
   setAbility?: Partial<Record<Ability, number>>;
   /** Kuyruk 19: Armor +N (zırh giyiliyken) ve Shield +N (kalkan taşınırken). */

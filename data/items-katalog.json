@@ -9196,7 +9196,7 @@
    "text": "Karanlık Elf gölge ipeğinden dokunmuş, yakasında Kara Malek'in rünü ve Kaltakkıran'ın kırık kılıç tokasını taşıyan cübbe: düşmanın algısını bükerek saldırıları saptırır ve büyücüyü neredeyse dokunulmaz kılar.",
    "weight": 4.0,
    "effects": {
-    "unarmoredAcBonus": 5
+    "unarmoredBase": 15
    },
    "passive": {
     "resist": [
@@ -9222,8 +9222,8 @@
      {
       "ad": "Cübbe",
       "metin": "Zırh yeterliliği gerektirmeden temel AC 15 + DEX sağlar.",
-      "durum": "kismi",
-      "not": "zırhsız taban 10 + DEX'e +5 eki olarak (15 + DEX); kalkan taşınırken ek düşer, Unarmored Defense tabanıyla toplanır (PDF tabanı değiştirir)"
+      "durum": "calisir",
+      "not": "zırhsız taban AC 15 + DEX (Mage Armor gibi taban; Unarmored Defense'le toplanmaz, yüksek olan geçerli; kalkan eklenir)"
      },
      {
       "ad": "Zihin Kalkanı",
@@ -9445,7 +9445,7 @@
   },
   {
    "id": "kaltakkirans-maw-chain-greatsword",
-   "name": "Kaltakkiran's Maw-Chain Greatsword",
+   "name": "Kaltakkıran's Maw-Chain Greatsword",
    "kaynak": "katalog-1",
    "attunement": false,
    "text": "Kaltakkıran'ın kırılan eski paladin yemin kılıcından dövülen ve yalnızca onun zırhıyla uyanan eklemli zincir büyük kılıç: tek vuruşta kesici, ezici ve delici hasarı birlikte indirir; zincir formuna uzayıp hedefi pençeli çenesiyle sarmalar ve kurbanın en zayıf olduğu büyü veya element enerjisini doğrudan bedenine akıtır.",

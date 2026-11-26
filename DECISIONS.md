@@ -2,6 +2,18 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev KATALOG-1 B onayı: kullanıcı kararları (2026-11-26)
+
+- K8 kalkanları aynen: "+2 AC sağlar" sihirli +2, "Toplam +3 AC" sihirli +1 (kalkanın kendi +2'si üstüne).
+- Ad ile istatistik çelişirse istatistik esas (B'deki zırhlar; A'daki dört silah: Yakarış Uzun Yayı → Shortbow, Kızıl İğne Mızrağı →
+  Rapier, Işık Biriktiren Çift Mızrak → kesici, Yarık Çökerten Dev Kılıç → Maul; ad ve ikon aynı kalır). A'da zaten böyleydi; değişiklik yok.
+- Görünen ad her yerde "Kaltakkıran": `Kaltakkiran's Maw-Chain Greatsword` → `Kaltakkıran's Maw-Chain Greatsword` (kimlik
+  `kaltakkirans-maw-chain-greatsword` ve güçler aynı).
+- Çeneli Zincir Kılıcı'nın +3'ü planlı kalır. Motorun denetleyemediği güçlerin tek listesi D sonunda verilir.
+- Kör Nokta Cübbesi "temel AC 15 + DEX" taban AC'dir: yeni eşya alanı `effects.unarmoredBase` (zırhsızken taban = değer + DEX;
+  Mage Armor gibi; Unarmored Defense'le toplanmaz, yüksek olan geçerli; kalkan eklenir; `stats.ts`). Zırhsız ek (+5) kaldırıldı,
+  "Cübbe" gücü `calisir` (B sayıları: 68 çalışır, 28 kısmen, 95 planlı). Savaş AC'si karakter AC'sinden geldiği için kural sürümü yok.
+
 ## Görev KATALOG-1 B: 60 özgün zırh, cübbe, kalkan + 6 boss imza eşyası (2026-11-26; kural sürümü ve kayıt sürümü değişmedi)
 
 Kaynak: Zırh Kataloğu #1–45 (`ZK#`), Karanlık Yadigârlar #36–44, #49–53, #55 (`KY#`; #45–48 ve #54 başlık, C'de), boss dosyaları:

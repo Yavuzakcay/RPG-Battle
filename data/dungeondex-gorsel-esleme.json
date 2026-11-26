@@ -1029,7 +1029,7 @@
     "mountain-crushers-chained-monolith": {"kaynak":"yedek","ref":"yedek:esya-silah","durum":"yedek","ad":"Mountain-Crusher's Chained Monolith","nadirlikRengi":"#f0a020"},
     "champions-crag-harness": {"kaynak":"yedek","ref":"yedek:esya-zirh","durum":"yedek","ad":"Champion's Crag Harness","nadirlikRengi":"#f0a020"},
     "kaltakkirans-paladin-armor": {"kaynak":"yedek","ref":"yedek:esya-zirh","durum":"yedek","ad":"Kaltakkıran's Paladin Armor","nadirlikRengi":"#f0a020"},
-    "kaltakkirans-maw-chain-greatsword": {"kaynak":"yedek","ref":"yedek:esya-silah","durum":"yedek","ad":"Kaltakkiran's Maw-Chain Greatsword","nadirlikRengi":"#f0a020"}
+    "kaltakkirans-maw-chain-greatsword": {"kaynak":"yedek","ref":"yedek:esya-silah","durum":"yedek","ad":"Kaltakkıran's Maw-Chain Greatsword","nadirlikRengi":"#f0a020"}
   },
   "canavar": {
     "goblin-warrior": {"kaynak":"jeton","ref":"monsters/goblin-warrior.webp","durum":"var","ad":"Goblin Warrior"},

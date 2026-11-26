@@ -47,9 +47,14 @@ describe('KATALOG-1 B: zırh, cübbe, kalkan ve imza eşyaları', () => {
     expect(ac(sheet(['Spellmirror Greatshield'], shield)) - ac(sheet([], shield))).toBe(1);
     expect(ac(sheet(['Deflector Knight Shield'])) - ac(sheet([]))).toBe(0);
   });
-  it('Kör Nokta Cübbesi: zırhsız 15 + DEX (10 + DEX + 5); kalkanla ek düşer; psişik direnç, Charmed/Frightened bağışıklığı', () => {
+  it('Kör Nokta Cübbesi: zırhsız taban 15 + DEX (kalkan eklenir); Unarmored Defense ile toplanmaz, yüksek olan; psişik direnç, Charmed/Frightened bağışıklığı', () => {
     expect(ac(sheet(['Robe of the Blindspot'])) - ac(sheet([]))).toBe(5);
-    expect(ac(sheet(['Robe of the Blindspot'], { shield: true })) - ac(sheet([], { shield: true }))).toBe(0);
+    expect(ac(sheet(['Robe of the Blindspot'], { shield: true })) - ac(sheet([], { shield: true }))).toBe(5);
+    expect(ac(sheet(['Robe of the Blindspot'], { armorName: 'Studded Leather Armor' }))).toBe(ac(sheet([], { armorName: 'Studded Leather Armor' })));
+    // Monk: 10 + DEX + WIS; WIS +5 ise eşik eşit (Unarmored Defense korunur), WIS +3 ise cübbenin 15'i (15 + DEX).
+    const monk = (wis: number, names: string[]) => ac(sheet(names, { classId: 'monk', baseScores: { str: 10, dex: 10, con: 10, int: 10, wis, cha: 10 }, backgroundBonuses: {} }));
+    expect(monk(16, ['Robe of the Blindspot'])).toBe(15);
+    expect(monk(16, [])).toBe(13);
     const e = itemParts(['Robe of the Blindspot'], 'p1').effects.find((x) => x.id === 'item:robe-of-the-blindspot')!;
     expect(e.resist).toEqual(['psychic']);
     expect(e.immune).toEqual(['Charmed', 'Frightened']);
@@ -89,7 +94,7 @@ describe('KATALOG-1 B: zırh, cübbe, kalkan ve imza eşyaları', () => {
     expect(dg.enchant ?? 0).toBe(0);
     const foe = mk('F', { side: 'enemies' });
     expect(itemHitsFor(a, maul, foe).map((h) => `${h.dice} ${h.type}`)).toContain('1d8 thunder');
-    const { a: k } = battle(sheet(["Kaltakkiran's Maw-Chain Greatsword"], { weapons: [{ name: 'Greatsword' }] }));
+    const { a: k } = battle(sheet(["Kaltakkıran's Maw-Chain Greatsword"], { weapons: [{ name: 'Greatsword' }] }));
     expect(k.weaponOptions.find((o) => o.weaponId === 'greatsword')!.enchant ?? 0).toBe(0);
   });
 });
