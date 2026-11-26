@@ -1752,29 +1752,29 @@
      "gorunum": "Massive heavy longbow of dark laminated wood and horn with thick limbs, a very thick braided pale sinew string, iron caps on the limb tips and a broad leather grip."
     },
     {
-     "id": "helldusk-gauntlets",
-     "ad": "Helldusk Gauntlets",
+     "id": "blazing-fist-gauntlets",
+     "ad": "Blazing Fist Gauntlets",
      "gorunum": "Pair of war gauntlets with blackened iron knuckle plates glowing orange from within like cooling forge metal, leather cuffs wrapped in brass wire."
     },
     {
-     "id": "nightwalker-boots",
-     "ad": "Nightwalker Boots",
+     "id": "darkstep-boots",
+     "ad": "Darkstep Boots",
      "gorunum": "Pair of tall soft charcoal suede boots with silver toe caps and a stitched star-map pattern, wisps of blue-grey shadow at the heels."
     },
     {
-     "id": "caustic-band",
-     "ad": "Caustic Band",
+     "id": "searing-acid-ring",
+     "ad": "Searing Acid Ring",
      "gorunum": "Thick bronze band holding a single emerald-green droplet-shaped gem in a claw setting, a bead of bright green acid on the band."
     },
     null,
     {
-     "id": "callous-glow-ring",
-     "ad": "Callous Glow Ring",
+     "id": "lightcall-ring",
+     "ad": "Lightcall Ring",
      "gorunum": "Hunter's ring of bone and gold with an amber cabochon glowing like a small lantern."
     },
     {
-     "id": "strange-conduit-ring",
-     "ad": "Strange Conduit Ring",
+     "id": "leaping-current-ring",
+     "ad": "Leaping Current Ring",
      "gorunum": "Focus ring with a smoky blue-grey quartz stone with a tiny pale-teal spark inside, on a dark silver band."
     }
    ],
@@ -2423,8 +2423,8 @@
      "eskiHucre": "katalog-tuketilebilir-03#15"
     },
     {
-     "id": "callous-glow-ring",
-     "ad": "Callous Glow Ring",
+     "id": "lightcall-ring",
+     "ad": "Lightcall Ring",
      "gorunum": "Hunter's ring of bone and gold with an amber cabochon glowing like a small lantern.",
      "eskiHucre": "katalog-bekleyen-01#6"
     }
@@ -2452,12 +2452,12 @@
   ],
   "kimlikler": [
    "giant-sinew-longbow",
-   "helldusk-gauntlets",
-   "nightwalker-boots",
-   "caustic-band",
-   "callous-glow-ring",
-   "strange-conduit-ring"
+   "blazing-fist-gauntlets",
+   "darkstep-boots",
+   "searing-acid-ring",
+   "lightcall-ring",
+   "leaping-current-ring"
   ],
-  "not": "KATALOG-1 karar K7 (BG3'e benzeyen 6 eşya): EN ad kullanıcı onayını bekliyor; kimlik yeni EN addan türetilecek. Tarifler değişmeyen TR ada göre özgün yazıldı; ad seçilince gözden geçirilip sayfa üretilir."
+  "not": "KATALOG-1 karar K7 (BG3'e benzeyen 6 eşya): EN ad kullanıcı onayını bekliyor; kimlik yeni EN addan türetilecek. Tarifler değişmeyen TR ada göre özgün yazıldı; ad seçilince gözden geçirilip sayfa üretilir. Görev KATALOG-1 (2026-11-26): kullanıcı 'a' önerilerini seçti; kimlikler ve dosyalar yeni adlara taşındı (Blazing Fist Gauntlets, Darkstep Boots, Searing Acid Ring, Lightcall Ring, Leaping Current Ring)."
  }
 }
