@@ -20,7 +20,8 @@ describe('Dungeondex Kitap', () => {
     expect(m).toContain('data-testid="dex-cover"');
     expect(m).toContain('Dokun, aç');
     expect(m).toContain('339 büyü');
-    expect(m).toContain('330 canavar');
+    // Görev KATALOG-F2: 330 SRD canavarı + 20 kadim yaratık.
+    expect(m).toContain('350 canavar');
     expect(m).toContain('splash-kapali-kanat');
     expect(m).not.toContain('dex-cat-buyu');
   });

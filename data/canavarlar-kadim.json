@@ -1,0 +1,2997 @@
+{
+ "_not": "Görev KATALOG-F2: Kadim Yaratıklar ve Mücevher Ejderhası (21 stat bloğu; PDF depo dışı). `node scripts/katalog-f2-kadim.mjs` üretir, elle düzenlenmez. `canavarlar`: Monster biçimi (yeni alan yok; `data/monsters.json`a yazılmaz, `loadMonsters` ayrı dizi `kadimMonsters` olarak yükler). `dex`: Dungeondex yan tablosu (tür, hizalanma, durum bağışıklığı; `data/srd/monsters.json` biçimi). `ozellikler`: Dungeondex özellik/eylem listesi (`data/canavar-ozellik.json` biçimi). `ekler`: saldırı ekleri (`data/attack-riders.json` biçimi, anahtar `<kimlik>:<saldırı>`). `hatlar`: mücevher hatları (nefes türünün tek yeri betikteki HATLAR). Türetilen değerler harita/belgeler/KATALOG-F2-PROSPEKTUS.md.",
+ "hatlar": {
+  "sigma": {
+   "ad": {
+    "tr": "Sigma",
+    "en": "Sigma"
+   },
+   "tas": {
+    "tr": "Altın",
+    "en": "gold"
+   },
+   "hasar": "radiant",
+   "oneri": true,
+   "hizalanma": "Chaotic Neutral",
+   "kimlikler": [
+    "sigma-jewel-dragon-wyrmling",
+    "young-sigma-jewel-dragon",
+    "adult-sigma-jewel-dragon"
+   ]
+  },
+  "omega": {
+   "ad": {
+    "tr": "Omega",
+    "en": "Omega"
+   },
+   "tas": {
+    "tr": "Yakut",
+    "en": "ruby"
+   },
+   "hasar": "necrotic",
+   "oneri": true,
+   "hizalanma": "Chaotic Neutral",
+   "kimlikler": [
+    "omega-jewel-dragon-wyrmling",
+    "young-omega-jewel-dragon",
+    "adult-omega-jewel-dragon"
+   ]
+  },
+  "delta": {
+   "ad": {
+    "tr": "Delta",
+    "en": "Delta"
+   },
+   "tas": {
+    "tr": "Zümrüt",
+    "en": "emerald"
+   },
+   "hasar": "psychic",
+   "oneri": false,
+   "hizalanma": "Lawful Neutral",
+   "kimlikler": [
+    "delta-jewel-dragon-wyrmling",
+    "young-delta-jewel-dragon",
+    "adult-delta-jewel-dragon"
+   ]
+  },
+  "alpha": {
+   "ad": {
+    "tr": "Alfa",
+    "en": "Alpha"
+   },
+   "tas": {
+    "tr": "Safir",
+    "en": "sapphire"
+   },
+   "hasar": "thunder",
+   "oneri": false,
+   "hizalanma": "Lawful Neutral",
+   "kimlikler": [
+    "alpha-jewel-dragon-wyrmling",
+    "young-alpha-jewel-dragon",
+    "adult-alpha-jewel-dragon"
+   ]
+  },
+  "gamma": {
+   "ad": {
+    "tr": "Gamma",
+    "en": "Gamma"
+   },
+   "tas": {
+    "tr": "Gümüş",
+    "en": "silver"
+   },
+   "hasar": "force",
+   "oneri": true,
+   "hizalanma": "True Neutral",
+   "kimlikler": [
+    "gamma-jewel-dragon-wyrmling",
+    "young-gamma-jewel-dragon",
+    "adult-gamma-jewel-dragon"
+   ]
+  }
+ },
+ "canavarlar": [
+  {
+   "id": "continent-dragon",
+   "name": "Continent Dragon",
+   "size": "G",
+   "ac": 25,
+   "hp": 740,
+   "speed": 50,
+   "fly": 100,
+   "abilities": {
+    "str": 30,
+    "dex": 12,
+    "con": 30,
+    "int": 22,
+    "wis": 24,
+    "cha": 28
+   },
+   "saves": {
+    "str": 19,
+    "con": 19,
+    "wis": 16,
+    "cha": 18
+   },
+   "skills": {
+    "perception": 16
+   },
+   "darkvision": 120,
+   "cr": "31",
+   "multiattack": true,
+   "attacks": [
+    {
+     "name": "Bite",
+     "bonus": 19,
+     "damage": "26 (3d10 + 10) Piercing damage plus 13 (3d8) Force damage.",
+     "damageDice": "3d10+10",
+     "damageType": "piercing",
+     "rider": "+ 3d8 force",
+     "ranged": false,
+     "reachFt": 15,
+     "repeat": 1
+    },
+    {
+     "name": "Claw",
+     "bonus": 19,
+     "damage": "23 (3d8 + 10) Slashing damage.",
+     "damageDice": "3d8+10",
+     "damageType": "slashing",
+     "ranged": false,
+     "reachFt": 15,
+     "repeat": 2
+    },
+    {
+     "name": "Tail",
+     "bonus": 19,
+     "damage": "26 (3d10 + 10) Bludgeoning damage.",
+     "damageDice": "3d10+10",
+     "damageType": "bludgeoning",
+     "rider": "The target is pushed 20 feet",
+     "ranged": false,
+     "reachFt": 25,
+     "repeat": 0
+    },
+    {
+     "name": "Crushing Presence",
+     "bonus": 0,
+     "damage": "Wisdom Saving Throw: DC 25, each enemy in a 60-foot Emanation originating from the attacker. Failure: The target has the Frightened condition for 1 minute.",
+     "save": {
+      "ability": "wis",
+      "dc": 25,
+      "halfOnSave": false
+     },
+     "ranged": true,
+     "range": [
+      60,
+      60
+     ],
+     "rider": "the target has the Frightened condition for 1 minute",
+     "repeat": 0,
+     "area": {
+      "shape": "emanation",
+      "sizeFt": 60,
+      "origin": "self",
+      "targets": "enemies"
+     }
+    },
+    {
+     "name": "Continent Roar Breath",
+     "bonus": 0,
+     "damage": "Constitution Saving Throw: DC 26, each creature in a 120-foot-long, 20-foot-wide Line. Failure: 72 (16d8) Force damage plus 36 (8d8) Thunder damage, and the target is flung 30 feet back and has the Prone condition; the hexes become permanent Cracked Rock. Success: Half damage.",
+     "save": {
+      "ability": "con",
+      "dc": 26,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      120,
+      120
+     ],
+     "damageDice": "16d8",
+     "damageType": "force",
+     "rider": "+ 8d8 thunder. the target is flung 30 feet back and has the Prone condition; the hexes become permanent Cracked Rock",
+     "recharge": 5,
+     "repeat": 0,
+     "area": {
+      "shape": "line",
+      "sizeFt": 120,
+      "widthFt": 20,
+      "origin": "self",
+      "targets": "all"
+     }
+    }
+   ],
+   "traits": "Uçma 100 ft. Legendary Resistance (4/Day), Veil of Slumber, Armor's Betrayal, Ten-Stone Resonance. Multiattack: The dragon uses Crushing Presence, then makes one Bite attack and two Claw attacks.",
+   "resistances": [
+    "fire",
+    "cold",
+    "lightning",
+    "necrotic"
+   ],
+   "immunities": [
+    "force",
+    "thunder"
+   ],
+   "unsupported": [
+    "Boyut: PDF 4×4 (19 altıgen) = Gargantuan; çok altıgen yalnız multiHex açıkken ve 21×11+ haritada",
+    "Hız: Swim 50 ft (yalnızca yürüme/uçma kullanılır)",
+    "Duyu: Blindsight 60 ft",
+    "Bağışıklık: büyülü olmayan fiziksel hasar (motorda büyüsüz bağışıklık yok)",
+    "Durum bağışıklığı: Frightened, Paralyzed, Petrified, Unconscious (yalnız Dungeondex)",
+    "Trait: Veil of Slumber (ilk 2 tur yarım uçuş, INT kurtarma dezavantajı)",
+    "Trait: Armor's Betrayal (Kaltakkıran zırhı kancası)",
+    "Trait: Ten-Stone Resonance (Versiyon II'ye evrim)",
+    "Multiattack (kısmi): Crushing Presence ayrı eylem (alan 60 ft türetildi)",
+    "Continent Roar Breath: ikinci hasar (8d8 thunder), 30 ft savrulma ve kalıcı Çatlak Kaya yüzeyi",
+    "Tail: 20 ft itme",
+    "Legendary Actions: puan bedelleri (her eylem 1 kullanım); Seal Pull; Wing Storm sonrası 50 ft uçuş"
+   ]
+  },
+  {
+   "id": "ancient-continent-spirit",
+   "name": "Ancient Continent Spirit",
+   "size": "G",
+   "ac": 30,
+   "hp": 1850,
+   "speed": 80,
+   "fly": 200,
+   "abilities": {
+    "str": 36,
+    "dex": 18,
+    "con": 36,
+    "int": 30,
+    "wis": 32,
+    "cha": 34
+   },
+   "saves": {
+    "str": 25,
+    "dex": 16,
+    "con": 25,
+    "int": 22,
+    "wis": 23,
+    "cha": 24
+   },
+   "skills": {
+    "perception": 23
+   },
+   "cr": "40",
+   "multiattack": true,
+   "attacks": [
+    {
+     "name": "World-Breaker Bite",
+     "bonus": 25,
+     "damage": "52 (6d12 + 13) Piercing damage plus 33 (6d10) Force damage plus 33 (6d10) Radiant damage.",
+     "damageDice": "6d12+13",
+     "damageType": "piercing",
+     "rider": "+ 6d10 force + 6d10 radiant",
+     "ranged": false,
+     "reachFt": 20,
+     "repeat": 1
+    },
+    {
+     "name": "Continent-Shaper Claws",
+     "bonus": 25,
+     "damage": "40 (5d10 + 13) Slashing damage plus 22 (4d10) Force damage.",
+     "damageDice": "5d10+13",
+     "damageType": "slashing",
+     "rider": "+ 4d10 force. The target takes a −3 penalty to AC for 1 round",
+     "ranged": false,
+     "reachFt": 20,
+     "repeat": 2
+    },
+    {
+     "name": "Continent Tail",
+     "bonus": 25,
+     "damage": "45 (5d12 + 13) Bludgeoning damage.",
+     "damageDice": "5d12+13",
+     "damageType": "bludgeoning",
+     "rider": "Each creature within 15 feet of the target is flung 40 feet and has the Prone condition",
+     "ranged": false,
+     "reachFt": 30,
+     "repeat": 1
+    },
+    {
+     "name": "Crushing Continental Presence",
+     "bonus": 0,
+     "damage": "Wisdom Saving Throw: DC 32, each enemy in a 60-foot Emanation originating from the attacker. Failure: The target has the Paralyzed condition for 1 minute.",
+     "save": {
+      "ability": "wis",
+      "dc": 32,
+      "halfOnSave": false
+     },
+     "ranged": true,
+     "range": [
+      60,
+      60
+     ],
+     "rider": "the target has the Paralyzed condition for 1 minute",
+     "repeat": 0,
+     "area": {
+      "shape": "emanation",
+      "sizeFt": 60,
+      "origin": "self",
+      "targets": "enemies"
+     }
+    },
+    {
+     "name": "Continent Judgment Breath",
+     "bonus": 0,
+     "damage": "Constitution Saving Throw: DC 32, each enemy in a 300-foot-long, 30-foot-wide Line. Failure: 165 (30d10) Force damage plus 110 (20d10) Radiant damage, and a foe reduced to 0 Hit Points is disintegrated; allies and cities take no damage. Success: Half damage.",
+     "save": {
+      "ability": "con",
+      "dc": 32,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      300,
+      300
+     ],
+     "damageDice": "30d10",
+     "damageType": "force",
+     "rider": "+ 20d10 radiant. a foe reduced to 0 Hit Points is disintegrated; allies and cities take no damage",
+     "recharge": 5,
+     "repeat": 0,
+     "area": {
+      "shape": "line",
+      "sizeFt": 300,
+      "widthFt": 30,
+      "origin": "self",
+      "targets": "enemies"
+     }
+    }
+   ],
+   "traits": "Uçma 200 ft. Legendary Resistance (6/Day), Continent Scale, Ten-Seal Core, Timeless Storm Dominion, Spell-Reflecting Crystal Shell. Multiattack: The dragon uses Crushing Continental Presence, then makes one World-Breaker Bite, two Continent-Shaper Claws, and one Continent Tail attack.",
+   "immunities": [
+    "acid",
+    "cold",
+    "fire",
+    "force",
+    "lightning",
+    "necrotic",
+    "poison",
+    "psychic",
+    "radiant",
+    "thunder"
+   ],
+   "unsupported": [
+    "Boyut: PDF 7×7 (37 altıgen); motorun en büyük boyutu Gargantuan (19 altıgen), çok altıgen yalnız multiHex açıkken",
+    "Hız: Swim 100 ft, Burrow 80 ft, Hover (yalnızca yürüme/uçma kullanılır)",
+    "Duyu: Truesight 300 ft, Tremorsense 1 mil",
+    "Bağışıklık: büyülü olmayan fiziksel hasar (motorda büyüsüz bağışıklık yok)",
+    "Durum bağışıklığı: 13 durum (yalnız Dungeondex)",
+    "Trait: Legendary Resistance'ın olumsuz etki silmesi",
+    "Trait: Continent Scale (altındaki altıgenler dosta sığınak, düşmana zorlu arazi; zorla hareket bağışıklığı)",
+    "Trait: Ten-Seal Core (direnç/bağışıklık yok sayma; 300 ft dost aurası)",
+    "Trait: Timeless Storm Dominion (iki inisiyatif 30 ve 15; turda bir tepkisiz iptal)",
+    "Trait: Spell-Reflecting Crystal Shell (büyü yansıtma)",
+    "Multiattack (kısmi): Crushing Continental Presence ayrı eylem (alan 60 ft türetildi)",
+    "Continent Judgment Breath: ikinci hasar (20d10 radiant), atomlarına ayırma, gökten dikey sütun seçeneği",
+    "Continent-Shaper Claws: 1 tur AC −3; Continent Tail: 15 ft yarıçapta 40 ft savurma",
+    "Curse-Breaking Seal (1/UD): anlatı eylemi",
+    "Legendary Actions: puan bedelleri (her eylem 1 kullanım); Tectonic Shift yükseltme/çökertme; Seal Burst Dispel ve dost iyileşmesi"
+   ]
+  },
+  {
+   "id": "cosmic-phoenix",
+   "name": "Cosmic Phoenix",
+   "size": "H",
+   "ac": 26,
+   "hp": 780,
+   "speed": 40,
+   "fly": 150,
+   "abilities": {
+    "str": 24,
+    "dex": 30,
+    "con": 30,
+    "int": 22,
+    "wis": 30,
+    "cha": 28
+   },
+   "saves": {
+    "dex": 19,
+    "con": 19,
+    "wis": 19,
+    "cha": 18
+   },
+   "skills": {
+    "perception": 19
+   },
+   "cr": "32",
+   "multiattack": true,
+   "faz2": {
+    "esik": 0.05,
+    "geciciCan": 450,
+    "nefesDoldur": true,
+    "not": {
+     "tr": "Küllerden Yeniden Doğuş (yaklaşık): Kozmik Anka 450 geçici canla ve yenilenmiş Celestial Glide ile göğe yükselir.",
+     "en": "Rebirth from Ashes (approximate): the Cosmic Phoenix rises with 450 Temporary Hit Points and a recharged Celestial Glide."
+    }
+   },
+   "attacks": [
+    {
+     "name": "Cosmic Beak",
+     "bonus": 19,
+     "damage": "26 (3d10 + 10) Piercing damage plus 18 (4d8) Fire damage.",
+     "damageDice": "3d10+10",
+     "damageType": "piercing",
+     "rider": "+ 4d8 fire. The target gains a Star Mark for 1 round",
+     "ranged": false,
+     "reachFt": 10,
+     "repeat": 1
+    },
+    {
+     "name": "Starfire Talons",
+     "bonus": 19,
+     "damage": "23 (3d8 + 10) Slashing damage plus 18 (4d8) Fire damage.",
+     "damageDice": "3d8+10",
+     "damageType": "slashing",
+     "rider": "+ 4d8 fire. The target gains a Star Mark for 1 round",
+     "ranged": false,
+     "reachFt": 10,
+     "repeat": 2
+    },
+    {
+     "name": "Celestial Glide",
+     "bonus": 0,
+     "damage": "Dexterity Saving Throw: DC 27, each enemy in a 120-foot-long, 15-foot-wide Line. Failure: 77 (14d10) Fire damage, and the hexes become Cosmic Phoenix Flame for 3 rounds. Success: Half damage.",
+     "save": {
+      "ability": "dex",
+      "dc": 27,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      120,
+      120
+     ],
+     "damageDice": "14d10",
+     "damageType": "fire",
+     "rider": "the hexes become Cosmic Phoenix Flame for 3 rounds",
+     "recharge": 5,
+     "repeat": 0,
+     "area": {
+      "shape": "line",
+      "sizeFt": 120,
+      "widthFt": 15,
+      "origin": "self",
+      "targets": "enemies"
+     }
+    }
+   ],
+   "traits": "Uçma 150 ft. Legendary Resistance (4/Day), Cosmic Starfire, Halo That Burns Veil and Slumber, Soul Bond with the Hunter, Rebirth from Ashes. Multiattack: The phoenix makes one Cosmic Beak attack and two Starfire Talons attacks.",
+   "immunities": [
+    "fire",
+    "radiant",
+    "necrotic",
+    "psychic"
+   ],
+   "unsupported": [
+    "Boyut: PDF 3×3 (7 altıgen) = Huge; çok altıgen yalnız multiHex açıkken",
+    "Hız: Hover (yalnızca yürüme/uçma kullanılır)",
+    "Duyu: Truesight 120 ft",
+    "Durum bağışıklığı: 11 durum (yalnız Dungeondex)",
+    "Trait: Cosmic Starfire (ateş hasarı Ateş + Işıltı; direnci yok sayar, bağışıklığı dirence indirir) — hasar türü ateş yazıldı",
+    "Trait: Halo That Burns Veil and Slumber (40 ft illüzyon/Invisible dağıtma, dostlardan Frightened silme)",
+    "Trait: Soul Bond with the Hunter (Avcı'nın ardından oynama, hasar paylaşımı, konsantrasyon avantajı)",
+    "Trait: Rebirth from Ashes — 0 HP yerine %5 can eşiğinde Faz 2 (450 geçici can, nefes dolar); Süpernova ve Kor Yumurtası yok",
+    "Cosmic Beak / Starfire Talons: Yıldız İşareti",
+    "Celestial Glide: fırsat saldırısız 120 ft süzülme ve 3 tur Kozmik Anka Alevi yüzeyi",
+    "Legendary Actions: puan bedelleri; Ember Wingbeat kurtarması türetildi (DC 27 DEX); Seal-Melting Talon ve Star Tear yok"
+   ]
+  },
+  {
+   "id": "ember-egg",
+   "name": "Ember Egg",
+   "size": "M",
+   "ac": 22,
+   "hp": 150,
+   "speed": 0,
+   "abilities": {
+    "str": 1,
+    "dex": 1,
+    "con": 24,
+    "int": 1,
+    "wis": 10,
+    "cha": 10
+   },
+   "cr": "0",
+   "attacks": [],
+   "traits": "Hatching.",
+   "immunities": [
+    "fire",
+    "radiant"
+   ],
+   "unsupported": [
+    "Kor Yumurtası Cosmic Phoenix'in Rebirth from Ashes özelliğiyle oluşur; motor yumurtayı kendiliğinden yaratmaz",
+    "Trait: Hatching (sonraki tur başında çatlama ve 450 canla diriliş)",
+    "CR yok (yumurta); 0 yazıldı"
+   ]
+  },
+  {
+   "id": "abyssal-star-nightmare",
+   "name": "Abyssal Star-Nightmare",
+   "size": "G",
+   "ac": 26,
+   "hp": 1150,
+   "speed": 40,
+   "fly": 60,
+   "abilities": {
+    "str": 34,
+    "dex": 14,
+    "con": 30,
+    "int": 30,
+    "wis": 28,
+    "cha": 30
+   },
+   "saves": {
+    "str": 22,
+    "con": 20,
+    "int": 20,
+    "wis": 19,
+    "cha": 20
+   },
+   "skills": {
+    "perception": 19
+   },
+   "cr": "35",
+   "multiattack": true,
+   "faz2": {
+    "esik": 0.05,
+    "geciciCan": 550,
+    "not": {
+     "tr": "Uykudaki Tanrının Uyanışı (yaklaşık): gerçeklik yarığı açılır, Yıldız-Kâbusu 550 geçici canla 2. faza geçer.",
+     "en": "Awakening of the Sleeping God (approximate): a rift in reality opens and the Star-Nightmare enters its second phase with 550 Temporary Hit Points."
+    }
+   },
+   "attacks": [
+    {
+     "name": "Eldritch Tentacle",
+     "bonus": 22,
+     "damage": "34 (5d8 + 12) Bludgeoning damage plus 13 (3d8) Psychic damage.",
+     "damageDice": "5d8+12",
+     "damageType": "bludgeoning",
+     "rider": "+ 3d8 psychic. The target has the Grappled condition (escape DC 26) and the Restrained condition (up to 12 targets)",
+     "ranged": false,
+     "reachFt": 45,
+     "repeat": 3
+    },
+    {
+     "name": "Maddening Gaze",
+     "bonus": 0,
+     "damage": "Intelligence Saving Throw: DC 27, one creature the attacker can see within 120 feet. Failure: 44 (8d10) Psychic damage, and the target has the Stunned condition for 1 round. Success: Half damage.",
+     "save": {
+      "ability": "int",
+      "dc": 27,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      120,
+      120
+     ],
+     "damageDice": "8d10",
+     "damageType": "psychic",
+     "rider": "the target has the Stunned condition for 1 round",
+     "repeat": 0
+    },
+    {
+     "name": "Cosmic Fling",
+     "bonus": 0,
+     "damage": "Dexterity Saving Throw: DC 28, the Huge or smaller creature it is grappling, thrown to a point within 90 feet, and each creature within 10 feet of the landing point. Failure: 33 (6d10) Bludgeoning damage plus 13 (3d8) Force damage, and the target has the Prone condition. Success: Half damage.",
+     "save": {
+      "ability": "dex",
+      "dc": 28,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      90,
+      90
+     ],
+     "damageDice": "6d10",
+     "damageType": "bludgeoning",
+     "rider": "+ 3d8 force. the target has the Prone condition",
+     "repeat": 0
+    },
+    {
+     "name": "Void-Lightning Strike",
+     "bonus": 0,
+     "damage": "Dexterity Saving Throw: DC 27, up to three creatures within 180 feet. Failure: 44 (8d10) Lightning damage plus 22 (4d10) Psychic damage, and the target can't maintain Concentration for 1 round. Success: Half damage.",
+     "save": {
+      "ability": "dex",
+      "dc": 27,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      180,
+      180
+     ],
+     "damageDice": "8d10",
+     "damageType": "lightning",
+     "rider": "+ 4d10 psychic. the target can't maintain Concentration for 1 round",
+     "repeat": 0
+    },
+    {
+     "name": "Abyssal Swallow",
+     "bonus": 0,
+     "damage": "Dexterity Saving Throw: DC 28, one Huge or smaller creature it is grappling. Failure: 34 (4d10+12) Piercing damage, and the target is swallowed (up to 6), taking 8d6 Acid plus 6d6 Psychic damage at the start of each turn.",
+     "save": {
+      "ability": "dex",
+      "dc": 28,
+      "halfOnSave": false
+     },
+     "ranged": true,
+     "range": [
+      45,
+      45
+     ],
+     "damageDice": "4d10+12",
+     "damageType": "piercing",
+     "rider": "the target is swallowed (up to 6), taking 8d6 Acid plus 6d6 Psychic damage at the start of each turn",
+     "repeat": 0
+    }
+   ],
+   "traits": "Uçma 60 ft. Amphibious, Siege Monster, Legendary Resistance (5/Day, or 6/Day in Lair), Mind-Bending Presence, Alpha Resonance, Awakening of the Sleeping God. Multiattack: The Star-Nightmare uses Maddening Gaze, then makes three Eldritch Tentacle attacks; it can replace two of them with Cosmic Fling, Void-Lightning Strike, or Abyssal Swallow.",
+   "resistances": [
+    "force",
+    "necrotic",
+    "thunder"
+   ],
+   "immunities": [
+    "lightning",
+    "psychic",
+    "acid",
+    "cold"
+   ],
+   "unsupported": [
+    "Boyut: PDF 6×6 (31 altıgen); motorun en büyük boyutu Gargantuan (19 altıgen), çok altıgen yalnız multiHex açıkken",
+    "Hız: Swim 120 ft, Hover (yalnızca yürüme/uçma kullanılır)",
+    "Duyu: Truesight 180 ft, Telepati 10 mil",
+    "Bağışıklık: büyülü olmayan fiziksel hasar (motorda büyüsüz bağışıklık yok)",
+    "Durum bağışıklığı: 12 durum (yalnız Dungeondex)",
+    "Trait: Siege Monster (yapılara iki kat hasar)",
+    "Trait: Mind-Bending Presence (60/90 ft Kozmik Delilik aurası)",
+    "Trait: Alpha Resonance (Alfa hattı ejderhanın gök gürültüsü saldırıları direnci yok sayar)",
+    "Trait: Awakening of the Sleeping God — 0 HP yerine %5 can eşiğinde Faz 2 (550 geçici can); su/kıyı zorlu arazi, 15 ft çekim, 90 ft aura ve 4 dokunaç yok",
+    "Multiattack (kısmi): Maddening Gaze ayrı eylem; yerine geçen seçenekler ayrı eylem",
+    "Eldritch Tentacle: aynı anda en çok 12 hedef",
+    "Cosmic Fling / Abyssal Swallow: yalnız yakaladığı hedef; fırlatma, yutma ve kusma yok",
+    "Void-Lightning Strike: en çok 3 hedef (tek hedef), ikinci hasar (4d10 psychic) ve konsantrasyon yasağı",
+    "Legendary Actions: puan bedelleri; Abyssal Toxic Ink Silenced durumu; Dream Call yok"
+   ]
+  },
+  {
+   "id": "sigma-jewel-dragon-wyrmling",
+   "name": "Sigma Jewel Dragon Wyrmling",
+   "size": "M",
+   "ac": 17,
+   "hp": 120,
+   "speed": 40,
+   "fly": 80,
+   "abilities": {
+    "str": 19,
+    "dex": 14,
+    "con": 17,
+    "int": 12,
+    "wis": 12,
+    "cha": 18
+   },
+   "saves": {
+    "dex": 5,
+    "wis": 4
+   },
+   "skills": {
+    "perception": 7,
+    "stealth": 5
+   },
+   "darkvision": 120,
+   "cr": "6",
+   "multiattack": true,
+   "attacks": [
+    {
+     "name": "Rend",
+     "bonus": 7,
+     "damage": "11 (2d6 + 4) Slashing damage.",
+     "damageDice": "2d6+4",
+     "damageType": "slashing",
+     "ranged": false,
+     "reachFt": 5,
+     "repeat": 3
+    },
+    {
+     "name": "Radiant Breath",
+     "bonus": 0,
+     "damage": "Constitution Saving Throw: DC 14, each creature in a 30-foot Cone. Failure: 31 (7d8) Radiant damage, and the target has the Blinded condition for 1 round. Success: Half damage.",
+     "save": {
+      "ability": "con",
+      "dc": 14,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      30,
+      30
+     ],
+     "damageDice": "7d8",
+     "damageType": "radiant",
+     "rider": "the target has the Blinded condition for 1 round",
+     "recharge": 5,
+     "repeat": 0,
+     "area": {
+      "shape": "cone",
+      "sizeFt": 30,
+      "origin": "self",
+      "targets": "all"
+     }
+    }
+   ],
+   "traits": "Uçma 80 ft. Carrier's Imprint. Multiattack: The dragon makes three Rend attacks.",
+   "immunities": [
+    "radiant"
+   ],
+   "unsupported": [
+    "Boyut: PDF 1×1 = Medium",
+    "Duyu: Blindsight (SRD kalıbı) yok",
+    "Trait: Carrier's Imprint (yumurta türü izleyicisi, taşıyıcıya göre DC)",
+    "Radiant Breath: 1 tur Blinded olur — yalnız veriyle bağlanan durumlar uygulanır",
+    "Türetilen değerler (SRD 5.2.1 ejderha kalıbı): yetenek puanları, Rend, hız, kurtarma, beceriler, bağışıklık, Recharge, yarı hasar, AC, HP, nefes"
+   ]
+  },
+  {
+   "id": "young-sigma-jewel-dragon",
+   "name": "Young Sigma Jewel Dragon",
+   "size": "L",
+   "ac": 19,
+   "hp": 240,
+   "speed": 40,
+   "fly": 80,
+   "abilities": {
+    "str": 23,
+    "dex": 14,
+    "con": 21,
+    "int": 14,
+    "wis": 13,
+    "cha": 21
+   },
+   "saves": {
+    "dex": 7,
+    "wis": 6
+   },
+   "skills": {
+    "perception": 11,
+    "stealth": 7
+   },
+   "darkvision": 120,
+   "cr": "15",
+   "multiattack": true,
+   "attacks": [
+    {
+     "name": "Rend",
+     "bonus": 11,
+     "damage": "15 (2d8 + 6) Slashing damage.",
+     "damageDice": "2d8+6",
+     "damageType": "slashing",
+     "ranged": false,
+     "reachFt": 10,
+     "repeat": 3
+    },
+    {
+     "name": "Radiant Breath",
+     "bonus": 0,
+     "damage": "Constitution Saving Throw: DC 19, each creature in a 60-foot Cone. Failure: 45 (10d8) Radiant damage, and the target has the Blinded condition for 1 round. Success: Half damage.",
+     "save": {
+      "ability": "con",
+      "dc": 19,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      60,
+      60
+     ],
+     "damageDice": "10d8",
+     "damageType": "radiant",
+     "rider": "the target has the Blinded condition for 1 round",
+     "recharge": 5,
+     "repeat": 0,
+     "area": {
+      "shape": "cone",
+      "sizeFt": 60,
+      "origin": "self",
+      "targets": "all"
+     }
+    }
+   ],
+   "traits": "Uçma 80 ft. Carrier's Imprint, Mount Bond, Attribute 20 Lock. Multiattack: The dragon makes three Rend attacks.",
+   "immunities": [
+    "radiant"
+   ],
+   "unsupported": [
+    "Boyut: PDF 2×2 = Large; çok altıgen yalnız multiHex açıkken",
+    "Duyu: Blindsight (SRD kalıbı) yok",
+    "Trait: Carrier's Imprint (yumurta türü izleyicisi, taşıyıcıya göre DC)",
+    "Trait: Mount Bond (binek bağı, binicinin kazanımları)",
+    "Trait: Attribute 20 Lock (taşıyıcının nitelik pasifi ve boss sinerjisi)",
+    "Radiant Breath: 1 tur Blinded olur — yalnız veriyle bağlanan durumlar uygulanır",
+    "Türetilen değerler (SRD 5.2.1 ejderha kalıbı): yetenek puanları, Rend, hız, kurtarma, beceriler, bağışıklık, Recharge, yarı hasar"
+   ]
+  },
+  {
+   "id": "adult-sigma-jewel-dragon",
+   "name": "Adult Sigma Jewel Dragon",
+   "size": "H",
+   "ac": 22,
+   "hp": 480,
+   "speed": 40,
+   "fly": 80,
+   "abilities": {
+    "str": 27,
+    "dex": 16,
+    "con": 25,
+    "int": 16,
+    "wis": 15,
+    "cha": 25
+   },
+   "saves": {
+    "dex": 11,
+    "wis": 10
+   },
+   "skills": {
+    "perception": 18,
+    "stealth": 11
+   },
+   "darkvision": 120,
+   "cr": "25",
+   "multiattack": true,
+   "attacks": [
+    {
+     "name": "Rend",
+     "bonus": 16,
+     "damage": "19 (2d10 + 8) Slashing damage.",
+     "damageDice": "2d10+8",
+     "damageType": "slashing",
+     "ranged": false,
+     "reachFt": 10,
+     "repeat": 3
+    },
+    {
+     "name": "Radiant Breath",
+     "bonus": 0,
+     "damage": "Constitution Saving Throw: DC 23, each creature in a 90-foot Cone. Failure: 88 (16d10) Radiant damage, and the target has the Blinded condition for 1 round. Success: Half damage.",
+     "save": {
+      "ability": "con",
+      "dc": 23,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      90,
+      90
+     ],
+     "damageDice": "16d10",
+     "damageType": "radiant",
+     "rider": "the target has the Blinded condition for 1 round",
+     "recharge": 5,
+     "repeat": 0,
+     "area": {
+      "shape": "cone",
+      "sizeFt": 90,
+      "origin": "self",
+      "targets": "all"
+     }
+    }
+   ],
+   "traits": "Uçma 80 ft. Carrier's Imprint, Attribute 20 Lock, Legendary Resistance (3/Day). Multiattack: The dragon makes three Rend attacks.",
+   "immunities": [
+    "radiant"
+   ],
+   "unsupported": [
+    "Boyut: PDF \"Gargantuan 3×3\" (7 altıgen) = Huge yazıldı; çok altıgen yalnız multiHex açıkken",
+    "Duyu: Blindsight (SRD kalıbı) yok",
+    "Trait: Carrier's Imprint (yumurta türü izleyicisi, taşıyıcıya göre DC)",
+    "Trait: Attribute 20 Lock (taşıyıcının nitelik pasifi ve boss sinerjisi)",
+    "Radiant Breath: 1 tur Blinded olur — yalnız veriyle bağlanan durumlar uygulanır",
+    "Türetilen değerler (SRD 5.2.1 ejderha kalıbı): yetenek puanları, Rend, hız, kurtarma, beceriler, bağışıklık, Recharge, yarı hasar, Legendary Resistance, Pounce"
+   ]
+  },
+  {
+   "id": "omega-jewel-dragon-wyrmling",
+   "name": "Omega Jewel Dragon Wyrmling",
+   "size": "M",
+   "ac": 17,
+   "hp": 135,
+   "speed": 40,
+   "fly": 80,
+   "abilities": {
+    "str": 19,
+    "dex": 12,
+    "con": 21,
+    "int": 12,
+    "wis": 12,
+    "cha": 16
+   },
+   "saves": {
+    "dex": 4,
+    "wis": 4
+   },
+   "skills": {
+    "perception": 7,
+    "stealth": 4
+   },
+   "darkvision": 120,
+   "cr": "7",
+   "multiattack": true,
+   "attacks": [
+    {
+     "name": "Rend",
+     "bonus": 7,
+     "damage": "11 (2d6 + 4) Slashing damage.",
+     "damageDice": "2d6+4",
+     "damageType": "slashing",
+     "ranged": false,
+     "reachFt": 5,
+     "repeat": 3
+    },
+    {
+     "name": "Necrotic Breath",
+     "bonus": 0,
+     "damage": "Constitution Saving Throw: DC 16, each creature in a 30-foot Cone. Failure: 36 (8d8) Necrotic damage, and the target can't regain Hit Points for 1 round. Success: Half damage.",
+     "save": {
+      "ability": "con",
+      "dc": 16,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      30,
+      30
+     ],
+     "damageDice": "8d8",
+     "damageType": "necrotic",
+     "rider": "the target can't regain Hit Points for 1 round",
+     "recharge": 5,
+     "repeat": 0,
+     "area": {
+      "shape": "cone",
+      "sizeFt": 30,
+      "origin": "self",
+      "targets": "all"
+     }
+    }
+   ],
+   "traits": "Uçma 80 ft. Carrier's Imprint. Multiattack: The dragon makes three Rend attacks.",
+   "immunities": [
+    "necrotic"
+   ],
+   "unsupported": [
+    "Boyut: PDF 1×1 = Medium",
+    "Duyu: Blindsight (SRD kalıbı) yok",
+    "Trait: Carrier's Imprint (yumurta türü izleyicisi, taşıyıcıya göre DC)",
+    "Necrotic Breath: 1 tur iyileşemez — yalnız veriyle bağlanan durumlar uygulanır",
+    "Türetilen değerler (SRD 5.2.1 ejderha kalıbı): yetenek puanları, Rend, hız, kurtarma, beceriler, bağışıklık, Recharge, yarı hasar, AC, HP, nefes"
+   ]
+  },
+  {
+   "id": "young-omega-jewel-dragon",
+   "name": "Young Omega Jewel Dragon",
+   "size": "L",
+   "ac": 19,
+   "hp": 265,
+   "speed": 40,
+   "fly": 80,
+   "abilities": {
+    "str": 23,
+    "dex": 12,
+    "con": 25,
+    "int": 14,
+    "wis": 13,
+    "cha": 19
+   },
+   "saves": {
+    "dex": 6,
+    "wis": 6
+   },
+   "skills": {
+    "perception": 11,
+    "stealth": 6
+   },
+   "darkvision": 120,
+   "cr": "16",
+   "multiattack": true,
+   "attacks": [
+    {
+     "name": "Rend",
+     "bonus": 11,
+     "damage": "15 (2d8 + 6) Slashing damage.",
+     "damageDice": "2d8+6",
+     "damageType": "slashing",
+     "ranged": false,
+     "reachFt": 10,
+     "repeat": 3
+    },
+    {
+     "name": "Necrotic Breath",
+     "bonus": 0,
+     "damage": "Constitution Saving Throw: DC 20, each creature in a 60-foot Cone. Failure: 49 (11d8) Necrotic damage, and the target can't regain Hit Points for 1 round. Success: Half damage.",
+     "save": {
+      "ability": "con",
+      "dc": 20,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      60,
+      60
+     ],
+     "damageDice": "11d8",
+     "damageType": "necrotic",
+     "rider": "the target can't regain Hit Points for 1 round",
+     "recharge": 5,
+     "repeat": 0,
+     "area": {
+      "shape": "cone",
+      "sizeFt": 60,
+      "origin": "self",
+      "targets": "all"
+     }
+    }
+   ],
+   "traits": "Uçma 80 ft. Carrier's Imprint, Mount Bond, Attribute 20 Lock. Multiattack: The dragon makes three Rend attacks.",
+   "immunities": [
+    "necrotic"
+   ],
+   "unsupported": [
+    "Boyut: PDF 2×2 = Large; çok altıgen yalnız multiHex açıkken",
+    "Duyu: Blindsight (SRD kalıbı) yok",
+    "Trait: Carrier's Imprint (yumurta türü izleyicisi, taşıyıcıya göre DC)",
+    "Trait: Mount Bond (binek bağı, binicinin kazanımları)",
+    "Trait: Attribute 20 Lock (taşıyıcının nitelik pasifi ve boss sinerjisi)",
+    "Necrotic Breath: 1 tur iyileşemez — yalnız veriyle bağlanan durumlar uygulanır",
+    "Türetilen değerler (SRD 5.2.1 ejderha kalıbı): yetenek puanları, Rend, hız, kurtarma, beceriler, bağışıklık, Recharge, yarı hasar"
+   ]
+  },
+  {
+   "id": "adult-omega-jewel-dragon",
+   "name": "Adult Omega Jewel Dragon",
+   "size": "H",
+   "ac": 23,
+   "hp": 515,
+   "speed": 40,
+   "fly": 80,
+   "abilities": {
+    "str": 27,
+    "dex": 14,
+    "con": 29,
+    "int": 16,
+    "wis": 15,
+    "cha": 23
+   },
+   "saves": {
+    "dex": 10,
+    "wis": 10
+   },
+   "skills": {
+    "perception": 18,
+    "stealth": 10
+   },
+   "darkvision": 120,
+   "cr": "26",
+   "multiattack": true,
+   "attacks": [
+    {
+     "name": "Rend",
+     "bonus": 16,
+     "damage": "19 (2d10 + 8) Slashing damage.",
+     "damageDice": "2d10+8",
+     "damageType": "slashing",
+     "ranged": false,
+     "reachFt": 10,
+     "repeat": 3
+    },
+    {
+     "name": "Necrotic Breath",
+     "bonus": 0,
+     "damage": "Constitution Saving Throw: DC 24, each creature in a 90-foot Cone. Failure: 93 (17d10) Necrotic damage, and the target can't regain Hit Points for 1 round, and its Hit Point maximum decreases by the damage taken. Success: Half damage.",
+     "save": {
+      "ability": "con",
+      "dc": 24,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      90,
+      90
+     ],
+     "damageDice": "17d10",
+     "damageType": "necrotic",
+     "rider": "the target can't regain Hit Points for 1 round, and its Hit Point maximum decreases by the damage taken",
+     "recharge": 5,
+     "repeat": 0,
+     "area": {
+      "shape": "cone",
+      "sizeFt": 90,
+      "origin": "self",
+      "targets": "all"
+     }
+    }
+   ],
+   "traits": "Uçma 80 ft. Carrier's Imprint, Attribute 20 Lock, Legendary Resistance (3/Day). Multiattack: The dragon makes three Rend attacks.",
+   "immunities": [
+    "necrotic"
+   ],
+   "unsupported": [
+    "Boyut: PDF \"Gargantuan 3×3\" (7 altıgen) = Huge yazıldı; çok altıgen yalnız multiHex açıkken",
+    "Duyu: Blindsight (SRD kalıbı) yok",
+    "Trait: Carrier's Imprint (yumurta türü izleyicisi, taşıyıcıya göre DC)",
+    "Trait: Attribute 20 Lock (taşıyıcının nitelik pasifi ve boss sinerjisi)",
+    "Necrotic Breath: 1 tur iyileşemez ve en yüksek canı aldığı hasar kadar düşer — yalnız veriyle bağlanan durumlar uygulanır",
+    "Türetilen değerler (SRD 5.2.1 ejderha kalıbı): yetenek puanları, Rend, hız, kurtarma, beceriler, bağışıklık, Recharge, yarı hasar, Legendary Resistance, Pounce"
+   ]
+  },
+  {
+   "id": "delta-jewel-dragon-wyrmling",
+   "name": "Delta Jewel Dragon Wyrmling",
+   "size": "M",
+   "ac": 18,
+   "hp": 145,
+   "speed": 40,
+   "fly": 80,
+   "abilities": {
+    "str": 19,
+    "dex": 12,
+    "con": 17,
+    "int": 16,
+    "wis": 14,
+    "cha": 14
+   },
+   "saves": {
+    "dex": 4,
+    "wis": 5
+   },
+   "skills": {
+    "perception": 8,
+    "stealth": 4
+   },
+   "darkvision": 120,
+   "cr": "8",
+   "multiattack": true,
+   "attacks": [
+    {
+     "name": "Rend",
+     "bonus": 7,
+     "damage": "11 (2d6 + 4) Slashing damage.",
+     "damageDice": "2d6+4",
+     "damageType": "slashing",
+     "ranged": false,
+     "reachFt": 5,
+     "repeat": 3
+    },
+    {
+     "name": "Psychic Breath",
+     "bonus": 0,
+     "damage": "Intelligence Saving Throw: DC 14, each creature in a 30-foot Cone. Failure: 36 (8d8) Psychic damage, and the target subtracts 1d6 from its next rolls. Success: Half damage.",
+     "save": {
+      "ability": "int",
+      "dc": 14,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      30,
+      30
+     ],
+     "damageDice": "8d8",
+     "damageType": "psychic",
+     "rider": "the target subtracts 1d6 from its next rolls",
+     "recharge": 5,
+     "repeat": 0,
+     "area": {
+      "shape": "cone",
+      "sizeFt": 30,
+      "origin": "self",
+      "targets": "all"
+     }
+    }
+   ],
+   "traits": "Uçma 80 ft. Carrier's Imprint. Multiattack: The dragon makes three Rend attacks.",
+   "immunities": [
+    "psychic"
+   ],
+   "unsupported": [
+    "Boyut: PDF 1×1 = Medium",
+    "Duyu: Blindsight (SRD kalıbı) yok",
+    "Trait: Carrier's Imprint (yumurta türü izleyicisi, taşıyıcıya göre DC)",
+    "Psychic Breath: sonraki zarlarından 1d6 düşer — yalnız veriyle bağlanan durumlar uygulanır",
+    "Türetilen değerler (SRD 5.2.1 ejderha kalıbı): yetenek puanları, Rend, hız, kurtarma, beceriler, bağışıklık, Recharge, yarı hasar, AC, HP, nefes"
+   ]
+  },
+  {
+   "id": "young-delta-jewel-dragon",
+   "name": "Young Delta Jewel Dragon",
+   "size": "L",
+   "ac": 20,
+   "hp": 285,
+   "speed": 40,
+   "fly": 80,
+   "abilities": {
+    "str": 23,
+    "dex": 12,
+    "con": 21,
+    "int": 18,
+    "wis": 15,
+    "cha": 17
+   },
+   "saves": {
+    "dex": 7,
+    "wis": 8
+   },
+   "skills": {
+    "perception": 14,
+    "stealth": 7
+   },
+   "darkvision": 120,
+   "cr": "17",
+   "multiattack": true,
+   "attacks": [
+    {
+     "name": "Rend",
+     "bonus": 12,
+     "damage": "15 (2d8 + 6) Slashing damage.",
+     "damageDice": "2d8+6",
+     "damageType": "slashing",
+     "ranged": false,
+     "reachFt": 10,
+     "repeat": 3
+    },
+    {
+     "name": "Psychic Breath",
+     "bonus": 0,
+     "damage": "Intelligence Saving Throw: DC 20, each creature in a 60-foot Cone. Failure: 49 (11d8) Psychic damage, and the target subtracts 1d6 from its next rolls. Success: Half damage.",
+     "save": {
+      "ability": "int",
+      "dc": 20,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      60,
+      60
+     ],
+     "damageDice": "11d8",
+     "damageType": "psychic",
+     "rider": "the target subtracts 1d6 from its next rolls",
+     "recharge": 5,
+     "repeat": 0,
+     "area": {
+      "shape": "cone",
+      "sizeFt": 60,
+      "origin": "self",
+      "targets": "all"
+     }
+    }
+   ],
+   "traits": "Uçma 80 ft. Carrier's Imprint, Mount Bond, Attribute 20 Lock. Multiattack: The dragon makes three Rend attacks.",
+   "immunities": [
+    "psychic"
+   ],
+   "unsupported": [
+    "Boyut: PDF 2×2 = Large; çok altıgen yalnız multiHex açıkken",
+    "Duyu: Blindsight (SRD kalıbı) yok",
+    "Trait: Carrier's Imprint (yumurta türü izleyicisi, taşıyıcıya göre DC)",
+    "Trait: Mount Bond (binek bağı, binicinin kazanımları)",
+    "Trait: Attribute 20 Lock (taşıyıcının nitelik pasifi ve boss sinerjisi)",
+    "Psychic Breath: sonraki zarlarından 1d6 düşer — yalnız veriyle bağlanan durumlar uygulanır",
+    "Türetilen değerler (SRD 5.2.1 ejderha kalıbı): yetenek puanları, Rend, hız, kurtarma, beceriler, bağışıklık, Recharge, yarı hasar"
+   ]
+  },
+  {
+   "id": "adult-delta-jewel-dragon",
+   "name": "Adult Delta Jewel Dragon",
+   "size": "H",
+   "ac": 23,
+   "hp": 545,
+   "speed": 40,
+   "fly": 80,
+   "abilities": {
+    "str": 27,
+    "dex": 14,
+    "con": 25,
+    "int": 20,
+    "wis": 17,
+    "cha": 21
+   },
+   "saves": {
+    "dex": 10,
+    "wis": 11
+   },
+   "skills": {
+    "perception": 19,
+    "stealth": 10
+   },
+   "darkvision": 120,
+   "cr": "27",
+   "multiattack": true,
+   "attacks": [
+    {
+     "name": "Rend",
+     "bonus": 16,
+     "damage": "19 (2d10 + 8) Slashing damage.",
+     "damageDice": "2d10+8",
+     "damageType": "slashing",
+     "ranged": false,
+     "reachFt": 10,
+     "repeat": 3
+    },
+    {
+     "name": "Psychic Breath",
+     "bonus": 0,
+     "damage": "Intelligence Saving Throw: DC 24, each creature in a 90-foot Cone. Failure: 99 (18d10) Psychic damage, and the target has the Stunned condition for 1 round, and loses all its Resistances for 1 round. Success: Half damage.",
+     "save": {
+      "ability": "int",
+      "dc": 24,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      90,
+      90
+     ],
+     "damageDice": "18d10",
+     "damageType": "psychic",
+     "rider": "the target has the Stunned condition for 1 round, and loses all its Resistances for 1 round",
+     "recharge": 5,
+     "repeat": 0,
+     "area": {
+      "shape": "cone",
+      "sizeFt": 90,
+      "origin": "self",
+      "targets": "all"
+     }
+    }
+   ],
+   "traits": "Uçma 80 ft. Carrier's Imprint, Attribute 20 Lock, Legendary Resistance (3/Day). Multiattack: The dragon makes three Rend attacks.",
+   "immunities": [
+    "psychic"
+   ],
+   "unsupported": [
+    "Boyut: PDF \"Gargantuan 3×3\" (7 altıgen) = Huge yazıldı; çok altıgen yalnız multiHex açıkken",
+    "Duyu: Blindsight (SRD kalıbı) yok",
+    "Trait: Carrier's Imprint (yumurta türü izleyicisi, taşıyıcıya göre DC)",
+    "Trait: Attribute 20 Lock (taşıyıcının nitelik pasifi ve boss sinerjisi)",
+    "Psychic Breath: 1 tur Stunned olur ve bütün dirençlerini 1 tur kaybeder — yalnız veriyle bağlanan durumlar uygulanır",
+    "Türetilen değerler (SRD 5.2.1 ejderha kalıbı): yetenek puanları, Rend, hız, kurtarma, beceriler, bağışıklık, Recharge, yarı hasar, Legendary Resistance, Pounce"
+   ]
+  },
+  {
+   "id": "alpha-jewel-dragon-wyrmling",
+   "name": "Alpha Jewel Dragon Wyrmling",
+   "size": "M",
+   "ac": 18,
+   "hp": 155,
+   "speed": 40,
+   "fly": 80,
+   "abilities": {
+    "str": 23,
+    "dex": 12,
+    "con": 19,
+    "int": 12,
+    "wis": 12,
+    "cha": 14
+   },
+   "saves": {
+    "dex": 5,
+    "wis": 5
+   },
+   "skills": {
+    "perception": 9,
+    "stealth": 5
+   },
+   "darkvision": 120,
+   "cr": "9",
+   "multiattack": true,
+   "attacks": [
+    {
+     "name": "Rend",
+     "bonus": 10,
+     "damage": "13 (2d6 + 6) Slashing damage.",
+     "damageDice": "2d6+6",
+     "damageType": "slashing",
+     "ranged": false,
+     "reachFt": 5,
+     "repeat": 3
+    },
+    {
+     "name": "Thunder Breath",
+     "bonus": 0,
+     "damage": "Constitution Saving Throw: DC 16, each creature in a 30-foot Cone. Failure: 40 (9d8) Thunder damage, and the target is pushed 15 feet, and has the Prone condition. Success: Half damage.",
+     "save": {
+      "ability": "con",
+      "dc": 16,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      30,
+      30
+     ],
+     "damageDice": "9d8",
+     "damageType": "thunder",
+     "rider": "the target is pushed 15 feet, and has the Prone condition",
+     "recharge": 5,
+     "repeat": 0,
+     "area": {
+      "shape": "cone",
+      "sizeFt": 30,
+      "origin": "self",
+      "targets": "all"
+     }
+    }
+   ],
+   "traits": "Uçma 80 ft. Carrier's Imprint. Multiattack: The dragon makes three Rend attacks.",
+   "immunities": [
+    "thunder"
+   ],
+   "unsupported": [
+    "Boyut: PDF 1×1 = Medium",
+    "Duyu: Blindsight (SRD kalıbı) yok",
+    "Trait: Carrier's Imprint (yumurta türü izleyicisi, taşıyıcıya göre DC)",
+    "Thunder Breath: 15 ft itilir ve Prone olur — yalnız veriyle bağlanan durumlar uygulanır",
+    "Türetilen değerler (SRD 5.2.1 ejderha kalıbı): yetenek puanları, Rend, hız, kurtarma, beceriler, bağışıklık, Recharge, yarı hasar, AC, HP, nefes"
+   ]
+  },
+  {
+   "id": "young-alpha-jewel-dragon",
+   "name": "Young Alpha Jewel Dragon",
+   "size": "L",
+   "ac": 20,
+   "hp": 310,
+   "speed": 40,
+   "fly": 80,
+   "abilities": {
+    "str": 27,
+    "dex": 12,
+    "con": 23,
+    "int": 14,
+    "wis": 13,
+    "cha": 17
+   },
+   "saves": {
+    "dex": 7,
+    "wis": 7
+   },
+   "skills": {
+    "perception": 13,
+    "stealth": 7
+   },
+   "darkvision": 120,
+   "cr": "18",
+   "multiattack": true,
+   "attacks": [
+    {
+     "name": "Rend",
+     "bonus": 14,
+     "damage": "17 (2d8 + 8) Slashing damage.",
+     "damageDice": "2d8+8",
+     "damageType": "slashing",
+     "ranged": false,
+     "reachFt": 10,
+     "repeat": 3
+    },
+    {
+     "name": "Thunder Breath",
+     "bonus": 0,
+     "damage": "Constitution Saving Throw: DC 21, each creature in a 60-foot Cone. Failure: 54 (12d8) Thunder damage, and the target is pushed 15 feet, and has the Prone condition. Success: Half damage.",
+     "save": {
+      "ability": "con",
+      "dc": 21,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      60,
+      60
+     ],
+     "damageDice": "12d8",
+     "damageType": "thunder",
+     "rider": "the target is pushed 15 feet, and has the Prone condition",
+     "recharge": 5,
+     "repeat": 0,
+     "area": {
+      "shape": "cone",
+      "sizeFt": 60,
+      "origin": "self",
+      "targets": "all"
+     }
+    }
+   ],
+   "traits": "Uçma 80 ft. Carrier's Imprint, Mount Bond, Attribute 20 Lock. Multiattack: The dragon makes three Rend attacks.",
+   "immunities": [
+    "thunder"
+   ],
+   "unsupported": [
+    "Boyut: PDF 2×2 = Large; çok altıgen yalnız multiHex açıkken",
+    "Duyu: Blindsight (SRD kalıbı) yok",
+    "Trait: Carrier's Imprint (yumurta türü izleyicisi, taşıyıcıya göre DC)",
+    "Trait: Mount Bond (binek bağı, binicinin kazanımları)",
+    "Trait: Attribute 20 Lock (taşıyıcının nitelik pasifi ve boss sinerjisi)",
+    "Thunder Breath: 15 ft itilir ve Prone olur — yalnız veriyle bağlanan durumlar uygulanır",
+    "Türetilen değerler (SRD 5.2.1 ejderha kalıbı): yetenek puanları, Rend, hız, kurtarma, beceriler, bağışıklık, Recharge, yarı hasar"
+   ]
+  },
+  {
+   "id": "adult-alpha-jewel-dragon",
+   "name": "Adult Alpha Jewel Dragon",
+   "size": "H",
+   "ac": 24,
+   "hp": 585,
+   "speed": 40,
+   "fly": 80,
+   "abilities": {
+    "str": 30,
+    "dex": 14,
+    "con": 27,
+    "int": 16,
+    "wis": 15,
+    "cha": 21
+   },
+   "saves": {
+    "dex": 10,
+    "wis": 10
+   },
+   "skills": {
+    "perception": 18,
+    "stealth": 10
+   },
+   "darkvision": 120,
+   "cr": "28",
+   "multiattack": true,
+   "attacks": [
+    {
+     "name": "Rend",
+     "bonus": 18,
+     "damage": "21 (2d10 + 10) Slashing damage.",
+     "damageDice": "2d10+10",
+     "damageType": "slashing",
+     "ranged": false,
+     "reachFt": 10,
+     "repeat": 3
+    },
+    {
+     "name": "Thunder Breath",
+     "bonus": 0,
+     "damage": "Constitution Saving Throw: DC 25, each creature in a 90-foot Cone. Failure: 104 (19d10) Thunder damage, and the target is pushed 30 feet, has the Prone condition, and loses Concentration. Success: Half damage.",
+     "save": {
+      "ability": "con",
+      "dc": 25,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      90,
+      90
+     ],
+     "damageDice": "19d10",
+     "damageType": "thunder",
+     "rider": "the target is pushed 30 feet, has the Prone condition, and loses Concentration",
+     "recharge": 5,
+     "repeat": 0,
+     "area": {
+      "shape": "cone",
+      "sizeFt": 90,
+      "origin": "self",
+      "targets": "all"
+     }
+    }
+   ],
+   "traits": "Uçma 80 ft. Carrier's Imprint, Attribute 20 Lock, Legendary Resistance (3/Day). Multiattack: The dragon makes three Rend attacks.",
+   "immunities": [
+    "thunder"
+   ],
+   "unsupported": [
+    "Boyut: PDF \"Gargantuan 3×3\" (7 altıgen) = Huge yazıldı; çok altıgen yalnız multiHex açıkken",
+    "Duyu: Blindsight (SRD kalıbı) yok",
+    "Trait: Carrier's Imprint (yumurta türü izleyicisi, taşıyıcıya göre DC)",
+    "Trait: Attribute 20 Lock (taşıyıcının nitelik pasifi ve boss sinerjisi)",
+    "Thunder Breath: 30 ft itilir, Prone olur ve konsantrasyonu bozulur — yalnız veriyle bağlanan durumlar uygulanır",
+    "Türetilen değerler (SRD 5.2.1 ejderha kalıbı): yetenek puanları, Rend, hız, kurtarma, beceriler, bağışıklık, Recharge, yarı hasar, Legendary Resistance, Pounce"
+   ]
+  },
+  {
+   "id": "gamma-jewel-dragon-wyrmling",
+   "name": "Gamma Jewel Dragon Wyrmling",
+   "size": "M",
+   "ac": 19,
+   "hp": 170,
+   "speed": 40,
+   "fly": 80,
+   "abilities": {
+    "str": 19,
+    "dex": 12,
+    "con": 17,
+    "int": 14,
+    "wis": 16,
+    "cha": 14
+   },
+   "saves": {
+    "dex": 5,
+    "wis": 7
+   },
+   "skills": {
+    "perception": 11,
+    "stealth": 5
+   },
+   "darkvision": 120,
+   "cr": "10",
+   "multiattack": true,
+   "attacks": [
+    {
+     "name": "Rend",
+     "bonus": 8,
+     "damage": "11 (2d6 + 4) Slashing damage.",
+     "damageDice": "2d6+4",
+     "damageType": "slashing",
+     "ranged": false,
+     "reachFt": 5,
+     "repeat": 3
+    },
+    {
+     "name": "Force Breath",
+     "bonus": 0,
+     "damage": "Strength Saving Throw: DC 15, each creature in a 30-foot Cone. Failure: 40 (9d8) Force damage, and the target is pulled 15 feet toward the center, and its Speed becomes 0. Success: Half damage.",
+     "save": {
+      "ability": "str",
+      "dc": 15,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      30,
+      30
+     ],
+     "damageDice": "9d8",
+     "damageType": "force",
+     "rider": "the target is pulled 15 feet toward the center, and its Speed becomes 0",
+     "recharge": 5,
+     "repeat": 0,
+     "area": {
+      "shape": "cone",
+      "sizeFt": 30,
+      "origin": "self",
+      "targets": "all"
+     }
+    }
+   ],
+   "traits": "Uçma 80 ft. Carrier's Imprint. Multiattack: The dragon makes three Rend attacks.",
+   "immunities": [
+    "force"
+   ],
+   "unsupported": [
+    "Boyut: PDF 1×1 = Medium",
+    "Duyu: Blindsight (SRD kalıbı) yok",
+    "Trait: Carrier's Imprint (yumurta türü izleyicisi, taşıyıcıya göre DC)",
+    "Force Breath: 15 ft merkeze çekilir ve hızı 0 olur — yalnız veriyle bağlanan durumlar uygulanır",
+    "Türetilen değerler (SRD 5.2.1 ejderha kalıbı): yetenek puanları, Rend, hız, kurtarma, beceriler, bağışıklık, Recharge, yarı hasar, AC, HP, nefes"
+   ]
+  },
+  {
+   "id": "young-gamma-jewel-dragon",
+   "name": "Young Gamma Jewel Dragon",
+   "size": "L",
+   "ac": 21,
+   "hp": 340,
+   "speed": 40,
+   "fly": 80,
+   "abilities": {
+    "str": 23,
+    "dex": 12,
+    "con": 21,
+    "int": 16,
+    "wis": 17,
+    "cha": 17
+   },
+   "saves": {
+    "dex": 7,
+    "wis": 9
+   },
+   "skills": {
+    "perception": 15,
+    "stealth": 7
+   },
+   "darkvision": 120,
+   "cr": "20",
+   "multiattack": true,
+   "attacks": [
+    {
+     "name": "Rend",
+     "bonus": 12,
+     "damage": "15 (2d8 + 6) Slashing damage.",
+     "damageDice": "2d8+6",
+     "damageType": "slashing",
+     "ranged": false,
+     "reachFt": 10,
+     "repeat": 3
+    },
+    {
+     "name": "Force Breath",
+     "bonus": 0,
+     "damage": "Strength Saving Throw: DC 22, each creature in a 60-foot Cone. Failure: 54 (12d8) Force damage, and the target is pulled 15 feet toward the center, and its Speed becomes 0. Success: Half damage.",
+     "save": {
+      "ability": "str",
+      "dc": 22,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      60,
+      60
+     ],
+     "damageDice": "12d8",
+     "damageType": "force",
+     "rider": "the target is pulled 15 feet toward the center, and its Speed becomes 0",
+     "recharge": 5,
+     "repeat": 0,
+     "area": {
+      "shape": "cone",
+      "sizeFt": 60,
+      "origin": "self",
+      "targets": "all"
+     }
+    }
+   ],
+   "traits": "Uçma 80 ft. Carrier's Imprint, Mount Bond, Attribute 20 Lock. Multiattack: The dragon makes three Rend attacks.",
+   "immunities": [
+    "force"
+   ],
+   "unsupported": [
+    "Boyut: PDF 2×2 = Large; çok altıgen yalnız multiHex açıkken",
+    "Duyu: Blindsight (SRD kalıbı) yok",
+    "Trait: Carrier's Imprint (yumurta türü izleyicisi, taşıyıcıya göre DC)",
+    "Trait: Mount Bond (binek bağı, binicinin kazanımları)",
+    "Trait: Attribute 20 Lock (taşıyıcının nitelik pasifi ve boss sinerjisi)",
+    "Force Breath: 15 ft merkeze çekilir ve hızı 0 olur — yalnız veriyle bağlanan durumlar uygulanır",
+    "Türetilen değerler (SRD 5.2.1 ejderha kalıbı): yetenek puanları, Rend, hız, kurtarma, beceriler, bağışıklık, Recharge, yarı hasar"
+   ]
+  },
+  {
+   "id": "adult-gamma-jewel-dragon",
+   "name": "Adult Gamma Jewel Dragon",
+   "size": "H",
+   "ac": 25,
+   "hp": 650,
+   "speed": 40,
+   "fly": 80,
+   "abilities": {
+    "str": 27,
+    "dex": 14,
+    "con": 25,
+    "int": 18,
+    "wis": 19,
+    "cha": 21
+   },
+   "saves": {
+    "dex": 11,
+    "wis": 13
+   },
+   "skills": {
+    "perception": 22,
+    "stealth": 11
+   },
+   "darkvision": 120,
+   "cr": "30",
+   "multiattack": true,
+   "attacks": [
+    {
+     "name": "Rend",
+     "bonus": 17,
+     "damage": "19 (2d10 + 8) Slashing damage.",
+     "damageDice": "2d10+8",
+     "damageType": "slashing",
+     "ranged": false,
+     "reachFt": 10,
+     "repeat": 3
+    },
+    {
+     "name": "Force Breath",
+     "bonus": 0,
+     "damage": "Strength Saving Throw: DC 26, each creature in a 90-foot Cone. Failure: 110 (20d10) Force damage, and the target is pulled 30 feet by a local gravity collapse, stops flying, and its Speed becomes 0. Success: Half damage.",
+     "save": {
+      "ability": "str",
+      "dc": 26,
+      "halfOnSave": true
+     },
+     "ranged": true,
+     "range": [
+      90,
+      90
+     ],
+     "damageDice": "20d10",
+     "damageType": "force",
+     "rider": "the target is pulled 30 feet by a local gravity collapse, stops flying, and its Speed becomes 0",
+     "recharge": 5,
+     "repeat": 0,
+     "area": {
+      "shape": "cone",
+      "sizeFt": 90,
+      "origin": "self",
+      "targets": "all"
+     }
+    }
+   ],
+   "traits": "Uçma 80 ft. Carrier's Imprint, Attribute 20 Lock, Legendary Resistance (3/Day). Multiattack: The dragon makes three Rend attacks.",
+   "immunities": [
+    "force"
+   ],
+   "unsupported": [
+    "Boyut: PDF \"Gargantuan 3×3\" (7 altıgen) = Huge yazıldı; çok altıgen yalnız multiHex açıkken",
+    "Duyu: Blindsight (SRD kalıbı) yok",
+    "Trait: Carrier's Imprint (yumurta türü izleyicisi, taşıyıcıya göre DC)",
+    "Trait: Attribute 20 Lock (taşıyıcının nitelik pasifi ve boss sinerjisi)",
+    "Force Breath: yerel yerçekimi çöküşüyle 30 ft çekilir, uçuşu biter ve hızı 0 olur — yalnız veriyle bağlanan durumlar uygulanır",
+    "Türetilen değerler (SRD 5.2.1 ejderha kalıbı): yetenek puanları, Rend, hız, kurtarma, beceriler, bağışıklık, Recharge, yarı hasar, Legendary Resistance, Pounce"
+   ]
+  }
+ ],
+ "dex": {
+  "continent-dragon": {
+   "type": "dragon",
+   "alignment": "True Neutral",
+   "conditionImmunities": [
+    "Frightened",
+    "Paralyzed",
+    "Petrified",
+    "Unconscious"
+   ]
+  },
+  "ancient-continent-spirit": {
+   "type": "dragon",
+   "alignment": "Neutral Good",
+   "conditionImmunities": [
+    "Blinded",
+    "Charmed",
+    "Deafened",
+    "Exhaustion",
+    "Frightened",
+    "Grappled",
+    "Paralyzed",
+    "Petrified",
+    "Poisoned",
+    "Prone",
+    "Restrained",
+    "Stunned",
+    "Unconscious"
+   ]
+  },
+  "cosmic-phoenix": {
+   "type": "celestial",
+   "alignment": "Chaotic Good",
+   "conditionImmunities": [
+    "Blinded",
+    "Charmed",
+    "Exhaustion",
+    "Frightened",
+    "Grappled",
+    "Paralyzed",
+    "Petrified",
+    "Poisoned",
+    "Prone",
+    "Restrained",
+    "Unconscious"
+   ]
+  },
+  "ember-egg": {
+   "type": "celestial",
+   "alignment": "Unaligned",
+   "conditionImmunities": [
+    "Blinded",
+    "Charmed",
+    "Deafened",
+    "Exhaustion",
+    "Frightened",
+    "Paralyzed",
+    "Petrified",
+    "Poisoned",
+    "Prone",
+    "Stunned",
+    "Unconscious"
+   ]
+  },
+  "abyssal-star-nightmare": {
+   "type": "aberration",
+   "alignment": "Chaotic Evil",
+   "conditionImmunities": [
+    "Blinded",
+    "Charmed",
+    "Exhaustion",
+    "Frightened",
+    "Grappled",
+    "Paralyzed",
+    "Petrified",
+    "Poisoned",
+    "Prone",
+    "Restrained",
+    "Stunned",
+    "Unconscious"
+   ]
+  },
+  "sigma-jewel-dragon-wyrmling": {
+   "type": "dragon",
+   "alignment": "Chaotic Neutral",
+   "conditionImmunities": []
+  },
+  "young-sigma-jewel-dragon": {
+   "type": "dragon",
+   "alignment": "Chaotic Neutral",
+   "conditionImmunities": []
+  },
+  "adult-sigma-jewel-dragon": {
+   "type": "dragon",
+   "alignment": "Chaotic Neutral",
+   "conditionImmunities": []
+  },
+  "omega-jewel-dragon-wyrmling": {
+   "type": "dragon",
+   "alignment": "Chaotic Neutral",
+   "conditionImmunities": []
+  },
+  "young-omega-jewel-dragon": {
+   "type": "dragon",
+   "alignment": "Chaotic Neutral",
+   "conditionImmunities": []
+  },
+  "adult-omega-jewel-dragon": {
+   "type": "dragon",
+   "alignment": "Chaotic Neutral",
+   "conditionImmunities": []
+  },
+  "delta-jewel-dragon-wyrmling": {
+   "type": "dragon",
+   "alignment": "Lawful Neutral",
+   "conditionImmunities": []
+  },
+  "young-delta-jewel-dragon": {
+   "type": "dragon",
+   "alignment": "Lawful Neutral",
+   "conditionImmunities": []
+  },
+  "adult-delta-jewel-dragon": {
+   "type": "dragon",
+   "alignment": "Lawful Neutral",
+   "conditionImmunities": []
+  },
+  "alpha-jewel-dragon-wyrmling": {
+   "type": "dragon",
+   "alignment": "Lawful Neutral",
+   "conditionImmunities": []
+  },
+  "young-alpha-jewel-dragon": {
+   "type": "dragon",
+   "alignment": "Lawful Neutral",
+   "conditionImmunities": []
+  },
+  "adult-alpha-jewel-dragon": {
+   "type": "dragon",
+   "alignment": "Lawful Neutral",
+   "conditionImmunities": []
+  },
+  "gamma-jewel-dragon-wyrmling": {
+   "type": "dragon",
+   "alignment": "True Neutral",
+   "conditionImmunities": []
+  },
+  "young-gamma-jewel-dragon": {
+   "type": "dragon",
+   "alignment": "True Neutral",
+   "conditionImmunities": []
+  },
+  "adult-gamma-jewel-dragon": {
+   "type": "dragon",
+   "alignment": "True Neutral",
+   "conditionImmunities": []
+  }
+ },
+ "yer": {
+  "continent-dragon": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  },
+  "ancient-continent-spirit": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  },
+  "cosmic-phoenix": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  },
+  "ember-egg": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  },
+  "abyssal-star-nightmare": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  },
+  "sigma-jewel-dragon-wyrmling": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  },
+  "young-sigma-jewel-dragon": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  },
+  "adult-sigma-jewel-dragon": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  },
+  "omega-jewel-dragon-wyrmling": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  },
+  "young-omega-jewel-dragon": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  },
+  "adult-omega-jewel-dragon": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  },
+  "delta-jewel-dragon-wyrmling": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  },
+  "young-delta-jewel-dragon": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  },
+  "adult-delta-jewel-dragon": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  },
+  "alpha-jewel-dragon-wyrmling": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  },
+  "young-alpha-jewel-dragon": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  },
+  "adult-alpha-jewel-dragon": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  },
+  "gamma-jewel-dragon-wyrmling": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  },
+  "young-gamma-jewel-dragon": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  },
+  "adult-gamma-jewel-dragon": {
+   "tema": "Kadim Yaratıklar",
+   "ortam": []
+  }
+ },
+ "ozellikler": {
+  "continent-dragon": [
+   {
+    "anahtar": "continent-dragon/trait:legendary-resistance",
+    "ad": "Legendary Resistance (4/Day)",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "continent-dragon/trait:veil-of-slumber",
+    "ad": "Veil of Slumber",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "continent-dragon/trait:armors-betrayal",
+    "ad": "Armor's Betrayal",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "continent-dragon/trait:ten-stone-resonance",
+    "ad": "Ten-Stone Resonance",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "continent-dragon/action:multiattack",
+    "ad": "Multiattack",
+    "tur": "action"
+   },
+   {
+    "anahtar": "continent-dragon/action:crushing-presence",
+    "ad": "Crushing Presence",
+    "tur": "action"
+   },
+   {
+    "anahtar": "continent-dragon/action:bite",
+    "ad": "Bite",
+    "tur": "action"
+   },
+   {
+    "anahtar": "continent-dragon/action:claw",
+    "ad": "Claw",
+    "tur": "action"
+   },
+   {
+    "anahtar": "continent-dragon/action:tail",
+    "ad": "Tail",
+    "tur": "action"
+   },
+   {
+    "anahtar": "continent-dragon/action:continent-roar-breath",
+    "ad": "Continent Roar Breath (Recharge 5–6)",
+    "tur": "action"
+   },
+   {
+    "anahtar": "continent-dragon/legendary:tail",
+    "ad": "Tail",
+    "tur": "legendary"
+   },
+   {
+    "anahtar": "continent-dragon/legendary:wing-storm",
+    "ad": "Wing Storm",
+    "tur": "legendary"
+   },
+   {
+    "anahtar": "continent-dragon/legendary:seal-pull",
+    "ad": "Seal Pull",
+    "tur": "legendary"
+   }
+  ],
+  "ancient-continent-spirit": [
+   {
+    "anahtar": "ancient-continent-spirit/trait:legendary-resistance",
+    "ad": "Legendary Resistance (6/Day)",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "ancient-continent-spirit/trait:continent-scale",
+    "ad": "Continent Scale",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "ancient-continent-spirit/trait:ten-seal-core",
+    "ad": "Ten-Seal Core",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "ancient-continent-spirit/trait:timeless-storm-dominion",
+    "ad": "Timeless Storm Dominion",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "ancient-continent-spirit/trait:spell-reflecting-crystal-shell",
+    "ad": "Spell-Reflecting Crystal Shell",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "ancient-continent-spirit/action:multiattack",
+    "ad": "Multiattack",
+    "tur": "action"
+   },
+   {
+    "anahtar": "ancient-continent-spirit/action:crushing-continental-presence",
+    "ad": "Crushing Continental Presence",
+    "tur": "action"
+   },
+   {
+    "anahtar": "ancient-continent-spirit/action:world-breaker-bite",
+    "ad": "World-Breaker Bite",
+    "tur": "action"
+   },
+   {
+    "anahtar": "ancient-continent-spirit/action:continent-shaper-claws",
+    "ad": "Continent-Shaper Claws",
+    "tur": "action"
+   },
+   {
+    "anahtar": "ancient-continent-spirit/action:continent-tail",
+    "ad": "Continent Tail",
+    "tur": "action"
+   },
+   {
+    "anahtar": "ancient-continent-spirit/action:continent-judgment-breath",
+    "ad": "Continent Judgment Breath (Recharge 5–6)",
+    "tur": "action"
+   },
+   {
+    "anahtar": "ancient-continent-spirit/action:curse-breaking-seal",
+    "ad": "Curse-Breaking Seal (1/Long Rest)",
+    "tur": "action"
+   },
+   {
+    "anahtar": "ancient-continent-spirit/legendary:tectonic-shift",
+    "ad": "Tectonic Shift",
+    "tur": "legendary"
+   },
+   {
+    "anahtar": "ancient-continent-spirit/legendary:lightning-spear-rain",
+    "ad": "Lightning Spear Rain",
+    "tur": "legendary"
+   },
+   {
+    "anahtar": "ancient-continent-spirit/legendary:ten-seal-burst",
+    "ad": "Ten-Seal Burst",
+    "tur": "legendary"
+   }
+  ],
+  "cosmic-phoenix": [
+   {
+    "anahtar": "cosmic-phoenix/trait:legendary-resistance",
+    "ad": "Legendary Resistance (4/Day)",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "cosmic-phoenix/trait:cosmic-starfire",
+    "ad": "Cosmic Starfire",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "cosmic-phoenix/trait:halo-that-burns-veil-and-slumber",
+    "ad": "Halo That Burns Veil and Slumber",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "cosmic-phoenix/trait:soul-bond-with-the-hunter",
+    "ad": "Soul Bond with the Hunter",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "cosmic-phoenix/trait:rebirth-from-ashes",
+    "ad": "Rebirth from Ashes (1/Day)",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "cosmic-phoenix/action:multiattack",
+    "ad": "Multiattack",
+    "tur": "action"
+   },
+   {
+    "anahtar": "cosmic-phoenix/action:cosmic-beak",
+    "ad": "Cosmic Beak",
+    "tur": "action"
+   },
+   {
+    "anahtar": "cosmic-phoenix/action:starfire-talons",
+    "ad": "Starfire Talons",
+    "tur": "action"
+   },
+   {
+    "anahtar": "cosmic-phoenix/action:celestial-glide",
+    "ad": "Celestial Glide (Recharge 5–6)",
+    "tur": "action"
+   },
+   {
+    "anahtar": "cosmic-phoenix/legendary:ember-wingbeat",
+    "ad": "Ember Wingbeat",
+    "tur": "legendary"
+   },
+   {
+    "anahtar": "cosmic-phoenix/legendary:seal-melting-talon",
+    "ad": "Seal-Melting Talon",
+    "tur": "legendary"
+   },
+   {
+    "anahtar": "cosmic-phoenix/legendary:star-tear",
+    "ad": "Star Tear",
+    "tur": "legendary"
+   }
+  ],
+  "ember-egg": [
+   {
+    "anahtar": "ember-egg/trait:hatching",
+    "ad": "Hatching",
+    "tur": "trait"
+   }
+  ],
+  "abyssal-star-nightmare": [
+   {
+    "anahtar": "abyssal-star-nightmare/trait:amphibious",
+    "ad": "Amphibious",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "abyssal-star-nightmare/trait:siege-monster",
+    "ad": "Siege Monster",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "abyssal-star-nightmare/trait:legendary-resistance",
+    "ad": "Legendary Resistance (5/Day, or 6/Day in Lair)",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "abyssal-star-nightmare/trait:mind-bending-presence",
+    "ad": "Mind-Bending Presence",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "abyssal-star-nightmare/trait:alpha-resonance",
+    "ad": "Alpha Resonance",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "abyssal-star-nightmare/trait:awakening-of-the-sleeping-god",
+    "ad": "Awakening of the Sleeping God (1/Day)",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "abyssal-star-nightmare/action:multiattack",
+    "ad": "Multiattack",
+    "tur": "action"
+   },
+   {
+    "anahtar": "abyssal-star-nightmare/action:eldritch-tentacle",
+    "ad": "Eldritch Tentacle",
+    "tur": "action"
+   },
+   {
+    "anahtar": "abyssal-star-nightmare/action:cosmic-fling",
+    "ad": "Cosmic Fling",
+    "tur": "action"
+   },
+   {
+    "anahtar": "abyssal-star-nightmare/action:void-lightning-strike",
+    "ad": "Void-Lightning Strike",
+    "tur": "action"
+   },
+   {
+    "anahtar": "abyssal-star-nightmare/action:abyssal-swallow",
+    "ad": "Abyssal Swallow",
+    "tur": "action"
+   },
+   {
+    "anahtar": "abyssal-star-nightmare/action:maddening-gaze",
+    "ad": "Maddening Gaze",
+    "tur": "action"
+   },
+   {
+    "anahtar": "abyssal-star-nightmare/legendary:eldritch-storm-bolt",
+    "ad": "Eldritch Storm Bolt",
+    "tur": "legendary"
+   },
+   {
+    "anahtar": "abyssal-star-nightmare/legendary:abyssal-toxic-ink",
+    "ad": "Abyssal Toxic Ink",
+    "tur": "legendary"
+   },
+   {
+    "anahtar": "abyssal-star-nightmare/legendary:dream-call",
+    "ad": "Dream Call",
+    "tur": "legendary"
+   }
+  ],
+  "sigma-jewel-dragon-wyrmling": [
+   {
+    "anahtar": "sigma-jewel-dragon-wyrmling/trait:carriers-imprint",
+    "ad": "Carrier's Imprint",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "sigma-jewel-dragon-wyrmling/action:multiattack",
+    "ad": "Multiattack",
+    "tur": "action"
+   },
+   {
+    "anahtar": "sigma-jewel-dragon-wyrmling/action:rend",
+    "ad": "Rend",
+    "tur": "action"
+   },
+   {
+    "anahtar": "sigma-jewel-dragon-wyrmling/action:radiant-breath",
+    "ad": "Radiant Breath (Recharge 5–6)",
+    "tur": "action"
+   }
+  ],
+  "young-sigma-jewel-dragon": [
+   {
+    "anahtar": "young-sigma-jewel-dragon/trait:carriers-imprint",
+    "ad": "Carrier's Imprint",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "young-sigma-jewel-dragon/trait:mount-bond",
+    "ad": "Mount Bond",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "young-sigma-jewel-dragon/trait:attribute-20-lock",
+    "ad": "Attribute 20 Lock",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "young-sigma-jewel-dragon/action:multiattack",
+    "ad": "Multiattack",
+    "tur": "action"
+   },
+   {
+    "anahtar": "young-sigma-jewel-dragon/action:rend",
+    "ad": "Rend",
+    "tur": "action"
+   },
+   {
+    "anahtar": "young-sigma-jewel-dragon/action:radiant-breath",
+    "ad": "Radiant Breath (Recharge 5–6)",
+    "tur": "action"
+   }
+  ],
+  "adult-sigma-jewel-dragon": [
+   {
+    "anahtar": "adult-sigma-jewel-dragon/trait:carriers-imprint",
+    "ad": "Carrier's Imprint",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "adult-sigma-jewel-dragon/trait:attribute-20-lock",
+    "ad": "Attribute 20 Lock",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "adult-sigma-jewel-dragon/trait:legendary-resistance",
+    "ad": "Legendary Resistance (3/Day)",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "adult-sigma-jewel-dragon/action:multiattack",
+    "ad": "Multiattack",
+    "tur": "action"
+   },
+   {
+    "anahtar": "adult-sigma-jewel-dragon/action:rend",
+    "ad": "Rend",
+    "tur": "action"
+   },
+   {
+    "anahtar": "adult-sigma-jewel-dragon/action:radiant-breath",
+    "ad": "Radiant Breath (Recharge 5–6)",
+    "tur": "action"
+   },
+   {
+    "anahtar": "adult-sigma-jewel-dragon/legendary:pounce",
+    "ad": "Pounce",
+    "tur": "legendary"
+   }
+  ],
+  "omega-jewel-dragon-wyrmling": [
+   {
+    "anahtar": "omega-jewel-dragon-wyrmling/trait:carriers-imprint",
+    "ad": "Carrier's Imprint",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "omega-jewel-dragon-wyrmling/action:multiattack",
+    "ad": "Multiattack",
+    "tur": "action"
+   },
+   {
+    "anahtar": "omega-jewel-dragon-wyrmling/action:rend",
+    "ad": "Rend",
+    "tur": "action"
+   },
+   {
+    "anahtar": "omega-jewel-dragon-wyrmling/action:necrotic-breath",
+    "ad": "Necrotic Breath (Recharge 5–6)",
+    "tur": "action"
+   }
+  ],
+  "young-omega-jewel-dragon": [
+   {
+    "anahtar": "young-omega-jewel-dragon/trait:carriers-imprint",
+    "ad": "Carrier's Imprint",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "young-omega-jewel-dragon/trait:mount-bond",
+    "ad": "Mount Bond",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "young-omega-jewel-dragon/trait:attribute-20-lock",
+    "ad": "Attribute 20 Lock",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "young-omega-jewel-dragon/action:multiattack",
+    "ad": "Multiattack",
+    "tur": "action"
+   },
+   {
+    "anahtar": "young-omega-jewel-dragon/action:rend",
+    "ad": "Rend",
+    "tur": "action"
+   },
+   {
+    "anahtar": "young-omega-jewel-dragon/action:necrotic-breath",
+    "ad": "Necrotic Breath (Recharge 5–6)",
+    "tur": "action"
+   }
+  ],
+  "adult-omega-jewel-dragon": [
+   {
+    "anahtar": "adult-omega-jewel-dragon/trait:carriers-imprint",
+    "ad": "Carrier's Imprint",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "adult-omega-jewel-dragon/trait:attribute-20-lock",
+    "ad": "Attribute 20 Lock",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "adult-omega-jewel-dragon/trait:legendary-resistance",
+    "ad": "Legendary Resistance (3/Day)",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "adult-omega-jewel-dragon/action:multiattack",
+    "ad": "Multiattack",
+    "tur": "action"
+   },
+   {
+    "anahtar": "adult-omega-jewel-dragon/action:rend",
+    "ad": "Rend",
+    "tur": "action"
+   },
+   {
+    "anahtar": "adult-omega-jewel-dragon/action:necrotic-breath",
+    "ad": "Necrotic Breath (Recharge 5–6)",
+    "tur": "action"
+   },
+   {
+    "anahtar": "adult-omega-jewel-dragon/legendary:pounce",
+    "ad": "Pounce",
+    "tur": "legendary"
+   }
+  ],
+  "delta-jewel-dragon-wyrmling": [
+   {
+    "anahtar": "delta-jewel-dragon-wyrmling/trait:carriers-imprint",
+    "ad": "Carrier's Imprint",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "delta-jewel-dragon-wyrmling/action:multiattack",
+    "ad": "Multiattack",
+    "tur": "action"
+   },
+   {
+    "anahtar": "delta-jewel-dragon-wyrmling/action:rend",
+    "ad": "Rend",
+    "tur": "action"
+   },
+   {
+    "anahtar": "delta-jewel-dragon-wyrmling/action:psychic-breath",
+    "ad": "Psychic Breath (Recharge 5–6)",
+    "tur": "action"
+   }
+  ],
+  "young-delta-jewel-dragon": [
+   {
+    "anahtar": "young-delta-jewel-dragon/trait:carriers-imprint",
+    "ad": "Carrier's Imprint",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "young-delta-jewel-dragon/trait:mount-bond",
+    "ad": "Mount Bond",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "young-delta-jewel-dragon/trait:attribute-20-lock",
+    "ad": "Attribute 20 Lock",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "young-delta-jewel-dragon/action:multiattack",
+    "ad": "Multiattack",
+    "tur": "action"
+   },
+   {
+    "anahtar": "young-delta-jewel-dragon/action:rend",
+    "ad": "Rend",
+    "tur": "action"
+   },
+   {
+    "anahtar": "young-delta-jewel-dragon/action:psychic-breath",
+    "ad": "Psychic Breath (Recharge 5–6)",
+    "tur": "action"
+   }
+  ],
+  "adult-delta-jewel-dragon": [
+   {
+    "anahtar": "adult-delta-jewel-dragon/trait:carriers-imprint",
+    "ad": "Carrier's Imprint",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "adult-delta-jewel-dragon/trait:attribute-20-lock",
+    "ad": "Attribute 20 Lock",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "adult-delta-jewel-dragon/trait:legendary-resistance",
+    "ad": "Legendary Resistance (3/Day)",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "adult-delta-jewel-dragon/action:multiattack",
+    "ad": "Multiattack",
+    "tur": "action"
+   },
+   {
+    "anahtar": "adult-delta-jewel-dragon/action:rend",
+    "ad": "Rend",
+    "tur": "action"
+   },
+   {
+    "anahtar": "adult-delta-jewel-dragon/action:psychic-breath",
+    "ad": "Psychic Breath (Recharge 5–6)",
+    "tur": "action"
+   },
+   {
+    "anahtar": "adult-delta-jewel-dragon/legendary:pounce",
+    "ad": "Pounce",
+    "tur": "legendary"
+   }
+  ],
+  "alpha-jewel-dragon-wyrmling": [
+   {
+    "anahtar": "alpha-jewel-dragon-wyrmling/trait:carriers-imprint",
+    "ad": "Carrier's Imprint",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "alpha-jewel-dragon-wyrmling/action:multiattack",
+    "ad": "Multiattack",
+    "tur": "action"
+   },
+   {
+    "anahtar": "alpha-jewel-dragon-wyrmling/action:rend",
+    "ad": "Rend",
+    "tur": "action"
+   },
+   {
+    "anahtar": "alpha-jewel-dragon-wyrmling/action:thunder-breath",
+    "ad": "Thunder Breath (Recharge 5–6)",
+    "tur": "action"
+   }
+  ],
+  "young-alpha-jewel-dragon": [
+   {
+    "anahtar": "young-alpha-jewel-dragon/trait:carriers-imprint",
+    "ad": "Carrier's Imprint",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "young-alpha-jewel-dragon/trait:mount-bond",
+    "ad": "Mount Bond",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "young-alpha-jewel-dragon/trait:attribute-20-lock",
+    "ad": "Attribute 20 Lock",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "young-alpha-jewel-dragon/action:multiattack",
+    "ad": "Multiattack",
+    "tur": "action"
+   },
+   {
+    "anahtar": "young-alpha-jewel-dragon/action:rend",
+    "ad": "Rend",
+    "tur": "action"
+   },
+   {
+    "anahtar": "young-alpha-jewel-dragon/action:thunder-breath",
+    "ad": "Thunder Breath (Recharge 5–6)",
+    "tur": "action"
+   }
+  ],
+  "adult-alpha-jewel-dragon": [
+   {
+    "anahtar": "adult-alpha-jewel-dragon/trait:carriers-imprint",
+    "ad": "Carrier's Imprint",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "adult-alpha-jewel-dragon/trait:attribute-20-lock",
+    "ad": "Attribute 20 Lock",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "adult-alpha-jewel-dragon/trait:legendary-resistance",
+    "ad": "Legendary Resistance (3/Day)",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "adult-alpha-jewel-dragon/action:multiattack",
+    "ad": "Multiattack",
+    "tur": "action"
+   },
+   {
+    "anahtar": "adult-alpha-jewel-dragon/action:rend",
+    "ad": "Rend",
+    "tur": "action"
+   },
+   {
+    "anahtar": "adult-alpha-jewel-dragon/action:thunder-breath",
+    "ad": "Thunder Breath (Recharge 5–6)",
+    "tur": "action"
+   },
+   {
+    "anahtar": "adult-alpha-jewel-dragon/legendary:pounce",
+    "ad": "Pounce",
+    "tur": "legendary"
+   }
+  ],
+  "gamma-jewel-dragon-wyrmling": [
+   {
+    "anahtar": "gamma-jewel-dragon-wyrmling/trait:carriers-imprint",
+    "ad": "Carrier's Imprint",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "gamma-jewel-dragon-wyrmling/action:multiattack",
+    "ad": "Multiattack",
+    "tur": "action"
+   },
+   {
+    "anahtar": "gamma-jewel-dragon-wyrmling/action:rend",
+    "ad": "Rend",
+    "tur": "action"
+   },
+   {
+    "anahtar": "gamma-jewel-dragon-wyrmling/action:force-breath",
+    "ad": "Force Breath (Recharge 5–6)",
+    "tur": "action"
+   }
+  ],
+  "young-gamma-jewel-dragon": [
+   {
+    "anahtar": "young-gamma-jewel-dragon/trait:carriers-imprint",
+    "ad": "Carrier's Imprint",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "young-gamma-jewel-dragon/trait:mount-bond",
+    "ad": "Mount Bond",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "young-gamma-jewel-dragon/trait:attribute-20-lock",
+    "ad": "Attribute 20 Lock",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "young-gamma-jewel-dragon/action:multiattack",
+    "ad": "Multiattack",
+    "tur": "action"
+   },
+   {
+    "anahtar": "young-gamma-jewel-dragon/action:rend",
+    "ad": "Rend",
+    "tur": "action"
+   },
+   {
+    "anahtar": "young-gamma-jewel-dragon/action:force-breath",
+    "ad": "Force Breath (Recharge 5–6)",
+    "tur": "action"
+   }
+  ],
+  "adult-gamma-jewel-dragon": [
+   {
+    "anahtar": "adult-gamma-jewel-dragon/trait:carriers-imprint",
+    "ad": "Carrier's Imprint",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "adult-gamma-jewel-dragon/trait:attribute-20-lock",
+    "ad": "Attribute 20 Lock",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "adult-gamma-jewel-dragon/trait:legendary-resistance",
+    "ad": "Legendary Resistance (3/Day)",
+    "tur": "trait"
+   },
+   {
+    "anahtar": "adult-gamma-jewel-dragon/action:multiattack",
+    "ad": "Multiattack",
+    "tur": "action"
+   },
+   {
+    "anahtar": "adult-gamma-jewel-dragon/action:rend",
+    "ad": "Rend",
+    "tur": "action"
+   },
+   {
+    "anahtar": "adult-gamma-jewel-dragon/action:force-breath",
+    "ad": "Force Breath (Recharge 5–6)",
+    "tur": "action"
+   },
+   {
+    "anahtar": "adult-gamma-jewel-dragon/legendary:pounce",
+    "ad": "Pounce",
+    "tur": "legendary"
+   }
+  ]
+ },
+ "ekler": {
+  "continent-dragon:Bite": {
+   "extra": [
+    {
+     "dice": "3d8",
+     "type": "force"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "continent-dragon:Continent Roar Breath": {
+   "prone": {},
+   "status": "kısmen",
+   "unsupported": "ikinci hasar, savrulma, yüzey"
+  },
+  "continent-dragon:Crushing Presence": {
+   "conditions": [
+    {
+     "condition": "Frightened",
+     "owner": "target",
+     "rounds": 10
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "ancient-continent-spirit:World-Breaker Bite": {
+   "extra": [
+    {
+     "dice": "6d10",
+     "type": "force"
+    },
+    {
+     "dice": "6d10",
+     "type": "radiant"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "ancient-continent-spirit:Continent-Shaper Claws": {
+   "extra": [
+    {
+     "dice": "4d10",
+     "type": "force"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "ancient-continent-spirit:Continent Tail": {
+   "prone": {},
+   "status": "kısmen",
+   "unsupported": "savurma"
+  },
+  "ancient-continent-spirit:Crushing Continental Presence": {
+   "conditions": [
+    {
+     "condition": "Paralyzed",
+     "owner": "target",
+     "rounds": 10
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "cosmic-phoenix:Cosmic Beak": {
+   "extra": [
+    {
+     "dice": "4d8",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "cosmic-phoenix:Starfire Talons": {
+   "extra": [
+    {
+     "dice": "4d8",
+     "type": "fire"
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "abyssal-star-nightmare:Eldritch Tentacle": {
+   "extra": [
+    {
+     "dice": "3d8",
+     "type": "psychic"
+    }
+   ],
+   "grapple": {
+    "escapeDc": 26,
+    "restrained": true
+   },
+   "status": "uygulandı"
+  },
+  "abyssal-star-nightmare:Maddening Gaze": {
+   "conditions": [
+    {
+     "condition": "Stunned",
+     "owner": "target",
+     "end": "turnEnd",
+     "rounds": 1
+    }
+   ],
+   "status": "uygulandı"
+  },
+  "abyssal-star-nightmare:Cosmic Fling": {
+   "prone": {},
+   "status": "kısmen",
+   "unsupported": "ikinci hasar, fırlatma"
+  },
+  "sigma-jewel-dragon-wyrmling:Radiant Breath": {
+   "conditions": [
+    {
+     "condition": "Blinded",
+     "owner": "target",
+     "end": "turnEnd",
+     "rounds": 1
+    }
+   ],
+   "status": "kısmen"
+  },
+  "young-sigma-jewel-dragon:Radiant Breath": {
+   "conditions": [
+    {
+     "condition": "Blinded",
+     "owner": "target",
+     "end": "turnEnd",
+     "rounds": 1
+    }
+   ],
+   "status": "kısmen"
+  },
+  "adult-sigma-jewel-dragon:Radiant Breath": {
+   "conditions": [
+    {
+     "condition": "Blinded",
+     "owner": "target",
+     "end": "turnEnd",
+     "rounds": 1
+    }
+   ],
+   "status": "kısmen"
+  },
+  "adult-omega-jewel-dragon:Necrotic Breath": {
+   "drainMax": {},
+   "status": "kısmen"
+  },
+  "adult-delta-jewel-dragon:Psychic Breath": {
+   "conditions": [
+    {
+     "condition": "Stunned",
+     "owner": "target",
+     "end": "turnEnd",
+     "rounds": 1
+    }
+   ],
+   "status": "kısmen"
+  },
+  "alpha-jewel-dragon-wyrmling:Thunder Breath": {
+   "prone": {},
+   "status": "kısmen"
+  },
+  "young-alpha-jewel-dragon:Thunder Breath": {
+   "prone": {},
+   "status": "kısmen"
+  },
+  "adult-alpha-jewel-dragon:Thunder Breath": {
+   "prone": {},
+   "status": "kısmen"
+  }
+ }
+}

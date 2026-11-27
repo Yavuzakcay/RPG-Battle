@@ -23,7 +23,7 @@ describe('görsel galerisi', () => {
     expect(GALERI_TABS).toHaveLength(15);
     expect(tabRecords('buyu')).toHaveLength(339);
     expect(new Set(tabRecords('esya').map(([id]) => id))).toEqual(esyaKimlikleri()); // sayı veriden (KATALOG-1 ile 449 → 771)
-    expect(tabRecords('canavar')).toHaveLength(330);
+    expect(tabRecords('canavar')).toHaveLength(350); // KATALOG-F2: 330 SRD + 20 kadim yaratık (yedek glifi)
     expect(tabRecords('altsinif')).toHaveLength(120);
     expect(tabRecords('nesne').length).toBeGreaterThan(30);
   });

@@ -5,7 +5,7 @@
  */
 import { beforeAll, describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { armor, classes, items, loadMonsters, monsters, races, spells, weapons } from '../data';
+import { armor, classes, items, kadimMonsters, loadMonsters, monsters, races, spells, weapons } from '../data';
 import { subclassesOf } from '../rules/classFeatures';
 import { looksEnglish } from '../data/aciklamaDil';
 import { setLang, t } from '../i18n';
@@ -34,8 +34,11 @@ describe('Dungeondex kataloğu', () => {
     expect(DEX_CATS).toHaveLength(10);
     expect(dex.buyu.map((e) => e.id).sort()).toEqual(spells.map((s) => s.id).sort());
     expect(dex.buyu).toHaveLength(339);
-    expect(dex.canavar).toHaveLength(330);
-    for (const e of dex.canavar) expect((srdMonsters.monsters as Record<string, unknown>)[e.id], e.id).toBeDefined();
+    // Görev KATALOG-F2: 330 SRD canavarı + 20 kadim yaratık (`data/canavarlar-kadim.json`, SRD tablosunda yok).
+    expect(dex.canavar).toHaveLength(330 + kadimMonsters.length);
+    expect(kadimMonsters).toHaveLength(20);
+    const kadim = new Set(kadimMonsters.map((m) => m.id));
+    for (const e of dex.canavar) if (!kadim.has(e.id)) expect((srdMonsters.monsters as Record<string, unknown>)[e.id], e.id).toBeDefined();
     const armorCount = armor.filter((a) => (a as { srd?: string }).srd).length;
     expect(dex.esya).toHaveLength(items.length + weapons.length + armorCount);
     expect(dex.tur.map((e) => e.id).sort()).toEqual(races.map((r) => r.id).sort());

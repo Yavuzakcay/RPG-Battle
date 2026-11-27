@@ -1108,6 +1108,210 @@
      "halfMove": true
     }
    ]
+  },
+  "continent-dragon": {
+   "uses": 3,
+   "srd": "KATALOG-F2 (PDF s. 2): Efsanevi Eylemler 3 puan/tur; puan bedeli yok, her eylem 1 kullanım",
+   "actions": [
+    {
+     "id": "tail",
+     "tr": "Kuyruk",
+     "en": "Tail",
+     "kind": "strike",
+     "attack": "Tail"
+    },
+    {
+     "id": "wing-storm",
+     "tr": "Kanat Fırtınası",
+     "en": "Wing Storm",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "dex",
+     "dc": 26,
+     "area": {
+      "shape": "emanation",
+      "sizeFt": 25,
+      "origin": "self"
+     },
+     "damage": "3d8+10",
+     "damageType": "bludgeoning",
+     "conditions": [
+      "Prone"
+     ]
+    }
+   ]
+  },
+  "ancient-continent-spirit": {
+   "uses": 5,
+   "srd": "KATALOG-F2 (PDF s. 4): Efsanevi Eylemler 5 puan/tur; puan bedeli yok, her eylem 1 kullanım",
+   "actions": [
+    {
+     "id": "tectonic-shift",
+     "tr": "Tektonik Kayma",
+     "en": "Tectonic Shift",
+     "kind": "quake",
+     "oncePerTurn": true,
+     "radiusFt": 60
+    },
+    {
+     "id": "lightning-spear-rain",
+     "tr": "Yıldırım Mızrağı Yağmuru",
+     "en": "Lightning Spear Rain",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "dex",
+     "dc": 32,
+     "area": {
+      "shape": "sphere",
+      "sizeFt": 10,
+      "origin": "point",
+      "rangeFt": 120
+     },
+     "damage": "8d10",
+     "damageType": "lightning"
+    },
+    {
+     "id": "seal-burst",
+     "tr": "On Mühür Patlaması",
+     "en": "Ten-Seal Burst",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "con",
+     "dc": 32,
+     "area": {
+      "shape": "emanation",
+      "sizeFt": 60,
+      "origin": "self"
+     },
+     "damage": "12d10",
+     "damageType": "force"
+    }
+   ]
+  },
+  "cosmic-phoenix": {
+   "uses": 3,
+   "srd": "KATALOG-F2 (PDF s. 6): Efsanevi Eylemler 3 puan/tur; puan bedeli yok, her eylem 1 kullanım",
+   "actions": [
+    {
+     "id": "ember-wingbeat",
+     "tr": "Köz Kanat Çırpışı",
+     "en": "Ember Wingbeat",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "dex",
+     "dc": 27,
+     "half": true,
+     "area": {
+      "shape": "emanation",
+      "sizeFt": 25,
+      "origin": "self"
+     },
+     "damage": "4d8",
+     "damageType": "fire"
+    }
+   ]
+  },
+  "abyssal-star-nightmare": {
+   "uses": 4,
+   "srd": "KATALOG-F2 (PDF s. 10): Efsanevi Eylemler 4 puan/tur; puan bedeli yok, her eylem 1 kullanım",
+   "actions": [
+    {
+     "id": "eldritch-storm-bolt",
+     "tr": "Kozmik Fırtına Şimşeği",
+     "en": "Eldritch Storm Bolt",
+     "kind": "strike",
+     "attack": "Void-Lightning Strike"
+    },
+    {
+     "id": "abyssal-toxic-ink",
+     "tr": "Uçurum Zehir Mürekkebi",
+     "en": "Abyssal Toxic Ink",
+     "kind": "save",
+     "oncePerTurn": true,
+     "save": "con",
+     "dc": 27,
+     "area": {
+      "shape": "emanation",
+      "sizeFt": 30,
+      "origin": "self"
+     },
+     "conditions": [
+      "Blinded",
+      "Poisoned"
+     ],
+     "moveAfter": "full"
+    }
+   ]
+  },
+  "adult-sigma-jewel-dragon": {
+   "uses": 3,
+   "srd": "KATALOG-F2 (PDF s. 8): Yetişkin evre efsanevi 3 puan; eylemler PDF'te yok, SRD kalıbıyla Pounce (türetildi)",
+   "actions": [
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    }
+   ]
+  },
+  "adult-omega-jewel-dragon": {
+   "uses": 3,
+   "srd": "KATALOG-F2 (PDF s. 8): Yetişkin evre efsanevi 3 puan; eylemler PDF'te yok, SRD kalıbıyla Pounce (türetildi)",
+   "actions": [
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    }
+   ]
+  },
+  "adult-delta-jewel-dragon": {
+   "uses": 3,
+   "srd": "KATALOG-F2 (PDF s. 8): Yetişkin evre efsanevi 3 puan; eylemler PDF'te yok, SRD kalıbıyla Pounce (türetildi)",
+   "actions": [
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    }
+   ]
+  },
+  "adult-alpha-jewel-dragon": {
+   "uses": 3,
+   "srd": "KATALOG-F2 (PDF s. 8): Yetişkin evre efsanevi 3 puan; eylemler PDF'te yok, SRD kalıbıyla Pounce (türetildi)",
+   "actions": [
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    }
+   ]
+  },
+  "adult-gamma-jewel-dragon": {
+   "uses": 3,
+   "srd": "KATALOG-F2 (PDF s. 8): Yetişkin evre efsanevi 3 puan; eylemler PDF'te yok, SRD kalıbıyla Pounce (türetildi)",
+   "actions": [
+    {
+     "id": "pounce",
+     "tr": "Sıçrayış",
+     "en": "Pounce",
+     "kind": "strike",
+     "attack": "Rend",
+     "halfMove": true
+    }
+   ]
   }
  },
  "yuva": {

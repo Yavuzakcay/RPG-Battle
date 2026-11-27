@@ -46,13 +46,22 @@ export const monsters: Monster[] = [];
 export const attackRiders: Record<string, unknown> = {};
 /** Kuyruk 19: SRD canavar büyüleri (`data/canavar-buyuleri.json`, betik üretir); canavarlarla birlikte yüklenir. */
 export const monsterSpells: Record<string, unknown> = {};
+/**
+ * Görev KATALOG-F2: Kadim Yaratıklar ve Mücevher Ejderhası (`data/canavarlar-kadim.json`, `scripts/katalog-f2-kadim.mjs`).
+ * SRD listesinden (`monsters`, 330) ayrı dizi: Game Master seçicisinde yok, Dungeondex'te var; `getMonster` bulur.
+ * Saldırı ekleri (`ekler`) `attackRiders`'a eklenir. Aynı tembel yüklemede doldurulur.
+ */
+export const kadimMonsters: Monster[] = [];
 let monstersLoading: Promise<Monster[]> | null = null;
 export const monstersLoaded = () => monsters.length > 0;
 export function loadMonsters(): Promise<Monster[]> {
-  monstersLoading ??= Promise.all([import('../../data/monsters.json'), import('../../data/attack-riders.json'), import('../../data/canavar-buyuleri.json')]).then(([m, r, sp]) => {
+  monstersLoading ??= Promise.all([import('../../data/monsters.json'), import('../../data/attack-riders.json'), import('../../data/canavar-buyuleri.json'),
+    import('../../data/canavarlar-kadim.json')]).then(([m, r, sp, k]) => {
     if (monsters.length === 0) monsters.push(...(m.default as Monster[]));
+    const kadim = k.default as unknown as { canavarlar: Monster[]; ekler: Record<string, unknown> };
+    if (kadimMonsters.length === 0) kadimMonsters.push(...kadim.canavarlar);
     Object.assign(monsterSpells, sp.default);
-    Object.assign(attackRiders, (r.default as { attacks: Record<string, unknown> }).attacks);
+    Object.assign(attackRiders, (r.default as { attacks: Record<string, unknown> }).attacks, kadim.ekler);
     return monsters;
   });
   return monstersLoading;
@@ -180,5 +189,6 @@ export const getClass = (id: string) => byId(classes, id, 'Sınıf');
 export const getEnvironment = (id: string) => byId(environments, id, 'Ortam');
 export const getMonster = (id: string) => {
   if (!monstersLoaded()) throw new Error('Canavar verisi henüz yüklenmedi (önce loadMonsters).');
-  return byId(monsters, id, 'Canavar');
+  // KATALOG-F2: SRD listesinde yoksa kadim yaratıklar (ayrı dizi).
+  return monsters.find((m) => m.id === id) ?? byId(kadimMonsters, id, 'Canavar');
 };

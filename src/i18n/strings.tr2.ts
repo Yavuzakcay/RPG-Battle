@@ -1003,6 +1003,7 @@ export const TR_EXTRA = {
       "Ejderhalar (kırmızı)": "Ejderhalar (kırmızı)",
       "Ejderha soyu": "Ejderha soyu",
       "Göksel varlıklar": "Göksel varlıklar",
+      "Kadim Yaratıklar": "Kadim Yaratıklar",
     } as Record<string, string>,
   },
 };

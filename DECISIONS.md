@@ -2,6 +2,49 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev KATALOG-F2: Kadim Yaratıklar ve Mücevher Ejderhası verisi + Dungeondex açıklamaları (2026-11-27; kural sürümü (107) ve kayıt sürümü (28) değişmedi)
+
+Kaynak PDF (11 sayfa, depo dışı `docs/katalog/`). Tek üretici `node scripts/katalog-f2-kadim.mjs`; belgeler
+`harita/belgeler/KATALOG-F2-PROSPEKTUS.md` (kayıtlar, ad uyarlamaları, türetilen değerler) ve `KATALOG-SIGMAYAN.md` (sığmayanlar).
+
+- **Sayım:** görev metni 21 blok diyor; kayıt **20** (Kıta V1, Kıta V2, Kozmik Anka, Kor Yumurtası, Yıldız-Kâbusu + 5 hat × 3 evre).
+  Anka (+450) ve Yıldız-Kâbusu (+550) ikinci fazları ayrı stat bloğu değil; aynı kayıtta `faz2` bloğu.
+- **Dosya ve dizi:** `data/canavarlar-kadim.json` (Monster biçimi, yeni alan yok; yan tablolar `dex`, `yer`, `ozellikler`, `ekler`, `hatlar`).
+  `data/monsters.json` değişmedi. `loadMonsters()` aynı tembel yüklemede ayrı dizi `kadimMonsters` doldurur, saldırı eklerini `attackRiders`'a
+  ekler; `getMonster` SRD'de yoksa kadim diziye bakar. Game Master seçicisinde yok (SRD listesi 330 kalır); Dungeondex'te var
+  (`buildDex` iki diziyi birleştirir, yan tablolar SRD tablolarıyla aynı biçimde birleşir). Mühür Ruhu bossları için planlanan
+  `bosslar-muhur.json` henüz yok; KATALOG-F-TASARIM §1'in ek alanları (`kaynak`, `sinif`…) burada kullanılmadı (görev: yeni alan yok).
+- **Mücevher hatları (kullanıcı kararı):** Alfa = Safir (thunder), Omega = Yakut (necrotic), Delta = Zümrüt (psychic), Sigma = Altın (radiant),
+  Gamma = Gümüş (force). Nefes türü tek yerde: betikteki `HATLAR.<hat>.hasar` (Omega/Sigma/Gamma `oneri: true`); değiştirip betiği
+  çalıştırmak kaydı, bağışıklığı, nefes adını ve TR/EN açıklamaları günceller. PDF satırlarının sırası (Parlaklık, Nekrotik, Psişik,
+  Gök Gürültüsü, Güç) hatlara türüyle eşlendi; CR'ler PDF sırasıyla (Sigma 15/25 … Gamma 20/30).
+- **Adlar:** İngilizce ad "Jewel Dragon" + Yunan harfli hat (`young-alpha-jewel-dragon`): "Gem Dragon" ve "<taş> Dragon" D&D adı olduğundan
+  kullanılmadı; taş adı yalnız açıklamada ("Alfa hattı (Safir)"). Kraken özelliği "Safir Ejderhası Rezonansı" → Alpha Resonance; Alfa
+  pasifindeki "Far Realm" → "uzay kökenli (Aberration)". Korumalı ad listesi `src/data/katalogF2.test.ts` `PROTECTED`.
+- **Boyut:** Kıta V1 (19 altıgen), V2 ve Yıldız-Kâbusu Gargantuan (motorun en büyüğü 19 altıgen; PDF'in 37 ve 31'i geçerli değil).
+  V2 "5×5+" ile "7×7" çelişkisi: ikisi de 37 altıgen; 37 altıgen yarıçap 3 (genişlik 7) olduğundan **7×7** okundu. Anka "3×3 (7 altıgen)"
+  ve mücevher Yetişkin "Gargantuan 3×3" altıgen sayısına göre **Huge**; Genç Large, Yavru Medium.
+- **0 HP fazları (yaklaşık):** Anka ve Yıldız-Kâbusu'na mevcut Faz 2 bloğu **%5 can eşiğiyle** (Anka 450 geçici can + nefes dolar,
+  Yıldız-Kâbusu 550 geçici can). Süpernova, yumurta ile diriliş ve 2. faz arena değişimleri sığmayan.
+- **Yaklaşık bağlamalar (mevcut mekanik):** nefesler alanlı save saldırısı (Judgment ve Celestial Glide `targets: 'enemies'`), saldırı
+  ekleri (ek zar, Grappled + Restrained, Prone, Blinded/Stunned/Frightened/Paralyzed süreleri, `drainMax`), Legendary Resistance
+  `traits` metninden, efsanevi eylemler `data/efsanevi.json`'a 9 kayıt (puan bedelleri yok: `uses` = puan, pahalı eylem `oncePerTurn`;
+  mücevher Yetişkin'e PDF eylem vermediği için SRD kalıbı Pounce). Ezici Varlık ayrı eylem, alanı 60 ft (türetildi).
+  Ember Wingbeat'e DC 27 DEX kurtarma (türetildi). Büyüsüz fiziksel bağışıklık bağışıklık listesine yazılmadı (motorda karşılığı yok;
+  yazılsa büyülü silahlara da bağışık olurdu).
+- **Türetilen değerler** (SRD 5.2.1 ejderha kalıbı; prospektüste tablo): mücevher Rend, yetenek puanları, hız 40/uçuş 80, DEX/WIS
+  kurtarması, Perception/Stealth, kendi türüne bağışıklık, Recharge 5–6, yarı hasar, Yetişkin LR 3/gün; Yavru evresinin tamamı (CR 6–10,
+  AC = Genç − 2, HP = Genç / 2, 30 ft koni, zar = Genç − 3, DC = 8 + yeterlilik + CON). Kor Yumurtası CR 0, Medium.
+- **Görsel:** bağlama yok; `avatar` boş. Dungeondex görsel eşlemesine 20 satır "yedek" (`yedek:nesne`) eklendi; `scripts/lib/gorsel-envanter.ts`
+  `monsterRows` kadim diziyi de sayar (bu çalışma ağacında `icerik/` olmadığından `npm run dd-gorsel` çalıştırılmadı; satırlar üreticinin
+  biçiminde elle eklendi, `GORSEL-ENVANTER.md` sayıları bir sonraki tam çalıştırmada güncellenir). Dar ekran görüntüsü (375 px, Continent Dragon
+  kartı): `docs/gorev-katalog-f2/dungeondex-continent-dragon-dar.jpg`.
+- **Test değişiklikleri (gerekçe: Dungeondex canavar listesine 20 kadim kayıt eklendi; SRD listesi aynı):**
+  `canavarAciklama.test.ts` SRD listesi (330 / 1318) aynen, kadim liste ayrı (`canavarlar-kadim.json` `ozellikler`) ve sayısal tutarlılık
+  ikisinde; `dungeondex.test.tsx` 330 → 330 + 20, SRD kaydı denetimi kadim dışında; `book.test.tsx` kapak sayacı "330 canavar" → "350 canavar";
+  `gorselEsleme.test.ts` canavar eşlemesi `monsters.length` → `+ kadimMonsters.length`; `galeri.test.tsx` canavar sekmesi 330 → 350. Yeni: `src/data/katalogF2.test.ts` (şema, PDF
+  sayıları, hatlar, LR/efsanevi, TR/EN, korumalı adlar), `src/sim/katalogF2Duman.test.ts` (7 kayıt × 2 tohum, çökme yok).
+
 ## KATALOG-1 F / KATALOG-F0: yarı can fazı (Faz 2) motor kuralı — mekanik donmasına bilinçli istisna (2026-11-26; kural sürümü 107, kayıt sürümü 28)
 
 Kullanıcı kararı (2026-11-26): Serüven öncesi mekanik donmasına **bilinçli istisna** olarak, Mühür Ruhu bosslarının "%50 can Taş Uyanışı" fazı gerçek bir motor kuralı olacak.

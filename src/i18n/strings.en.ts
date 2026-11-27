@@ -334,6 +334,7 @@ export const en: Strings = {
       "Ejderhalar (kırmızı)": "Dragons (red)",
       "Ejderha soyu": "Dragonkin",
       "Göksel varlıklar": "Celestials",
+      "Kadim Yaratıklar": "Ancient Creatures",
     } as Record<string, string>,
   },
   home: {

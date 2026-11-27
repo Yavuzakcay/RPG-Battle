@@ -4,7 +4,7 @@
  * adlar İngilizce (alt sınıf ve Geçmiş adı Türkçe), açıklamalar Türkçe; SRD'nin İngilizce ham metni (`text`, `raw`)
  * hiçbir kartta kullanılmaz. Tembel parça: yalnız `src/screens/Dungeondex.tsx` içe aktarır.
  */
-import { armor, classes, isMagicItem, items, monsters, races, spells, spellDescriptions, trAciklama, weapons, classData, enDescriptions, loadMonsterDescriptions, loadEnMonsterDescriptions } from '../data';
+import { armor, classes, isMagicItem, items, kadimMonsters, monsters, races, spells, spellDescriptions, trAciklama, weapons, classData, enDescriptions, loadMonsterDescriptions, loadEnMonsterDescriptions } from '../data';
 import type { Item, Monster, Spell, SubclassDef, Weapon } from '../data';
 import { allFeats } from '../rules/advancement';
 import { backgrounds } from '../rules/backgrounds';
@@ -75,15 +75,17 @@ export async function loadDexExtras(): Promise<Omit<DexExtras, 'mapNames'>> {
     loadEnMonsterDescriptions().then(() => enDescriptions as unknown as Record<string, Record<string, string>>),
     import('../../data/srd/classes.json'),
   ]);
-  const [feats] = await Promise.all([import('../../data/canavar-ozellik.json'), loadMonsterDescriptions()]);
+  const [feats, kadimJson] = await Promise.all([import('../../data/canavar-ozellik.json'), import('../../data/canavarlar-kadim.json'), loadMonsterDescriptions()]);
   const placeList = places.default as unknown as Array<{ id: string; tema?: string; ortam?: string[] }>;
+  // KATALOG-F2: kadim yaratıkların yan tabloları (tür/hizalanma/durum bağışıklığı, tema, özellik listesi) SRD tablolarıyla aynı biçimde.
+  const kadim = kadimJson.default as unknown as { dex: DexExtras['srdMonsters']; yer: DexExtras['monsterPlaces']; ozellikler: DexExtras['monsterFeatures'] };
   return {
-    srdMonsters: (srd.default as unknown as { monsters: DexExtras['srdMonsters'] }).monsters,
+    srdMonsters: { ...(srd.default as unknown as { monsters: DexExtras['srdMonsters'] }).monsters, ...kadim.dex },
     monsterTypes: (types.default as unknown as { types: Record<string, string> }).types,
     monsterSpells: sp.default as unknown as DexExtras['monsterSpells'],
-    monsterPlaces: Object.fromEntries(placeList.map((p) => [p.id, p])),
+    monsterPlaces: { ...Object.fromEntries(placeList.map((p) => [p.id, p])), ...kadim.yer },
     en,
-    monsterFeatures: (feats.default as unknown as { canavarlar: DexExtras['monsterFeatures'] }).canavarlar,
+    monsterFeatures: { ...(feats.default as unknown as { canavarlar: DexExtras['monsterFeatures'] }).canavarlar, ...kadim.ozellikler },
     classPrimary: Object.fromEntries((srdClasses.default as unknown as { classes: Array<{ id: string; core: Record<string, string> }> }).classes
       .map((c) => [c.id, c.core['Primary Ability'] ?? ''])),
   };
@@ -198,7 +200,7 @@ export function buildDex(x: DexExtras): Record<DexCat, DexEntry[]> {
     const names = [...(sc?.atWill ?? []), ...(sc?.daily ?? []).flatMap((d) => d.spells)].map((s) => s.name);
     return [...new Map(names.flatMap((n) => { const s = spellsByName.get(spellKey(n)); return s ? [[s.id, s] as const] : []; })).values()];
   };
-  const canavar: DexEntry[] = monsters.map((m: Monster) => {
+  const canavar: DexEntry[] = [...monsters, ...kadimMonsters].map((m: Monster) => {
     const srd = x.srdMonsters[m.id];
     const type = x.monsterTypes[m.id] ?? srd?.type ?? '';
     const size = L.size[m.size ?? 'M'] ?? m.size ?? '';
