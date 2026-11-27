@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { execSync } from 'node:child_process';
 import { defineConfig, type Plugin } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { APP_NAME } from './src/app/appName';
@@ -22,8 +23,20 @@ function appShell(): Plugin {
   };
 }
 
+/**
+ * Görev ODA-1: build kimliği (`__APP_BUILD__`). Çevrimiçi odaya katılımda host ile istemcinin build'i eşit olmalı
+ * (src/room/surum.ts; farklı reducer sessizce ayrışır). Sürüm + git kısa kimliği + build/sunucu başlangıç zamanı.
+ */
+function buildId(): string {
+  const pkg = JSON.parse(fs.readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version?: string };
+  let git = 'yerel';
+  try { git = execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim() || git; } catch { /* git yok */ }
+  return `${pkg.version ?? '0'}+${git}.${Date.now().toString(36)}`;
+}
+
 export default defineConfig({
   plugins: [react(), appShell()],
+  define: { __APP_BUILD__: JSON.stringify(buildId()) },
   // Kuyruk 19C: harita/ altındaki kaynak görseller, önizlemeler ve prompt'lar derlemeye girmez (yalnızca public/ ve
   // içe aktarılan JSON); geliştirme sunucusu bunlar değişince yeniden yüklenmesin.
   server: { watch: { ignored: ['**/harita/*/gorsel/**', '**/harita/*/onizleme/**', '**/harita/*/prompt/**', '**/assets-ham/**'] } },

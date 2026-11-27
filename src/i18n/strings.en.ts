@@ -184,6 +184,23 @@ export const en: Strings = {
     ruleOn: 'on', ruleOff: 'off', back: 'Rooms',
     codeNote: 'Joining with a room code comes in a later stage.',
   },
+  /** Task ODA-1: online room (O1: tabs in the same browser; watch only). */
+  odaCevrimici: {
+    title: 'Online room', help: 'Players join from another tab in the same browser with the room code and watch the battle live. (Local network and internet come later.)',
+    open: 'Go online', close: 'Go offline', code: 'Room code', opening: 'Opening…', openFailed: 'Could not open the room.',
+    members: 'Joined', noMembers: 'Nobody has joined yet.', online: 'online', offline: 'disconnected', watcher: 'watcher',
+    copies: (n: number): string => `${n} character cop${n === 1 ? 'y' : 'ies'}`, copyBadge: 'copy',
+    joinTitle: 'Join with code', joinHelp: 'Enter the 6-digit code on the Game Master\'s screen.', yourName: 'Your name', namePlaceholder: 'Player',
+    join: 'Join', joining: 'Connecting…', badCode: 'The code must have 6 digits.', leave: 'Leave room',
+    noRoom: 'No open room with this code.', codeTaken: 'Code in use.',
+    rejected: { surum: 'Version mismatch: reload both tabs.', anahtar: 'Session key did not match: join again.', dolu: 'Room full.', kilitli: 'Room locked.', kapali: 'Room closed.' } as Record<string, string>,
+    versionField: { protokol: 'protocol', uygulama: 'app version', kuralSurumu: 'rules version', icerik: 'external content' } as Record<string, string>,
+    connected: (code: string): string => `Connected: room ${code}`, connecting: 'Connecting…', lost: 'Connection lost.', closed: 'The Game Master closed the room.',
+    stage: { lobi: 'Lobby', kurulum: 'Setting up battle', savas: 'Battle in progress', bitti: 'Battle over' } as Record<string, string>,
+    myChars: 'Your characters', send: 'Send copy', sent: 'Sent', withdraw: 'Withdraw',
+    charRejected: { gecersiz: 'Character not accepted (invalid).', dolu: 'Party full.', kilitli: 'Characters cannot be sent during a battle.' } as Record<string, string>,
+    watch: 'Watch battle', watching: 'Watching: the Game Master\'s battle (watch only)', leaveWatch: 'Back to lobby',
+  },
   roomRules: {
     title: 'Room rules', help: 'Chosen when you set up a room. Stays the same in every battle.',
     carry: 'Carrying load', carryHelp: { off: 'Weight is shown, no limit.', srd: 'Cannot carry over Strength × 15 lb.', tiered: 'You slow down as you get heavier.' } as Record<string, string>,

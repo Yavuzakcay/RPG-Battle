@@ -10,6 +10,51 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Tablo:** CR 30 kayıtları (tutsak-dragon, ocean-nightmare, ocean-nightmare-open-sea) zaten DMG CR 30 satırıyla karşılaştırılıyordu; "tablo dışı" yalnız CR > 30. Tablo yeniden üretildi.
 - **Efsanevi eylem bedeli: uygulanmadı.** Motor şeması (`src/battle/boss.ts` `LegendaryAction`) eylem başına bedel alanı taşımıyor; her kullanım 1 hak düşer (`legendary_used.left = legendaryLeft − 1`). Eksik alan: `LegendaryAction` üstünde eylem başına puan bedeli (ör. `cost`) ve onu düşen sayaç. Görev "yeni mekanik ekleme" dediğinden `data/efsanevi.json`'a dokunulmadı; kart metnindeki 1/2/3 puan yalnız görünüm.
 - **Testler:** `src/data/katalogF2.test.ts` Genç HP ve nefes zarı beklentileri yeni değerlere (veriye bağlı değer). Belgeler: `KATALOG-F2-PROSPEKTUS.md` Genç satırları, TR/EN canavar açıklamaları betikten.
+## ODA-1: çevrimiçi oda O1, bağlantı arayüzü + oda kodu + sekmeler arası (2026-11-27; kural sürümü 108 ve kayıt sürümü 28 değişmedi; `ODA_SURUM` 1 → 2)
+
+- **Kod:** saf çekirdek `src/room/` (React/DOM/i18n yok): `transport.ts` (`RoomTransport`), `protocol.ts` (`OdaMesaji`, `ODA_PROTOKOL` 1,
+  `mesajMi`, 4 MB sınır, parçalama), `code.ts` (6 hane, 32 hane oturum anahtarı), `hash.ts` (kanonik JSON özeti), `surum.ts` (el sıkışması),
+  `host.ts` (`OdaHost`), `client.ts` (`OdaIstemci`), `adapters/memory.ts` (test), `adapters/broadcast.ts` (sekme). Ekran tarafı:
+  `src/screens/odaCanli.ts` (etkin host/istemci, izleme oturumu), `src/screens/OdaLobi.tsx` (GM "Çevrimiçi aç", oyuncu "Kodla katıl" + lobi).
+  Savaş ekranı iki isteğe bağlı prop alır: `onEvents` (oda savaşında host yayar) ve `watch` (salt izleme: kayıt yok, dokunma kapalı, üst şerit).
+- **Karar cevapları (kullanıcı):** 1 gizlilik çizimde süzülür (O3; sıkı mod sonra); 2 Wake Lock + odayı aynı kodla geri getirme O4'te
+  (O1'de kayıtlı kod varsa yine o denenir); **3 O1'e alındı:** katılımda protokol, build kimliği (`__APP_BUILD__`, `vite.config.ts` `define`:
+  sürüm + git kısa kimliği + build zamanı), kural sürümü (`defaultRuleVersion()`) ve dış içerik özeti (`icerikOzeti`: yüklü alt sınıf
+  tanımlarının kanonik özeti) eşit değilse `red{surum, ayrinti: alan}`; 4 paket JSON gönderilmez, aynı build + içerik şartı yeter;
+  5 `ws` yalnız dev bağımlılığı (O2); 6 APK'ya cleartext izni yok, telefonda tarayıcıdan test; 7 katılım onayı + hız sınırı O5'te;
+  8 savaş sonucu otomatik uygulanır, karakter arada değiştiyse sorulur (O2+; kopyada `kopyaZamani` şimdiden tutuluyor).
+- **Oturum anahtarı ilk sürümden:** host ilk `katil`'de üretir; bilinen `istemciId` yanlış ya da eksik anahtarla gelirse `red{anahtar}`.
+  Oyuncu sekmesi kimliği ve anahtarı `sessionStorage`'da (aynı tarayıcıdaki iki sekme iki istemci).
+- **Eşitleme:** `seq` = host günlüğündeki sıra; `donem` (yeni savaş/kayıttan yükleme günlüğü baştan kurunca artar) eklendi: dönemi farklı
+  `olaylar`/`ozet` istemcide uygulanmaz, tam anlık istenir (kayıp `anlik` sonrası eski duruma yeni olay uygulanmasın diye; belgede yoktu).
+  Host durumu olaylardan kendisi kurar (istemcilerle aynı reducer yolu), özet her 20 yayında. Günlük 2 MB'ı aşarsa `anlik` durum tabanı +
+  en çok 200 son olay. **Ölçüm:** 92 olaylık savaş 27,9 kB (`battle_started` 13,8 kB, sonrası ≈0,15 kB/olay); 2 MB ≈ 13 000 olay, eşik
+  pratikte aşılmıyor, eşik aynı kaldı.
+- **O1 sınırları:** oyuncu komut gönderemez (host `komut`'u `komut_red{izleyici}` ile çevirir; O2). İzleme ekranında radyal menü görünür ama
+  dokunma kapalı (günlük açılamaz). Kopan istemci yeniden girişte her zaman tam anlık alır (eksik-olay yolu O4). Karakter kopyası yalnız GM
+  lobisi (oda düzenleyicisi) açıkken ve savaş kurulmamışken kabul edilir; kopyalar GM'in karakter deposuna yazılmaz, oda kapanınca partiden
+  çıkar. Bellek hub'ında aynı kimlikli ikinci bağlantıya adresli mesaj en son katılana gider (aktarıcı kimliği bağlantıya eşler); O2
+  aktarıcısında aynı kimlikle ikinci bağlantı ayrıca ele alınmalı.
+- **Testler:** `src/room/protocol.test.ts`, `src/room/host.test.ts` (bellek hub + host + iki istemci: bire bir replay, yeni savaş dönemi,
+  düşen/çoğalan/geciken mesaj, geç katılan (tam günlük ve durum tabanı), özet tutmazlığı, kopma, yanlış anahtar, dört sürüm alanı, karakter
+  kopyası), `src/room/broadcast.test.ts` (node `BroadcastChannel`). Uçtan uca `node scripts/oda-sekme-e2e.mjs [--ekran]` (iki sekme; görüntü
+  `docs/oda-1/iki-sekme.png`). `od1-oda.test.tsx` beklenen `surum` 1 → 2 (veriye bağlı değer: oda kaydı sürümü).
+- **`check:ses` betiği:** savaşı kuran düğme `button.cta` yerine `[data-testid="map-start"]` ile seçilir (oda düzenleyicisindeki
+  "Çevrimiçi aç" da `cta` ve ondan önce geliyor; betik yanlış düğmeye tıklayıp zaman aşımına düşüyordu).
+- **Ana parça:** 461,46 → 462,12 kB (+0,66 kB; yalnız `App.tsx` yönlendirmesi, metinler tembel `strings.tr2.ts`); `src/room/` +
+  yapıştırıcı ayrı parça `odaCanli-*.js` 17 kB.
+
+## ODA-0: çevrimiçi oda sistemi tasarımı (2026-11-27; yalnız belge, kod/mekanik/kural sürümü/kayıt sürümü değişmedi)
+
+- Belge `harita/belgeler/ODA-TASARIM.md`. Yetkili taraf GM cihazı: oyuncu komut gönderir, yalnız host `execute` çalıştırır,
+  olaylar `seq` ile yayılır, her istemci kendi reducer'ıyla uygular; eşitleme tam olay günlüğü (büyükse durum + son olaylar),
+  yeniden bağlanma `istemciId` + host'un verdiği oturum anahtarıyla. Bağlantı arayüzü `RoomTransport` (bellek/test,
+  BroadcastChannel, yerel ağ WebSocket aktarıcısı `npm run oda-sunucu`, Supabase yer tutucu); kod `src/room/` (saf, tembel),
+  yerel oda kaydı `src/oda/` aynı kalır.
+- Kullanıcı kararlarına iki ek: (1) anonim kimliğe oturum anahtarı eklendi (yoksa başkası kopan oyuncunun yerine geçebilir);
+  (2) "her istemcide reducer" korundu ama gizli bilgi oyuncu cihazının belleğinde de durur; ilk sürümde gizlilik çizimde süzülür
+  (`src/room/view.ts`), host'un izdüşürdüğü sıkı mod karar bekliyor (belge §4.4, §8 madde 1).
+- Aşamalar O1–O5 ve karar bekleyen 8 madde belgede.
 
 ## KATALOG-ON-HAZIRLIK: canavar saldırısı ek hasarı süren etki direncini uygular (2026-11-27; kural sürümü 108, kayıt sürümü 28 aynı)
 

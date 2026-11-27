@@ -1,0 +1,270 @@
+/**
+ * Görev ODA-1 (O1): oda host'u (GM cihazı; ODA-TASARIM.md §1, §3). Saf: React/DOM yok; bağlantı (`RoomTransport`) ve
+ * anahtar Rng'si enjekte. Yetkili tek taraf: savaş olaylarını yalnız GM'in oturumu üretir, host bunları `yayinla` ile
+ * sıra numarasıyla (`seq` = günlükteki sıra, `battle_started` = 0) yayar. İstemciler yalnız izler (O1: salt izleme;
+ * `komut` geri çevrilir, O2'de açılır).
+ *
+ * - Katılım: sürüm el sıkışması (build + kural sürümü + içerik özeti; Karar 3), oturum anahtarı (ilk girişte üretilir,
+ *   yeniden girişte `istemciId` ile birlikte istenir; yanlışsa `red{anahtar}`).
+ * - Eşitleme: yeni katılana / yakalayana `anlik` (tam günlük; günlük `anlikEsik` karakteri aşarsa durum tabanı + son
+ *   olaylar), boşluk isteyene eksik `olaylar`, her `ozetAraligi` yayında bir `ozet{seq, hash}`.
+ * - Lobi: karakter kopyası alma/geri alma (`karakterKabul` kancası doğrular), `oda_durumu`.
+ *
+ * Host durumu olaylardan kendisi kurar (`replay` + `applyEvents`): istemcilerle aynı reducer yolu, özet bu durumdan.
+ */
+import { applyEvents, replay } from '../battle/reduce';
+import type { BattleEvent, BattleState } from '../battle/types';
+import type { Rng } from '../rules/dice';
+import type { SavedCharacter } from '../rules/builder';
+import { anahtarUret } from './code';
+import { kanonikJson, ozet } from './hash';
+import { istemciMesajiMi, mesajMi, type Asama, type HostMesaji, type IstemciMesaji, type OdaOzeti, type SurumBilgisi, type UyeOzeti } from './protocol';
+import { surumUyusmazligi } from './surum';
+import type { BaglantiDurumu, Rol, RoomTransport, Zarf } from './transport';
+
+/** Oda ayarlarının yayına giden kısmı (aşama ve üyeler host'tan). */
+export type OdaBilgisi = Omit<OdaOzeti, 'asama' | 'uyeler'>;
+
+export interface HostUye {
+  istemciId: string;
+  ad: string;
+  anahtar: string;
+  rol: Rol;
+  bagli: boolean;
+  /** Gönderilen karakter kopyaları (kimlik → kopya). */
+  kopyalar: Map<string, SavedCharacter>;
+}
+
+export type HostOlayi =
+  | { tur: 'uyeler' }
+  | { tur: 'karakter_geldi'; istemciId: string; kopya: SavedCharacter }
+  | { tur: 'karakter_gitti'; istemciId: string; karakterId: string }
+  | { tur: 'reddedildi'; istemciId: string; neden: string };
+
+export interface HostSecenek {
+  transport: RoomTransport;
+  kod: string;
+  /** Host'un kendi istemciId'si (bağdaştırıcıda üye kimliği). */
+  hostId: string;
+  surum: SurumBilgisi;
+  /** Anahtar üretimi (uygulamada `guvenliRng`, testte tohumlu). */
+  rng: Rng;
+  oda: OdaBilgisi;
+  /** Karakter kopyasını kabul et (null) ya da reddet. Varsayılan: kabul. */
+  karakterKabul?: (istemciId: string, kopya: SavedCharacter, asama: Asama) => null | { neden: 'gecersiz' | 'dolu' | 'kilitli'; ayrinti?: string };
+  /** Her kaç `olaylar` yayınında bir `ozet` (öneri 20). */
+  ozetAraligi?: number;
+  /** Tam günlük `anlik` için JSON karakter eşiği; aşılırsa durum tabanı (öneri 2 MB). */
+  anlikEsik?: number;
+  /** Durum tabanı yeniden çekme aralığı (olay): taban + en çok bu kadar son olay. */
+  tabanAraligi?: number;
+  olay?: (o: HostOlayi) => void;
+}
+
+const asamaOf = (s: BattleState | null): Asama =>
+  !s ? 'lobi' : s.status === 'setup' ? 'kurulum' : s.status === 'finished' ? 'bitti' : 'savas';
+
+const ayniOlay = (a: BattleEvent | undefined, b: BattleEvent | undefined): boolean =>
+  a === b || (!!a && !!b && kanonikJson(a) === kanonikJson(b));
+
+export class OdaHost {
+  readonly kod: string;
+  readonly uyeler = new Map<string, HostUye>();
+  /** Reddedilen/bozuk mesaj sayısı (test ve tanı). */
+  bozuk = 0;
+  private readonly s: HostSecenek;
+  private log: BattleEvent[] = [];
+  private durumu: BattleState | null = null;
+  private donem = 0;
+  private yayinSayaci = 0;
+  private taban: { seq: number; durum: BattleState } | null = null;
+  private oda: OdaBilgisi;
+  private kapali = false;
+  private readonly cozucu: Array<() => void> = [];
+
+  constructor(s: HostSecenek) {
+    this.s = s;
+    this.kod = s.kod;
+    this.oda = s.oda;
+  }
+
+  /** Kodu sahiplenir ve dinlemeye başlar (kod doluysa bağdaştırıcının hatası fırlar). */
+  async baslat(): Promise<void> {
+    this.cozucu.push(this.s.transport.dinle((z) => this.al(z)), this.s.transport.durum((d) => this.baglanti(d)));
+    try {
+      await this.s.transport.katil(this.kod, { istemciId: this.s.hostId, rol: 'host' });
+    } catch (e) {
+      this.cozucu.splice(0).forEach((f) => f());
+      throw e;
+    }
+  }
+
+  get asama(): Asama { return asamaOf(this.durumu); }
+  get seq(): number { return this.log.length; }
+  get durum(): BattleState | null { return this.durumu; }
+  get olaylar(): readonly BattleEvent[] { return this.log; }
+  /** Günlüğün JSON boyutu (karakter; ölçüm ve eşik). */
+  gunlukBoyutu(): number { return JSON.stringify(this.log).length; }
+
+  /** Bütün karakter kopyaları (istemci → kopya listesi). */
+  kopyalar(): Array<{ istemciId: string; kopya: SavedCharacter }> {
+    return [...this.uyeler.values()].flatMap((u) => [...u.kopyalar.values()].map((kopya) => ({ istemciId: u.istemciId, kopya })));
+  }
+
+  odaOzeti(): OdaOzeti {
+    const uyeler: UyeOzeti[] = [...this.uyeler.values()].map((u) => ({ istemciId: u.istemciId, ad: u.ad, rol: u.rol, bagli: u.bagli, karakterler: [...u.kopyalar.keys()] }));
+    return { ...this.oda, asama: this.asama, uyeler };
+  }
+
+  /** Oda ayarları değişti (ad, kurallar…): herkese `oda_durumu`. */
+  odaAyarla(p: Partial<OdaBilgisi>): void {
+    const yeni = { ...this.oda, ...p };
+    if (kanonikJson(yeni) === kanonikJson(this.oda)) return;
+    this.oda = yeni;
+    this.durumYay();
+  }
+
+  /**
+   * GM oturumunun tam olay günlüğü. Önceki günlüğün devamıysa yalnız yeni olaylar yayılır; değilse (yeni savaş,
+   * kayıttan yükleme) dönem artar ve herkese tam `anlik` gider.
+   */
+  yayinla(events: readonly BattleEvent[]): void {
+    if (this.kapali) return;
+    const n = this.log.length;
+    const devam = n > 0 && events.length >= n && ayniOlay(events[0], this.log[0]) && ayniOlay(events[n - 1], this.log[n - 1]);
+    const oncekiAsama = this.asama;
+    if (!devam) {
+      if (n === 0 && events.length === 0) return;
+      this.log = [...events];
+      this.donem++;
+      this.durumu = this.log.length ? replay(this.log) : null;
+      this.taban = this.durumu ? { seq: this.log.length, durum: this.durumu } : null;
+      this.yayinSayaci = 0;
+      for (const u of this.uyeler.values()) if (u.bagli) this.anlikGonder(u.istemciId);
+      this.durumYay();
+      return;
+    }
+    if (events.length === n) return;
+    const yeni = events.slice(n);
+    this.log = [...this.log, ...yeni];
+    this.durumu = applyEvents(this.durumu as BattleState, yeni);
+    if (!this.taban || this.log.length - this.taban.seq >= (this.s.tabanAraligi ?? 200)) this.taban = { seq: this.log.length, durum: this.durumu };
+    this.gonder({ t: 'olaylar', donem: this.donem, ilkSeq: n, olaylar: yeni });
+    this.yayinSayaci++;
+    if (this.yayinSayaci % (this.s.ozetAraligi ?? 20) === 0) this.ozetGonder();
+    if (this.asama !== oncekiAsama) this.durumYay();
+  }
+
+  /** Herkese durum özeti (istemci kendi durumunu karşılaştırır; geride kalan yakalar). */
+  ozetGonder(kime?: string): void {
+    if (!this.durumu) return;
+    this.gonder({ t: 'ozet', donem: this.donem, seq: this.log.length, hash: ozet(this.durumu) }, kime);
+  }
+
+  async kapat(neden = 'kapandi'): Promise<void> {
+    if (this.kapali) return;
+    this.gonder({ t: 'oda_kapandi', neden });
+    this.kapali = true;
+    this.cozucu.splice(0).forEach((f) => f());
+    await this.s.transport.ayril();
+  }
+
+  // ---- iç ----
+
+  private gonder(m: HostMesaji, kime?: string): void {
+    if (!this.kapali) this.s.transport.gonder(m, kime);
+  }
+
+  private durumYay(): void {
+    this.gonder({ t: 'oda_durumu', ...this.odaOzeti() });
+    this.s.olay?.({ tur: 'uyeler' });
+  }
+
+  private anlikGonder(kime: string): void {
+    if (!this.log.length) { this.gonder({ t: 'anlik', donem: this.donem, tabanSeq: 0, olaylar: [] }, kime); return; }
+    if (this.taban && this.gunlukBoyutu() > (this.s.anlikEsik ?? 2_000_000)) {
+      this.gonder({ t: 'anlik', donem: this.donem, tabanSeq: this.taban.seq, durum: this.taban.durum, olaylar: this.log.slice(this.taban.seq) }, kime);
+      return;
+    }
+    this.gonder({ t: 'anlik', donem: this.donem, tabanSeq: 0, olaylar: [...this.log] }, kime);
+  }
+
+  private baglanti(d: BaglantiDurumu): void {
+    if (d.tur !== 'uye_gitti') return;
+    const u = this.uyeler.get(d.istemciId);
+    if (!u || !u.bagli) return;
+    u.bagli = false;
+    this.gonder({ t: 'uye_durumu', istemciId: u.istemciId, bagli: false });
+    this.durumYay();
+  }
+
+  private reddet(kime: string, m: HostMesaji & { t: 'red' }): void {
+    this.gonder(m, kime);
+    this.s.olay?.({ tur: 'reddedildi', istemciId: kime, neden: m.neden });
+  }
+
+  private al(z: Zarf): void {
+    if (this.kapali || z.kimden === this.s.hostId) return;
+    if (!mesajMi(z.m) || !istemciMesajiMi(z.m)) { this.bozuk++; return; }
+    const m: IstemciMesaji = z.m;
+    if (m.t === 'katil') { this.katilim(z.kimden, m); return; }
+    const u = this.uyeler.get(z.kimden);
+    if (!u) { this.bozuk++; return; }
+    if (!u.bagli) { u.bagli = true; this.durumYay(); }
+    switch (m.t) {
+      case 'karakter_gonder': this.karakterAl(u, m.kopya); return;
+      case 'karakter_geri_al':
+        if (u.kopyalar.delete(m.karakterId)) { this.s.olay?.({ tur: 'karakter_gitti', istemciId: u.istemciId, karakterId: m.karakterId }); this.durumYay(); }
+        return;
+      case 'yakala':
+        if (m.sonSeq < 0 || m.sonSeq > this.log.length) this.anlikGonder(u.istemciId);
+        else if (m.sonSeq < this.log.length) this.gonder({ t: 'olaylar', donem: this.donem, ilkSeq: m.sonSeq, olaylar: this.log.slice(m.sonSeq) }, u.istemciId);
+        else this.ozetGonder(u.istemciId);
+        return;
+      case 'ayril':
+        this.uyeler.delete(u.istemciId);
+        for (const id of u.kopyalar.keys()) this.s.olay?.({ tur: 'karakter_gitti', istemciId: u.istemciId, karakterId: id });
+        this.durumYay();
+        return;
+      case 'komut':
+        // O1: salt izleme. Komut yolu O2'de (yetki §4.3).
+        this.gonder({ t: 'komut_red', istekId: m.istekId, neden: 'izleyici', hata: 'salt izleme' }, u.istemciId);
+        return;
+      default:
+        return; // nabız, zar/tepki cevapları (O2)
+    }
+  }
+
+  private katilim(kimden: string, m: IstemciMesaji & { t: 'katil' }): void {
+    if (m.istemciId !== kimden) { this.bozuk++; return; }
+    const fark = surumUyusmazligi(this.s.surum, m);
+    if (fark) { this.reddet(kimden, { t: 'red', neden: 'surum', ayrinti: fark }); return; }
+    const eski = this.uyeler.get(kimden);
+    if (eski && m.anahtar !== eski.anahtar) { this.reddet(kimden, { t: 'red', neden: 'anahtar' }); return; }
+    const ad = m.ad.trim().slice(0, 40) || '?';
+    const u: HostUye = eski
+      ? { ...eski, ad, bagli: true }
+      : { istemciId: kimden, ad, anahtar: anahtarUret(this.s.rng), rol: this.asama === 'savas' ? 'izleyici' : 'oyuncu', bagli: true, kopyalar: new Map() };
+    if (eski && eski.rol === 'izleyici' && u.kopyalar.size === 0 && this.asama !== 'savas') u.rol = 'oyuncu';
+    this.uyeler.set(kimden, u);
+    this.gonder({ t: 'kabul', istemciId: kimden, anahtar: u.anahtar, rol: u.rol, karakterler: [...u.kopyalar.keys()] }, kimden);
+    this.durumYay();
+    // Yeniden bağlanan: elindeki günlük bu dönemin bir öneki olabilir; emin olmak için tam anlık (O4'te eksik olaylar).
+    if (this.log.length || eski) this.anlikGonder(kimden);
+  }
+
+  private karakterAl(u: HostUye, kopya: SavedCharacter): void {
+    const asama = this.asama;
+    const red = asama === 'savas' || asama === 'kurulum' ? { neden: 'kilitli' as const } : this.s.karakterKabul?.(u.istemciId, kopya, asama) ?? null;
+    if (red) { this.gonder({ t: 'karakter_red', karakterId: kopya.id, ...red }, u.istemciId); return; }
+    // Başka üyenin aynı kimlikli kopyası varsa reddedilir (kimlik savaşta `ownerId`).
+    if ([...this.uyeler.values()].some((x) => x !== u && x.kopyalar.has(kopya.id))) {
+      this.gonder({ t: 'karakter_red', karakterId: kopya.id, neden: 'gecersiz', ayrinti: 'kimlik' }, u.istemciId);
+      return;
+    }
+    u.kopyalar.set(kopya.id, kopya);
+    if (u.rol === 'izleyici') u.rol = 'oyuncu';
+    this.s.olay?.({ tur: 'karakter_geldi', istemciId: u.istemciId, kopya });
+    this.durumYay();
+  }
+}

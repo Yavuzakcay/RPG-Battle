@@ -13,6 +13,15 @@ export interface Session {
   error: string | null;
 }
 
+/**
+ * Görev ODA-1: dışarıdan beslenen (salt izlenen) oturum: çevrimiçi odada oyuncu sekmesi host'un savaşını izler. Savaş
+ * ekranı aboneliği her yeni durumda oturumu değiştirir; kendisi olay üretmez, kaydetmez.
+ */
+export interface SessionWatch {
+  current(): Session | null;
+  subscribe(fn: (s: Session) => void): () => void;
+}
+
 export function createSession(state: BattleState, startEvents: BattleEvent[]): Session {
   return { state, events: [...startEvents], lines: describeEvents(startEvents, state), error: null };
 }

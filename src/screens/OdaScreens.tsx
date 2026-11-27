@@ -24,6 +24,8 @@ import { characterProblems, type SavedCharacter } from '../rules/builder';
 import { alignmentAutoOnly, alignmentMoralEnabled, alignmentRace } from '../app/features';
 import type { Session } from '../ui/session';
 import type { GoalsDraft } from '../oda/hedef';
+import type { SessionWatch } from '../ui/session';
+import { OdaCevrimiciPanel, OdaKodlaKatil } from './OdaLobi';
 
 /** Yeni odanın kuralları: cihazın o anki genel değerlerinin kopyası (oda kaydı kendi kopyasını taşır). */
 export function globalRules(): OdaKurallar {
@@ -132,15 +134,20 @@ export function OdaKur(props: {
   if (room) {
     const locked = isLocked(room, hasSavedBattle());
     const change = (fn: (o: Oda) => Oda) => commit((l) => updateRoom(l, room.id, fn));
+    // Görev ODA-1: çevrimiçi oyuncuların karakter kopyaları kurulumda partiye girer (aynı kimlikli yerel karakterin yerine);
+    // kopyalar GM'in karakter deposuna yazılmaz.
+    const copyIds = new Set(room.cevrimici.map((g) => g.karakterId));
+    const characters = copyIds.size ? [...props.characters.filter((c) => !copyIds.has(c.id)), ...room.cevrimici.map((g) => g.kopya)] : props.characters;
+    const onUpdate = props.onUpdateCharacters;
     return (
-      <GmScreen characters={props.characters} room={room} locked={locked} onRoomChange={change}
+      <GmScreen characters={characters} room={room} locked={locked} onRoomChange={change}
         onBack={() => setSel(null)} backLabel={O.back} title={`${O.createTitle}: ${room.ad}`}
         onStart={(s, gd) => { change((o) => ({ ...o, kilit: { baslangic: new Date().toISOString() } })); props.onStart(s, room.id, gd); }}
-        {...(props.onUpdateCharacters ? { onUpdateCharacters: props.onUpdateCharacters } : {})} {...(props.onSefer ? { onSefer: props.onSefer } : {})}
-        roomPanel={<RoomPanel room={room} locked={locked} onChange={change}
+        {...(onUpdate ? { onUpdateCharacters: (list: SavedCharacter[]) => onUpdate(copyIds.size ? list.flatMap((c) => (!copyIds.has(c.id) ? [c] : props.characters.filter((x) => x.id === c.id))) : list) } : {})} {...(props.onSefer ? { onSefer: props.onSefer } : {})}
+        roomPanel={<><RoomPanel room={room} locked={locked} onChange={change}
           onRename={(ad, g) => commit((l) => updateRoom(renameRoom(l, room.id, ad), room.id, (o) => ({ ...o, gmAdi: g.trim().slice(0, ODA_AD_MAX) })))}
           onUnlock={() => change((o) => unlockRoom(o))}
-          {...(props.onResume && locked ? { onBackToBattle: () => props.onResume?.(room.id) } : {})} />} />
+          {...(props.onResume && locked ? { onBackToBattle: () => props.onResume?.(room.id) } : {})} /><OdaCevrimiciPanel room={room} onChange={change} /></>} />
     );
   }
   return (
@@ -204,7 +211,8 @@ function RulesReadOnly(props: { rules: OdaKurallar }) {
 }
 
 /** Odaya katıl: oda seç, kendi karakterini seç ("Hazır"); oda kuralları yalnız okunur. */
-export function OdaKatil(props: { characters: SavedCharacter[]; onBack: () => void; roomId?: string; /** Odanın kurallarıyla karakter oluşturucuyu aç. */ onBuild?: (roomId: string, overlay: RoomOverlay) => void }) {
+export function OdaKatil(props: { characters: SavedCharacter[]; onBack: () => void; roomId?: string; /** Odanın kurallarıyla karakter oluşturucuyu aç. */ onBuild?: (roomId: string, overlay: RoomOverlay) => void;
+  /** Görev ODA-1: çevrimiçi odada savaşı izle (salt izleme oturumu). */ onWatch?: (w: SessionWatch) => void }) {
   const O = t().oda, C = t().common;
   const [rooms, commit] = useRooms();
   const [sel, setSel] = useState<string | null>(props.roomId ?? null);
@@ -217,6 +225,7 @@ export function OdaKatil(props: { characters: SavedCharacter[]; onBack: () => vo
       <main className="app">
         <header><h1>{O.joinTitle}</h1>
           <button className="ghost" onClick={room ? () => setSel(null) : props.onBack}>{room ? O.back : C.home}</button></header>
+        {!room && props.onWatch && <OdaKodlaKatil characters={valid} onWatch={props.onWatch} />}
         {!room && (
           <section className="panel">
             <h2>{O.joinPick}</h2>

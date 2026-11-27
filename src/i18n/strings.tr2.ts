@@ -225,6 +225,23 @@ export const TR_EXTRA = {
     ruleOn: 'açık', ruleOff: 'kapalı', back: 'Odalar',
     codeNote: 'Oda koduyla katılma sonraki aşamada gelecek.',
   },
+  /** Görev ODA-1: çevrimiçi oda (O1: aynı tarayıcıdaki sekmeler; salt izleme). */
+  odaCevrimici: {
+    title: 'Çevrimiçi oda', help: 'Oyuncular aynı tarayıcıda başka bir sekmeden oda koduyla katılır ve savaşı canlı izler. (Yerel ağ ve internet sonraki aşamada.)',
+    open: 'Çevrimiçi aç', close: 'Çevrimiçi kapat', code: 'Oda kodu', opening: 'Açılıyor…', openFailed: 'Oda açılamadı.',
+    members: 'Katılanlar', noMembers: 'Henüz kimse katılmadı.', online: 'bağlı', offline: 'kopuk', watcher: 'izleyici',
+    copies: (n: number): string => `${n} karakter kopyası`, copyBadge: 'kopya',
+    joinTitle: 'Kodla katıl', joinHelp: 'Game Master\'ın ekranındaki 6 haneli kodu yaz.', yourName: 'Adın', namePlaceholder: 'Oyuncu',
+    join: 'Katıl', joining: 'Bağlanıyor…', badCode: 'Kod 6 haneli olmalı.', leave: 'Odadan ayrıl',
+    noRoom: 'Bu kodla açık oda bulunamadı.', codeTaken: 'Kod kullanımda.',
+    rejected: { surum: 'Sürüm uyuşmuyor: iki sekmeyi de yenile.', anahtar: 'Oturum anahtarı tutmadı: yeniden katıl.', dolu: 'Oda dolu.', kilitli: 'Oda kilitli.', kapali: 'Oda kapalı.' } as Record<string, string>,
+    versionField: { protokol: 'protokol', uygulama: 'uygulama sürümü', kuralSurumu: 'kural sürümü', icerik: 'dış içerik' } as Record<string, string>,
+    connected: (code: string): string => `Bağlı: oda ${code}`, connecting: 'Bağlanıyor…', lost: 'Bağlantı koptu.', closed: 'Game Master odayı kapattı.',
+    stage: { lobi: 'Lobi', kurulum: 'Savaş kuruluyor', savas: 'Savaş sürüyor', bitti: 'Savaş bitti' } as Record<string, string>,
+    myChars: 'Karakterlerin', send: 'Kopya gönder', sent: 'Gönderildi', withdraw: 'Geri al',
+    charRejected: { gecersiz: 'Karakter kabul edilmedi (geçersiz).', dolu: 'Parti dolu.', kilitli: 'Savaş sürerken karakter gönderilemez.' } as Record<string, string>,
+    watch: 'Savaşı izle', watching: 'İzliyorsun: Game Master\'ın savaşı (salt izleme)', leaveWatch: 'Lobiye dön',
+  },
   roomRules: {
     title: 'Oda kuralları', help: 'Oda kurarken seçilir. Her savaşta aynı kalır.',
     carry: 'Taşıma yükü', carryHelp: { off: 'Ağırlık gösterilir, sınır yok.', srd: 'Güç × 15 lb üstü taşınamaz.', tiered: 'Ağırlaştıkça yavaşlar.' } as Record<string, string>,
