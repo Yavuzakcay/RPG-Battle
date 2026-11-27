@@ -2,6 +2,137 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Not: KATALOG-1 F Aşama 2 (2026-11-27, kural sürümü 107) — Mühür Ruhu bossları
+
+Komut: `npm run sim:boss -- 100 --boss <kimlik> --parti <parti>` (kol başına; `--kol dirençsiz|hazırlıklı`). 20. seviye,
+4 temsilci duman partisi (K11 kararı: `k18-fighter`, `k18-wizard`, `k18-cleric`, `k18-rogue`); Normal = boss + Sv.2, Kolay = yalnız
+boss. Hedef: hazırlıklı Normal %45–65, Kolay %70–85; dirençsiz %0–10 (bilerek). Boss verisi denge için değiştirilmedi.
+
+### Tanı: Wolfgang neden kolay? (tek tohumlu günlük, `npx vite-node src/sim/bossTani.ts -- --boss wolfgang --parti k18-fighter --tohum N`)
+
+10 tohum, Normal, dirençsiz kol (parti dirençleri: Bor yalnız ırk zehir direnci, diğerleri yok; soğuk direnci yok, doğru).
+
+| Denetim | Sonuç |
+|---|---|
+| Sıralı Multiattack (Bite → Claw) | Çalışıyor; savaşın ≈ %40 turunda (diğer turlar nefes, sanat, yürüme) |
+| Nefes dolu başlıyor, Recharge 5–6 | Çalışıyor; savaş başına 1–4 nefes, yeniden dolum 0–3 |
+| 3 efsanevi eylem | Üçü de kullanılıyor; tur başına ≈ 2,1 / 3 (bitişikte dost Wolfie varken yakın yayılım atlanır: `legendarySave` dostu vurmaz) |
+| Legendary Resistance 3/gün | Kullanılıyor; savaş başına 0–3 (başarısız save olunca) |
+| Sanat (Kırağı Nefesi, savaşta 1) | Her savaşta 1 kez |
+| Hasar türleri | Soğuk ≈ %85, fiziksel ≈ %15 (dirençsiz parti tam yiyor) |
+| Faz 2 (%50, Taş Uyanışı) | Tetikleniyor (3.–7. tur); zayıflık kalkıyor, nefes doluyor |
+| Bossun tur başı hasarı (yalnız boss olayları) | ort. **≈ 88** (58–116); tasarım §5: ham 187 / dirençli 117 |
+| Partinin tur başı HP kaybı (boss + Wolfie) | ort. ≈ 98 |
+| Savaş uzunluğu / bossun öldüğü tur | ort. 7 tur; boss kazanılan savaşlarda 5–8. turda ölüyor |
+| Parti HP kaybı | kazanılan savaşlarda %37–68, kaybedilenlerde %100 |
+| Sonuç | 10'da 7 parti zaferi |
+
+**Hata bulunmadı** (yapay zekâ eylemleri, efsanevi eylemler, direnç, Recharge, Faz 2 doğru çalışıyor). **Boss gerçekten zayıf:**
+tasarımın tur hasarı DMG'nin ham ("hepsi isabet eder") tahminiydi; gerçekleşen hasar ıska, başarılı save'de yarı hasar, nefesin 2
+hedef yerine çoğu zaman 1–2 hedef tutması, yürümeye giden turlar ve efsanevi hakkın üçte birinin boşa gitmesiyle tasarımın ≈ %47'si.
+Ayrıca DMG XP bütçesine göre 4 kişilik 20. seviye parti için CR 20 + CR 8 karşılaşması "Hard" düzeyinde (ölümcül eşiğin altında);
+"dirençsiz parti ezilir" hedefi bu bütçeyle tutmaz. **Öneri (veri değişmedi):** bossların tur hasarını gerçekleşen ≈ %47 oranına göre
+≈ 2× artırmak ya da Normal listeye ikinci Sv.2 eklemek; karar kullanıcıda.
+
+### Sonuçlar (boss boss; aralık dışı **kalın**)
+
+Önceki 12 partili Wolfgang denemesinden kalan satırlar (100 tohum): Barbarian dirençsiz N **100** / K **100**, hazırlıklı N **100**;
+Ranger dirençsiz N **87** / K **100** (K11 kararıyla bu partiler artık ölçülmüyor).
+
+| Boss | Parti | Dirençsiz Normal | Dirençsiz Kolay | Hazırlıklı Normal | Hazırlıklı Kolay |
+|---|---|---:|---:|---:|---:|
+| Wolfgang | Fighter | **81** | **90** | **97** | **99** |
+| Wolfgang | Wizard | **80** | **94** | **98** | **99** |
+| Wolfgang | Cleric | **69** | **79** | **94** | **97** |
+| Wolfgang | Rogue | **85** | **91** | **96** | **99** |
+| **Wolfgang ort.** | 4 parti | **79** | **89** | **96** | **99** |
+| Stormer | Fighter | **94** | **99** | **96** | **100** |
+| Stormer | Wizard | **97** | **99** | **98** | **100** |
+| Stormer | Cleric | **97** | **100** | **98** | **100** |
+| Stormer | Rogue | **97** | **100** | **98** | **100** |
+| **Stormer ort.** | 4 parti | **96** | **100** | **98** | **100** |
+| Mothraq | Fighter | **92** | **100** | **100** | **100** |
+| Mothraq | Wizard | **97** | **100** | **99** | **100** |
+| Mothraq | Cleric | **96** | **100** | **99** | **100** |
+| Mothraq | Rogue | **97** | **100** | **98** | **100** |
+| **Mothraq ort.** | 4 parti | **96** | **100** | **99** | **100** |
+| Hydraxe | Fighter | **40** | **81** | **86** | **100** |
+| Hydraxe | Wizard | **44** | **80** | **91** | **99** |
+| Hydraxe | Cleric | **22** | **18** | 63 | 70 |
+| Hydraxe | Rogue | **43** | **72** | **86** | **98** |
+| **Hydraxe ort.** | 4 parti | **37** | **63** | **82** | **92** |
+| Gongar | Fighter | **43** | **58** | **96** | **100** |
+| Gongar | Wizard | **42** | **55** | **98** | **97** |
+| Gongar | Cleric | 10 | **44** | **79** | **97** |
+| Gongar | Rogue | **43** | **60** | **97** | **100** |
+| **Gongar ort.** | 4 parti | **35** | **54** | **93** | **99** |
+| Lightaur | Fighter | 0 | 10 | **21** | **67** |
+| Lightaur | Wizard | 2 | 9 | **11** | **61** |
+| Lightaur | Cleric | 0 | 0 | **1** | **0** |
+| Lightaur | Rogue | 3 | **15** | **22** | **67** |
+| **Lightaur ort.** | 4 parti | 1 | 9 | **14** | **49** |
+| Mirage | Fighter | 1 | 5 | **26** | **49** |
+| Mirage | Wizard | 2 | 1 | **20** | **43** |
+| Mirage | Cleric | 0 | 2 | **9** | **5** |
+| Mirage | Rogue | 1 | 1 | **20** | **48** |
+| **Mirage ort.** | 4 parti | 1 | 2 | **19** | **36** |
+| Cerbones | Fighter | **18** | **22** | **72** | **87** |
+| Cerbones | Wizard | **11** | **23** | **68** | 76 |
+| Cerbones | Cleric | 2 | 3 | **24** | **41** |
+| Cerbones | Rogue | **20** | **31** | **80** | 80 |
+| **Cerbones ort.** | 4 parti | **13** | **20** | 61 | 71 |
+| Kongark | Fighter | 0 | 2 | **3** | **8** |
+| Kongark | Wizard | 1 | 4 | **5** | **12** |
+| Kongark | Cleric | 0 | 3 | **6** | **25** |
+| Kongark | Rogue | 3 | 1 | **8** | **10** |
+| **Kongark ort.** | 4 parti | 1 | 3 | **6** | **14** |
+| Cimbombom | Fighter | 9 | **18** | **25** | 70 |
+| Cimbombom | Wizard | 6 | **13** | **42** | 70 |
+| Cimbombom | Cleric | 4 | 9 | **17** | **9** |
+| Cimbombom | Rogue | 6 | **11** | **32** | 82 |
+| **Cimbombom ort.** | 4 parti | 6 | **13** | **29** | **58** |
+
+Sv.1 / Sv.2 (yalnız `k18-fighter`, 50 tohum, dirençsiz kol, olağan karşılaşma; hedef yok, bilgi):
+
+| Yaratık | Kademe | Parti seviyesi | Normal | Kolay |
+|---|---|---:|---:|---:|
+| Cerbedo | Sv.2 | 9 | 100 | 100 |
+| Cerbit | Sv.1 | 3 | 100 | 100 |
+| Cim | Sv.1 | 3 | 96 | 100 |
+| Cimbom | Sv.2 | 9 | 100 | 100 |
+| Doggie | Sv.1 | 3 | 94 | 100 |
+| Gongi | Sv.2 | 9 | 100 | 100 |
+| Hydras | Sv.2 | 9 | 100 | 100 |
+| Hydrop | Sv.1 | 3 | 100 | 100 |
+| Kongcuk | Sv.1 | 3 | 80 | 100 |
+| Kongilla | Sv.2 | 9 | 100 | 100 |
+| Lighty | Sv.2 | 9 | 98 | 96 |
+| Lumbo | Sv.1 | 3 | 96 | 100 |
+| Mirath | Sv.2 | 9 | 100 | 100 |
+| Mirit | Sv.1 | 3 | 98 | 100 |
+| Mothcoon | Sv.2 | 9 | 100 | 100 |
+| Sparkle | Sv.1 | 3 | 100 | 100 |
+| Sporlet | Sv.1 | 3 | 100 | 100 |
+| Thunderse | Sv.2 | 9 | 100 | 100 |
+| Twinkle | Sv.1 | 3 | 100 | 100 |
+| Wolfie | Sv.2 | 9 | 100 | 100 |
+
+### Değerlendirme ve öneriler (veri değişmedi; karar kullanıcıda)
+
+Hazırlıklı kolda 4 parti ortalaması hedefte olan tek boss **Cerbones** (Normal 61, Kolay 71). Kalan dokuz boss iki öbeğe ayrılıyor:
+
+| Öbek | Bosslar | Durum | Öneri |
+|---|---|---|---|
+| Çok kolay | Wolfgang, Stormer, Mothraq | Dirençsiz kolda bile %79–100 zafer | Bossun tur hasarını ≈ 2× (Wolfgang tanısı: gerçekleşen hasar tasarımın ≈ %47'si) ve/veya Normal listeye ikinci Sv.2; Stormer ve Mothraq için daha büyük artış (dirençsiz %96) |
+| Kolay | Hydraxe, Gongar | Dirençsiz %35–63, hazırlıklı %82–99 | Tur hasarını ≈ 1,5× |
+| Çok zor | Lightaur, Mirage, Kongark | Hazırlıklı Normal %6–19, Kolay %14–49 | Hazırlık az fark yaratıyor (dirençsiz → hazırlıklı yalnız +5…+13 puan): hasarın bir kısmı direnci olmayan yoldan (durum, saldırı ekleri, fiziksel) geliyor olabilir; tanı yapılmadı. Öneri: önce Wolfgang gibi tek tohumlu tanı (`bossTani.ts`), sonra tur hasarını ≈ %30–40 azaltmak ya da Normal'den Sv.2'yi çıkarmak |
+| Zirve | Cimbombom | Hazırlıklı Normal 29, Kolay 58 | Zirve bossu olarak bilerek en güçlü; Kolay hedefin altında. Normal'de Sv.2'yi (Cimbom) çıkarmak ya da HP'yi ≈ %15 azaltmak |
+
+- **Dirençsiz hedef (%0–10)** Wolfgang, Stormer, Mothraq, Hydraxe, Gongar ve Cerbones'te aşılıyor; yukarıdaki artışlar bunu da düzeltir.
+- **Cleric partisi** (`k18-cleric`) bütün yüksek hasarlı bosslarda belirgin zayıf (Lightaur 1/0, Mirage 9/5, Cimbombom 17/9; dirençsiz Hydraxe 22/18):
+  boss verisinden çok partinin sorunu olabilir; ayrı bakılmalı.
+- **Sv.1 / Sv.2:** olağan karşılaşmada parti %80–100 kazanıyor (hedef yok). En güçlü Sv.1 Kongcuk (3. seviyede %80).
+
 ## Not: Görev MC7 (2026-11-26, kural sürümü 105) — çoklu sınıf partisi `mc-karma` ilk ölçüm
 
 Yalnız yeni parti ölçüldü (hafif doğrulama modu): `npm run sim -- 100 col kale magara orman --seviye 5|9 --parti mc-karma`,

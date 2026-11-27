@@ -10,9 +10,10 @@ import yetenek from '../../data/canavar-yetenekleri.json';
 import { attackRiders, getMonster, katalogMonsters, monsters, type Monster } from '.';
 import { faz2Errors } from '../rules/faz2Schema';
 import { combatantFromMonster } from '../battle/create';
+import { monsterAvatar } from '../battle/avatar';
 import { crNumber } from './monsterEnv';
 
-const list = (data as unknown as { canavarlar: Array<Monster & { kademe: number; cizgi: string; ganimet: string; gorsel: null }> }).canavarlar;
+const list = (data as unknown as { canavarlar: Array<Monster & { kademe: number; cizgi: string; ganimet: string; gorsel: string | null }> }).canavarlar;
 const bosses = list.filter((m) => m.kademe === 3);
 
 describe('KATALOG-1 F: Mühür Ruhu verisi', () => {
@@ -24,11 +25,12 @@ describe('KATALOG-1 F: Mühür Ruhu verisi', () => {
     for (const m of list) expect(monsters.some((s) => s.id === m.id), m.id).toBe(false);
     for (const c of new Set(list.map((m) => m.cizgi))) expect(list.filter((m) => m.cizgi === c).map((m) => m.kademe).sort()).toEqual([1, 2, 3]);
   });
-  it('getMonster bulur, görsel yok (null), ganimet taş kimliği', () => {
+  it('getMonster bulur, görsel ve savaş jetonu bağlı (BOSS-GORSEL-1), ganimet taş kimliği', () => {
     for (const m of list) {
       expect(getMonster(m.id).id).toBe(m.id);
-      expect(m.gorsel).toBeNull();
-      expect(m.avatar).toBeUndefined();
+      expect(m.gorsel, m.id).toBe(`boss/${m.id}.webp`);
+      expect(m.avatar, m.id).toBe(m.gorsel);
+      expect(monsterAvatar(getMonster(m.id)).src, m.id).toBe(`boss/${m.id}.webp`);
       expect(m.ganimet).toMatch(m.kademe === 3 ? /^[a-z-]+$/ : /^(cracked|awakened)-elemental-stone-[a-z]+$/);
     }
   });

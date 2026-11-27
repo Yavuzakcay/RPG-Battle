@@ -230,8 +230,17 @@ for (const b of B) {
   }
 }
 
+// BOSS-GORSEL-1 bağlaması: görsel data/boss-gorsel.json'dan (dosya yoksa `gorsel: null`, avatar yok → yedek jeton).
+// Savaş jetonu `Monster.avatar` (src/battle/avatar.ts monsterAvatar). Ölçek (Sv.1 0,25 / Sv.2 0,6 / Sv.3 1) veride kalır, jetona bağlanmadı.
+const bossGorsel = fs.existsSync('data/boss-gorsel.json') ? read('data/boss-gorsel.json').gorseller : {};
+for (const m of monsters) {
+  const dosya = bossGorsel[m.id]?.dosya ?? null;
+  m.gorsel = dosya;
+  if (dosya) m.avatar = dosya;
+}
+
 write('data/bosslar-muhur.json', {
-  _not: 'KATALOG-1 F Aşama 2: Mühür Ruhu bossları (Sv.3) ve evrim çizgileri (Sv.1, Sv.2), 30 kayıt. scripts/katalog-f-bosslar.mjs üretir, elle düzenlenmez. Tasarım harita/belgeler/KATALOG-F-TASARIM.md. Görsel henüz yok (`gorsel: null`; BOSS-GORSEL-1 ayrı); jeton yedek görünümle çizilir. Saldırı ekleri kayıtta `riders` (loadMonsters ortak tabloya ekler).',
+  _not: 'KATALOG-1 F Aşama 2: Mühür Ruhu bossları (Sv.3) ve evrim çizgileri (Sv.1, Sv.2), 30 kayıt. scripts/katalog-f-bosslar.mjs üretir, elle düzenlenmez. Tasarım harita/belgeler/KATALOG-F-TASARIM.md. Görsel ve savaş jetonu (`gorsel`, `avatar`) data/boss-gorsel.json üzerinden (BOSS-GORSEL-1); dosyası olmayan kayıtta `gorsel: null` ve yedek jeton. Saldırı ekleri kayıtta `riders` (loadMonsters ortak tabloya ekler).',
   canavarlar: monsters,
 });
 for (const [id, v] of Object.entries(efsanevi.monsters)) {

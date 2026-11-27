@@ -87,7 +87,7 @@ Kullanıcı isterse aşağıdakiler yeniden üretilebilir. Hepsi kabul edilebili
 ## Bağlama noktası (rapor; arayüz değişmedi)
 
 - **Savaş jetonu:** `Monster.avatar` (`src/battle/avatar.ts` canavar yolu: `monster.avatar ?? monsters/<id>.webp`, `Avatar` `onError` yedek zinciri).
-  - Bu görev boss verisine dokunmadı. Ölçüm sürerken `data/bosslar-muhur.json` değişmesin diye bağlama ölçüm bitince yapılacak.
-  - Yapılacak iş: `scripts/katalog-f-bosslar.mjs` `data/boss-gorsel.json`'dan `avatar: "boss/<id>.webp"` yazacak.
+  - Bağlandı (F Aşama 2, ölçüm bittikten sonra): `scripts/katalog-f-bosslar.mjs` `data/boss-gorsel.json`'dan `gorsel` ve
+    `avatar: "boss/<id>.webp"` yazar; dosyası olmayan kayıtta `gorsel: null`, avatar yok (yedek jeton). Test `src/data/bosslarMuhur.test.ts`.
   - Ölçek (`olcek`) jeton çiziminde kullanılacak; jeton boyutu bugün `data/token-sizes.json` boyut sınıfından geliyor, Sv.1/Sv.2 küçültmesi ayrı bağlama ister.
 - **Dungeondex vitrini:** canavar görselleri `data/dungeondex-gorsel-esleme.json`'dan (`npm run dd-gorsel`). Katalog canavarları Dungeondex'e girdiğinde aynı `public/boss/<id>.webp` yolu kullanılabilir. Dungeondex arayüzüne dokunulmadı.

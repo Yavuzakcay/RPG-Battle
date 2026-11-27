@@ -1,5 +1,5 @@
 {
-  "_not": "KATALOG-1 F Aşama 2: Mühür Ruhu bossları (Sv.3) ve evrim çizgileri (Sv.1, Sv.2), 30 kayıt. scripts/katalog-f-bosslar.mjs üretir, elle düzenlenmez. Tasarım harita/belgeler/KATALOG-F-TASARIM.md. Görsel henüz yok (`gorsel: null`; BOSS-GORSEL-1 ayrı); jeton yedek görünümle çizilir. Saldırı ekleri kayıtta `riders` (loadMonsters ortak tabloya ekler).",
+  "_not": "KATALOG-1 F Aşama 2: Mühür Ruhu bossları (Sv.3) ve evrim çizgileri (Sv.1, Sv.2), 30 kayıt. scripts/katalog-f-bosslar.mjs üretir, elle düzenlenmez. Tasarım harita/belgeler/KATALOG-F-TASARIM.md. Görsel ve savaş jetonu (`gorsel`, `avatar`) data/boss-gorsel.json üzerinden (BOSS-GORSEL-1); dosyası olmayan kayıtta `gorsel: null` ve yedek jeton. Saldırı ekleri kayıtta `riders` (loadMonsters ortak tabloya ekler).",
   "canavarlar": [
     {
       "id": "cimbombom",
@@ -94,7 +94,7 @@
         "derinlikler-lav-salonu",
         "volkan"
       ],
-      "gorsel": null,
+      "gorsel": "boss/cimbombom.webp",
       "faz2": {
         "zayiflikKaldir": [
           "cold"
@@ -131,7 +131,8 @@
         "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
-      }
+      },
+      "avatar": "boss/cimbombom.webp"
     },
     {
       "id": "cim",
@@ -185,7 +186,7 @@
         "derinlikler-lav-salonu",
         "volkan"
       ],
-      "gorsel": null,
+      "gorsel": "boss/cim.webp",
       "riders": {
         "Bite": {
           "extra": [
@@ -199,7 +200,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/cim.webp"
     },
     {
       "id": "cimbom",
@@ -274,7 +276,7 @@
         "derinlikler-lav-salonu",
         "volkan"
       ],
-      "gorsel": null,
+      "gorsel": "boss/cimbom.webp",
       "riders": {
         "Bite": {
           "extra": [
@@ -288,7 +290,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/cimbom.webp"
     },
     {
       "id": "kongark",
@@ -384,7 +387,7 @@
         "kanyon-koprusu",
         "isinlanma-salonu"
       ],
-      "gorsel": null,
+      "gorsel": "boss/kongark.webp",
       "faz2": {
         "zayiflikKaldir": [
           "psychic"
@@ -434,7 +437,8 @@
         "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
-      }
+      },
+      "avatar": "boss/kongark.webp"
     },
     {
       "id": "kongcuk",
@@ -489,7 +493,7 @@
         "kanyon-koprusu",
         "isinlanma-salonu"
       ],
-      "gorsel": null,
+      "gorsel": "boss/kongcuk.webp",
       "riders": {
         "Fist": {
           "extra": [
@@ -503,7 +507,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/kongcuk.webp"
     },
     {
       "id": "kongilla",
@@ -579,7 +584,7 @@
         "kanyon-koprusu",
         "isinlanma-salonu"
       ],
-      "gorsel": null,
+      "gorsel": "boss/kongilla.webp",
       "riders": {
         "Fist": {
           "extra": [
@@ -602,7 +607,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/kongilla.webp"
     },
     {
       "id": "cerbones",
@@ -684,7 +690,7 @@
         "orman-kemik-acikligi",
         "derinlikler-mezar-labirenti"
       ],
-      "gorsel": null,
+      "gorsel": "boss/cerbones.webp",
       "faz2": {
         "zayiflikKaldir": [
           "radiant"
@@ -715,7 +721,8 @@
         "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
-      }
+      },
+      "avatar": "boss/cerbones.webp"
     },
     {
       "id": "cerbit",
@@ -767,7 +774,7 @@
         "orman-kemik-acikligi",
         "derinlikler-mezar-labirenti"
       ],
-      "gorsel": null,
+      "gorsel": "boss/cerbit.webp",
       "riders": {
         "Bite": {
           "extra": [
@@ -781,7 +788,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/cerbit.webp"
     },
     {
       "id": "cerbedo",
@@ -854,7 +862,7 @@
         "orman-kemik-acikligi",
         "derinlikler-mezar-labirenti"
       ],
-      "gorsel": null,
+      "gorsel": "boss/cerbedo.webp",
       "riders": {
         "Bite": {
           "extra": [
@@ -868,7 +876,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/cerbedo.webp"
     },
     {
       "id": "mirage",
@@ -954,7 +963,7 @@
         "isinlanma-salonu",
         "beyaz-sehir-saray-avlusu"
       ],
-      "gorsel": null,
+      "gorsel": "boss/mirage.webp",
       "faz2": {
         "zayiflikKaldir": [
           "force"
@@ -993,7 +1002,8 @@
         "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
-      }
+      },
+      "avatar": "boss/mirage.webp"
     },
     {
       "id": "mirit",
@@ -1046,7 +1056,7 @@
         "isinlanma-salonu",
         "beyaz-sehir-saray-avlusu"
       ],
-      "gorsel": null,
+      "gorsel": "boss/mirit.webp",
       "riders": {
         "Soul Claw": {
           "extra": [
@@ -1060,7 +1070,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/mirit.webp"
     },
     {
       "id": "mirath",
@@ -1136,7 +1147,7 @@
         "isinlanma-salonu",
         "beyaz-sehir-saray-avlusu"
       ],
-      "gorsel": null,
+      "gorsel": "boss/mirath.webp",
       "riders": {
         "Soul Claw": {
           "extra": [
@@ -1150,7 +1161,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/mirath.webp"
     },
     {
       "id": "gongar",
@@ -1246,7 +1258,7 @@
         "col-sutun-harabesi",
         "kanyon-koprusu"
       ],
-      "gorsel": null,
+      "gorsel": "boss/gongar.webp",
       "faz2": {
         "zayiflikKaldir": [
           "lightning"
@@ -1302,7 +1314,8 @@
         "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
-      }
+      },
+      "avatar": "boss/gongar.webp"
     },
     {
       "id": "twinkle",
@@ -1357,7 +1370,7 @@
         "col-sutun-harabesi",
         "kanyon-koprusu"
       ],
-      "gorsel": null,
+      "gorsel": "boss/twinkle.webp",
       "riders": {
         "Bell Slam": {
           "extra": [
@@ -1371,7 +1384,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/twinkle.webp"
     },
     {
       "id": "gongi",
@@ -1448,7 +1462,7 @@
         "col-sutun-harabesi",
         "kanyon-koprusu"
       ],
-      "gorsel": null,
+      "gorsel": "boss/gongi.webp",
       "riders": {
         "Bell Slam": {
           "extra": [
@@ -1471,7 +1485,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/gongi.webp"
     },
     {
       "id": "lightaur",
@@ -1569,7 +1584,7 @@
         "buzul-tapinak",
         "lav-tapinagi"
       ],
-      "gorsel": null,
+      "gorsel": "boss/lightaur.webp",
       "faz2": {
         "zayiflikKaldir": [
           "necrotic"
@@ -1639,7 +1654,8 @@
         "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
-      }
+      },
+      "avatar": "boss/lightaur.webp"
     },
     {
       "id": "lumbo",
@@ -1694,7 +1710,7 @@
         "buzul-tapinak",
         "lav-tapinagi"
       ],
-      "gorsel": null,
+      "gorsel": "boss/lumbo.webp",
       "riders": {
         "Gore": {
           "extra": [
@@ -1708,7 +1724,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/lumbo.webp"
     },
     {
       "id": "lighty",
@@ -1785,7 +1802,7 @@
         "buzul-tapinak",
         "lav-tapinagi"
       ],
-      "gorsel": null,
+      "gorsel": "boss/lighty.webp",
       "riders": {
         "Gore": {
           "extra": [
@@ -1809,7 +1826,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/lighty.webp"
     },
     {
       "id": "hydraxe",
@@ -1894,7 +1912,7 @@
         "batak-kale",
         "bataklik"
       ],
-      "gorsel": null,
+      "gorsel": "boss/hydraxe.webp",
       "faz2": {
         "zayiflikKaldir": [
           "fire"
@@ -1922,7 +1940,8 @@
         "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
-      }
+      },
+      "avatar": "boss/hydraxe.webp"
     },
     {
       "id": "hydrop",
@@ -1977,7 +1996,7 @@
         "batak-kale",
         "bataklik"
       ],
-      "gorsel": null,
+      "gorsel": "boss/hydrop.webp",
       "riders": {
         "Bite": {
           "extra": [
@@ -1991,7 +2010,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/hydrop.webp"
     },
     {
       "id": "hydras",
@@ -2068,7 +2088,7 @@
         "batak-kale",
         "bataklik"
       ],
-      "gorsel": null,
+      "gorsel": "boss/hydras.webp",
       "riders": {
         "Bite": {
           "extra": [
@@ -2082,7 +2102,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/hydras.webp"
     },
     {
       "id": "mothraq",
@@ -2178,7 +2199,7 @@
         "orman-kemik-acikligi",
         "orman-heykel-golu"
       ],
-      "gorsel": null,
+      "gorsel": "boss/mothraq.webp",
       "faz2": {
         "zayiflikKaldir": [
           "radiant"
@@ -2235,7 +2256,8 @@
         "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
-      }
+      },
+      "avatar": "boss/mothraq.webp"
     },
     {
       "id": "sporlet",
@@ -2291,7 +2313,7 @@
         "orman-kemik-acikligi",
         "orman-heykel-golu"
       ],
-      "gorsel": null,
+      "gorsel": "boss/sporlet.webp",
       "riders": {
         "Proboscis": {
           "extra": [
@@ -2305,7 +2327,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/sporlet.webp"
     },
     {
       "id": "mothcoon",
@@ -2382,7 +2405,7 @@
         "orman-kemik-acikligi",
         "orman-heykel-golu"
       ],
-      "gorsel": null,
+      "gorsel": "boss/mothcoon.webp",
       "riders": {
         "Proboscis": {
           "extra": [
@@ -2406,7 +2429,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/mothcoon.webp"
     },
     {
       "id": "stormer",
@@ -2493,7 +2517,7 @@
         "dag-nobetci",
         "dag"
       ],
-      "gorsel": null,
+      "gorsel": "boss/stormer.webp",
       "faz2": {
         "geciciCan": 42,
         "nefesDoldur": true,
@@ -2527,7 +2551,8 @@
         "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
-      }
+      },
+      "avatar": "boss/stormer.webp"
     },
     {
       "id": "sparkle",
@@ -2582,7 +2607,7 @@
         "dag-nobetci",
         "dag"
       ],
-      "gorsel": null,
+      "gorsel": "boss/sparkle.webp",
       "riders": {
         "Hoof": {
           "extra": [
@@ -2596,7 +2621,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/sparkle.webp"
     },
     {
       "id": "thunderse",
@@ -2670,7 +2696,7 @@
         "dag-nobetci",
         "dag"
       ],
-      "gorsel": null,
+      "gorsel": "boss/thunderse.webp",
       "riders": {
         "Hoof": {
           "extra": [
@@ -2684,7 +2710,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/thunderse.webp"
     },
     {
       "id": "wolfgang",
@@ -2781,7 +2808,7 @@
         "buzul-tapinak",
         "buzul-kamp"
       ],
-      "gorsel": null,
+      "gorsel": "boss/wolfgang.webp",
       "faz2": {
         "zayiflikKaldir": [
           "fire"
@@ -2839,7 +2866,8 @@
         "kaynak": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
-      }
+      },
+      "avatar": "boss/wolfgang.webp"
     },
     {
       "id": "doggie",
@@ -2895,7 +2923,7 @@
         "buzul-tapinak",
         "buzul-kamp"
       ],
-      "gorsel": null,
+      "gorsel": "boss/doggie.webp",
       "riders": {
         "Bite": {
           "extra": [
@@ -2909,7 +2937,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/doggie.webp"
     },
     {
       "id": "wolfie",
@@ -2987,7 +3016,7 @@
         "buzul-tapinak",
         "buzul-kamp"
       ],
-      "gorsel": null,
+      "gorsel": "boss/wolfie.webp",
       "riders": {
         "Bite": {
           "extra": [
@@ -3011,7 +3040,8 @@
       },
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
-      }
+      },
+      "avatar": "boss/wolfie.webp"
     }
   ]
 }
