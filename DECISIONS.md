@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev KATALOG-LA-SRD: kadim ve mücevher efsanevi eylemleri SRD 5.2.1 kuralına (2026-11-27; motor, şema, kural sürümü (108) ve kayıt sürümü (28) değişmedi)
+
+- **Karar (kullanıcı):** bedelli efsanevi eylem mekaniği eklenmedi; SRD 5.2.1'e uyuldu ("The monster expends one use whenever it takes a Legendary Action"). Motor zaten her eylemde 1 hak düşüyordu (`src/battle/boss.ts`); değişen yalnız veri ve metin.
+- **Metin:** `scripts/katalog-f2-kadim.mjs` kart metinlerinden "Bedeli N puan." / "Costs N point(s)." kalktı (18 + 18; eylem adı ve etkisi aynı), `srd` notları "Efsanevi Eylem hakkı N/tur", Yetişkin evre metni "2 efsanevi eylem hakkı / 2 Legendary Action uses". `KATALOG-SIGMAYAN.md` puan bedeli satırı kapandı; `KATALOG-F2-OZELLIKLER.md` (tasarım kaynağı) değişmedi.
+- **Denge hak sayısıyla:** referans = kart bedelleriyle en güçlü tur (her eylem en çok bir kez, bedel toplamı ≤ hak); yeni = 1 hak = 1 eylem, tablo yöntemiyle (hak kadar en güçlü eylem, her biri bir kez). ±%15 için: Ocean-Nightmare (iki kayıt) 3 → 2 (74 = 74), Yetişkin mücevher 3 → 2 (alpha 156/144 +%8, omega 132/129 +%2, delta 152/138 +%10, sigma 123/115 +%7, gamma 170/167 +%2). Captive Dragon 3, Hexonia 5, Kozmik Anka 3, Titan 4 aynı (bedelli = bedelsiz). Hiçbir eylemin zarı azaltılmadı. Lair'de ek hak alanı motorda yok; eklenmedi.
+- **Etkin CR:** Ocean-Nightmare iki kayıtta 29 → 28 (yazılan 30, fark −2: ±1 dışında; saldırı CR'ı 27). Captive Dragon zaten 28 (−2), değişmedi. Mücevher Yetişkinler ±1 içinde (sigma 26 → 25 tam).
+- **Tablo:** `scripts/katalog-denge-tablo.mjs` "puan" yerine "hak" (sütun "efsanevi hak"), yöntem satırı SRD kuralını yazar; "bedelsiz okunursa" notu tabloda yoktu.
+- **Test:** `src/data/katalogF2.test.ts` Yetişkin `uses` beklentisi 3 → 2 (veriye bağlı değer).
+
 ## Görev KATALOG-DENGE-DUZELT: Mücevher Genç ve Mühür Sv.2 (CR 9) denge düzeltmesi (2026-11-27; `data/monsters.json`, kural sürümü (108) ve kayıt sürümü (28) değişmedi)
 
 - **Yer:** değerler yalnız üretici betiklerde, JSON betikle yeniden üretildi: `scripts/katalog-f2-kadim.mjs` `GENC_DENGE`, `scripts/katalog-f-bosslar.mjs` `HP_DUZELT`.

@@ -248,7 +248,7 @@
     "Multiattack (kısmi): Crushing Presence ayrı eylem (alan 60 ft türetildi)",
     "Continent Roar Breath: ikinci hasar (8d8 thunder), 30 ft savrulma ve kalıcı Çatlak Kaya yüzeyi",
     "Tail: 20 ft itme",
-    "Legendary Actions: puan bedelleri (her eylem 1 kullanım); Seal Pull; Wing Storm sonrası 50 ft uçuş"
+    "Legendary Actions: Seal Pull; Wing Storm sonrası 50 ft uçuş"
    ],
    "creatureType": "dragon",
    "kaynak": "katalog-f2",
@@ -426,7 +426,7 @@
     "Continent Judgment Breath: ikinci hasar (20d10 radiant), atomlarına ayırma, gökten dikey sütun seçeneği",
     "Continent-Shaper Claw: 1 tur AC −3; Continent Tail: 15 ft yarıçapta 40 ft savurma",
     "Seal That Strips Darkness (1/UD): anlatı eylemi",
-    "Legendary Actions: puan bedelleri (her eylem 1 kullanım); Tectonic Shift yükseltme/çökertme; Ten Seals Burst Dispel ve dost iyileşmesi"
+    "Legendary Actions: Tectonic Shift yükseltme/çökertme; Ten Seals Burst Dispel ve dost iyileşmesi"
    ],
    "creatureType": "dragon",
    "kaynak": "katalog-f2",
@@ -617,7 +617,7 @@
     "Continent Judgment Breath: ikinci hasar (20d10 radiant), atomlarına ayırma, gökten dikey sütun seçeneği",
     "Continent-Shaper Claw: 1 tur AC −3; Continent Tail: 15 ft yarıçapta 40 ft savurma",
     "Seal That Strips Darkness (1/UD): anlatı eylemi",
-    "Legendary Actions: puan bedelleri (her eylem 1 kullanım); Tectonic Shift yükseltme/çökertme; Ten Seals Burst Dispel ve dost iyileşmesi"
+    "Legendary Actions: Tectonic Shift yükseltme/çökertme; Ten Seals Burst Dispel ve dost iyileşmesi"
    ],
    "creatureType": "dragon",
    "kaynak": "katalog-f2",
@@ -767,7 +767,7 @@
     "Trait: Rebirth from Ashes — 0 HP yerine %5 can eşiğinde Faz 2 (450 geçici can, nefes dolar); Supernova ve Ember Egg yok",
     "Cosmic Beak / Starfire Talons: Star Mark",
     "Celestial Glide: fırsat saldırısız 120 ft süzülme ve 3 tur Cosmic Phoenix Flame yüzeyi",
-    "Legendary Actions: puan bedelleri; Ember Wing Flap kurtarması türetildi (DC 27 DEX); Seal-Melting Talon ve Star Tear yok"
+    "Legendary Actions: Ember Wing Flap kurtarması türetildi (DC 27 DEX); Seal-Melting Talon ve Star Tear yok"
    ],
    "creatureType": "celestial",
    "kaynak": "katalog-f2",
@@ -899,7 +899,7 @@
     "Trait: Rebirth from Ashes — 0 HP yerine %5 can eşiğinde Faz 2 (450 geçici can, nefes dolar); Supernova ve Ember Egg yok",
     "Cosmic Beak / Starfire Talons: Star Mark",
     "Celestial Glide: fırsat saldırısız 120 ft süzülme ve 3 tur Cosmic Phoenix Flame yüzeyi",
-    "Legendary Actions: puan bedelleri; Ember Wing Flap kurtarması türetildi (DC 27 DEX); Seal-Melting Talon ve Star Tear yok"
+    "Legendary Actions: Ember Wing Flap kurtarması türetildi (DC 27 DEX); Seal-Melting Talon ve Star Tear yok"
    ],
    "creatureType": "celestial",
    "kaynak": "katalog-f2",
@@ -1053,7 +1053,7 @@
     "Trait: Hull Crusher (gemi gövdesine vuruş), Ship Sinks (700 HP bitince gemi batar, Faz 2)",
     "Multiattack (kısmi): yerine geçen seçenekler ayrı eylem; Fling yalnız tuttuğu hedef; Storm Lightning tek hedef (en çok 3)",
     "Tentacle: aynı anda en çok 8 hedef",
-    "Legendary Actions: puan bedelleri (her eylem 1 kullanım); Tidal Surge itmesi"
+    "Legendary Actions: Tidal Surge itmesi"
    ],
    "creatureType": "monstrosity",
    "kaynak": "katalog-f2",
@@ -1221,7 +1221,7 @@
     "Abyssal Swallow: yutma ve kusma yok; Ink Cloud kalıcı bulut değil (tek seferlik kurtarma)",
     "Multiattack (kısmi): yerine geçen seçenekler ayrı eylem; Fling yalnız tuttuğu hedef; Storm Lightning tek hedef (en çok 3)",
     "Tentacle: aynı anda en çok 8 hedef",
-    "Legendary Actions: puan bedelleri (her eylem 1 kullanım); Tidal Surge itmesi"
+    "Legendary Actions: Tidal Surge itmesi"
    ],
    "creatureType": "monstrosity",
    "kaynak": "katalog-f2",
@@ -1415,7 +1415,7 @@
     "Eldritch Tentacle: aynı anda en çok 12 hedef",
     "Cosmic Fling / Abyssal Swallow: yalnız tuttuğu hedef; fırlatma, yutma ve kusma yok",
     "Void-Lightning Strike: en çok 3 hedef (tek hedef), ikinci hasar (4d10 psychic) ve konsantrasyon yasağı",
-    "Legendary Actions: puan bedelleri; Abyssal Toxic Ink Silenced durumu; Dream Call yok"
+    "Legendary Actions: Abyssal Toxic Ink Silenced durumu; Dream Call yok"
    ],
    "creatureType": "aberration",
    "kaynak": "katalog-f2",

@@ -60,8 +60,8 @@ birebir; hızlar görev metninden. Yavru 30 ft, Genç 60 ft, Yetişkin 90 ft kon
 | Sigma (`sigma`) | altın | radiant | gök ejderi | yürüme 30/40/40, uçuş 60/80/80 | var (Wing Buffet) |
 | Gamma (`gamma`) | gümüş | force | gök ejderi | yürüme 30/40/40, uçuş 60/80/80 | var (Wing Buffet) |
 
-Genç: Mount Bond (belgedeki bağ metni). Yetişkin: Attribute 20 Lock (belgedeki pasif), 3 efsanevi puan (Tail 1, Body Sweep/Wing Buffet 2,
-Elemental Pulse 2). Ertelenenler: yumurta kuluçka sistemi, Taşıyıcı'ya göre Save DC, Mühür taşları.
+Genç: Mount Bond (belgedeki bağ metni). Yetişkin: Attribute 20 Lock (belgedeki pasif), 2 efsanevi eylem hakkı (SRD 5.2.1: her eylem 1 hak; KATALOG-LA-SRD:
+belgedeki 3 puanın bedelli hasarına (Tail 1, Body Sweep/Wing Buffet 2, Elemental Pulse 2) ±%15 içinde eş olsun diye 3 → 2). Ertelenenler: yumurta kuluçka sistemi, Taşıyıcı'ya göre Save DC, Mühür taşları.
 
 ## Türetilen değerler
 

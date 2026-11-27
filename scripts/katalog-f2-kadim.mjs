@@ -169,12 +169,12 @@ function captiveDragon() {
       'Multiattack (kısmi): Crushing Presence ayrı eylem (alan 60 ft türetildi)',
       'Continent Roar Breath: ikinci hasar (8d8 thunder), 30 ft savrulma ve kalıcı Çatlak Kaya yüzeyi',
       'Tail: 20 ft itme',
-      'Legendary Actions: puan bedelleri (her eylem 1 kullanım); Seal Pull; Wing Storm sonrası 50 ft uçuş',
+      'Legendary Actions: Seal Pull; Wing Storm sonrası 50 ft uçuş',
     ],
     riders: { Bite: bite.ek, 'Continent Roar Breath': { prone: {}, status: 'kısmen', unsupported: 'ikinci hasar, savrulma, yüzey' },
       'Crushing Presence': { conditions: [{ condition: 'Frightened', owner: 'target', rounds: 10 }], status: 'uygulandı' } },
     dex: { type: 'dragon', alignment: 'Chaotic Neutral', conditionImmunities: ['Frightened', 'Paralyzed', 'Petrified', 'Unconscious'] },
-    efsanevi: { uses: 3, srd: 'KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §1): Efsanevi Eylemler 3 puan/tur; puan bedeli yok, her eylem 1 kullanım', actions: [
+    efsanevi: { uses: 3, srd: 'KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §1): Efsanevi Eylem hakkı 3/tur; SRD 5.2.1: her eylem 1 hak (KATALOG-LA-SRD, puan bedeli kaldırıldı)', actions: [
       { id: 'tail', tr: 'Kuyruk', en: 'Tail', kind: 'strike', attack: 'Tail' },
       { id: 'wing-storm', tr: 'Kanat Fırtınası', en: 'Wing Storm', kind: 'save', oncePerTurn: true, save: 'dex', dc: 26, area: { shape: 'emanation', sizeFt: 25, origin: 'self' }, damage: '3d8+10', damageType: 'bludgeoning', conditions: ['Prone'] },
     ] },
@@ -189,9 +189,9 @@ function captiveDragon() {
       ['action', 'Claw', trMelee(19, 15, '3d8+10', 'slashing'), enMelee(claw.atk)],
       ['action', 'Tail', trMelee(19, 25, '3d10+10', 'bludgeoning', [], ' ve hedef 20 ft itilir'), `${enMelee(tail.atk).replace(/\.$/, '')}, and the target is pushed 20 feet.`],
       ['action', 'Continent Roar Breath (Recharge 5–6)', '120 ft uzunluğunda, 20 ft genişliğinde hatta şok dalgası üfler. Hattaki herkes DC 26 CON kurtarma zarı atar; kaybeden 15d8 kuvvet ve 8d8 gök gürültüsü hasarı alır, 30 ft geri savrulur ve Prone olur; başaran yarı hasar alır. Altıgenler kalıcı Çatlak Kaya yüzeyine döner.', breath.damage],
-      ['legendary', 'Tail', 'Tail saldırısı yapar (25 ft erişim, 3d10 + 10 ezici hasar ve 20 ft itme). Bedeli 1 puan.', 'The dragon makes one Tail attack (reach 25 ft, 3d10 + 10 Bludgeoning damage and a 20-foot push). Costs 1 point.'],
-      ['legendary', 'Wing Storm', '25 ft yarıçaptaki herkes DC 26 DEX kurtarma zarı atar; kaybeden 3d8 + 10 ezici hasar alır ve Prone olur. Ardından ejderha 50 ft uçar. Bedeli 2 puan.', 'Dexterity Saving Throw: DC 26, each creature within 25 feet. Failure: 3d8 + 10 Bludgeoning damage and the Prone condition. The dragon then flies up to 50 feet. Costs 2 points.'],
-      ['legendary', 'Seal Pull', 'Mühür Taşı taşıyan bir hedef DC 25 STR kurtarma zarı atar; kaybederse 30 ft ejderhaya çekilir. Bedeli 2 puan.', 'Strength Saving Throw: DC 25, one target carrying a Seal Stone. Failure: the target is pulled 30 feet toward the dragon. Costs 2 points.'],
+      ['legendary', 'Tail', 'Tail saldırısı yapar (25 ft erişim, 3d10 + 10 ezici hasar ve 20 ft itme).', 'The dragon makes one Tail attack (reach 25 ft, 3d10 + 10 Bludgeoning damage and a 20-foot push).'],
+      ['legendary', 'Wing Storm', '25 ft yarıçaptaki herkes DC 26 DEX kurtarma zarı atar; kaybeden 3d8 + 10 ezici hasar alır ve Prone olur. Ardından ejderha 50 ft uçar.', 'Dexterity Saving Throw: DC 26, each creature within 25 feet. Failure: 3d8 + 10 Bludgeoning damage and the Prone condition. The dragon then flies up to 50 feet.'],
+      ['legendary', 'Seal Pull', 'Mühür Taşı taşıyan bir hedef DC 25 STR kurtarma zarı atar; kaybederse 30 ft ejderhaya çekilir.', 'Strength Saving Throw: DC 25, one target carrying a Seal Stone. Failure: the target is pulled 30 feet toward the dragon.'],
     ],
   };
 }
@@ -229,13 +229,13 @@ function dragonOfHexonia(variant) {
       'Continent Judgment Breath: ikinci hasar (20d10 radiant), atomlarına ayırma, gökten dikey sütun seçeneği',
       'Continent-Shaper Claw: 1 tur AC −3; Continent Tail: 15 ft yarıçapta 40 ft savurma',
       'Seal That Strips Darkness (1/UD): anlatı eylemi',
-      'Legendary Actions: puan bedelleri (her eylem 1 kullanım); Tectonic Shift yükseltme/çökertme; Ten Seals Burst Dispel ve dost iyileşmesi',
+      'Legendary Actions: Tectonic Shift yükseltme/çökertme; Ten Seals Burst Dispel ve dost iyileşmesi',
     ],
     riders: { 'World-Breaker Bite': bite.ek, 'Continent-Shaper Claw': claw.ek, 'Continent Tail': { prone: {}, status: 'kısmen', unsupported: 'savurma' },
       'Crushing Continental Presence': { conditions: [{ condition: 'Paralyzed', owner: 'target', rounds: 10 }], status: 'uygulandı' } },
     dex: { type: 'dragon', alignment: 'Neutral Good', conditionImmunities: ['Blinded', 'Charmed', 'Deafened', 'Exhaustion', 'Frightened', 'Grappled', 'Paralyzed', 'Petrified', 'Poisoned', 'Prone', 'Restrained', 'Stunned', 'Unconscious'],
       yon: variant === 'a' ? 'sag' : 'sol', ...(variant === 'b' ? { gizli: true } : {}) },
-    efsanevi: { uses: 5, srd: 'KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §2): Efsanevi Eylemler 5 puan/tur; puan bedeli yok, her eylem 1 kullanım', actions: [
+    efsanevi: { uses: 5, srd: 'KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §2): Efsanevi Eylem hakkı 5/tur; SRD 5.2.1: her eylem 1 hak (KATALOG-LA-SRD, puan bedeli kaldırıldı)', actions: [
       { id: 'tectonic-shift', tr: 'Tektonik Kayma', en: 'Tectonic Shift', kind: 'quake', oncePerTurn: true, radiusFt: 60 },
       { id: 'lightning-spear-rain', tr: 'Yıldırım Mızrağı Yağmuru', en: 'Lightning Spear Rain', kind: 'save', oncePerTurn: true, save: 'dex', dc: 32, area: { shape: 'sphere', sizeFt: 10, origin: 'point', rangeFt: 120 }, damage: '8d10', damageType: 'lightning' },
       { id: 'ten-seals-burst', tr: 'On Mühür Patlaması', en: 'Ten Seals Burst', kind: 'save', oncePerTurn: true, save: 'con', dc: 32, area: { shape: 'emanation', sizeFt: 60, origin: 'self' }, damage: '12d10', damageType: 'force' },
@@ -254,9 +254,9 @@ function dragonOfHexonia(variant) {
       ['action', 'Continent Tail', trMelee(25, 30, '5d12+13', 'bludgeoning', [], '; hedefin 15 ft yarıçapındaki herkes 40 ft savrulur ve Prone olur'), `${enMelee(tail.atk).replace(/\.$/, '')}. Each creature within 15 feet of the target is flung 40 feet and has the Prone condition.`],
       ['action', 'Continent Judgment Breath (Recharge 5–6)', '300 ft uzunluğunda, 30 ft genişliğinde hatta (ya da gökten 60 ft yarıçaplı dikey sütunda) kozmik ışık ateşler. Alandaki düşmanlar DC 32 CON kurtarma zarı atar; kaybeden 30d10 kuvvet ve 20d10 ışıltı hasarı alır, başaran yarısını. 0 HP\'ye inen düşman atomlarına ayrılır. Dost birimlere ve şehirlere hiç zarar vermez.', breath.damage],
       ['action', 'Seal That Strips Darkness (1/Long Rest)', '300 ft içindeki bir eserin ya da hedefin bütün lanetlerini siler. Kaltakkıran zırhını parçalar, kılıcı Devrim Simgesi\'ne çevirir ve partiye Koruyucu Ejderha Mührü verir.', 'It removes every curse from an artifact or target within 300 feet. It shatters Kaltakkıran\'s armor, turns the sword into the Symbol of Revolution, and grants the party the Guardian Dragon Seal.'],
-      ['legendary', 'Tectonic Shift', '60 ft\'lik bir alanı 30 ft yükseltir ya da çökertir; alandakiler Prone olur. Bedeli 1 puan.', 'It raises or sinks a 60-foot area by 30 feet; creatures there have the Prone condition. Costs 1 point.'],
-      ['legendary', 'Lightning Spear Rain', '4 altıgendeki herkes DC 32 DEX kurtarma zarı atar; kaybeden 8d10 yıldırım ve 8d10 kuvvet hasarı alır. Bedeli 2 puan.', 'Dexterity Saving Throw: DC 32, each creature in 4 hexes. Failure: 8d10 Lightning damage plus 8d10 Force damage. Costs 2 points.'],
-      ['legendary', 'Ten Seals Burst', '60 ft içindeki herkes DC 32 CON kurtarma zarı atar; kaybeden 12d10 kuvvet ve 12d10 ışıltı hasarı alır, üzerindeki büyüler dağılır. Dostlar 100 can iyileşir. Bedeli 3 puan.', 'Constitution Saving Throw: DC 32, each creature within 60 feet. Failure: 12d10 Force damage plus 12d10 Radiant damage, and magic on the target is dispelled. Allies regain 100 Hit Points. Costs 3 points.'],
+      ['legendary', 'Tectonic Shift', '60 ft\'lik bir alanı 30 ft yükseltir ya da çökertir; alandakiler Prone olur.', 'It raises or sinks a 60-foot area by 30 feet; creatures there have the Prone condition.'],
+      ['legendary', 'Lightning Spear Rain', '4 altıgendeki herkes DC 32 DEX kurtarma zarı atar; kaybeden 8d10 yıldırım ve 8d10 kuvvet hasarı alır.', 'Dexterity Saving Throw: DC 32, each creature in 4 hexes. Failure: 8d10 Lightning damage plus 8d10 Force damage.'],
+      ['legendary', 'Ten Seals Burst', '60 ft içindeki herkes DC 32 CON kurtarma zarı atar; kaybeden 12d10 kuvvet ve 12d10 ışıltı hasarı alır, üzerindeki büyüler dağılır. Dostlar 100 can iyileşir.', 'Constitution Saving Throw: DC 32, each creature within 60 feet. Failure: 12d10 Force damage plus 12d10 Radiant damage, and magic on the target is dispelled. Allies regain 100 Hit Points.'],
     ],
   };
 }
@@ -287,12 +287,12 @@ function cosmicPhoenix(id) {
       'Trait: Rebirth from Ashes — 0 HP yerine %5 can eşiğinde Faz 2 (450 geçici can, nefes dolar); Supernova ve Ember Egg yok',
       'Cosmic Beak / Starfire Talons: Star Mark',
       'Celestial Glide: fırsat saldırısız 120 ft süzülme ve 3 tur Cosmic Phoenix Flame yüzeyi',
-      'Legendary Actions: puan bedelleri; Ember Wing Flap kurtarması türetildi (DC 27 DEX); Seal-Melting Talon ve Star Tear yok',
+      'Legendary Actions: Ember Wing Flap kurtarması türetildi (DC 27 DEX); Seal-Melting Talon ve Star Tear yok',
     ],
     riders: { 'Cosmic Beak': beak.ek, 'Starfire Talons': talons.ek },
     dex: { type: 'celestial', alignment: 'Chaotic Good', conditionImmunities: ['Blinded', 'Charmed', 'Exhaustion', 'Frightened', 'Grappled', 'Paralyzed', 'Petrified', 'Poisoned', 'Prone', 'Restrained', 'Unconscious'],
       ...(id.endsWith('-savas') ? { gizli: true } : {}) },
-    efsanevi: { uses: 3, srd: 'KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §3): Efsanevi Eylemler 3 puan/tur; puan bedeli yok, her eylem 1 kullanım', actions: [
+    efsanevi: { uses: 3, srd: 'KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §3): Efsanevi Eylem hakkı 3/tur; SRD 5.2.1: her eylem 1 hak (KATALOG-LA-SRD, puan bedeli kaldırıldı)', actions: [
       { id: 'ember-wing-flap', tr: 'Köz Kanat Çırpışı', en: 'Ember Wing Flap', kind: 'save', oncePerTurn: true, save: 'dex', dc: 27, half: true, area: { shape: 'emanation', sizeFt: 25, origin: 'self' }, damage: '4d8', damageType: 'fire' },
     ] },
     features: [
@@ -305,9 +305,9 @@ function cosmicPhoenix(id) {
       ['action', 'Cosmic Beak', trMelee(19, 10, '3d10+10', 'piercing', [{ dice: '4d8', type: 'fire' }], ' (Yıldız Alevi)'), enMelee(beak.atk)],
       ['action', 'Starfire Talons', trMelee(19, 10, '3d8+10', 'slashing', [{ dice: '4d8', type: 'fire' }], ' (Yıldız Alevi)'), enMelee(talons.atk)],
       ['action', 'Celestial Glide (Recharge 5–6)', 'Fırsat saldırısına uğramadan 120 ft düz hatta süzülür. 3 altıgen genişliğindeki koridordaki düşmanlar DC 27 DEX kurtarma zarı atar; kaybeden 14d10 Yıldız Alevi hasarı alır, başaran yarısını. Altıgenler 3 tur Kozmik Anka Alevi yüzeyi olur: düşmanlara tur başı 4d8 vurur, dostları her tur başı 3d8 + 10 can iyileştirir.', glide.damage],
-      ['legendary', 'Ember Wing Flap', '25 ft içindekilere 4d8 Yıldız Alevi hasarı verir, karanlık yüzeyleri siler ve 50 ft uçar. Bedeli 1 puan.', 'It deals 4d8 Starfire damage to creatures within 25 feet, erases dark surfaces, and flies up to 50 feet. Costs 1 point.'],
-      ['legendary', 'Seal-Melting Talon', 'Hedef 1 tur boyunca 0 HP\'de ölüm kurtarma zarı atmaz ama iyileşemez. Bedeli 2 puan.', 'For 1 round, the target doesn\'t make Death Saving Throws at 0 Hit Points but can\'t regain Hit Points. Costs 2 points.'],
-      ['legendary', 'Star Tear', '60 ft içindeki bir müttefikin olumsuz durumlarını siler ve onu 6d10 + 10 can iyileştirir. Bedeli 2 puan.', 'It removes the negative conditions of an ally within 60 feet and restores 6d10 + 10 Hit Points to it. Costs 2 points.'],
+      ['legendary', 'Ember Wing Flap', '25 ft içindekilere 4d8 Yıldız Alevi hasarı verir, karanlık yüzeyleri siler ve 50 ft uçar.', 'It deals 4d8 Starfire damage to creatures within 25 feet, erases dark surfaces, and flies up to 50 feet.'],
+      ['legendary', 'Seal-Melting Talon', 'Hedef 1 tur boyunca 0 HP\'de ölüm kurtarma zarı atmaz ama iyileşemez.', 'For 1 round, the target doesn\'t make Death Saving Throws at 0 Hit Points but can\'t regain Hit Points.'],
+      ['legendary', 'Star Tear', '60 ft içindeki bir müttefikin olumsuz durumlarını siler ve onu 6d10 + 10 can iyileştirir.', 'It removes the negative conditions of an ally within 60 feet and restores 6d10 + 10 Hit Points to it.'],
     ],
   };
 }
@@ -362,12 +362,12 @@ function oceanNightmare(phase) {
         : ['Trait: Hull Crusher (gemi gövdesine vuruş), Ship Sinks (700 HP bitince gemi batar, Faz 2)']),
       'Multiattack (kısmi): yerine geçen seçenekler ayrı eylem; Fling yalnız tuttuğu hedef; Storm Lightning tek hedef (en çok 3)',
       'Tentacle: aynı anda en çok 8 hedef',
-      'Legendary Actions: puan bedelleri (her eylem 1 kullanım); Tidal Surge itmesi',
+      'Legendary Actions: Tidal Surge itmesi',
     ],
     riders: { Tentacle: { ...tentacle.ek, grapple: { escapeDc: 24, restrained: true }, status: 'uygulandı' }, Fling: { prone: {}, status: 'kısmen', unsupported: 'fırlatma' },
       ...(sea ? { 'Ink Cloud': { conditions: [{ condition: 'Blinded', owner: 'target', end: 'turnEnd', rounds: 1 }, { condition: 'Poisoned', owner: 'target', end: 'turnEnd', rounds: 1 }], status: 'kısmen', unsupported: 'kalıcı bulut' } } : {}) },
     dex: { type: 'monstrosity', alignment: 'Chaotic Evil', conditionImmunities: ['Frightened', 'Paralyzed', 'Restrained'] },
-    efsanevi: { uses: 3, srd: 'KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §4a): Efsanevi Eylemler 3 puan/tur; puan bedeli yok, her eylem 1 kullanım', actions: [
+    efsanevi: { uses: 2, srd: 'KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §4a): Efsanevi Eylem hakkı 2/tur; SRD 5.2.1: her eylem 1 hak (KATALOG-LA-SRD: belgedeki 3 puan bedelliyle eş hasar için 3 → 2)', actions: [
       { id: 'tentacle', tr: 'Dokunaç', en: 'Tentacle', kind: 'strike', attack: 'Tentacle' },
       { id: 'storm-bolt', tr: 'Fırtına Şimşeği', en: 'Storm Bolt', kind: 'save', save: 'dex', dc: 25, rangeFt: 120, damage: '5d10', damageType: 'lightning' },
       { id: 'tidal-surge', tr: 'Gelgit Dalgası', en: 'Tidal Surge', kind: 'save', oncePerTurn: true, save: 'str', dc: 26, area: { shape: 'emanation', sizeFt: 15, origin: 'self' }, damage: '4d8', damageType: 'bludgeoning', conditions: ['Prone'], push: 15 },
@@ -394,9 +394,9 @@ function oceanNightmare(phase) {
         ['action', 'Abyssal Swallow', 'Tuttuğu Huge ya da daha küçük bir hedef DC 26 DEX kurtarma zarı atar; kaybederse 4d10 + 11 delici hasar alır ve yutulur (en çok 4). Yutulan Blinded ve Restrained olur, tam siperdedir ve tur başı 6d6 asit hasarı alır. İçeriden bir turda 70 ya da daha çok hasar gelirse DC 25 CON kurtarma zarında başarısız olunca yutulanları 10 ft içine Prone kusar.', swallow.damage],
         ['bonus', 'Ink Cloud (Recharge 5–6)', '30 ft\'lik yoğun mürekkep bulutu salar. İçinde turuna başlayan DC 24 CON kurtarma zarı atar; kaybeden Blinded ve Poisoned olur.', ink.damage],
       ] : []),
-      ['legendary', 'Tentacle', 'Bir Tentacle saldırısı yapar. Bedeli 1 puan.', 'It makes one Tentacle attack. Costs 1 point.'],
-      ['legendary', 'Storm Bolt', 'Tek hedef DC 25 DEX kurtarma zarı atar; kaybederse 5d10 yıldırım hasarı alır. Bedeli 1 puan.', 'Dexterity Saving Throw: DC 25, one target. Failure: 5d10 Lightning damage. Costs 1 point.'],
-      ['legendary', 'Tidal Surge', '15 ft içindekiler DC 26 STR kurtarma zarı atar; kaybeden 4d8 ezici hasar alır, 15 ft itilir ve Prone olur. Bedeli 2 puan.', 'Strength Saving Throw: DC 26, each creature within 15 feet. Failure: 4d8 Bludgeoning damage, a 15-foot push, and the Prone condition. Costs 2 points.'],
+      ['legendary', 'Tentacle', 'Bir Tentacle saldırısı yapar.', 'It makes one Tentacle attack.'],
+      ['legendary', 'Storm Bolt', 'Tek hedef DC 25 DEX kurtarma zarı atar; kaybederse 5d10 yıldırım hasarı alır.', 'Dexterity Saving Throw: DC 25, one target. Failure: 5d10 Lightning damage.'],
+      ['legendary', 'Tidal Surge', '15 ft içindekiler DC 26 STR kurtarma zarı atar; kaybeden 4d8 ezici hasar alır, 15 ft itilir ve Prone olur.', 'Strength Saving Throw: DC 26, each creature within 15 feet. Failure: 4d8 Bludgeoning damage, a 15-foot push, and the Prone condition.'],
     ],
   };
 }
@@ -432,13 +432,13 @@ function titanOfNightmare() {
       'Eldritch Tentacle: aynı anda en çok 12 hedef',
       'Cosmic Fling / Abyssal Swallow: yalnız tuttuğu hedef; fırlatma, yutma ve kusma yok',
       'Void-Lightning Strike: en çok 3 hedef (tek hedef), ikinci hasar (4d10 psychic) ve konsantrasyon yasağı',
-      'Legendary Actions: puan bedelleri; Abyssal Toxic Ink Silenced durumu; Dream Call yok',
+      'Legendary Actions: Abyssal Toxic Ink Silenced durumu; Dream Call yok',
     ],
     riders: { 'Eldritch Tentacle': { ...tentacle.ek, grapple: { escapeDc: 26, restrained: true }, status: 'uygulandı' },
       'Maddening Gaze': { conditions: [{ condition: 'Stunned', owner: 'target', end: 'turnEnd', rounds: 1 }], status: 'uygulandı' },
       'Cosmic Fling': { prone: {}, status: 'kısmen', unsupported: 'ikinci hasar, fırlatma' } },
     dex: { type: 'aberration', alignment: 'Chaotic Evil', conditionImmunities: ['Blinded', 'Charmed', 'Exhaustion', 'Frightened', 'Grappled', 'Paralyzed', 'Petrified', 'Poisoned', 'Prone', 'Restrained', 'Stunned', 'Unconscious'] },
-    efsanevi: { uses: 4, srd: 'KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §5): Efsanevi Eylemler 4 puan/tur; puan bedeli yok, her eylem 1 kullanım', actions: [
+    efsanevi: { uses: 4, srd: 'KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §5): Efsanevi Eylem hakkı 4/tur; SRD 5.2.1: her eylem 1 hak (KATALOG-LA-SRD, puan bedeli kaldırıldı)', actions: [
       { id: 'eldritch-storm-bolt', tr: 'Kozmik Fırtına Şimşeği', en: 'Eldritch Storm Bolt', kind: 'strike', attack: 'Void-Lightning Strike' },
       { id: 'abyssal-toxic-ink', tr: 'Uçurum Zehir Mürekkebi', en: 'Abyssal Toxic Ink', kind: 'save', oncePerTurn: true, save: 'con', dc: 27, area: { shape: 'emanation', sizeFt: 30, origin: 'self' }, conditions: ['Blinded', 'Poisoned'], moveAfter: 'full' },
     ] },
@@ -455,9 +455,9 @@ function titanOfNightmare() {
       ['action', 'Void-Lightning Strike', '180 ft içindeki 3 hedef DC 27 DEX kurtarma zarı atar; kaybeden 8d10 yıldırım ve 4d10 psişik hasar alır ve 1 tur konsantrasyon sürdüremez, başaran yarısını.', lightning.damage],
       ['action', 'Abyssal Swallow', 'Tuttuğu Huge ya da daha küçük bir hedef DC 28 DEX kurtarma zarı atar; kaybederse 4d10 + 12 delici hasar alır ve yutulur (en çok 6). Yutulan tur başı 8d6 asit ve 6d6 psişik hasar alır. İçeriden bir turda 80 ya da daha çok hasar gelirse DC 27 CON kurtarma zarında başarısız olunca yutulanları 15 ft içine Prone kusar.', swallow.damage],
       ['action', 'Maddening Gaze', '120 ft içindeki tek hedef DC 27 INT kurtarma zarı atar; kaybederse 8d10 psişik hasar alır ve 1 tur Stunned olur, başaran yarısını.', gaze.damage],
-      ['legendary', 'Eldritch Storm Bolt', 'Tek hedefe Void-Lightning Strike kullanır. Bedeli 1 puan.', 'It uses Void-Lightning Strike against one target. Costs 1 point.'],
-      ['legendary', 'Abyssal Toxic Ink', 'Havada ya da suda 30 ft\'lik bulut salar: içindekiler DC 27 CON kurtarma zarı atar, kaybeden Blinded, Poisoned ve Silenced olur. Ardından hızı kadar hareket eder. Bedeli 2 puan.', 'It releases a 30-foot cloud in air or water: creatures in it make a DC 27 Constitution saving throw, and on a failure have the Blinded and Poisoned conditions and are Silenced. It then moves up to its Speed. Costs 2 points.'],
-      ['legendary', 'Dream Call', '120 ft içindeki bir hedef DC 27 WIS kurtarma zarı atar; kaybederse 30 ft yaklaşır ve silahını düşürür. Bedeli 2 puan.', 'Wisdom Saving Throw: DC 27, one target within 120 feet. Failure: the target moves 30 feet closer and drops its weapon. Costs 2 points.'],
+      ['legendary', 'Eldritch Storm Bolt', 'Tek hedefe Void-Lightning Strike kullanır.', 'It uses Void-Lightning Strike against one target.'],
+      ['legendary', 'Abyssal Toxic Ink', 'Havada ya da suda 30 ft\'lik bulut salar: içindekiler DC 27 CON kurtarma zarı atar, kaybeden Blinded, Poisoned ve Silenced olur. Ardından hızı kadar hareket eder.', 'It releases a 30-foot cloud in air or water: creatures in it make a DC 27 Constitution saving throw, and on a failure have the Blinded and Poisoned conditions and are Silenced. It then moves up to its Speed.'],
+      ['legendary', 'Dream Call', '120 ft içindeki bir hedef DC 27 WIS kurtarma zarı atar; kaybederse 30 ft yaklaşır ve silahını düşürür.', 'Wisdom Saving Throw: DC 27, one target within 120 feet. Failure: the target moves 30 feet closer and drops its weapon.'],
     ],
   };
 }
@@ -529,8 +529,8 @@ function gemDragon(hat, i) {
   const walk = hiz.yurume[i], fly = hiz.ucus?.[i], swim = hiz.yuzme?.[i], climb = hiz.tirmanma?.[i];
   TURETILEN.push({ id, cr: E.cr, bonus, T, ...(genc ? { k, hp, nefes: zar } : {}), bite: `${biteDice} + ${elem} ${type}`, claw: clawDice, ...(adult ? { tail: biteDice, sweep: clawDice, pulse: pulseDice } : {}) });
   const features = [
-    ['trait', 'Carrier\'s Imprint', `${renk} ${H.tip.tr}. Yumurta, Taşıyıcı'nın hizalanma kararlarına (${H.eksen.tr}) ve en sık kullandığı yetenek ve beceri zarlarına (baskın ${H.baskin.map((a) => a.toUpperCase()).join(' + ')}) göre bu hatta çatlar. Nefes kurtarma DC'si Taşıyıcı'nın baskın niteliğine göre ölçeklenir. Evreler: Yavru (1×1, CR 5–8) → Genç (2×2, CR 16–20) → Yetişkin (3×3, CR 25–30, 3 efsanevi puan).`,
-      `${H.ad.en} line (${H.renk.en}) ${H.tip.en}. The egg hatches into this line based on its Carrier's alignment choices (${H.eksen.en}) and most used ability and skill rolls (dominant ${H.baskin.map((a) => a.toUpperCase()).join(' + ')}). The breath save DC scales with the Carrier's dominant ability. Stages: Wyrmling (1×1, CR 5–8) → Young (2×2, CR 16–20) → Adult (3×3, CR 25–30, 3 legendary points).`],
+    ['trait', 'Carrier\'s Imprint', `${renk} ${H.tip.tr}. Yumurta, Taşıyıcı'nın hizalanma kararlarına (${H.eksen.tr}) ve en sık kullandığı yetenek ve beceri zarlarına (baskın ${H.baskin.map((a) => a.toUpperCase()).join(' + ')}) göre bu hatta çatlar. Nefes kurtarma DC'si Taşıyıcı'nın baskın niteliğine göre ölçeklenir. Evreler: Yavru (1×1, CR 5–8) → Genç (2×2, CR 16–20) → Yetişkin (3×3, CR 25–30, 2 efsanevi eylem hakkı).`,
+      `${H.ad.en} line (${H.renk.en}) ${H.tip.en}. The egg hatches into this line based on its Carrier's alignment choices (${H.eksen.en}) and most used ability and skill rolls (dominant ${H.baskin.map((a) => a.toUpperCase()).join(' + ')}). The breath save DC scales with the Carrier's dominant ability. Stages: Wyrmling (1×1, CR 5–8) → Young (2×2, CR 16–20) → Adult (3×3, CR 25–30, 2 Legendary Action uses).`],
     ...(H.amfibi ? [['trait', 'Amphibious', 'Hem havada hem suda soluyabilir.', 'It can breathe air and water.'],
       ['trait', 'Sea Camouflage', 'Sudayken gizlenme (Stealth) kontrollerinde avantajlıdır.', 'It has Advantage on Dexterity (Stealth) checks while in water.']] : []),
     ...(H.suzulme ? [['trait', 'Wingless Flight', 'Kanatsız uçar ve havada süzülür (hover).', 'It flies without wings and can hover.']] : []),
@@ -543,11 +543,11 @@ function gemDragon(hat, i) {
     ['action', `${breathName} (Recharge 5–6)`, `${S.cone} ft konideki herkes DC ${E.dc} ${E.yet.toUpperCase()} kurtarma zarı atar; kaybeden ${zar} ${trT} hasarı alır${ek.tr}, başaran yarısını.${sonra ? ` ${sonra.tr}` : ''}`,
       `${breath.damage}${sonra ? ` ${sonra.en}` : ''}`],
     ...(adult ? [
-      ['legendary', 'Tail', 'Bir Tail saldırısı yapar. Bedeli 1 puan.', 'The dragon makes one Tail attack. Costs 1 point.'],
-      ['legendary', sweepName, `10 ft içindekiler DC ${E.dc} DEX kurtarma zarı atar; kaybeden ${spaced(clawDice)} ezici hasar alır ve Prone olur.${H.kanatsiz ? ' Gövdesini savurur (kanatsız).' : ' Kanat çırpar.'} Bedeli 2 puan.`,
-        `Dexterity Saving Throw: DC ${E.dc}, each creature within 10 feet. Failure: ${spaced(clawDice)} Bludgeoning damage and the Prone condition. Costs 2 points.`],
-      ['legendary', 'Elemental Pulse', `20 ft içindekiler DC ${E.dc} CON kurtarma zarı atar; kaybeden ${pulseDice} ${trT} hasarı alır, başaran yarısını. Bedeli 2 puan.`,
-        `Constitution Saving Throw: DC ${E.dc}, each creature within 20 feet. Failure: ${pulseDice} ${EN_TUR(type)} damage. Success: Half damage. Costs 2 points.`],
+      ['legendary', 'Tail', 'Bir Tail saldırısı yapar.', 'The dragon makes one Tail attack.'],
+      ['legendary', sweepName, `10 ft içindekiler DC ${E.dc} DEX kurtarma zarı atar; kaybeden ${spaced(clawDice)} ezici hasar alır ve Prone olur.${H.kanatsiz ? ' Gövdesini savurur (kanatsız).' : ' Kanat çırpar.'}`,
+        `Dexterity Saving Throw: DC ${E.dc}, each creature within 10 feet. Failure: ${spaced(clawDice)} Bludgeoning damage and the Prone condition.`],
+      ['legendary', 'Elemental Pulse', `20 ft içindekiler DC ${E.dc} CON kurtarma zarı atar; kaybeden ${pulseDice} ${trT} hasarı alır, başaran yarısını.`,
+        `Constitution Saving Throw: DC ${E.dc}, each creature within 20 feet. Failure: ${pulseDice} ${EN_TUR(type)} damage. Success: Half damage.`],
     ] : []),
   ];
   const traits = features.filter((f) => f[0] === 'trait').map((f) => f[1]);
@@ -570,7 +570,7 @@ function gemDragon(hat, i) {
     ],
     riders: { Bite: bite.ek, ...(H.ekVeri[i] ? { [breathName]: { ...H.ekVeri[i], status: 'kısmen' } } : {}) },
     dex: { type: 'dragon', alignment: H.hizalanma, conditionImmunities: [], ...(climb ? { tirmanma: climb } : {}), ...(H.suzulme ? { suzulme: true } : {}) },
-    ...(adult ? { efsanevi: { uses: 3, srd: 'KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §6): Yetişkin 3 efsanevi puan; puan bedeli yok, her eylem 1 kullanım; değerler türetildi', actions: [
+    ...(adult ? { efsanevi: { uses: 2, srd: 'KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §6): Yetişkin Efsanevi Eylem hakkı 2/tur; SRD 5.2.1: her eylem 1 hak (KATALOG-LA-SRD: belgedeki 3 puan bedelliyle eş hasar için 3 → 2); değerler türetildi', actions: [
       { id: 'tail', tr: 'Kuyruk', en: 'Tail', kind: 'strike', attack: 'Tail' },
       { id: slug(sweepName), tr: H.kanatsiz ? 'Gövde Savuruşu' : 'Kanat Darbesi', en: sweepName, kind: 'save', oncePerTurn: true, save: 'dex', dc: E.dc, area: { shape: 'emanation', sizeFt: 10, origin: 'self' }, damage: clawDice, damageType: 'bludgeoning', conditions: ['Prone'] },
       { id: 'elemental-pulse', tr: 'Element Nabzı', en: 'Elemental Pulse', kind: 'save', oncePerTurn: true, save: 'con', dc: E.dc, half: true, area: { shape: 'emanation', sizeFt: 20, origin: 'self' }, damage: pulseDice, damageType: type },

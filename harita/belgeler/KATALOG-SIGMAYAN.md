@@ -63,7 +63,7 @@ Kayıtlar `data/canavarlar-kadim.json` (`node scripts/katalog-f2-kadim.mjs`; tek
 | Groggy Veil (Captive) | İlk 2 tur uçuş yarı, INT kurtarma dezavantajı | Yok | Savaş başı süren etki (`speedMult`, `saveDis: ['int']`, 3. tura dek) |
 | Armor's Betrayal (Captive) — Kaltakkıran zırhı kancası | 60 ft içinde zırhı giyen DC 24 WIS; başarısızsa hız 0, ejderhaya dezavantaj, ejderhadan avantaj | Eşya ↔ canavar kancası yok | KATALOG-1 zırh bağı kancasına canavar kimliği koşulu |
 | Seal Pull (Captive efsanevi) | Taş taşıyan hedefi DC 25 STR ile 30 ft çekme | Efsanevi eylemde çekme ve "taş taşıyan" koşulu yok; kayda girmedi | Efsanevi eyleme `pull` + `needsItem` |
-| Efsanevi eylem puan bedelleri | 1/2/3 puanlık eylemler | SRD 5.2.1'de bedel yok: `uses` = puan sayısı, pahalı eylem `oncePerTurn` | `LegendaryAction.cost` |
+| Efsanevi eylem puan bedelleri | 1/2/3 puanlık eylemler | Kapandı, mekanik eklenmedi (KATALOG-LA-SRD): SRD 5.2.1'e uyuldu, her eylem 1 hak; kart metninden bedel kalktı, denge hak sayısıyla (Ocean-Nightmare ve Yetişkin mücevher 3 → 2) | — |
 | Save'li saldırının ikinci hasar türü | Roar 15d8 + 8d8, Judgment 30d10 + 20d10, Cosmic Fling, Void-Lightning | Save yolu yalnız ana zarı atar | Save yolunda `riderExtras` çağrısı |
 | Savrulma, itme, çekme | Roar 30 ft, Tail 20 ft, Continent Tail 40 ft, Alfa nefesi 10/15/30 ft, Gamma çekme 10/15/30 ft (Tidal Surge efsanevide itme çalışır) | Saldırı ekinde itme/çekme yok (yalnız Prone) | `canavar-ekleri-a2.json` itme kalıbı kadim saldırılarına |
 | Kalıcı yüzeyler | Roar: Çatlak Kaya; Celestial Glide: 3 tur Kozmik Anka Alevi | Canavar eylemi yüzey oluşturamaz | Canavar saldırısına `surface` |

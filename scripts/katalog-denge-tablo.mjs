@@ -113,7 +113,7 @@ function analyse(m, grup) {
     farkDpr: row ? band(Math.round(dpr3), row.dpr) : '—', farkDc: row && dc !== null ? signed(dc - row.dc) : '—',
     yakin: Math.round(melee), yakinParca: meleeParts || '—', bonus: strikes.length ? `+${bonus}` : '—',
     alan: top ? `${top.ad}: ${Math.round(top.ort)} (DC ${top.dc})` : '—', alanOrt: top ? Math.round(top.ort) : 0, alanDc: top?.dc ?? '',
-    efsanevi: leg ? `${leg.actions.length} eylem, ${leg.uses ?? 3} puan/tur (≈${Math.round(legPerRound)} hasar/tur)` : '—',
+    efsanevi: leg ? `${leg.actions.length} eylem, ${leg.uses ?? 3} hak/tur (≈${Math.round(legPerRound)} hasar/tur)` : '—',
     efsSayi: leg ? leg.actions.length : 0, efsPuan: leg ? leg.uses ?? 3 : 0, efsHasar: Math.round(legPerRound),
     lr: lr || '—', faz2: f2Text, etkinHp: Math.round(effHp), dpr3: Math.round(dpr3),
     savCr: out ? 'tablo dışı' : `${def}${defOver ? '+' : ''}`, salCr: out ? 'tablo dışı' : `${off}${offOver ? '+' : ''}`,
@@ -131,7 +131,7 @@ const COLS = [['id', 'id'], ['grup', 'grup'], ['kademe', 'kademe/evre'], ['cr', 
   ['bag', 'bağışıklık'], ['dir', 'direnç'], ['zay', 'zayıflık'], ['dmgAc', 'DMG AC'], ['dmgHp', 'DMG HP'], ['dmgAtk', 'DMG saldırı'], ['dmgDpr', 'DMG tur hasarı'],
   ['dmgDc', 'DMG DC'], ['farkHp', 'HP farkı'], ['farkAc', 'AC farkı'], ['farkAtk', 'saldırı farkı'], ['farkDpr', '3 tur hasar farkı'], ['farkDc', 'DC farkı'],
   ['yakin', 'çoklu saldırı ort.'], ['yakinParca', 'çoklu saldırı'], ['bonus', 'saldırı bonusu'], ['alanOrt', 'en güçlü alan ort.'], ['alanDc', 'alan DC'],
-  ['alan', 'en güçlü alan'], ['efsSayi', 'efsanevi eylem'], ['efsPuan', 'efsanevi puan'], ['efsHasar', 'efsanevi hasar/tur'], ['lr', 'Legendary Resistance'],
+  ['alan', 'en güçlü alan'], ['efsSayi', 'efsanevi eylem'], ['efsPuan', 'efsanevi hak'], ['efsHasar', 'efsanevi hasar/tur'], ['lr', 'Legendary Resistance'],
   ['faz2', 'Faz 2'], ['etkinHp', 'etkin HP'], ['dpr3', '3 tur ort. hasar'], ['savCr', 'savunma CR'], ['salCr', 'saldırı CR'], ['etkinCr', 'etkin CR']];
 const esc = (v) => { const s = String(v ?? ''); return /[",;\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
 const csv = [COLS.map(([, h]) => esc(h)).join(','), ...rows.map((r) => COLS.map(([k]) => esc(r[k])).join(','))].join('\n') + '\n';
@@ -159,7 +159,7 @@ const md = `# KATALOG-DENGE-TABLO: katalog yaratıkları ve DMG CR tablosu
 - **Yöntem (yaklaşık):**
   - **Etkin HP:** HP + Legendary Resistance (kullanım başına CR 1–4: 10, 5–10: 20, 11–16: 30, 17+: 45) + Faz 2 geçici canı. Tek element bağışıklığı ve zayıflık etkin HP'ye katılmadı.
   - **Savunma CR'si:** etkin HP'nin satırı, AC farkının her 2 puanı 1 basamak.
-  - **Tur hasarı (3 tur ortalaması):** 1. tur en güçlü alan/nefes saldırısı 2 hedefe (başarısız save, tam hasar) ya da çoklu saldırı, hangisi büyükse; 2–3. tur çoklu saldırı. Saldırı ekleri (\`riders.extra\`) dahil. Her tura efsanevi eylemler eklenir (puan kadar eylem, her eylem bir kez, en güçlüler; alanlı efsanevi eylem 2 hedef).
+  - **Tur hasarı (3 tur ortalaması):** 1. tur en güçlü alan/nefes saldırısı 2 hedefe (başarısız save, tam hasar) ya da çoklu saldırı, hangisi büyükse; 2–3. tur çoklu saldırı. Saldırı ekleri (\`riders.extra\`) dahil. Her tura efsanevi eylemler eklenir (SRD 5.2.1: her eylem 1 hak; hak kadar eylem, her eylem bir kez, en güçlüler; alanlı efsanevi eylem 2 hedef). Puan bedeli yok (KATALOG-LA-SRD).
   - **Saldırı CR'si:** tur hasarının satırı, saldırı bonusu farkının her 2 puanı 1 basamak (yakın saldırısı olmayan kayıtta kurtarma DC'si).
   - **Etkin CR:** savunma ve saldırı CR'sinin ortalamasına en yakın basamak. "+" ve "(tavan)": değer CR 30 satırını aştı.
 - **Fark sütunları:** HP ve tur hasarı için "bantta" ya da bandın kaç puan altında/üstünde olduğu; AC, saldırı bonusu ve DC için kayıt − DMG.

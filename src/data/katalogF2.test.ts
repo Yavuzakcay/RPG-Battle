@@ -173,7 +173,8 @@ describe('KATALOG-F2: kadim yaratık kayıtları', () => {
       }
       const adult = EF[h.kimlikler[2]!]!;
       const sweep = ['alpha', 'omega', 'delta'].includes(hat) ? 'body-sweep' : 'wing-buffet';
-      expect(adult.uses).toBe(3);
+      // KATALOG-LA-SRD: her eylem 1 hak (SRD 5.2.1); bedelli 3 puanla eş hasar için 2 hak.
+      expect(adult.uses).toBe(2);
       expect(adult.actions.map((a) => a.id)).toEqual(['tail', sweep, 'elemental-pulse']);
       expect(adult.actions[2]!.damageType).toBe(h.hasar);
       expect(EF[h.kimlikler[0]!]).toBeUndefined();
