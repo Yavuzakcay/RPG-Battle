@@ -520,7 +520,7 @@
       "name": "Kongilla",
       "size": "L",
       "ac": 16,
-      "hp": 170,
+      "hp": 191,
       "speed": 40,
       "abilities": {
         "str": 20,
@@ -804,7 +804,7 @@
       "name": "Cerbedo",
       "size": "L",
       "ac": 16,
-      "hp": 170,
+      "hp": 191,
       "speed": 50,
       "abilities": {
         "str": 20,
@@ -1089,7 +1089,7 @@
       "name": "Mirath",
       "size": "M",
       "ac": 16,
-      "hp": 170,
+      "hp": 191,
       "speed": 40,
       "abilities": {
         "str": 20,
@@ -1406,7 +1406,7 @@
       "name": "Gongi",
       "size": "L",
       "ac": 16,
-      "hp": 170,
+      "hp": 191,
       "speed": 30,
       "abilities": {
         "str": 20,

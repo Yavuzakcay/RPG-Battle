@@ -1562,7 +1562,7 @@
    "name": "Alphyr",
    "size": "L",
    "ac": 20,
-   "hp": 310,
+   "hp": 341,
    "speed": 30,
    "swim": 80,
    "avatar": "boss/alphyr.webp",
@@ -1589,10 +1589,10 @@
     {
      "name": "Bite",
      "bonus": 10,
-     "damage": "19 (2d10 + 8) Piercing damage plus 10 (3d6) Thunder damage.",
-     "damageDice": "2d10+8",
+     "damage": "24 (3d10 + 8) Piercing damage plus 14 (4d6) Thunder damage.",
+     "damageDice": "3d10+8",
      "damageType": "piercing",
-     "rider": "+ 3d6 thunder",
+     "rider": "+ 4d6 thunder",
      "ranged": false,
      "reachFt": 10,
      "repeat": 1
@@ -1600,8 +1600,8 @@
     {
      "name": "Claw",
      "bonus": 10,
-     "damage": "21 (3d8 + 8) Slashing damage.",
-     "damageDice": "3d8+8",
+     "damage": "30 (5d8 + 8) Slashing damage.",
+     "damageDice": "5d8+8",
      "damageType": "slashing",
      "ranged": false,
      "reachFt": 10,
@@ -1610,7 +1610,7 @@
     {
      "name": "Thunder Breath",
      "bonus": 0,
-     "damage": "Constitution Saving Throw: DC 21, each creature in a 60-foot Cone. Failure: 54 (12d8) Thunder damage, and the target is pushed 15 feet and has the Prone condition. Success: Half damage.",
+     "damage": "Constitution Saving Throw: DC 21, each creature in a 60-foot Cone. Failure: 76 (17d8) Thunder damage, and the target is pushed 15 feet and has the Prone condition. Success: Half damage.",
      "save": {
       "ability": "con",
       "dc": 21,
@@ -1621,7 +1621,7 @@
       60,
       60
      ],
-     "damageDice": "12d8",
+     "damageDice": "17d8",
      "damageType": "thunder",
      "rider": "the target is pushed 15 feet and has the Prone condition",
      "recharge": 5,
@@ -1652,7 +1652,7 @@
     "Bite": {
      "extra": [
       {
-       "dice": "3d6",
+       "dice": "4d6",
        "type": "thunder"
       }
      ],
@@ -1887,7 +1887,7 @@
    "name": "Omegyr",
    "size": "L",
    "ac": 19,
-   "hp": 265,
+   "hp": 311,
    "speed": 40,
    "avatar": "boss/omegyr.webp",
    "abilities": {
@@ -1913,10 +1913,10 @@
     {
      "name": "Bite",
      "bonus": 10,
-     "damage": "17 (2d10 + 6) Piercing damage plus 7 (2d6) Necrotic damage.",
-     "damageDice": "2d10+6",
+     "damage": "22 (3d10 + 6) Piercing damage plus 10 (3d6) Necrotic damage.",
+     "damageDice": "3d10+6",
      "damageType": "piercing",
-     "rider": "+ 2d6 necrotic",
+     "rider": "+ 3d6 necrotic",
      "ranged": false,
      "reachFt": 10,
      "repeat": 1
@@ -1924,8 +1924,8 @@
     {
      "name": "Claw",
      "bonus": 10,
-     "damage": "19 (3d8 + 6) Slashing damage.",
-     "damageDice": "3d8+6",
+     "damage": "28 (5d8 + 6) Slashing damage.",
+     "damageDice": "5d8+6",
      "damageType": "slashing",
      "ranged": false,
      "reachFt": 10,
@@ -1934,7 +1934,7 @@
     {
      "name": "Necrotic Breath",
      "bonus": 0,
-     "damage": "Constitution Saving Throw: DC 20, each creature in a 60-foot Cone. Failure: 49 (11d8) Necrotic damage, and the target can't regain Hit Points for 1 round. Success: Half damage.",
+     "damage": "Constitution Saving Throw: DC 20, each creature in a 60-foot Cone. Failure: 67 (15d8) Necrotic damage, and the target can't regain Hit Points for 1 round. Success: Half damage.",
      "save": {
       "ability": "con",
       "dc": 20,
@@ -1945,7 +1945,7 @@
       60,
       60
      ],
-     "damageDice": "11d8",
+     "damageDice": "15d8",
      "damageType": "necrotic",
      "rider": "the target can't regain Hit Points for 1 round",
      "recharge": 5,
@@ -1976,7 +1976,7 @@
     "Bite": {
      "extra": [
       {
-       "dice": "2d6",
+       "dice": "3d6",
        "type": "necrotic"
       }
      ],
@@ -2207,7 +2207,7 @@
    "name": "Deltyr",
    "size": "L",
    "ac": 20,
-   "hp": 285,
+   "hp": 326,
    "speed": 30,
    "fly": 80,
    "avatar": "boss/deltyr.webp",
@@ -2234,10 +2234,10 @@
     {
      "name": "Bite",
      "bonus": 10,
-     "damage": "17 (2d10 + 6) Piercing damage plus 10 (3d6) Psychic damage.",
-     "damageDice": "2d10+6",
+     "damage": "28 (4d10 + 6) Piercing damage plus 14 (4d6) Psychic damage.",
+     "damageDice": "4d10+6",
      "damageType": "piercing",
-     "rider": "+ 3d6 psychic",
+     "rider": "+ 4d6 psychic",
      "ranged": false,
      "reachFt": 10,
      "repeat": 1
@@ -2245,8 +2245,8 @@
     {
      "name": "Claw",
      "bonus": 10,
-     "damage": "19 (3d8 + 6) Slashing damage.",
-     "damageDice": "3d8+6",
+     "damage": "28 (5d8 + 6) Slashing damage.",
+     "damageDice": "5d8+6",
      "damageType": "slashing",
      "ranged": false,
      "reachFt": 10,
@@ -2255,7 +2255,7 @@
     {
      "name": "Psychic Breath",
      "bonus": 0,
-     "damage": "Intelligence Saving Throw: DC 20, each creature in a 60-foot Cone. Failure: 49 (11d8) Psychic damage, and the target subtracts 1d6 from its next rolls. Success: Half damage.",
+     "damage": "Intelligence Saving Throw: DC 20, each creature in a 60-foot Cone. Failure: 72 (16d8) Psychic damage, and the target subtracts 1d6 from its next rolls. Success: Half damage.",
      "save": {
       "ability": "int",
       "dc": 20,
@@ -2266,7 +2266,7 @@
       60,
       60
      ],
-     "damageDice": "11d8",
+     "damageDice": "16d8",
      "damageType": "psychic",
      "rider": "the target subtracts 1d6 from its next rolls",
      "recharge": 5,
@@ -2297,7 +2297,7 @@
     "Bite": {
      "extra": [
       {
-       "dice": "3d6",
+       "dice": "4d6",
        "type": "psychic"
       }
      ],
@@ -2546,7 +2546,7 @@
    "name": "Sigmyr",
    "size": "L",
    "ac": 19,
-   "hp": 240,
+   "hp": 296,
    "speed": 40,
    "fly": 80,
    "avatar": "boss/sigmyr.webp",
@@ -2573,10 +2573,10 @@
     {
      "name": "Bite",
      "bonus": 9,
-     "damage": "17 (2d10 + 6) Piercing damage plus 7 (2d6) Radiant damage.",
-     "damageDice": "2d10+6",
+     "damage": "22 (3d10 + 6) Piercing damage plus 10 (3d6) Radiant damage.",
+     "damageDice": "3d10+6",
      "damageType": "piercing",
-     "rider": "+ 2d6 radiant",
+     "rider": "+ 3d6 radiant",
      "ranged": false,
      "reachFt": 10,
      "repeat": 1
@@ -2584,8 +2584,8 @@
     {
      "name": "Claw",
      "bonus": 9,
-     "damage": "19 (3d8 + 6) Slashing damage.",
-     "damageDice": "3d8+6",
+     "damage": "28 (5d8 + 6) Slashing damage.",
+     "damageDice": "5d8+6",
      "damageType": "slashing",
      "ranged": false,
      "reachFt": 10,
@@ -2594,7 +2594,7 @@
     {
      "name": "Radiant Breath",
      "bonus": 0,
-     "damage": "Constitution Saving Throw: DC 19, each creature in a 60-foot Cone. Failure: 45 (10d8) Radiant damage, and the target has the Blinded condition for 1 round. Success: Half damage.",
+     "damage": "Constitution Saving Throw: DC 19, each creature in a 60-foot Cone. Failure: 63 (14d8) Radiant damage, and the target has the Blinded condition for 1 round. Success: Half damage.",
      "save": {
       "ability": "con",
       "dc": 19,
@@ -2605,7 +2605,7 @@
       60,
       60
      ],
-     "damageDice": "10d8",
+     "damageDice": "14d8",
      "damageType": "radiant",
      "rider": "the target has the Blinded condition for 1 round",
      "recharge": 5,
@@ -2635,7 +2635,7 @@
     "Bite": {
      "extra": [
       {
-       "dice": "2d6",
+       "dice": "3d6",
        "type": "radiant"
       }
      ],
@@ -2883,7 +2883,7 @@
    "name": "Gammyr",
    "size": "L",
    "ac": 21,
-   "hp": 340,
+   "hp": 356,
    "speed": 40,
    "fly": 80,
    "avatar": "boss/gammyr.webp",
@@ -2910,10 +2910,10 @@
     {
      "name": "Bite",
      "bonus": 10,
-     "damage": "22 (3d10 + 6) Piercing damage plus 10 (3d6) Force damage.",
-     "damageDice": "3d10+6",
+     "damage": "28 (4d10 + 6) Piercing damage plus 14 (4d6) Force damage.",
+     "damageDice": "4d10+6",
      "damageType": "piercing",
-     "rider": "+ 3d6 force",
+     "rider": "+ 4d6 force",
      "ranged": false,
      "reachFt": 10,
      "repeat": 1
@@ -2921,8 +2921,8 @@
     {
      "name": "Claw",
      "bonus": 10,
-     "damage": "24 (4d8 + 6) Slashing damage.",
-     "damageDice": "4d8+6",
+     "damage": "33 (6d8 + 6) Slashing damage.",
+     "damageDice": "6d8+6",
      "damageType": "slashing",
      "ranged": false,
      "reachFt": 10,
@@ -2931,7 +2931,7 @@
     {
      "name": "Force Breath",
      "bonus": 0,
-     "damage": "Strength Saving Throw: DC 22, each creature in a 60-foot Cone. Failure: 54 (12d8) Force damage, and the target is pulled 15 feet and its Speed becomes 0. Success: Half damage.",
+     "damage": "Strength Saving Throw: DC 22, each creature in a 60-foot Cone. Failure: 76 (17d8) Force damage, and the target is pulled 15 feet and its Speed becomes 0. Success: Half damage.",
      "save": {
       "ability": "str",
       "dc": 22,
@@ -2942,7 +2942,7 @@
       60,
       60
      ],
-     "damageDice": "12d8",
+     "damageDice": "17d8",
      "damageType": "force",
      "rider": "the target is pulled 15 feet and its Speed becomes 0",
      "recharge": 5,
@@ -2972,7 +2972,7 @@
     "Bite": {
      "extra": [
       {
-       "dice": "3d6",
+       "dice": "4d6",
        "type": "force"
       }
      ],

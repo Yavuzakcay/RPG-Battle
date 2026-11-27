@@ -41,19 +41,20 @@ const DOC: Record<string, { cr: string; ac: number; hp: number; size: string }> 
   'ocean-nightmare': { cr: '30', ac: 24, hp: 700, size: 'G' },
   'ocean-nightmare-open-sea': { cr: '30', ac: 24, hp: 600, size: 'G' },
   'titan-of-nightmare': { cr: '35', ac: 26, hp: 1150, size: 'G' },
-  sigmlet: { cr: '5', ac: 16, hp: 120, size: 'M' }, sigmyr: { cr: '16', ac: 19, hp: 240, size: 'L' }, sigmadrake: { cr: '25', ac: 22, hp: 480, size: 'H' },
-  omeglet: { cr: '6', ac: 16, hp: 135, size: 'M' }, omegyr: { cr: '17', ac: 19, hp: 265, size: 'L' }, omegadrake: { cr: '26', ac: 23, hp: 515, size: 'H' },
-  deltlet: { cr: '6', ac: 17, hp: 140, size: 'M' }, deltyr: { cr: '18', ac: 20, hp: 285, size: 'L' }, deltadrake: { cr: '27', ac: 23, hp: 545, size: 'H' },
-  alphlet: { cr: '7', ac: 17, hp: 155, size: 'M' }, alphyr: { cr: '19', ac: 20, hp: 310, size: 'L' }, alphadrake: { cr: '28', ac: 24, hp: 585, size: 'H' },
-  gamlet: { cr: '8', ac: 18, hp: 175, size: 'M' }, gammyr: { cr: '20', ac: 21, hp: 340, size: 'L' }, gammadrake: { cr: '30', ac: 25, hp: 650, size: 'H' },
+  // KATALOG-DENGE-DUZELT: Genç HP'si DMG bandının alt sınırı, nefes zarı tur hasarı hedefine göre (belge tablosundan sapar; DECISIONS.md).
+  sigmlet: { cr: '5', ac: 16, hp: 120, size: 'M' }, sigmyr: { cr: '16', ac: 19, hp: 296, size: 'L' }, sigmadrake: { cr: '25', ac: 22, hp: 480, size: 'H' },
+  omeglet: { cr: '6', ac: 16, hp: 135, size: 'M' }, omegyr: { cr: '17', ac: 19, hp: 311, size: 'L' }, omegadrake: { cr: '26', ac: 23, hp: 515, size: 'H' },
+  deltlet: { cr: '6', ac: 17, hp: 140, size: 'M' }, deltyr: { cr: '18', ac: 20, hp: 326, size: 'L' }, deltadrake: { cr: '27', ac: 23, hp: 545, size: 'H' },
+  alphlet: { cr: '7', ac: 17, hp: 155, size: 'M' }, alphyr: { cr: '19', ac: 20, hp: 341, size: 'L' }, alphadrake: { cr: '28', ac: 24, hp: 585, size: 'H' },
+  gamlet: { cr: '8', ac: 18, hp: 175, size: 'M' }, gammyr: { cr: '20', ac: 21, hp: 356, size: 'L' }, gammadrake: { cr: '30', ac: 25, hp: 650, size: 'H' },
 };
 /** Nefes: kurtarma yeteneği, DC, zar, koni (ft). */
 const BREATH: Record<string, [string, number, string, number]> = {
-  sigmlet: ['con', 15, '6d8', 30], sigmyr: ['con', 19, '10d8', 60], sigmadrake: ['con', 23, '16d10', 90],
-  omeglet: ['con', 15, '7d8', 30], omegyr: ['con', 20, '11d8', 60], omegadrake: ['con', 24, '17d10', 90],
-  deltlet: ['int', 15, '7d8', 30], deltyr: ['int', 20, '11d8', 60], deltadrake: ['int', 24, '18d10', 90],
-  alphlet: ['con', 16, '8d8', 30], alphyr: ['con', 21, '12d8', 60], alphadrake: ['con', 25, '19d10', 90],
-  gamlet: ['str', 16, '8d8', 30], gammyr: ['str', 22, '12d8', 60], gammadrake: ['str', 26, '20d10', 90],
+  sigmlet: ['con', 15, '6d8', 30], sigmyr: ['con', 19, '14d8', 60], sigmadrake: ['con', 23, '16d10', 90],
+  omeglet: ['con', 15, '7d8', 30], omegyr: ['con', 20, '15d8', 60], omegadrake: ['con', 24, '17d10', 90],
+  deltlet: ['int', 15, '7d8', 30], deltyr: ['int', 20, '16d8', 60], deltadrake: ['int', 24, '18d10', 90],
+  alphlet: ['con', 16, '8d8', 30], alphyr: ['con', 21, '17d8', 60], alphadrake: ['con', 25, '19d10', 90],
+  gamlet: ['str', 16, '8d8', 30], gammyr: ['str', 22, '17d8', 60], gammadrake: ['str', 26, '20d10', 90],
 };
 /** Hızlar (ft): yürüme, uçuş, yüzme, tırmanma (Yavru / Genç / Yetişkin). */
 const SPEED: Record<string, [number, number | undefined, number | undefined, number | undefined]> = {

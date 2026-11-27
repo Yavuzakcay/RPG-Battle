@@ -474,6 +474,15 @@ const STAGES = [
   { tr: 'Genç', en: 'Young', base: { str: 23, dex: 12, con: 21, int: 14, wis: 13, cha: 17 }, size: 'L', reach: 10, cone: 60 },
   { tr: 'Yetişkin', en: 'Adult', base: { str: 27, dex: 14, con: 25, int: 16, wis: 15, cha: 21 }, size: 'H', reach: 15, cone: 90 },
 ];
+// KATALOG-DENGE-DUZELT (kullanıcı kararı; harita/belgeler/KATALOG-DENGE-TABLO.md): Genç evresi belge tablosundan sapar. HP DMG bandının
+// alt sınırına çıkar; Bite, Claw ve nefes zarları aynı çarpanla (Bite/Claw oranı korunur) büyür, çarpan 3 turluk tur hasarı (denge tablosunun
+// yöntemi: 1. tur max(çoklu saldırı, 2 × nefes), 2–3. tur çoklu saldırı; ortalamalar yuvarlanmadan) DMG bandının alt sınırına gelene dek
+// 0,01 adımla artar. AC, saldırı bonusu ve nefes DC'si aynı.
+const GENC_DENGE = {
+  hp: { sigmyr: 296, omegyr: 311, deltyr: 326, alphyr: 341, gammyr: 356 },
+  hedefTur: { 16: 99, 17: 105, 18: 111, 19: 117, 20: 123 },
+};
+const exact = (d) => { const m = /^(\d+)d(\d+)(?:\+(\d+))?$/.exec(d); return (Number(m[1]) * (Number(m[2]) + 1)) / 2 + Number(m[3] ?? 0); };
 const dice = (target, die, flat) => `${Math.max(1, Math.round((target - flat) / ((die + 1) / 2)))}d${die}${flat ? `+${flat}` : ''}`;
 const cap = (s) => s[0].toUpperCase() + s.slice(1);
 export const TURETILEN = [];
@@ -488,24 +497,37 @@ function gemDragon(hat, i) {
   const [bonus, lo, hi] = DMG[Number(E.cr)];
   const T = Math.round(((lo + hi) / 2) * 0.6);
   const type = H.hasar, trT = TR_TUR[type];
-  const elem = `${Math.max(1, Math.round((T * 0.4) / 3 / 3.5))}d6`;
-  const biteDice = dice(T * 0.4 - avg(elem), 10, sm);
-  const clawDice = dice(T * 0.3, 8, sm);
+  // Çarpan k: yakın dövüş hedefi T × k (Bite %40, Claw %30 × 2), nefes zar sayısı × k (KATALOG-DENGE-DUZELT; yalnız Genç, diğerlerinde 1).
+  const derive = (k) => {
+    const Tk = T * k;
+    const elem = `${Math.max(1, Math.round((Tk * 0.4) / 3 / 3.5))}d6`;
+    const biteDice = dice(Tk * 0.4 - avg(elem), 10, sm);
+    const clawDice = dice(Tk * 0.3, 8, sm);
+    const [zn, zd] = E.zar.split('d').map(Number);
+    const zar = k === 1 ? E.zar : `${Math.max(1, Math.round(zn * k))}d${zd}`;
+    const melee = exact(biteDice) + exact(elem) + 2 * exact(clawDice);
+    return { elem, biteDice, clawDice, zar, tur: (Math.max(melee, 2 * exact(zar)) + 2 * melee) / 3 };
+  };
+  const genc = i === 1 && GENC_DENGE.hp[id] !== undefined;
+  let k = 1;
+  if (genc) { const hedef = GENC_DENGE.hedefTur[Number(E.cr)]; while (derive(k).tur < hedef && k < 3) k = Math.round((k + 0.01) * 100) / 100; }
+  const { elem, biteDice, clawDice, zar } = derive(k);
+  const hp = genc ? GENC_DENGE.hp[id] : E.hp;
   const bite = melee('Bite', bonus, biteDice, 'piercing', S.reach, 1, [{ dice: elem, type }]);
   const claw = melee('Claw', bonus, clawDice, 'slashing', S.reach, 2);
   const adult = i === 2;
   const tail = adult ? melee('Tail', bonus, biteDice, 'bludgeoning', 20, 0) : null;
   const breathName = `${EN_TUR(type)} Breath`;
   const ek = H.ek[i];
-  const breath = saveAttack(breathName, { ability: E.yet, dc: E.dc, dice: E.zar, type, recharge: 5,
+  const breath = saveAttack(breathName, { ability: E.yet, dc: E.dc, dice: zar, type, recharge: 5,
     area: { shape: 'cone', sizeFt: S.cone, origin: 'self', targets: 'all' }, failText: `the target ${ek.en}` });
   const sonra = adult ? H.sonra : undefined;
   const sweepName = H.kanatsiz ? 'Body Sweep' : 'Wing Buffet';
-  const pulseDice = `${Math.max(1, Math.round(Number(E.zar.split('d')[0]) / 4))}d10`;
+  const pulseDice = `${Math.max(1, Math.round(Number(zar.split('d')[0]) / 4))}d10`;
   const renk = `${H.ad.tr} hattı (${H.renk.tr})`;
   const hiz = H.hiz;
   const walk = hiz.yurume[i], fly = hiz.ucus?.[i], swim = hiz.yuzme?.[i], climb = hiz.tirmanma?.[i];
-  TURETILEN.push({ id, cr: E.cr, bonus, T, bite: `${biteDice} + ${elem} ${type}`, claw: clawDice, ...(adult ? { tail: biteDice, sweep: clawDice, pulse: pulseDice } : {}) });
+  TURETILEN.push({ id, cr: E.cr, bonus, T, ...(genc ? { k, hp, nefes: zar } : {}), bite: `${biteDice} + ${elem} ${type}`, claw: clawDice, ...(adult ? { tail: biteDice, sweep: clawDice, pulse: pulseDice } : {}) });
   const features = [
     ['trait', 'Carrier\'s Imprint', `${renk} ${H.tip.tr}. Yumurta, Taşıyıcı'nın hizalanma kararlarına (${H.eksen.tr}) ve en sık kullandığı yetenek ve beceri zarlarına (baskın ${H.baskin.map((a) => a.toUpperCase()).join(' + ')}) göre bu hatta çatlar. Nefes kurtarma DC'si Taşıyıcı'nın baskın niteliğine göre ölçeklenir. Evreler: Yavru (1×1, CR 5–8) → Genç (2×2, CR 16–20) → Yetişkin (3×3, CR 25–30, 3 efsanevi puan).`,
       `${H.ad.en} line (${H.renk.en}) ${H.tip.en}. The egg hatches into this line based on its Carrier's alignment choices (${H.eksen.en}) and most used ability and skill rolls (dominant ${H.baskin.map((a) => a.toUpperCase()).join(' + ')}). The breath save DC scales with the Carrier's dominant ability. Stages: Wyrmling (1×1, CR 5–8) → Young (2×2, CR 16–20) → Adult (3×3, CR 25–30, 3 legendary points).`],
@@ -518,7 +540,7 @@ function gemDragon(hat, i) {
     ['action', 'Bite', trMelee(bonus, S.reach, biteDice, 'piercing', [{ dice: elem, type }]), enMelee(bite.atk)],
     ['action', 'Claw', trMelee(bonus, S.reach, clawDice, 'slashing'), enMelee(claw.atk)],
     ...(adult ? [['action', 'Tail', trMelee(bonus, 20, biteDice, 'bludgeoning'), enMelee(tail.atk)]] : []),
-    ['action', `${breathName} (Recharge 5–6)`, `${S.cone} ft konideki herkes DC ${E.dc} ${E.yet.toUpperCase()} kurtarma zarı atar; kaybeden ${E.zar} ${trT} hasarı alır${ek.tr}, başaran yarısını.${sonra ? ` ${sonra.tr}` : ''}`,
+    ['action', `${breathName} (Recharge 5–6)`, `${S.cone} ft konideki herkes DC ${E.dc} ${E.yet.toUpperCase()} kurtarma zarı atar; kaybeden ${zar} ${trT} hasarı alır${ek.tr}, başaran yarısını.${sonra ? ` ${sonra.tr}` : ''}`,
       `${breath.damage}${sonra ? ` ${sonra.en}` : ''}`],
     ...(adult ? [
       ['legendary', 'Tail', 'Bir Tail saldırısı yapar. Bedeli 1 puan.', 'The dragon makes one Tail attack. Costs 1 point.'],
@@ -530,7 +552,7 @@ function gemDragon(hat, i) {
   ];
   const traits = features.filter((f) => f[0] === 'trait').map((f) => f[1]);
   return {
-    id, name: cap(id), size: S.size, ac: E.ac, hp: E.hp, speed: walk, ...(fly ? { fly } : {}), ...(swim ? { swim } : {}), abilities: ab,
+    id, name: cap(id), size: S.size, ac: E.ac, hp, speed: walk, ...(fly ? { fly } : {}), ...(swim ? { swim } : {}), abilities: ab,
     saves: { dex: mod(ab.dex) + pb, wis: mod(ab.wis) + pb }, skills: { perception: mod(ab.wis) + 2 * pb, stealth: mod(ab.dex) + pb },
     darkvision: 120, cr: E.cr, multiattack: true, creatureType: 'dragon',
     attacks: [bite.atk, claw.atk, ...(tail ? [tail.atk] : []), breath],

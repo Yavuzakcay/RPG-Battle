@@ -137,6 +137,9 @@ const L = {
 };
 const ATK_NAMES = { ates: ['Bite', 'piercing'], soguk: ['Bite', 'piercing'], yildirim: ['Hoof', 'bludgeoning'], gurultu: ['Bell Slam', 'bludgeoning'], asit: ['Bite', 'piercing'],
   zehir: ['Proboscis', 'piercing'], isilti: ['Gore', 'piercing'], nekrotik: ['Bite', 'piercing'], psisik: ['Soul Claw', 'slashing'], kuvvet: ['Fist', 'bludgeoning'] };
+// KATALOG-DENGE-DUZELT (kullanıcı kararı; harita/belgeler/KATALOG-DENGE-TABLO.md): yalnız bu Sv.2 kayıtlarının HP'si DMG CR 9 bandının
+// alt sınırına (191). Şablon (TIER 9) ve diğer CR 9 kaydı (lighty) aynı.
+const HP_DUZELT = { kongilla: 191, cerbedo: 191, mirath: 191, gongi: 191 };
 const TIER = {
   2: { hp: 60, ac: 13, atk: 5, dc: 12, n: 1, phys: '1d10+3', el: '2d6', ab: [16, 14, 14] },
   3: { hp: 75, ac: 14, atk: 5, dc: 12, n: 2, phys: '1d8+3', el: '1d6', ab: [16, 14, 14] },
@@ -211,7 +214,7 @@ for (const b of B) {
     }
     const [s1, d1, c1] = t.ab;
     const o = {
-      id: e.id, name: cap(e.id), size: e.size ?? (k === 0 ? 'S' : 'L'), ac: t.ac, hp: t.hp, speed: e.speed, fly: e.fly, el: b.el, vuln: b.vuln, type: b.type,
+      id: e.id, name: cap(e.id), size: e.size ?? (k === 0 ? 'S' : 'L'), ac: t.ac, hp: HP_DUZELT[e.id] ?? t.hp, speed: e.speed, fly: e.fly, el: b.el, vuln: b.vuln, type: b.type,
       ab: { str: s1, dex: d1, con: c1, int: 6, wis: 12, cha: 8 }, cr: String(e.cr), dv: 60, attacks: attacks2, regen: e.regen, bonusActions: e.bonusActions, swim: e.swim,
       traits: 'Mühür Ruhu (KATALOG-1 F).',
       unsupported: unsupportedOf({ condImm: k === 1 ? b.condImm : e.poisonedImm ? ['Poisoned'] : undefined, senses: e.senses, climb: e.climb, iceWalk: e.iceWalk, illumination: e.illumination }),

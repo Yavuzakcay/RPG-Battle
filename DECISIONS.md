@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev KATALOG-DENGE-DUZELT: Mücevher Genç ve Mühür Sv.2 (CR 9) denge düzeltmesi (2026-11-27; `data/monsters.json`, kural sürümü (108) ve kayıt sürümü (28) değişmedi)
+
+- **Yer:** değerler yalnız üretici betiklerde, JSON betikle yeniden üretildi: `scripts/katalog-f2-kadim.mjs` `GENC_DENGE`, `scripts/katalog-f-bosslar.mjs` `HP_DUZELT`.
+- **Mücevher Genç:** HP DMG bandının alt sınırına (sigmyr 296, omegyr 311, deltyr 326, alphyr 341, gammyr 356). Bite, Claw, Bite ek hasarı ve nefes zarları ortak bir `k` katsayısıyla büyütülür (0,01 adımla, 3 tur hasarı hedefe ≥ ulaşana dek; zar sayısı yuvarlanır, sabit ek aynı, Bite/Claw oranı korunur): hedef 3 tur hasarı CR 16: 99, 17: 105, 18: 111, 19: 117, 20: 123. AC, saldırı bonusu ve nefes DC'si aynı. Etkin CR beşinde de yazılan CR (gammyr savunma 21, saldırı 20).
+- **Mühür Sv.2 (CR 9):** kongilla, cerbedo, mirath, gongi yalnız HP 170 → 191 (DMG CR 9 alt sınırı). Lighty (CR 9, 170 HP) ve diğer Mühür kayıtları aynı. Etkin CR 7 → 8 (saldırı CR'ı 7 kaldı). K11 Sv.2 ölçümü önce/sonra DENGE.md'de (aralık %80–100 içinde).
+- **Tablo:** CR 30 kayıtları (tutsak-dragon, ocean-nightmare, ocean-nightmare-open-sea) zaten DMG CR 30 satırıyla karşılaştırılıyordu; "tablo dışı" yalnız CR > 30. Tablo yeniden üretildi.
+- **Efsanevi eylem bedeli: uygulanmadı.** Motor şeması (`src/battle/boss.ts` `LegendaryAction`) eylem başına bedel alanı taşımıyor; her kullanım 1 hak düşer (`legendary_used.left = legendaryLeft − 1`). Eksik alan: `LegendaryAction` üstünde eylem başına puan bedeli (ör. `cost`) ve onu düşen sayaç. Görev "yeni mekanik ekleme" dediğinden `data/efsanevi.json`'a dokunulmadı; kart metnindeki 1/2/3 puan yalnız görünüm.
+- **Testler:** `src/data/katalogF2.test.ts` Genç HP ve nefes zarı beklentileri yeni değerlere (veriye bağlı değer). Belgeler: `KATALOG-F2-PROSPEKTUS.md` Genç satırları, TR/EN canavar açıklamaları betikten.
+
 ## KATALOG-ON-HAZIRLIK: canavar saldırısı ek hasarı süren etki direncini uygular (2026-11-27; kural sürümü 108, kayıt sürümü 28 aynı)
 
 - **Sorun (tanı DENGE.md "Tanı: çok zor üç boss…"):** `src/battle/riders.ts` `riderExtras` ek hasarın (rider `extra`, `conditional`, hücum ekleri) direncini yalnız hedefin kalıcı `resistances/immunities/vulnerabilities` alanlarından okuyordu; süren etkiden gelen direnç (Protection from Energy, Absorb Elements, paket `direnc`, sim `sim:hazirlik`), aura direnci, Mind Blank'in hasar bağışıklığı, Petrified, Silence işlemiyordu. Aynı saldırının ana hasarı ve kurtarmalı hasar `profileIn` ile hesaplanıyordu.

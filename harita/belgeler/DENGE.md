@@ -117,6 +117,17 @@ Sv.1 / Sv.2 (yalnız `k18-fighter`, 50 tohum, dirençsiz kol, olağan karşıla�
 | Twinkle | Sv.1 | 3 | 100 | 100 |
 | Wolfie | Sv.2 | 9 | 100 | 100 |
 
+KATALOG-DENGE-DUZELT (2026-11-27): Kongilla, Cerbedo, Mirath, Gongi HP 170 → 191 (DMG CR 9 alt sınırı); aynı yöntem (`npm run sim:boss -- 50 --boss <id> --parti k18-fighter --kol dirençsiz`), önce / sonra:
+
+| Yaratık | Normal önce | Normal sonra | Kolay önce | Kolay sonra |
+|---|---:|---:|---:|---:|
+| Cerbedo | 100 | 100 | 100 | 100 |
+| Gongi | 100 | 100 | 100 | 100 |
+| Kongilla | 100 | 100 | 100 | 100 |
+| Mirath | 100 | 100 | 100 | 100 |
+
+Kazanma oranı değişmedi (aralık %80–100 içinde); savaş süresi uzadı (Normal toplam sim süresi 172–249 sn → 235–328 sn).
+
 ### Değerlendirme ve öneriler (veri değişmedi; karar kullanıcıda)
 
 Hazırlıklı kolda 4 parti ortalaması hedefte olan tek boss **Cerbones** (Normal 61, Kolay 71). Kalan dokuz boss iki öbeğe ayrılıyor:
