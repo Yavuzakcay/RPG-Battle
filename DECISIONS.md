@@ -19,6 +19,23 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Tablo:** CR 30 kayıtları (tutsak-dragon, ocean-nightmare, ocean-nightmare-open-sea) zaten DMG CR 30 satırıyla karşılaştırılıyordu; "tablo dışı" yalnız CR > 30. Tablo yeniden üretildi.
 - **Efsanevi eylem bedeli: uygulanmadı.** Motor şeması (`src/battle/boss.ts` `LegendaryAction`) eylem başına bedel alanı taşımıyor; her kullanım 1 hak düşer (`legendary_used.left = legendaryLeft − 1`). Eksik alan: `LegendaryAction` üstünde eylem başına puan bedeli (ör. `cost`) ve onu düşen sayaç. Görev "yeni mekanik ekleme" dediğinden `data/efsanevi.json`'a dokunulmadı; kart metnindeki 1/2/3 puan yalnız görünüm.
 - **Testler:** `src/data/katalogF2.test.ts` Genç HP ve nefes zarı beklentileri yeni değerlere (veriye bağlı değer). Belgeler: `KATALOG-F2-PROSPEKTUS.md` Genç satırları, TR/EN canavar açıklamaları betikten.
+## EN-ACIKLAMA-YOL: `en-aciklama-uret` Windows yol hatası ve boş/eksik çıktı koruması (2026-11-27; veri, kural ve kayıt sürümü değişmedi)
+
+- **Windows yolu:** `scripts/en-aciklama-uret.mjs` alt betiği `new URL(...).pathname` ile çağırıyordu (Windows'ta `/D:/...`); artık
+  `fileURLToPath` + `node:path` (`HERE`, `ROOT`, `at()`); dosya okuma/yazmaları da aynı yoldan.
+- **Boş çıktı koruması:** kaynak JSON okunamazsa, canavar SRD metni üretilemez/boş gelirse ya da bir çıktının kayıt sayısı 0 ise betik
+  hata verip çıkar, hiçbir dosya yazılmaz (önce hepsi denetlenir, sonra yazılır).
+- **Canavar kimlikleri:** canavar TR açıklamaları `data/aciklamalar-tr-canavar.json`'a ayrıldığından beri betik kimlikleri eski
+  `aciklamalar-tr.json`'dan okuyup 0 canavar üretiyor ve **boş** `aciklamalar-en-canavar.json` yazıyordu (Linux'ta da); kimlikler yeni
+  dosyadan okunur.
+- **Düşme koruması (karar bekliyor):** mevcut çıktıda olup yeni çıktıda olmayan kayıt varsa betik yazmaz. Şu an çalıştırınca durur:
+  `aciklamalar-en-canavar.json`'daki 231 kayıt (KATALOG-F2'nin 24 kadim/mücevher canavarı, `scripts/katalog-f2-kadim.mjs` aynı dosyaya
+  ekler) SRD metninden üretilmediği için düşerdi (1549 → 1318). Seçenekler: (a) betik SRD dışı mevcut kayıtları korusun (öneri), (b)
+  katalog EN kayıtları ayrı dosyaya, (c) her çalıştırmadan sonra `katalog-f2-kadim.mjs`. Veri dosyaları bu görevde değişmedi; yalnız
+  alt betiğin yeniden ürettiği `data/canavar-ozellik.json` notu yeni TR canavar dosyasını gösteriyor.
+- **Aynı yol hatası (düzeltilmedi, rapor):** `scripts/sehir-gorunum.mjs:12`, `scripts/ses-yer-tutucu.mjs:11`; `scripts/harita-karo.mjs:21`
+  elle `/D:` düzeltmesiyle çalışıyor; `scripts/logo.ts:18`, `scripts/dungeondex-kitap.ts:14` `import.meta.dirname` yoksa aynı yedeğe düşer.
+
 ## ODA-2: çevrimiçi oda O2, yerel ağ aktarıcısı + canlı savaşta oyuncu komutları (2026-11-27; kural sürümü 108, kayıt sürümü 28 ve `ODA_SURUM` 2 değişmedi)
 
 - **Aktarıcı:** saf çekirdek `src/room/aktarici.ts` (oda kodu → host + oyuncu bağlantıları, `kimden`'i aktarıcı yazar, oyun mantığı
