@@ -199,8 +199,9 @@ export async function monsterRows(): Promise<{ rows: GRow[]; info: MonsterInfo }
   for (const [id, h] of hash) byHash.set(h, [...(byHash.get(h) ?? []), id]);
   const sameAs = new Map<string, string[]>();
   for (const ids of byHash.values()) if (ids.length > 1) for (const id of ids) sameAs.set(id, ids.filter((x) => x !== id));
-  // KATALOG-F2: kadim yaratıklar da (görsel bekliyor: yedek glifi).
-  const rows = [...monsters, ...kadimMonsters].map((m): GRow => {
+  // KATALOG-F2: Dungeondex'teki kadim yaratıklar da (görsel hazırlanıyor: yedek glifi; gizli varyantlar hariç).
+  const gizli = new Set(read<{ dexGizli: string[] }>('data/canavarlar-kadim.json').dexGizli);
+  const rows = [...monsters, ...kadimMonsters().filter((m) => !gizli.has(m.id))].map((m): GRow => {
     const ref = (m.avatar ?? `monsters/${m.id}.webp`).replace(/^\//, '');
     const same = (sameAs.get(m.id) ?? []).filter((x) => !x.endsWith('-uyku'));
     const size = m.size ?? 'M';

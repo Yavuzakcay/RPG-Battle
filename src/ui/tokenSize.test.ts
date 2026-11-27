@@ -27,6 +27,11 @@ describe('jeton boyutu', () => {
     expect(tokenScale(c)).toBe(0.5);
     for (const r of races) expect(Object.keys(sizes.race), r.id).toContain(r.id);
   });
+  it('MUHUR-OLCEK: jetonun kendi ölçeği (Avatar.scale) boyut sınıfının yerine; oyuncu karakteri ırktan kalır', () => {
+    expect(tokenScale({ side: 'enemies', size: 'S', avatar: { scale: 0.25 } })).toBe(0.25);
+    expect(tokenScale({ side: 'enemies', size: 'L', avatar: {} })).toBe(1.5);
+    expect(tokenScale({ side: 'party', size: 'M', raceId: 'goliath', avatar: { scale: 0.25 } })).toBe(1.4);
+  });
   it('taşma menzili: Large ve Huge 1 altıgen, Gargantuan 2', () => {
     expect([0.3, 1, 1.5, 2, 3].map(overhang)).toEqual([0, 0, 1, 1, 2]);
   });

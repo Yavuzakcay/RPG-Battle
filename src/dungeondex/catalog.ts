@@ -4,7 +4,7 @@
  * adlar İngilizce (alt sınıf ve Geçmiş adı Türkçe), açıklamalar Türkçe; SRD'nin İngilizce ham metni (`text`, `raw`)
  * hiçbir kartta kullanılmaz. Tembel parça: yalnız `src/screens/Dungeondex.tsx` içe aktarır.
  */
-import { armor, classes, isMagicItem, items, kadimMonsters, monsters, races, spells, spellDescriptions, trAciklama, weapons, classData, enDescriptions, loadMonsterDescriptions, loadEnMonsterDescriptions } from '../data';
+import { armor, classes, isMagicItem, items, katalogMonsters, monsters, races, spells, spellDescriptions, trAciklama, weapons, classData, enDescriptions, loadMonsterDescriptions, loadEnMonsterDescriptions } from '../data';
 import type { Item, Monster, Spell, SubclassDef, Weapon } from '../data';
 import { allFeats } from '../rules/advancement';
 import { backgrounds } from '../rules/backgrounds';
@@ -13,6 +13,7 @@ import { displayName } from '../rules/subclasses';
 import { armorDetail, itemSummary, weaponDetail } from '../ui/equipmentText';
 import { featInfo, featureSummary, masteryDescription } from '../ui/descriptions';
 import { allInvocations } from '../rules/invocations';
+import { hexCount } from '../rules/footprint';
 import { spellRitual } from '../rules/spellComponents';
 import { actionGlyph, itemGlyphs, spellGlyphs } from '../ui/glyph/glyphs';
 import { t, type Lang } from '../i18n';
@@ -51,7 +52,7 @@ export interface DexFilter { key: string; label: string; options: Array<{ value:
 
 /** Ek veri (canavar ayrıntıları; `loadDexExtras` doldurur). */
 export interface DexExtras {
-  srdMonsters: Record<string, { alignment?: string; type?: string; conditionImmunities?: string[]; size?: string[] }>;
+  srdMonsters: Record<string, { alignment?: string; type?: string; conditionImmunities?: string[]; size?: string[]; tirmanma?: number; suzulme?: boolean }>;
   monsterTypes: Record<string, string>;
   monsterSpells: Record<string, { spellcasting?: { atWill?: Array<{ name: string }>; daily?: Array<{ spells: Array<{ name: string }> }> } }>;
   monsterPlaces: Record<string, { tema?: string; ortam?: string[] }>;
@@ -63,6 +64,8 @@ export interface DexExtras {
   monsterFeatures: Record<string, Array<{ anahtar: string; ad: string; tur: string }>>;
   /** Sınıf → SRD sınıf tablosunun "Primary Ability" değeri (İngilizce yetenek adları; kartta yetenek kısaltmasına çevrilir). */
   classPrimary: Record<string, string>;
+  /** KATALOG-F2: Dungeondex'te gösterilen katalog canavarları (`data/canavarlar-kadim.json` `dex`, `dexGizli` varyantları hariç). */
+  katalogDex?: string[];
 }
 
 
@@ -78,7 +81,7 @@ export async function loadDexExtras(): Promise<Omit<DexExtras, 'mapNames'>> {
   const [feats, kadimJson] = await Promise.all([import('../../data/canavar-ozellik.json'), import('../../data/canavarlar-kadim.json'), loadMonsterDescriptions()]);
   const placeList = places.default as unknown as Array<{ id: string; tema?: string; ortam?: string[] }>;
   // KATALOG-F2: kadim yaratıkların yan tabloları (tür/hizalanma/durum bağışıklığı, tema, özellik listesi) SRD tablolarıyla aynı biçimde.
-  const kadim = kadimJson.default as unknown as { dex: DexExtras['srdMonsters']; yer: DexExtras['monsterPlaces']; ozellikler: DexExtras['monsterFeatures'] };
+  const kadim = kadimJson.default as unknown as { dex: DexExtras['srdMonsters']; yer: DexExtras['monsterPlaces']; ozellikler: DexExtras['monsterFeatures']; dexGizli: string[] };
   return {
     srdMonsters: { ...(srd.default as unknown as { monsters: DexExtras['srdMonsters'] }).monsters, ...kadim.dex },
     monsterTypes: (types.default as unknown as { types: Record<string, string> }).types,
@@ -88,6 +91,7 @@ export async function loadDexExtras(): Promise<Omit<DexExtras, 'mapNames'>> {
     monsterFeatures: { ...(feats.default as unknown as { canavarlar: DexExtras['monsterFeatures'] }).canavarlar, ...kadim.ozellikler },
     classPrimary: Object.fromEntries((srdClasses.default as unknown as { classes: Array<{ id: string; core: Record<string, string> }> }).classes
       .map((c) => [c.id, c.core['Primary Ability'] ?? ''])),
+    katalogDex: Object.keys(kadim.dex).filter((id) => !kadim.dexGizli.includes(id)),
   };
 }
 
@@ -200,20 +204,27 @@ export function buildDex(x: DexExtras): Record<DexCat, DexEntry[]> {
     const names = [...(sc?.atWill ?? []), ...(sc?.daily ?? []).flatMap((d) => d.spells)].map((s) => s.name);
     return [...new Map(names.flatMap((n) => { const s = spellsByName.get(spellKey(n)); return s ? [[s.id, s] as const] : []; })).values()];
   };
-  const canavar: DexEntry[] = [...monsters, ...kadimMonsters].map((m: Monster) => {
+  // KATALOG-F2: katalog canavarlarından yalnız Dungeondex'e alınanlar (kadim yaratıklar; gizli varyantlar ve Mühür Ruhu hariç).
+  const katalogDex = new Set(x.katalogDex ?? []);
+  const canavar: DexEntry[] = [...monsters, ...katalogMonsters.filter((m) => katalogDex.has(m.id))].map((m: Monster) => {
     const srd = x.srdMonsters[m.id];
     const type = x.monsterTypes[m.id] ?? srd?.type ?? '';
     const size = L.size[m.size ?? 'M'] ?? m.size ?? '';
     const place = x.monsterPlaces[m.id];
     const immune = (srd?.conditionImmunities ?? []).map((c) => fold(c)).filter((c) => CONDITION_IDS.includes(c));
     const ab = m.abilities as unknown as Record<string, number>;
-    const speed = typeof m.speed === 'number' ? L.ft(m.speed) : String(m.speed);
+    const kat = katalogDex.has(m.id);
+    const speed0 = typeof m.speed === 'number' ? L.ft(m.speed) : String(m.speed);
+    // KATALOG-F2: katalog canavarında uçuş, yüzme, tırmanma ve süzülme de yazılır.
+    const speed = !kat ? speed0 : [speed0, ...(m.fly ? [`${L.speedKind.fly} ${L.ft(m.fly)}`] : []), ...(m.swim ? [`${L.speedKind.swim} ${L.ft(m.swim)}`] : []),
+      ...(srd?.tirmanma ? [`${L.speedKind.climb} ${L.ft(srd.tirmanma)}`] : []), ...(srd?.suzulme ? [L.speedKind.hover] : [])].join(' · ');
     return {
       cat: 'canavar', id: m.id, name: m.name, header: `${size} ${cap(type)} · CR ${m.cr}`,
       summary: { ui: L.monsterSummary(size, cap(type), m.cr, m.ac, m.hp) },
       facts: [
         ...(srd?.alignment ? [[L.fact.alignment, srd.alignment] as [string, string]] : []),
         [L.fact.ac, String(m.ac)], [L.fact.hp, String(m.hp)], [L.fact.speed, speed],
+        ...(kat ? [[L.footprint, L.hexes(hexCount(m.size ?? 'M'))] as [string, string]] : []),
         [L.fact.abilities, ['str', 'dex', 'con', 'int', 'wis', 'cha'].map((k) => `${k.toUpperCase()} ${ab[k] ?? '—'}`).join(' · ')],
         ...(m.darkvision ? [[L.fact.darkvision, L.ft(m.darkvision)] as [string, string]] : []),
         ...(m.attacks?.length ? [[L.fact.attacks, m.attacks.map((a) => a.name).join(', ')] as [string, string]] : []),

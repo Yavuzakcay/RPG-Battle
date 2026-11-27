@@ -792,6 +792,8 @@ export interface Avatar {
   /** Görev P0: renk tonu kaydırma (derece; CSS hue-rotate) ve halka rengi (çizim anında; ek görsel yok). */
   hue?: number;
   ring?: string;
+  /** MUHUR-OLCEK: jetonun görsel ölçeği (boyut sınıfı ölçeğinin yerine; `Monster.jetonOlcek`). Yalnız çizim; mekanik tek altıgen. */
+  scale?: number;
 }
 
 /** Savaştaki bir yaratık (karakter veya düşman). */

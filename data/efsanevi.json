@@ -1109,210 +1109,29 @@
     }
    ]
   },
-  "continent-dragon": {
-   "uses": 3,
-   "srd": "KATALOG-F2 (PDF s. 2): Efsanevi Eylemler 3 puan/tur; puan bedeli yok, her eylem 1 kullanım",
-   "actions": [
-    {
-     "id": "tail",
-     "tr": "Kuyruk",
-     "en": "Tail",
-     "kind": "strike",
-     "attack": "Tail"
-    },
-    {
-     "id": "wing-storm",
-     "tr": "Kanat Fırtınası",
-     "en": "Wing Storm",
-     "kind": "save",
-     "oncePerTurn": true,
-     "save": "dex",
-     "dc": 26,
-     "area": {
-      "shape": "emanation",
-      "sizeFt": 25,
-      "origin": "self"
-     },
-     "damage": "3d8+10",
-     "damageType": "bludgeoning",
-     "conditions": [
-      "Prone"
-     ]
-    }
-   ]
-  },
-  "ancient-continent-spirit": {
-   "uses": 5,
-   "srd": "KATALOG-F2 (PDF s. 4): Efsanevi Eylemler 5 puan/tur; puan bedeli yok, her eylem 1 kullanım",
-   "actions": [
-    {
-     "id": "tectonic-shift",
-     "tr": "Tektonik Kayma",
-     "en": "Tectonic Shift",
-     "kind": "quake",
-     "oncePerTurn": true,
-     "radiusFt": 60
-    },
-    {
-     "id": "lightning-spear-rain",
-     "tr": "Yıldırım Mızrağı Yağmuru",
-     "en": "Lightning Spear Rain",
-     "kind": "save",
-     "oncePerTurn": true,
-     "save": "dex",
-     "dc": 32,
-     "area": {
-      "shape": "sphere",
-      "sizeFt": 10,
-      "origin": "point",
-      "rangeFt": 120
-     },
-     "damage": "8d10",
-     "damageType": "lightning"
-    },
-    {
-     "id": "seal-burst",
-     "tr": "On Mühür Patlaması",
-     "en": "Ten-Seal Burst",
-     "kind": "save",
-     "oncePerTurn": true,
-     "save": "con",
-     "dc": 32,
-     "area": {
-      "shape": "emanation",
-      "sizeFt": 60,
-      "origin": "self"
-     },
-     "damage": "12d10",
-     "damageType": "force"
-    }
-   ]
-  },
-  "cosmic-phoenix": {
-   "uses": 3,
-   "srd": "KATALOG-F2 (PDF s. 6): Efsanevi Eylemler 3 puan/tur; puan bedeli yok, her eylem 1 kullanım",
-   "actions": [
-    {
-     "id": "ember-wingbeat",
-     "tr": "Köz Kanat Çırpışı",
-     "en": "Ember Wingbeat",
-     "kind": "save",
-     "oncePerTurn": true,
-     "save": "dex",
-     "dc": 27,
-     "half": true,
-     "area": {
-      "shape": "emanation",
-      "sizeFt": 25,
-      "origin": "self"
-     },
-     "damage": "4d8",
-     "damageType": "fire"
-    }
-   ]
-  },
-  "abyssal-star-nightmare": {
-   "uses": 4,
-   "srd": "KATALOG-F2 (PDF s. 10): Efsanevi Eylemler 4 puan/tur; puan bedeli yok, her eylem 1 kullanım",
-   "actions": [
-    {
-     "id": "eldritch-storm-bolt",
-     "tr": "Kozmik Fırtına Şimşeği",
-     "en": "Eldritch Storm Bolt",
-     "kind": "strike",
-     "attack": "Void-Lightning Strike"
-    },
-    {
-     "id": "abyssal-toxic-ink",
-     "tr": "Uçurum Zehir Mürekkebi",
-     "en": "Abyssal Toxic Ink",
-     "kind": "save",
-     "oncePerTurn": true,
-     "save": "con",
-     "dc": 27,
-     "area": {
-      "shape": "emanation",
-      "sizeFt": 30,
-      "origin": "self"
-     },
-     "conditions": [
-      "Blinded",
-      "Poisoned"
-     ],
-     "moveAfter": "full"
-    }
-   ]
-  },
-  "adult-sigma-jewel-dragon": {
-   "uses": 3,
-   "srd": "KATALOG-F2 (PDF s. 8): Yetişkin evre efsanevi 3 puan; eylemler PDF'te yok, SRD kalıbıyla Pounce (türetildi)",
-   "actions": [
-    {
-     "id": "pounce",
-     "tr": "Sıçrayış",
-     "en": "Pounce",
-     "kind": "strike",
-     "attack": "Rend",
-     "halfMove": true
-    }
-   ]
-  },
-  "adult-omega-jewel-dragon": {
-   "uses": 3,
-   "srd": "KATALOG-F2 (PDF s. 8): Yetişkin evre efsanevi 3 puan; eylemler PDF'te yok, SRD kalıbıyla Pounce (türetildi)",
-   "actions": [
-    {
-     "id": "pounce",
-     "tr": "Sıçrayış",
-     "en": "Pounce",
-     "kind": "strike",
-     "attack": "Rend",
-     "halfMove": true
-    }
-   ]
-  },
-  "adult-delta-jewel-dragon": {
-   "uses": 3,
-   "srd": "KATALOG-F2 (PDF s. 8): Yetişkin evre efsanevi 3 puan; eylemler PDF'te yok, SRD kalıbıyla Pounce (türetildi)",
-   "actions": [
-    {
-     "id": "pounce",
-     "tr": "Sıçrayış",
-     "en": "Pounce",
-     "kind": "strike",
-     "attack": "Rend",
-     "halfMove": true
-    }
-   ]
-  },
-  "adult-alpha-jewel-dragon": {
-   "uses": 3,
-   "srd": "KATALOG-F2 (PDF s. 8): Yetişkin evre efsanevi 3 puan; eylemler PDF'te yok, SRD kalıbıyla Pounce (türetildi)",
-   "actions": [
-    {
-     "id": "pounce",
-     "tr": "Sıçrayış",
-     "en": "Pounce",
-     "kind": "strike",
-     "attack": "Rend",
-     "halfMove": true
-    }
-   ]
-  },
-  "adult-gamma-jewel-dragon": {
-   "uses": 3,
-   "srd": "KATALOG-F2 (PDF s. 8): Yetişkin evre efsanevi 3 puan; eylemler PDF'te yok, SRD kalıbıyla Pounce (türetildi)",
-   "actions": [
-    {
-     "id": "pounce",
-     "tr": "Sıçrayış",
-     "en": "Pounce",
-     "kind": "strike",
-     "attack": "Rend",
-     "halfMove": true
-    }
-   ]
-  }
+  "cimbombom": {"uses":3,"srd":"KATALOG-1 F (özgün; harita/belgeler/KATALOG-F-TASARIM.md §5)","actions":[{"id":"ember-halo","tr":"Kor Halesi","en":"Ember Halo","kind":"save","save":"dex","dc":21,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"4d8","damageType":"fire","half":true,"oncePerTurn":true},{"id":"flame-spit","tr":"Alev Tükürüğü","en":"Flame Spit","kind":"rays","count":1,"dice":"6d10","damageType":"fire","bonus":12,"rangeFt":120,"oncePerTurn":true},{"id":"tail-sweep","tr":"Kuyruk Süpürmesi","en":"Tail Sweep","kind":"save","save":"dex","dc":21,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"2d8+10","damageType":"bludgeoning","half":true,"oncePerTurn":true,"conditions":["Prone"]}]},
+  "kongark": {"uses":3,"srd":"KATALOG-1 F (özgün; harita/belgeler/KATALOG-F-TASARIM.md §5)","actions":[{"id":"gravity-ring","tr":"Yerçekimi Halkası","en":"Gravity Ring","kind":"save","save":"str","dc":21,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"4d8","damageType":"force","half":true,"oncePerTurn":true,"conditions":["Prone"]},{"id":"void-stone","tr":"Boşluk Taşı","en":"Void Stone","kind":"rays","count":1,"dice":"6d10","damageType":"force","bonus":12,"rangeFt":120,"oncePerTurn":true},{"id":"back-sweep","tr":"Arka Kol Savuruşu","en":"Backhand Sweep","kind":"save","save":"dex","dc":21,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"1d8+10","damageType":"bludgeoning","half":true,"oncePerTurn":true,"push":15}]},
+  "cerbones": {"uses":3,"srd":"KATALOG-1 F (özgün; harita/belgeler/KATALOG-F-TASARIM.md §5)","actions":[{"id":"ash-halo","tr":"Kül Halesi","en":"Ash Halo","kind":"save","save":"con","dc":21,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"3d8","damageType":"necrotic","half":true,"oncePerTurn":true},{"id":"black-spark","tr":"Kara Kıvılcım","en":"Black Spark","kind":"rays","count":1,"dice":"5d10","damageType":"necrotic","bonus":12,"rangeFt":120,"oncePerTurn":true},{"id":"tail-sweep","tr":"Kuyruk Süpürmesi","en":"Tail Sweep","kind":"save","save":"dex","dc":21,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"1d8+10","damageType":"bludgeoning","half":true,"oncePerTurn":true,"conditions":["Prone"]}]},
+  "mirage": {"uses":3,"srd":"KATALOG-1 F (özgün; harita/belgeler/KATALOG-F-TASARIM.md §5)","actions":[{"id":"mirror-scream","tr":"Ayna Çığlığı","en":"Mirror Scream","kind":"save","save":"int","dc":21,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"3d8","damageType":"psychic","half":true,"oncePerTurn":true,"conditions":["Stunned"]},{"id":"mind-needle","tr":"Zihin İğnesi","en":"Mind Needle","kind":"rays","count":1,"dice":"5d10","damageType":"psychic","bonus":12,"rangeFt":120,"oncePerTurn":true},{"id":"reflection-sweep","tr":"Yansıma Süpürmesi","en":"Reflection Sweep","kind":"save","save":"dex","dc":21,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"1d8+10","damageType":"slashing","half":true,"oncePerTurn":true,"push":10}]},
+  "gongar": {"uses":3,"srd":"KATALOG-1 F (özgün; harita/belgeler/KATALOG-F-TASARIM.md §5)","actions":[{"id":"bell-tremor","tr":"Çan Titreşimi","en":"Bell Tremor","kind":"save","save":"con","dc":20,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"3d8","damageType":"thunder","half":true,"oncePerTurn":true,"conditions":["Deafened"]},{"id":"echo-shot","tr":"Yankı Mermisi","en":"Echo Shot","kind":"rays","count":1,"dice":"5d10","damageType":"thunder","bonus":11,"rangeFt":120,"oncePerTurn":true},{"id":"shell-spin","tr":"Kabuk Dönüşü","en":"Shell Spin","kind":"save","save":"dex","dc":20,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"1d8+9","damageType":"bludgeoning","half":true,"oncePerTurn":true,"conditions":["Prone"]}]},
+  "lightaur": {"uses":3,"srd":"KATALOG-1 F (özgün; harita/belgeler/KATALOG-F-TASARIM.md §5)","actions":[{"id":"halo-flare","tr":"Hale Parıltısı","en":"Halo Flare","kind":"save","save":"con","dc":20,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"3d8","damageType":"radiant","half":true,"oncePerTurn":true,"conditions":["Blinded"]},{"id":"ray-spear","tr":"Işın Mızrağı","en":"Ray Spear","kind":"rays","count":1,"dice":"5d10","damageType":"radiant","bonus":11,"rangeFt":120,"oncePerTurn":true},{"id":"rear-hoof","tr":"Arka Toynak","en":"Rear Hoof","kind":"save","save":"dex","dc":20,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"1d8+9","damageType":"bludgeoning","half":true,"oncePerTurn":true,"push":10}]},
+  "hydraxe": {"uses":3,"srd":"KATALOG-1 F (özgün; harita/belgeler/KATALOG-F-TASARIM.md §5)","actions":[{"id":"acid-drool","tr":"Asit Salyası","en":"Acid Drool","kind":"save","save":"dex","dc":20,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"3d8","damageType":"acid","half":true,"oncePerTurn":true},{"id":"acid-spit","tr":"Asit Tükürüğü","en":"Acid Spit","kind":"rays","count":1,"dice":"4d10","damageType":"acid","bonus":11,"rangeFt":120,"oncePerTurn":true},{"id":"tail-sweep","tr":"Kuyruk Süpürmesi","en":"Tail Sweep","kind":"save","save":"dex","dc":20,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"1d8+9","damageType":"bludgeoning","half":true,"oncePerTurn":true,"conditions":["Prone"]}]},
+  "mothraq": {"uses":3,"srd":"KATALOG-1 F (özgün; harita/belgeler/KATALOG-F-TASARIM.md §5)","actions":[{"id":"spore-burst","tr":"Spor Patlaması","en":"Spore Burst","kind":"save","save":"con","dc":20,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"3d8","damageType":"poison","half":true,"oncePerTurn":true,"conditions":["Poisoned"]},{"id":"venom-needle","tr":"Zehir İğnesi","en":"Venom Needle","kind":"rays","count":1,"dice":"4d10","damageType":"poison","bonus":11,"rangeFt":120,"oncePerTurn":true},{"id":"wing-sweep","tr":"Kanat Süpürmesi","en":"Wing Sweep","kind":"save","save":"dex","dc":20,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"1d8+9","damageType":"bludgeoning","half":true,"oncePerTurn":true,"push":10}]},
+  "stormer": {"uses":3,"srd":"KATALOG-1 F (özgün; harita/belgeler/KATALOG-F-TASARIM.md §5)","actions":[{"id":"thunder-hoof","tr":"Şimşek Toynağı","en":"Thunder Hoof","kind":"save","save":"dex","dc":20,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"2d8","damageType":"lightning","half":true,"oncePerTurn":true},{"id":"chain-lightning","tr":"Zincir Şimşek","en":"Chain Lightning","kind":"rays","count":3,"dice":"2d6","damageType":"lightning","bonus":11,"rangeFt":120,"oncePerTurn":true},{"id":"back-kick","tr":"Arka Tekme","en":"Back Kick","kind":"save","save":"dex","dc":20,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"1d8+9","damageType":"bludgeoning","half":true,"oncePerTurn":true,"push":10}]},
+  "wolfgang": {"uses":3,"srd":"KATALOG-1 F (özgün; harita/belgeler/KATALOG-F-TASARIM.md §5)","actions":[{"id":"frost-halo","tr":"Ayaz Halesi","en":"Frost Halo","kind":"save","save":"con","dc":19,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"2d8","damageType":"cold","half":true,"oncePerTurn":true,"effect":{"speedMult":0.5}},{"id":"ice-spear","tr":"Buz Mızrağı","en":"Ice Spear","kind":"rays","count":1,"dice":"3d10","damageType":"cold","bonus":10,"rangeFt":120,"oncePerTurn":true},{"id":"tail-sweep","tr":"Kuyruk Süpürmesi","en":"Tail Sweep","kind":"save","save":"dex","dc":19,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"1d8+8","damageType":"bludgeoning","half":true,"oncePerTurn":true,"conditions":["Prone"]}]},
+  "tutsak-dragon": {"uses":3,"srd":"KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §1): Efsanevi Eylemler 3 puan/tur; puan bedeli yok, her eylem 1 kullanım","actions":[{"id":"tail","tr":"Kuyruk","en":"Tail","kind":"strike","attack":"Tail"},{"id":"wing-storm","tr":"Kanat Fırtınası","en":"Wing Storm","kind":"save","oncePerTurn":true,"save":"dex","dc":26,"area":{"shape":"emanation","sizeFt":25,"origin":"self"},"damage":"3d8+10","damageType":"bludgeoning","conditions":["Prone"]}]},
+  "dragon-of-hexonia-a": {"uses":5,"srd":"KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §2): Efsanevi Eylemler 5 puan/tur; puan bedeli yok, her eylem 1 kullanım","actions":[{"id":"tectonic-shift","tr":"Tektonik Kayma","en":"Tectonic Shift","kind":"quake","oncePerTurn":true,"radiusFt":60},{"id":"lightning-spear-rain","tr":"Yıldırım Mızrağı Yağmuru","en":"Lightning Spear Rain","kind":"save","oncePerTurn":true,"save":"dex","dc":32,"area":{"shape":"sphere","sizeFt":10,"origin":"point","rangeFt":120},"damage":"8d10","damageType":"lightning"},{"id":"ten-seals-burst","tr":"On Mühür Patlaması","en":"Ten Seals Burst","kind":"save","oncePerTurn":true,"save":"con","dc":32,"area":{"shape":"emanation","sizeFt":60,"origin":"self"},"damage":"12d10","damageType":"force"}]},
+  "dragon-of-hexonia-b": {"uses":5,"srd":"KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §2): Efsanevi Eylemler 5 puan/tur; puan bedeli yok, her eylem 1 kullanım","actions":[{"id":"tectonic-shift","tr":"Tektonik Kayma","en":"Tectonic Shift","kind":"quake","oncePerTurn":true,"radiusFt":60},{"id":"lightning-spear-rain","tr":"Yıldırım Mızrağı Yağmuru","en":"Lightning Spear Rain","kind":"save","oncePerTurn":true,"save":"dex","dc":32,"area":{"shape":"sphere","sizeFt":10,"origin":"point","rangeFt":120},"damage":"8d10","damageType":"lightning"},{"id":"ten-seals-burst","tr":"On Mühür Patlaması","en":"Ten Seals Burst","kind":"save","oncePerTurn":true,"save":"con","dc":32,"area":{"shape":"emanation","sizeFt":60,"origin":"self"},"damage":"12d10","damageType":"force"}]},
+  "kozmik-anka": {"uses":3,"srd":"KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §3): Efsanevi Eylemler 3 puan/tur; puan bedeli yok, her eylem 1 kullanım","actions":[{"id":"ember-wing-flap","tr":"Köz Kanat Çırpışı","en":"Ember Wing Flap","kind":"save","oncePerTurn":true,"save":"dex","dc":27,"half":true,"area":{"shape":"emanation","sizeFt":25,"origin":"self"},"damage":"4d8","damageType":"fire"}]},
+  "kozmik-anka-savas": {"uses":3,"srd":"KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §3): Efsanevi Eylemler 3 puan/tur; puan bedeli yok, her eylem 1 kullanım","actions":[{"id":"ember-wing-flap","tr":"Köz Kanat Çırpışı","en":"Ember Wing Flap","kind":"save","oncePerTurn":true,"save":"dex","dc":27,"half":true,"area":{"shape":"emanation","sizeFt":25,"origin":"self"},"damage":"4d8","damageType":"fire"}]},
+  "ocean-nightmare": {"uses":3,"srd":"KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §4a): Efsanevi Eylemler 3 puan/tur; puan bedeli yok, her eylem 1 kullanım","actions":[{"id":"tentacle","tr":"Dokunaç","en":"Tentacle","kind":"strike","attack":"Tentacle"},{"id":"storm-bolt","tr":"Fırtına Şimşeği","en":"Storm Bolt","kind":"save","save":"dex","dc":25,"rangeFt":120,"damage":"5d10","damageType":"lightning"},{"id":"tidal-surge","tr":"Gelgit Dalgası","en":"Tidal Surge","kind":"save","oncePerTurn":true,"save":"str","dc":26,"area":{"shape":"emanation","sizeFt":15,"origin":"self"},"damage":"4d8","damageType":"bludgeoning","conditions":["Prone"],"push":15}]},
+  "ocean-nightmare-open-sea": {"uses":3,"srd":"KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §4a): Efsanevi Eylemler 3 puan/tur; puan bedeli yok, her eylem 1 kullanım","actions":[{"id":"tentacle","tr":"Dokunaç","en":"Tentacle","kind":"strike","attack":"Tentacle"},{"id":"storm-bolt","tr":"Fırtına Şimşeği","en":"Storm Bolt","kind":"save","save":"dex","dc":25,"rangeFt":120,"damage":"5d10","damageType":"lightning"},{"id":"tidal-surge","tr":"Gelgit Dalgası","en":"Tidal Surge","kind":"save","oncePerTurn":true,"save":"str","dc":26,"area":{"shape":"emanation","sizeFt":15,"origin":"self"},"damage":"4d8","damageType":"bludgeoning","conditions":["Prone"],"push":15}]},
+  "titan-of-nightmare": {"uses":4,"srd":"KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §5): Efsanevi Eylemler 4 puan/tur; puan bedeli yok, her eylem 1 kullanım","actions":[{"id":"eldritch-storm-bolt","tr":"Kozmik Fırtına Şimşeği","en":"Eldritch Storm Bolt","kind":"strike","attack":"Void-Lightning Strike"},{"id":"abyssal-toxic-ink","tr":"Uçurum Zehir Mürekkebi","en":"Abyssal Toxic Ink","kind":"save","oncePerTurn":true,"save":"con","dc":27,"area":{"shape":"emanation","sizeFt":30,"origin":"self"},"conditions":["Blinded","Poisoned"],"moveAfter":"full"}]},
+  "alphadrake": {"uses":3,"srd":"KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §6): Yetişkin 3 efsanevi puan; puan bedeli yok, her eylem 1 kullanım; değerler türetildi","actions":[{"id":"tail","tr":"Kuyruk","en":"Tail","kind":"strike","attack":"Tail"},{"id":"body-sweep","tr":"Gövde Savuruşu","en":"Body Sweep","kind":"save","oncePerTurn":true,"save":"dex","dc":25,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"9d8+10","damageType":"bludgeoning","conditions":["Prone"]},{"id":"elemental-pulse","tr":"Element Nabzı","en":"Elemental Pulse","kind":"save","oncePerTurn":true,"save":"con","dc":25,"half":true,"area":{"shape":"emanation","sizeFt":20,"origin":"self"},"damage":"5d10","damageType":"thunder"}]},
+  "omegadrake": {"uses":3,"srd":"KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §6): Yetişkin 3 efsanevi puan; puan bedeli yok, her eylem 1 kullanım; değerler türetildi","actions":[{"id":"tail","tr":"Kuyruk","en":"Tail","kind":"strike","attack":"Tail"},{"id":"body-sweep","tr":"Gövde Savuruşu","en":"Body Sweep","kind":"save","oncePerTurn":true,"save":"dex","dc":24,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"8d8+8","damageType":"bludgeoning","conditions":["Prone"]},{"id":"elemental-pulse","tr":"Element Nabzı","en":"Elemental Pulse","kind":"save","oncePerTurn":true,"save":"con","dc":24,"half":true,"area":{"shape":"emanation","sizeFt":20,"origin":"self"},"damage":"4d10","damageType":"necrotic"}]},
+  "deltadrake": {"uses":3,"srd":"KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §6): Yetişkin 3 efsanevi puan; puan bedeli yok, her eylem 1 kullanım; değerler türetildi","actions":[{"id":"tail","tr":"Kuyruk","en":"Tail","kind":"strike","attack":"Tail"},{"id":"body-sweep","tr":"Gövde Savuruşu","en":"Body Sweep","kind":"save","oncePerTurn":true,"save":"dex","dc":24,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"9d8+8","damageType":"bludgeoning","conditions":["Prone"]},{"id":"elemental-pulse","tr":"Element Nabzı","en":"Elemental Pulse","kind":"save","oncePerTurn":true,"save":"con","dc":24,"half":true,"area":{"shape":"emanation","sizeFt":20,"origin":"self"},"damage":"5d10","damageType":"psychic"}]},
+  "sigmadrake": {"uses":3,"srd":"KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §6): Yetişkin 3 efsanevi puan; puan bedeli yok, her eylem 1 kullanım; değerler türetildi","actions":[{"id":"tail","tr":"Kuyruk","en":"Tail","kind":"strike","attack":"Tail"},{"id":"wing-buffet","tr":"Kanat Darbesi","en":"Wing Buffet","kind":"save","oncePerTurn":true,"save":"dex","dc":23,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"7d8+8","damageType":"bludgeoning","conditions":["Prone"]},{"id":"elemental-pulse","tr":"Element Nabzı","en":"Elemental Pulse","kind":"save","oncePerTurn":true,"save":"con","dc":23,"half":true,"area":{"shape":"emanation","sizeFt":20,"origin":"self"},"damage":"4d10","damageType":"radiant"}]},
+  "gammadrake": {"uses":3,"srd":"KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §6): Yetişkin 3 efsanevi puan; puan bedeli yok, her eylem 1 kullanım; değerler türetildi","actions":[{"id":"tail","tr":"Kuyruk","en":"Tail","kind":"strike","attack":"Tail"},{"id":"wing-buffet","tr":"Kanat Darbesi","en":"Wing Buffet","kind":"save","oncePerTurn":true,"save":"dex","dc":26,"area":{"shape":"emanation","sizeFt":10,"origin":"self"},"damage":"11d8+8","damageType":"bludgeoning","conditions":["Prone"]},{"id":"elemental-pulse","tr":"Element Nabzı","en":"Elemental Pulse","kind":"save","oncePerTurn":true,"save":"con","dc":26,"half":true,"area":{"shape":"emanation","sizeFt":20,"origin":"self"},"damage":"5d10","damageType":"force"}]}
  },
  "yuva": {
   "uses": 3,

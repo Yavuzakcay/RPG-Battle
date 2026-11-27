@@ -235,6 +235,8 @@ export const en: Strings = {
     status: { calisir: 'works', kismi: 'partial', planli: 'planned', hikaye: 'story', calismiyor: 'not working' } as Record<string, string>,
     noDesc: 'No Turkish description yet.',
     monsterSummary: (size: string, type: string, cr: string, ac: number, hp: number) => `${size} ${type}; CR ${cr}, AC ${ac}, ${hp} HP.`,
+    /** KATALOG-F2: catalog monster speed kinds and map footprint (hexes). */
+    speedKind: { fly: 'fly', swim: 'swim', climb: 'climb', hover: 'hover' } as Record<string, string>, footprint: 'Footprint', hexes: (n: number) => `${n} hexes`,
     pro: {
       sec: { ne: 'What it does', nasil: 'How to use', etken: 'Active ingredients', risk: 'Risks', kimler: 'Who cannot use it', maliyet: 'Cost and weight', durum: 'In-game status', malzeme: 'Material and cost' } as Record<string, string>,
       badge: { ok: 'Works in combat', part: 'Partly works', gm: 'Game Master handles', off: 'Out of combat', none: 'Description only' } as Record<string, string>,

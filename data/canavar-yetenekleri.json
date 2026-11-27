@@ -1502,5 +1502,303 @@
     "srd": "SRD 5.2.1 s. 275 Cloud Giant Bonus Actions: Misty Step (büyüyü Spellcasting yeteneğiyle yapar)"
    }
   ]
+ },
+ "cimbombom": {
+  "abilities": [
+   {
+    "id": "molten-anvil-burst",
+    "tr": "Erimiş Örs Patlaması",
+    "en": "Molten Anvil Burst",
+    "cost": "action",
+    "kind": "save",
+    "uses": 1,
+    "save": "dex",
+    "dc": 16,
+    "area": {
+     "shape": "emanation",
+     "sizeFt": 15,
+     "origin": "self"
+    },
+    "damage": "5d6",
+    "damageType": "fire",
+    "half": true,
+    "push": 10
+   }
+  ]
+ },
+ "kongark": {
+  "abilities": [
+   {
+    "id": "star-collapse",
+    "tr": "Yıldız Çöküşü",
+    "en": "Star Collapse",
+    "cost": "action",
+    "kind": "save",
+    "uses": 1,
+    "save": "str",
+    "dc": 16,
+    "area": {
+     "shape": "emanation",
+     "sizeFt": 10,
+     "origin": "self"
+    },
+    "damage": "6d6",
+    "damageType": "force",
+    "half": true,
+    "conditions": [
+     "Prone"
+    ]
+   },
+   {
+    "id": "gravity-pull",
+    "tr": "Çekim",
+    "en": "Gravity Pull",
+    "cost": "bonus",
+    "kind": "pull",
+    "rangeFt": 30,
+    "pullFt": 15
+   }
+  ]
+ },
+ "cerbones": {
+  "abilities": [
+   {
+    "id": "black-flame-cleave",
+    "tr": "Kara Alev Kesiği",
+    "en": "Black Flame Cleave",
+    "cost": "action",
+    "kind": "save",
+    "uses": 1,
+    "save": "con",
+    "dc": 16,
+    "area": {
+     "shape": "line",
+     "sizeFt": 25,
+     "widthFt": 5,
+     "origin": "self"
+    },
+    "damage": "5d6",
+    "damageType": "necrotic",
+    "half": true,
+    "effect": {
+     "noHeal": true
+    }
+   }
+  ]
+ },
+ "mirage": {
+  "abilities": [
+   {
+    "id": "mind-breaker-scream",
+    "tr": "Zihin Kıran Çığlık",
+    "en": "Mind-Breaker Scream",
+    "cost": "action",
+    "kind": "save",
+    "uses": 1,
+    "save": "int",
+    "dc": 16,
+    "area": {
+     "shape": "emanation",
+     "sizeFt": 20,
+     "origin": "self"
+    },
+    "damage": "5d6",
+    "damageType": "psychic",
+    "half": true,
+    "conditions": [
+     "Stunned"
+    ]
+   }
+  ]
+ },
+ "gongar": {
+  "abilities": [
+   {
+    "id": "canyon-rend",
+    "tr": "Kanyon Yırtığı",
+    "en": "Canyon Rend",
+    "cost": "action",
+    "kind": "save",
+    "uses": 1,
+    "save": "con",
+    "dc": 16,
+    "area": {
+     "shape": "line",
+     "sizeFt": 30,
+     "widthFt": 10,
+     "origin": "self"
+    },
+    "damage": "5d6",
+    "damageType": "thunder",
+    "half": true,
+    "conditions": [
+     "Prone",
+     "Deafened"
+    ],
+    "push": 15
+   }
+  ],
+  "passive": {
+   "siegeMonster": true
+  }
+ },
+ "gongi": {
+  "passive": {
+   "siegeMonster": true
+  }
+ },
+ "lightaur": {
+  "abilities": [
+   {
+    "id": "golden-judgment",
+    "tr": "Altın Yargı Sütunu",
+    "en": "Golden Judgment Pillar",
+    "cost": "action",
+    "kind": "save",
+    "uses": 1,
+    "save": "con",
+    "dc": 16,
+    "area": {
+     "shape": "sphere",
+     "sizeFt": 10,
+     "origin": "point",
+     "rangeFt": 60
+    },
+    "damage": "6d6",
+    "damageType": "radiant",
+    "half": true,
+    "conditions": [
+     "Blinded"
+    ]
+   }
+  ]
+ },
+ "hydraxe": {
+  "abilities": [
+   {
+    "id": "sulphur-deluge",
+    "tr": "Sülfür Tufanı",
+    "en": "Sulphur Deluge",
+    "cost": "action",
+    "kind": "save",
+    "uses": 1,
+    "save": "dex",
+    "dc": 16,
+    "area": {
+     "shape": "sphere",
+     "sizeFt": 15,
+     "origin": "point",
+     "rangeFt": 30
+    },
+    "damage": "5d6",
+    "damageType": "acid",
+    "half": true,
+    "effect": {
+     "ac": -3
+    },
+    "minute": true
+   }
+  ]
+ },
+ "mothraq": {
+  "abilities": [
+   {
+    "id": "plague-cloud",
+    "tr": "Veba Bulutu",
+    "en": "Plague Cloud",
+    "cost": "action",
+    "kind": "save",
+    "uses": 1,
+    "save": "con",
+    "dc": 16,
+    "area": {
+     "shape": "sphere",
+     "sizeFt": 15,
+     "origin": "point",
+     "rangeFt": 30
+    },
+    "damage": "4d6",
+    "damageType": "poison",
+    "half": true,
+    "conditions": [
+     "Poisoned"
+    ]
+   },
+   {
+    "id": "spore-pull",
+    "tr": "Spor Çekimi",
+    "en": "Spore Pull",
+    "cost": "bonus",
+    "kind": "pull",
+    "rangeFt": 30,
+    "pullFt": 30,
+    "needsCondition": "Poisoned"
+   }
+  ]
+ },
+ "mothcoon": {
+  "abilities": [
+   {
+    "id": "spore-pull",
+    "tr": "Spor Çekimi",
+    "en": "Spore Pull",
+    "cost": "bonus",
+    "kind": "pull",
+    "rangeFt": 20,
+    "pullFt": 20,
+    "needsCondition": "Poisoned"
+   }
+  ]
+ },
+ "stormer": {
+  "abilities": [
+   {
+    "id": "sky-spear",
+    "tr": "Gök Mızrağı",
+    "en": "Sky Spear",
+    "cost": "action",
+    "kind": "save",
+    "uses": 1,
+    "save": "dex",
+    "dc": 16,
+    "area": {
+     "shape": "sphere",
+     "sizeFt": 10,
+     "origin": "point",
+     "rangeFt": 60
+    },
+    "damage": "6d6",
+    "damageType": "lightning",
+    "half": true,
+    "effect": {
+     "noReactions": true
+    }
+   }
+  ]
+ },
+ "wolfgang": {
+  "abilities": [
+   {
+    "id": "rime-breath",
+    "tr": "Kırağı Nefesi",
+    "en": "Rime Breath",
+    "cost": "action",
+    "kind": "save",
+    "uses": 1,
+    "save": "con",
+    "dc": 16,
+    "area": {
+     "shape": "cone",
+     "sizeFt": 20,
+     "origin": "self"
+    },
+    "damage": "5d6",
+    "damageType": "cold",
+    "half": true,
+    "conditions": [
+     "Restrained"
+    ]
+   }
+  ]
  }
 }

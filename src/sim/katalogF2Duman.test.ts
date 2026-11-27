@@ -15,7 +15,7 @@ import { currentActorId } from '../battle/common';
 import { seededRng as seeded } from '../rules/dice';
 import type { BattleEvent, BattleState, Command } from '../battle/types';
 
-const IDS = ['continent-dragon', 'ancient-continent-spirit', 'cosmic-phoenix', 'abyssal-star-nightmare', 'adult-alpha-jewel-dragon', 'young-delta-jewel-dragon', 'gamma-jewel-dragon-wyrmling'];
+const IDS = ['tutsak-dragon', 'kozmik-anka', 'ocean-nightmare', 'ocean-nightmare-open-sea', 'titan-of-nightmare', 'alphadrake', 'deltyr', 'gamlet'];
 
 function battle(monId: string, seed: number): { state: BattleState; events: BattleEvent[] } {
   const pcs = [0, 1].map((i) => {
@@ -49,7 +49,7 @@ function battle(monId: string, seed: number): { state: BattleState; events: Batt
 }
 
 describe('KATALOG-F2: kadim yaratık savaş dumanı', () => {
-  it('7 kayıt × 2 tohum: çökme yok, yaratık saldırır', () => {
+  it('8 kayıt × 2 tohum (Dragon of Hexonia yalnız dost: simülasyonda yok): çökme yok, yaratık saldırır', () => {
     for (const id of IDS) for (const seed of [1, 2]) {
       const { state, events } = battle(id, seed);
       expect(state.round, id).toBeGreaterThan(0);

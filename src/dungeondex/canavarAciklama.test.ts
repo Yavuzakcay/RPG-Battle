@@ -38,7 +38,7 @@ describe('Canavar özellik ve eylem açıklamaları', () => {
     expect(Object.keys(SRD_L).sort()).toEqual(monsters.map((m) => m.id).sort());
     expect(SRD_ALL.length).toBe(1318);
     // KATALOG-F2: kadim liste kadim kayıtlarla aynı, SRD kimlikleriyle çakışmaz.
-    expect(Object.keys(KADIM_L).sort()).toEqual(kadimMonsters.map((m) => m.id).sort());
+    expect(Object.keys(KADIM_L).sort()).toEqual(kadimMonsters().map((m) => m.id).sort());
     for (const id of Object.keys(KADIM_L)) expect(SRD_L[id], id).toBeUndefined();
     expect(new Set(ALL.map((e) => e.anahtar)).size).toBe(ALL.length);
     const keys = new Set(ALL.map((e) => e.anahtar));
@@ -52,7 +52,7 @@ describe('Canavar özellik ve eylem açıklamaları', () => {
   });
   it('sayısal tutarlılık: saldırının zarı, isabet bonusu ve kurtarma DC\'si açıklamada', () => {
     const bad: string[] = [];
-    for (const m of [...monsters, ...kadimMonsters]) for (const a of m.attacks) {
+    for (const m of [...monsters, ...kadimMonsters()]) for (const a of m.attacks) {
       const key = L[m.id]?.find((e) => e.tur !== 'trait' && slug(e.ad.replace(/ \(.*$/, '')) === slug(a.name))?.anahtar;
       const tr = key ? TR[key] : undefined;
       if (!tr) continue;

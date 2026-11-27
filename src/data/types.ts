@@ -1192,6 +1192,14 @@ export interface Monster {
   id: string;
   /** Görev KATALOG-F0: yarı can fazı (107+). */
   faz2?: Faz2Block;
+  /**
+   * KATALOG-1 F: özgün katalog canavarı (`data/bosslar-muhur.json`; SRD tablosu `canavar-turleri.json`/`yuzme-hizi.json` dışında):
+   * yaratık türü ve yüzme hızı (ft) kendi kaydında; saldırı ekleri `riders` (anahtar saldırı adı, `attack-riders.json` biçimi).
+   */
+  creatureType?: string;
+  swim?: number;
+  kaynak?: string;
+  riders?: Record<string, unknown>;
   name: string;
   /** KAPSAM103 (kural sürümü 103+): SRD stat bloğundaki "Initiative +X" (`scripts/srd-canavar.mjs`; yoksa DEX değiştiricisi). */
   initiative?: number;
@@ -1208,6 +1216,8 @@ export interface Monster {
   fly?: number;
   /** `public/` altındaki jeton resmi; verilmezse `monsters/<id>.webp` (uyurken `<id>-uyku.webp`). */
   avatar?: string;
+  /** MUHUR-OLCEK: jetonun görsel ölçeği (boyut sınıfı yerine; `data/bosslar-muhur.json`, Mühür Ruhu kademe ölçeği). Yalnız görünüm. */
+  jetonOlcek?: number;
   abilities: Record<Ability, number>;
   /** Modifier'dan farklı olan save bonusları (stat bloğundaki SAVE sütunu). */
   saves?: Partial<Record<Ability, number>>;

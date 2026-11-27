@@ -1,111 +1,105 @@
-# KATALOG-F2: Kadim Yaratıklar ve Mücevher Ejderhası
+# KATALOG-F2: Kadim Yaratıklar ve mücevher ejderhaları
 
-Kaynak: "Dice & Hex — Kadim Yaratıklar ve Mücevher Ejderhası Kataloğu" PDF (11 sayfa; depo dışı, `docs/katalog/`).
-Üretici: `node scripts/katalog-f2-kadim.mjs` (tek kaynak; tekrar çalıştırılabilir). Çıktılar:
+**Tek kaynak:** `harita/belgeler/KATALOG-F2-OZELLIKLER.md` (onaylı; PDF ile çelişirse belge kazanır). PDF depo dışı (`docs/katalog/`).
+Üretici: `node scripts/katalog-f2-kadim.mjs` (tek kaynak kod; tekrar çalıştırılabilir; `-- --turetilen` türetilen saldırı tablosunu basar).
 
-- `data/canavarlar-kadim.json`: 20 `Monster` kaydı (yeni alan yok) ve yan tablolar: `dex` (tür, hizalanma, durum bağışıklığı),
-  `yer` (tema "Kadim Yaratıklar"), `ozellikler` (Dungeondex özellik/eylem listesi), `ekler` (saldırı ekleri), `hatlar`.
-- `data/aciklamalar-tr-canavar.json`, `data/aciklamalar-en-canavar.json`: 141 özellik/eylem açıklaması (yalnız bu kimlikler).
-- `data/efsanevi.json`: 9 efsanevi eylem kaydı (yalnız bu kimlikler).
+Çıktılar:
 
-`data/monsters.json` değişmedi. Kayıtlar `loadMonsters()` ile ayrı dizide (`kadimMonsters`) gelir: Dungeondex'te görünür,
-`getMonster` bulur, Game Master seçicisinde yoktur. Görsel yok (görseller Gemini bekliyor); avatar alanı boş, Dungeondex
-vitrini "yedek" glifini gösterir.
+- `data/canavarlar-kadim.json`: 24 `Monster` kaydı, Mühür Ruhu kayıtlarıyla aynı katalog alanları (`creatureType`, `swim`,
+  `kaynak: katalog-f2`, saldırı ekleri `riders`). Yan tablolar: `dex` (tür, hizalanma, durum bağışıklığı, tırmanma, süzülme, yön,
+  gizli varyant), `dexGizli`, `yer` (tema "Kadim Yaratıklar"), `ozellikler` (Dungeondex özellik/eylem listesi), `hatlar`.
+- `data/aciklamalar-tr-canavar.json`, `data/aciklamalar-en-canavar.json`: 231 özellik/eylem açıklaması (yalnız bu kimlikler; SRD 1318 anahtar aynı).
+- `data/efsanevi.json`: 13 efsanevi eylem kaydı. `data/dungeondex-gorsel-esleme.json`: 22 yedek satırı ("görsel hazırlanıyor").
 
-Sığmayan mekanikler: `KATALOG-SIGMAYAN.md`. Kararlar: `DECISIONS.md` "Görev KATALOG-F2".
+`data/monsters.json` değişmez. Kayıtlar `loadMonsters()` ile Mühür Ruhu'yla aynı `katalogMonsters` dizisine girer; `getMonster` bulur;
+Game Master seçicisinde yoktur. Dungeondex'te 22 kayıt (gizli varyantlar `dragon-of-hexonia-b`, `kozmik-anka-savas` yok); kartta hız
+satırı uçuş, yüzme, tırmanma ve süzülmeyi, "Kaplama" satırı altıgen sayısını gösterir.
+
+Sığmayanlar: `KATALOG-SIGMAYAN.md` "KATALOG-F2". Kararlar: `DECISIONS.md` "KATALOG-F2-DUZELT".
 
 ## Kayıtlar
 
-Sayım: PDF 21 blok diyor; kayıt 20. Faz 2'ler (Anka +450, Yıldız-Kâbusu +550) ayrı stat bloğu değil, aynı kayıtta `faz2` bloğu.
+| Kimlik | Ad (EN) | Boyut | CR | AC | HP | Rol |
+|---|---|---|---|---|---|---|
+| `tutsak-dragon` | Captive Dragon | Gargantuan (19) | 30 | 24 | 697 | düşman |
+| `dragon-of-hexonia-a` | Dragon of Hexonia | Gargantuan (19) | 40 | 30 | 2500 | yalnız dost; sağa bakar |
+| `dragon-of-hexonia-b` | Dragon of Hexonia | Gargantuan (19) | 40 | 30 | 2500 | yalnız dost; sola bakar; Dungeondex'te gizli varyant |
+| `kozmik-anka` | Cosmic Phoenix | Huge (7) | 32 | 26 | 780 (+450 Faz 2) | müttefik |
+| `kozmik-anka-savas` | Cosmic Phoenix | Huge (7) | 32 | 26 | 780 (+450 Faz 2) | aynı değerler; Dungeondex'te gizli savaş varyantı |
+| `ember-egg` | Ember Egg | Medium* | 0* | 22 | 150 | Anka'nın dirilişi; kırılırsa Anka ölür |
+| `ocean-nightmare` | Ocean-Nightmare | Gargantuan (19) | 30 | 24 | 700 | Faz 1 (gemi); 0 HP'de gemi batar |
+| `ocean-nightmare-open-sea` | Ocean-Nightmare (Open Sea) | Gargantuan (19) | 30 | 24 | 600 | Faz 2 (açık deniz); 0 HP'de ölmez |
+| `titan-of-nightmare` | Titan of Nightmare | Gargantuan (19) | 35 | 26 | 1150 | Faz 3 (ada); tek can çubuğu; yarı canda The Sleeper Awakens |
+| `sigmlet` / `sigmyr` / `sigmadrake` | Sigmlet / Sigmyr / Sigmadrake | M / L / H | 5 / 16 / 25 | 16 / 19 / 22 | 120 / 240 / 480 | mücevher, Sigma (altın) |
+| `omeglet` / `omegyr` / `omegadrake` | Omeglet / Omegyr / Omegadrake | M / L / H | 6 / 17 / 26 | 16 / 19 / 23 | 135 / 265 / 515 | mücevher, Omega (kırmızı) |
+| `deltlet` / `deltyr` / `deltadrake` | Deltlet / Deltyr / Deltadrake | M / L / H | 6 / 18 / 27 | 17 / 20 / 23 | 140 / 285 / 545 | mücevher, Delta (yeşil) |
+| `alphlet` / `alphyr` / `alphadrake` | Alphlet / Alphyr / Alphadrake | M / L / H | 7 / 19 / 28 | 17 / 20 / 24 | 155 / 310 / 585 | mücevher, Alfa (mavi) |
+| `gamlet` / `gammyr` / `gammadrake` | Gamlet / Gammyr / Gammadrake | M / L / H | 8 / 20 / 30 | 18 / 21 / 25 | 175 / 340 / 650 | mücevher, Gamma (gümüş) |
 
-| Kimlik | Ad (EN) | PDF adı | Boyut | CR | AC | HP | Rol |
-|---|---|---|---|---|---|---|---|
-| `continent-dragon` | Continent Dragon | Kıta Ejderhası — Versiyon I | Gargantuan | 31 | 25 | 740 | düşman |
-| `ancient-continent-spirit` | Ancient Continent Spirit | Kadim Kıta Ruhu — Versiyon II | Gargantuan | 40 | 30 | 1850 | müttefik/koruyucu, sim hedefi değil |
-| `cosmic-phoenix` | Cosmic Phoenix | Kozmik Anka Kuşu | Huge | 32 | 26 | 780 (+450) | müttefik |
-| `ember-egg` | Ember Egg | Kozmik Kor Yumurtası | Medium* | 0* | 22 | 150 | Anka'nın dirilişi |
-| `abyssal-star-nightmare` | Abyssal Star-Nightmare | Uçurumun Yıldız-Kâbusu | Gargantuan | 35 | 26 | 1150 (+550) | final bossu |
-| `<hat>-jewel-dragon-wyrmling` | `<Hat>` Jewel Dragon Wyrmling | Yavru | Medium | 6–10* | 17–19* | 120–170* | yoldaş |
-| `young-<hat>-jewel-dragon` | Young `<Hat>` Jewel Dragon | Genç binek | Large | 15–20 | 19–21 | 240–340 | binek |
-| `adult-<hat>-jewel-dragon` | Adult `<Hat>` Jewel Dragon | Yetişkin efsanevi yoldaş | Huge | 25–30 | 22–25 | 480–650 | yoldaş |
+\* türetildi (belge vermiyor).
 
-\* türetildi (PDF vermiyor).
+## Ad kuralları
 
-## Ad uyarlamaları (korumalı adlar)
-
-Ticari marka ve D&D'ye özgü adlar veriye ve açıklamaya girmez; test (`src/data/katalogF2.test.ts`) tarar.
-
-| PDF | Bizim |
-|---|---|
-| Kıta Ejderhası (V1) | Continent Dragon |
-| Kadim Kıta Ruhu (V2) | Ancient Continent Spirit |
-| V2'nin kuyruk saldırısı (PDF'te esin kaynağı adıyla) | Continent Tail (Kıta Kuyruğu) |
-| V2'nin nefesi (PDF'te esin kaynağı adıyla) | Continent Judgment Breath (Kıta Hükmü Nefesi) |
-| V2'nin ölçek özelliği (PDF'te esin kaynağı adıyla) | Continent Scale (Kıta Ölçeği) |
-| Uçurumun Yıldız-Kâbusu (PDF alt başlığında esin kaynağı adıyla) | Abyssal Star-Nightmare |
-| Mücevher ejderhası türleri (PDF'te D&D türleri) | Jewel Dragon, beş hat (aşağıda) |
-| "Safir Ejderhası Rezonansı" (Kraken) | Alpha Resonance (Alfa hattı) |
-| Alfa pasifinde "Uzay/Far Realm yaratıkları" | uzay kökenli (Aberration) yaratıklar |
-| Kozmik Anka Kuşu | Cosmic Phoenix |
-| Kozmik Kor Yumurtası | Ember Egg |
-
-Türkçe özellik adları İngilizceye çevrildi (SD4): Mahmurluk Perdesi → Veil of Slumber, Zırhın Psikolojik İhaneti → Armor's Betrayal,
-On Taş Rezonansı → Ten-Stone Resonance, Ezici Varlık → Crushing Presence, Ezici Kıta Varlığı → Crushing Continental Presence,
-Kanat Fırtınası → Wing Storm, Mühür Çekimi → Seal Pull, On Mühür Çekirdeği → Ten-Seal Core, Zaman-Dışı Fırtına Hâkimiyeti →
-Timeless Storm Dominion, Büyü Yansıtan Kristal Kabuk → Spell-Reflecting Crystal Shell, Karanlığı Söken Mühür → Curse-Breaking Seal,
-Tektonik Kayma → Tectonic Shift, Yıldırım Mızrağı Yağmuru → Lightning Spear Rain, On Mühür Patlaması → Ten-Seal Burst,
-Kozmik Yıldız Alevi → Cosmic Starfire, Perdeyi ve Uykuyu Yakan Hale → Halo That Burns Veil and Slumber, Avcı ile Ruh Bağı → Soul Bond
-with the Hunter, Küllerden Yeniden Doğuş → Rebirth from Ashes, Köz Kanat Çırpışı → Ember Wingbeat, Mühür Eriten Pençe → Seal-Melting
-Talon, Yıldız Gözyaşı → Star Tear, Akıl Bükücü Varlık → Mind-Bending Presence, Uykudaki Tanrının Uyanışı → Awakening of the Sleeping
-God, Rüya Çağrısı → Dream Call. PDF'teki İngilizce adlar aynen (Bite, Claw, Tail, Continent Roar Breath, World-Breaker Bite,
-Continent-Shaper Claws, Cosmic Beak, Starfire Talons, Celestial Glide, Eldritch Tentacle, Cosmic Fling, Void-Lightning Strike,
-Abyssal Swallow, Maddening Gaze, Eldritch Storm Bolt, Abyssal Toxic Ink).
+- Ticari marka, D&D'ye özgü ad ve PDF'in esin kaynağı adları veriye, açıklamaya, test ve dosya adlarına girmez; eski "Continent Dragon",
+  "Jewel Dragon" ve "Gem Dragon" adları kalktı. Tarama: `src/data/katalogF2.test.ts` `PROTECTED`.
+- Belgedeki yeniden adlandırmalar: Continent Tail, Continent Judgment Breath, Continent Scale.
+- Belgedeki "Sapphire Resonance" → **Alpha Resonance** (taş adı yasak; kullanıcı onayı).
+- Mücevher açıklamalarında taş adı yok; hat adı ve rengi kullanılır (Alfa mavi, Omega kırmızı, Delta yeşil, Sigma altın, Gamma gümüş).
+- Adlar İngilizce (SD4), açıklamalar Türkçe.
 
 ## Mücevher hatları
 
-Kullanıcı kararı: hat adları bizim. **Nefes türü tek yerde**: betikteki `HATLAR` sabiti (`hasar`); değiştirip betiği yeniden
-çalıştırmak kayıtları, bağışıklığı, nefes adını ve açıklamaları günceller. Omega, Sigma, Gamma türleri **öneridir** (`oneri: true`).
+**Nefes türü tek yerde:** betikteki `HATLAR.<hat>.hasar`. Evre değerleri (CR, AC, HP, nefes DC/zar, Yavru dahil) belge §6 tablosundan
+birebir; hızlar görev metninden. Yavru 30 ft, Genç 60 ft, Yetişkin 90 ft koni.
 
-| Hat | Taş | Nefes türü | Hizalanma | Baskın | PDF satırı |
+| Hat | Renk | Nefes | Tip | Hız (Yavru / Genç / Yetişkin, ft) | Kanat |
 |---|---|---|---|---|---|
-| Alfa (`alpha`) | Safir | thunder | Lawful Neutral (Savaş / Strateji) | STR + CON | Gök Gürültüsü |
-| Omega (`omega`) | Yakut | necrotic (öneri) | Chaotic Neutral (Entropi / Yalnızlık) | CON + CHA | Nekrotik |
-| Delta (`delta`) | Zümrüt | psychic | Lawful Neutral (Gizem / Kontrol) | INT + WIS | Psişik |
-| Sigma (`sigma`) | Altın | radiant (öneri) | Chaotic Neutral (Umut / Özgürlük) | CHA + DEX | Parlaklık |
-| Gamma (`gamma`) | Gümüş | force (öneri) | True Neutral (Kozmik Denge) | WIS + INT | Güç |
+| Alfa (`alpha`) | mavi | thunder | deniz ejderi, Amphibious, Sea Camouflage | yürüme 20/30/30, yüzme 60/80/90 | yok (Body Sweep) |
+| Omega (`omega`) | kırmızı | necrotic | kara ejderi | yürüme 40/40/50, tırmanma 30/40/40 | yok (Body Sweep) |
+| Delta (`delta`) | yeşil | psychic | Doğu ejderi, Wingless Flight | yürüme 30, uçuş (hover) 60/80/100 | yok (Body Sweep) |
+| Sigma (`sigma`) | altın | radiant | gök ejderi | yürüme 30/40/40, uçuş 60/80/80 | var (Wing Buffet) |
+| Gamma (`gamma`) | gümüş | force | gök ejderi | yürüme 30/40/40, uçuş 60/80/80 | var (Wing Buffet) |
 
-Genç ve Yetişkin AC/HP/nefes (DC, zar, koni boyu, ek etki) PDF'ten birebir. CR sırası PDF satır sırasıyla: Sigma 15/25,
-Omega 16/26, Delta 17/27, Alfa 18/28, Gamma 20/30.
+Genç: Mount Bond (belgedeki bağ metni). Yetişkin: Attribute 20 Lock (belgedeki pasif), 3 efsanevi puan (Tail 1, Body Sweep/Wing Buffet 2,
+Elemental Pulse 2). Ertelenenler: yumurta kuluçka sistemi, Taşıyıcı'ya göre Save DC, Mühür taşları.
 
 ## Türetilen değerler
 
-PDF'in vermediği değerler SRD 5.2.1 ejderha kalıbından (Young/Adult Dragon stat blokları) türetildi. Kayıtta `unsupported`
-satırı "Türetilen değerler…" bunları sayar.
+### Mücevher saldırıları (Mühür Ruhu yöntemi)
 
-### Mücevher ejderhası (15 blok)
+KATALOG-F-TASARIM §4 gibi DMG 2014 "Monster Statistics by CR" tablosu: saldırı bonusu tablodan; tur hasarı bandının orta noktasının
+**%60'ı** yakın dövüşe (kalanı nefes ve efsanevi eylem). Multiattack = Bite + 2 Claw. Bite payı %40 (üçte biri hattın türünde d6),
+her Claw %30. Zar sayısı = (pay − STR) / zar ortalaması, yuvarlanır. Yetişkin Tail = Bite'ın fiziksel zarı (ezici, 20 ft).
+Efsanevi: Body Sweep / Wing Buffet = Claw zarı ezici + Prone, DEX, 10 ft yayılım; Elemental Pulse = nefes zar sayısının dörtte biri d10,
+hattın türü, CON, 20 ft yayılım, yarı hasar. DC'ler hattın nefes DC'si. Erişim Yavru 5, Genç 10, Yetişkin 15 ft.
 
-| Değer | Kural | Örnek |
-|---|---|---|
-| Yetenek puanları | Evre tabanı (Yavru 19/12/17/12/12/14, Genç 23/12/21/14/13/17, Yetişkin 27/14/25/16/15/21; STR/DEX/CON/INT/WIS/CHA) + hattın 1. baskın niteliği +4, 2. baskın +2 (en çok 30) | Yetişkin Alfa STR 30, CON 27 |
-| Yeterlilik | CR tablosu (CR 6–8 +3 … 29–30 +9) | Genç Delta (CR 17) +6 |
-| Rend | SRD kalıbı: üç Rend (Multiattack); zar Yavru 2d6, Genç 2d8, Yetişkin 2d10 + STR; isabet = yeterlilik + STR; erişim Yavru 5, Genç/Yetişkin 10 ft | Genç Alfa +14, 2d8 + 8 |
-| Hız | 40 ft, uçuş 80 ft | — |
-| Duyu | Karanlık görüş 120 ft (Blindsight yok) | — |
-| Kurtarma | DEX ve WIS yetkin | Yetişkin Sigma DEX +11, WIS +10 |
-| Beceri | Perception = WIS + 2 × yeterlilik, Stealth = DEX + yeterlilik | — |
-| Bağışıklık | kendi nefes türü | Delta: psychic |
-| Nefes | Recharge 5–6, başarıda yarı hasar | — |
-| Yetişkin | Legendary Resistance 3/gün; efsanevi eylem Pounce (PDF "Efsanevi 3 puan" diyor, eylem vermiyor) | — |
-| Boyut | Yavru 1×1 Medium, Genç 2×2 Large, Yetişkin "Gargantuan 3×3" → Huge (7 altıgen) | — |
-| Yavru (tamamı) | CR 6–10 hat sırasıyla; AC = Genç AC − 2; HP = Genç HP / 2 (5'e yuvarlı); nefes 30 ft koni, zar = Genç zar sayısı − 3 (d8), DC = 8 + yeterlilik + CON; ek etki Genç'inki | Yavru Gamma CR 10, AC 19, 170 HP, 9d8, DC 15 |
+| Kimlik | CR | Bonus | Yakın dövüş hedefi | Bite | Claw (×2) | Tail | Sweep/Buffet | Elemental Pulse |
+|---|---|---|---|---|---|---|---|---|
+| `sigmlet` | 5 | +6 | 21 | 1d10+4 + 1d6 radiant | 1d8+4 | | | |
+| `sigmyr` | 16 | +9 | 61 | 2d10+6 + 2d6 radiant | 3d8+6 | | | |
+| `sigmadrake` | 25 | +12 | 133 | 5d10+8 + 5d6 radiant | 7d8+8 | 5d10+8 | 7d8+8 | 4d10 |
+| `omeglet` | 6 | +6 | 25 | 1d10+4 + 1d6 necrotic | 1d8+4 | | | |
+| `omegyr` | 17 | +10 | 65 | 2d10+6 + 2d6 necrotic | 3d8+6 | | | |
+| `omegadrake` | 26 | +12 | 144 | 6d10+8 + 5d6 necrotic | 8d8+8 | 6d10+8 | 8d8+8 | 4d10 |
+| `deltlet` | 6 | +6 | 25 | 1d10+4 + 1d6 psychic | 1d8+4 | | | |
+| `deltyr` | 18 | +10 | 68 | 2d10+6 + 3d6 psychic | 3d8+6 | | | |
+| `deltadrake` | 27 | +13 | 155 | 6d10+8 + 6d6 psychic | 9d8+8 | 6d10+8 | 9d8+8 | 5d10 |
+| `alphlet` | 7 | +6 | 29 | 1d10+6 + 1d6 thunder | 1d8+6 | | | |
+| `alphyr` | 19 | +10 | 72 | 2d10+8 + 3d6 thunder | 3d8+8 | | | |
+| `alphadrake` | 28 | +13 | 165 | 6d10+10 + 6d6 thunder | 9d8+10 | 6d10+10 | 9d8+10 | 5d10 |
+| `gamlet` | 8 | +7 | 32 | 1d10+4 + 1d6 force | 1d8+4 | | | |
+| `gammyr` | 20 | +10 | 79 | 3d10+6 + 3d6 force | 4d8+6 | | | |
+| `gammadrake` | 30 | +14 | 187 | 8d10+8 + 7d6 force | 11d8+8 | 8d10+8 | 11d8+8 | 5d10 |
 
-### Kadim yaratıklar
+### Diğer türetilenler
 
 | Kayıt | Türetilen |
 |---|---|
-| Continent Dragon | Bite/Claw erişimi 15 ft (Tail 25 ft PDF'ten); Crushing Presence alanı 60 ft (PDF menzil vermiyor); Wing Storm'da yarı hasar yok (PDF söylemiyor) |
-| Ancient Continent Spirit | World-Breaker Bite / Claws erişimi 20 ft, Continent Tail 30 ft; Crushing Continental Presence alanı 60 ft; Lightning Spear Rain "4 altıgen" → 10 ft küre, 120 ft menzil |
-| Cosmic Phoenix | Gaga/pençe erişimi 10 ft; Ember Wingbeat için DC 27 DEX kurtarma, yarı hasar (PDF kurtarma vermiyor; Celestial Glide DC'si) |
-| Ember Egg | boyut Medium, CR 0, yetenek puanları (STR 1, DEX 1, CON 24, INT 1, WIS 10, CHA 10), ateş/ışıltı bağışıklığı, durum bağışıklıkları, hız 0 |
-| Abyssal Star-Nightmare | Abyssal Swallow menzili 45 ft (dokunaç erişimi) |
-| Hepsi | inisiyatif DEX değiştiricisi (PDF vermiyor); Perception = pasif Algı − 10 (PDF'ten) |
+| Mücevher (15) | yetenek puanları (evre tabanı Yavru 19/12/17/12/12/14, Genç 23/12/21/14/13/17, Yetişkin 27/14/25/16/15/21 + 1. baskın nitelik +4, 2. +2); DEX/WIS kurtarması (yeterlilik CR'den); Perception = WIS + 2 × yeterlilik, Stealth = DEX + yeterlilik; kendi nefes türüne bağışıklık; karanlık görüş 120 ft; Recharge 5–6, başarıda yarı hasar. Legendary Resistance yok (belge vermiyor). Boyut: 1×1 Medium, 2×2 Large, 3×3 Huge (7 altıgen) |
+| Captive Dragon | Bite/Claw erişimi 15 ft (Tail 25 ft belgeden); Crushing Presence alanı 60 ft |
+| Dragon of Hexonia | World-Breaker Bite / Continent-Shaper Claw erişimi 20 ft, Continent Tail 30 ft; Crushing Continental Presence alanı 60 ft; Lightning Spear Rain "4 altıgen" → 10 ft küre, 120 ft menzil |
+| Cosmic Phoenix | gaga/pençe erişimi 10 ft; Ember Wing Flap için DC 27 DEX kurtarma, yarı hasar |
+| Ember Egg | boyut Medium, CR 0, yetenek puanları, ateş/ışıltı bağışıklığı, durum bağışıklıkları |
+| Ocean-Nightmare | Abyssal Swallow menzili 30 ft (dokunaç erişimi); Storm Bolt / Tidal Surge efsanevi kurtarmaları yarı hasarsız |
+| Titan of Nightmare | Abyssal Swallow menzili 45 ft |
+| Hepsi | inisiyatif DEX değiştiricisi (belge vermiyor); Perception = pasif Algı − 10 (belgeden) |

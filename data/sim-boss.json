@@ -66,6 +66,476 @@
       "kolay": {
         "wyvern": 1
       }
+    },
+    {
+      "id": "cim",
+      "ad": "Cim (Sv.1)",
+      "senaryo": "volkan",
+      "seviye": 3,
+      "normal": {
+        "cim": 2
+      },
+      "kolay": {
+        "cim": 1
+      },
+      "element": "fire",
+      "cizgi": "ates",
+      "katalog": true
+    },
+    {
+      "id": "cimbom",
+      "ad": "Cimbom (Sv.2)",
+      "senaryo": "volkan",
+      "seviye": 9,
+      "normal": {
+        "cimbom": 1,
+        "cim": 2
+      },
+      "kolay": {
+        "cimbom": 1
+      },
+      "element": "fire",
+      "cizgi": "ates",
+      "katalog": true
+    },
+    {
+      "id": "cimbombom",
+      "ad": "Cimbombom (Sv.3)",
+      "senaryo": "volkan",
+      "seviye": 20,
+      "normal": {
+        "cimbombom": 1,
+        "cimbom": 1
+      },
+      "kolay": {
+        "cimbombom": 1
+      },
+      "element": "fire",
+      "cizgi": "ates",
+      "katalog": true
+    },
+    {
+      "id": "kongcuk",
+      "ad": "Kongcuk (Sv.1)",
+      "senaryo": "k29-dag-karakol",
+      "seviye": 3,
+      "normal": {
+        "kongcuk": 2
+      },
+      "kolay": {
+        "kongcuk": 1
+      },
+      "element": "force",
+      "cizgi": "kuvvet",
+      "katalog": true
+    },
+    {
+      "id": "kongilla",
+      "ad": "Kongilla (Sv.2)",
+      "senaryo": "k29-dag-karakol",
+      "seviye": 9,
+      "normal": {
+        "kongilla": 1,
+        "kongcuk": 2
+      },
+      "kolay": {
+        "kongilla": 1
+      },
+      "element": "force",
+      "cizgi": "kuvvet",
+      "katalog": true
+    },
+    {
+      "id": "kongark",
+      "ad": "Kongark (Sv.3)",
+      "senaryo": "k29-dag-karakol",
+      "seviye": 20,
+      "normal": {
+        "kongark": 1,
+        "kongilla": 1
+      },
+      "kolay": {
+        "kongark": 1
+      },
+      "element": "force",
+      "cizgi": "kuvvet",
+      "katalog": true
+    },
+    {
+      "id": "cerbit",
+      "ad": "Cerbit (Sv.1)",
+      "senaryo": "orman-kemik",
+      "seviye": 3,
+      "normal": {
+        "cerbit": 2
+      },
+      "kolay": {
+        "cerbit": 1
+      },
+      "element": "necrotic",
+      "cizgi": "nekrotik",
+      "katalog": true
+    },
+    {
+      "id": "cerbedo",
+      "ad": "Cerbedo (Sv.2)",
+      "senaryo": "orman-kemik",
+      "seviye": 9,
+      "normal": {
+        "cerbedo": 1,
+        "cerbit": 2
+      },
+      "kolay": {
+        "cerbedo": 1
+      },
+      "element": "necrotic",
+      "cizgi": "nekrotik",
+      "katalog": true
+    },
+    {
+      "id": "cerbones",
+      "ad": "Cerbones (Sv.3)",
+      "senaryo": "orman-kemik",
+      "seviye": 20,
+      "normal": {
+        "cerbones": 1,
+        "cerbedo": 1
+      },
+      "kolay": {
+        "cerbones": 1
+      },
+      "element": "necrotic",
+      "cizgi": "nekrotik",
+      "katalog": true
+    },
+    {
+      "id": "mirit",
+      "ad": "Mirit (Sv.1)",
+      "senaryo": "k29-col-sutun-harabesi",
+      "seviye": 3,
+      "normal": {
+        "mirit": 2
+      },
+      "kolay": {
+        "mirit": 1
+      },
+      "element": "psychic",
+      "cizgi": "psisik",
+      "katalog": true
+    },
+    {
+      "id": "mirath",
+      "ad": "Mirath (Sv.2)",
+      "senaryo": "k29-col-sutun-harabesi",
+      "seviye": 9,
+      "normal": {
+        "mirath": 1,
+        "mirit": 2
+      },
+      "kolay": {
+        "mirath": 1
+      },
+      "element": "psychic",
+      "cizgi": "psisik",
+      "katalog": true
+    },
+    {
+      "id": "mirage",
+      "ad": "Mirage (Sv.3)",
+      "senaryo": "k29-col-sutun-harabesi",
+      "seviye": 20,
+      "normal": {
+        "mirage": 1,
+        "mirath": 1
+      },
+      "kolay": {
+        "mirage": 1
+      },
+      "element": "psychic",
+      "cizgi": "psisik",
+      "katalog": true
+    },
+    {
+      "id": "twinkle",
+      "ad": "Twinkle (Sv.1)",
+      "senaryo": "k29-col-kanyon-nehri",
+      "seviye": 3,
+      "normal": {
+        "twinkle": 2
+      },
+      "kolay": {
+        "twinkle": 1
+      },
+      "element": "thunder",
+      "cizgi": "gurultu",
+      "katalog": true
+    },
+    {
+      "id": "gongi",
+      "ad": "Gongi (Sv.2)",
+      "senaryo": "k29-col-kanyon-nehri",
+      "seviye": 9,
+      "normal": {
+        "gongi": 1,
+        "twinkle": 2
+      },
+      "kolay": {
+        "gongi": 1
+      },
+      "element": "thunder",
+      "cizgi": "gurultu",
+      "katalog": true
+    },
+    {
+      "id": "gongar",
+      "ad": "Gongar (Sv.3)",
+      "senaryo": "k29-col-kanyon-nehri",
+      "seviye": 20,
+      "normal": {
+        "gongar": 1,
+        "gongi": 1
+      },
+      "kolay": {
+        "gongar": 1
+      },
+      "element": "thunder",
+      "cizgi": "gurultu",
+      "katalog": true
+    },
+    {
+      "id": "lumbo",
+      "ad": "Lumbo (Sv.1)",
+      "senaryo": "k35-kasaba-demirci-tapinak",
+      "seviye": 3,
+      "normal": {
+        "lumbo": 2
+      },
+      "kolay": {
+        "lumbo": 1
+      },
+      "element": "radiant",
+      "cizgi": "isilti",
+      "katalog": true
+    },
+    {
+      "id": "lighty",
+      "ad": "Lighty (Sv.2)",
+      "senaryo": "k35-kasaba-demirci-tapinak",
+      "seviye": 9,
+      "normal": {
+        "lighty": 1,
+        "lumbo": 2
+      },
+      "kolay": {
+        "lighty": 1
+      },
+      "element": "radiant",
+      "cizgi": "isilti",
+      "katalog": true
+    },
+    {
+      "id": "lightaur",
+      "ad": "Lightaur (Sv.3)",
+      "senaryo": "k35-kasaba-demirci-tapinak",
+      "seviye": 20,
+      "normal": {
+        "lightaur": 1,
+        "lighty": 1
+      },
+      "kolay": {
+        "lightaur": 1
+      },
+      "element": "radiant",
+      "cizgi": "isilti",
+      "katalog": true
+    },
+    {
+      "id": "hydrop",
+      "ad": "Hydrop (Sv.1)",
+      "senaryo": "k29-batak-cukur",
+      "seviye": 3,
+      "normal": {
+        "hydrop": 2
+      },
+      "kolay": {
+        "hydrop": 1
+      },
+      "element": "acid",
+      "cizgi": "asit",
+      "katalog": true
+    },
+    {
+      "id": "hydras",
+      "ad": "Hydras (Sv.2)",
+      "senaryo": "k29-batak-cukur",
+      "seviye": 9,
+      "normal": {
+        "hydras": 1,
+        "hydrop": 2
+      },
+      "kolay": {
+        "hydras": 1
+      },
+      "element": "acid",
+      "cizgi": "asit",
+      "katalog": true
+    },
+    {
+      "id": "hydraxe",
+      "ad": "Hydraxe (Sv.3)",
+      "senaryo": "k29-batak-cukur",
+      "seviye": 20,
+      "normal": {
+        "hydraxe": 1,
+        "hydras": 1
+      },
+      "kolay": {
+        "hydraxe": 1
+      },
+      "element": "acid",
+      "cizgi": "asit",
+      "katalog": true
+    },
+    {
+      "id": "sporlet",
+      "ad": "Sporlet (Sv.1)",
+      "senaryo": "derin-mantar",
+      "seviye": 3,
+      "normal": {
+        "sporlet": 2
+      },
+      "kolay": {
+        "sporlet": 1
+      },
+      "element": "poison",
+      "cizgi": "zehir",
+      "katalog": true
+    },
+    {
+      "id": "mothcoon",
+      "ad": "Mothcoon (Sv.2)",
+      "senaryo": "derin-mantar",
+      "seviye": 9,
+      "normal": {
+        "mothcoon": 1,
+        "sporlet": 2
+      },
+      "kolay": {
+        "mothcoon": 1
+      },
+      "element": "poison",
+      "cizgi": "zehir",
+      "katalog": true
+    },
+    {
+      "id": "mothraq",
+      "ad": "Mothraq (Sv.3)",
+      "senaryo": "derin-mantar",
+      "seviye": 20,
+      "normal": {
+        "mothraq": 1,
+        "mothcoon": 1
+      },
+      "kolay": {
+        "mothraq": 1
+      },
+      "element": "poison",
+      "cizgi": "zehir",
+      "katalog": true
+    },
+    {
+      "id": "sparkle",
+      "ad": "Sparkle (Sv.1)",
+      "senaryo": "k29-dag-kayalik",
+      "seviye": 3,
+      "normal": {
+        "sparkle": 2
+      },
+      "kolay": {
+        "sparkle": 1
+      },
+      "element": "lightning",
+      "cizgi": "yildirim",
+      "katalog": true
+    },
+    {
+      "id": "thunderse",
+      "ad": "Thunderse (Sv.2)",
+      "senaryo": "k29-dag-kayalik",
+      "seviye": 9,
+      "normal": {
+        "thunderse": 1,
+        "sparkle": 2
+      },
+      "kolay": {
+        "thunderse": 1
+      },
+      "element": "lightning",
+      "cizgi": "yildirim",
+      "katalog": true
+    },
+    {
+      "id": "stormer",
+      "ad": "Stormer (Sv.3)",
+      "senaryo": "k29-dag-kayalik",
+      "seviye": 20,
+      "normal": {
+        "stormer": 1,
+        "thunderse": 1
+      },
+      "kolay": {
+        "stormer": 1
+      },
+      "element": "lightning",
+      "cizgi": "yildirim",
+      "katalog": true
+    },
+    {
+      "id": "doggie",
+      "ad": "Doggie (Sv.1)",
+      "senaryo": "k29-buzul-kayalik",
+      "seviye": 3,
+      "normal": {
+        "doggie": 2
+      },
+      "kolay": {
+        "doggie": 1
+      },
+      "element": "cold",
+      "cizgi": "soguk",
+      "katalog": true
+    },
+    {
+      "id": "wolfie",
+      "ad": "Wolfie (Sv.2)",
+      "senaryo": "k29-buzul-kayalik",
+      "seviye": 9,
+      "normal": {
+        "wolfie": 1,
+        "doggie": 2
+      },
+      "kolay": {
+        "wolfie": 1
+      },
+      "element": "cold",
+      "cizgi": "soguk",
+      "katalog": true
+    },
+    {
+      "id": "wolfgang",
+      "ad": "Wolfgang (Sv.3)",
+      "senaryo": "k29-buzul-kayalik",
+      "seviye": 20,
+      "normal": {
+        "wolfgang": 1,
+        "wolfie": 1
+      },
+      "kolay": {
+        "wolfgang": 1
+      },
+      "element": "cold",
+      "cizgi": "soguk",
+      "katalog": true
     }
   ]
 }

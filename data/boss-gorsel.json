@@ -1,0 +1,460 @@
+{
+  "_not": "BOSS-GORSEL-1: Mühür Ruhu yaratık görselleri; scripts/boss-gorsel.mjs üretir (kaynak depo dışı assets-ham/boss/), elle düzenlenmez. `dosya` public/ altındaki yol; görsel yoksa null (jeton yedek görünüme düşer). `olcek`: jeton görsel boyutu boss yüksekliğine göre (Sv.1 0.25, Sv.2 0.6, Sv.3 1); görsele gömülmez. Kontrol: harita/belgeler/BOSS-GORSEL-KONTROL.md.",
+  "olcek": {
+    "1": 0.25,
+    "2": 0.6,
+    "3": 1
+  },
+  "gorseller": {
+    "cim": {
+      "dosya": "boss/cim.webp",
+      "kademe": 1,
+      "cizgi": "ates",
+      "olcek": 0.25,
+      "boyut": [
+        504,
+        512
+      ],
+      "hamBoyut": [
+        1984,
+        2146
+      ],
+      "zemin": "#2f8052"
+    },
+    "cimbom": {
+      "dosya": "boss/cimbom.webp",
+      "kademe": 2,
+      "cizgi": "ates",
+      "olcek": 0.6,
+      "boyut": [
+        512,
+        455
+      ],
+      "hamBoyut": [
+        2120,
+        1984
+      ],
+      "zemin": "#fc05f7"
+    },
+    "cimbombom": {
+      "dosya": "boss/cimbombom.webp",
+      "kademe": 3,
+      "cizgi": "ates",
+      "olcek": 1,
+      "boyut": [
+        496,
+        512
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#fd01fd"
+    },
+    "doggie": {
+      "dosya": "boss/doggie.webp",
+      "kademe": 1,
+      "cizgi": "soguk",
+      "olcek": 0.25,
+      "boyut": [
+        499,
+        512
+      ],
+      "hamBoyut": [
+        1187,
+        1536
+      ],
+      "zemin": "#fc02f1"
+    },
+    "wolfie": {
+      "dosya": "boss/wolfie.webp",
+      "kademe": 2,
+      "cizgi": "soguk",
+      "olcek": 0.6,
+      "boyut": [
+        512,
+        466
+      ],
+      "hamBoyut": [
+        1583,
+        1536
+      ],
+      "zemin": "#fb03f1"
+    },
+    "wolfgang": {
+      "dosya": "boss/wolfgang.webp",
+      "kademe": 3,
+      "cizgi": "soguk",
+      "olcek": 1,
+      "boyut": [
+        512,
+        484
+      ],
+      "hamBoyut": [
+        2096,
+        2016
+      ],
+      "zemin": "#fb00fd"
+    },
+    "sparkle": {
+      "dosya": "boss/sparkle.webp",
+      "kademe": 1,
+      "cizgi": "yildirim",
+      "olcek": 0.25,
+      "boyut": [
+        512,
+        507
+      ],
+      "hamBoyut": [
+        1339,
+        1536
+      ],
+      "zemin": "#ea0ec1"
+    },
+    "thunderse": {
+      "dosya": "boss/thunderse.webp",
+      "kademe": 2,
+      "cizgi": "yildirim",
+      "olcek": 0.6,
+      "boyut": [
+        512,
+        506
+      ],
+      "hamBoyut": [
+        1471,
+        1536
+      ],
+      "zemin": "#e80fc1"
+    },
+    "stormer": {
+      "dosya": "boss/stormer.webp",
+      "kademe": 3,
+      "cizgi": "yildirim",
+      "olcek": 1,
+      "boyut": [
+        512,
+        512
+      ],
+      "hamBoyut": [
+        1330,
+        1251
+      ],
+      "zemin": "#fc00fc"
+    },
+    "twinkle": {
+      "dosya": "boss/twinkle.webp",
+      "kademe": 1,
+      "cizgi": "gurultu",
+      "olcek": 0.25,
+      "boyut": [
+        512,
+        479
+      ],
+      "hamBoyut": [
+        1306,
+        1792
+      ],
+      "zemin": "#fc00fb"
+    },
+    "gongi": {
+      "dosya": "boss/gongi.webp",
+      "kademe": 2,
+      "cizgi": "gurultu",
+      "olcek": 0.6,
+      "boyut": [
+        500,
+        512
+      ],
+      "hamBoyut": [
+        1402,
+        1792
+      ],
+      "zemin": "#fc03fb"
+    },
+    "gongar": {
+      "dosya": "boss/gongar.webp",
+      "kademe": 3,
+      "cizgi": "gurultu",
+      "olcek": 1,
+      "boyut": [
+        512,
+        494
+      ],
+      "hamBoyut": [
+        1359,
+        1251
+      ],
+      "zemin": "#fc00fc"
+    },
+    "hydrop": {
+      "dosya": "boss/hydrop.webp",
+      "kademe": 1,
+      "cizgi": "asit",
+      "olcek": 0.25,
+      "boyut": [
+        512,
+        484
+      ],
+      "hamBoyut": [
+        1322,
+        1536
+      ],
+      "zemin": "#fd01fd"
+    },
+    "hydras": {
+      "dosya": "boss/hydras.webp",
+      "kademe": 2,
+      "cizgi": "asit",
+      "olcek": 0.6,
+      "boyut": [
+        497,
+        512
+      ],
+      "hamBoyut": [
+        1532,
+        1536
+      ],
+      "zemin": "#fc03fc"
+    },
+    "hydraxe": {
+      "dosya": "boss/hydraxe.webp",
+      "kademe": 3,
+      "cizgi": "asit",
+      "olcek": 1,
+      "boyut": [
+        512,
+        511
+      ],
+      "hamBoyut": [
+        1511,
+        1472
+      ],
+      "zemin": "#f801fb"
+    },
+    "sporlet": {
+      "dosya": "boss/sporlet.webp",
+      "kademe": 1,
+      "cizgi": "zehir",
+      "olcek": 0.25,
+      "boyut": [
+        512,
+        355
+      ],
+      "hamBoyut": [
+        1492,
+        1536
+      ],
+      "zemin": "#fd01fd"
+    },
+    "mothcoon": {
+      "dosya": "boss/mothcoon.webp",
+      "kademe": 2,
+      "cizgi": "zehir",
+      "olcek": 0.6,
+      "boyut": [
+        363,
+        512
+      ],
+      "hamBoyut": [
+        1337,
+        1536
+      ],
+      "zemin": "#fc03fc"
+    },
+    "mothraq": {
+      "dosya": "boss/mothraq.webp",
+      "kademe": 3,
+      "cizgi": "zehir",
+      "olcek": 1,
+      "boyut": [
+        512,
+        484
+      ],
+      "hamBoyut": [
+        2016,
+        2142
+      ],
+      "zemin": "#fc02fd"
+    },
+    "lumbo": {
+      "dosya": "boss/lumbo.webp",
+      "kademe": 1,
+      "cizgi": "isilti",
+      "olcek": 0.25,
+      "boyut": [
+        458,
+        416
+      ],
+      "hamBoyut": [
+        2752,
+        1536
+      ],
+      "zemin": "#fb02fc"
+    },
+    "lighty": {
+      "dosya": "boss/lighty.webp",
+      "kademe": 2,
+      "cizgi": "isilti",
+      "olcek": 0.6,
+      "boyut": [
+        412,
+        441
+      ],
+      "hamBoyut": [
+        2752,
+        1536
+      ],
+      "zemin": "#fb02fd"
+    },
+    "lightaur": {
+      "dosya": "boss/lightaur.webp",
+      "kademe": 3,
+      "cizgi": "isilti",
+      "olcek": 1,
+      "boyut": [
+        491,
+        512
+      ],
+      "hamBoyut": [
+        1561,
+        1344
+      ],
+      "zemin": "#fc00fc"
+    },
+    "cerbit": {
+      "dosya": "boss/cerbit.webp",
+      "kademe": 1,
+      "cizgi": "nekrotik",
+      "olcek": 0.25,
+      "boyut": [
+        425,
+        512
+      ],
+      "hamBoyut": [
+        1312,
+        1536
+      ],
+      "zemin": "#fc00fd"
+    },
+    "cerbedo": {
+      "dosya": "boss/cerbedo.webp",
+      "kademe": 2,
+      "cizgi": "nekrotik",
+      "olcek": 0.6,
+      "boyut": [
+        477,
+        512
+      ],
+      "hamBoyut": [
+        1671,
+        1536
+      ],
+      "zemin": "#fe01fd"
+    },
+    "cerbones": {
+      "dosya": "boss/cerbones.webp",
+      "kademe": 3,
+      "cizgi": "nekrotik",
+      "olcek": 1,
+      "boyut": [
+        496,
+        512
+      ],
+      "hamBoyut": [
+        1610,
+        1344
+      ],
+      "zemin": "#fc03fc"
+    },
+    "mirit": {
+      "dosya": "boss/mirit.webp",
+      "kademe": 1,
+      "cizgi": "psisik",
+      "olcek": 0.25,
+      "boyut": [
+        380,
+        512
+      ],
+      "hamBoyut": [
+        941,
+        1248
+      ],
+      "zemin": "#fc01fc"
+    },
+    "mirath": {
+      "dosya": "boss/mirath.webp",
+      "kademe": 2,
+      "cizgi": "psisik",
+      "olcek": 0.6,
+      "boyut": [
+        295,
+        512
+      ],
+      "hamBoyut": [
+        1792,
+        2400
+      ],
+      "zemin": "#fb02fc"
+    },
+    "mirage": {
+      "dosya": "boss/mirage.webp",
+      "kademe": 3,
+      "cizgi": "psisik",
+      "olcek": 1,
+      "boyut": [
+        408,
+        512
+      ],
+      "hamBoyut": [
+        1792,
+        2400
+      ],
+      "zemin": "#fc01fc"
+    },
+    "kongcuk": {
+      "dosya": "boss/kongcuk.webp",
+      "kademe": 1,
+      "cizgi": "kuvvet",
+      "olcek": 0.25,
+      "boyut": [
+        396,
+        512
+      ],
+      "hamBoyut": [
+        1103,
+        1329
+      ],
+      "zemin": "#fb00fd"
+    },
+    "kongilla": {
+      "dosya": "boss/kongilla.webp",
+      "kademe": 2,
+      "cizgi": "kuvvet",
+      "olcek": 0.6,
+      "boyut": [
+        484,
+        512
+      ],
+      "hamBoyut": [
+        1499,
+        1689
+      ],
+      "zemin": "#fc01fe"
+    },
+    "kongark": {
+      "dosya": "boss/kongark.webp",
+      "kademe": 3,
+      "cizgi": "kuvvet",
+      "olcek": 1,
+      "boyut": [
+        512,
+        511
+      ],
+      "hamBoyut": [
+        2058,
+        2048
+      ],
+      "zemin": "#fd00fd"
+    }
+  }
+}

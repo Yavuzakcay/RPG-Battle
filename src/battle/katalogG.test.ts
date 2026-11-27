@@ -81,7 +81,7 @@ describe('KATALOG-1 G: Kaltakkıran anlatım verisi', () => {
     const b = om.baglar!;
     expect(b).toHaveLength(10);
     expect(new Set(b.map((x) => x.hasarTuru))).toEqual(new Set(['fire', 'cold', 'lightning', 'thunder', 'acid', 'poison', 'radiant', 'necrotic', 'psychic', 'force']));
-    expect(b.map((x) => x.boss.ad)).toEqual(['Cimbombom', 'Wolfgang', 'Stormer', 'Gongar', 'Hydraxe', 'Mothraq', 'Lightaur', 'Cerbones', 'Mirage', 'Darkape']);
+    expect(b.map((x) => x.boss.ad)).toEqual(['Cimbombom', 'Wolfgang', 'Stormer', 'Gongar', 'Hydraxe', 'Mothraq', 'Lightaur', 'Cerbones', 'Mirage', 'Kongark']);
     for (const x of b) {
       const e = E(x.tas);
       expect(e.katalog.ref, x.tas).toMatch(/^BOSS#(9|1[0-8])$/);
