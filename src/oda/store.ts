@@ -2,7 +2,7 @@
  * Görev OD1: oda saklama (`rpg-battle-oda`, ayrı anahtar; karakter, savaş, yolculuk ve Serüven kayıtlarına dokunmaz).
  * Dosya: `{ surum, odalar: Oda[] }`. Ağ yok; çevrimiçi aşamada aynı model eşzamanlanır.
  */
-import { ODA_KEY, ODA_SURUM, cleanName, newRoom, normalizeRoom, type Oda, type OdaKurallar, type SonSavas } from './model';
+import { ODA_KEY, ODA_SURUM, cleanName, newRoom, normalizeRoom, type CevrimiciGirdi, type Oda, type OdaKurallar, type SonSavas } from './model';
 import { MAX_PARTY } from '../app/limits';
 import { newId } from '../app/storage';
 
@@ -43,3 +43,14 @@ export const lockRoom = (o: Oda, now = new Date().toISOString()): Oda => ({ ...o
 export const unlockRoom = (o: Oda, son?: SonSavas): Oda => ({ ...o, kilit: null, ...(son ? { sonSavas: son } : {}) });
 /** Kilit yalnız bitmemiş kayıtlı savaş varken geçerli; yoksa kendiliğinden açılır. */
 export const isLocked = (o: Oda, savedBattle: boolean): boolean => o.kilit !== null && savedBattle;
+
+/** Görev ODA-1: çevrimiçi karakter kopyası partiye girer (aynı kimlik yenilenir; parti doluysa değişmez). */
+export function addOnlineCopy(o: Oda, g: CevrimiciGirdi): Oda {
+  const joined = joinRoom(o, g.karakterId);
+  if (!joined.parti.includes(g.karakterId)) return o;
+  return { ...joined, cevrimici: [...joined.cevrimici.filter((x) => x.karakterId !== g.karakterId), g] };
+}
+export const removeOnlineCopy = (o: Oda, karakterId: string): Oda =>
+  o.cevrimici.some((x) => x.karakterId === karakterId) ? { ...leaveRoom(o, karakterId), cevrimici: o.cevrimici.filter((x) => x.karakterId !== karakterId) } : o;
+/** Çevrimiçi oda kapanınca kopyalar partiden çıkar. */
+export const clearOnlineCopies = (o: Oda): Oda => o.cevrimici.reduce((r, g) => removeOnlineCopy(r, g.karakterId), o);

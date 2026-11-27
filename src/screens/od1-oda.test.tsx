@@ -28,7 +28,7 @@ afterEach(() => { setRoomOverlay(null); });
 describe('OD1 model ve saklama', () => {
   it('yeni oda: davet kodu boş, kural kopyası, kilitsiz, parti boş; ayrı anahtar', () => {
     const r = newRoom('a', '  Masa  ', '2026-11-15T10:00:00Z', { ...DEFAULT_KURALLAR, hizalanma: true }, 'Ayşe');
-    expect(r).toMatchObject({ id: 'a', kod: '', ad: 'Masa', gmAdi: 'Ayşe', parti: [], kilit: null, surum: 1 });
+    expect(r).toMatchObject({ id: 'a', kod: '', ad: 'Masa', gmAdi: 'Ayşe', parti: [], kilit: null, surum: 2, cevrimici: [] });
     expect(r.ayarlar.kurallar.hizalanma).toBe(true);
     // 2026-11-19: "Üst seviye" anahtarı kalktı; yeni odada yazılmaz.
     expect('ustSeviye' in r.ayarlar.kurallar).toBe(false);

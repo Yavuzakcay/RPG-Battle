@@ -39,7 +39,7 @@ import { createPortal } from 'react-dom';
 import { SHEET_BAR_H, TOP_STRIP_H, isPortraitPhone, portraitScaleScreen, sheetOpenFor, sheetOpenHeight, stageBox } from './ui/battleLayout';
 import { droppableWeapons, groupName, heldItemName, isNaturalWeapon } from './ui/heldItemName';
 import type { Spell } from './data';
-import { resourceLeft, type AttackOption, type BattleState, type Combatant, type Command, type CunningOption } from './battle';
+import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Combatant, type Command, type CunningOption } from './battle';
 import { resourceDef, resourceUsable } from './rules/classFeatures';
 import { pickerLevels, usesShown } from './ui/slotInfo';
 import { getMap, maps } from './map/maps';
@@ -69,7 +69,7 @@ import { cloudBaseFt, cloudCastProblem, cloudPointProblem, cloudRing, stormSourc
 import { speedZero as hasSpeedZero } from './rules/conditions';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
 import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
-import { GM_CONTEXT, contextFor, dispatch, type Session } from './ui/session';
+import { GM_CONTEXT, contextFor, dispatch, type Session, type SessionWatch } from './ui/session';
 import { getLang, t, useLang } from './i18n';
 import { completeReason, reasonOr, reasonText } from './ui/reasons';
 /** Motor gerekçesi seçili dile (null kalır). */
@@ -534,7 +534,9 @@ const usableResources = (c: Combatant): Array<[string, number]> =>
   Object.entries(c.resources).filter(([id, n]) => n > 0 && resourceUsable(id));
 
 /** Haritalı savaş ekranı. `exitLabel` çıkış düğmesinin adı (kurulum ekranına dönüş). */
-export function Battle(props: { initial: Session; /** Görev OD1C: haritada tamamlanacak bekleyen hedefler içeren taslak. */ goalDraft?: GoalsDraft; mapFilter?: string; onExit: (final?: BattleState) => void; exitLabel?: string; restored?: boolean }) {
+export function Battle(props: { initial: Session; /** Görev OD1C: haritada tamamlanacak bekleyen hedefler içeren taslak. */ goalDraft?: GoalsDraft; mapFilter?: string; onExit: (final?: BattleState) => void; exitLabel?: string; restored?: boolean;
+  /** Görev ODA-1: salt izleme (çevrimiçi oda oyuncusu): oturum dışarıdan gelir; kayıt yok, dokunma kapalı. */ watch?: SessionWatch;
+  /** Görev ODA-1: olay günlüğü her değiştiğinde (çevrimiçi oda host'u yayar). */ onEvents?: (events: BattleEvent[]) => void }) {
   const stage = useStage();
   // Görev D: telefon dikey yerleşimi (üstte sıra şeridi, ortada harita, altta çekmece); yatay ve masaüstü aynı.
   const portrait = stage.portrait;
@@ -569,8 +571,13 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   const seenDice = useRef(diceSeenAtStart(props.initial.events, props.restored === true));
   // Otomatik kayıt: her tur (round) sonunda ve savaş bitince (tek kayıt yuvası, olay günlüğü).
   useEffect(() => {
-    if (session.state.status !== 'setup') saveBattle(session);
+    if (session.state.status !== 'setup' && !props.watch) saveBattle(session);
   }, [session.state.round, session.state.status]);
+  // Görev ODA-1: çevrimiçi oda. İzleyen sekme host'tan gelen oturumu çizer; host sekmesi her yeni olayı yayar.
+  const watch = props.watch;
+  useEffect(() => (watch ? watch.subscribe((s) => setSession(s)) : undefined), [watch]);
+  const onEvents = props.onEvents;
+  useEffect(() => { onEvents?.(session.events); }, [session.events, onEvents]);
   const [mode, setMode] = useState<Mode>('idle');
   // Hazırla (Ready, sürüm 90): panel taslağı ve haritadan seçilen alan.
   const [readyDraft, setReadyDraft] = useState<ReadyDraft>(READY_DRAFT);
@@ -3751,9 +3758,17 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
         </div>
       </div>
   );
+  // Görev ODA-1: salt izlemede üst şerit (dokunma kapalı; yalnız çıkış).
+  const watchBar = props.watch ? (
+    <div className="oda-izle-bar" role="status" data-testid="oda-izle-bar">
+      <span>{t().odaCevrimici.watching}</span>
+      <button type="button" onClick={() => props.onExit(session.state)}>{props.exitLabel ?? t().odaCevrimici.leaveWatch}</button>
+    </div>
+  ) : null;
   if (!portrait) {
     return (
-      <div className="mb-screen">
+      <div className={`mb-screen${props.watch ? ' watching' : ''}`}>
+        {watchBar}
         {stageNode}
         <p className="portrait-hint">{B.portrait}</p>
       </div>
@@ -3764,7 +3779,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   const barLabel = setup ? B.hint.setup : mode === 'idle' && !moveAim && !jumpAim ? S.actions : modeHint[mode] || S.actions;
   const canCancel = mode !== 'idle' || !!moveAim || !!jumpAim;
   return (
-    <div className="mb-screen portrait">
+    <div className={`mb-screen portrait${props.watch ? ' watching' : ''}`}>
+      {watchBar}
       <div className="pt-top" ref={setPtTop} />
       <div className="pt-map" ref={setPtMap}>{stageNode}</div>
       <div className={`pt-sheet${sheetOpen ? ' open' : ''}`} data-testid="sheet" role="region" aria-label={S.label}

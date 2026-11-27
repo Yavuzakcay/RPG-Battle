@@ -89,7 +89,8 @@ await wait(2500);
 d = await debug();
 check('kurulumda harita ve varyant değişince de ortam sesi yok', d.playing.join() === 'menu:menu-dark', d);
 
-await page.click('button.cta');
+// Görev ODA-1: oda düzenleyicisinde "Çevrimiçi aç" da `cta`; savaşı kuran düğme test kimliğiyle seçilir.
+await page.click('[data-testid="map-start"]');
 await page.waitForSelector('.hud-cta');
 await wait(3000);
 d = await debug();

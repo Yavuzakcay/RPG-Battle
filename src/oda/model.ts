@@ -11,8 +11,10 @@ import { HP_VIS, type HpVis, type RoomOverlay } from './active';
 import { MAX_PARTY } from '../app/limits';
 import type { GoalsDraft } from './hedef';
 import { normalizeDraft } from './hedef';
+import type { SavedCharacter } from '../rules/builder';
 
-export const ODA_SURUM = 1;
+/** 2: çevrimiçi parti girdileri `cevrimici` (Görev ODA-1); 1 kayıtları aynen okunur (alan boş). */
+export const ODA_SURUM = 2;
 export const ODA_KEY = 'rpg-battle-oda';
 export const ODA_AD_MAX = 40;
 
@@ -48,6 +50,12 @@ export interface OdaAyarlar {
   hedefler?: GoalsDraft | null;
 }
 
+/**
+ * Görev ODA-1: çevrimiçi odada oyuncunun gönderdiği karakter kopyası (asıl kayıt oyuncunun cihazında kalır).
+ * `kopyaZamani`: Karar 8 (savaş sonucu dönüşünde asıl karakter bu tarihten sonra değiştiyse sorulur; O2+).
+ */
+export interface CevrimiciGirdi { karakterId: string; istemciId: string; kopya: SavedCharacter; kopyaZamani: string }
+
 export interface SonSavas { zaman: string; harita: string; sonuc: 'zafer' | 'yenilgi' | 'bitmedi' }
 
 export interface Oda {
@@ -65,6 +73,8 @@ export interface Oda {
   /** Bitmemiş (kayıtlı) bir savaş varsa ayarlar o savaş için kilitli. */
   kilit: { baslangic: string } | null;
   sonSavas?: SonSavas;
+  /** Görev ODA-1: çevrimiçi parti girdileri (kimlikleri `parti`'de de durur). */
+  cevrimici: CevrimiciGirdi[];
 }
 
 /** Oda kurallarının varsayılanı: cihazın o anki genel değerleri (çağıran verir; model saf kalır). */
@@ -79,7 +89,7 @@ export const defaultAyarlar = (kurallar: OdaKurallar = DEFAULT_KURALLAR): OdaAya
 });
 
 export function newRoom(id: string, ad: string, now: string, kurallar?: OdaKurallar, gmAdi = ''): Oda {
-  return { surum: ODA_SURUM, id, kod: '', ad: cleanName(ad), olusturma: now, guncelleme: now, gmAdi: gmAdi.trim().slice(0, ODA_AD_MAX), ayarlar: defaultAyarlar(kurallar), parti: [], kilit: null };
+  return { surum: ODA_SURUM, id, kod: '', ad: cleanName(ad), olusturma: now, guncelleme: now, gmAdi: gmAdi.trim().slice(0, ODA_AD_MAX), ayarlar: defaultAyarlar(kurallar), parti: [], kilit: null, cevrimici: [] };
 }
 
 export const cleanName = (s: string): string => s.trim().slice(0, ODA_AD_MAX);
@@ -119,9 +129,23 @@ export function normalizeRoom(raw: unknown): Oda | null {
       },
       ...(a.hedefler === null ? { hedefler: null } : normalizeDraft(a.hedefler) ? { hedefler: normalizeDraft(a.hedefler) as GoalsDraft } : {}),
     },
-    parti, kilit,
+    parti, kilit, cevrimici: cevrimiciOf(r.cevrimici),
     ...(son && typeof son.zaman === 'string' ? { sonSavas: { zaman: son.zaman, harita: typeof son.harita === 'string' ? son.harita : '', sonuc: pick(son.sonuc, ['zafer', 'yenilgi', 'bitmedi'] as const, 'bitmedi') } } : {}),
   };
+}
+
+function cevrimiciOf(v: unknown): CevrimiciGirdi[] {
+  if (!Array.isArray(v)) return [];
+  const out: CevrimiciGirdi[] = [];
+  for (const x of v) {
+    if (!x || typeof x !== 'object') continue;
+    const g = x as Record<string, unknown>;
+    const k = g.kopya as { id?: unknown; sheet?: unknown } | null;
+    if (typeof g.karakterId !== 'string' || typeof g.istemciId !== 'string' || !k || typeof k !== 'object' || k.id !== g.karakterId || !k.sheet) continue;
+    if (out.some((o) => o.karakterId === g.karakterId)) continue;
+    out.push({ karakterId: g.karakterId, istemciId: g.istemciId, kopya: g.kopya as SavedCharacter, kopyaZamani: typeof g.kopyaZamani === 'string' ? g.kopyaZamani : '' });
+  }
+  return out.slice(0, MAX_PARTY);
 }
 
 /** Oda kurallarının genel ayarların üstüne bineceği örtü (`oda/active`). */

@@ -2,6 +2,11 @@
 
 Durum: **tasarım** (2026-11-27). Bu görevde kod yazılmadı; mekanik, kural sürümü (108) ve kayıt sürümü (`SAVE_VERSION` 28) değişmedi.
 
+**O1 uygulandı (Görev ODA-1, 2026-11-27):** `src/room/` çekirdeği, bellek ve sekme bağdaştırıcıları, GM "Çevrimiçi aç", oyuncu "Kodla katıl"
++ lobi, salt izleme; sürüm el sıkışması (Karar 3) ve oturum anahtarı O1'de. Belgeden farklar: canlı yapıştırıcı `src/room/canli.ts` yerine
+`src/screens/odaCanli.ts` (oturum/günlük metni ekran katmanında, `src/room/` i18n'e bile bağlı değil); `anlik`/`olaylar`/`ozet`'e `donem`
+alanı ve `karakter_red` mesajı eklendi; katılımda `kuralSurumuAzami` yerine `kuralSurumu` + `icerik`. Ayrıntı DECISIONS.md ODA-1.
+
 Amaç: Game Master'ın savaşta yaptığı her değişiklik oyuncuların cihazına anında yansısın. Her oyuncu kendi karakterini kendi
 cihazından oynasın. İlk sürümde hesap yok, katılım oda koduyla. Google/Supabase girişi en son, yalnız bir bağlantı türü olarak eklenir.
 Ağ katmanı bu yüzden değiştirilebilir olmalı.

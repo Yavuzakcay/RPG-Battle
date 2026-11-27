@@ -11,7 +11,7 @@ import { migrateSubclasses, newCharacter, type SavedCharacter } from './rules/bu
 import { migrateLineages } from './rules/lineage';
 import { newPendingLineages } from './app/lineageNotice';
 import { repairSlots } from './rules/characterRest';
-import type { Session } from './ui/session';
+import type { Session, SessionWatch } from './ui/session';
 import { MenuBackground } from './ui/MenuBackground';
 import { WingFilterHost } from './ui/WingFilter';
 import { removeStaticSplash, splashEnabled, watchResume, type SplashKind } from './ui/splashBoot';
@@ -27,6 +27,8 @@ import { SCREEN_SOUND } from './ui/audio/soundPlan';
 // Haritalı savaş ekranı ayrı parça: giriş ve menüler onu beklemeden açılır (ana parça 500 kB altında kalır).
 // Game Master ekranına girilince boşta önceden indirilir; savaş başlarken hazırdır.
 const importBattle = () => import('./MapBattle');
+/** Görev ODA-1: çevrimiçi oda yapıştırıcısı (tembel; ilk yüklemeden sonra eşzamanlı, olay sırası korunur). */
+let odaCanli: typeof import('./screens/odaCanli') | null = null;
 const Battle = lazy(() => importBattle().then((m) => ({ default: m.Battle })));
 // Game Master kurulum ve durum ekranları da ayrı parça (canavar verisiyle birlikte yüklenir).
 const importGm = () => import('./screens/GmScreen');
@@ -66,7 +68,7 @@ type Screen =
   | { name: 'notes'; character: SavedCharacter }
   | { name: 'oda'; roomId?: string }
   | { name: 'katil'; roomId?: string }
-  | { name: 'battle'; session: Session; restored?: boolean; journey?: boolean; seruven?: string; mapFilter?: string; /** Görev OD1: odadan kurulan savaş (oda kimliği). */ oda?: string; /** Görev OD1B: kayıttan devam eden savaşın HP görünürlüğü. */ hp?: HpVis; /** Görev OD1C: haritada tamamlanacak bekleyen hedefler. */ goalDraft?: GoalsDraft }
+  | { name: 'battle'; session: Session; restored?: boolean; journey?: boolean; seruven?: string; mapFilter?: string; /** Görev OD1: odadan kurulan savaş (oda kimliği). */ oda?: string; /** Görev OD1B: kayıttan devam eden savaşın HP görünürlüğü. */ hp?: HpVis; /** Görev OD1C: haritada tamamlanacak bekleyen hedefler. */ goalDraft?: GoalsDraft; /** Görev ODA-1: çevrimiçi odada salt izleme. */ watch?: SessionWatch }
   | { name: 'seruven'; result?: { final: BattleState; node: string } | null }
   | { name: 'journey'; result?: BattleState | null; preset?: string }
   | { name: 'status' }
@@ -270,6 +272,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
         }} />;
     case 'katil':
       return <OdaKatil characters={characters} onBack={home} roomId={screen.roomId}
+        onWatch={(watch) => { const s = watch.current(); if (s) setScreen({ name: 'battle', session: s, watch, restored: true }); }}
         onBuild={(id, overlay) => setScreen({ name: 'builder', character: newCharacter(newId()), oda: { id, overlay } })} />;
     case 'battle':
       if (!data.ready) return <Loading error={data.error} />;
@@ -280,11 +283,13 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
         return <Battle initial={screen.session} restored={false} exitLabel={t().seruven.title} mapFilter={screen.mapFilter}
           onExit={(final) => setScreen({ name: 'seruven', result: final && (final.status === 'finished' || node.startsWith('link:') || node.startsWith('yer:') || node.startsWith('hapis:')) ? { final, node } : null })} />;
       }
+      if (screen.watch) return <Battle initial={screen.session} watch={screen.watch} restored onExit={() => setScreen({ name: 'katil' })} />;
       if (screen.journey) return <Battle initial={screen.session} restored={false} exitLabel={t().journey.title}
         onExit={(final) => setScreen({ name: 'journey', result: final?.status === 'finished' ? final : null })} />;
       if (screen.oda) {
         const oda = screen.oda;
         return <Battle initial={screen.session} goalDraft={screen.goalDraft} restored={screen.restored === true} exitLabel={t().oda.back}
+          onEvents={(ev) => { if (odaCanli) odaCanli.hostYayinla(oda, ev); else void import('./screens/odaCanli').then((m) => { odaCanli = m; m.hostYayinla(oda, ev); }); }}
           onExit={(final) => {
             if (final?.status === 'finished') store(applyBattleResult(characters, final));
             // Bitince oda ayarları açılır ve son savaş özeti yazılır; bitmediyse kayıtlı savaş için kilitli kalır.
