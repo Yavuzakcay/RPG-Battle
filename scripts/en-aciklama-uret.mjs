@@ -31,7 +31,7 @@ const TR = read('data/aciklamalar-tr.json');
 const SRC = read('scripts/en-aciklama/ceviri.json');
 const CEVIRI = SRC.ceviri ?? {};
 const FARK = SRC.farklar ?? {};
-const KINDS = ['buyu', 'esya', 'tur', 'yetenek', 'altsinif', 'invocation', 'buyuSecenek', 'durum'];
+const KINDS = ['buyu', 'esya', 'tur', 'yetenek', 'altsinif', 'invocation', 'buyuSecenek', 'durum', 'muhurTasi'];
 
 const slug = (s) => s.toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 /** PDF/JSON metnini tek biçime getirir: satır sonu tireleri, fazla boşluk; paragraflar "\n". */
@@ -118,7 +118,7 @@ const invocationNames = new Map(Object.values(read('data/class-features.json').f
 const invocationText = (id) => section(invocationNames.get(id) ?? title(id), { from: 60 });
 const conditionText = (id) => section(`${CONDITIONS[id] ?? title(id)} [Condition]`, { from: 170 });
 
-const SRD = { buyu: spellText, esya: itemText, tur: traitText, yetenek: featureText, altsinif: () => undefined, invocation: invocationText, buyuSecenek: () => undefined, durum: conditionText };
+const SRD = { buyu: spellText, esya: itemText, tur: traitText, yetenek: featureText, altsinif: () => undefined, invocation: invocationText, buyuSecenek: () => undefined, durum: conditionText, muhurTasi: () => undefined };
 
 // --- Canavar: scripts/srd-canavar-ozellik.mjs --metin (aynı ayrıştırıcı; canavar-ozellik.json'u aynen yeniden yazar). ---
 const tmp = path.join(os.tmpdir(), `en-canavar-${process.pid}.json`);
