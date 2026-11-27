@@ -30,7 +30,8 @@ import { getLang, t } from '../i18n';
 import type { Session } from '../ui/session';
 import type { Combatant } from '../battle';
 import { DICE_MODES, type DiceMode } from '../rules/manualDice';
-import { useDiceFlow } from '../ui/diceFlow';
+import { useDiceFlow, type RemoteAsker } from '../ui/diceFlow';
+import { uzakSorucu } from './odaCanli';
 import { DicePrompt } from '../ui/DicePrompt';
 import { HouseRulesPanel } from '../ui/gm/HouseRulesPanel';
 import { RoomRules } from '../ui/settings/RoomRules';
@@ -177,7 +178,9 @@ export function GmScreen(props: {
   const starting = useRef<Combatant[]>([]);
   const isPlayer = (id: string) => starting.current.some((c) => c.id === id && c.side === 'party' && !c.civilian);
   const pendingRef = useRef<GoalsDraft | undefined>(undefined);
-  const dice = useDiceFlow<Session>(diceMode, isPlayer, (s) => props.onStart(s, pendingRef.current));
+  // Görev ODA-2: çevrimiçi odada oyuncu karakterinin kurulum zarları (inisiyatif) sahibinin cihazında istenir.
+  const remote: RemoteAsker | null = room ? uzakSorucu(room.id, (id) => starting.current.find((c) => c.id === id)?.ownerId) : null;
+  const dice = useDiceFlow<Session>(diceMode, isPlayer, (s) => props.onStart(s, pendingRef.current), Math.random, undefined, remote);
   const pool = useMemo(() => (allMonsters ? all : all.filter((m) => fitsMap(m.id, mapId))), [all, allMonsters, mapId]);
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -562,7 +565,8 @@ export function GmScreen(props: {
           {dice.pending && (
             <DicePrompt key={dice.pending.step} request={dice.pending.request}
               whoName={starting.current.find((c) => c.id === dice.pending?.request.by)?.name ?? null}
-              onEnter={dice.enter} onAuto={dice.autoRoll} onCancel={dice.cancel} />
+              onEnter={dice.enter} onAuto={dice.autoRoll} onCancel={dice.cancel}
+              {...(dice.pending.remote ? { note: t().odaCevrimici.remoteWait(starting.current.find((c) => c.id === dice.pending?.request.by)?.name ?? '?') } : {})} />
           )}
         </section>
       </main>

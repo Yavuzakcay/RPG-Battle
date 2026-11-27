@@ -51,7 +51,7 @@ export function reactionButtons(req: ReactionRequest): Array<{ key: string; labe
     : [{ key: o.id, label: o.name, answer: { option: o.id }, suggested: same({ option: o.id }) }]));
 }
 
-export function ReactionPrompt(props: { request: ReactionRequest; state: BattleState; onAnswer: (a: ReactionAnswer) => void }) {
+export function ReactionPrompt(props: { request: ReactionRequest; state: BattleState; onAnswer: (a: ReactionAnswer) => void; /** Görev ODA-2: ek not. */ note?: string }) {
   const R = t().reactions;
   const text = reactionAskText(props.request, props.state);
   const first = useRef<HTMLButtonElement>(null);
@@ -63,6 +63,7 @@ export function ReactionPrompt(props: { request: ReactionRequest; state: BattleS
       <div className="dice-prompt reaction-prompt" role="dialog" aria-modal="true" aria-label={text.title}>
         <strong>{text.title}</strong>
         <small>{text.line}</small>
+        {props.note && <small className="dice-remote-note" role="status">{props.note}</small>}
         <div className="dice-actions reaction-actions">
           {buttons.map((b, i) => (
             <button key={b.key} ref={i === 0 ? first : undefined} type="button" className={b.suggested ? 'cta' : undefined}

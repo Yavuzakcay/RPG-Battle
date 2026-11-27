@@ -10,6 +10,47 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Tablo:** CR 30 kayıtları (tutsak-dragon, ocean-nightmare, ocean-nightmare-open-sea) zaten DMG CR 30 satırıyla karşılaştırılıyordu; "tablo dışı" yalnız CR > 30. Tablo yeniden üretildi.
 - **Efsanevi eylem bedeli: uygulanmadı.** Motor şeması (`src/battle/boss.ts` `LegendaryAction`) eylem başına bedel alanı taşımıyor; her kullanım 1 hak düşer (`legendary_used.left = legendaryLeft − 1`). Eksik alan: `LegendaryAction` üstünde eylem başına puan bedeli (ör. `cost`) ve onu düşen sayaç. Görev "yeni mekanik ekleme" dediğinden `data/efsanevi.json`'a dokunulmadı; kart metnindeki 1/2/3 puan yalnız görünüm.
 - **Testler:** `src/data/katalogF2.test.ts` Genç HP ve nefes zarı beklentileri yeni değerlere (veriye bağlı değer). Belgeler: `KATALOG-F2-PROSPEKTUS.md` Genç satırları, TR/EN canavar açıklamaları betikten.
+## ODA-2: çevrimiçi oda O2, yerel ağ aktarıcısı + canlı savaşta oyuncu komutları (2026-11-27; kural sürümü 108, kayıt sürümü 28 ve `ODA_SURUM` 2 değişmedi)
+
+- **Aktarıcı:** saf çekirdek `src/room/aktarici.ts` (oda kodu → host + oyuncu bağlantıları, `kimden`'i aktarıcı yazar, oyun mantığı
+  yok), node bağlaması `src/room/aktariciNode.ts` (`ws` 8.18.3, yalnız dev bağımlılığı; ping ile kopma algısı). `npm run oda-sunucu`
+  (`scripts/oda-sunucu.ts`, vite-node; belgede `.mjs` yazıyordu, `src/room` TS çekirdeğini kullanmak için TS): tek portta (5180) `dist/`
+  + `/oda` WebSocket; açılışta yerel ağ adresleri ve QR (`qrcode-terminal` 0.12.0, dev). Aynı aktarıcı Vite eklentisiyle
+  `npm run dev -- --host` ve `npm run preview -- --host`'ta da (`vite.config.ts` `odaAktariciEklentisi`). İstemci bağdaştırıcısı
+  `src/room/adapters/websocket.ts` (`ws(s)://<host>/oda`). Bağlantı seçimi (`odaCanli.ts` `baglantiSec`): sayfa http(s) ise önce yerel ağ,
+  bağlanamazsa sekme (O1); ilk çalışan tür sayfa boyunca.
+- **Aynı kimlikle ikinci bağlantı (kullanıcı kararı):** her oyuncu bağlantısı önce aday; yalnız `katil` iletilir, aktarıcı zarfa bağlantı
+  kimliği `bag` yazar, host `kabul`/`red`'i aynı `bag` ile yanıtlar. Doğru anahtarla `kabul` → kimlik yeni bağlantıya bağlanır, eski
+  bağlantı `degisti` ile düşer; yanlış anahtar → `red` yalnız adaya, bağlantı kapanır, başkasının mesajını hiç almaz. `Zarf.bag` ve
+  `RoomTransport.gonder(m, kime, bag)` eklendi (bellek/sekme bağdaştırıcıları yok sayar).
+- **Oyuncu komutu:** oyuncu cihazında `dispatch` komutu çalıştırmaz, host'a yollar (`ui/session.ts` `setDispatchSink`; durum host'un
+  olaylarıyla değişir). Host yetkiyi kendi kurar (`src/room/auth.ts` `komutYetkisi`, §4.3): oyuncu rolü, savaş sürüyor, `actorId` var,
+  GM komutu değil (`skill_check`, `place`, `set_exhaustion`…, `gm: true`), savaşçının `ownerId`'si gönderenin kopyalarından (çağrılar
+  sahibinin `ownerId`'sini taşır), düşman/masum değil. Bağlam `{ playerId: ownerId, isGm: false }`; motorun `canControl`/sıra denetimi
+  ikinci kat. Yetkisiz → `komut_red{yetki}` (20. yetkisizde GM'e olay), istek kimliği çift gelirse bir kez. Geçen komut GM'in savaş
+  ekranında (`MapBattle` `odaId`, `hostSavasBagla`) ekran boşken GM'in zar akışıyla çalışır (tek yazıcı GM'in oturumu); hata
+  `komut_red{gecersiz, hata}`.
+- **Zar ve tepki istemleri:** zar akışına (`ui/diceFlow.ts`) `RemoteAsker` eklendi. Zar modu elle zar istediğinde (ya da tepki sorulacaksa)
+  savaşçının sahibi bağlı bir oyuncuysa istem onun cihazına gider (`zar_iste`/`tepki_sor`, ötekilere `bekleniyor`); GM'in isteminde
+  "oyuncunun cihazından bekleniyor" notu durur, GM yine girebilir/otomatik atabilir (uzak istem `istem_iptal` ile kalkar, geç cevap
+  uygulanmaz). Tepkide cevap gelmezse 20 sn sonra motorun önerisi. Uzak oyuncunun tepkisi GM'in tepki ayarına değil oyuncuya sorulur;
+  oyuncu cihazı kendi tepki ayarını uygular (Her zaman/Asla ise sormadan cevaplar). Kurulumdaki inisiyatif zarı (GmScreen) da aynı
+  yoldan; savaş ekranı açılmadan gelen istem lobide sorulur (açık istemler yeni aboneye yeniden verilir). Bağlantısı kopuk oyuncunun
+  istemi GM'in cihazında sorulur.
+- **Protokol:** `istem_iptal` eklendi; `zar_iste`/`tepki_sor` doğrulaması sıkılaştı. Protokol sürümü 1 kaldı (O1 yayımlanmadı, iki uç aynı
+  build ister).
+- **`@types/ws` → `@types/node`:** uygulama typecheck'ine node tipleri girdi; `src/ui/as1cGorunum.test.tsx`'teki artık gereksiz
+  `@ts-expect-error` yorumu kaldırıldı (test davranışı aynı).
+- **Sınırlar (O3/O4):** oyuncu cihazında GM düğmeleri (Düşmanı oynat, kurulum) görünür, host reddeder; gizli bilgi süzgeci yok (O1 kararı:
+  çizimde süzme O3). Host sayfası kapanırsa oda kapanır (diriltme O4). Kopan oyuncunun sırasında GM karar menüsü yok (O4); GM kendi
+  cihazından oynayabilir. Zar modu "herkes"te uzak komutun canavar zarları GM'in cihazında sorulur.
+- **Testler:** `src/room/ws.test.ts` (gerçek `ws` aktarıcısı, localhost: GM + 2 oyuncu bire bir replay ve tek cihaz eşitliği; yetkisiz komut
+  (başkasının karakteri, düşman, GM komutu, izleyici); ikinci bağlantı değiştirme ve yanlış anahtar; kopup geri gelme; uzak zar/tepki,
+  GM kapatma, tepki zaman aşımı). Uçtan uca `npx vite-node scripts/oda-ag-e2e.ts -- --ekran` (gerçek `oda-sunucu` + üç ayrı tarayıcı
+  bağlamı: kodla katılım, kopya, "yalnızca oyuncular" zar modunda inisiyatif zarları oyuncuların cihazında, oyuncunun kendi sırasında
+  "Turu bitir"i GM ve öbür oyuncuda, başkasının sırasındaki komut reddi; görüntü `docs/oda-2/oyuncu.png`). O1 e2e yeni yolla da geçiyor.
+- **Ana parça:** 462,12 → 462,14 kB (+0,02 kB: `App.tsx` `odaId`).
+
 ## ODA-1: çevrimiçi oda O1, bağlantı arayüzü + oda kodu + sekmeler arası (2026-11-27; kural sürümü 108 ve kayıt sürümü 28 değişmedi; `ODA_SURUM` 1 → 2)
 
 - **Kod:** saf çekirdek `src/room/` (React/DOM/i18n yok): `transport.ts` (`RoomTransport`), `protocol.ts` (`OdaMesaji`, `ODA_PROTOKOL` 1,

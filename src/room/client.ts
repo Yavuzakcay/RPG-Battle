@@ -7,7 +7,9 @@
  * - `ozet`: kendi durumunun özeti tutmazsa tam anlık ister (sayılır; farklı build ya da reducer hatası).
  */
 import { applyEvents, replay } from '../battle/reduce';
-import type { BattleEvent, BattleState } from '../battle/types';
+import type { BattleEvent, BattleState, Command } from '../battle/types';
+import type { DiceRequest } from '../rules/dice';
+import type { ReactionAnswer, ReactionRequest } from '../rules/reactionChoice';
 import type { SavedCharacter } from '../rules/builder';
 import { ozet } from './hash';
 import { mesajMi, type HostMesaji, type IstemciMesaji, type OdaOzeti, type RedNedeni, type SurumBilgisi } from './protocol';
@@ -21,6 +23,12 @@ export type IstemciOlayi =
   | { tur: 'savas'; sifirlandi: boolean; yeni: BattleEvent[] }
   | { tur: 'karakter_red'; karakterId: string; neden: string; ayrinti?: string }
   | { tur: 'kapandi'; neden: string }
+  /** Görev ODA-2: komut host'ta reddedildi. */
+  | { tur: 'komut_red'; istekId: string; neden: string; hata?: string }
+  | { tur: 'zar_iste'; istekId: string; istek: DiceRequest }
+  | { tur: 'tepki_sor'; istekId: string; istek: ReactionRequest; sureMs: number }
+  | { tur: 'istem_iptal'; istekId: string }
+  | { tur: 'bekleniyor'; kim: string; neYi: 'zar' | 'tepki' }
   | { tur: 'baglanti'; d: BaglantiDurumu };
 
 export interface IstemciSecenek {
@@ -52,6 +60,7 @@ export class OdaIstemci {
   /** Sayaçlar (test ve tanı). */
   readonly sayac = { bozuk: 0, yinelenen: 0, bosluk: 0, ozetTutmadi: 0, anlik: 0 };
   private bekleyen: number | null = null;
+  private istekSayaci = 0;
   private readonly s: IstemciSecenek;
   private readonly ol = dinleyiciler<IstemciOlayi>();
   private readonly cozucu: Array<() => void> = [];
@@ -85,6 +94,18 @@ export class OdaIstemci {
   }
 
   karakterGonder(kopya: SavedCharacter): void { this.gonder({ t: 'karakter_gonder', kopya }); }
+
+  /** Görev ODA-2: kendi karakterinin komutu (host yetkiyi denetler, olaylar yayınla gelir). İstek kimliği döner. */
+  komutGonder(cmd: Command): string {
+    const istekId = `${this.istemciId}-${++this.istekSayaci}`;
+    this.gonder({ t: 'komut', istekId, cmd, tabanSeq: this.sonrakiSeq });
+    return istekId;
+  }
+  /** Zar istemine cevap (`null`: otomatik at). */
+  zarCevap(istekId: string, degerler: number[] | null): void {
+    this.gonder(degerler ? { t: 'zar_cevap', istekId, degerler } : { t: 'zar_cevap', istekId, otomatik: true });
+  }
+  tepkiCevap(istekId: string, cevap: ReactionAnswer): void { this.gonder({ t: 'tepki_cevap', istekId, cevap }); }
   karakterGeriAl(karakterId: string): void { this.gonder({ t: 'karakter_geri_al', karakterId }); }
 
   async ayril(): Promise<void> {
@@ -127,7 +148,12 @@ export class OdaIstemci {
       case 'ozet': this.ozetAl(m); return;
       case 'karakter_red': this.ol.yay({ tur: 'karakter_red', karakterId: m.karakterId, neden: m.neden, ...(m.ayrinti ? { ayrinti: m.ayrinti } : {}) }); return;
       case 'oda_kapandi': this.ol.yay({ tur: 'kapandi', neden: m.neden }); return;
-      default: return; // O2+: komut_red, zar_iste, tepki_sor, bekleniyor, uye_durumu, karakter_sonuc
+      case 'komut_red': this.ol.yay({ tur: 'komut_red', istekId: m.istekId, neden: m.neden, ...(m.hata ? { hata: m.hata } : {}) }); return;
+      case 'zar_iste': this.ol.yay({ tur: 'zar_iste', istekId: m.istekId, istek: m.istek as DiceRequest }); return;
+      case 'tepki_sor': this.ol.yay({ tur: 'tepki_sor', istekId: m.istekId, istek: m.istek as ReactionRequest, sureMs: m.sureMs }); return;
+      case 'istem_iptal': this.ol.yay({ tur: 'istem_iptal', istekId: m.istekId }); return;
+      case 'bekleniyor': this.ol.yay({ tur: 'bekleniyor', kim: m.kim, neYi: m.tur }); return;
+      default: return; // uye_durumu, karakter_sonuc (O4)
     }
   }
 

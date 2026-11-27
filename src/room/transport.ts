@@ -15,6 +15,11 @@ export interface Zarf {
   kimden: string;
   /** Yoksa: host'tan herkese yayın / istemciden host'a. */
   kime?: string;
+  /**
+   * Görev ODA-2: aktarıcının bağlantı kimliği. Henüz kabul edilmemiş bağlantının `katil`'ine aktarıcı yazar, host
+   * yanıtında (`kabul`/`red`) aynen geri verir: aktarıcı yanıtı o bağlantıya iletir, `kabul`'de kimliği ona bağlar.
+   */
+  bag?: string;
   m: OdaMesaji;
 }
 
@@ -29,8 +34,8 @@ export interface RoomTransport {
   readonly tur: TransportTuru;
   /** Host için: kodu sahiplenir (doluysa `kod_dolu` durumu ve hata). Oyuncu için: odaya bağlanır (yoksa `oda_yok` ve hata). */
   katil(kod: string, uye: Uye): Promise<void>;
-  /** `kime` verilmezse: host gönderiyorsa herkese, istemci gönderiyorsa host'a. */
-  gonder(m: OdaMesaji, kime?: string): void;
+  /** `kime` verilmezse: host gönderiyorsa herkese, istemci gönderiyorsa host'a. `bag`: yalnız host, katılım yanıtında. */
+  gonder(m: OdaMesaji, kime?: string, bag?: string): void;
   dinle(fn: (z: Zarf) => void): () => void;
   durum(fn: (d: BaglantiDurumu) => void): () => void;
   ayril(): Promise<void>;

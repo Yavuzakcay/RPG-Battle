@@ -69,7 +69,10 @@ import { cloudBaseFt, cloudCastProblem, cloudPointProblem, cloudRing, stormSourc
 import { speedZero as hasSpeedZero } from './rules/conditions';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
 import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
-import { GM_CONTEXT, contextFor, dispatch, type Session, type SessionWatch } from './ui/session';
+import { GM_CONTEXT, contextFor, dispatch, setDispatchSink, type RemotePrompt, type Session, type SessionWatch } from './ui/session';
+import type { UzakKomut } from './room/host';
+import type { ReactionAnswer, ReactionRequest } from './rules/reactionChoice';
+import { isRecording } from './rules/manualDice';
 import { getLang, t, useLang } from './i18n';
 import { completeReason, reasonOr, reasonText } from './ui/reasons';
 /** Motor gerekçesi seçili dile (null kalır). */
@@ -149,7 +152,7 @@ import { useEffectsDensity, useEffectsSetting, useSpriteAnimSetting } from './ui
 import { saveMapTint, storedMapTint } from './ui/mapTintSetting';
 import { RageFlames } from './ui/RageFlames';
 import { LOOP_SCALE, MAX_ANIMATED, ROTATE_MS, beamFor, limitBadges, filterStyle, loopEffectsFor, outlineColor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
-import { useDiceFlow } from './ui/diceFlow';
+import { useDiceFlow, type RemoteAsker } from './ui/diceFlow';
 import { DicePrompt } from './ui/DicePrompt';
 import { ReactionPrompt } from './ui/ReactionPrompt';
 import { reactionDecider, useReactionPolicies } from './ui/reactionSetting';
@@ -536,7 +539,8 @@ const usableResources = (c: Combatant): Array<[string, number]> =>
 /** Haritalı savaş ekranı. `exitLabel` çıkış düğmesinin adı (kurulum ekranına dönüş). */
 export function Battle(props: { initial: Session; /** Görev OD1C: haritada tamamlanacak bekleyen hedefler içeren taslak. */ goalDraft?: GoalsDraft; mapFilter?: string; onExit: (final?: BattleState) => void; exitLabel?: string; restored?: boolean;
   /** Görev ODA-1: salt izleme (çevrimiçi oda oyuncusu): oturum dışarıdan gelir; kayıt yok, dokunma kapalı. */ watch?: SessionWatch;
-  /** Görev ODA-1: olay günlüğü her değiştiğinde (çevrimiçi oda host'u yayar). */ onEvents?: (events: BattleEvent[]) => void }) {
+  /** Görev ODA-1: olay günlüğü her değiştiğinde (çevrimiçi oda host'u yayar). */ onEvents?: (events: BattleEvent[]) => void;
+  /** Görev ODA-2: odadan kurulan savaş: çevrimiçi host varsa uzak oyuncu komutları ve zar/tepki istemleri bu ekrandan. */ odaId?: string }) {
   const stage = useStage();
   // Görev D: telefon dikey yerleşimi (üstte sıra şeridi, ortada harita, altta çekmece); yatay ve masaüstü aynı.
   const portrait = stage.portrait;
@@ -555,7 +559,75 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   const isPlayer = (id: string) => { const c = session.state.combatants[id]; return !!c && c.side === 'party' && !c.civilian; };
   // Tepki ayarı (Görev R1): oyuncu karakterine sor / her zaman / asla; düşmanlar yapay zekâ / her zaman / asla.
   const [policies, cyclePolicy] = useReactionPolicies();
-  const dice = useDiceFlow<Session>(session.state.diceMode ?? 'auto', isPlayer, setSession, Math.random, reactionDecider(policies, isPlayer));
+  // Görev ODA-2: GM cihazında host köprüsü. Uzak oyuncunun komutu (yetkisi host'ta denetlenmiş) ekran boşken bu zar akışıyla
+  // çalışır; uzak oyuncunun karakterinin zar/tepki istemi onun cihazına gider (Game Master yine de karar verebilir).
+  const odaId = props.odaId;
+  const stateRef = useRef(session.state);
+  stateRef.current = session.state;
+  const kopru = useRef<{ remote: RemoteAsker; sonuc: (k: UzakKomut, hata: string | null) => void; kapat: () => void } | null>(null);
+  const odaMod = useRef<typeof import('./screens/odaCanli') | null>(null);
+  const [uzakKuyruk, setUzakKuyruk] = useState<UzakKomut[]>([]);
+  const aktifUzak = useRef<UzakKomut | null>(null);
+  useEffect(() => {
+    if (!odaId) return undefined;
+    let iptal = false;
+    void import('./screens/odaCanli').then((m) => {
+      if (iptal) return;
+      odaMod.current = m;
+      kopru.current = m.hostSavasBagla(odaId, (u) => setUzakKuyruk((q) => [...q, u]), () => stateRef.current);
+    });
+    return () => { iptal = true; kopru.current?.kapat(); kopru.current = null; };
+  }, [odaId]);
+  const remoteAsker: RemoteAsker = {
+    dice: (r) => kopru.current?.remote.dice(r) ?? null,
+    reaction: (r) => kopru.current?.remote.reaction(r) ?? null,
+    close: (id) => kopru.current?.remote.close(id),
+  };
+  const localDecider = reactionDecider(policies, isPlayer);
+  const decider = (req: ReactionRequest) => (odaId && odaMod.current?.uzakSahipMi(odaId, stateRef.current, req.reactorId) ? 'ask' as const : localDecider(req));
+  const uzakBitti = (hata: string | null) => { const k = aktifUzak.current; if (!k) return; aktifUzak.current = null; kopru.current?.sonuc(k, hata); };
+  const dice = useDiceFlow<Session>(session.state.diceMode ?? 'auto', isPlayer, (s) => { uzakBitti(s.error); setSession(s); }, Math.random, decider, odaId ? remoteAsker : null);
+  useEffect(() => {
+    if (!uzakKuyruk.length || dice.pending || dice.reaction || aktifUzak.current) return;
+    const [k, ...kalan] = uzakKuyruk as [UzakKomut, ...UzakKomut[]];
+    setUzakKuyruk(kalan);
+    aktifUzak.current = k;
+    dice.play((rng) => dispatch(session, k.cmd, rng, k.ctx));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uzakKuyruk, dice.pending, dice.reaction, session]);
+  // Görev ODA-2: oyuncu cihazı. Kendi karakteri savaştaysa dokunma açık; komutlar host'a gider (`setDispatchSink`), durum
+  // host'un olaylarıyla değişir. Host'un zar/tepki istemleri bu cihazda sorulur (oyuncunun kendi tepki ayarıyla).
+  const watchCtl = !!props.watch?.control?.();
+  useEffect(() => {
+    const send = props.watch?.send;
+    if (!watchCtl || !send) return undefined;
+    setDispatchSink((c) => send(c));
+    return () => setDispatchSink(null);
+  }, [watchCtl, props.watch]);
+  const istemRef = useRef<RemotePrompt | null>(null);
+  const [istemler, setIstemler] = useState<RemotePrompt[]>([]);
+  const uzakFlow = useDiceFlow<unknown>('everyone', () => true, (v) => {
+    const p = istemRef.current;
+    istemRef.current = null;
+    if (p?.kind === 'dice') p.answer(Array.isArray(v) ? (v as number[]) : null);
+    else if (p?.kind === 'reaction') p.answer(v as ReactionAnswer);
+  }, Math.random, (req) => reactionDecider(policies, () => true)(req));
+  const uzakFlowRef = useRef(uzakFlow);
+  uzakFlowRef.current = uzakFlow;
+  useEffect(() => props.watch?.prompts?.((p) => {
+    if (p.kind === 'cancel' && istemRef.current?.id === p.id) { istemRef.current = null; uzakFlowRef.current.cancel(); return; }
+    setIstemler((q) => (p.kind === 'cancel' ? q.filter((x) => x.id !== p.id) : [...q, p]));
+  }), [props.watch]);
+  useEffect(() => {
+    if (istemRef.current || !istemler.length || uzakFlow.pending || uzakFlow.reaction) return;
+    const [p, ...kalan] = istemler as [RemotePrompt, ...RemotePrompt[]];
+    setIstemler(kalan);
+    if (p.kind === 'cancel') return;
+    istemRef.current = p;
+    if (p.kind === 'dice') uzakFlow.play((rng) => (isRecording(rng) ? rng.dice(p.request) : null));
+    else uzakFlow.play((rng) => (isRecording(rng) ? rng.react(p.request) : p.request.suggested));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [istemler, uzakFlow.pending, uzakFlow.reaction]);
   // Zar animasyonu: yalnızca canlı zarlar (kayıttan yüklenen oturumun eski zarları oynamaz), sırayla.
   const [diceAnim, cycleDiceAnim] = useDiceAnimSetting();
   // SD9: tema atışa göre (`themeForRoll`: oyuncu seçimi, düşman canavar zarı, harita bölge zarı); tepsinin varsayılanı Klasik.
@@ -3739,12 +3811,23 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
           </>, ptPeek)}
 {inPt(<>
           {dice.reaction && (
-            <ReactionPrompt key={`${dice.reaction.reactorId}:${dice.reaction.trigger}:${session.events.length}`} request={dice.reaction} state={state} onAnswer={dice.answer} />
+            <ReactionPrompt key={`${dice.reaction.reactorId}:${dice.reaction.trigger}:${session.events.length}`} request={dice.reaction} state={state} onAnswer={dice.answer}
+              {...(dice.reactionRemote ? { note: t().odaCevrimici.remoteWait(state.combatants[dice.reaction.reactorId]?.name ?? '?') } : {})} />
           )}
           {dice.pending && (
             <DicePrompt key={dice.pending.step} request={dice.pending.request}
               whoName={dice.pending.request.by ? state.combatants[dice.pending.request.by]?.name ?? null : null}
-              onEnter={dice.enter} onAuto={dice.autoRoll} onCancel={() => { setEnemyRun(0); dice.cancel(); }} />
+              onEnter={dice.enter} onAuto={dice.autoRoll} onCancel={() => { setEnemyRun(0); dice.cancel(); uzakBitti(t().dice.cancel); }}
+              {...(dice.pending.remote ? { note: t().odaCevrimici.remoteWait(dice.pending.request.by ? state.combatants[dice.pending.request.by]?.name ?? '?' : '?') } : {})} />
+          )}
+          {uzakFlow.reaction && (
+            <ReactionPrompt key={`uzak:${istemRef.current?.id ?? ''}`} request={uzakFlow.reaction} state={state} onAnswer={uzakFlow.answer} note={t().odaCevrimici.remoteFrom} />
+          )}
+          {uzakFlow.pending && (
+            <DicePrompt key={`uzak:${istemRef.current?.id ?? ''}`} request={uzakFlow.pending.request} note={t().odaCevrimici.remoteFrom}
+              whoName={uzakFlow.pending.request.by ? state.combatants[uzakFlow.pending.request.by]?.name ?? null : null}
+              onEnter={uzakFlow.enter} onAuto={uzakFlow.autoRoll}
+              onCancel={() => { const p = istemRef.current; istemRef.current = null; uzakFlow.cancel(); if (p?.kind === 'dice') p.answer(null); }} />
           )}
           </>, ptBody)}
 
@@ -3760,14 +3843,14 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   );
   // Görev ODA-1: salt izlemede üst şerit (dokunma kapalı; yalnız çıkış).
   const watchBar = props.watch ? (
-    <div className="oda-izle-bar" role="status" data-testid="oda-izle-bar">
-      <span>{t().odaCevrimici.watching}</span>
+    <div className={`oda-izle-bar${watchCtl ? ' playing' : ''}`} role="status" data-testid="oda-izle-bar">
+      <span>{watchCtl ? t().odaCevrimici.playing : t().odaCevrimici.watching}</span>
       <button type="button" onClick={() => props.onExit(session.state)}>{props.exitLabel ?? t().odaCevrimici.leaveWatch}</button>
     </div>
   ) : null;
   if (!portrait) {
     return (
-      <div className={`mb-screen${props.watch ? ' watching' : ''}`}>
+      <div className={`mb-screen${props.watch && !watchCtl ? ' watching' : ''}`}>
         {watchBar}
         {stageNode}
         <p className="portrait-hint">{B.portrait}</p>
@@ -3779,7 +3862,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   const barLabel = setup ? B.hint.setup : mode === 'idle' && !moveAim && !jumpAim ? S.actions : modeHint[mode] || S.actions;
   const canCancel = mode !== 'idle' || !!moveAim || !!jumpAim;
   return (
-    <div className={`mb-screen portrait${props.watch ? ' watching' : ''}`}>
+    <div className={`mb-screen portrait${props.watch && !watchCtl ? ' watching' : ''}`}>
       {watchBar}
       <div className="pt-top" ref={setPtTop} />
       <div className="pt-map" ref={setPtMap}>{stageNode}</div>

@@ -72,6 +72,8 @@ export type HostMesaji =
   | { t: 'zar_iste'; istekId: string; istek: unknown }
   | { t: 'tepki_sor'; istekId: string; istek: unknown; sureMs: number }
   | { t: 'bekleniyor'; kim: string; tur: 'zar' | 'tepki' }
+  /** Görev ODA-2: açık zar/tepki istemi kapandı (GM karar verdi, süre doldu ya da cevap alındı). */
+  | { t: 'istem_iptal'; istekId: string }
   | { t: 'ozet'; donem: number; seq: number; hash: string }
   | { t: 'uye_durumu'; istemciId: string; bagli: boolean; karar?: 'bekle' | 'yz' | 'gm' }
   | { t: 'karakter_sonuc'; karakterId: string; durum: unknown }
@@ -114,9 +116,10 @@ const DENETIM: Record<string, (m: Record<string, unknown>) => boolean> = {
     && (m.durum !== undefined || m.tabanSeq === 0),
   olaylar: (m) => int(m.donem) && int(m.ilkSeq) && (m.ilkSeq as number) >= 0 && arr(m.olaylar) && m.olaylar.every((e) => obj(e) && str(e.type)) && opt(m.istekId, str) && opt(m.kimden, str),
   komut_red: (m) => str(m.istekId) && ['yetki', 'gecersiz', 'bekle', 'izleyici'].includes(m.neden as string) && opt(m.hata, str),
-  zar_iste: (m) => str(m.istekId),
-  tepki_sor: (m) => str(m.istekId) && num(m.sureMs),
+  zar_iste: (m) => str(m.istekId) && obj(m.istek) && int(m.istek.sides) && int(m.istek.count),
+  tepki_sor: (m) => str(m.istekId) && num(m.sureMs) && obj(m.istek) && str(m.istek.reactorId) && arr(m.istek.options),
   bekleniyor: (m) => str(m.kim) && (m.tur === 'zar' || m.tur === 'tepki'),
+  istem_iptal: (m) => str(m.istekId),
   ozet: (m) => int(m.donem) && int(m.seq) && str(m.hash),
   karakter_red: (m) => str(m.karakterId) && ['gecersiz', 'dolu', 'kilitli'].includes(m.neden as string) && opt(m.ayrinti, str),
   uye_durumu: (m) => str(m.istemciId) && typeof m.bagli === 'boolean',

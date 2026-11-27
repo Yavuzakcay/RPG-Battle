@@ -13,8 +13,10 @@
  * Host durumu olaylardan kendisi kurar (`replay` + `applyEvents`): istemcilerle aynı reducer yolu, özet bu durumdan.
  */
 import { applyEvents, replay } from '../battle/reduce';
-import type { BattleEvent, BattleState } from '../battle/types';
-import type { Rng } from '../rules/dice';
+import type { BattleEvent, BattleState, Command, CommandContext } from '../battle/types';
+import type { DiceRequest, Rng } from '../rules/dice';
+import type { ReactionAnswer, ReactionRequest } from '../rules/reactionChoice';
+import { komutYetkisi } from './auth';
 import type { SavedCharacter } from '../rules/builder';
 import { anahtarUret } from './code';
 import { kanonikJson, ozet } from './hash';
@@ -33,13 +35,23 @@ export interface HostUye {
   bagli: boolean;
   /** Gönderilen karakter kopyaları (kimlik → kopya). */
   kopyalar: Map<string, SavedCharacter>;
+  /** Son komut istek kimlikleri (çift gönderim; en çok 64). */
+  istekler?: string[];
 }
+
+/** Görev ODA-2: yetkisi denetlenmiş uzak komut (GM'in savaş ekranı çalıştırır, sonucu `komutSonucu` ile bildirir). */
+export interface UzakKomut { istemciId: string; istekId: string; cmd: Command; ctx: CommandContext; ownerId: string }
+
+/** Görev ODA-2: oyuncunun cihazına giden açık zar/tepki istemi. */
+export interface AcikIstem { istekId: string; istemciId: string; tur: 'zar' | 'tepki' }
 
 export type HostOlayi =
   | { tur: 'uyeler' }
   | { tur: 'karakter_geldi'; istemciId: string; kopya: SavedCharacter }
   | { tur: 'karakter_gitti'; istemciId: string; karakterId: string }
-  | { tur: 'reddedildi'; istemciId: string; neden: string };
+  | { tur: 'reddedildi'; istemciId: string; neden: string }
+  | { tur: 'istemler' }
+  | { tur: 'yetkisiz'; istemciId: string; sayi: number };
 
 export interface HostSecenek {
   transport: RoomTransport;
@@ -72,6 +84,13 @@ export class OdaHost {
   readonly uyeler = new Map<string, HostUye>();
   /** Reddedilen/bozuk mesaj sayısı (test ve tanı). */
   bozuk = 0;
+  /** Görev ODA-2: GM'in savaş ekranı (yoksa komut `bekle` ile geri çevrilir). */
+  yurutucu: ((k: UzakKomut) => void) | null = null;
+  /** "Yapay zekâ oynasın" işaretli karakterler (O4; komutları `bekle`). */
+  readonly yzKarakterler = new Set<string>();
+  private readonly istemler = new Map<string, AcikIstem & { coz: (x: unknown) => void; zaman?: ReturnType<typeof setTimeout>; istek: DiceRequest | ReactionRequest }>();
+  private istemSayaci = 0;
+  private readonly yetkisiz = new Map<string, number>();
   private readonly s: HostSecenek;
   private log: BattleEvent[] = [];
   private durumu: BattleState | null = null;
@@ -161,8 +180,61 @@ export class OdaHost {
     this.gonder({ t: 'ozet', donem: this.donem, seq: this.log.length, hash: ozet(this.durumu) }, kime);
   }
 
+  // ---- Görev ODA-2: komut, zar, tepki ----
+
+  /** Bu `ownerId`'nin bağlı uzak sahibi (istemciId); yoksa null (GM kendi cihazında karar verir). */
+  sahibi(ownerId: string | null | undefined): string | null {
+    if (!ownerId) return null;
+    for (const u of this.uyeler.values()) if (u.bagli && u.kopyalar.has(ownerId)) return u.istemciId;
+    return null;
+  }
+
+  /** GM'in savaş ekranı uzak komutun sonucunu bildirir (hata: motorun `fail` metni; başarıda olaylar zaten yayılır). */
+  komutSonucu(istemciId: string, istekId: string, hata: string | null): void {
+    if (hata) this.gonder({ t: 'komut_red', istekId, neden: 'gecersiz', hata }, istemciId);
+  }
+
+  acikIstemler(): AcikIstem[] { return [...this.istemler.values()].map(({ istekId, istemciId, tur }) => ({ istekId, istemciId, tur })); }
+
+  /** Oyuncunun cihazından zar ister; `null`: oyuncu "otomatik" dedi ya da istem iptal edildi (GM otomatik atar). */
+  zarIste(istemciId: string, istek: DiceRequest): { istekId: string; sonuc: Promise<number[] | null> } {
+    const istekId = `z${++this.istemSayaci}`;
+    const sonuc = new Promise<number[] | null>((coz) => {
+      this.istemler.set(istekId, { istekId, istemciId, tur: 'zar', istek, coz: (x) => coz(x as number[] | null) });
+    });
+    this.gonder({ t: 'zar_iste', istekId, istek }, istemciId);
+    this.gonder({ t: 'bekleniyor', kim: istemciId, tur: 'zar' });
+    this.s.olay?.({ tur: 'istemler' });
+    return { istekId, sonuc };
+  }
+
+  /** Oyuncuya tepki sorar; `sureMs` dolunca motorun önerisi (`suggested`). */
+  tepkiSor(istemciId: string, istek: ReactionRequest, sureMs = 20_000): { istekId: string; sonuc: Promise<ReactionAnswer> } {
+    const istekId = `t${++this.istemSayaci}`;
+    const sonuc = new Promise<ReactionAnswer>((coz) => {
+      const zaman = setTimeout(() => this.istemKapat(istekId, istek.suggested), sureMs);
+      this.istemler.set(istekId, { istekId, istemciId, tur: 'tepki', istek, coz: (x) => coz(x as ReactionAnswer), zaman });
+    });
+    this.gonder({ t: 'tepki_sor', istekId, istek, sureMs }, istemciId);
+    this.gonder({ t: 'bekleniyor', kim: istemciId, tur: 'tepki' });
+    this.s.olay?.({ tur: 'istemler' });
+    return { istekId, sonuc };
+  }
+
+  /** Açık istemi GM kapatır (zar: `null` = otomatik; tepki: verilen karar ya da öneri); oyuncunun istemi kalkar. */
+  istemKapat(istekId: string, deger?: unknown): void {
+    const i = this.istemler.get(istekId);
+    if (!i) return;
+    this.istemler.delete(istekId);
+    if (i.zaman) clearTimeout(i.zaman);
+    this.gonder({ t: 'istem_iptal', istekId }, i.istemciId);
+    i.coz(deger === undefined ? (i.tur === 'zar' ? null : (i.istek as ReactionRequest).suggested) : deger);
+    this.s.olay?.({ tur: 'istemler' });
+  }
+
   async kapat(neden = 'kapandi'): Promise<void> {
     if (this.kapali) return;
+    for (const id of [...this.istemler.keys()]) this.istemKapat(id);
     this.gonder({ t: 'oda_kapandi', neden });
     this.kapali = true;
     this.cozucu.splice(0).forEach((f) => f());
@@ -171,8 +243,8 @@ export class OdaHost {
 
   // ---- iç ----
 
-  private gonder(m: HostMesaji, kime?: string): void {
-    if (!this.kapali) this.s.transport.gonder(m, kime);
+  private gonder(m: HostMesaji, kime?: string, bag?: string): void {
+    if (!this.kapali) this.s.transport.gonder(m, kime, bag);
   }
 
   private durumYay(): void {
@@ -198,8 +270,8 @@ export class OdaHost {
     this.durumYay();
   }
 
-  private reddet(kime: string, m: HostMesaji & { t: 'red' }): void {
-    this.gonder(m, kime);
+  private reddet(kime: string, m: HostMesaji & { t: 'red' }, bag?: string): void {
+    this.gonder(m, kime, bag);
     this.s.olay?.({ tur: 'reddedildi', istemciId: kime, neden: m.neden });
   }
 
@@ -207,7 +279,7 @@ export class OdaHost {
     if (this.kapali || z.kimden === this.s.hostId) return;
     if (!mesajMi(z.m) || !istemciMesajiMi(z.m)) { this.bozuk++; return; }
     const m: IstemciMesaji = z.m;
-    if (m.t === 'katil') { this.katilim(z.kimden, m); return; }
+    if (m.t === 'katil') { this.katilim(z.kimden, m, z.bag); return; }
     const u = this.uyeler.get(z.kimden);
     if (!u) { this.bozuk++; return; }
     if (!u.bagli) { u.bagli = true; this.durumYay(); }
@@ -226,28 +298,67 @@ export class OdaHost {
         for (const id of u.kopyalar.keys()) this.s.olay?.({ tur: 'karakter_gitti', istemciId: u.istemciId, karakterId: id });
         this.durumYay();
         return;
-      case 'komut':
-        // O1: salt izleme. Komut yolu O2'de (yetki §4.3).
-        this.gonder({ t: 'komut_red', istekId: m.istekId, neden: 'izleyici', hata: 'salt izleme' }, u.istemciId);
+      case 'komut': this.komutAl(u, m.istekId, m.cmd); return;
+      case 'zar_cevap': {
+        const i = this.istemler.get(m.istekId);
+        if (!i || i.istemciId !== u.istemciId || i.tur !== 'zar') { this.bozuk++; return; }
+        const req = i.istek as DiceRequest;
+        const ok = m.degerler && m.degerler.length === req.count && m.degerler.every((v) => Number.isInteger(v) && v >= 1 && v <= req.sides);
+        this.istemKapat(m.istekId, m.otomatik || !ok ? null : m.degerler);
         return;
+      }
+      case 'tepki_cevap': {
+        const i = this.istemler.get(m.istekId);
+        if (!i || i.istemciId !== u.istemciId || i.tur !== 'tepki') { this.bozuk++; return; }
+        const c = m.cevap as { option?: unknown; choice?: unknown } | null;
+        const gecerli = c === null || (typeof c === 'object' && typeof c.option === 'string' && (c.choice === undefined || typeof c.choice === 'string'));
+        this.istemKapat(m.istekId, gecerli ? (c === null ? null : { option: c.option as string, ...(typeof c.choice === 'string' ? { choice: c.choice } : {}) }) : undefined);
+        return;
+      }
       default:
-        return; // nabız, zar/tepki cevapları (O2)
+        return; // nabız
     }
   }
 
-  private katilim(kimden: string, m: IstemciMesaji & { t: 'katil' }): void {
+  private komutAl(u: HostUye, istekId: string, cmd: Command): void {
+    const son = (u.istekler ??= []);
+    if (son.includes(istekId)) return; // çift gönderim: bir kez çalışır
+    son.push(istekId);
+    if (son.length > 64) son.shift();
+    const red = (neden: 'yetki' | 'gecersiz' | 'bekle' | 'izleyici', hata: string) => this.gonder({ t: 'komut_red', istekId, neden, hata }, u.istemciId);
+    const y = komutYetkisi(this.durumu, cmd, { rol: u.rol, karakterler: new Set(u.kopyalar.keys()) }, this.yzKarakterler);
+    if (!y.ok) {
+      if (y.neden === 'yetki') {
+        const n = (this.yetkisiz.get(u.istemciId) ?? 0) + 1;
+        this.yetkisiz.set(u.istemciId, n);
+        if (n === 20) this.s.olay?.({ tur: 'yetkisiz', istemciId: u.istemciId, sayi: n });
+      }
+      red(y.neden, y.hata);
+      return;
+    }
+    if (!this.yurutucu) { red('bekle', 'savaş ekranı açık değil'); return; }
+    this.yurutucu({ istemciId: u.istemciId, istekId, cmd, ctx: y.ctx, ownerId: y.ownerId });
+  }
+
+  private katilim(kimden: string, m: IstemciMesaji & { t: 'katil' }, bag?: string): void {
     if (m.istemciId !== kimden) { this.bozuk++; return; }
     const fark = surumUyusmazligi(this.s.surum, m);
-    if (fark) { this.reddet(kimden, { t: 'red', neden: 'surum', ayrinti: fark }); return; }
+    if (fark) { this.reddet(kimden, { t: 'red', neden: 'surum', ayrinti: fark }, bag); return; }
     const eski = this.uyeler.get(kimden);
-    if (eski && m.anahtar !== eski.anahtar) { this.reddet(kimden, { t: 'red', neden: 'anahtar' }); return; }
+    if (eski && m.anahtar !== eski.anahtar) { this.reddet(kimden, { t: 'red', neden: 'anahtar' }, bag); return; }
     const ad = m.ad.trim().slice(0, 40) || '?';
     const u: HostUye = eski
       ? { ...eski, ad, bagli: true }
       : { istemciId: kimden, ad, anahtar: anahtarUret(this.s.rng), rol: this.asama === 'savas' ? 'izleyici' : 'oyuncu', bagli: true, kopyalar: new Map() };
     if (eski && eski.rol === 'izleyici' && u.kopyalar.size === 0 && this.asama !== 'savas') u.rol = 'oyuncu';
     this.uyeler.set(kimden, u);
-    this.gonder({ t: 'kabul', istemciId: kimden, anahtar: u.anahtar, rol: u.rol, karakterler: [...u.kopyalar.keys()] }, kimden);
+    this.gonder({ t: 'kabul', istemciId: kimden, anahtar: u.anahtar, rol: u.rol, karakterler: [...u.kopyalar.keys()] }, kimden, bag);
+    // Yeniden bağlanana açık istemleri yeniden gönder.
+    for (const i of this.istemler.values()) {
+      if (i.istemciId !== kimden) continue;
+      if (i.tur === 'zar') this.gonder({ t: 'zar_iste', istekId: i.istekId, istek: i.istek }, kimden);
+      else this.gonder({ t: 'tepki_sor', istekId: i.istekId, istek: i.istek, sureMs: 20_000 }, kimden);
+    }
     this.durumYay();
     // Yeniden bağlanan: elindeki günlük bu dönemin bir öneki olabilir; emin olmak için tam anlık (O4'te eksik olaylar).
     if (this.log.length || eski) this.anlikGonder(kimden);

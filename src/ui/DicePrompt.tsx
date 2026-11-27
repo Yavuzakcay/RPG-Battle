@@ -22,6 +22,8 @@ export function diceAskText(req: DiceRequest, whoName: string | null): { title: 
 export function DicePrompt(props: {
   request: DiceRequest; whoName: string | null;
   onEnter: (values: number[]) => void; onAuto: () => void; onCancel: () => void;
+  /** Görev ODA-2: ek not (istem oyuncunun cihazında / Game Master istiyor). */
+  note?: string;
 }) {
   const { request: req } = props;
   const D = t().dice;
@@ -41,6 +43,7 @@ export function DicePrompt(props: {
         onSubmit={(e: { preventDefault: () => void }) => { e.preventDefault(); submit(); }}>
         <strong>{text.title}</strong>
         {text.lines.map((l) => <small key={l}>{l}</small>)}
+        {props.note && <small className="dice-remote-note" role="status">{props.note}</small>}
         <div className="dice-inputs">
           {texts.map((v, i) => (
             <label key={i} className={bad.includes(i) ? 'bad' : undefined}>

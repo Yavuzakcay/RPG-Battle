@@ -290,6 +290,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
         const oda = screen.oda;
         return <Battle initial={screen.session} goalDraft={screen.goalDraft} restored={screen.restored === true} exitLabel={t().oda.back}
           onEvents={(ev) => { if (odaCanli) odaCanli.hostYayinla(oda, ev); else void import('./screens/odaCanli').then((m) => { odaCanli = m; m.hostYayinla(oda, ev); }); }}
+          odaId={oda}
           onExit={(final) => {
             if (final?.status === 'finished') store(applyBattleResult(characters, final));
             // Bitince oda ayarları açılır ve son savaş özeti yazılır; bitmediyse kayıtlı savaş için kilitli kalır.
