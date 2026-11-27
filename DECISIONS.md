@@ -2,6 +2,23 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## KATALOG-F2-PROSPEKTUS: kadim yaratık açıklamaları bekliyor (2026-11-27; kural sürümü (107) ve kayıt sürümü (28) değişmedi)
+
+Görev, kadim yaratıkların ve Mücevher Ejderhası hatlarının Dungeondex TR/EN açıklamalarını istiyordu (21 stat bloğu). Açıklamalar yazılmadı.
+
+- **Neden:**
+  - Hiçbir dalda canavar kaydı yok (KATALOG-F2 veri görevi yapılmadı).
+  - Kaynak PDF depoda yok.
+  - Görev kuralı sayıların kayıtla birebir olmasını ve metinden değer uydurulmamasını istiyor; kayıt olmadan bu sağlanamaz.
+  - Kayıtsız anahtar mevcut iki testi kırar: `canavarAciklama.test.ts` (anahtar 330'luk listede olmalı) ve `aciklamalarEn.test.ts`.
+- **Alternatif reddedildi:** envanterdeki özetten (KATALOG-1-ENVANTER §3.1) taslak açıklama yazmak. Bu satırlarda DC, kurtarma türü ve saldırı bonusu yok; taslak değer uydurmak olurdu.
+- **Yapılan:**
+  - `harita/belgeler/KATALOG-F2-PROSPEKTUS.md`: 21 bloğun durumu ("bekliyor") ve F2 veri görevine notlar. Notlar: ayrı dizi ve test, mücevher hat adı ↔ envanter kümesi çelişkisi, korumalı adlar (yalnız envanter belgesinde, dokunulmadı), HP ve boyut tutarsızlıkları.
+  - Kayıt gelince uygulanacak yazım kuralı aynı belgede.
+  - `harita/belgeler/KATALOG-SIGMAYAN.md` iskeleti oluşturuldu; satır yok.
+- **Test:** yeni test eklenmedi. Kayıt gelince mevcut testler kendiliğinden devreye girer: kapsam, sayısal tutarlılık ve EN karşılığı.
+- Dungeondex görüntüsü kayıt olmadığı için alınmadı.
+
 ## KATALOG-1 F / KATALOG-F0: yarı can fazı (Faz 2) motor kuralı — mekanik donmasına bilinçli istisna (2026-11-26; kural sürümü 107, kayıt sürümü 28)
 
 Kullanıcı kararı (2026-11-26): Serüven öncesi mekanik donmasına **bilinçli istisna** olarak, Mühür Ruhu bosslarının "%50 can Taş Uyanışı" fazı gerçek bir motor kuralı olacak.
