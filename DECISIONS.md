@@ -2,6 +2,24 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev GORSEL-MUCEVHER-EJDERHA: 15 mücevher ejderhası görseli bağlandı (2026-11-27; yalnız görsel, kural sürümü ve kayıt sürümü değişmedi)
+
+- **Hat:** Mühür Ruhu hattı (`scripts/boss-gorsel.mjs`) aynen: kaynak depo dışı `assets-ham/boss/dragon-<hat>-<yavru|genc|adult>.jpg`
+  → `public/boss/<kimlik>.webp` + `data/boss-gorsel.json` yeni `mucevher` bölümü (`hat`, `evre`, `kaynak`). Çalıştırma
+  `node scripts/boss-gorsel.mjs --kaynak <assets-ham/boss> --grup mucevher`; kısmi çalıştırma json'un, ölçüm dökümünün ve Mühür Ruhu
+  kontrol sayfalarının geri kalanını korur. Bağlama `scripts/katalog-f2-kadim.mjs`: kayıtta `avatar: "boss/<kimlik>.webp"` (savaş jetonu
+  `monsterAvatar`) ve Dungeondex eşlemesinde `kaynak: jeton`. Kimlikler veride vardı (`data/canavarlar-kadim.json` `hatlar`); yeni kimlik yok.
+- **Ölçek:** yazılmadı (`jetonOlcek` yok). Jeton boyutu boyut sınıfından (Yavru M 1×1, Genç L 2×2, Yetişkin H 3×3; `token-sizes.json`).
+- **Gri zemin:** ejderha görsellerinin zemini düz koyu gri (≈ #50). Renkli zemin eşiği (T0 28, T1 +55) gövdenin gri/koyu tonlarını ve
+  konturu yiyordu (piksellerin %27–36'sı yarı saydam, gri karın ve boynuzlar delik). Nötr zeminde dar eşik (T0 = max(10, 4 × gürültü),
+  T1 = T0 + 35) ve iç boşlukta en az 150 px / alanın %0,05'i; yarı saydam oran %5–11 (duman/kıvılcım). Renkli zemin yolu aynı.
+- **Dungeondex vitrini** canavarda yalnız SRD listesine bakıyordu; katalog canavarlarının `avatar`ı da okunur (`Dungeondex.tsx` `Vitrine`).
+  Mühür Ruhu Dungeondex'te olmadığından yalnız kadim kayıtları etkiler.
+- **Bağlanmayanlar:** `dragon-alpha-adult-b.jpg` yedek (Alfa Yetişkin `-a`). `dragon-of-hexonia-a/-b.jpg` bağlı değil (görsel ve `avatar`
+  yok, Dungeondex'te yedek glifi); değiştirilmedi. Diğer boss dosyalarına dokunulmadı.
+- **Test:** `src/data/bossGorsel.test.ts` (15 kimlik, kaynak eşlemesi, avatar/vitrin aynı dosya, ölçek yok); `katalogF2.test.ts`
+  "görsel alanı yok" beklentisi "görsel yalnız mücevher ejderhalarında" oldu (gerekçe: görseller geldi).
+
 ## Görev KATALOG-F2-DUZELT: kadim yaratıklar ve mücevher ejderhaları onaylı belgeye göre (2026-11-27; kural sürümü (107) ve kayıt sürümü (28) değişmedi)
 
 Tek kaynak `harita/belgeler/KATALOG-F2-OZELLIKLER.md` (onaylı; PDF ile çelişirse belge kazanır; bu dala da eklendi). Aşağıdaki

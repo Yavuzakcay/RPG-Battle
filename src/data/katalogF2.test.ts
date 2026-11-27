@@ -96,10 +96,12 @@ describe('KATALOG-F2: kadim yaratık kayıtları', () => {
     }
     for (const t of ['dex', 'yer', 'ozellikler'] as const) expect(Object.keys(K[t]).sort()).toEqual([...ids()].sort());
   });
-  it('şema: yalnız Monster alanları; yetenekler, boyut, saldırılar ve ekler geçerli; görsel alanı yok', () => {
+  // GORSEL-MUCEVHER-EJDERHA: görsel yalnız mücevher ejderhalarında (`avatar` boss/<kimlik>.webp, src/data/bossGorsel.test.ts); diğer kadimlerde yok.
+  it('şema: yalnız Monster alanları; yetenekler, boyut, saldırılar ve ekler geçerli; görsel yalnız mücevher ejderhalarında', () => {
+    const gem = new Set(Object.values(K.hatlar).flatMap((h) => h.kimlikler));
     for (const m of K.canavarlar) {
       for (const k of Object.keys(m)) expect(MONSTER_KEYS.has(k), `${m.id}.${k}`).toBe(true);
-      expect(m.avatar, m.id).toBeUndefined();
+      expect(m.avatar, m.id).toBe(gem.has(m.id) ? `boss/${m.id}.webp` : undefined);
       expect(['T', 'S', 'M', 'L', 'H', 'G']).toContain(m.size);
       expect(Object.keys(m.abilities).sort()).toEqual(['cha', 'con', 'dex', 'int', 'str', 'wis']);
       for (const v of Object.values(m.abilities)) expect(v >= 1 && v <= 36).toBe(true);

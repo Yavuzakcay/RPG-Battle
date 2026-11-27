@@ -562,7 +562,13 @@ const DEFS = [captiveDragon(), dragonOfHexonia('a'), dragonOfHexonia('b'), cosmi
   oceanNightmare(1), oceanNightmare(2), titanOfNightmare(),
   ...Object.keys(HATLAR).flatMap((h) => [0, 1, 2].map((i) => gemDragon(h, i)))];
 
-const MONSTER_KEYS = ['id', 'name', 'size', 'ac', 'hp', 'speed', 'fly', 'swim', 'abilities', 'saves', 'skills', 'darkvision', 'cr', 'multiattack', 'faz2', 'attacks',
+// GORSEL-MUCEVHER-EJDERHA: mücevher ejderhası görselleri data/boss-gorsel.json `mucevher`den (scripts/boss-gorsel.mjs --grup mucevher).
+// Savaş jetonu ve Dungeondex vitrini `avatar` (src/battle/avatar.ts monsterAvatar); jeton boyutu boyut sınıfından (ölçek yazılmaz).
+// Dosyası olmayan kayıtta avatar yok (yedek jeton/glif).
+const MUCEVHER_GORSEL = fs.existsSync(P('data/boss-gorsel.json')) ? (JSON.parse(fs.readFileSync(P('data/boss-gorsel.json'), 'utf8')).mucevher ?? {}) : {};
+for (const d of DEFS) { const dosya = MUCEVHER_GORSEL[d.id]?.dosya; if (dosya && fs.existsSync(P(`public/${dosya}`))) d.avatar = dosya; }
+
+const MONSTER_KEYS = ['id', 'name', 'size', 'ac', 'hp', 'speed', 'fly', 'swim', 'avatar', 'abilities', 'saves', 'skills', 'darkvision', 'cr', 'multiattack', 'faz2', 'attacks',
   'traits', 'resistances', 'immunities', 'vulnerabilities', 'unsupported', 'creatureType', 'kaynak', 'riders'];
 const pick = (o, keys) => Object.fromEntries(keys.filter((k) => o[k] !== undefined).map((k) => [k, o[k]]));
 const featKey = (id, f) => `${id}/${f[0]}:${slug(f[1])}`;
@@ -611,13 +617,13 @@ ef = `${head},\n${rows.join(',\n')}${ef.slice(yuva)}`;
 JSON.parse(ef);
 fs.writeFileSync(P('data/efsanevi.json'), ef);
 
-// Dungeondex görsel eşlemesi: görünen kayıtlar için yedek satırı (görsel hazırlanıyor), `npm run dd-gorsel` biçiminde.
+// Dungeondex görsel eşlemesi: görünen kayıtlar için satır, `npm run dd-gorsel` biçiminde (avatar varsa jeton, yoksa yedek: görsel hazırlanıyor).
 const gp = P('data/dungeondex-gorsel-esleme.json');
 let g = fs.readFileSync(gp, 'utf8');
 const gs = g.indexOf('\n  "canavar": {');
 const ge = g.indexOf('\n  }', gs + 5);
 const block = g.slice(gs, ge).split('\n').filter((l) => { const m = /^ {4}"([^"]+)":/.exec(l); return !(m && ours(m[1])); }).join('\n').replace(/,\s*$/, '');
-const grows = visible.map((d) => `    ${JSON.stringify(d.id)}: ${JSON.stringify({ kaynak: 'yedek', ref: 'yedek:nesne', durum: 'yedek', ad: d.name })}`);
+const grows = visible.map((d) => `    ${JSON.stringify(d.id)}: ${JSON.stringify(d.avatar ? { kaynak: 'jeton', ref: d.avatar, durum: 'var', ad: d.name } : { kaynak: 'yedek', ref: 'yedek:nesne', durum: 'yedek', ad: d.name })}`);
 g = `${g.slice(0, gs)}${block},\n${grows.join(',\n')}${g.slice(ge)}`;
 JSON.parse(g);
 fs.writeFileSync(gp, g);

@@ -838,5 +838,425 @@
   "silinenParca": 1050,
   "kalanParca": 12,
   "kenarSizinti": 0
+ },
+ {
+  "id": "alphlet",
+  "file": "dragon-alpha-yavru.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   512,
+   402
+  ],
+  "zemin": "#42454c",
+  "koseler": [
+   "#42454c",
+   "#42464d",
+   "#42454c",
+   "#42454c"
+  ],
+  "gurultu": 1,
+  "esik": [
+   10,
+   45
+  ],
+  "icBosluk": 1,
+  "silinenParca": 0,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "alphyr",
+  "file": "dragon-alpha-genc.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   512,
+   394
+  ],
+  "zemin": "#45464a",
+  "koseler": [
+   "#45464a",
+   "#45464a",
+   "#45464a",
+   "#45464a"
+  ],
+  "gurultu": 1,
+  "esik": [
+   10,
+   45
+  ],
+  "icBosluk": 1,
+  "silinenParca": 0,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "alphadrake",
+  "file": "dragon-alpha-adult-a.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   488,
+   512
+  ],
+  "zemin": "#43454c",
+  "koseler": [
+   "#44464c",
+   "#44464c",
+   "#41444b",
+   "#41444b"
+  ],
+  "gurultu": 2,
+  "esik": [
+   10,
+   45
+  ],
+  "icBosluk": 7,
+  "silinenParca": 6,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "omeglet",
+  "file": "dragon-omega-yavru.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   512,
+   440
+  ],
+  "zemin": "#545354",
+  "koseler": [
+   "#565555",
+   "#565455",
+   "#525252",
+   "#525252"
+  ],
+  "gurultu": 1,
+  "esik": [
+   10,
+   45
+  ],
+  "icBosluk": 0,
+  "silinenParca": 22,
+  "kalanParca": 1,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "omegyr",
+  "file": "dragon-omega-genc.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   512,
+   469
+  ],
+  "zemin": "#4e4e4e",
+  "koseler": [
+   "#4e4e4e",
+   "#4e4e4e",
+   "#4e4e4e",
+   "#4e4e4e"
+  ],
+  "gurultu": 1,
+  "esik": [
+   10,
+   45
+  ],
+  "icBosluk": 0,
+  "silinenParca": 33,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "omegadrake",
+  "file": "dragon-omega-adult.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   512,
+   475
+  ],
+  "zemin": "#515051",
+  "koseler": [
+   "#505050",
+   "#525053",
+   "#505050",
+   "#505050"
+  ],
+  "gurultu": 2,
+  "esik": [
+   10,
+   45
+  ],
+  "icBosluk": 0,
+  "silinenParca": 23,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "deltlet",
+  "file": "dragon-delta-yavru.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   512,
+   505
+  ],
+  "zemin": "#525151",
+  "koseler": [
+   "#525051",
+   "#505050",
+   "#525252",
+   "#525252"
+  ],
+  "gurultu": 2,
+  "esik": [
+   10,
+   45
+  ],
+  "icBosluk": 2,
+  "silinenParca": 10,
+  "kalanParca": 3,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "deltyr",
+  "file": "dragon-delta-genc.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   512,
+   498
+  ],
+  "zemin": "#4d4d4d",
+  "koseler": [
+   "#4e4e4e",
+   "#4e4d4d",
+   "#4c4c4c",
+   "#4c4c4c"
+  ],
+  "gurultu": 1,
+  "esik": [
+   10,
+   45
+  ],
+  "icBosluk": 3,
+  "silinenParca": 20,
+  "kalanParca": 2,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "deltadrake",
+  "file": "dragon-delta-adult.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   512,
+   510
+  ],
+  "zemin": "#505050",
+  "koseler": [
+   "#505050",
+   "#505050",
+   "#505050",
+   "#505050"
+  ],
+  "gurultu": 1,
+  "esik": [
+   10,
+   45
+  ],
+  "icBosluk": 0,
+  "silinenParca": 3,
+  "kalanParca": 5,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "sigmlet",
+  "file": "dragon-sigma-yavru.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   512,
+   453
+  ],
+  "zemin": "#505050",
+  "koseler": [
+   "#505050",
+   "#505050",
+   "#505050",
+   "#505050"
+  ],
+  "gurultu": 2,
+  "esik": [
+   10,
+   45
+  ],
+  "icBosluk": 0,
+  "silinenParca": 113,
+  "kalanParca": 6,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "sigmyr",
+  "file": "dragon-sigma-genc.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   512,
+   473
+  ],
+  "zemin": "#4d4d4d",
+  "koseler": [
+   "#4e4e4e",
+   "#4e4e4e",
+   "#4c4c4c",
+   "#4c4c4c"
+  ],
+  "gurultu": 1,
+  "esik": [
+   10,
+   45
+  ],
+  "icBosluk": 0,
+  "silinenParca": 10,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "sigmadrake",
+  "file": "dragon-sigma-adult.jpg",
+  "ham": [
+   2528,
+   1696
+  ],
+  "cikti": [
+   512,
+   341
+  ],
+  "zemin": "#4c4c4b",
+  "koseler": [
+   "#4d4c4a",
+   "#4e4c4c",
+   "#4a4a4a",
+   "#4c4c4c"
+  ],
+  "gurultu": 2,
+  "esik": [
+   10,
+   45
+  ],
+  "icBosluk": 0,
+  "silinenParca": 13,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "gamlet",
+  "file": "dragon-gamma-yavru.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   512,
+   458
+  ],
+  "zemin": "#4f4e4f",
+  "koseler": [
+   "#4f4f4f",
+   "#4e4e4e",
+   "#504e4f",
+   "#4f4e4f"
+  ],
+  "gurultu": 2,
+  "esik": [
+   10,
+   45
+  ],
+  "icBosluk": 0,
+  "silinenParca": 27,
+  "kalanParca": 12,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "gammyr",
+  "file": "dragon-gamma-genc.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   512,
+   483
+  ],
+  "zemin": "#525152",
+  "koseler": [
+   "#525152",
+   "#525252",
+   "#525152",
+   "#515151"
+  ],
+  "gurultu": 2,
+  "esik": [
+   10,
+   45
+  ],
+  "icBosluk": 1,
+  "silinenParca": 16,
+  "kalanParca": 8,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "gammadrake",
+  "file": "dragon-gamma-adult.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   512,
+   481
+  ],
+  "zemin": "#515151",
+  "koseler": [
+   "#515151",
+   "#505050",
+   "#515051",
+   "#525252"
+  ],
+  "gurultu": 2,
+  "esik": [
+   10,
+   45
+  ],
+  "icBosluk": 1,
+  "silinenParca": 20,
+  "kalanParca": 10,
+  "kenarSizinti": 0
  }
 ]

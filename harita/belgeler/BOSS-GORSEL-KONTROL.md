@@ -92,3 +92,32 @@ Kullanıcı isterse aşağıdakiler yeniden üretilebilir. Hepsi kabul edilebili
   - Ölçek bağlandı (MUHUR-OLCEK): `olcek` çizginin Sv.3 bossunun jetonuna göre; üretici `jetonOlcek` (= `token-sizes.json` `scale[<Sv.3 boyutu>]` × `olcek`) yazar,
     `monsterAvatar` → `Avatar.scale` → `tokenScale`. Yalnız görünüm. Ekran: `boss-gorsel-kontrol/jeton-olcek.jpg` (üstte Mirit/Mirath/Mirage, altta Cim/Cimbom/Cimbombom).
 - **Dungeondex vitrini:** canavar görselleri `data/dungeondex-gorsel-esleme.json`'dan (`npm run dd-gorsel`). Katalog canavarları Dungeondex'e girdiğinde aynı `public/boss/<id>.webp` yolu kullanılabilir. Dungeondex arayüzüne dokunulmadı.
+
+## GORSEL-MUCEVHER-EJDERHA: 15 mücevher ejderhası
+
+Üretici aynı: `node scripts/boss-gorsel.mjs --kaynak <assets-ham/boss> --grup mucevher`. Eşleme `data/boss-gorsel.json` `mucevher`
+(`hat`, `evre`, `kaynak`); ölçek yok, jeton boyutu boyut sınıfından. Bağlama `scripts/katalog-f2-kadim.mjs` (`avatar`, Dungeondex
+eşlemesi `kaynak: jeton`); Dungeondex vitrini katalog canavarının `avatar`ını okur. Kontrol sayfası `boss-gorsel-kontrol/sayfa-mucevher.jpg`
+(hat başına bir satır: Alfa, Omega, Delta, Sigma, Gamma).
+
+- **Zemin:** düz koyu gri (≈ #50, köşe gürültüsü 1–2). Nötr zeminde dar eşik (T0 10, T1 45) ve büyük iç boşluk şartı; renkli zemin eşiği
+  gövdenin gri tonlarını (Omega karnı, boynuzlar) siliyordu. Sonuç: yarı saydam piksel oranı %5–11 (Delta/Sigma duman ve kıvılcımı).
+- **Bağlanmayan:** `dragon-alpha-adult-b.jpg` (yedek), `dragon-of-hexonia-a/-b.jpg` (bağlı değil, değiştirilmedi).
+
+| Kimlik | Hat | Evre | Ham dosya | Ham boyut | Çıktı | Zemin | İç boşluk | Silinen parça |
+|---|---|---|---|---|---|---|---|---|
+| `alphlet` | alpha | Yavru | dragon-alpha-yavru.jpg | 2048×2048 | 512×402 | #42454c | 1 | 0 |
+| `alphyr` | alpha | Genç | dragon-alpha-genc.jpg | 2048×2048 | 512×394 | #45464a | 1 | 0 |
+| `alphadrake` | alpha | Yetişkin | dragon-alpha-adult-a.jpg | 2048×2048 | 488×512 | #43454c | 7 | 6 |
+| `omeglet` | omega | Yavru | dragon-omega-yavru.jpg | 2048×2048 | 512×440 | #545354 | 0 | 22 |
+| `omegyr` | omega | Genç | dragon-omega-genc.jpg | 2048×2048 | 512×469 | #4e4e4e | 0 | 33 |
+| `omegadrake` | omega | Yetişkin | dragon-omega-adult.jpg | 2048×2048 | 512×475 | #515051 | 0 | 23 |
+| `deltlet` | delta | Yavru | dragon-delta-yavru.jpg | 2048×2048 | 512×505 | #525151 | 2 | 10 |
+| `deltyr` | delta | Genç | dragon-delta-genc.jpg | 2048×2048 | 512×498 | #4d4d4d | 3 | 20 |
+| `deltadrake` | delta | Yetişkin | dragon-delta-adult.jpg | 2048×2048 | 512×510 | #505050 | 0 | 3 |
+| `sigmlet` | sigma | Yavru | dragon-sigma-yavru.jpg | 2048×2048 | 512×453 | #505050 | 0 | 113 |
+| `sigmyr` | sigma | Genç | dragon-sigma-genc.jpg | 2048×2048 | 512×473 | #4d4d4d | 0 | 10 |
+| `sigmadrake` | sigma | Yetişkin | dragon-sigma-adult.jpg | 2528×1696 | 512×341 | #4c4c4b | 0 | 13 |
+| `gamlet` | gamma | Yavru | dragon-gamma-yavru.jpg | 2048×2048 | 512×458 | #4f4e4f | 0 | 27 |
+| `gammyr` | gamma | Genç | dragon-gamma-genc.jpg | 2048×2048 | 512×483 | #525152 | 1 | 16 |
+| `gammadrake` | gamma | Yetişkin | dragon-gamma-adult.jpg | 2048×2048 | 512×481 | #515151 | 1 | 20 |
