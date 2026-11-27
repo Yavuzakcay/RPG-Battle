@@ -7,6 +7,11 @@ Durum: **tasarım** (2026-11-27). Bu görevde kod yazılmadı; mekanik, kural s�
 `src/screens/odaCanli.ts` (oturum/günlük metni ekran katmanında, `src/room/` i18n'e bile bağlı değil); `anlik`/`olaylar`/`ozet`'e `donem`
 alanı ve `karakter_red` mesajı eklendi; katılımda `kuralSurumuAzami` yerine `kuralSurumu` + `icerik`. Ayrıntı DECISIONS.md ODA-1.
 
+**O2 uygulandı (Görev ODA-2, 2026-11-27):** yerel ağ aktarıcısı (`src/room/aktarici.ts` + `aktariciNode.ts`, `npm run oda-sunucu` =
+`scripts/oda-sunucu.ts`, Vite eklentisi), WebSocket bağdaştırıcısı, oyuncu komutu (`auth.ts`, `setDispatchSink`), uzak zar/tepki
+istemleri (`RemoteAsker`). Belgeden farklar: sunucu betiği `.ts` (vite-node); aynı kimlikle ikinci bağlantı için `Zarf.bag` (aday bağlantı,
+host'un `kabul`'ü bağlar); `istem_iptal` mesajı; oyuncu cihazında ayrı `SavasSurucusu` yerine `dispatch` çıkışı. Ayrıntı DECISIONS.md ODA-2.
+
 Amaç: Game Master'ın savaşta yaptığı her değişiklik oyuncuların cihazına anında yansısın. Her oyuncu kendi karakterini kendi
 cihazından oynasın. İlk sürümde hesap yok, katılım oda koduyla. Google/Supabase girişi en son, yalnız bir bağlantı türü olarak eklenir.
 Ağ katmanı bu yüzden değiştirilebilir olmalı.

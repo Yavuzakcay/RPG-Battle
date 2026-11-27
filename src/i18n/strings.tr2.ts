@@ -227,7 +227,7 @@ export const TR_EXTRA = {
   },
   /** Görev ODA-1: çevrimiçi oda (O1: aynı tarayıcıdaki sekmeler; salt izleme). */
   odaCevrimici: {
-    title: 'Çevrimiçi oda', help: 'Oyuncular aynı tarayıcıda başka bir sekmeden oda koduyla katılır ve savaşı canlı izler. (Yerel ağ ve internet sonraki aşamada.)',
+    title: 'Çevrimiçi oda', help: 'Oyuncular oda koduyla katılır: aynı Wi-Fi\'daki telefonlar uygulamayı oda sunucusunun adresinden (npm run oda-sunucu) açar; sunucu yoksa aynı tarayıcının sekmeleri. Herkes kendi karakterini kendi sırasında oynar.',
     open: 'Çevrimiçi aç', close: 'Çevrimiçi kapat', code: 'Oda kodu', opening: 'Açılıyor…', openFailed: 'Oda açılamadı.',
     members: 'Katılanlar', noMembers: 'Henüz kimse katılmadı.', online: 'bağlı', offline: 'kopuk', watcher: 'izleyici',
     copies: (n: number): string => `${n} karakter kopyası`, copyBadge: 'kopya',
@@ -240,6 +240,11 @@ export const TR_EXTRA = {
     stage: { lobi: 'Lobi', kurulum: 'Savaş kuruluyor', savas: 'Savaş sürüyor', bitti: 'Savaş bitti' } as Record<string, string>,
     myChars: 'Karakterlerin', send: 'Kopya gönder', sent: 'Gönderildi', withdraw: 'Geri al',
     charRejected: { gecersiz: 'Karakter kabul edilmedi (geçersiz).', dolu: 'Parti dolu.', kilitli: 'Savaş sürerken karakter gönderilemez.' } as Record<string, string>,
+    cmdRejected: { yetki: 'Bu savaşçıyı yönetemezsin.', izleyici: 'İzleyici komut gönderemez.', bekle: 'Şu an komut gönderilemez (Game Master bekliyor).', gecersiz: 'Komut reddedildi.' } as Record<string, string>,
+    remoteWait: (name: string): string => `${name} oyuncusunun cihazından bekleniyor. İstersen sen karar ver.`,
+    remoteFrom: 'Game Master istiyor',
+    transport: { 'yerel-ag': 'Yerel ağ', sekme: 'Bu tarayıcının sekmeleri', bellek: 'Bellek', supabase: 'İnternet' } as Record<string, string>,
+    playing: 'Oynuyorsun: kendi karakterini kendi sıranda yönet',
     watch: 'Savaşı izle', watching: 'İzliyorsun: Game Master\'ın savaşı (salt izleme)', leaveWatch: 'Lobiye dön',
   },
   roomRules: {

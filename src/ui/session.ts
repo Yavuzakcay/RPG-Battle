@@ -1,6 +1,7 @@
 /** Tek cihazda oynanan savaş oturumu: durum, olay günlüğü ve komut gönderme. */
 import { execute, type BattleEvent, type BattleState, type Command, type CommandContext } from '../battle';
-import type { Rng } from '../rules/dice';
+import type { DiceRequest, Rng } from '../rules/dice';
+import type { ReactionAnswer, ReactionRequest } from '../rules/reactionChoice';
 import { isRecording, type DiceGroup } from '../rules/manualDice';
 import type { DiceRoll } from '../battle/types';
 import { describeEvents } from './log';
@@ -20,7 +21,24 @@ export interface Session {
 export interface SessionWatch {
   current(): Session | null;
   subscribe(fn: (s: Session) => void): () => void;
+  /** Görev ODA-2: bu cihaz kendi karakterlerini oynar (dokunma açık; komutlar host'a gider, `setDispatchSink`). */
+  control?(): boolean;
+  send?(cmd: Command): void;
+  /** Görev ODA-2: host'un bu cihaza yolladığı zar/tepki istemleri. */
+  prompts?(fn: (p: RemotePrompt) => void): () => void;
 }
+
+export type RemotePrompt =
+  | { kind: 'dice'; id: string; request: DiceRequest; answer(values: number[] | null): void }
+  | { kind: 'reaction'; id: string; request: ReactionRequest; answer(a: ReactionAnswer): void }
+  | { kind: 'cancel'; id: string };
+
+/**
+ * Görev ODA-2: çevrimiçi odada oyuncu cihazı komutu kendisi çalıştırmaz; `dispatch` komutu buraya verir (host'a gider)
+ * ve oturumu değiştirmeden döner. Durum host'tan gelen olaylarla değişir. Tek cihazda ve host'ta boş.
+ */
+let sink: ((cmd: Command) => void) | null = null;
+export function setDispatchSink(f: ((cmd: Command) => void) | null): void { sink = f; }
 
 export function createSession(state: BattleState, startEvents: BattleEvent[]): Session {
   return { state, events: [...startEvents], lines: describeEvents(startEvents, state), error: null };
@@ -40,6 +58,7 @@ export function contextFor(state: BattleState, actorId: string): CommandContext 
 export const GM_CONTEXT: CommandContext = { playerId: 'gm', isGm: true };
 
 export function dispatch(session: Session, cmd: Command, rng: Rng, as?: CommandContext): Session {
+  if (sink) { sink(cmd); return session.error ? { ...session, error: null } : session; }
   // GM komutları (savaşçıya bağlı olmayan ya da GM'in istediği kontroller).
   const ctx = as ?? (!('actorId' in cmd) || cmd.type === 'skill_check'
     ? GM_CONTEXT

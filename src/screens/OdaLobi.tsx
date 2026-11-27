@@ -9,13 +9,14 @@ import { t } from '../i18n';
 import type { Oda } from '../oda/model';
 import { addOnlineCopy, clearOnlineCopies, removeOnlineCopy } from '../oda/store';
 import type { SavedCharacter } from '../rules/builder';
-import type { SessionWatch } from '../ui/session';
+import type { RemotePrompt, SessionWatch } from '../ui/session';
+import { DicePrompt } from '../ui/DicePrompt';
 import { sheetClassLevel } from '../ui/classLabel';
 import { BaglantiHatasi } from '../room/transport';
 import { kodGecerli, kodTemizle } from '../room/code';
 import type { OdaIstemci } from '../room/client';
 import {
-  aktifHost, aktifIstemci, cevrimiciAc, cevrimiciKapat, hostAbone, hostOdaGuncelle, istemciAyril, izleme, kodlaKatil,
+  aktifHost, aktifHostTuru, aktifIstemci, cevrimiciAc, cevrimiciKapat, hostAbone, hostOdaGuncelle, istemciAyril, izleme, kodlaKatil,
 } from './odaCanli';
 
 const useYenile = (): (() => void) => { const [, set] = useState(0); return () => set((n) => n + 1); };
@@ -37,6 +38,7 @@ export function OdaCevrimiciPanel(props: { room: Oda; onChange: (fn: (o: Oda) =>
     yenile();
   }), []);
   const host = aktifHost(room.id);
+  const tur = aktifHostTuru();
   const ac = async () => {
     setAciliyor(true); setHata(null);
     try {
@@ -57,7 +59,7 @@ export function OdaCevrimiciPanel(props: { room: Oda; onChange: (fn: (o: Oda) =>
       {hata && <p className="oda-error" role="alert">{hata}</p>}
       {host && (
         <>
-          <p className="oda-kod">{C.code}: <strong data-testid="oda-kod">{host.kod}</strong> <small className="mute">{C.stage[host.asama] ?? host.asama}</small></p>
+          <p className="oda-kod">{C.code}: <strong data-testid="oda-kod">{host.kod}</strong> <small className="mute">{C.stage[host.asama] ?? host.asama}{tur ? ` · ${C.transport[tur] ?? tur}` : ''}</small></p>
           <h3>{C.members}</h3>
           {uyeler.length === 0 && <p className="empty-state">{C.noMembers}</p>}
           <ul className="oda-list">
@@ -94,6 +96,9 @@ export function OdaKodlaKatil(props: { characters: SavedCharacter[]; onWatch: (w
   const [c, setC] = useState<OdaIstemci | null>(() => aktifIstemci());
   const onWatch = useRef(props.onWatch);
   onWatch.current = props.onWatch;
+  // Görev ODA-2: savaş ekranı açılmadan gelen zar istemi (kurulumdaki inisiyatif) lobide sorulur.
+  const [istemler, setIstemler] = useState<RemotePrompt[]>([]);
+  useEffect(() => (c ? izleme.prompts?.((p) => setIstemler((q) => (p.kind === 'cancel' ? q.filter((x) => x.id !== p.id) : p.kind === 'dice' && !q.some((x) => x.id === p.id) ? [...q, p] : q))) : undefined), [c]);
   useEffect(() => c?.abone((o) => {
     if (o.tur === 'kabul') { const k = kimlikOku(); kimlikYaz({ ...k, istemciId: c.istemciId, anahtarlar: { ...k.anahtarlar, [c.kod]: o.anahtar } }); }
     if (o.tur === 'red') setHata(o.neden === 'surum' ? `${C.rejected.surum} (${C.versionField[o.ayrinti ?? ''] ?? o.ayrinti ?? ''})` : C.rejected[o.neden] ?? o.neden);
@@ -133,11 +138,16 @@ export function OdaKodlaKatil(props: { characters: SavedCharacter[]; onWatch: (w
     );
   }
   const oda = c.oda;
+  const ilk = istemler[0];
+  const zarIstemi = ilk?.kind === 'dice' ? ilk : null;
+  const cevapla = (v: number[] | null) => { zarIstemi?.answer(v); setIstemler((q) => q.slice(1)); };
   const ben = oda?.uyeler.find((u) => u.istemciId === c.istemciId);
   const gonderilen = new Set(ben?.karakterler ?? []);
   const kilitli = !!oda && (oda.asama === 'savas' || oda.asama === 'kurulum');
   return (
     <section className="panel oda-lobi" data-testid="oda-lobi">
+      {zarIstemi && <DicePrompt key={zarIstemi.id} request={zarIstemi.request} whoName={null} note={C.remoteFrom}
+        onEnter={(v) => cevapla(v)} onAuto={() => cevapla(null)} onCancel={() => cevapla(null)} />}
       <h2>{oda?.ad ?? C.connecting} <small className="mute">{C.connected(c.kod)}{oda ? ` · ${C.stage[oda.asama] ?? oda.asama}` : ''}</small></h2>
       {oda && <p className="mute">{O.lineGm(oda.gmAdi)}</p>}
       {hata && <p className="oda-error" role="alert">{hata}</p>}

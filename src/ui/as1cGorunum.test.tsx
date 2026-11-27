@@ -388,7 +388,6 @@ describe('KQ6-19: Celestial yıldız tacı', () => {
     if (CROWN_ON) expect(circle).toContain('star-crown-g'); else expect(circle).not.toContain('star-crown-g');
     const badge = renderToStaticMarkup(<AvatarBadge avatar={a} size={48} eager />);
     if (!CROWN_ON) expect(badge).not.toContain('star-crown');   // açıkken rozet tacı görsel yüklenince çizer (statik çizimde yok)
-    // @ts-expect-error uygulama tsconfig'inde node tipleri yok (testte dosya okunur)
     const css = (await import('node:fs')).readFileSync('src/styles.css', 'utf8') as string;
     expect(css).toMatch(/prefers-reduced-motion: reduce\) \{ \.sc-star \{ animation: none; \} \}/);
   });

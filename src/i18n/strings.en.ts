@@ -186,7 +186,7 @@ export const en: Strings = {
   },
   /** Task ODA-1: online room (O1: tabs in the same browser; watch only). */
   odaCevrimici: {
-    title: 'Online room', help: 'Players join from another tab in the same browser with the room code and watch the battle live. (Local network and internet come later.)',
+    title: 'Online room', help: 'Players join with the room code: phones on the same Wi-Fi open the app from the room server address (npm run oda-sunucu); without a server, tabs of this browser. Everyone plays their own character on their turn.',
     open: 'Go online', close: 'Go offline', code: 'Room code', opening: 'Opening…', openFailed: 'Could not open the room.',
     members: 'Joined', noMembers: 'Nobody has joined yet.', online: 'online', offline: 'disconnected', watcher: 'watcher',
     copies: (n: number): string => `${n} character cop${n === 1 ? 'y' : 'ies'}`, copyBadge: 'copy',
@@ -199,6 +199,11 @@ export const en: Strings = {
     stage: { lobi: 'Lobby', kurulum: 'Setting up battle', savas: 'Battle in progress', bitti: 'Battle over' } as Record<string, string>,
     myChars: 'Your characters', send: 'Send copy', sent: 'Sent', withdraw: 'Withdraw',
     charRejected: { gecersiz: 'Character not accepted (invalid).', dolu: 'Party full.', kilitli: 'Characters cannot be sent during a battle.' } as Record<string, string>,
+    cmdRejected: { yetki: 'You cannot control this combatant.', izleyici: 'Watchers cannot send commands.', bekle: 'Commands cannot be sent right now (the Game Master is busy).', gecersiz: 'Command rejected.' } as Record<string, string>,
+    remoteWait: (name: string): string => `Waiting for ${name}'s device. You may decide instead.`,
+    remoteFrom: 'The Game Master asks',
+    transport: { 'yerel-ag': 'Local network', sekme: 'Tabs of this browser', bellek: 'Memory', supabase: 'Internet' } as Record<string, string>,
+    playing: 'Playing: control your own character on your turn',
     watch: 'Watch battle', watching: 'Watching: the Game Master\'s battle (watch only)', leaveWatch: 'Back to lobby',
   },
   roomRules: {

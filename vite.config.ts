@@ -4,6 +4,7 @@ import { defineConfig, type Plugin } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { APP_NAME } from './src/app/appName';
 import { splashDieCss, splashStaticHtml } from './src/ui/splashLogic';
+import { odaAktarici } from './src/room/aktariciNode';
 
 /**
  * index.html (Görev L, L2): başlık APP_NAME'den; açılış ekranının stili (zar dönüşü @keyframes dahil) satır içi ve ilk
@@ -34,8 +35,20 @@ function buildId(): string {
   return `${pkg.version ?? '0'}+${git}.${Date.now().toString(36)}`;
 }
 
+/**
+ * Görev ODA-2: geliştirme (`npm run dev -- --host`) ve önizleme (`npm run preview -- --host`) sunucusuna oda aktarıcısı
+ * (`/oda`, WebSocket). Telefon aynı sunucudan açınca yerel ağ odası çalışır. Test sunucusunda (http sunucusu yok) etkisiz.
+ */
+function odaAktariciEklentisi(): Plugin {
+  return {
+    name: 'oda-aktarici',
+    configureServer(server) { if (server.httpServer && 'on' in server.httpServer) odaAktarici(server.httpServer as import('node:http').Server); },
+    configurePreviewServer(server) { if (server.httpServer && 'on' in server.httpServer) odaAktarici(server.httpServer as import('node:http').Server); },
+  };
+}
+
 export default defineConfig({
-  plugins: [react(), appShell()],
+  plugins: [react(), appShell(), odaAktariciEklentisi()],
   define: { __APP_BUILD__: JSON.stringify(buildId()) },
   // Kuyruk 19C: harita/ altındaki kaynak görseller, önizlemeler ve prompt'lar derlemeye girmez (yalnızca public/ ve
   // içe aktarılan JSON); geliştirme sunucusu bunlar değişince yeniden yüklenmesin.

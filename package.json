@@ -31,6 +31,7 @@
     "sim:irk": "vite-node src/sim/irkRun.ts --",
     "sim:imza": "vite-node src/sim/imzaRun.ts",
     "sim:karadul": "vite-node src/sim/karadulRun.ts --",
+    "oda-sunucu": "vite-node scripts/oda-sunucu.ts --",
     "check:harita": "node scripts/kara-ekran.mjs",
     "masumlar": "node scripts/masumlar.mjs",
     "efektler": "node scripts/efektler.mjs",
@@ -77,13 +78,16 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@types/three": "0.186.0",
+    "@types/ws": "8.18.1",
     "@vitejs/plugin-react": "^4.3.4",
     "pdfjs-dist": "5.7.284",
     "playwright": "^1.48.2",
+    "qrcode-terminal": "0.12.0",
     "sharp": "^0.33.5",
     "typescript": "^5.6.0",
     "vite": "^5.4.11",
-    "vitest": "^2.1.0"
+    "vitest": "^2.1.0",
+    "ws": "8.18.3"
   },
   "allowScripts": {
     "sharp@0.33.5": true
