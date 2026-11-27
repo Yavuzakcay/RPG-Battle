@@ -5,8 +5,8 @@
  * Saf modül: React, DOM, localStorage yok; metinler parametreyle gelen dil tablosundan. SRD'nin İngilizce ham metni
  * (`Item.text`) ve sayfa numarası hiç kullanılmaz.
  */
-import { armor, isMagicItem, items, weapons } from '../../data';
-import type { Armor, Item, Weapon } from '../../data';
+import { aciklamaOf, armor, isMagicItem, items, katalogMonsters, trAciklama, weapons } from '../../data';
+import type { Armor, Item, Monster, Weapon } from '../../data';
 import type { Lang, Strings } from '../../i18n';
 import silahJson from '../../../data/prospektus/esya-silah.json';
 import zirhJson from '../../../data/prospektus/esya-zirh.json';
@@ -56,6 +56,15 @@ export function esyaIds(): Record<EsyaTur, string[]> & { katalog: string[] } {
     sihirli: items.filter((i) => isMagicItem(i) && !i.katalog).map((i) => i.id),
     katalog: items.filter((i) => !!i.katalog).map((i) => i.id),
   };
+}
+
+/**
+ * Görev MUHUR-TASI-PROSPEKTUS: eşya bir Mühür taşıysa taşa hapsedilmiş Mühür Ruhu (`data/bosslar-muhur.json` kaydında
+ * `ganimet` bu kimlik; kademe 1 Çatlak, 2 Uyanmış, 3 Sv.3 taşı). Canavarlar yüklenmemişse ya da taş değilse null.
+ */
+export function muhurRuhu(id: string): { id: string; name: string; kademe: number } | null {
+  const m = katalogMonsters.find((x) => (x as Monster & { ganimet?: string }).ganimet === id) as (Monster & { kademe?: number }) | undefined;
+  return m && m.kademe ? { id: m.id, name: m.name, kademe: m.kademe } : null;
 }
 
 /** Silah özelliği → `ozellik` anahtarı. */
@@ -127,6 +136,16 @@ export function esyaProspektus(id: string, L: ProStrings, lang: Lang): ProSectio
     const k = it.katalog!;
     const T = true;
     S.ne.push(...par(k.ozet));
+    // Görev MUHUR-TASI-PROSPEKTUS: Mühür taşı = taşa hapsedilmiş Mühür Ruhu (yalnız bilgi). Ruh ve kademe tek kaynaktan
+    // (`data/bosslar-muhur.json` `ganimet`; `loadMonsters` doldurur), paragraf `aciklamalar-tr/en.json` `muhurTasi`.
+    const ruh = muhurRuhu(id);
+    if (ruh) {
+      S.ne.push(...row(L.muhur.kademe, L.muhur.tier[ruh.kademe] ?? String(ruh.kademe)));
+      S.ne.push(...row(L.muhur.ruh, ruh.name));
+      const bilgi = aciklamaOf('muhurTasi', id, lang);
+      if (bilgi) S.ne.push({ text: bilgi });
+      else S.ne.push(...par(trAciklama('muhurTasi', id)));
+    }
     for (const o of k.ozellikler) S.nasil.push({ label: `${o.ad} · ${L.katDurum[o.durum] ?? o.durum}`, text: o.not ? `${o.metin} (${o.not})` : o.metin, trOnly: tr || undefined });
     S.etken.push(...row(L.l.category, k.yuva, T));
     S.etken.push(...row(L.l.rarity, L.katNadirlik[k.nadirlik] ?? k.nadirlik));

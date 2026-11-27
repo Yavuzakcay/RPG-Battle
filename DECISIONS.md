@@ -2,6 +2,20 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev MUHUR-TASI-PROSPEKTUS: Mühür taşları Dungeondex'te bilgi olarak (2026-11-27; mekanik yok, kural ve kayıt sürümü değişmedi)
+
+Bağlam (kullanıcı): Mühür taşı, bir Mühür Ruhu'nun taşa hapsedilmiş hâlidir; hikâyesi Serüven'de. Şimdilik yalnız Dungeondex'te okunur bilgi.
+
+- **Durum:** 30 taş zaten katalog eşyası (`data/items-katalog.json`: 10 `cracked-elemental-stone-<tür>` BOSS#…, 10 `awakened-…`, 10 Sv.3 taşı) ve her biri tam bir Mühür Ruhu'nun ganimeti (`data/bosslar-muhur.json` `ganimet`, 30 ↔ 30). `data/katalog-anlatim.json`'da taş başına bilgi kaydı yoktu (yalnız `on-muhur` bağı ve `esyalar` listeleri); taşı ruhla ilişkilendiren metin de yoktu.
+- **Biçim (karar):** yeni veri dosyası açılmadı; ruh ve kademe tek kaynaktan, `bosslar-muhur.json` `ganimet`/`kademe` (yinelenmez). Paragraf açıklama yolunda yeni tür `muhurTasi` (kimlik = eşya kimliği): TR `data/aciklamalar-tr.json`, EN `scripts/en-aciklama/ceviri.json` `ceviri.muhurTasi` → `data/aciklamalar-en.json` (üreteç `KINDS`'e eklendi). `katalog-anlatim.json` 14 kayıtta kaldı (KATALOG-1 G testi aynen).
+- **Gösterim:** eşya prospektüsünün "Ne işe yarar" bölümünde PDF özetinin altında "Kademe", "Mühür Ruhu" (canavar adı) ve bilgi paragrafı (`src/dungeondex/prospektus/esya.ts` `muhurRuhu`). Mühür Ruhu Dungeondex canavar listesinde olmadığı için bağlantı yok.
+- **Metin (PDF'e sadık):** kademe etiketi ve "nereden bulunur" PDF §4 tablosundan (Sv.1 sandık/elit ganimet/şehir tüccarları, 3× Sv.1 → Sv.2; Sv.2 zindan ara boss'ları ya da 3× Sv.1 dövme; Sv.3 "Kaltakkıran Parçası", yalnız bölge bossu), Sv.3'te §6 girişi (zırh parçalanınca taş bölgeye düşer, bölge bossunu doğurur) ve bölge adı (`on-muhur.baglar.bolge`). "Hapsedilmiştir" cümlesi kullanıcının görev bağlamı (PDF'te yok). PDF'in §6 Faz 1 kimlik cümleleri alınmadı: eski boss tasarımını anlatıyor (ör. lav golemi; bugünkü Cimbombom aslan), yanıltır.
+- **EN:** kademe etiketleri Tier 1 · Cracked Stone / Tier 2 · Awakened Stone / Tier 3 · Boss Stone (Sv.3 için PDF Bölüm 8 "Boss Taşı"; "Kaltakkıran Parçası"nın EN adı yok, öneri). EN paragrafta Kaltakkıran ve bölge adları Türkçe özel ad olarak kalır (`aciklamalarEn.test.ts` `PROPER_NAMES` bunları `on-muhur` bağından okur).
+- **İkon:** 30 taşın hiçbirinin ikonu yok (`public/esya/` yok); hepsi zaten `data/esya-ikonsuz-izin.json`'da (Sv.1, Sv.2, Sv.3 grupları). Yeni ikon istenmedi.
+- **Kayıt açılmayan:** PDF'te her kademe için tek ortak metin var; ayrı ad/kademe yok. YT#… soket "mühür taşları" (ör. `umbral-sigil-stone`) Mühür Ruhu taşı değil, satır almaz.
+- **Üreteç notu:** `node scripts/en-aciklama-uret.mjs` Windows'ta canavar adımında (`srd-canavar-ozellik.mjs` alt süreci, `URL.pathname` yolu) kırılıyor; çıktı yalnız `muhurTasi` farkıyla alındı, canavar dosyaları değişmedi (önceden var olan sorun, bu görevde düzeltilmedi).
+- Testler: `src/dungeondex/prospektus/muhurTasi.test.ts` (30 ↔ 30, TR/EN dolu, kimlik eşlemesi, prospektüs satırları TR/EN, korumalı ad taraması temiz).
+
 ## KATALOG-1 F: Kuvvet çizgisinin adı (2026-11-27; kural ve kayıt sürümü değişmedi)
 
 Kullanıcı kararı: Kuvvet çizgisi Kongcuk → Kongilla → Kongark (kimlikler `kongcuk`, `kongilla`, `kongark`; unvan "Kong of the Void" aynı). Tarihçe notu: önceki tasarım kimlikleri bu çizgi için başka adlardı; veri, belge, sim satırları ve testler yeni kimliklere geçirildi (`scripts/katalog-f-bosslar.mjs` yeniden üretir). Zehir bossu Mothraq (`mothraq`).

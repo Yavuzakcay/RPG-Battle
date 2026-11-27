@@ -914,6 +914,8 @@ export const TR_EXTRA = {
       katNadirlik: { olagandisi: 'Sıra Dışı', nadir: 'Nadir', cokNadir: 'Çok Nadir', efsanevi: 'Efsanevi', yadigar: 'Yadigâr' } as Record<string, string>,
       katDurum: { calisir: 'çalışır', kismi: 'kısmen çalışır', planli: 'planlı (henüz oyunda yok)', calismiyor: 'çalışmıyor' } as Record<string, string>,
       katKaynak: (ref: string) => `Dice & Hex özgün eşya kataloğu (${ref})`, priceless: 'Satılamaz / paha biçilemez',
+      // Görev MUHUR-TASI-PROSPEKTUS: Mühür taşı bilgi satırları (kademe PDF Kaltakkıran §4 tablosundan; ruh data/bosslar-muhur.json `ganimet`).
+      muhur: { kademe: 'Kademe', ruh: 'Mühür Ruhu', tier: { 1: 'Seviye 1 · Çatlak Taş', 2: 'Seviye 2 · Uyanmış Taş', 3: 'Seviye 3 · Kaltakkıran Parçası' } as Record<number, string> },
       v: {
         dexMod: 'DEX', dexMax: (n: number) => `DEX (en çok ${n})`, shield: (n: number) => `+${n} (kalkan)`,
         minutes: (a: number, b: number) => `${a} dk giyme, ${b} dk çıkarma`, stealthDis: 'Gizlen (Stealth) zarlarında dezavantaj',
