@@ -33,7 +33,14 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   ekler) SRD metninden üretilmediği için düşerdi (1549 → 1318). Seçenekler: (a) betik SRD dışı mevcut kayıtları korusun (öneri), (b)
   katalog EN kayıtları ayrı dosyaya, (c) her çalıştırmadan sonra `katalog-f2-kadim.mjs`. Veri dosyaları bu görevde değişmedi; yalnız
   alt betiğin yeniden ürettiği `data/canavar-ozellik.json` notu yeni TR canavar dosyasını gösteriyor.
-- **Aynı yol hatası (düzeltilmedi, rapor):** `scripts/sehir-gorunum.mjs:12`, `scripts/ses-yer-tutucu.mjs:11`; `scripts/harita-karo.mjs:21`
+- **Karar (kullanıcı, 2026-11-28): (a) uygulandı.** Betik yalnız SRD kayıtlarını yeniler, SRD dışı mevcut kayıtları korur. Canavar
+  üretimi yalnız SRD'de olan canavarların anahtarlarıyla (`monsterSrd`; `_kaynak.canavar` 1318/0 eksik aynı kalır). Yazmadan önce
+  mevcut dosyayla birleştirilir: çakışan kimlikte yeni çıktı kazanır, yeni çıktıda olmayan SRD dışı kayıt (KATALOG-F2'nin 24 kadim/
+  mücevher canavarının 231 kaydı) aynen ve mevcut sırada kalır, yeni anahtar sona eklenir. Düşme koruması daraldı: yalnız SRD kaynaklı
+  bir kayıt (canavarı SRD'de olan ya da SRD metni hâlâ bulunan, elle çeviri olmayan) düşecekse durur, hiçbir dosya yazılmaz. Boş
+  kaynak/0 kayıt koruması aynı. Konsol: yenilenen SRD kaydı (1940) ve korunan SRD dışı kayıt (231). Çalıştırma sonucu
+  `aciklamalar-en-canavar.json` 1549 → 1549, veri dosyalarında fark yok; ikinci çalıştırma bit bit aynı.
+- **Aynı yol hatası (bilinçli olarak bırakıldı, 2026-11-28 kararı):** `scripts/sehir-gorunum.mjs:12`, `scripts/ses-yer-tutucu.mjs:11`; `scripts/harita-karo.mjs:21`
   elle `/D:` düzeltmesiyle çalışıyor; `scripts/logo.ts:18`, `scripts/dungeondex-kitap.ts:14` `import.meta.dirname` yoksa aynı yedeğe düşer.
 
 ## ODA-2: çevrimiçi oda O2, yerel ağ aktarıcısı + canlı savaşta oyuncu komutları (2026-11-27; kural sürümü 108, kayıt sürümü 28 ve `ODA_SURUM` 2 değişmedi)
