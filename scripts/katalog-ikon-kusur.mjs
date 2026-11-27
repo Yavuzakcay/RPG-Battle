@@ -9,12 +9,22 @@
 //   macenta cep: bant dışı opak (α ≥ 200) zemin ailesi pikseli (G ≤ 0,2·min(R, B), min(R, B) ≥ 50, |R − B| ≤ 0,3·max) sayısı.
 //   sis: görünen piksellerde α < 50 oranı (geniş düşük alfalı pus).
 //   kenara dayanan parıltı: kaynak hücrenin 4 px kenar şeridinde zemine uzaklığı > 60 piksel oranı (parıltı/nesne hücre sınırında kesik).
-// Kullanım: node scripts/katalog-ikon-kusur.mjs [--kaynak <klasör>] [--duzeltme]
+// ESYA-IKON-ZEMIN-TEMIZLIK: bütün public/esya (256 ve kucuk/) taraması, ikonun kaynak sayfasının zemin kipine göre (yeşil / macenta):
+//   anahtar kalıntısı (opak, saydama BANT'tan uzak; 8 komşu bileşen ≥ ZEMIN_KUSUR.kalintiBilesen, 96 px'te ölçekli):
+//     yeşil: G − max(R, B) ≥ 60, ton 70–130°, doygunluk ≥ 0,6, parlaklık ≥ 0,55 (zümrüt ≈ 145°, yaprak koyu: sayılmaz);
+//     macenta: G ≤ 0,2·min(R, B), min(R, B) ≥ 50, |R − B| ≤ 0,3·max (pembe/kırmızı taşta G yüksek: sayılmaz).
+//   kenar halesi (saydama ≤ BANT, α ≥ 30) oranı: yeşil: G > max(R, B) + 8 ya da ton 58–150°, doygunluk ≥ 0,35, G ≥ 60 (sarı-yeşil, zeytin);
+//     macenta: min(R, B) − G ≥ 25 ve R ≥ 120 (pembe/macenta) ya da yarı saydam (α < 240) açık pembe-somon (ton 300–8°, doygunluk
+//     0,15–0,5, R ≥ 170);
+//     leylak ve mavi parıltı sayılmaz.
+//   Kip yalnız ikonun kaynak sayfasından: yeşil sayfanın ikonunda macenta ölçüsü (ve tersi) sayılmaz (meşru pembe/yeşil parıltı).
+//   Ayırt (ESYA-IKON-AYIRT) çıktıları taranmaz: tabanları (assets/esya-taban) taranır (hasar tonu meşru yeşil/pembe ekler).
+// Kullanım: node scripts/katalog-ikon-kusur.mjs [--kaynak <klasör>] [--duzeltme] [--klasor <public/esya yerine>] [--json <yol>]
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
-import { sayfaAdi } from './esya-ikon.mjs';
+import { ANA_MANIFEST, KATALOG_MANIFESTLER, bagla, esle, manifestKimlikleri, oyunKayitlari, plan, sayfaAdi, zeminKipi } from './esya-ikon.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const MANIFEST = path.join(ROOT, 'data/katalog-ikon-sayfalar.json');
@@ -57,6 +67,130 @@ export function ikonOlcu(rgba, w, h) {
     }
   }
   return { pembe: bant ? pembe / bant : 0, somon: bant ? somon / bant : 0, cep, sis: gorunen ? soluk / gorunen : 0 };
+}
+
+/** ESYA-IKON-ZEMIN-TEMIZLIK: zemin kalıntısı ve kenar halesi eşikleri (256 px; 96 px'te alan oranıyla ölçeklenir). */
+export const ZEMIN_KUSUR = {
+  kalinti: { esik: 40, ad: 'anahtar kalıntısı' },
+  hale: { esik: 0.1, ad: 'kenar halesi' },
+  kalintiBilesen: 12,
+};
+
+const hsv = (r, g, b) => {
+  const mx = Math.max(r, g, b); const mn = Math.min(r, g, b); const c = mx - mn;
+  let h = 0;
+  if (c) h = mx === r ? 60 * (((g - b) / c) % 6) : mx === g ? 60 * ((b - r) / c + 2) : 60 * ((r - g) / c + 4);
+  return [(h + 360) % 360, mx ? c / mx : 0, mx / 255];
+};
+/** Opak iç pikselde anahtar kalıntısı (kip: 'yesil' | 'macenta'). */
+export function kalintiMi(kip, r, g, b) {
+  if (kip === 'macenta') { const mn = Math.min(r, b); const mx = Math.max(r, b); return g <= 0.2 * mn && mn >= 50 && mx - mn <= 0.3 * mx; }
+  const [h, s, v] = hsv(r, g, b);
+  return g - Math.max(r, b) >= 60 && h >= 70 && h <= 130 && s >= 0.6 && v >= 0.55;
+}
+/** Kenar bandı pikselinde hale. */
+export function haleMi(kip, r, g, b, a = 255) {
+  if (kip === 'macenta') {
+    if (Math.min(r, b) - g >= 25 && r >= 120) return true;
+    // Açık pembe-somon (beyaz/krem parıltının macenta üstünde kalan tonu): yalnız yarı saydam halede (opak altın/bronz kenar çizgisi sayılmaz).
+    const [h, s] = hsv(r, g, b);
+    return a < 240 && (h >= 300 || h <= 8) && s >= 0.15 && s <= 0.5 && r >= 170;
+  }
+  if (g > Math.max(r, b) + 8) return true;
+  const [h, s] = hsv(r, g, b);
+  return h >= 58 && h <= 150 && s >= 0.35 && g >= 60; // 58°: eski despill G = R yaptığı zeytin-sarı (≈ 60°) dahil
+}
+
+/**
+ * ESYA-IKON-ZEMIN-TEMIZLIK ölçüsü: { kalinti: px (bileşen süzgeçli), hale: oran }. Bant = saydama 4 komşu uzaklığı ≤ BANT (α ≥ 30);
+ * kalıntı bandın dışındaki opak (α ≥ 200) piksel, en az `bilesen` px'lik 8 komşu bileşende.
+ */
+export function zeminOlcu(rgba, w, h, kip, bilesen = ZEMIN_KUSUR.kalintiBilesen) {
+  const n = w * h; const a = (i) => rgba[i * 4 + 3];
+  const uz = new Uint8Array(n).fill(255); const q = [];
+  for (let i = 0; i < n; i++) if (a(i) === 0) { uz[i] = 0; q.push(i); }
+  for (let k = 0; k < q.length; k++) {
+    const p = q[k]; if (uz[p] >= BANT) continue; const x = p % w;
+    for (const r of [x > 0 ? p - 1 : -1, x < w - 1 ? p + 1 : -1, p >= w ? p - w : -1, p < n - w ? p + w : -1]) {
+      if (r >= 0 && uz[r] === 255) { uz[r] = uz[p] + 1; q.push(r); }
+    }
+  }
+  let bant = 0; let hale = 0; const aday = new Uint8Array(n);
+  for (let i = 0; i < n; i++) {
+    const al = a(i); if (al === 0) continue;
+    const r = rgba[i * 4]; const g = rgba[i * 4 + 1]; const b = rgba[i * 4 + 2];
+    if (uz[i] <= BANT) { if (al >= 30) { bant++; if (haleMi(kip, r, g, b, al)) hale++; } } else if (al >= 200 && kalintiMi(kip, r, g, b)) aday[i] = 1;
+  }
+  let kalinti = 0; const gor = new Uint8Array(n);
+  for (let i = 0; i < n; i++) {
+    if (!aday[i] || gor[i]) continue;
+    const st = [i]; gor[i] = 1; let say = 0;
+    while (st.length) {
+      const p = st.pop(); say++; const x = p % w; const y = (p - x) / w;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const nx = x + dx; const ny = y + dy; const r = ny * w + nx;
+        if (nx >= 0 && ny >= 0 && nx < w && ny < h && aday[r] && !gor[r]) { gor[r] = 1; st.push(r); }
+      }
+    }
+    if (say >= bilesen) kalinti += say;
+  }
+  return { kalinti, hale: bant ? hale / bant : 0 };
+}
+
+/** Ölçüden zemin kusurları (256 px ölçeğinde; eşiğin yarısı ile eşik arası belirsiz). */
+export function zeminKusurlari(olcu, kip) {
+  const out = [];
+  for (const tur of ['kalinti', 'hale']) {
+    const k = ZEMIN_KUSUR[tur]; const v = olcu[tur];
+    const ad = `${kip === 'macenta' ? 'macenta/pembe' : 'yeşil/sarı-yeşil'} ${k.ad}`;
+    if (v >= k.esik) out.push({ tur, ad, deger: v, kesin: true });
+    else if (v >= k.esik / 2) out.push({ tur, ad, deger: v, kesin: false });
+  }
+  return out;
+}
+
+const dosyaOf = (id) => `${id.split('/').join('--')}.webp`;
+
+/**
+ * public/esya dosyası → kaynak sayfa adı (ana + katalog manifesti; kopyalar kaynak hücrenin sayfası). Ayırt çıktıları `ayirt` kümesinde.
+ */
+export async function dosyaSayfalari(root, kaynak) {
+  const oku = (y) => JSON.parse(fs.readFileSync(path.join(root, y), 'utf8'));
+  const kayitlar = oyunKayitlari(root);
+  const katalogHedef = new Set(KATALOG_MANIFESTLER.flatMap((y) => [...manifestKimlikleri(oku(y))]));
+  const varMi = (d) => fs.existsSync(path.join(kaynak, d));
+  const sayfaOf = new Map();
+  for (const y of [ANA_MANIFEST, ...KATALOG_MANIFESTLER]) {
+    const { son } = plan(esle(oku(y), kayitlar).manifest, varMi);
+    const { cikti } = bagla(son, kayitlar, katalogHedef);
+    for (const [id, sn] of cikti) sayfaOf.set(dosyaOf(id), sn.sayfa);
+    // Ayırt tabanları (SRD üst kimliği; assets/esya-taban) da hücresinin sayfasından.
+    for (const [id, sn] of son) if (!sayfaOf.has(dosyaOf(id))) sayfaOf.set(dosyaOf(id), sn.sayfa);
+  }
+  const { hedefler, veriOku } = await import('./esya-ikon-ayirt.mjs');
+  const ayirt = new Set(hedefler(veriOku(root)).map((h) => dosyaOf(h.id)));
+  return { sayfaOf, ayirt };
+}
+
+/** Klasör taraması: [{ dosya, boyut ('256' | '96' | 'taban'), sayfa, kip, olcu, kusur }]; kip sayfanın köşe renginden (`kipOf`). */
+export async function zeminTara(klasor, sayfaOf, ayirt, kipOf, tabanKlasor) {
+  const satir = [];
+  const tara = async (dir, boyut, dosyalar) => {
+    for (const f of dosyalar) {
+      const sayfa = sayfaOf.get(f) ?? null; const kip = sayfa ? kipOf(sayfa) : null;
+      if (!kip) { satir.push({ dosya: f, boyut, sayfa, kip: null, olcu: null, kusur: [] }); continue; }
+      const { data, info } = await sharp(path.join(dir, f)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+      const olcek = (info.width / 256) ** 2;
+      const olcu = zeminOlcu(data, info.width, info.height, kip, Math.max(2, Math.round(ZEMIN_KUSUR.kalintiBilesen * olcek)));
+      const kusur = zeminKusurlari({ kalinti: olcu.kalinti / olcek, hale: olcu.hale }, kip);
+      satir.push({ dosya: f, boyut, sayfa, kip, olcu, kusur });
+    }
+  };
+  const liste = (d) => (fs.existsSync(d) ? fs.readdirSync(d).filter((f) => f.endsWith('.webp')).sort() : []);
+  await tara(klasor, '256', liste(klasor).filter((f) => !ayirt.has(f)));
+  await tara(path.join(klasor, 'kucuk'), '96', liste(path.join(klasor, 'kucuk')).filter((f) => !ayirt.has(f)));
+  if (tabanKlasor) await tara(tabanKlasor, 'taban', liste(tabanKlasor));
+  return satir;
 }
 
 /** Kaynak hücrenin 4 px kenar şeridinde zemine uzaklığı > 60 piksel oranı. */
@@ -117,6 +251,8 @@ async function main() {
   const arg = (ad) => { const i = process.argv.indexOf(ad); return i >= 0 ? process.argv[i + 1] : undefined; };
   const kaynak = path.resolve(ROOT, arg('--kaynak') ?? 'assets-ham/esya');
   const duzeltme = process.argv.includes('--duzeltme');
+  const klasor = path.resolve(ROOT, arg('--klasor') ?? 'public/esya');
+  const yazma = process.argv.includes('--yazma-yok');
   const ham = fs.readFileSync(MANIFEST, 'utf8');
   const manifest = JSON.parse(ham);
   const satirlar = []; const kusurlu = []; let taranan = 0; const eksik = [];
@@ -131,7 +267,7 @@ async function main() {
     }
     for (let i = 0; i < s.ogeler.length; i++) {
       const o = s.ogeler[i]; if (!o?.id) continue;
-      const ikon = path.join(ROOT, 'public/esya', `${o.id}.webp`);
+      const ikon = path.join(klasor, `${o.id}.webp`);
       if (!fs.existsSync(ikon)) { eksik.push(`${ad}#${i + 1} ${o.id}`); continue; }
       taranan++;
       const { data, info } = await sharp(ikon).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
@@ -145,8 +281,54 @@ async function main() {
       if (k.some((x) => x.kesin)) kusurlu.push({ sayfa: ad, hucre: i + 1, o, k: k.filter((x) => x.kesin) });
     }
   }
+  // ESYA-IKON-ZEMIN-TEMIZLIK: bütün klasör, kaynak sayfanın zemin kipiyle.
+  const kipler = new Map();
+  for (const sayfa of new Set((await dosyaSayfalari(ROOT, kaynak)).sayfaOf.values())) {
+    const f = ['.jpg', '.png', '.webp'].map((u) => path.join(kaynak, sayfa + u)).find((y) => fs.existsSync(y));
+    if (!f) continue;
+    const { data, info } = await sharp(f).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+    kipler.set(sayfa, zeminKipi(zeminRengi(data, info.width, info.height)));
+  }
+  const { sayfaOf, ayirt } = await dosyaSayfalari(ROOT, kaynak);
+  const varsayilan = klasor === path.join(ROOT, 'public/esya');
+  const zemin = await zeminTara(klasor, sayfaOf, ayirt, (s) => kipler.get(s) ?? null, varsayilan ? path.join(ROOT, 'assets/esya-taban') : null);
+  if (arg('--json')) fs.writeFileSync(path.resolve(ROOT, arg('--json')), JSON.stringify(zemin));
+  // Manifestlerin `zeminMesru` kaydı (kimlik → gerekçe): gözle denetlenmiş meşru içerik rengi; kusur sayılmaz, ayrı listelenir.
+  const mesru = new Map([ANA_MANIFEST, ...KATALOG_MANIFESTLER].flatMap((y) => Object.entries(JSON.parse(fs.readFileSync(path.join(ROOT, y), 'utf8')).zeminMesru ?? {})));
+  const mesruMu = (r) => mesru.has(r.dosya.replace(/\.webp$/, '').split('--').join('/'));
+  const zMesru = zemin.filter((r) => r.kusur.length && mesruMu(r));
+  for (const r of zMesru) r.mesru = true;
+  const zKusurlu = zemin.filter((r) => !r.mesru && r.kusur.some((k) => k.kesin));
+  const zBelirsiz = zemin.filter((r) => !r.mesru && r.kusur.length && !r.kusur.some((k) => k.kesin));
+  const kipsiz = zemin.filter((r) => !r.kip);
+  const zSay = (kip, tur) => zKusurlu.filter((r) => r.kip === kip && r.kusur.some((k) => k.tur === tur && k.kesin)).length;
+  const zOzet = ['yesil', 'macenta'].map((kip) => `${kip === 'yesil' ? 'yeşil' : 'macenta'}: kalıntı ${zSay(kip, 'kalinti')}, hale ${zSay(kip, 'hale')}`).join('; ');
+  const zDeger = (k) => (k.tur === 'kalinti' ? `${Math.round(k.deger)} px` : yuzde(k.deger));
+  const yer = (r) => (r.boyut === '256' ? r.dosya : `${r.boyut}/${r.dosya}`);
+  console.log(`zemin taraması: ${zemin.length} dosya, kusurlu ${zKusurlu.length} (${zOzet}), belirsiz ${zBelirsiz.length}, kaynak sayfası bilinmeyen ${kipsiz.length}`);
+  const zeminMd = [
+    '## Bütün public/esya: zemin kalıntısı ve kenar halesi (ESYA-IKON-ZEMIN-TEMIZLIK)',
+    '',
+    'Taranan: `public/esya` (256), `public/esya/kucuk` (96) ve ayırt tabanları `assets/esya-taban` (ayırt çıktıları, hasar tonu meşru renk',
+    'eklediği için taranmaz; tabanından gelir). Ölçü ikonun kaynak sayfasının zemin kipiyle (yeşil sayfada yalnız yeşil/sarı-yeşil, macenta',
+    'sayfada yalnız macenta/pembe): anahtar kalıntısı = kenar bandı dışında opak anahtar rengi bileşenleri (256 px ölçeğinde px), kenar',
+    `halesi = saydama ≤ 3 px bantta hale rengi oranı. Eşikler: kalıntı ${ZEMIN_KUSUR.kalinti.esik} px, hale ${yuzde(ZEMIN_KUSUR.hale.esik)} (yarısı belirsiz).`,
+    '',
+    `- Taranan dosya: ${zemin.length}; kaynak sayfası bilinmeyen (ölçülmeyen): ${kipsiz.length ? kipsiz.map(yer).join(', ') : 'yok'}`,
+    `- Kusurlu: ${zKusurlu.length} (${zOzet})`,
+    `- Belirsiz: ${zBelirsiz.length}`,
+    `- Meşru (manifest \`zeminMesru\`, gözle denetlendi; ölçüye takılan dosya ${zMesru.length}):`,
+    ...[...new Set(mesru.values())].map((g) => `  - ${g}: ${[...mesru].filter(([, v]) => v === g).map(([k]) => `\`${k}\``).join(', ')}`),
+    '',
+    ...(zKusurlu.length + zBelirsiz.length ? [
+      '| Dosya | Sayfa | Kip | Kusur | Ölçü | Durum |',
+      '|---|---|---|---|---|---|',
+      ...[...zKusurlu, ...zBelirsiz].flatMap((r) => r.kusur.map((k) => `| \`${yer(r)}\` | ${r.sayfa} | ${r.kip} | ${k.ad} | ${zDeger(k)} | ${k.kesin ? 'kusur' : 'belirsiz'} |`)),
+      '',
+    ] : ['Kusurlu ya da belirsiz dosya yok.', '']),
+  ];
   const kesin = satirlar.filter((r) => r.kesin); const belirsiz = satirlar.filter((r) => !r.kesin);
-  const tur = (liste) => Object.values(KUSUR).map((k) => `${k.ad} ${liste.filter((r) => r.ad === k.ad).length}`).join(', ');
+  const tur =(liste) => Object.values(KUSUR).map((k) => `${k.ad} ${liste.filter((r) => r.ad === k.ad).length}`).join(', ');
   const md = [
     '# KATALOG-IKON-KUSUR — katalog ikonlarında otomatik kusur taraması',
     '',
@@ -162,10 +344,11 @@ async function main() {
     '|---|---|---|---|---|---|',
     ...satirlar.map((r) => `| ${r.sayfa} | ${r.hucre} | \`${r.id}\` | ${r.ad} | ${deger(r)} | ${r.kesin ? 'kusur' : 'belirsiz'} |`),
     '',
+    ...zeminMd,
   ].join('\n');
-  fs.writeFileSync(path.join(ROOT, 'harita/belgeler/KATALOG-IKON-KUSUR.md'), md);
+  if (!yazma) fs.writeFileSync(path.join(ROOT, 'harita/belgeler/KATALOG-IKON-KUSUR.md'), md);
   console.log(`taranan ${taranan}, kusurlu hücre ${kusurlu.length}, kusur satırı ${kesin.length}, belirsiz ${belirsiz.length}`);
-  if (!duzeltme) return;
+  if (!duzeltme || yazma) return;
 
   // Düzeltme sayfaları: kusurlu hücreler sayfa sırasıyla, 16'lık paketler.
   const sayfalar = [];
