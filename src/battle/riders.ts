@@ -11,7 +11,9 @@ import type { Ability } from '../rules/abilities';
 import { adjustDamage } from '../rules/damage';
 import { chargeHolds, fitsSize } from './grapple';
 import { rollDice, type Rng, type RollMode } from '../rules/dice';
-import type { Combatant, ExtraDamage } from './types';
+import { riderResist108On } from './riderResist108Surum';
+import { profileIn } from './zones';
+import type { BattleState, Combatant, ExtraDamage } from './types';
 
 type When = 'advantage' | 'targetBloodied' | 'selfBloodied' | 'charge';
 interface Part { dice: string; type: string }
@@ -73,15 +75,20 @@ export function riderReplace(spec: RiderSpec | undefined, mode: RollMode, actor:
   return r && holds(r.when, mode, actor, target, r.feet) ? { dice: r.dice, type: r.type } : undefined;
 }
 
-/** İsabette ek hasarlar (her zaman olanlar ve koşulu tutanlar), hedefin direnç/bağışıklığıyla. */
+/**
+ * İsabette ek hasarlar (her zaman olanlar ve koşulu tutanlar), hedefin direnç/bağışıklığıyla. Kural sürümü 108+ (`state` verilince):
+ * direnç kurtarmalı hasarla aynı tek yoldan (`profileIn`: süren etkiden gelen direnç dahil); 107 ve altı yalnız kalıcı alanlar.
+ */
 export function riderExtras(
-  spec: RiderSpec | undefined, ctx: { mode: RollMode; critical: boolean; actor: Combatant; target: Combatant }, rng: Rng,
+  spec: RiderSpec | undefined, ctx: { mode: RollMode; critical: boolean; actor: Combatant; target: Combatant; state?: BattleState }, rng: Rng,
 ): ExtraDamage[] {
   if (!spec) return [];
   const ch = spec.charge;
   const charged = ch?.extra && fitsSize(ctx.target, ch.maxSize) && chargeHolds(ctx.actor, ctx.target, ch.feet) ? ch.extra : [];
   const parts = [...(spec.extra ?? []), ...(spec.conditional ?? []).filter((p) => holds(p.when, ctx.mode, ctx.actor, ctx.target)), ...charged];
-  const profile = { resistances: ctx.target.resistances, immunities: ctx.target.immunities, vulnerabilities: ctx.target.vulnerabilities };
+  const profile = ctx.state && riderResist108On(ctx.state)
+    ? profileIn(ctx.state, ctx.target, false, ctx.actor)
+    : { resistances: ctx.target.resistances, immunities: ctx.target.immunities, vulnerabilities: ctx.target.vulnerabilities };
   return parts.map((p) => {
     const r = rollDice(p.dice, rng, ctx.critical);
     const adj = adjustDamage(r.total, p.type, profile);

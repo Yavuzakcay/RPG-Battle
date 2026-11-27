@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## KATALOG-ON-HAZIRLIK: canavar saldırısı ek hasarı süren etki direncini uygular (2026-11-27; kural sürümü 108, kayıt sürümü 28 aynı)
+
+- **Sorun (tanı DENGE.md "Tanı: çok zor üç boss…"):** `src/battle/riders.ts` `riderExtras` ek hasarın (rider `extra`, `conditional`, hücum ekleri) direncini yalnız hedefin kalıcı `resistances/immunities/vulnerabilities` alanlarından okuyordu; süren etkiden gelen direnç (Protection from Energy, Absorb Elements, paket `direnc`, sim `sim:hazirlik`), aura direnci, Mind Blank'in hasar bağışıklığı, Petrified, Silence işlemiyordu. Aynı saldırının ana hasarı ve kurtarmalı hasar `profileIn` ile hesaplanıyordu.
+- **Karar (kullanıcı):** 108+ ek hasar kurtarmalı hasarla aynı tek yoldan: `profileIn(state, hedef, false, saldıran)` (`riderExtras` `ctx.state`; çağıranlar `monsters.ts` canavar saldırısı ve `features.ts` oyuncunun canavar biçimi/bineği saldırısı). İkinci bir direnç hesabı yok; kalıcı direnç ve süren etki `damageProfile` içinde kümede birleşir, tek kez yarılanır. Ana hasardaki büyüsüz saldırı direnci (`nonmagicalProfile`) ek hasara eklenmedi (107 de eklemiyordu; kurtarmalı yol da kullanmıyor).
+- **Sürüm kapısı:** tek sabit `src/battle/riderResist108Surum.ts` `RIDER_RESIST_VERSION` = 108, `riderResist108On`. 107 ve altı (eski kayıt, replay) yalnız kalıcı alanlar (eski davranış).
+- **Kayıt sürümü değişmedi (28):** olay biçimi aynı (`attack_resolved.extra[].applied` zaten vardı; yalnız değeri değişir), yeni olay ya da alan yok; eski kayıt kendi `kuralSurumu`'yla aynı oynar.
+- **Testler:** `src/battle/riderResist108.test.ts` (Protection from Energy altında ek hasar 108 yarım / 107 tam; aynı turda Fire Breath ve Rend ikisi de yarım; kalıcı + süren direnç tek kez; süren etki bağışıklığı), `src/battle/g6.test.ts` güncel sürüm 108 (veriye bağlı değer). Regresyon `src/sim/riderResist108Regresyon.test.ts`: 107 imzası MC3 altınıyla aynı, 108 de aynı (sim partilerinde ek hasara karşı süren etki direnci yok). K11 boss ölçümü 108 ile yinelenmedi (ayrı denge turu; DENGE.md notu).
+
 ## BOSS-GORSEL-1: Mühür Ruhu görselleri — kapandı, görseller F Aşama 2'de bağlandı (2026-11-27; yalnız görünüm, kural ve kayıt sürümü değişmedi)
 
 - **Durum: kapandı.** İş `e5292d66`'da (birlesik'te); savaş jetonu bağlaması F Aşama 2'de (`b9d8eff1`: `scripts/katalog-f-bosslar.mjs` `data/boss-gorsel.json`'dan `gorsel` ve `avatar: "boss/<id>.webp"` yazar), kademe ölçeği jetona MUHUR-OLCEK'te bağlandı (aşağıda). Oturum arşivlendi; eski çalışma kopyasının `e5292d66` öncesi ara sürümü yerel `yedek/boss-gorsel-1-eski` dalında (itilmedi), boş `claude/boss-gorsel-1` dalı silindi.

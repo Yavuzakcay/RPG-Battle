@@ -213,7 +213,7 @@ export function monsterAttackEvents(
     if (penalty) raw = penalty.total;
     const adj = hit && raw > 0 ? adjustDamage(raw, dmgType, nonmagicalProfile(actor, target, dmgType, profileIn(state, target))) : { amount: 0, note: null };
     // İsabette ek hasarlar (her zaman olanlar ve koşulu tutanlar); kritikte zarlar ikiye katlanır.
-    let extras = hit ? riderExtras(spec, { mode, critical, actor, target }, rollTag(rng, { kind: 'damage', by: actor.id })) : [];
+    let extras = hit ? riderExtras(spec, { mode, critical, actor, target, state }, rollTag(rng, { kind: 'damage', by: actor.id })) : [];
     // Görev P7 (sürüm 34): süren etkinin isabet zarı (`hitDie`: Enlarge, paket çağrı güçlendirmesi) canavar saldırısında da.
     if (hit && ruleVersion(state) >= 34) for (const e of (actor.effects ?? []).filter((x) => x.hitDie)) {
       const d = rollDice(e.hitDie as string, rollTag(rng, { kind: 'damage', by: actor.id }), critical);

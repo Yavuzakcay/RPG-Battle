@@ -317,7 +317,7 @@ export function weaponAttackEvents(
   let bonus: ReturnType<typeof hitExtras> = result.hit
     ? hitExtras(state, actor, target, { mode, critical: result.critical, weapon: option, ...(opts.cunning ? { cunning: opts.cunning } : {}) }, rng)
     : { extras: [] as ExtraDamage[] };
-  if (result.hit && beast) bonus = { ...bonus, extras: [...bonus.extras, ...riderExtras(beast, { mode, critical: result.critical, actor, target }, rollTag(rng, { kind: 'damage', by: actor.id }))] };
+  if (result.hit && beast) bonus = { ...bonus, extras: [...bonus.extras, ...riderExtras(beast, { mode, critical: result.critical, actor, target, state }, rollTag(rng, { kind: 'damage', by: actor.id }))] };
   // Görev K3: Goliath Giant Ancestry (Fire's Burn, Frost's Chill, Hill's Tumble): isabette, turda bir kez.
   const giant = result.hit && rawDamage > 0 ? giantHit(state, actor, target, option, result.critical, rng) : null;
   if (giant) bonus = { ...bonus, extras: [...bonus.extras, ...(giant.extra ? [giant.extra] : [])], traitTurns: { ...bonus.traitTurns, ...giant.traitTurns } };

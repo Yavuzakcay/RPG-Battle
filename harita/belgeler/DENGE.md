@@ -166,6 +166,11 @@ uygulanan hasarın yola göre dağılımı:
   Mirage ≈ −%17, Lightaur ≈ −%24 azaltır. Bütün bossların hazırlıklı sonuçları değişeceği için K11 ölçümü düzeltmeden sonra
   yinelenmeli; ancak ondan sonra hasar/HP önerilerine (yukarıdaki tablo) bakılmalı. Çok zor üçlüde ikinci aday efsanevi eylem
   hasarı (Void Stone, Mind Needle, Ray Spear).
+- **Durum (2026-11-27): açık kural sürümü 108'de kapandı** (Görev KATALOG-ON-HAZIRLIK, `src/battle/riderResist108Surum.ts`;
+  ek hasar `profileIn` ile, kurtarmalı hasarla aynı yol). **108 sonrası K11 boss ölçümü bekliyor** (ayrı denge turu görevi):
+  yukarıdaki K11 tabloları 107 ile ölçüldü; hazırlıklı kol sonuçları 108'de değişecek, dirençsiz kol değişmez (süren etki
+  direnci yok). Hasar/HP önerilerine 108 ölçümünden sonra bakılır. Standart sim imzası (Çöl/Kale/Mağara/Orman, 3 tohum)
+  108'de değişmedi.
 - **Araç notu:** `bossTani` savaş sonu `partiDirencleri` ölen üyede boş görünür (ölünce süren etkiler temizlenir; `pruneEffects`).
   Bu bir direnç kaybı değil.
 
