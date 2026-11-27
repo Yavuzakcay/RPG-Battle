@@ -1,5 +1,5 @@
 {
-  "_not": "BOSS-GORSEL-1: Mühür Ruhu yaratık görselleri; scripts/boss-gorsel.mjs üretir (kaynak depo dışı assets-ham/boss/), elle düzenlenmez. `dosya` public/ altındaki yol; görsel yoksa null (jeton yedek görünüme düşer). `olcek`: jeton görsel boyutu boss yüksekliğine göre (Sv.1 0.25, Sv.2 0.6, Sv.3 1); görsele gömülmez. Kontrol: harita/belgeler/BOSS-GORSEL-KONTROL.md.",
+  "_not": "BOSS-GORSEL-1: Mühür Ruhu yaratık görselleri; scripts/boss-gorsel.mjs üretir (kaynak depo dışı assets-ham/boss/), elle düzenlenmez. `dosya` public/ altındaki yol; görsel yoksa null (jeton yedek görünüme düşer). `olcek`: jeton görsel boyutu boss yüksekliğine göre (Sv.1 0.25, Sv.2 0.6, Sv.3 1); görsele gömülmez. `mucevher` (GORSEL-MUCEVHER-EJDERHA): 15 mücevher ejderhası (`hat`, `evre` 1 Yavru / 2 Genç / 3 Yetişkin, `kaynak` ham dosya); ölçek yok, jeton boyutu boyut sınıfından; scripts/katalog-f2-kadim.mjs `avatar` olarak bağlar. Kontrol: harita/belgeler/BOSS-GORSEL-KONTROL.md.",
   "olcek": {
     "1": 0.25,
     "2": 0.6,
@@ -455,6 +455,233 @@
         2048
       ],
       "zemin": "#fd00fd"
+    }
+  },
+  "mucevher": {
+    "alphlet": {
+      "dosya": "boss/alphlet.webp",
+      "hat": "alpha",
+      "evre": 1,
+      "kaynak": "dragon-alpha-yavru.jpg",
+      "boyut": [
+        512,
+        402
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#42454c"
+    },
+    "alphyr": {
+      "dosya": "boss/alphyr.webp",
+      "hat": "alpha",
+      "evre": 2,
+      "kaynak": "dragon-alpha-genc.jpg",
+      "boyut": [
+        512,
+        394
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#45464a"
+    },
+    "alphadrake": {
+      "dosya": "boss/alphadrake.webp",
+      "hat": "alpha",
+      "evre": 3,
+      "kaynak": "dragon-alpha-adult-a.jpg",
+      "boyut": [
+        488,
+        512
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#43454c"
+    },
+    "omeglet": {
+      "dosya": "boss/omeglet.webp",
+      "hat": "omega",
+      "evre": 1,
+      "kaynak": "dragon-omega-yavru.jpg",
+      "boyut": [
+        512,
+        440
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#545354"
+    },
+    "omegyr": {
+      "dosya": "boss/omegyr.webp",
+      "hat": "omega",
+      "evre": 2,
+      "kaynak": "dragon-omega-genc.jpg",
+      "boyut": [
+        512,
+        469
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#4e4e4e"
+    },
+    "omegadrake": {
+      "dosya": "boss/omegadrake.webp",
+      "hat": "omega",
+      "evre": 3,
+      "kaynak": "dragon-omega-adult.jpg",
+      "boyut": [
+        512,
+        475
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#515051"
+    },
+    "deltlet": {
+      "dosya": "boss/deltlet.webp",
+      "hat": "delta",
+      "evre": 1,
+      "kaynak": "dragon-delta-yavru.jpg",
+      "boyut": [
+        512,
+        505
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#525151"
+    },
+    "deltyr": {
+      "dosya": "boss/deltyr.webp",
+      "hat": "delta",
+      "evre": 2,
+      "kaynak": "dragon-delta-genc.jpg",
+      "boyut": [
+        512,
+        498
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#4d4d4d"
+    },
+    "deltadrake": {
+      "dosya": "boss/deltadrake.webp",
+      "hat": "delta",
+      "evre": 3,
+      "kaynak": "dragon-delta-adult.jpg",
+      "boyut": [
+        512,
+        510
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#505050"
+    },
+    "sigmlet": {
+      "dosya": "boss/sigmlet.webp",
+      "hat": "sigma",
+      "evre": 1,
+      "kaynak": "dragon-sigma-yavru.jpg",
+      "boyut": [
+        512,
+        453
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#505050"
+    },
+    "sigmyr": {
+      "dosya": "boss/sigmyr.webp",
+      "hat": "sigma",
+      "evre": 2,
+      "kaynak": "dragon-sigma-genc.jpg",
+      "boyut": [
+        512,
+        473
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#4d4d4d"
+    },
+    "sigmadrake": {
+      "dosya": "boss/sigmadrake.webp",
+      "hat": "sigma",
+      "evre": 3,
+      "kaynak": "dragon-sigma-adult.jpg",
+      "boyut": [
+        512,
+        341
+      ],
+      "hamBoyut": [
+        2528,
+        1696
+      ],
+      "zemin": "#4c4c4b"
+    },
+    "gamlet": {
+      "dosya": "boss/gamlet.webp",
+      "hat": "gamma",
+      "evre": 1,
+      "kaynak": "dragon-gamma-yavru.jpg",
+      "boyut": [
+        512,
+        458
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#4f4e4f"
+    },
+    "gammyr": {
+      "dosya": "boss/gammyr.webp",
+      "hat": "gamma",
+      "evre": 2,
+      "kaynak": "dragon-gamma-genc.jpg",
+      "boyut": [
+        512,
+        483
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#525152"
+    },
+    "gammadrake": {
+      "dosya": "boss/gammadrake.webp",
+      "hat": "gamma",
+      "evre": 3,
+      "kaynak": "dragon-gamma-adult.jpg",
+      "boyut": [
+        512,
+        481
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#515151"
     }
   }
 }

@@ -1451,6 +1451,7 @@
    "hp": 155,
    "speed": 20,
    "swim": 60,
+   "avatar": "boss/alphlet.webp",
    "abilities": {
     "str": 23,
     "dex": 12,
@@ -1556,6 +1557,7 @@
    "hp": 310,
    "speed": 30,
    "swim": 80,
+   "avatar": "boss/alphyr.webp",
    "abilities": {
     "str": 27,
     "dex": 12,
@@ -1662,6 +1664,7 @@
    "hp": 585,
    "speed": 30,
    "swim": 90,
+   "avatar": "boss/alphadrake.webp",
    "abilities": {
     "str": 30,
     "dex": 14,
@@ -1777,6 +1780,7 @@
    "ac": 16,
    "hp": 135,
    "speed": 40,
+   "avatar": "boss/omeglet.webp",
    "abilities": {
     "str": 19,
     "dex": 12,
@@ -1877,6 +1881,7 @@
    "ac": 19,
    "hp": 265,
    "speed": 40,
+   "avatar": "boss/omegyr.webp",
    "abilities": {
     "str": 23,
     "dex": 12,
@@ -1978,6 +1983,7 @@
    "ac": 23,
    "hp": 515,
    "speed": 50,
+   "avatar": "boss/omegadrake.webp",
    "abilities": {
     "str": 27,
     "dex": 14,
@@ -2094,6 +2100,7 @@
    "hp": 140,
    "speed": 30,
    "fly": 60,
+   "avatar": "boss/deltlet.webp",
    "abilities": {
     "str": 19,
     "dex": 12,
@@ -2195,6 +2202,7 @@
    "hp": 285,
    "speed": 30,
    "fly": 80,
+   "avatar": "boss/deltyr.webp",
    "abilities": {
     "str": 23,
     "dex": 12,
@@ -2297,6 +2305,7 @@
    "hp": 545,
    "speed": 30,
    "fly": 100,
+   "avatar": "boss/deltadrake.webp",
    "abilities": {
     "str": 27,
     "dex": 14,
@@ -2420,6 +2429,7 @@
    "hp": 120,
    "speed": 30,
    "fly": 60,
+   "avatar": "boss/sigmlet.webp",
    "abilities": {
     "str": 19,
     "dex": 14,
@@ -2531,6 +2541,7 @@
    "hp": 240,
    "speed": 40,
    "fly": 80,
+   "avatar": "boss/sigmyr.webp",
    "abilities": {
     "str": 23,
     "dex": 14,
@@ -2643,6 +2654,7 @@
    "hp": 480,
    "speed": 40,
    "fly": 80,
+   "avatar": "boss/sigmadrake.webp",
    "abilities": {
     "str": 27,
     "dex": 16,
@@ -2765,6 +2777,7 @@
    "hp": 175,
    "speed": 30,
    "fly": 60,
+   "avatar": "boss/gamlet.webp",
    "abilities": {
     "str": 19,
     "dex": 12,
@@ -2865,6 +2878,7 @@
    "hp": 340,
    "speed": 40,
    "fly": 80,
+   "avatar": "boss/gammyr.webp",
    "abilities": {
     "str": 23,
     "dex": 12,
@@ -2966,6 +2980,7 @@
    "hp": 650,
    "speed": 40,
    "fly": 80,
+   "avatar": "boss/gammadrake.webp",
    "abilities": {
     "str": 27,
     "dex": 14,

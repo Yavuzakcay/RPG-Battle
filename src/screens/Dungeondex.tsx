@@ -4,7 +4,7 @@
  * sütun (liste ya da kart), geniş ekranda iki sütun (liste + kart).
  */
 import { useEffect, useMemo, useState } from 'react';
-import { loadMonsters, monsters } from '../data';
+import { katalogMonsters, loadMonsters, monsters } from '../data';
 import { t, useLang, type Lang } from '../i18n';
 import { APP_NAME } from '../app/appName';
 import notice from '../../NOTICE?raw';
@@ -191,7 +191,8 @@ function Vitrine(props: { entry: DexEntry | null }) {
     void import('../ui/galeri/Galeri').then((m) => { if (live) setGal(m); }).catch(() => {});
     return () => { live = false; };
   }, [want, gal]);
-  const src = e?.cat === 'canavar' ? (monsters.find((m) => m.id === e.id)?.avatar ?? `monsters/${e.id}.webp`) : null;
+  // Katalog canavarları (kadim yaratıklar, mücevher ejderhaları) da: jetonları `avatar` (ör. boss/<kimlik>.webp).
+  const src = e?.cat === 'canavar' ? ((monsters.find((m) => m.id === e.id) ?? katalogMonsters.find((m) => m.id === e.id))?.avatar ?? `monsters/${e.id}.webp`) : null;
   if (src && broken !== src) return <img src={`${BASE}${src}`} alt={e!.name} onError={() => setBroken(src)} />;
   const rec = e && gal ? gal.dexRecord(e.cat, e.id) : null;
   if (rec && gal) {
