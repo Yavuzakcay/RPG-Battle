@@ -2453,6 +2453,24 @@
    "radiant-sigil-stone"
   ]
  },
+ "zeminMesru": {
+  "sparkburst-flask": "şişenin kendi pembe camı ve parıltısı (macenta halesi değil)",
+  "cinderheart-greatsword": "kırmızı-turuncu ateş ya da ışık parıltısı, kırmızımsı kahve dış çizgi (macenta/pembe hale değil)",
+  "golden-poise-greatsword": "kırmızı-turuncu ateş ya da ışık parıltısı, kırmızımsı kahve dış çizgi (macenta/pembe hale değil)",
+  "hellforge-plate": "kırmızı-turuncu ateş ya da ışık parıltısı, kırmızımsı kahve dış çizgi (macenta/pembe hale değil)",
+  "horizonlight-greatsword": "kırmızı-turuncu ateş ya da ışık parıltısı, kırmızımsı kahve dış çizgi (macenta/pembe hale değil)",
+  "ichorous-gloves": "kırmızı-turuncu ateş ya da ışık parıltısı, kırmızımsı kahve dış çizgi (macenta/pembe hale değil)",
+  "lightcall-ring": "kırmızı-turuncu ateş ya da ışık parıltısı, kırmızımsı kahve dış çizgi (macenta/pembe hale değil)",
+  "pitchtorch-club": "kırmızı-turuncu ateş ya da ışık parıltısı, kırmızımsı kahve dış çizgi (macenta/pembe hale değil)",
+  "radiant-sigil-stone": "kırmızı-turuncu ateş ya da ışık parıltısı, kırmızımsı kahve dış çizgi (macenta/pembe hale değil)",
+  "umbral-sigil-stone": "kırmızı-turuncu ateş ya da ışık parıltısı, kırmızımsı kahve dış çizgi (macenta/pembe hale değil)",
+  "skylight-longbow": "kırmızı-turuncu ateş ya da ışık parıltısı, kırmızımsı kahve dış çizgi (macenta/pembe hale değil)",
+  "sparkstride-boots": "kırmızı-turuncu ateş ya da ışık parıltısı, kırmızımsı kahve dış çizgi (macenta/pembe hale değil)",
+  "stormbolt-javelin": "kırmızı-turuncu ateş ya da ışık parıltısı, kırmızımsı kahve dış çizgi (macenta/pembe hale değil)",
+  "strong-will-draught": "kırmızı-turuncu ateş ya da ışık parıltısı, kırmızımsı kahve dış çizgi (macenta/pembe hale değil)",
+  "homing-forge-hammer": "kırmızı-turuncu ateş ya da ışık parıltısı, kırmızımsı kahve dış çizgi (macenta/pembe hale değil)",
+  "luster-twinblade": "kırmızı-turuncu ateş ya da ışık parıltısı, kırmızımsı kahve dış çizgi (macenta/pembe hale değil)"
+ },
  "cepTemizle": [
   "subjugation-pendant",
   "springvault-boots",

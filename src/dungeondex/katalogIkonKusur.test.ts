@@ -3,7 +3,7 @@
  * kaynak hücre kenarı ve eşik/belirsiz ayrımı. Görsel dosyası açılmaz.
  */
 import { describe, expect, it } from 'vitest';
-import { ikonOlcu, kenarOrani, KUSUR, kusurlar } from '../../scripts/katalog-ikon-kusur.mjs';
+import { haleMi, ikonOlcu, kalintiMi, kenarOrani, KUSUR, kusurlar, ZEMIN_KUSUR, zeminKusurlari, zeminOlcu } from '../../scripts/katalog-ikon-kusur.mjs';
 
 const W = 32;
 /** Ortada 20 × 20 opak gövde (gri), dış 3 px halkası `halka` renginde, kalanı saydam; `cep` verilirse ortada 8 × 8 opak macenta. */
@@ -43,5 +43,44 @@ describe('Katalog ikon kusur sezgisi', () => {
     expect(kusurlar({ pembe: e })[0]).toMatchObject({ tur: 'pembe', kesin: true });
     expect(kusurlar({ pembe: e * 0.6 })[0]).toMatchObject({ tur: 'pembe', kesin: false });
     expect(kusurlar({ pembe: e * 0.4 })).toEqual([]);
+  });
+});
+
+describe('Zemin kalıntısı ve kenar halesi (ESYA-IKON-ZEMIN-TEMIZLIK)', () => {
+  /** 32 × 32: ortada 20 × 20 opak gri gövde, dış 3 px halkası `halka` (α 160), ortada 6 × 6 `ic` lekesi (opak). */
+  function ikon2(halka: number[], ic?: number[]) {
+    const b = new Uint8Array(W * W * 4);
+    for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) {
+      const d = Math.max(Math.abs(x - 15.5), Math.abs(y - 15.5));
+      if (d >= 10) continue;
+      b.set(ic && d < 3 ? [...ic, 255] : d >= 7 ? [...halka, 160] : [128, 128, 128, 255], (y * W + x) * 4);
+    }
+    return b;
+  }
+  it('yeşil kalıntı: kapalı boşlukta anahtar yeşili sayılır; zümrüt ve koyu yaprak sayılmaz', () => {
+    expect(zeminOlcu(ikon2([128, 128, 128], [40, 235, 30]), W, W, 'yesil').kalinti).toBe(36);
+    expect(zeminOlcu(ikon2([128, 128, 128], [20, 180, 80]), W, W, 'yesil').kalinti).toBe(0);
+    expect(zeminOlcu(ikon2([128, 128, 128], [60, 140, 40]), W, W, 'yesil').kalinti).toBe(0);
+  });
+  it('macenta kalıntı: opak macenta sayılır; pembe/kırmızı taş sayılmaz; kip ayrımı', () => {
+    expect(zeminOlcu(ikon2([128, 128, 128], [230, 10, 220]), W, W, 'macenta').kalinti).toBe(36);
+    expect(zeminOlcu(ikon2([128, 128, 128], [230, 60, 210]), W, W, 'macenta').kalinti).toBe(0);
+    expect(zeminOlcu(ikon2([128, 128, 128], [230, 10, 220]), W, W, 'yesil').kalinti).toBe(0); // yeşil sayfada macenta ölçülmez
+  });
+  it('kenar halesi: sarı-yeşil ve nane yeşil sayılır, altın sayılmaz; macentada pembe ve yarı saydam somon sayılır, turuncu sayılmaz', () => {
+    expect(zeminOlcu(ikon2([160, 160, 24]), W, W, 'yesil').hale).toBeGreaterThan(0.5);
+    expect(haleMi('yesil', 180, 230, 200)).toBe(true);
+    expect(zeminOlcu(ikon2([255, 200, 40]), W, W, 'yesil').hale).toBe(0);
+    expect(haleMi('macenta', 230, 120, 200)).toBe(true);
+    expect(haleMi('macenta', 245, 175, 170, 160)).toBe(true);
+    expect(haleMi('macenta', 245, 175, 170, 255)).toBe(false); // opak kenar çizgisi
+    expect(haleMi('macenta', 250, 170, 90, 160)).toBe(false); // turuncu parıltı
+    expect(kalintiMi('yesil', 0, 255, 0)).toBe(true);
+  });
+  it('eşik kusur, yarısı belirsiz', () => {
+    const e = ZEMIN_KUSUR.kalinti.esik;
+    expect(zeminKusurlari({ kalinti: e, hale: 0 }, 'yesil')[0]).toMatchObject({ tur: 'kalinti', kesin: true });
+    expect(zeminKusurlari({ kalinti: e * 0.6, hale: 0 }, 'macenta')[0]).toMatchObject({ tur: 'kalinti', kesin: false });
+    expect(zeminKusurlari({ kalinti: 0, hale: 0 }, 'yesil')).toEqual([]);
   });
 });
