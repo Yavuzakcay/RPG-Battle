@@ -231,12 +231,18 @@ for (const b of B) {
 }
 
 // BOSS-GORSEL-1 bağlaması: görsel data/boss-gorsel.json'dan (dosya yoksa `gorsel: null`, avatar yok → yedek jeton).
-// Savaş jetonu `Monster.avatar` (src/battle/avatar.ts monsterAvatar). Ölçek (Sv.1 0,25 / Sv.2 0,6 / Sv.3 1) veride kalır, jetona bağlanmadı.
+// Savaş jetonu `Monster.avatar` (src/battle/avatar.ts monsterAvatar).
+// MUHUR-OLCEK: kademe ölçeği (boss-gorsel.json `olcek`: Sv.1 0,25 / Sv.2 0,6 / Sv.3 1) çizginin Sv.3 bossunun jeton ölçeğine göre
+// (data/token-sizes.json `scale[<Sv.3 boyutu>]` × olcek) → `jetonOlcek`; yalnız görünüm (`tokenScale`), boyut sınıfı ve mekanik aynı.
 const bossGorsel = fs.existsSync('data/boss-gorsel.json') ? read('data/boss-gorsel.json').gorseller : {};
+const jetonBoyut = read('data/token-sizes.json').scale;
+const sv3Boyut = Object.fromEntries(monsters.filter((m) => bossGorsel[m.id]?.kademe === 3).map((m) => [bossGorsel[m.id].cizgi, m.size]));
 for (const m of monsters) {
-  const dosya = bossGorsel[m.id]?.dosya ?? null;
+  const g = bossGorsel[m.id];
+  const dosya = g?.dosya ?? null;
   m.gorsel = dosya;
   if (dosya) m.avatar = dosya;
+  if (g && sv3Boyut[g.cizgi]) m.jetonOlcek = Math.round(jetonBoyut[sv3Boyut[g.cizgi]] * g.olcek * 1000) / 1000;
 }
 
 write('data/bosslar-muhur.json', {

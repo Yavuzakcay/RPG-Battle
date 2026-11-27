@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## BOSS-GORSEL-1: Mühür Ruhu görselleri — kapandı, görseller F Aşama 2'de bağlandı (2026-11-27; yalnız görünüm, kural ve kayıt sürümü değişmedi)
+
+- **Durum: kapandı.** İş `e5292d66`'da (birlesik'te); savaş jetonu bağlaması F Aşama 2'de (`b9d8eff1`: `scripts/katalog-f-bosslar.mjs` `data/boss-gorsel.json`'dan `gorsel` ve `avatar: "boss/<id>.webp"` yazar), kademe ölçeği jetona MUHUR-OLCEK'te bağlandı (aşağıda). Oturum arşivlendi; eski çalışma kopyasının `e5292d66` öncesi ara sürümü yerel `yedek/boss-gorsel-1-eski` dalında (itilmedi), boş `claude/boss-gorsel-1` dalı silindi.
+- **Görseller:** 30 ham görsel → `public/boss/<kimlik>.webp` (uzun kenar ≤ 512, kırpılmış) + `data/boss-gorsel.json` (dosya, kademe, çizgi, ölçek, zemin, kaynak). Üretici `scripts/boss-gorsel.mjs` (ham `assets-ham/boss`, depo dışı; ham dosyalar ezilmez). Zemin her görselde köşelerden örneklenir (çift doğrusal model: gradyan), macentada min(R, B) − G anahtarı, Cim'in yeşil zemininde renk uzaklığı; yalnız kenar bandında unmix ve renk düzeltmesi (erozyon yok); kopuk parça yalnız kırıntı boyunda ya da zemin tonundaysa silinir. Kontrol `harita/belgeler/BOSS-GORSEL-KONTROL.md`.
+- **Kuvvet çizgisinin adı:** Kongcuk → Kongilla → Kongark (ayrı kayıt aşağıda, "KATALOG-1 F: Kuvvet çizgisinin adı"). Tarihçe: eski kimlikler `darkit`/`darkath`/`darkape` yalnız bu satırda.
+- **Ölçek veride, görsele gömülmez:** Sv.1 0,25, Sv.2 0,6, Sv.3 1 (`olcek`). Dungeondex vitrini aynı dosyayı gösterebilir; Dungeondex arayüzü değişmedi. Ana parçaya veri girmez.
+- **MUHUR-OLCEK (jeton kademe ölçeği; yalnız görünüm, mekanik ve boyut sınıfı aynı):** `olcek` çizginin Sv.3 bossunun jetonuna göredir (`data/boss-gorsel.json` notu: "boss yüksekliğine göre"), yaratığın kendi boyut sınıfına göre değil. Üretici `jetonOlcek` = `token-sizes.json` `scale[<Sv.3 boyutu>]` × `olcek` yazar (Huge boss çizgisinde Sv.1 0,5, Sv.2 1,2; Mirage (Medium) çizgisinde 0,25 ve 0,6; Large Lightaur/Stormer çizgisinde 0,375 ve 0,9). `monsterAvatar` bunu `Avatar.scale`'e koyar, `tokenScale` boyut sınıfı yerine onu kullanır (oyuncu karakteri ırktan kalır); okunabilirlik alt sınırı (`minJetonPx` 18) aynen geçerli. Eski kayıtların jetonunda alan yok, boyut sınıfı ölçeği. Testler `src/data/bosslarMuhur.test.ts`, `src/ui/tokenSize.test.ts`; ekran `harita/belgeler/boss-gorsel-kontrol/jeton-olcek.jpg`.
+
 ## KATALOG-1 F: Kuvvet çizgisinin adı (2026-11-27; kural ve kayıt sürümü değişmedi)
 
 Kullanıcı kararı: Kuvvet çizgisi Kongcuk → Kongilla → Kongark (kimlikler `kongcuk`, `kongilla`, `kongark`; unvan "Kong of the Void" aynı). Tarihçe notu: önceki tasarım kimlikleri bu çizgi için başka adlardı; veri, belge, sim satırları ve testler yeni kimliklere geçirildi (`scripts/katalog-f-bosslar.mjs` yeniden üretir). Zehir bossu Mothraq (`mothraq`).

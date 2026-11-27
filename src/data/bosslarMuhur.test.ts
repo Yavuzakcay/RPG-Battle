@@ -12,8 +12,10 @@ import { faz2Errors } from '../rules/faz2Schema';
 import { combatantFromMonster } from '../battle/create';
 import { monsterAvatar } from '../battle/avatar';
 import { crNumber } from './monsterEnv';
+import { tokenScale } from '../ui/tokenSize';
+import tokenSizes from '../../data/token-sizes.json';
 
-const list = (data as unknown as { canavarlar: Array<Monster & { kademe: number; cizgi: string; ganimet: string; gorsel: string | null }> }).canavarlar;
+const list = (data as unknown as { canavarlar: Array<Monster & { kademe: number; cizgi: string; ganimet: string; gorsel: string | null; jetonOlcek?: number }> }).canavarlar;
 const bosses = list.filter((m) => m.kademe === 3);
 
 describe('KATALOG-1 F: Mühür Ruhu verisi', () => {
@@ -63,5 +65,24 @@ describe('KATALOG-1 F: Mühür Ruhu verisi', () => {
     expect(c.faz2).toMatchObject({ zayiflikKaldir: ['fire'], nefesDoldur: true, nefesAlan: 1.25 });
     expect(combatantFromMonster(getMonster('lightaur'), { id: 'L', kuralSurumu: 107 }).creatureType).toBe('celestial');
     expect(combatantFromMonster(getMonster('stormer'), { id: 'S', kuralSurumu: 107 }).faz2).toMatchObject({ geciciCan: 42 });
+  });
+  it('MUHUR-OLCEK: jeton kademe ölçeği Sv.3 bossunun jetonuna göre (Sv.1 0,25 / Sv.2 0,6 / Sv.3 1); yalnız görünüm, boyut aynı', () => {
+    const SCALE = tokenSizes.scale as Record<string, number>;
+    const olcek: Record<number, number> = { 1: 0.25, 2: 0.6, 3: 1 };
+    for (const m of list) {
+      const boss = bosses.find((b) => b.cizgi === m.cizgi)!;
+      const beklenen = SCALE[boss.size as string]! * olcek[m.kademe]!;
+      expect(m.jetonOlcek, m.id).toBeCloseTo(beklenen, 3);
+      const c = combatantFromMonster(getMonster(m.id), { id: m.id, kuralSurumu: 107 });
+      expect(c.avatar.scale, m.id).toBe(m.jetonOlcek);
+      expect(tokenScale(c), m.id).toBeCloseTo(beklenen, 3);
+      expect(c.size, m.id).toBe(m.size);
+    }
+    // Sv.3 jetonu boyut sınıfıyla aynı; Mirage (Medium) çizgisinde Sv.1 dörtte bir, Sv.2 0,6 altıgen.
+    for (const b of bosses) expect(tokenScale(combatantFromMonster(getMonster(b.id), { id: b.id })), b.id).toBe(SCALE[b.size as string]);
+    expect(tokenScale(combatantFromMonster(getMonster('mirit'), { id: 'm1' }))).toBe(0.25);
+    expect(tokenScale(combatantFromMonster(getMonster('mirath'), { id: 'm2' }))).toBe(0.6);
+    // SRD canavarında jeton ölçeği yok: boyut sınıfından.
+    expect(monsterAvatar(getMonster('wolf')).scale).toBeUndefined();
   });
 });

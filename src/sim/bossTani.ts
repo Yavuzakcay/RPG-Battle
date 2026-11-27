@@ -31,6 +31,11 @@ let state: BattleState = setupBattle(s, rng, b.seviye);
 const events: BattleEvent[] = [];
 const roundOf: number[] = [];
 const hpLoss: Record<number, number> = {};
+// MUHUR-OLCEK tanısı: parti HP kaybı komut kaynağına göre (boss komutu türü + yetenek/eylem kimliği; diğerleri taraf:komut) ve
+// partiyi vuran olaylarda uygulanan hasar olay türü × hasar türü × direnç (direnci olan hedefte ham = uygulanan → direnç işlemedi).
+const lossBySource: Record<string, number> = {};
+const anyC = (c: Command) => c as unknown as Record<string, unknown>;
+const anyE = (e: BattleEvent) => e as unknown as Record<string, unknown>;
 const apply = (cmd: Command): boolean => {
   const actorId = 'actorId' in cmd ? cmd.actorId : '';
   const r = execute(state, cmd, contextFor(state, actorId), rng);
@@ -40,6 +45,15 @@ const apply = (cmd: Command): boolean => {
     const after = r.state.combatants[c.id]!;
     const lost = (c.hp + (c.tempHp ?? 0)) - (after.hp + (after.tempHp ?? 0));
     if (lost > 0) hpLoss[state.round] = (hpLoss[state.round] ?? 0) + lost;
+    if (lost > 0) {
+      const actor = state.combatants[actorId];
+      const x = anyC(cmd);
+      // Efsanevi eylem başkasının turunda kendiliğinden: komutun olaylarında boss'un `legendary_used`'ı varsa kaynak o.
+      const leg = r.events.map(anyE).find((e) => e.type === 'legendary_used' && e.actorId === bossId);
+      const key = leg ? `boss:efsanevi:${String(leg.actionId)}`
+        : actor?.monsterId === b.id ? `boss:${cmd.type}${x.abilityId ? `:${String(x.abilityId)}` : ''}` : `${actor?.side ?? '-'}:${cmd.type}`;
+      lossBySource[key] = (lossBySource[key] ?? 0) + lost;
+    }
   }
   for (const e of r.events) { events.push(e); roundOf.push(state.round); }
   state = r.state;
@@ -66,7 +80,6 @@ const dmgByRound: Record<number, number> = {};
 const add = (r: number, type: string, n: number) => { if (n <= 0) return; dmgByType[type] = (dmgByType[type] ?? 0) + n; dmgByRound[r] = (dmgByRound[r] ?? 0) + n; };
 const attacks: Record<string, { n: number; hit: number }> = {};
 let breaths = 0, legendary: Record<string, number> = {}, lr = 0, phase: number | null = null, sanat = 0, recharged = 0;
-const anyE = (e: BattleEvent) => e as unknown as Record<string, unknown>;
 events.forEach((e, i) => {
   const r = roundOf[i]!; const x = anyE(e);
   if (e.type === 'attack_resolved' && x.actorId === bossId) {
@@ -87,6 +100,24 @@ events.forEach((e, i) => {
   if (e.type === 'recharge_rolled' && x.actorId === bossId && x.recharged) recharged++;
   if (e.type === 'phase_changed' && x.targetId === bossId) phase = r;
 });
+// Partiyi vuran her olay: olay türü × hasar türü; hedefin o anki direnci (son durumdan değil, olaydaki `damageNote`'tan) yoksa ham = uygulanan.
+const byEvent: Record<string, { n: number; ham: number; uygulanan: number; dirensiz: number }> = {};
+const resistAt = (id: string) => { const c = state.combatants[id]; return new Set([...(c?.resistances ?? []), ...(c?.effects ?? []).flatMap((e) => e.resist ?? [])]); };
+events.forEach((e) => {
+  const x = anyE(e);
+  if (!partyIds.has(String(x.targetId)) || typeof x.appliedDamage !== 'number') return;
+  const res = resistAt(String(x.targetId));
+  const put = (k: string, type: string, raw: number, applied: number) => {
+    const row = (byEvent[k] ??= { n: 0, ham: 0, uygulanan: 0, dirensiz: 0 });
+    row.n++; row.ham += raw; row.uygulanan += applied;
+    // Direnci olan türde ham = uygulanan → direnç işlemedi (ölü hedefte etki temizlendiği için yalnız yaşayan hedefin son durumu).
+    if (raw > 0 && applied >= raw && res.has(type)) row.dirensiz += applied;
+  };
+  const extras = (x.extra as Array<{ label: string; raw: number; applied: number; type: string }> | undefined) ?? [];
+  const exApplied = extras.reduce((n, ex) => n + ex.applied, 0);
+  put(`${e.type}:${String(x.damageType ?? '?')}`, String(x.damageType ?? '?'), Number(x.rawDamage ?? x.appliedDamage), Number(x.appliedDamage) - exApplied);
+  for (const ex of extras) put(`${e.type}+ek:${ex.type}`, ex.type, ex.raw, ex.applied);
+});
 const boss = state.combatants[bossId]!;
 const partyHpEnd = [...partyIds].reduce((n, id) => n + Math.max(0, state.combatants[id]!.hp), 0);
 const rounds = state.round;
@@ -98,6 +129,7 @@ const out = {
   bossKomutlari: commands, saldirilar: attacks, nefes: breaths, nefesYenilendi: recharged, efsanevi: legendary, legendaryResistance: lr, sanat,
   bossHasariTurBasi: Math.round(totalDmg / Math.max(1, rounds)), hasarTurleri: dmgByType, turBasina: dmgByRound,
   partiHpKaybiTurBasina: hpLoss, legendaryResistanceKalan: boss.resources.legendaryResistance,
+  hpKaybiKaynak: lossBySource, olayHasari: byEvent,
   partiHpKaybi: `${Math.round((100 * (partyHp0 - partyHpEnd)) / partyHp0)}%`, partiDirencleri: partyRes,
 };
 console.log(JSON.stringify(out, null, 1));

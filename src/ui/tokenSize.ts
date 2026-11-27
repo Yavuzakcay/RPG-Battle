@@ -12,11 +12,11 @@ const RACE = sizes.race as Record<string, number>;
 
 /**
  * Jetonun görsel ölçeği: oyuncu karakterleri ırktan (tabloda olmayan ırk ve ırksız masum 1),
- * canavarlar boyut sınıfından.
+ * canavarlar boyut sınıfından; jetonda kendi ölçeği varsa o (MUHUR-OLCEK: Mühür Ruhu kademe ölçeği, `Avatar.scale`).
  */
-export function tokenScale(c: { side: Combatant['side']; size: Size; civilian?: boolean; raceId?: string }): number {
+export function tokenScale(c: { side: Combatant['side']; size: Size; civilian?: boolean; raceId?: string; avatar?: { scale?: number } }): number {
   if (c.side === 'party') return (c.raceId ? RACE[c.raceId] : undefined) ?? 1;
-  return SCALE[c.size] ?? 1;
+  return c.avatar?.scale ?? SCALE[c.size] ?? 1;
 }
 
 /** Büyük jetonun komşu altıgenlere taşma menzili (altıgen): 1.5 ve 2 → 1, 3 → 2. */

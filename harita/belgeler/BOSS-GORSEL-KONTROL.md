@@ -89,5 +89,6 @@ Kullanıcı isterse aşağıdakiler yeniden üretilebilir. Hepsi kabul edilebili
 - **Savaş jetonu:** `Monster.avatar` (`src/battle/avatar.ts` canavar yolu: `monster.avatar ?? monsters/<id>.webp`, `Avatar` `onError` yedek zinciri).
   - Bağlandı (F Aşama 2, ölçüm bittikten sonra): `scripts/katalog-f-bosslar.mjs` `data/boss-gorsel.json`'dan `gorsel` ve
     `avatar: "boss/<id>.webp"` yazar; dosyası olmayan kayıtta `gorsel: null`, avatar yok (yedek jeton). Test `src/data/bosslarMuhur.test.ts`.
-  - Ölçek (`olcek`) jeton çiziminde kullanılacak; jeton boyutu bugün `data/token-sizes.json` boyut sınıfından geliyor, Sv.1/Sv.2 küçültmesi ayrı bağlama ister.
+  - Ölçek bağlandı (MUHUR-OLCEK): `olcek` çizginin Sv.3 bossunun jetonuna göre; üretici `jetonOlcek` (= `token-sizes.json` `scale[<Sv.3 boyutu>]` × `olcek`) yazar,
+    `monsterAvatar` → `Avatar.scale` → `tokenScale`. Yalnız görünüm. Ekran: `boss-gorsel-kontrol/jeton-olcek.jpg` (üstte Mirit/Mirath/Mirage, altta Cim/Cimbom/Cimbombom).
 - **Dungeondex vitrini:** canavar görselleri `data/dungeondex-gorsel-esleme.json`'dan (`npm run dd-gorsel`). Katalog canavarları Dungeondex'e girdiğinde aynı `public/boss/<id>.webp` yolu kullanılabilir. Dungeondex arayüzüne dokunulmadı.

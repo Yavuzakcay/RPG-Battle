@@ -1216,6 +1216,8 @@ export interface Monster {
   fly?: number;
   /** `public/` altındaki jeton resmi; verilmezse `monsters/<id>.webp` (uyurken `<id>-uyku.webp`). */
   avatar?: string;
+  /** MUHUR-OLCEK: jetonun görsel ölçeği (boyut sınıfı yerine; `data/bosslar-muhur.json`, Mühür Ruhu kademe ölçeği). Yalnız görünüm. */
+  jetonOlcek?: number;
   abilities: Record<Ability, number>;
   /** Modifier'dan farklı olan save bonusları (stat bloğundaki SAVE sütunu). */
   saves?: Partial<Record<Ability, number>>;

@@ -125,13 +125,49 @@ Hazırlıklı kolda 4 parti ortalaması hedefte olan tek boss **Cerbones** (Norm
 |---|---|---|---|
 | Çok kolay | Wolfgang, Stormer, Mothraq | Dirençsiz kolda bile %79–100 zafer | Bossun tur hasarını ≈ 2× (Wolfgang tanısı: gerçekleşen hasar tasarımın ≈ %47'si) ve/veya Normal listeye ikinci Sv.2; Stormer ve Mothraq için daha büyük artış (dirençsiz %96) |
 | Kolay | Hydraxe, Gongar | Dirençsiz %35–63, hazırlıklı %82–99 | Tur hasarını ≈ 1,5× |
-| Çok zor | Lightaur, Mirage, Kongark | Hazırlıklı Normal %6–19, Kolay %14–49 | Hazırlık az fark yaratıyor (dirençsiz → hazırlıklı yalnız +5…+13 puan): hasarın bir kısmı direnci olmayan yoldan (durum, saldırı ekleri, fiziksel) geliyor olabilir; tanı yapılmadı. Öneri: önce Wolfgang gibi tek tohumlu tanı (`bossTani.ts`), sonra tur hasarını ≈ %30–40 azaltmak ya da Normal'den Sv.2'yi çıkarmak |
+| Çok zor | Lightaur, Mirage, Kongark | Hazırlıklı Normal %6–19, Kolay %14–49 | Hazırlık az fark yaratıyor (dirençsiz → hazırlıklı yalnız +5…+13 puan): saldırı eki direnci atlıyor (motor açığı, bütün bosslarda; aşağıdaki tanı). Öneri: önce açığın düzeltilip yeniden ölçülmesi, sonra tur hasarını ≈ %30–40 azaltmak ya da Normal'den Sv.2'yi çıkarmak |
 | Zirve | Cimbombom | Hazırlıklı Normal 29, Kolay 58 | Zirve bossu olarak bilerek en güçlü; Kolay hedefin altında. Normal'de Sv.2'yi (Cimbom) çıkarmak ya da HP'yi ≈ %15 azaltmak |
 
 - **Dirençsiz hedef (%0–10)** Wolfgang, Stormer, Mothraq, Hydraxe, Gongar ve Cerbones'te aşılıyor; yukarıdaki artışlar bunu da düzeltir.
 - **Cleric partisi** (`k18-cleric`) bütün yüksek hasarlı bosslarda belirgin zayıf (Lightaur 1/0, Mirage 9/5, Cimbombom 17/9; dirençsiz Hydraxe 22/18):
   boss verisinden çok partinin sorunu olabilir; ayrı bakılmalı.
 - **Sv.1 / Sv.2:** olağan karşılaşmada parti %80–100 kazanıyor (hedef yok). En güçlü Sv.1 Kongcuk (3. seviyede %80).
+
+### Tanı: çok zor üç boss ve direncin işlemediği hasar yolu (2026-11-27; yalnız tanı, veri ve motor değişmedi)
+
+`npx vite-node src/sim/bossTani.ts -- --boss <id> --parti k18-fighter --tohum 1 --kol hazırlıklı|dirençsiz` (tek tohum, Normal;
+betiğe iki alan eklendi: `hpKaybiKaynak` parti HP kaybını komut kaynağına göre (efsanevi eylem kendi adıyla), `olayHasari` partiyi
+vuran hasarı olay yolu × tür × ham/uygulanan olarak döker; çıktılar `sim-sonuc/katalog-f/tani/`). Hazırlıklı kolda partideki
+uygulanan hasarın yola göre dağılımı:
+
+| Boss | Sonuç (tur) | Boss HP sonda | Parti HP kaybı | Saldırı eki (elemental) | Kurtarmalı (nefes, efsanevi, sanat) | Saldırının ana hasarı | Ek payı |
+|---|---|---:|---:|---:|---:|---:|---:|
+| Kongark | yenilgi (11) | 326/578 | 1198 | 281 (ham 281) | 492 (ham 1104) | 156 | %30 |
+| Mirage | yenilgi (10) | 200/525 | 987 | 341 (ham 341) | 507 (ham 1211) | 95 | %36 |
+| Lightaur | yenilgi (10) | 10/432 | 913 | 443 (ham 443) | 327 (ham 804) | 165 | %47 |
+| Cerbones (hedefte) | zafer (8) | 0/527 | 716 | 136 | 362 | 78 | %24 |
+| Wolfgang (çok kolay) | zafer (9) | 0/319 | 655 | 308 | 192 | 101 | %51 |
+
+- **Direncin işlemediği yol bulundu: canavar saldırı eki.** Bossların elemental eki (Fist/Grab +6d10 force, Gore/Hoof +6d10
+  radiant, Soul Claw +6d10 psychic…) hazırlıklı kolda hiç yarıya inmiyor (ham = uygulanan); aynı türün kurtarmalı hasarı yarıya
+  iniyor. Neden motorda: `src/battle/riders.ts` `riderExtras` hedefin direncini yalnız kalıcı alanlarından okuyor
+  (`target.resistances/immunities/vulnerabilities`), süren etkilerden gelen dirence (`profileIn(state, target)`: sim'in
+  `sim:hazirlik` etkisi, oyunda Protection from Energy, Absorb Elements, paket `direnc`…) bakmıyor; aynı saldırının ana hasarı ve
+  `hitDie` eki `profileIn` ile hesaplanıyor (`src/battle/monsters.ts` saldırı çözümü). Bu Mühür Ruhu'na özgü değil, ek hasarlı
+  bütün canavar saldırılarında geçerli.
+- **Üç zor bossu ayıran bu değil.** Açık bütün bosslarda var ve payı çok kolay Wolfgang'da en yüksek (%51). Dirençsiz → hazırlıklı
+  farkının bütün bosslarda küçük kalmasını (+5…+13 puan) kısmen açıklar; zorluk sırasını açıklamaz.
+- **Üç bossu ayıran:** (1) kurtarmalı hasar (yarıya inmiş hâliyle bile 327–507; Cerbones 362, Wolfgang 192): en büyük kalem efsanevi
+  eylem (Kongark Void Stone 355 HP, Mirage Mind Needle 243, Lightaur Ray Spear 194; tek tohum, hazırlıklı); (2) Kongark ve
+  Mirage'da partinin boss'a verdiği hasar düşük (11 ve 10 turda 252 ve 325 HP: boss HP'sinin %44'ü ve %62'si), Lightaur'da
+  savaş başa baş (boss 10 HP'yle kaldı).
+- **Öneri (uygulanmadı; motor kuralı, karar kullanıcıda):** `riderExtras` dirençleri `profileIn(state, target)`'tan okusun, yeni
+  kural sürümü kapısıyla (108; eski kayıt/replay aynı). Tek tohumda bu, hazırlıklı kolda parti HP kaybını Kongark ≈ −%12,
+  Mirage ≈ −%17, Lightaur ≈ −%24 azaltır. Bütün bossların hazırlıklı sonuçları değişeceği için K11 ölçümü düzeltmeden sonra
+  yinelenmeli; ancak ondan sonra hasar/HP önerilerine (yukarıdaki tablo) bakılmalı. Çok zor üçlüde ikinci aday efsanevi eylem
+  hasarı (Void Stone, Mind Needle, Ray Spear).
+- **Araç notu:** `bossTani` savaş sonu `partiDirencleri` ölen üyede boş görünür (ölünce süren etkiler temizlenir; `pruneEffects`).
+  Bu bir direnç kaybı değil.
 
 ## Not: Görev MC7 (2026-11-26, kural sürümü 105) — çoklu sınıf partisi `mc-karma` ilk ölçüm
 

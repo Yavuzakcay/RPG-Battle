@@ -132,7 +132,8 @@
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
       },
-      "avatar": "boss/cimbombom.webp"
+      "avatar": "boss/cimbombom.webp",
+      "jetonOlcek": 2
     },
     {
       "id": "cim",
@@ -201,7 +202,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/cim.webp"
+      "avatar": "boss/cim.webp",
+      "jetonOlcek": 0.5
     },
     {
       "id": "cimbom",
@@ -291,7 +293,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/cimbom.webp"
+      "avatar": "boss/cimbom.webp",
+      "jetonOlcek": 1.2
     },
     {
       "id": "kongark",
@@ -438,7 +441,8 @@
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
       },
-      "avatar": "boss/kongark.webp"
+      "avatar": "boss/kongark.webp",
+      "jetonOlcek": 2
     },
     {
       "id": "kongcuk",
@@ -508,7 +512,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/kongcuk.webp"
+      "avatar": "boss/kongcuk.webp",
+      "jetonOlcek": 0.5
     },
     {
       "id": "kongilla",
@@ -608,7 +613,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/kongilla.webp"
+      "avatar": "boss/kongilla.webp",
+      "jetonOlcek": 1.2
     },
     {
       "id": "cerbones",
@@ -722,7 +728,8 @@
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
       },
-      "avatar": "boss/cerbones.webp"
+      "avatar": "boss/cerbones.webp",
+      "jetonOlcek": 2
     },
     {
       "id": "cerbit",
@@ -789,7 +796,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/cerbit.webp"
+      "avatar": "boss/cerbit.webp",
+      "jetonOlcek": 0.5
     },
     {
       "id": "cerbedo",
@@ -877,7 +885,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/cerbedo.webp"
+      "avatar": "boss/cerbedo.webp",
+      "jetonOlcek": 1.2
     },
     {
       "id": "mirage",
@@ -1003,7 +1012,8 @@
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
       },
-      "avatar": "boss/mirage.webp"
+      "avatar": "boss/mirage.webp",
+      "jetonOlcek": 1
     },
     {
       "id": "mirit",
@@ -1071,7 +1081,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/mirit.webp"
+      "avatar": "boss/mirit.webp",
+      "jetonOlcek": 0.25
     },
     {
       "id": "mirath",
@@ -1162,7 +1173,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/mirath.webp"
+      "avatar": "boss/mirath.webp",
+      "jetonOlcek": 0.6
     },
     {
       "id": "gongar",
@@ -1315,7 +1327,8 @@
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
       },
-      "avatar": "boss/gongar.webp"
+      "avatar": "boss/gongar.webp",
+      "jetonOlcek": 2
     },
     {
       "id": "twinkle",
@@ -1385,7 +1398,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/twinkle.webp"
+      "avatar": "boss/twinkle.webp",
+      "jetonOlcek": 0.5
     },
     {
       "id": "gongi",
@@ -1486,7 +1500,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/gongi.webp"
+      "avatar": "boss/gongi.webp",
+      "jetonOlcek": 1.2
     },
     {
       "id": "lightaur",
@@ -1655,7 +1670,8 @@
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
       },
-      "avatar": "boss/lightaur.webp"
+      "avatar": "boss/lightaur.webp",
+      "jetonOlcek": 1.5
     },
     {
       "id": "lumbo",
@@ -1725,7 +1741,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/lumbo.webp"
+      "avatar": "boss/lumbo.webp",
+      "jetonOlcek": 0.375
     },
     {
       "id": "lighty",
@@ -1827,7 +1844,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/lighty.webp"
+      "avatar": "boss/lighty.webp",
+      "jetonOlcek": 0.9
     },
     {
       "id": "hydraxe",
@@ -1941,7 +1959,8 @@
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
       },
-      "avatar": "boss/hydraxe.webp"
+      "avatar": "boss/hydraxe.webp",
+      "jetonOlcek": 2
     },
     {
       "id": "hydrop",
@@ -2011,7 +2030,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/hydrop.webp"
+      "avatar": "boss/hydrop.webp",
+      "jetonOlcek": 0.5
     },
     {
       "id": "hydras",
@@ -2103,7 +2123,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/hydras.webp"
+      "avatar": "boss/hydras.webp",
+      "jetonOlcek": 1.2
     },
     {
       "id": "mothraq",
@@ -2257,7 +2278,8 @@
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
       },
-      "avatar": "boss/mothraq.webp"
+      "avatar": "boss/mothraq.webp",
+      "jetonOlcek": 2
     },
     {
       "id": "sporlet",
@@ -2328,7 +2350,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/sporlet.webp"
+      "avatar": "boss/sporlet.webp",
+      "jetonOlcek": 0.5
     },
     {
       "id": "mothcoon",
@@ -2430,7 +2453,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/mothcoon.webp"
+      "avatar": "boss/mothcoon.webp",
+      "jetonOlcek": 1.2
     },
     {
       "id": "stormer",
@@ -2552,7 +2576,8 @@
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
       },
-      "avatar": "boss/stormer.webp"
+      "avatar": "boss/stormer.webp",
+      "jetonOlcek": 1.5
     },
     {
       "id": "sparkle",
@@ -2622,7 +2647,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/sparkle.webp"
+      "avatar": "boss/sparkle.webp",
+      "jetonOlcek": 0.375
     },
     {
       "id": "thunderse",
@@ -2711,7 +2737,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/thunderse.webp"
+      "avatar": "boss/thunderse.webp",
+      "jetonOlcek": 0.9
     },
     {
       "id": "wolfgang",
@@ -2867,7 +2894,8 @@
         "bolum": "§5–§6",
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §5"
       },
-      "avatar": "boss/wolfgang.webp"
+      "avatar": "boss/wolfgang.webp",
+      "jetonOlcek": 2
     },
     {
       "id": "doggie",
@@ -2938,7 +2966,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/doggie.webp"
+      "avatar": "boss/doggie.webp",
+      "jetonOlcek": 0.5
     },
     {
       "id": "wolfie",
@@ -3041,7 +3070,8 @@
       "katalog": {
         "tasarim": "harita/belgeler/KATALOG-F-TASARIM.md §8"
       },
-      "avatar": "boss/wolfie.webp"
+      "avatar": "boss/wolfie.webp",
+      "jetonOlcek": 1.2
     }
   ]
 }
