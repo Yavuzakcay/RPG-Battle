@@ -287,6 +287,7 @@ export const en: Strings = {
       katNadirlik: { olagandisi: 'Uncommon', nadir: 'Rare', cokNadir: 'Very Rare', efsanevi: 'Legendary', yadigar: 'Artifact' } as Record<string, string>,
       katDurum: { calisir: 'works', kismi: 'partly works', planli: 'planned (not in the game yet)', calismiyor: 'not working' } as Record<string, string>,
       katKaynak: (ref: string) => `Dice & Hex original item catalog (${ref})`, priceless: 'Cannot be sold / priceless',
+      muhur: { kademe: 'Tier', ruh: 'Seal Spirit', tier: { 1: 'Tier 1 · Cracked Stone', 2: 'Tier 2 · Awakened Stone', 3: 'Tier 3 · Boss Stone' } as Record<number, string> },
       v: {
         dexMod: 'DEX', dexMax: (n: number) => `DEX (max ${n})`, shield: (n: number) => `+${n} (shield)`,
         minutes: (a: number, b: number) => `${a} min to don, ${b} min to doff`, stealthDis: 'Disadvantage on Dexterity (Stealth) checks',
