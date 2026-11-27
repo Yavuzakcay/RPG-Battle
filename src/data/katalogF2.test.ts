@@ -15,6 +15,7 @@ import kadimJson from '../../data/canavarlar-kadim.json';
 import trJson from '../../data/aciklamalar-tr-canavar.json';
 import enJson from '../../data/aciklamalar-en-canavar.json';
 import efsanevi from '../../data/efsanevi.json';
+import bossGorsel from '../../data/boss-gorsel.json';
 
 interface Kadim {
   hatlar: Record<string, { hasar: string; kimlikler: string[] }>;
@@ -96,12 +97,14 @@ describe('KATALOG-F2: kadim yaratık kayıtları', () => {
     }
     for (const t of ['dex', 'yer', 'ozellikler'] as const) expect(Object.keys(K[t]).sort()).toEqual([...ids()].sort());
   });
-  // GORSEL-MUCEVHER-EJDERHA: görsel yalnız mücevher ejderhalarında (`avatar` boss/<kimlik>.webp, src/data/bossGorsel.test.ts); diğer kadimlerde yok.
-  it('şema: yalnız Monster alanları; yetenekler, boyut, saldırılar ve ekler geçerli; görsel yalnız mücevher ejderhalarında', () => {
-    const gem = new Set(Object.values(K.hatlar).flatMap((h) => h.kimlikler));
+  // GORSEL-MUCEVHER-EJDERHA / KATALOG-DEX-DENGE-HAZIRLIK: görsel `data/boss-gorsel.json` `mucevher` ve `kadim` bölümlerinden
+  // (`avatar`; Ocean-Nightmare açık deniz fazı Ocean-Nightmare görselini paylaşır); görseli olmayan (Ember Egg) kayıtta yok.
+  it('şema: yalnız Monster alanları; yetenekler, boyut, saldırılar ve ekler geçerli; görsel boss-gorsel.json\'dan', () => {
+    const BG = bossGorsel as unknown as { mucevher: Record<string, { dosya: string }>; kadim: Record<string, { dosya: string }> };
+    const dosya = (id: string) => (BG.mucevher[id] ?? BG.kadim[id])?.dosya;
     for (const m of K.canavarlar) {
       for (const k of Object.keys(m)) expect(MONSTER_KEYS.has(k), `${m.id}.${k}`).toBe(true);
-      expect(m.avatar, m.id).toBe(gem.has(m.id) ? `boss/${m.id}.webp` : undefined);
+      expect(m.avatar, m.id).toBe(dosya(m.id));
       expect(['T', 'S', 'M', 'L', 'H', 'G']).toContain(m.size);
       expect(Object.keys(m.abilities).sort()).toEqual(['cha', 'con', 'dex', 'int', 'str', 'wis']);
       for (const v of Object.values(m.abilities)) expect(v >= 1 && v <= 36).toBe(true);
@@ -140,7 +143,8 @@ describe('KATALOG-F2: kadim yaratık kayıtları', () => {
     expect(getMonster('ocean-nightmare').faz2).toBeUndefined();
     for (const m of K.canavarlar) if (m.faz2) expect(faz2Errors(m.faz2, m.id)).toEqual([]);
     // -savas varyantı kozmik-anka ile aynı değerler; Hexonia a/b aynı değerler, yön a sağa, b sola; gizli varyantlar.
-    const strip = (id: string) => { const { id: _i, unsupported: _u, ...rest } = getMonster(id); return rest; };
+    // Görsel (`avatar`) varyanta göre ayrı (Anka savaş biçimi, Hexonia b aynalı); değerler aynı.
+    const strip = (id: string) => { const { id: _i, unsupported: _u, avatar: _a, ...rest } = getMonster(id); return rest; };
     expect(strip('kozmik-anka-savas')).toEqual(strip('kozmik-anka'));
     expect(strip('dragon-of-hexonia-b')).toEqual(strip('dragon-of-hexonia-a'));
     expect([K.dex['dragon-of-hexonia-a']!.yon, K.dex['dragon-of-hexonia-b']!.yon]).toEqual(['sag', 'sol']);

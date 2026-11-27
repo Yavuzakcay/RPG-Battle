@@ -4,7 +4,7 @@
  * adlar İngilizce (alt sınıf ve Geçmiş adı Türkçe), açıklamalar Türkçe; SRD'nin İngilizce ham metni (`text`, `raw`)
  * hiçbir kartta kullanılmaz. Tembel parça: yalnız `src/screens/Dungeondex.tsx` içe aktarır.
  */
-import { armor, classes, isMagicItem, items, katalogMonsters, monsters, races, spells, spellDescriptions, trAciklama, weapons, classData, enDescriptions, loadMonsterDescriptions, loadEnMonsterDescriptions } from '../data';
+import { armor, classes, isMagicItem, items, katalogMonsters, MUHUR_KAYNAK, monsters, races, spells, spellDescriptions, trAciklama, weapons, classData, enDescriptions, loadMonsterDescriptions, loadEnMonsterDescriptions } from '../data';
 import type { Item, Monster, Spell, SubclassDef, Weapon } from '../data';
 import { allFeats } from '../rules/advancement';
 import { backgrounds } from '../rules/backgrounds';
@@ -16,7 +16,7 @@ import { allInvocations } from '../rules/invocations';
 import { hexCount } from '../rules/footprint';
 import { spellRitual } from '../rules/spellComponents';
 import { actionGlyph, itemGlyphs, spellGlyphs } from '../ui/glyph/glyphs';
-import { t, type Lang } from '../i18n';
+import { getLang, t, type Lang } from '../i18n';
 import cfg from '../../data/dungeondex.json';
 import srdSpecies from '../../data/srd/species.json';
 import altSoyMetin from '../../data/alt-soy-metin.json';
@@ -66,6 +66,16 @@ export interface DexExtras {
   classPrimary: Record<string, string>;
   /** KATALOG-F2: Dungeondex'te gösterilen katalog canavarları (`data/canavarlar-kadim.json` `dex`, `dexGizli` varyantları hariç). */
   katalogDex?: string[];
+  /** KATALOG-DEX-DENGE-HAZIRLIK: Mühür Ruhu kartı için efsanevi eylemler (`data/efsanevi.json` `monsters`) ve canavar yetenekleri. */
+  legendary?: Record<string, { uses?: number; actions: KatAct[] }>;
+  abilities?: Record<string, { abilities?: KatAct[] }>;
+}
+
+/** Efsanevi eylem ya da canavar yeteneği (kartta gösterilen alanlar). */
+interface KatAct {
+  id: string; tr?: string; en?: string; kind?: string; cost?: string; save?: string; dc?: number; damage?: string; damageType?: string; dice?: string;
+  half?: boolean; conditions?: string[]; push?: number; area?: { shape: string; sizeFt: number; widthFt?: number }; count?: number; rangeFt?: number;
+  bonus?: number; attack?: string; uses?: number; pullFt?: number;
 }
 
 
@@ -92,6 +102,16 @@ export async function loadDexExtras(): Promise<Omit<DexExtras, 'mapNames'>> {
     classPrimary: Object.fromEntries((srdClasses.default as unknown as { classes: Array<{ id: string; core: Record<string, string> }> }).classes
       .map((c) => [c.id, c.core['Primary Ability'] ?? ''])),
     katalogDex: Object.keys(kadim.dex).filter((id) => !kadim.dexGizli.includes(id)),
+    ...(await loadKatalogExtras()),
+  };
+}
+
+/** KATALOG-DEX-DENGE-HAZIRLIK: katalog canavarı kartının efsanevi eylem ve yetenek tabloları (tembel). */
+async function loadKatalogExtras(): Promise<Pick<DexExtras, 'legendary' | 'abilities'>> {
+  const [ef, ab] = await Promise.all([import('../../data/efsanevi.json'), import('../../data/canavar-yetenekleri.json')]);
+  return {
+    legendary: (ef.default as unknown as { monsters: DexExtras['legendary'] }).monsters,
+    abilities: ab.default as unknown as DexExtras['abilities'],
   };
 }
 
@@ -119,6 +139,57 @@ const cap = (s: string) => (s ? s[0]!.toUpperCase() + s.slice(1) : s);
 const className = (id: string) => classes.find((c) => c.id === id)?.name ?? cap(id);
 const spellClassIds = (s: Spell): string[] => s.classes.map((c) => (cfg.buyuSiniflari as Record<string, string>)[c] ?? c.toLowerCase());
 const spellKey = (name: string) => fold(name).replace(/[^a-z0-9]/g, '');
+
+/** KATALOG-DEX-DENGE-HAZIRLIK: Mühür Ruhu kartı (evrim çizgisi, eylemler, efsanevi eylemler, yetenekler, Faz 2). Metin arayüz dilinde (`ui`). */
+function muhurCard(m: Monster, x: DexExtras, condName: (id: string) => string, lang: Lang): Pick<DexEntry, 'sections' | 'links' | 'facts'> & { condImmune: string[] } {
+  const L = t().dex;
+  const K = L.kat;
+  const dmg = (type?: string) => (type ? L.pro.dmg[type] ?? type : '');
+  const ab = (a?: string) => (a ? L.pro.ab[a] ?? a.toUpperCase() : '');
+  const conds = (list?: string[]) => (list?.length ? K.conds(list.map((c) => condName(fold(c))).join(', ')) : '');
+  const area = (a?: { shape: string; sizeFt: number; widthFt?: number }) => (a ? (K.area[a.shape]?.(a.sizeFt, a.widthFt ?? 5) ?? `${a.shape} ${a.sizeFt} ft`) : '');
+  const actName = (a: KatAct) => (lang === 'en' ? a.en : a.tr) ?? a.en ?? a.id;
+  const riders = (m.riders ?? {}) as Record<string, { extra?: Array<{ dice: string; type: string }>; conditions?: Array<{ condition: string }> }>;
+  const atkRow = (a: NonNullable<Monster['attacks']>[number]): DexRow => {
+    const r = riders[a.name];
+    const extra = (r?.extra ?? []).map((e) => `${K.plus}${e.dice} ${dmg(e.type)}`).join('');
+    const text = a.save
+      ? `${K.save(ab(a.save.ability), a.save.dc)}${a.area ? `, ${area(a.area)}` : ''}: ${a.damageDice ?? ''} ${dmg(a.damageType)}.${a.save.halfOnSave ? K.half : ''}${a.recharge ? K.recharge(a.recharge) : ''}`
+      : `${a.ranged ? K.ranged : K.melee}: +${a.bonus}, ${a.ranged ? K.range(a.range?.[0] ?? 0) : K.reach(a.reachFt ?? 5)}. ${K.hit}: ${a.damageDice ?? ''} ${dmg(a.damageType)}${extra}.${(a.repeat ?? 1) > 1 ? K.times(a.repeat!) : ''}${conds(r?.conditions?.map((c) => c.condition))}`;
+    return { name: a.name, tag: L.monsterKind.action, glif: actionGlyph('action'), text: { ui: text } };
+  };
+  const actText = (a: KatAct): string => {
+    if (a.kind === 'strike') return K.strike(a.attack ?? actName(a));
+    if (a.kind === 'pull') return K.pull(a.rangeFt ?? 0, a.pullFt ?? 0);
+    if (a.kind === 'rays') return `${K.rays(a.count ?? 1, a.rangeFt ?? 0)}: +${a.bonus ?? 0}. ${K.hit}: ${a.dice ?? ''} ${dmg(a.damageType)}.`;
+    const base = `${K.save(ab(a.save), a.dc ?? 0)}${a.area ? `, ${area(a.area)}` : ''}${a.damage ? `: ${a.damage} ${dmg(a.damageType)}.` : '.'}`;
+    return `${base}${a.half ? K.half : ''}${conds(a.conditions)}${a.push ? K.push(a.push) : ''}${a.uses ? K.uses(a.uses) : ''}`;
+  };
+  const leg = x.legendary?.[m.id];
+  const abil = x.abilities?.[m.id]?.abilities ?? [];
+  const rows: DexRow[] = [
+    ...(m.attacks ?? []).map(atkRow),
+    ...abil.map((a): DexRow => ({ name: actName(a), tag: L.monsterKind[a.cost === 'bonus' ? 'bonus' : 'action'], glif: actionGlyph(a.cost === 'bonus' ? 'bonus' : 'action'), text: { ui: actText(a) } })),
+    ...(leg?.actions ?? []).map((a): DexRow => ({ name: actName(a), tag: K.legendary(leg?.uses ?? 3), glif: actionGlyph('legendary'), text: { ui: actText(a) } })),
+  ];
+  const f2 = m.faz2;
+  const f2mech = f2 ? [f2.zayiflikKaldir?.length ? K.weakLoss(f2.zayiflikKaldir.map(dmg).join(', ')) : '', f2.nefesDoldur ? K.breathRefill : '', f2.nefesAlan ? K.areaMul(f2.nefesAlan) : ''].filter(Boolean).join(' ') : '';
+  const f2rows: DexRow[] = f2 ? [
+    ...(f2.not ? [{ name: K.phase2, text: { tr: f2.not.tr, en: f2.not.en } }] : []),
+    ...(f2mech ? [{ name: '—', text: { ui: f2mech } }] : []),
+  ] : [];
+  // Evrim çizgisi: aynı çizginin Sv.1 → Sv.2 → Sv.3 kayıtları.
+  type Mx = Monster & { kademe?: number; cizgi?: string; element?: string };
+  const mx = m as Mx;
+  const line = katalogMonsters.filter((o) => o.kaynak === MUHUR_KAYNAK && (o as Mx).cizgi === mx.cizgi).sort((a, b) => ((a as Mx).kademe ?? 0) - ((b as Mx).kademe ?? 0));
+  const condImmune = (m.unsupported ?? []).flatMap((u) => /^Durum bağışıklığı: (.+)$/.exec(u)?.[1]?.split(',').map((c) => fold(c.trim())) ?? []).filter((c) => CONDITION_IDS.includes(c));
+  return {
+    facts: [[K.evo, `${K.sv(mx.kademe ?? 0)} · ${cap(K.line(dmg(mx.element)))}`]],
+    sections: [{ title: L.sec.monsterFeatures, rows }, ...(f2rows.length ? [{ title: K.phase2, rows: f2rows }] : [])],
+    links: line.map((o): DexLink => ({ cat: 'canavar', id: o.id, label: `${K.sv((o as Mx).kademe ?? 0)} · ${o.name}` })),
+    condImmune,
+  };
+}
 
 /** Bütün kategorilerin kayıtları (dil değişince yeniden üretilir; ucuz). */
 export function buildDex(x: DexExtras): Record<DexCat, DexEntry[]> {
@@ -204,16 +275,21 @@ export function buildDex(x: DexExtras): Record<DexCat, DexEntry[]> {
     const names = [...(sc?.atWill ?? []), ...(sc?.daily ?? []).flatMap((d) => d.spells)].map((s) => s.name);
     return [...new Map(names.flatMap((n) => { const s = spellsByName.get(spellKey(n)); return s ? [[s.id, s] as const] : []; })).values()];
   };
-  // KATALOG-F2: katalog canavarlarından yalnız Dungeondex'e alınanlar (kadim yaratıklar; gizli varyantlar ve Mühür Ruhu hariç).
+  // KATALOG-F2: katalog canavarlarından Dungeondex'e alınanlar (kadim yaratıklar; gizli varyantlar hariç).
+  // KATALOG-DEX-DENGE-HAZIRLIK: Mühür Ruhu da (30 kayıt; kart `muhurCard`).
   const katalogDex = new Set(x.katalogDex ?? []);
-  const canavar: DexEntry[] = [...monsters, ...katalogMonsters.filter((m) => katalogDex.has(m.id))].map((m: Monster) => {
+  const muhur = katalogMonsters.filter((m) => m.kaynak === MUHUR_KAYNAK);
+  const canavar: DexEntry[] = [...monsters, ...muhur, ...katalogMonsters.filter((m) => katalogDex.has(m.id))].map((m: Monster) => {
     const srd = x.srdMonsters[m.id];
-    const type = x.monsterTypes[m.id] ?? srd?.type ?? '';
+    const type = x.monsterTypes[m.id] ?? srd?.type ?? m.creatureType ?? '';
+    const isMuhur = m.kaynak === MUHUR_KAYNAK;
+    const mc = isMuhur ? muhurCard(m, x, condName, getLang()) : null;
     const size = L.size[m.size ?? 'M'] ?? m.size ?? '';
     const place = x.monsterPlaces[m.id];
-    const immune = (srd?.conditionImmunities ?? []).map((c) => fold(c)).filter((c) => CONDITION_IDS.includes(c));
+    const immune = mc ? mc.condImmune : (srd?.conditionImmunities ?? []).map((c) => fold(c)).filter((c) => CONDITION_IDS.includes(c));
     const ab = m.abilities as unknown as Record<string, number>;
-    const kat = katalogDex.has(m.id);
+    const kat = katalogDex.has(m.id) || isMuhur;
+    const dmgList = (l?: string[]) => (l ?? []).map((d) => L.pro.dmg[d] ?? d).join(', ');
     const speed0 = typeof m.speed === 'number' ? L.ft(m.speed) : String(m.speed);
     // KATALOG-F2: katalog canavarında uçuş, yüzme, tırmanma ve süzülme de yazılır.
     const speed = !kat ? speed0 : [speed0, ...(m.fly ? [`${L.speedKind.fly} ${L.ft(m.fly)}`] : []), ...(m.swim ? [`${L.speedKind.swim} ${L.ft(m.swim)}`] : []),
@@ -225,20 +301,28 @@ export function buildDex(x: DexExtras): Record<DexCat, DexEntry[]> {
         ...(srd?.alignment ? [[L.fact.alignment, srd.alignment] as [string, string]] : []),
         [L.fact.ac, String(m.ac)], [L.fact.hp, String(m.hp)], [L.fact.speed, speed],
         ...(kat ? [[L.footprint, L.hexes(hexCount(m.size ?? 'M'))] as [string, string]] : []),
+        // KATALOG-DEX-DENGE-HAZIRLIK: katalog canavarında hasar bağışıklığı, direnç ve zayıflık; Mühür Ruhu'nda evrim basamağı.
+        ...(kat && m.immunities?.length ? [[L.kat.immune, dmgList(m.immunities)] as [string, string]] : []),
+        ...(kat && m.resistances?.length ? [[L.fact.resist, dmgList(m.resistances)] as [string, string]] : []),
+        ...(kat && m.vulnerabilities?.length ? [[L.kat.vuln, dmgList(m.vulnerabilities)] as [string, string]] : []),
+        ...(mc ? mc.facts : []),
         [L.fact.abilities, ['str', 'dex', 'con', 'int', 'wis', 'cha'].map((k) => `${k.toUpperCase()} ${ab[k] ?? '—'}`).join(' · ')],
         ...(m.darkvision ? [[L.fact.darkvision, L.ft(m.darkvision)] as [string, string]] : []),
         ...(m.attacks?.length ? [[L.fact.attacks, m.attacks.map((a) => a.name).join(', ')] as [string, string]] : []),
       ],
       // Kuyruk A İş 4: özellik ve eylemler (ad İngilizce, açıklama Türkçe `aciklamalar-tr-canavar.json`, `loadMonsterDescriptions`); eksikte "henüz yok".
-      sections: (x.monsterFeatures[m.id] ?? []).length ? [{ title: L.sec.monsterFeatures, rows: (x.monsterFeatures[m.id] ?? []).map((ft): DexRow => {
+      sections: mc ? mc.sections : (x.monsterFeatures[m.id] ?? []).length ? [{ title: L.sec.monsterFeatures, rows: (x.monsterFeatures[m.id] ?? []).map((ft): DexRow => {
         const tr = trAciklama('canavar', ft.anahtar);
         return { name: ft.ad, tag: L.monsterKind[ft.tur] ?? ft.tur, glif: actionGlyph(ft.tur), text: tr ? { tr, en: en('canavar', ft.anahtar) } : { ui: L.noDesc } };
       }) }] : [],
       links: [
+        ...(mc ? mc.links : []),
         ...immune.map((c): DexLink => ({ cat: 'durum', id: c, label: L.immuneTo(condName(c)) })),
         ...monsterSpellIds(m.id).map((s): DexLink => ({ cat: 'buyu', id: s.id, label: s.name })),
       ],
-      tags: [...(place?.tema ? [L.monsterThemes[place.tema] ?? place.tema] : []), ...(place?.ortam ?? []).flatMap((o) => (x.mapNames[o] ? [x.mapNames[o]!] : []))],
+      tags: isMuhur
+        ? [L.monsterThemes['Mühür Ruhu'] ?? 'Mühür Ruhu', ...((m as Monster & { ortam?: string[] }).ortam ?? []).flatMap((o) => (x.mapNames[o] ? [x.mapNames[o]!] : []))]
+        : [...(place?.tema ? [L.monsterThemes[place.tema] ?? place.tema] : []), ...(place?.ortam ?? []).flatMap((o) => (x.mapNames[o] ? [x.mapNames[o]!] : []))],
       f: { cr: crBand(m.cr), type }, sort: `${String(crNum(m.cr)).padStart(6, '0')}${m.name}`,
     };
   });

@@ -1,5 +1,5 @@
 {
-  "_not": "BOSS-GORSEL-1: Mühür Ruhu yaratık görselleri; scripts/boss-gorsel.mjs üretir (kaynak depo dışı assets-ham/boss/), elle düzenlenmez. `dosya` public/ altındaki yol; görsel yoksa null (jeton yedek görünüme düşer). `olcek`: jeton görsel boyutu boss yüksekliğine göre (Sv.1 0.25, Sv.2 0.6, Sv.3 1); görsele gömülmez. `mucevher` (GORSEL-MUCEVHER-EJDERHA): 15 mücevher ejderhası (`hat`, `evre` 1 Yavru / 2 Genç / 3 Yetişkin, `kaynak` ham dosya); ölçek yok, jeton boyutu boyut sınıfından; scripts/katalog-f2-kadim.mjs `avatar` olarak bağlar. Kontrol: harita/belgeler/BOSS-GORSEL-KONTROL.md.",
+  "_not": "BOSS-GORSEL-1: Mühür Ruhu yaratık görselleri; scripts/boss-gorsel.mjs üretir (kaynak depo dışı assets-ham/boss/), elle düzenlenmez. `dosya` public/ altındaki yol; görsel yoksa null (jeton yedek görünüme düşer). `olcek`: jeton görsel boyutu boss yüksekliğine göre (Sv.1 0.25, Sv.2 0.6, Sv.3 1); görsele gömülmez. `mucevher` (GORSEL-MUCEVHER-EJDERHA): 15 mücevher ejderhası (`hat`, `evre` 1 Yavru / 2 Genç / 3 Yetişkin, `kaynak` ham dosya); ölçek yok, jeton boyutu boyut sınıfından; scripts/katalog-f2-kadim.mjs `avatar` olarak bağlar. `kadim` (KATALOG-DEX-DENGE-HAZIRLIK): kadim yaratıklar, aynı biçim; `ortak` = görseli paylaşılan kaydın kimliği (ayrı dosya yok); `ayna`: kaynak yatay aynalandı (yan tabloda `yon: sol`). Kontrol: harita/belgeler/BOSS-GORSEL-KONTROL.md.",
   "olcek": {
     "1": 0.25,
     "2": 0.6,
@@ -682,6 +682,104 @@
         2048
       ],
       "zemin": "#515151"
+    }
+  },
+  "kadim": {
+    "tutsak-dragon": {
+      "dosya": "boss/tutsak-dragon.webp",
+      "kaynak": "tutsak-dragon.jpg",
+      "boyut": [
+        512,
+        487
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#f200fe"
+    },
+    "dragon-of-hexonia-a": {
+      "dosya": "boss/dragon-of-hexonia-a.webp",
+      "kaynak": "dragon-of-hexonia-a.jpg",
+      "boyut": [
+        512,
+        309
+      ],
+      "hamBoyut": [
+        2720,
+        1568
+      ],
+      "zemin": "#fb03fd"
+    },
+    "dragon-of-hexonia-b": {
+      "dosya": "boss/dragon-of-hexonia-b.webp",
+      "kaynak": "dragon-of-hexonia-b.jpg",
+      "ayna": true,
+      "boyut": [
+        512,
+        309
+      ],
+      "hamBoyut": [
+        2624,
+        1632
+      ],
+      "zemin": "#fb02fc"
+    },
+    "kozmik-anka": {
+      "dosya": "boss/kozmik-anka.webp",
+      "kaynak": "kozmik-anka.jpg",
+      "boyut": [
+        512,
+        489
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#1fc624"
+    },
+    "kozmik-anka-savas": {
+      "dosya": "boss/kozmik-anka-savas.webp",
+      "kaynak": "kozmik-anka-savas.jpg",
+      "boyut": [
+        512,
+        297
+      ],
+      "hamBoyut": [
+        2752,
+        1536
+      ],
+      "zemin": "#14b91d"
+    },
+    "ocean-nightmare": {
+      "dosya": "boss/ocean-nightmare.webp",
+      "kaynak": "ocean-nightmare.jpg",
+      "boyut": [
+        512,
+        294
+      ],
+      "hamBoyut": [
+        2752,
+        1536
+      ],
+      "zemin": "#f802fc"
+    },
+    "titan-of-nightmare": {
+      "dosya": "boss/titan-of-nightmare.webp",
+      "kaynak": "titan-of-nightmare.jpg",
+      "boyut": [
+        512,
+        389
+      ],
+      "hamBoyut": [
+        2752,
+        1536
+      ],
+      "zemin": "#f802fc"
+    },
+    "ocean-nightmare-open-sea": {
+      "dosya": "boss/ocean-nightmare.webp",
+      "ortak": "ocean-nightmare"
     }
   }
 }

@@ -121,3 +121,16 @@ eşlemesi `kaynak: jeton`); Dungeondex vitrini katalog canavarının `avatar`ın
 | `gamlet` | gamma | Yavru | dragon-gamma-yavru.jpg | 2048×2048 | 512×458 | #4f4e4f | 0 | 27 |
 | `gammyr` | gamma | Genç | dragon-gamma-genc.jpg | 2048×2048 | 512×483 | #525152 | 1 | 16 |
 | `gammadrake` | gamma | Yetişkin | dragon-gamma-adult.jpg | 2048×2048 | 512×481 | #515151 | 1 | 20 |
+
+## KATALOG-DEX-DENGE-HAZIRLIK: kadim yaratıklar
+
+Üretici aynı: `node scripts/boss-gorsel.mjs --kaynak <assets-ham/boss> --grup kadim`. Eşleme `data/boss-gorsel.json` `kadim`; bağlama
+`scripts/katalog-f2-kadim.mjs` (`avatar`). Kontrol sayfası `boss-gorsel-kontrol/sayfa-kadim.jpg`.
+
+- **Bağlanan (7 dosya):** `tutsak-dragon`, `dragon-of-hexonia-a`, `dragon-of-hexonia-b` (aynalı: yan tabloda `yon: sol`, ham görsel sağa bakıyor),
+  `kozmik-anka`, `kozmik-anka-savas`, `ocean-nightmare`, `titan-of-nightmare`. `ocean-nightmare-open-sea` → `boss/ocean-nightmare.webp` (`ortak`).
+- **Görselsiz:** `ember-egg` (yedek simge).
+- **Zemin:** macenta (Captive Dragon, Hexonia, Ocean-Nightmare, Titan) ve yeşil (Kozmik Anka); renkli zemin eşiği. Yarı saydam piksel oranı %6–14
+  (Kozmik Anka savaş biçiminde alev dilleri doğal yarı saydam).
+- **Dungeondex ekranı (375 px):** `harita/belgeler/katalog-dex-ekran/` (Cimbombom, Cosmic Phoenix, Alphadrake).
+

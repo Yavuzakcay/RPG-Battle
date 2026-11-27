@@ -1258,5 +1258,201 @@
   "silinenParca": 20,
   "kalanParca": 10,
   "kenarSizinti": 0
+ },
+ {
+  "id": "tutsak-dragon",
+  "file": "tutsak-dragon.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   512,
+   487
+  ],
+  "zemin": "#f200fe",
+  "koseler": [
+   "#f100fe",
+   "#f400fe",
+   "#f100fd",
+   "#f100fd"
+  ],
+  "gurultu": 4,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 4,
+  "silinenParca": 33,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "dragon-of-hexonia-a",
+  "file": "dragon-of-hexonia-a.jpg",
+  "ham": [
+   2720,
+   1568
+  ],
+  "cikti": [
+   512,
+   309
+  ],
+  "zemin": "#fb03fd",
+  "koseler": [
+   "#fb00fd",
+   "#fb04fc",
+   "#fc01fd",
+   "#fb05fc"
+  ],
+  "gurultu": 6,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 2,
+  "silinenParca": 1,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "dragon-of-hexonia-b",
+  "file": "dragon-of-hexonia-b.jpg",
+  "ham": [
+   2624,
+   1632
+  ],
+  "cikti": [
+   512,
+   309
+  ],
+  "zemin": "#fb02fc",
+  "koseler": [
+   "#fb00fd",
+   "#fa03fc",
+   "#fb00fc",
+   "#fa03fb"
+  ],
+  "gurultu": 6,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 3,
+  "silinenParca": 1,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "kozmik-anka",
+  "file": "kozmik-anka.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   512,
+   489
+  ],
+  "zemin": "#1fc624",
+  "koseler": [
+   "#1ec922",
+   "#1ec922",
+   "#1fc326",
+   "#1fc327"
+  ],
+  "gurultu": 3,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 5,
+  "silinenParca": 0,
+  "kalanParca": 1,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "kozmik-anka-savas",
+  "file": "kozmik-anka-savas.jpg",
+  "ham": [
+   2752,
+   1536
+  ],
+  "cikti": [
+   512,
+   297
+  ],
+  "zemin": "#14b91d",
+  "koseler": [
+   "#13b81c",
+   "#14b71c",
+   "#13bb1d",
+   "#15b91e"
+  ],
+  "gurultu": 4,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 4,
+  "silinenParca": 12,
+  "kalanParca": 7,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "ocean-nightmare",
+  "file": "ocean-nightmare.jpg",
+  "ham": [
+   2752,
+   1536
+  ],
+  "cikti": [
+   512,
+   294
+  ],
+  "zemin": "#f802fc",
+  "koseler": [
+   "#fa00fd",
+   "#f803fd",
+   "#f601fc",
+   "#f604fb"
+  ],
+  "gurultu": 7,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 8,
+  "silinenParca": 1,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "titan-of-nightmare",
+  "file": "titan-of-nightmare.jpg",
+  "ham": [
+   2752,
+   1536
+  ],
+  "cikti": [
+   512,
+   389
+  ],
+  "zemin": "#f802fc",
+  "koseler": [
+   "#f800fc",
+   "#f803fb",
+   "#f901fc",
+   "#f804fc"
+  ],
+  "gurultu": 7,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 1,
+  "silinenParca": 1,
+  "kalanParca": 0,
+  "kenarSizinti": 0
  }
 ]

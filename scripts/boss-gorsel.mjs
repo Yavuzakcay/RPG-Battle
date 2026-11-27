@@ -10,6 +10,10 @@
 // çıktı `boss-gorsel.json` `mucevher` bölümüne. Ölçek yok: jeton boyutu boyut sınıfından (token-sizes.json). Kontrol sayfası ayrı
 // (`sayfa-mucevher.jpg`). `--kimlik`/`--grup` ile yalnız seçilenler yazılır; json'un ve ölçüm dökümünün geri kalanı korunur, Mühür
 // Ruhu kontrol sayfaları yalnız 30 Mühür Ruhu birlikte işlenince yeniden çizilir.
+// KATALOG-DEX-DENGE-HAZIRLIK: kadim yaratıklar (`--grup kadim`; kaynak dosya adı = kimlik), çıktı `kadim` bölümüne; aynı görseli
+// paylaşan varyant (KADIM_ORTAK: Ocean-Nightmare açık deniz fazı) ayrı dosya üretmez, `ortak` ile kaynağın dosyasını gösterir.
+// Yön: kaynak görseller sağa bakar (sprite kuralı, src/ui/tokenFacing.ts). Kadim yan tablosunda `yon: "sol"` olan kayıt
+// (Dragon of Hexonia b) yatay aynalanır; `yon: "sag"` ve yönsüz kayıtlar kaynaktaki gibi.
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
@@ -18,7 +22,7 @@ const args = process.argv.slice(2);
 const opt = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : undefined; };
 const SRC = opt('--kaynak') ?? 'assets-ham/boss';
 const DRY = args.includes('--kuru');
-const GRUP = opt('--grup'); // muhur | mucevher | (hepsi)
+const GRUP = opt('--grup'); // muhur | mucevher | kadim | (hepsi)
 const ONLY = opt('--kimlik')?.split(',');
 const OUT = 'public/boss';
 const KONTROL = 'harita/belgeler/boss-gorsel-kontrol';
@@ -38,6 +42,12 @@ const EVRE = ['yavru', 'genc', 'adult'];
 /** Kimlik → ham dosya adı (uzantısız). Alfa Yetişkin'de iki seçenek var: `-a` bağlanır, `dragon-alpha-adult-b` yedek kalır. */
 const MUCEVHER_DOSYA = Object.fromEntries(Object.entries(MUCEVHER).flatMap(([hat, ids]) =>
   ids.map((id, i) => [id, `dragon-${hat}-${EVRE[i]}${hat === 'alpha' && i === 2 ? '-a' : ''}`])));
+// Kadim yaratıklar (data/canavarlar-kadim.json): görseli olanlar. Ember Egg'in görseli yok (yedek simge).
+const KADIM = ['tutsak-dragon', 'dragon-of-hexonia-a', 'dragon-of-hexonia-b', 'kozmik-anka', 'kozmik-anka-savas', 'ocean-nightmare', 'titan-of-nightmare'];
+/** Görseli başka bir kaydınkiyle aynı olan varyantlar (kimlik → görselin sahibi). */
+const KADIM_ORTAK = { 'ocean-nightmare-open-sea': 'ocean-nightmare' };
+const KADIM_DEX = fs.existsSync('data/canavarlar-kadim.json') ? JSON.parse(fs.readFileSync('data/canavarlar-kadim.json', 'utf8')).dex ?? {} : {};
+const AYNA = new Set(KADIM.filter((id) => KADIM_DEX[id]?.yon === 'sol'));
 const WORK = 1024; // işlem boyu (uzun kenar)
 const OUT_H = 512; // çıktı uzun kenarı
 
@@ -196,7 +206,7 @@ async function processOne(id) {
   const cw = x1 - x0 + 1, ch = y1 - y0 + 1;
   const k = Math.min(1, OUT_H / Math.max(cw, ch));
   const ow = Math.round(cw * k), oh = Math.round(ch * k);
-  const webp = await img.resize(ow, oh).webp({ quality: 90, alphaQuality: 100 }).toBuffer();
+  const webp = await (AYNA.has(id) ? img.resize(ow, oh).flop() : img.resize(ow, oh)).webp({ quality: 90, alphaQuality: 100 }).toBuffer();
   if (!DRY) { fs.mkdirSync(OUT, { recursive: true }); fs.writeFileSync(path.join(OUT, `${id}.webp`), webp); }
   const kenarSizinti = edge ? leak / edge : 0;
   return {
@@ -208,7 +218,8 @@ async function processOne(id) {
 
 const MUHUR_IDS = Object.values(CIZGI).flat();
 const MUCEVHER_IDS = Object.values(MUCEVHER).flat();
-const ids = [...(GRUP === 'mucevher' ? [] : MUHUR_IDS), ...(GRUP === 'muhur' ? [] : MUCEVHER_IDS)].filter((id) => !ONLY || ONLY.includes(id));
+const GRUPLAR = { muhur: MUHUR_IDS, mucevher: MUCEVHER_IDS, kadim: KADIM };
+const ids = Object.entries(GRUPLAR).filter(([g]) => !GRUP || GRUP === g).flatMap(([, v]) => v).filter((id) => !ONLY || ONLY.includes(id));
 const rows = [];
 for (const id of ids) { const r = await processOne(id); rows.push(r); console.log(id, r.yok ? 'YOK' : `${r.file} → ${r.cikti.join('x')} zemin ${r.zemin} sızıntı ${r.kenarSizinti} silinen ${r.silinenParca}`); }
 
@@ -222,11 +233,14 @@ if (!DRY) {
   const prev = fs.existsSync(JSON_YOL) ? JSON.parse(fs.readFileSync(JSON_YOL, 'utf8')) : {};
   const gorseller = { ...(prev.gorseller ?? {}) };
   const mucevher = { ...(prev.mucevher ?? {}) };
+  const kadim = { ...(prev.kadim ?? {}) };
   for (const r of rows) {
     if (MUHUR_IDS.includes(r.id)) {
       const k = kademeOf(r.id);
       gorseller[r.id] = r.yok ? { dosya: null, kademe: k, cizgi: cizgiOf(r.id), olcek: OLCEK[k] }
         : { dosya: `boss/${r.id}.webp`, kademe: k, cizgi: cizgiOf(r.id), olcek: OLCEK[k], boyut: r.cikti, hamBoyut: r.ham, zemin: r.zemin };
+    } else if (KADIM.includes(r.id)) {
+      kadim[r.id] = r.yok ? { dosya: null, kaynak: r.id } : { dosya: `boss/${r.id}.webp`, kaynak: r.file, ...(AYNA.has(r.id) ? { ayna: true } : {}), boyut: r.cikti, hamBoyut: r.ham, zemin: r.zemin };
     } else {
       mucevher[r.id] = r.yok ? { dosya: null, hat: hatOf(r.id), evre: evreOf(r.id), kaynak: MUCEVHER_DOSYA[r.id] }
         : { dosya: `boss/${r.id}.webp`, hat: hatOf(r.id), evre: evreOf(r.id), kaynak: r.file, boyut: r.cikti, hamBoyut: r.ham, zemin: r.zemin };
@@ -234,10 +248,14 @@ if (!DRY) {
   }
   const order = (o, list) => Object.fromEntries(list.filter((id) => o[id]).map((id) => [id, o[id]]));
   const out = {
-    _not: 'BOSS-GORSEL-1: Mühür Ruhu yaratık görselleri; scripts/boss-gorsel.mjs üretir (kaynak depo dışı assets-ham/boss/), elle düzenlenmez. `dosya` public/ altındaki yol; görsel yoksa null (jeton yedek görünüme düşer). `olcek`: jeton görsel boyutu boss yüksekliğine göre (Sv.1 0.25, Sv.2 0.6, Sv.3 1); görsele gömülmez. `mucevher` (GORSEL-MUCEVHER-EJDERHA): 15 mücevher ejderhası (`hat`, `evre` 1 Yavru / 2 Genç / 3 Yetişkin, `kaynak` ham dosya); ölçek yok, jeton boyutu boyut sınıfından; scripts/katalog-f2-kadim.mjs `avatar` olarak bağlar. Kontrol: harita/belgeler/BOSS-GORSEL-KONTROL.md.',
+    _not: 'BOSS-GORSEL-1: Mühür Ruhu yaratık görselleri; scripts/boss-gorsel.mjs üretir (kaynak depo dışı assets-ham/boss/), elle düzenlenmez. `dosya` public/ altındaki yol; görsel yoksa null (jeton yedek görünüme düşer). `olcek`: jeton görsel boyutu boss yüksekliğine göre (Sv.1 0.25, Sv.2 0.6, Sv.3 1); görsele gömülmez. `mucevher` (GORSEL-MUCEVHER-EJDERHA): 15 mücevher ejderhası (`hat`, `evre` 1 Yavru / 2 Genç / 3 Yetişkin, `kaynak` ham dosya); ölçek yok, jeton boyutu boyut sınıfından; scripts/katalog-f2-kadim.mjs `avatar` olarak bağlar. `kadim` (KATALOG-DEX-DENGE-HAZIRLIK): kadim yaratıklar, aynı biçim; `ortak` = görseli paylaşılan kaydın kimliği (ayrı dosya yok); `ayna`: kaynak yatay aynalandı (yan tabloda `yon: sol`). Kontrol: harita/belgeler/BOSS-GORSEL-KONTROL.md.',
     olcek: OLCEK,
     gorseller: order(gorseller, [...MUHUR_IDS, ...Object.keys(gorseller).filter((id) => !MUHUR_IDS.includes(id))]),
     mucevher: order(mucevher, MUCEVHER_IDS),
+    kadim: {
+      ...order(kadim, KADIM),
+      ...Object.fromEntries(Object.entries(KADIM_ORTAK).filter(([, src]) => kadim[src]?.dosya).map(([id, src]) => [id, { dosya: kadim[src].dosya, ortak: src }])),
+    },
   };
   fs.writeFileSync(JSON_YOL, JSON.stringify(out, null, 2) + '\n');
 }
@@ -278,6 +296,7 @@ if (!DRY) {
   const all = (list) => list.every((id) => rows.some((r) => r.id === id && !r.yok));
   if (all(MUHUR_IDS)) { const lines = Object.entries(CIZGI); await page(lines.slice(0, 5), 'sayfa-1.jpg'); await page(lines.slice(5, 10), 'sayfa-2.jpg'); }
   if (all(MUCEVHER_IDS)) await page(Object.entries(MUCEVHER), 'sayfa-mucevher.jpg');
+  if (all(KADIM)) await page([['a', KADIM.slice(0, 4)], ['b', KADIM.slice(4)]], 'sayfa-kadim.jpg');
   // Ölçüm dökümü: işlenen kayıtlar güncellenir ya da sona eklenir, diğerleri korunur.
   const OLCUM = path.join(KONTROL, 'olcum.json');
   const olcum = fs.existsSync(OLCUM) ? JSON.parse(fs.readFileSync(OLCUM, 'utf8')) : [];

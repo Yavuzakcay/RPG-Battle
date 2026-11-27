@@ -5,7 +5,7 @@
  */
 import { beforeAll, describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { armor, classes, items, kadimMonsters, loadMonsters, monsters, races, spells, weapons } from '../data';
+import { armor, classes, items, kadimMonsters, loadMonsters, muhurMonsters, monsters, races, spells, weapons } from '../data';
 import { subclassesOf } from '../rules/classFeatures';
 import { looksEnglish } from '../data/aciklamaDil';
 import { setLang, t } from '../i18n';
@@ -35,12 +35,16 @@ describe('Dungeondex kataloğu', () => {
     expect(DEX_CATS).toHaveLength(10);
     expect(dex.buyu.map((e) => e.id).sort()).toEqual(spells.map((s) => s.id).sort());
     expect(dex.buyu).toHaveLength(339);
-    // Görev KATALOG-F2: 330 SRD canavarı + Dungeondex'teki kadim yaratıklar (`data/canavarlar-kadim.json`; gizli varyantlar ve Mühür Ruhu yok).
+    // Görev KATALOG-F2: 330 SRD canavarı + Dungeondex'teki kadim yaratıklar (`data/canavarlar-kadim.json`; gizli varyantlar yok).
+    // KATALOG-DEX-DENGE-HAZIRLIK: + 30 Mühür Ruhu (`data/bosslar-muhur.json`); toplam 382.
     const gizli = new Set((kadimJson as unknown as { dexGizli: string[] }).dexGizli);
     const kadim = new Set(kadimMonsters().filter((m) => !gizli.has(m.id)).map((m) => m.id));
-    expect(dex.canavar).toHaveLength(330 + kadim.size);
+    const muhur = new Set(muhurMonsters().map((m) => m.id));
+    expect(muhur.size).toBe(30);
+    expect(dex.canavar).toHaveLength(330 + muhur.size + kadim.size);
+    expect(dex.canavar).toHaveLength(382);
     expect(dex.canavar.filter((e) => gizli.has(e.id))).toEqual([]);
-    for (const e of dex.canavar) if (!kadim.has(e.id)) expect((srdMonsters.monsters as Record<string, unknown>)[e.id], e.id).toBeDefined();
+    for (const e of dex.canavar) if (!kadim.has(e.id) && !muhur.has(e.id)) expect((srdMonsters.monsters as Record<string, unknown>)[e.id], e.id).toBeDefined();
     const armorCount = armor.filter((a) => (a as { srd?: string }).srd).length;
     expect(dex.esya).toHaveLength(items.length + weapons.length + armorCount);
     expect(dex.tur.map((e) => e.id).sort()).toEqual(races.map((r) => r.id).sort());
@@ -89,6 +93,25 @@ describe('Dungeondex kataloğu', () => {
     expect(dexFilters('canavar', dex.canavar).map((f) => f.key)).toEqual(['cr', 'type']);
     for (const c of DEX_CATS) expect(dexFilters(c, dex[c]).length).toBeLessThanOrEqual(DEX_VISIBLE_FILTERS);
   });
+  // KATALOG-DEX-DENGE-HAZIRLIK: Mühür Ruhu kartı: evrim çizgisi Sv.1 → Sv.2 → Sv.3, tür, hasar bağışıklığı/zayıflık, eylemler, Faz 2.
+  it('Mühür Ruhu kartı: evrim sırası, savunma satırları, eylemler ve Faz 2 notu', () => {
+    const c = dex.canavar.find((e) => e.id === 'cimbombom')!;
+    expect(c.header).toMatch(/CR 26/);
+    expect(c.header.toLowerCase()).toContain('fiend');
+    const facts = Object.fromEntries(c.facts);
+    expect(facts['Evrim']).toBe('Sv.3 · Ateş çizgisi');
+    expect(facts['Hasar bağışıklığı']).toBe('ateş');
+    expect(facts['Zayıflık']).toBe('soğuk');
+    expect(c.links.filter((l) => l.cat === 'canavar').map((l) => l.id)).toEqual(['cim', 'cimbom', 'cimbombom']);
+    const rows = c.sections[0]!.rows;
+    expect(rows.map((r) => r.name)).toEqual(expect.arrayContaining(['Bite', 'Claw', 'Hellfire Roar']));
+    expect(rows.some((r) => r.tag?.startsWith('Efsanevi'))).toBe(true);
+    const f2 = c.sections.find((s) => s.title === 'Faz 2 (yarı can)')!;
+    expect(f2.rows[0]!.text?.tr).toContain('Taş Uyanışı');
+    expect(dex.canavar.find((e) => e.id === 'cim')!.sections.some((s) => s.title === 'Faz 2 (yarı can)')).toBe(false);
+    expect(dex.canavar.find((e) => e.id === 'mirage')!.links.map((l) => l.id)).toEqual(expect.arrayContaining(['charmed', 'frightened']));
+  });
+
   it('bağlantılar yalnız var olan kayıtlara', () => {
     for (const c of DEX_CATS) for (const e of dex[c]) for (const l of e.links) if (l.id) expect(dex[l.cat].some((x) => x.id === l.id), `${e.id} → ${l.cat}/${l.id}`).toBe(true);
     expect(dex.canavar.find((e) => e.id === 'adult-black-dragon')!.links.some((l) => l.cat === 'buyu')).toBe(true);

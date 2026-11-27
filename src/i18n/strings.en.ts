@@ -237,6 +237,19 @@ export const en: Strings = {
     monsterSummary: (size: string, type: string, cr: string, ac: number, hp: number) => `${size} ${type}; CR ${cr}, AC ${ac}, ${hp} HP.`,
     /** KATALOG-F2: catalog monster speed kinds and map footprint (hexes). */
     speedKind: { fly: 'fly', swim: 'swim', climb: 'climb', hover: 'hover' } as Record<string, string>, footprint: 'Footprint', hexes: (n: number) => `${n} hexes`,
+    /** KATALOG-DEX-DENGE-HAZIRLIK: catalog monster card (Seal Spirit evolution line, damage immunity/vulnerability, action rows, Phase 2). */
+    kat: {
+      evo: 'Evolution', sv: (n: number) => `Lv.${n}`, line: (dmg: string) => `${dmg} line`, immune: 'Damage immunities', vuln: 'Vulnerabilities',
+      phase2: 'Phase 2 (half HP)', melee: 'Melee attack', ranged: 'Ranged attack', reach: (ft: number) => `reach ${ft} ft`,
+      range: (ft: number) => `range ${ft} ft`, hit: 'Hit', plus: ' plus ', times: (n: number) => ` ${n} times per turn (Multiattack).`,
+      save: (ab: string, dc: number) => `${ab} saving throw, DC ${dc}`, half: ' Half damage on a success.', recharge: (n: number) => ` Recharge ${n}–6.`,
+      area: { cone: (ft: number) => `${ft}-foot cone`, line: (ft: number, w: number) => `${ft}-foot line (${w} ft wide)`, emanation: (ft: number) => `${ft}-foot emanation`,
+        sphere: (ft: number) => `${ft}-foot-radius sphere`, cube: (ft: number) => `${ft}-foot cube` } as Record<string, (ft: number, w: number) => string>,
+      conds: (list: string) => ` Condition: ${list}.`, push: (ft: number) => ` Pushed ${ft} ft.`, pull: (range: number, ft: number) => `Pulls a target within ${range} ft by ${ft} ft.`,
+      rays: (n: number, ft: number) => `${n} ray(s), range ${ft} ft`, strike: (name: string) => `${name} attack.`, uses: (n: number) => ` ${n} use(s) per battle.`,
+      legendary: (n: number) => `Legendary action (${n} per round)`, weakLoss: (list: string) => `Vulnerability lost: ${list}.`, breathRefill: 'Breath recharges.',
+      areaMul: (x: number) => `Breath area ×${x}.`, condImmune: 'Condition immunities',
+    },
     pro: {
       sec: { ne: 'What it does', nasil: 'How to use', etken: 'Active ingredients', risk: 'Risks', kimler: 'Who cannot use it', maliyet: 'Cost and weight', durum: 'In-game status', malzeme: 'Material and cost' } as Record<string, string>,
       badge: { ok: 'Works in combat', part: 'Partly works', gm: 'Game Master handles', off: 'Out of combat', none: 'Description only' } as Record<string, string>,
@@ -337,6 +350,7 @@ export const en: Strings = {
       "Ejderha soyu": "Dragonkin",
       "Göksel varlıklar": "Celestials",
       "Kadim Yaratıklar": "Ancient Creatures",
+      "Mühür Ruhu": "Seal Spirits",
     } as Record<string, string>,
   },
   home: {

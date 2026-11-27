@@ -7,7 +7,7 @@
  * açıklamaları aynı dosyada. SRD listesi (330 canavar, 1318 kayıt) aynen denetlenir, kadim liste ayrıca.
  */
 import { beforeAll, describe, expect, it } from 'vitest';
-import { kadimMonsters, loadMonsters, monsters } from '../data';
+import { kadimMonsters, loadMonsters, monsters, muhurMonsters } from '../data';
 import { looksEnglish } from '../data/aciklamaDil';
 import { setLang } from '../i18n';
 import { buildDex, loadDexExtras, type DexEntry } from './catalog';
@@ -75,7 +75,12 @@ describe('Canavar özellik ve eylem açıklamaları', () => {
     const rows = ab.sections[0]!.rows;
     expect(rows.map((r) => r.name)).toContain('Tentacle');
     for (const r of rows) expect(r.text?.tr ?? r.text?.ui, r.name).toBeTruthy();
-    const missing = canavar.flatMap((e) => e.sections.flatMap((s) => s.rows)).filter((r) => !r.text?.tr).length;
+    // KATALOG-DEX-DENGE-HAZIRLIK: Mühür Ruhu kartının satırları veriden üretilir (`ui`, açıklama dosyası yok); ayrı denetlenir.
+    const muhur = new Set(muhurMonsters().map((m) => m.id));
+    const missing = canavar.filter((e) => !muhur.has(e.id)).flatMap((e) => e.sections.flatMap((s) => s.rows)).filter((r) => !r.text?.tr).length;
     expect(missing).toBe(ALL.length - Object.keys(TR).length);
+    const muhurRows = canavar.filter((e) => muhur.has(e.id)).flatMap((e) => e.sections.flatMap((s) => s.rows));
+    expect(muhurRows.length).toBeGreaterThan(0);
+    for (const r of muhurRows) expect(r.text?.ui ?? r.text?.tr, r.name).toBeTruthy();
   });
 });

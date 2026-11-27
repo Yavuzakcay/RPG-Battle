@@ -9,6 +9,27 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Sürüm kapısı:** tek sabit `src/battle/riderResist108Surum.ts` `RIDER_RESIST_VERSION` = 108, `riderResist108On`. 107 ve altı (eski kayıt, replay) yalnız kalıcı alanlar (eski davranış).
 - **Kayıt sürümü değişmedi (28):** olay biçimi aynı (`attack_resolved.extra[].applied` zaten vardı; yalnız değeri değişir), yeni olay ya da alan yok; eski kayıt kendi `kuralSurumu`'yla aynı oynar.
 - **Testler:** `src/battle/riderResist108.test.ts` (Protection from Energy altında ek hasar 108 yarım / 107 tam; aynı turda Fire Breath ve Rend ikisi de yarım; kalıcı + süren direnç tek kez; süren etki bağışıklığı), `src/battle/g6.test.ts` güncel sürüm 108 (veriye bağlı değer). Regresyon `src/sim/riderResist108Regresyon.test.ts`: 107 imzası MC3 altınıyla aynı, 108 de aynı (sim partilerinde ek hasara karşı süren etki direnci yok). K11 boss ölçümü 108 ile yinelenmedi (ayrı denge turu; DENGE.md notu).
+## Görev KATALOG-DEX-DENGE-HAZIRLIK: Mühür Ruhu Dungeondex'te, kadim görselleri, katalog denge tablosu (2026-11-27; canavar değerleri, kural sürümü (108) ve kayıt sürümü değişmedi)
+
+- **Dungeondex:** Mühür Ruhu'nun 30 kaydı listede ve vitrinde (önceden yalnız SRD + kadim; süzgeç `katalogDex` yalnız kadim yan tablosunu okuyordu).
+  Kart `catalog.ts` `muhurCard`: tür (`creatureType`), CR, AC, HP, hız, kaplama, hasar bağışıklığı/direnç/zayıflık (katalog canavarlarının
+  hepsinde yeni satırlar), evrim basamağı ve çizgi bağlantıları Sv.1 → Sv.2 → Sv.3, saldırılar + yetenekler + efsanevi eylemler (metin
+  veriden, arayüz dilinde), Faz 2 notu ve mekanik özeti, durum bağışıklığı (kayıttaki "Durum bağışıklığı:" notundan). Tema etiketi "Mühür
+  Ruhu" / "Seal Spirits". Efsanevi ve yetenek tabloları Dungeondex'e tembel yüklenir.
+- **Kapak sayısı:** `dex.canavar.length` = 330 SRD + 30 Mühür Ruhu + 22 kadim = **382** (önceki 352'de Mühür Ruhu yoktu). Sayıya bağlı
+  testler güncellendi (book, dungeondex, galeri, görsel eşlemesi; gerekçe: Mühür Ruhu Dungeondex'e girdi).
+- **Kadim görselleri:** aynı hat (`scripts/boss-gorsel.mjs --grup kadim`, `boss-gorsel.json` `kadim`; zeminler macenta/yeşil, eşik zemine
+  göre kendiliğinden; yarı saydam piksel %6–14): Captive Dragon, Dragon of Hexonia a/b, Kozmik Anka ve savaş varyantı, Ocean-Nightmare,
+  Titan of Nightmare. Ocean-Nightmare açık deniz fazı Ocean-Nightmare görselini paylaşır (`ortak`). Ember Egg görselsiz (yedek simge).
+  **Yön:** iki ham Hexonia görseli de sağa bakıyor; yan tablodaki `yon: "sol"` (b) için b yatay aynalandı (`ayna: true`), a kaynaktaki gibi.
+  Sprite kuralı (kaynak sağa bakar) korunur. Bağlama `katalog-f2-kadim.mjs` (`avatar`), Mühür Ruhu satırları `katalog-f-bosslar.mjs`
+  (Dungeondex görsel eşlemesi).
+- **Denge tablosu:** `scripts/katalog-denge-tablo.mjs` → `harita/belgeler/KATALOG-DENGE-TABLO.md` + `.csv` (54 satır). DMG değerleri
+  `data/dmg-cr-tablosu.json` (DMG 2014 "Monster Statistics by Challenge Rating", s. 274; LR etkin HP eki s. 280–281; savaş motoru kullanmaz).
+  Yöntem belgede: etkin HP (LR, Faz 2 geçici can), 3 tur hasarı (alan 2 hedef, efsanevi eylemler dahil), AC/bonus farkı 2 puanda 1 basamak.
+  CR 30 üstü (Hexonia a/b, Kozmik Anka ×2, Titan) tablo dışı; Captive Dragon ve Ocean-Nightmare kayıtları veride CR 30, tabloyla karşılaştırıldı.
+  Oyunun `data/cr-tahmini.json` tahmini CR 20 üstünde DMG'den sapar (HP 15, hasar 6 sabit adım); değiştirilmedi.
+
 ## Görev GORSEL-MUCEVHER-EJDERHA: 15 mücevher ejderhası görseli bağlandı (2026-11-27; yalnız görsel, kural sürümü ve kayıt sürümü değişmedi)
 
 - **Hat:** Mühür Ruhu hattı (`scripts/boss-gorsel.mjs`) aynen: kaynak depo dışı `assets-ham/boss/dragon-<hat>-<yavru|genc|adult>.jpg`

@@ -49,6 +49,23 @@ const KAYNAK: Record<string, string> = {
   gamlet: 'dragon-gamma-yavru', gammyr: 'dragon-gamma-genc', gammadrake: 'dragon-gamma-adult',
 };
 
+/** KATALOG-DEX-DENGE-HAZIRLIK: kadim yaratık görselleri (`boss-gorsel.json` `kadim`); Ember Egg görselsiz, açık deniz fazı ortak görsel. */
+describe('KATALOG-DEX-DENGE-HAZIRLIK kadim görselleri', () => {
+  const KD = (data as unknown as { kadim: Record<string, { dosya: string; ortak?: string; ayna?: boolean }> }).kadim;
+  it('görseli olan 7 kadim kaydı + ortak görselli açık deniz fazı; dosyalar var, avatar aynı dosya', () => {
+    const own = ['tutsak-dragon', 'dragon-of-hexonia-a', 'dragon-of-hexonia-b', 'kozmik-anka', 'kozmik-anka-savas', 'ocean-nightmare', 'titan-of-nightmare'];
+    expect(Object.keys(KD).sort()).toEqual([...own, 'ocean-nightmare-open-sea'].sort());
+    for (const id of own) { expect(KD[id]!.dosya, id).toBe(`boss/${id}.webp`); expect(files.has(KD[id]!.dosya), id).toBe(true); }
+    expect(KD['ocean-nightmare-open-sea']).toEqual({ dosya: 'boss/ocean-nightmare.webp', ortak: 'ocean-nightmare' });
+    for (const id of Object.keys(KD)) expect(K.canavarlar.find((m) => m.id === id)!.avatar, id).toBe(KD[id]!.dosya);
+    expect(K.canavarlar.find((m) => m.id === 'ember-egg')!.avatar).toBeUndefined();
+  });
+  it('Hexonia yönü veriden: b (yon sol) aynalı, a değil', () => {
+    expect(KD['dragon-of-hexonia-b']!.ayna).toBe(true);
+    expect(KD['dragon-of-hexonia-a']!.ayna).toBeUndefined();
+  });
+});
+
 describe('GORSEL-MUCEVHER-EJDERHA', () => {
   const ids = Object.values(K.hatlar).flatMap((h) => h.kimlikler);
   it('15 kimliğin hepsinin görseli var; kaynak dosya eşlemesi doğru', () => {

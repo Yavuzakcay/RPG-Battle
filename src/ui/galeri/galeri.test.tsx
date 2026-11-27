@@ -23,7 +23,7 @@ describe('görsel galerisi', () => {
     expect(GALERI_TABS).toHaveLength(15);
     expect(tabRecords('buyu')).toHaveLength(339);
     expect(new Set(tabRecords('esya').map(([id]) => id))).toEqual(esyaKimlikleri()); // sayı veriden (KATALOG-1 ile 449 → 771)
-    expect(tabRecords('canavar')).toHaveLength(352); // KATALOG-F2(-DUZELT): 330 SRD + 22 Dungeondex kadim kaydı (yedek glifi)
+    expect(tabRecords('canavar')).toHaveLength(382); // KATALOG-F2(-DUZELT): 330 SRD + 22 Dungeondex kadim kaydı; KATALOG-DEX-DENGE-HAZIRLIK: + 30 Mühür Ruhu
     expect(tabRecords('altsinif')).toHaveLength(120);
     expect(tabRecords('nesne').length).toBeGreaterThan(30);
   });

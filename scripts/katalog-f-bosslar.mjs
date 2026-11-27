@@ -278,4 +278,20 @@ for (const b of B) {
   );
 }
 write('data/sim-boss.json', simBoss);
+
+// KATALOG-DEX-DENGE-HAZIRLIK: Mühür Ruhu Dungeondex'te; görsel eşlemesinde satır (`npm run dd-gorsel` biçimi: görseli varsa jeton,
+// yoksa yedek). Bu kimliklerin satırları silinip `canavar` bloğunun sonuna eklenir; dosyanın geri kalanı aynı kalır.
+{
+  const gp = 'data/dungeondex-gorsel-esleme.json';
+  let g = fs.readFileSync(gp, 'utf8');
+  const ids = new Set(monsters.map((m) => m.id));
+  const gs = g.indexOf('\n  "canavar": {');
+  const ge = g.indexOf('\n  }', gs + 5);
+  const block = g.slice(gs, ge).split('\n').filter((l) => { const m = /^ {4}"([^"]+)":/.exec(l); return !(m && ids.has(m[1])); }).join('\n').replace(/,\s*$/, '');
+  const rows = monsters.map((m) => `    ${JSON.stringify(m.id)}: ${JSON.stringify(m.avatar && fs.existsSync(`public/${m.avatar}`)
+    ? { kaynak: 'jeton', ref: m.avatar, durum: 'var', ad: m.name } : { kaynak: 'yedek', ref: 'yedek:nesne', durum: 'yedek', ad: m.name })}`);
+  g = `${g.slice(0, gs)}${block},\n${rows.join(',\n')}${g.slice(ge)}`;
+  JSON.parse(g);
+  fs.writeFileSync(gp, g);
+}
 console.log(`${monsters.length} yaratık yazıldı.`);

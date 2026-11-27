@@ -10,7 +10,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
-import { armor, classes, classData, isMagicItem, items, kadimMonsters, monsters, races, spells, weapons } from '../../src/data';
+import { armor, classes, classData, isMagicItem, items, kadimMonsters, katalogMonsters, MUHUR_KAYNAK, monsters, races, spells, weapons } from '../../src/data';
 import type { Spell } from '../../src/data/types';
 import { buildDex, loadDexExtras, type DexCat } from '../../src/dungeondex/catalog';
 import { observeSpell } from '../../src/ui/fx/e2Verify';
@@ -199,9 +199,9 @@ export async function monsterRows(): Promise<{ rows: GRow[]; info: MonsterInfo }
   for (const [id, h] of hash) byHash.set(h, [...(byHash.get(h) ?? []), id]);
   const sameAs = new Map<string, string[]>();
   for (const ids of byHash.values()) if (ids.length > 1) for (const id of ids) sameAs.set(id, ids.filter((x) => x !== id));
-  // KATALOG-F2: Dungeondex'teki kadim yaratıklar da (görsel hazırlanıyor: yedek glifi; gizli varyantlar hariç).
+  // KATALOG-F2: Dungeondex'teki kadim yaratıklar da (gizli varyantlar hariç); KATALOG-DEX-DENGE-HAZIRLIK: Mühür Ruhu da (30).
   const gizli = new Set(read<{ dexGizli: string[] }>('data/canavarlar-kadim.json').dexGizli);
-  const rows = [...monsters, ...kadimMonsters().filter((m) => !gizli.has(m.id))].map((m): GRow => {
+  const rows = [...monsters, ...katalogMonsters.filter((m) => m.kaynak === MUHUR_KAYNAK), ...kadimMonsters().filter((m) => !gizli.has(m.id))].map((m): GRow => {
     const ref = (m.avatar ?? `monsters/${m.id}.webp`).replace(/^\//, '');
     const same = (sameAs.get(m.id) ?? []).filter((x) => !x.endsWith('-uyku'));
     const size = m.size ?? 'M';

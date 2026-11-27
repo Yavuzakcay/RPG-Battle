@@ -565,7 +565,9 @@ const DEFS = [captiveDragon(), dragonOfHexonia('a'), dragonOfHexonia('b'), cosmi
 // GORSEL-MUCEVHER-EJDERHA: mücevher ejderhası görselleri data/boss-gorsel.json `mucevher`den (scripts/boss-gorsel.mjs --grup mucevher).
 // Savaş jetonu ve Dungeondex vitrini `avatar` (src/battle/avatar.ts monsterAvatar); jeton boyutu boyut sınıfından (ölçek yazılmaz).
 // Dosyası olmayan kayıtta avatar yok (yedek jeton/glif).
-const MUCEVHER_GORSEL = fs.existsSync(P('data/boss-gorsel.json')) ? (JSON.parse(fs.readFileSync(P('data/boss-gorsel.json'), 'utf8')).mucevher ?? {}) : {};
+// KATALOG-DEX-DENGE-HAZIRLIK: kadim yaratıklar da (`kadim` bölümü; Ocean-Nightmare açık deniz fazı Ocean-Nightmare görselini paylaşır).
+const BOSS_GORSEL = fs.existsSync(P('data/boss-gorsel.json')) ? JSON.parse(fs.readFileSync(P('data/boss-gorsel.json'), 'utf8')) : {};
+const MUCEVHER_GORSEL = { ...(BOSS_GORSEL.mucevher ?? {}), ...(BOSS_GORSEL.kadim ?? {}) };
 for (const d of DEFS) { const dosya = MUCEVHER_GORSEL[d.id]?.dosya; if (dosya && fs.existsSync(P(`public/${dosya}`))) d.avatar = dosya; }
 
 const MONSTER_KEYS = ['id', 'name', 'size', 'ac', 'hp', 'speed', 'fly', 'swim', 'avatar', 'abilities', 'saves', 'skills', 'darkvision', 'cr', 'multiattack', 'faz2', 'attacks',

@@ -121,6 +121,7 @@
    "speed": 50,
    "fly": 100,
    "swim": 50,
+   "avatar": "boss/tutsak-dragon.webp",
    "abilities": {
     "str": 30,
     "dex": 12,
@@ -287,6 +288,7 @@
    "speed": 80,
    "fly": 200,
    "swim": 100,
+   "avatar": "boss/dragon-of-hexonia-a.webp",
    "abilities": {
     "str": 36,
     "dex": 18,
@@ -477,6 +479,7 @@
    "speed": 80,
    "fly": 200,
    "swim": 100,
+   "avatar": "boss/dragon-of-hexonia-b.webp",
    "abilities": {
     "str": 36,
     "dex": 18,
@@ -666,6 +669,7 @@
    "hp": 780,
    "speed": 40,
    "fly": 150,
+   "avatar": "boss/kozmik-anka.webp",
    "abilities": {
     "str": 24,
     "dex": 30,
@@ -796,6 +800,7 @@
    "hp": 780,
    "speed": 40,
    "fly": 150,
+   "avatar": "boss/kozmik-anka-savas.webp",
    "abilities": {
     "str": 24,
     "dex": 30,
@@ -958,6 +963,7 @@
    "hp": 700,
    "speed": 30,
    "swim": 100,
+   "avatar": "boss/ocean-nightmare.webp",
    "abilities": {
     "str": 32,
     "dex": 12,
@@ -1080,6 +1086,7 @@
    "hp": 600,
    "speed": 30,
    "swim": 100,
+   "avatar": "boss/ocean-nightmare.webp",
    "abilities": {
     "str": 32,
     "dex": 12,
@@ -1266,6 +1273,7 @@
    "speed": 40,
    "fly": 60,
    "swim": 120,
+   "avatar": "boss/titan-of-nightmare.webp",
    "abilities": {
     "str": 34,
     "dex": 14,

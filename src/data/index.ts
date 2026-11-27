@@ -44,6 +44,9 @@ export const katalogMonsters: Monster[] = [];
 /** KATALOG-F2: Kadim Yaratıklar ve mücevher ejderhaları (`data/canavarlar-kadim.json`), `katalogMonsters` içinde `kaynak: katalog-f2`. */
 export const KADIM_KAYNAK = 'katalog-f2';
 export const kadimMonsters = (): Monster[] => katalogMonsters.filter((m) => m.kaynak === KADIM_KAYNAK);
+/** KATALOG-1 F: Mühür Ruhu kayıtlarının `kaynak` değeri (`data/bosslar-muhur.json`); Dungeondex'te görünür (KATALOG-DEX-DENGE-HAZIRLIK). */
+export const MUHUR_KAYNAK = 'katalog-1';
+export const muhurMonsters = (): Monster[] => katalogMonsters.filter((m) => m.kaynak === MUHUR_KAYNAK);
 /**
  * Canavar saldırı ek etkileri (`data/attack-riders.json`, battle/riders.ts okur). Yalnızca canavarlarla
  * birlikte gerekir; aynı tembel yüklemede doldurulur.

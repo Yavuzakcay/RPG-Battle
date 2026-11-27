@@ -900,6 +900,19 @@ export const TR_EXTRA = {
     monsterSummary: (size: string, type: string, cr: string, ac: number, hp: number) => `${size} ${type}; CR ${cr}, AC ${ac}, ${hp} HP.`,
     /** KATALOG-F2: katalog canavarının hız türleri ve haritadaki kaplaması (altıgen). */
     speedKind: { fly: 'uçuş', swim: 'yüzme', climb: 'tırmanma', hover: 'süzülür' } as Record<string, string>, footprint: 'Kaplama', hexes: (n: number) => `${n} altıgen`,
+    /** KATALOG-DEX-DENGE-HAZIRLIK: katalog canavarı kartı (Mühür Ruhu evrim çizgisi, hasar bağışıklığı/zayıflık, eylem satırları, Faz 2). */
+    kat: {
+      evo: 'Evrim', sv: (n: number) => `Sv.${n}`, line: (dmg: string) => `${dmg} çizgisi`, immune: 'Hasar bağışıklığı', vuln: 'Zayıflık',
+      phase2: 'Faz 2 (yarı can)', melee: 'Yakın dövüş saldırısı', ranged: 'Menzilli saldırı', reach: (ft: number) => `erişim ${ft} ft`,
+      range: (ft: number) => `menzil ${ft} ft`, hit: 'İsabet', plus: ' + ', times: (n: number) => ` Turda ${n} kez (Multiattack).`,
+      save: (ab: string, dc: number) => `${ab} kurtarma zarı, DC ${dc}`, half: ' Başarıda yarısı.', recharge: (n: number) => ` Yeniden dolar: ${n}–6.`,
+      area: { cone: (ft: number) => `${ft} ft koni`, line: (ft: number, w: number) => `${ft} ft çizgi (${w} ft geniş)`, emanation: (ft: number) => `${ft} ft yayılım`,
+        sphere: (ft: number) => `${ft} ft yarıçaplı küre`, cube: (ft: number) => `${ft} ft küp` } as Record<string, (ft: number, w: number) => string>,
+      conds: (list: string) => ` Durum: ${list}.`, push: (ft: number) => ` ${ft} ft itme.`, pull: (range: number, ft: number) => `${range} ft içindeki hedefi ${ft} ft çeker.`,
+      rays: (n: number, ft: number) => `${n} ışın, menzil ${ft} ft`, strike: (name: string) => `${name} saldırısı.`, uses: (n: number) => ` Savaşta ${n} kez.`,
+      legendary: (n: number) => `Efsanevi eylem (turda ${n})`, weakLoss: (list: string) => `Zayıflık kalkar: ${list}.`, breathRefill: 'Nefes yeniden dolar.',
+      areaMul: (x: number) => `Nefes alanı ×${String(x).replace(".", ",")}.`, condImmune: 'Durum bağışıklığı',
+    },
     /** Dungeondex prospektüsü (harita/belgeler/DUNGEONDEX-PROSPEKTUS.md): bölüm başlıkları ve veriden üretilen satırlar. */
     pro: {
       sec: { ne: 'Ne işe yarar', nasil: 'Nasıl kullanılır', etken: 'Etken içerik', risk: 'Riskler', kimler: 'Kimler kullanamaz', maliyet: 'Maliyet ve ağırlık', durum: 'Oyundaki durum', malzeme: 'Malzeme ve bedel' } as Record<string, string>,
@@ -1006,6 +1019,7 @@ export const TR_EXTRA = {
       "Ejderha soyu": "Ejderha soyu",
       "Göksel varlıklar": "Göksel varlıklar",
       "Kadim Yaratıklar": "Kadim Yaratıklar",
+      "Mühür Ruhu": "Mühür Ruhu",
     } as Record<string, string>,
   },
 };
