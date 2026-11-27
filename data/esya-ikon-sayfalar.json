@@ -2603,6 +2603,12 @@
   "musical-instrument/viol",
   "hide-armor"
  ],
+ "zeminMesru": {
+  "wand-of-the-war-mage-3": "asanın kendi mor-macenta gövde gölgesi (anahtar kalıntısı değil)"
+ },
+ "boslukZorla": [
+  "ring-of-shooting-stars"
+ ],
  "tamDespill": [
   "potion-of-healing",
   "potion-of-greater-healing",

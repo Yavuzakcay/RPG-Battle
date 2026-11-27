@@ -92,6 +92,40 @@ Kaynak PDF (11 sayfa, depo dışı `docs/katalog/`). Tek üretici `node scripts/
 ## KATALOG-1 F: Kuvvet çizgisinin adı (2026-11-27; kural ve kayıt sürümü değişmedi)
 
 Kullanıcı kararı: Kuvvet çizgisi Kongcuk → Kongilla → Kongark (kimlikler `kongcuk`, `kongilla`, `kongark`; unvan "Kong of the Void" aynı). Tarihçe notu: önceki tasarım kimlikleri bu çizgi için başka adlardı; veri, belge, sim satırları ve testler yeni kimliklere geçirildi (`scripts/katalog-f-bosslar.mjs` yeniden üretir). Zehir bossu Mothraq (`mothraq`).
+## ESYA-IKON-ZEMIN-TEMIZLIK: eşya ikonlarında yeşil, macenta ve pembe zemin/hale temizliği (2026-11-27; yalnız görünüm, kural sürümü değişmedi)
+
+Sorun: bazı `public/esya` ikonlarında (ör. Amulet of Health, Periapt of Health) zincir/halka arası kapalı boşlukta yeşil zemin, kenarda
+sarı-yeşil ya da somon/pembe hale kalıyordu. Ölçüm: ham sayfada bu boşluklar saf zemin değil, altın/beyaz parıltıyla karışmış zemin
+(zemine RGB uzaklığı 58–140); eski delik kuralı (uzaklık < 55) onları tutmuyordu, eski despill (G ≤ max(R, B)) haleyi zeytin-sarı bırakıyordu.
+
+- **Anahtarlama renk bazlı (`scripts/esya-ikon.mjs` `anahtarla`):** taşkın dolguya bağlı olmayan, zemin tonlu kapalı bileşen, piksellerinin
+  %80'i (`boslukEslesme`) dış dolgunun hale renk kümesinde (kanal başına 16'lık kova, kovada ≥ 3 piksel) ise zemindir ve dış hale gibi
+  ayrışır (`kapaliBosluklar`). Kırpım kenarına değen, 6 px'ten küçük ya da kırpımın %20'sinden büyük bileşen değil. Zümrüt, yaprak,
+  zehir yeşili ve pembe/kırmızı taş dış halede olmayan renktedir: kalır (test). Riskli ikon için manifest `boslukKapali` (kapalı),
+  `boslukZorla` (eşik 0: kapalı her zemin tonlu bileşen; yalnız `ring-of-shooting-stars`, yüzük içi gölgeli yeşil), sayfa `boslukEslesme`.
+- **Yeşil kip:** dolgu sınırı 160 → 200 (`yesilUst`; parıltının parlak sarı-yeşil iç halkası), alfa uzaklık rampası ile fark matının
+  (1 − (G − max(R, B)) / (Zg − max(Zr, Zb))) küçüğü.
+- **Güçlü kenar despill'i:** anahtarlı her pikselde ve ona 2 px içindeki yeşil baskın pikselde G → (R + B) / 2 (eskiden yalnız
+  `tamDespill`); 6 px bantta eskisi gibi G ≤ max(R, B); 16 px içinde soluk (doygunluk < 0,35) yeşil baskın piksel de (R + B) / 2
+  (beyaz parıltının nane yeşili halesi). Sonuç: sarı-yeşil hale turuncu-altın ya da beyaz parıltı olur.
+- **Macenta kip:** anahtarlı ve 2 px bant pikselinde ton 290°–25° ve doygunluk ≤ 0,55 ise %75 griye çekilir (`pembeSondur`): beyaz/krem
+  parıltının şeftali-pembe kalıntısı söner; doygun kırmızı ateş parıltısı ve altın değişmez, banttaki olmayan pembe taş dokunulmaz.
+- **Kenar aşındırma:** saydama 1 ve 2 px uzaklıktaki görünen pikselin alfası × 0,35 ve × 0,7 (kaynak ölçeğinde; 256 px'te ≈ 1 px).
+- **Tarama (`scripts/katalog-ikon-kusur.mjs`):** bütün `public/esya` (256 + `kucuk/` 96) ve ayırt tabanları (`assets/esya-taban`),
+  ikonun kaynak sayfasının kipiyle: anahtar kalıntısı (bant dışı opak anahtar rengi bileşeni ≥ 12 px; eşik 40 px, 96 px'te alanla
+  ölçekli) ve kenar halesi (≤ 3 px bantta oran; eşik %10). Yeşil sayfada yalnız yeşil/sarı-yeşil, macentada yalnız macenta/pembe ölçülür
+  (meşru renk alarm vermez); ayırt çıktıları (hasar tonu) taranmaz. Gözle denetlenen meşru içerik manifest `zeminMesru` (gerekçeli;
+  16 kimlik: kırmızı-turuncu ateş/ışık parıltısı, mor asa gövdesi, pembe şişe camı). Rapor `harita/belgeler/KATALOG-IKON-KUSUR.md` sonu.
+  Seçenekler `--klasor`, `--json`, `--yazma-yok`.
+- **Sonuç:** önce kusurlu benzersiz ikon yeşil 115 (kalıntı 24, hale 108), macenta-pembe 27 (hale 27); dosya olarak 226 (256 + 96).
+  Yeniden kesimden sonra kusurlu 0, belirsiz 11 (eşiğin yarısı ile eşik arası). Eski katalog bölümü: kusurlu hücre 94 → 69 (somon 37 → 5;
+  kalan "leylak/pembe" mavi-mor parıltıların eski ölçüsü).
+- **Ham sayfa:** bütün sayfalar mevcut; manifest `duzeltme-09.jpg` bekliyor, yerelde `duzeltme-9.jpg` (eski ⚠). Kullanıcının
+  klasörüne dokunulmadı: yeniden kesim geçici bir kaynak klasöründe `duzeltme-09.jpg` kopyasıyla yapıldı, bu yüzden 6 kayıt eski görsele
+  dönmedi. `katalog-duzeltme-01…07` ertelendiği için yok (beklenen).
+- Kontrol sayfası `docs/sabah/esya-ikon-zemin/index.html` (142 kusurlu ikon, önce/sonra, beyaz/siyah/gri) ve `karsilastirma.png` depoya
+  katılmadı. Testler `src/dungeondex/esyaIkonMacenta.test.ts` (yeşil ve macenta kapalı boşluk, despill, zümrüt/pembe taş, pembe söndürme,
+  aşındırma), `src/dungeondex/katalogIkonKusur.test.ts` (kalıntı ve hale ölçüsü).
 
 ## KATALOG-1 F / KATALOG-F0: yarı can fazı (Faz 2) motor kuralı — mekanik donmasına bilinçli istisna (2026-11-26; kural sürümü 107, kayıt sürümü 28)
 
