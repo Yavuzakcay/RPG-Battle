@@ -4,7 +4,7 @@
  * yedek glifi). Testler görsel açmaz: yalnız dosya adları listelenir (`import.meta.glob`, tembel).
  */
 import { beforeAll, describe, expect, it } from 'vitest';
-import { classData, isMagicItem, items, loadMonsters, monsters, races, spells, weapons, armor } from '../data';
+import { classData, isMagicItem, items, kadimMonsters, loadMonsters, monsters, races, spells, weapons, armor } from '../data';
 import { subclassesOf } from '../rules/classFeatures';
 import { classes } from '../data';
 import { setLang } from '../i18n';
@@ -53,7 +53,8 @@ describe('Dungeondex görsel eşlemesi', () => {
     // Görev KATALOG-1 A: 449 SRD/oyun eşyası + 125 özgün katalog silahı (yedek ikon); B: + 66 zırh/cübbe/kalkan/imza eşyası; C: + 55 giyilebilir; D: + 76 yüzük, tılsım, taş; E: + 45 tüketilebilir (ikonlu).
     expect(Object.keys(E.kategoriler.esya)).toHaveLength(816);
     for (const id of Object.keys((srdMonsters as unknown as { monsters: Record<string, unknown> }).monsters)) has('canavar', id);
-    expect(Object.keys(E.kategoriler.canavar)).toHaveLength(monsters.length);
+    // Görev KATALOG-F2: + Dungeondex'teki kadim yaratıklar (görsel hazırlanıyor: yedek glifi).
+    expect(Object.keys(E.kategoriler.canavar)).toHaveLength(monsters.length + dex.canavar.filter((e) => kadimMonsters().some((m) => m.id === e.id)).length);
     for (const id of srdIds((srdFeats as unknown as { feats: Array<{ id: string }> }).feats)) has('feat', id);
     for (const s of (srdSpecies as unknown as { species: Array<{ id: string }> }).species) has('tur', s.id);
     for (const r of races) for (const l of r.lineages ?? []) has('altsoy', `${r.id}/${l.id}`);

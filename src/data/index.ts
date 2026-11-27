@@ -41,6 +41,9 @@ export const environments = environmentsJson as Environment[];
 export const monsters: Monster[] = [];
 /** KATALOG-1 F: özgün katalog canavarları (Mühür Ruhu bossları ve evrimleri; `data/bosslar-muhur.json`), `loadMonsters` doldurur. */
 export const katalogMonsters: Monster[] = [];
+/** KATALOG-F2: Kadim Yaratıklar ve mücevher ejderhaları (`data/canavarlar-kadim.json`), `katalogMonsters` içinde `kaynak: katalog-f2`. */
+export const KADIM_KAYNAK = 'katalog-f2';
+export const kadimMonsters = (): Monster[] => katalogMonsters.filter((m) => m.kaynak === KADIM_KAYNAK);
 /**
  * Canavar saldırı ek etkileri (`data/attack-riders.json`, battle/riders.ts okur). Yalnızca canavarlarla
  * birlikte gerekir; aynı tembel yüklemede doldurulur.
@@ -51,13 +54,15 @@ export const monsterSpells: Record<string, unknown> = {};
 let monstersLoading: Promise<Monster[]> | null = null;
 export const monstersLoaded = () => monsters.length > 0;
 export function loadMonsters(): Promise<Monster[]> {
-  monstersLoading ??= Promise.all([import('../../data/monsters.json'), import('../../data/attack-riders.json'), import('../../data/canavar-buyuleri.json'), import('../../data/bosslar-muhur.json')]).then(([m, r, sp, k]) => {
+  monstersLoading ??= Promise.all([import('../../data/monsters.json'), import('../../data/attack-riders.json'), import('../../data/canavar-buyuleri.json'), import('../../data/bosslar-muhur.json'),
+    import('../../data/canavarlar-kadim.json')]).then(([m, r, sp, k, kd]) => {
     if (monsters.length === 0) monsters.push(...(m.default as Monster[]));
     Object.assign(monsterSpells, sp.default);
     Object.assign(attackRiders, (r.default as { attacks: Record<string, unknown> }).attacks);
     // KATALOG-1 F: Mühür Ruhu katalog canavarları ayrı dizide (SRD listesi 330 kalır); saldırı ekleri ortak tabloya.
+    // KATALOG-F2: Kadim Yaratıklar ve mücevher ejderhaları da aynı dizide (`data/canavarlar-kadim.json`, `kaynak: katalog-f2`).
     if (katalogMonsters.length === 0) {
-      const list = (k.default as unknown as { canavarlar: Monster[] }).canavarlar;
+      const list = [...(k.default as unknown as { canavarlar: Monster[] }).canavarlar, ...(kd.default as unknown as { canavarlar: Monster[] }).canavarlar];
       katalogMonsters.push(...list);
       for (const c of list) for (const [atk, spec] of Object.entries(c.riders ?? {})) attackRiders[`${c.id}:${atk}`] = spec;
     }

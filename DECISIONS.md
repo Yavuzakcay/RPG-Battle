@@ -10,6 +10,85 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Kayıt sürümü değişmedi (28):** olay biçimi aynı (`attack_resolved.extra[].applied` zaten vardı; yalnız değeri değişir), yeni olay ya da alan yok; eski kayıt kendi `kuralSurumu`'yla aynı oynar.
 - **Testler:** `src/battle/riderResist108.test.ts` (Protection from Energy altında ek hasar 108 yarım / 107 tam; aynı turda Fire Breath ve Rend ikisi de yarım; kalıcı + süren direnç tek kez; süren etki bağışıklığı), `src/battle/g6.test.ts` güncel sürüm 108 (veriye bağlı değer). Regresyon `src/sim/riderResist108Regresyon.test.ts`: 107 imzası MC3 altınıyla aynı, 108 de aynı (sim partilerinde ek hasara karşı süren etki direnci yok). K11 boss ölçümü 108 ile yinelenmedi (ayrı denge turu; DENGE.md notu).
 
+## Görev KATALOG-F2-DUZELT: kadim yaratıklar ve mücevher ejderhaları onaylı belgeye göre (2026-11-27; kural sürümü (107) ve kayıt sürümü (28) değişmedi)
+
+Tek kaynak `harita/belgeler/KATALOG-F2-OZELLIKLER.md` (onaylı; PDF ile çelişirse belge kazanır; bu dala da eklendi). Aşağıdaki
+"Görev KATALOG-F2" kararlarından **Yıldız-Kâbusu kaydı, +550 Faz 2, "Continent Dragon"/"Jewel Dragon" adları, mücevher kimlikleri,
+Yavru türetmesi, Genç CR 15 ve mücevher Legendary Resistance'ı geçersizdir**; kalanlar (tek üretici, korumalı ad taraması, efsanevi
+puan bedeli yaklaşımı, büyüsüz bağışıklığın yazılmaması) sürer.
+
+- **Birleşme (kullanıcı onayı):** güncel `origin/birlesik` (Mühür Ruhu, `fc2822b4`) dala alındı. Çakışmalar: `src/data/index.ts`
+  (birlesik'in `katalogMonsters` yapısı esas; kadim kayıtlar aynı diziye `data/canavarlar-kadim.json`'dan, saldırı ekleri kayıtta
+  `riders`; `kadimMonsters()` = `kaynak: katalog-f2` süzgeci; önceki ayrı `kadimMonsters` dizisi ve `ekler` tablosu kalktı),
+  `data/efsanevi.json` (birlesik'in 10 Mühür Ruhu satırı + yeni kadim kimlikler; eski kadim kimlikleri taşınmadı),
+  `harita/belgeler/KATALOG-SIGMAYAN.md` (iki bölüm alt alta). Kadim kayıtlar Mühür Ruhu'nun katalog alanlarını kullanır:
+  `creatureType` (savaşta tür), `swim` (savaşta yüzme hızı), `kaynak`.
+- **24 kayıt:** `tutsak-dragon` (Captive Dragon, CR 30, Chaotic Neutral, 697 HP), `dragon-of-hexonia-a`/`-b` (CR 40, 2.500 HP sabit,
+  yalnız dost: Game Master seçicisinde ve simülasyonda yok; a sağa, b sola bakar, yan tabloda `yon`; b Dungeondex'te gizli varyant),
+  `kozmik-anka` ve `kozmik-anka-savas` (kullanıcı kararı: aynı değerler, `-savas` Dungeondex'te gizli savaş varyantı; Faz 2 +450),
+  `ember-egg` (kırılırsa Anka ölür: varsayılan karar, yazılı özellik), `ocean-nightmare` (Faz 1, 700 HP) ve `ocean-nightmare-open-sea`
+  (Faz 2, 600 HP) (kullanıcı kararı: iki kayıt; fazlar ayrı harita), `titan-of-nightmare` (CR 35, 1.150 HP tek çubuk; eski 550 HP
+  fazı kalktı: The Sleeper Awakens yarı canda bir kez, Faz 2 bloğu `esik: 0.5` yalnız günlük notu, ek can yok) + 15 mücevher.
+- **Mücevher ejderhaları:** kimlikler alphlet/alphyr/alphadrake, omeglet/…, deltlet/…, sigmlet/…, gamlet/gammyr/gammadrake; ad =
+  kimliğin büyük harfli hâli. CR/AC/HP/nefes DC ve zar belge §6 tablosundan (Yavru dahil, türetme yok). Hat tipi ve hızlar görev
+  metninden; tırmanma ve süzülme Monster alanı olmadığından yan tabloda (Dungeondex hız satırı gösterir, savaşta yok). Bite + 2 Claw
+  (Yetişkinde Tail) DMG CR tablosundan türetildi (prospektüste tablo). Yetişkin efsanevi: Tail, Body Sweep (kanatsız Alfa/Omega/Delta)
+  ya da Wing Buffet, Elemental Pulse. Legendary Resistance belgede yok, yazılmadı.
+- **Adlar:** "Sapphire Resonance" → **Alpha Resonance** (kullanıcı onayı). Açıklamalarda taş adı yok, hat rengi var. Alfa Yetişkin pasifinde
+  belgedeki "Far Realm" ifadesi aynen (SRD 5.2.1'de geçer). Yasaklı adlar: Thangorodrim, Zettaflare, Ancalagon, Placidusax, Bahamut,
+  Cthulhu, Yıldız-Kâbusu, bizim yaratık için "Kraken", D&D mücevher ejderhası ve taş adları, Jewel/Gem Dragon, Continent Dragon.
+- **Dungeondex:** 330 SRD + 22 kadim kayıt (gizli varyantlar hariç; Mühür Ruhu Dungeondex'e alınmadı, bu görevin kapsamı dışında).
+  Katalog kartında hız satırı uçuş/yüzme/tırmanma/süzülme, yeni "Kaplama" satırı altıgen sayısı (TR/EN metinler). Görsel yedek
+  satırları yeni kimliklerle (üretici yazar).
+- **Test değişiklikleri (gerekçe: kimlikler ve sayılar belgeye göre değişti; Mühür Ruhu ile aynı dizi):** `bosslarMuhur.test.ts`
+  `katalogMonsters` 30 → `kaynak: katalog-1` süzgeciyle 30; `dungeondex.test.tsx` ve `gorselEsleme.test.ts` sayı kadim görünen kayıtlardan;
+  `book.test.tsx` kapak "352 canavar", `galeri.test.tsx` 352; `canavarAciklama.test.ts` `kadimMonsters()`; `katalogF2.test.ts` yeniden
+  (belge sayıları, hızlar, yasaklı adlar, 19 altıgen sığma, yön/gizli varyant, SRD ve Mühür Ruhu araması); `katalogF2Duman.test.ts`
+  8 kayıt × 2 tohum (Hexonia yok). Eski ekran görüntüsü (eski adlı dosya) silindi; yeni dar ekran görüntüsü
+  `docs/gorev-katalog-f2/dungeondex-captive-dragon-dar.jpg` (hız ve Kaplama satırları).
+
+## Görev KATALOG-F2: Kadim Yaratıklar ve Mücevher Ejderhası verisi + Dungeondex açıklamaları (2026-11-27; kural sürümü (107) ve kayıt sürümü (28) değişmedi) — kısmen KATALOG-F2-DUZELT ile geçersiz
+
+Kaynak PDF (11 sayfa, depo dışı `docs/katalog/`). Tek üretici `node scripts/katalog-f2-kadim.mjs`; belgeler
+`harita/belgeler/KATALOG-F2-PROSPEKTUS.md` (kayıtlar, ad uyarlamaları, türetilen değerler) ve `KATALOG-SIGMAYAN.md` (sığmayanlar).
+
+- **Sayım:** görev metni 21 blok diyor; kayıt **20** (Kıta V1, Kıta V2, Kozmik Anka, Kor Yumurtası, Yıldız-Kâbusu + 5 hat × 3 evre).
+  Anka (+450) ve Yıldız-Kâbusu (+550) ikinci fazları ayrı stat bloğu değil; aynı kayıtta `faz2` bloğu.
+- **Dosya ve dizi:** `data/canavarlar-kadim.json` (Monster biçimi, yeni alan yok; yan tablolar `dex`, `yer`, `ozellikler`, `ekler`, `hatlar`).
+  `data/monsters.json` değişmedi. `loadMonsters()` aynı tembel yüklemede ayrı dizi `kadimMonsters` doldurur, saldırı eklerini `attackRiders`'a
+  ekler; `getMonster` SRD'de yoksa kadim diziye bakar. Game Master seçicisinde yok (SRD listesi 330 kalır); Dungeondex'te var
+  (`buildDex` iki diziyi birleştirir, yan tablolar SRD tablolarıyla aynı biçimde birleşir). Mühür Ruhu bossları için planlanan
+  `bosslar-muhur.json` henüz yok; KATALOG-F-TASARIM §1'in ek alanları (`kaynak`, `sinif`…) burada kullanılmadı (görev: yeni alan yok).
+- **Mücevher hatları (kullanıcı kararı):** Alfa = Safir (thunder), Omega = Yakut (necrotic), Delta = Zümrüt (psychic), Sigma = Altın (radiant),
+  Gamma = Gümüş (force). Nefes türü tek yerde: betikteki `HATLAR.<hat>.hasar` (Omega/Sigma/Gamma `oneri: true`); değiştirip betiği
+  çalıştırmak kaydı, bağışıklığı, nefes adını ve TR/EN açıklamaları günceller. PDF satırlarının sırası (Parlaklık, Nekrotik, Psişik,
+  Gök Gürültüsü, Güç) hatlara türüyle eşlendi; CR'ler PDF sırasıyla (Sigma 15/25 … Gamma 20/30).
+- **Adlar:** İngilizce ad "Jewel Dragon" + Yunan harfli hat (`young-alpha-jewel-dragon`): "Gem Dragon" ve "<taş> Dragon" D&D adı olduğundan
+  kullanılmadı; taş adı yalnız açıklamada ("Alfa hattı (Safir)"). Kraken özelliği "Safir Ejderhası Rezonansı" → Alpha Resonance; Alfa
+  pasifindeki "Far Realm" → "uzay kökenli (Aberration)". Korumalı ad listesi `src/data/katalogF2.test.ts` `PROTECTED`.
+- **Boyut:** Kıta V1 (19 altıgen), V2 ve Yıldız-Kâbusu Gargantuan (motorun en büyüğü 19 altıgen; PDF'in 37 ve 31'i geçerli değil).
+  V2 "5×5+" ile "7×7" çelişkisi: ikisi de 37 altıgen; 37 altıgen yarıçap 3 (genişlik 7) olduğundan **7×7** okundu. Anka "3×3 (7 altıgen)"
+  ve mücevher Yetişkin "Gargantuan 3×3" altıgen sayısına göre **Huge**; Genç Large, Yavru Medium.
+- **0 HP fazları (yaklaşık):** Anka ve Yıldız-Kâbusu'na mevcut Faz 2 bloğu **%5 can eşiğiyle** (Anka 450 geçici can + nefes dolar,
+  Yıldız-Kâbusu 550 geçici can). Süpernova, yumurta ile diriliş ve 2. faz arena değişimleri sığmayan.
+- **Yaklaşık bağlamalar (mevcut mekanik):** nefesler alanlı save saldırısı (Judgment ve Celestial Glide `targets: 'enemies'`), saldırı
+  ekleri (ek zar, Grappled + Restrained, Prone, Blinded/Stunned/Frightened/Paralyzed süreleri, `drainMax`), Legendary Resistance
+  `traits` metninden, efsanevi eylemler `data/efsanevi.json`'a 9 kayıt (puan bedelleri yok: `uses` = puan, pahalı eylem `oncePerTurn`;
+  mücevher Yetişkin'e PDF eylem vermediği için SRD kalıbı Pounce). Ezici Varlık ayrı eylem, alanı 60 ft (türetildi).
+  Ember Wingbeat'e DC 27 DEX kurtarma (türetildi). Büyüsüz fiziksel bağışıklık bağışıklık listesine yazılmadı (motorda karşılığı yok;
+  yazılsa büyülü silahlara da bağışık olurdu).
+- **Türetilen değerler** (SRD 5.2.1 ejderha kalıbı; prospektüste tablo): mücevher Rend, yetenek puanları, hız 40/uçuş 80, DEX/WIS
+  kurtarması, Perception/Stealth, kendi türüne bağışıklık, Recharge 5–6, yarı hasar, Yetişkin LR 3/gün; Yavru evresinin tamamı (CR 6–10,
+  AC = Genç − 2, HP = Genç / 2, 30 ft koni, zar = Genç − 3, DC = 8 + yeterlilik + CON). Kor Yumurtası CR 0, Medium.
+- **Görsel:** bağlama yok; `avatar` boş. Dungeondex görsel eşlemesine 20 satır "yedek" (`yedek:nesne`) eklendi; `scripts/lib/gorsel-envanter.ts`
+  `monsterRows` kadim diziyi de sayar (bu çalışma ağacında `icerik/` olmadığından `npm run dd-gorsel` çalıştırılmadı; satırlar üreticinin
+  biçiminde elle eklendi, `GORSEL-ENVANTER.md` sayıları bir sonraki tam çalıştırmada güncellenir). Dar ekran görüntüsü (375 px, Continent Dragon
+  kartı): `docs/gorev-katalog-f2/dungeondex-continent-dragon-dar.jpg`.
+- **Test değişiklikleri (gerekçe: Dungeondex canavar listesine 20 kadim kayıt eklendi; SRD listesi aynı):**
+  `canavarAciklama.test.ts` SRD listesi (330 / 1318) aynen, kadim liste ayrı (`canavarlar-kadim.json` `ozellikler`) ve sayısal tutarlılık
+  ikisinde; `dungeondex.test.tsx` 330 → 330 + 20, SRD kaydı denetimi kadim dışında; `book.test.tsx` kapak sayacı "330 canavar" → "350 canavar";
+  `gorselEsleme.test.ts` canavar eşlemesi `monsters.length` → `+ kadimMonsters.length`; `galeri.test.tsx` canavar sekmesi 330 → 350. Yeni: `src/data/katalogF2.test.ts` (şema, PDF
+  sayıları, hatlar, LR/efsanevi, TR/EN, korumalı adlar), `src/sim/katalogF2Duman.test.ts` (7 kayıt × 2 tohum, çökme yok).
 ## BOSS-GORSEL-1: Mühür Ruhu görselleri — kapandı, görseller F Aşama 2'de bağlandı (2026-11-27; yalnız görünüm, kural ve kayıt sürümü değişmedi)
 
 - **Durum: kapandı.** İş `e5292d66`'da (birlesik'te); savaş jetonu bağlaması F Aşama 2'de (`b9d8eff1`: `scripts/katalog-f-bosslar.mjs` `data/boss-gorsel.json`'dan `gorsel` ve `avatar: "boss/<id>.webp"` yazar), kademe ölçeği jetona MUHUR-OLCEK'te bağlandı (aşağıda). Oturum arşivlendi; eski çalışma kopyasının `e5292d66` öncesi ara sürümü yerel `yedek/boss-gorsel-1-eski` dalında (itilmedi), boş `claude/boss-gorsel-1` dalı silindi.

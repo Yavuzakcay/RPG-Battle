@@ -23,7 +23,8 @@ describe('KATALOG-1 F: Mühür Ruhu verisi', () => {
     expect(list).toHaveLength(30);
     expect(new Set(list.map((m) => m.id)).size).toBe(30);
     expect(monsters).toHaveLength(330);
-    expect(katalogMonsters).toHaveLength(30);
+    // KATALOG-F2: aynı dizide kadim yaratıklar da var (`kaynak: katalog-f2`); Mühür Ruhu 30.
+    expect(katalogMonsters.filter((m) => m.kaynak === 'katalog-1')).toHaveLength(30);
     for (const m of list) expect(monsters.some((s) => s.id === m.id), m.id).toBe(false);
     for (const c of new Set(list.map((m) => m.cizgi))) expect(list.filter((m) => m.cizgi === c).map((m) => m.kademe).sort()).toEqual([1, 2, 3]);
   });

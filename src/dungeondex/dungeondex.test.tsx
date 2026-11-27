@@ -5,7 +5,7 @@
  */
 import { beforeAll, describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { armor, classes, items, loadMonsters, monsters, races, spells, weapons } from '../data';
+import { armor, classes, items, kadimMonsters, loadMonsters, monsters, races, spells, weapons } from '../data';
 import { subclassesOf } from '../rules/classFeatures';
 import { looksEnglish } from '../data/aciklamaDil';
 import { setLang, t } from '../i18n';
@@ -13,6 +13,7 @@ import { APP_NAME } from '../app/appName';
 import { buildDex, dexFilters, dexSearch, loadDexExtras, shownText, CLASS_KINDS, CONDITION_IDS, DEX_CATS, DEX_VISIBLE_FILTERS, type DexCat, type DexEntry, type DexExtras } from './catalog';
 import { Dungeondex, type DexView } from '../screens/Dungeondex';
 import srdMonsters from '../../data/srd/monsters.json';
+import kadimJson from '../../data/canavarlar-kadim.json';
 import srdClasses from '../../data/srd/classes.json';
 import { allInvocations } from '../rules/invocations';
 import { classData } from '../data';
@@ -34,8 +35,12 @@ describe('Dungeondex kataloğu', () => {
     expect(DEX_CATS).toHaveLength(10);
     expect(dex.buyu.map((e) => e.id).sort()).toEqual(spells.map((s) => s.id).sort());
     expect(dex.buyu).toHaveLength(339);
-    expect(dex.canavar).toHaveLength(330);
-    for (const e of dex.canavar) expect((srdMonsters.monsters as Record<string, unknown>)[e.id], e.id).toBeDefined();
+    // Görev KATALOG-F2: 330 SRD canavarı + Dungeondex'teki kadim yaratıklar (`data/canavarlar-kadim.json`; gizli varyantlar ve Mühür Ruhu yok).
+    const gizli = new Set((kadimJson as unknown as { dexGizli: string[] }).dexGizli);
+    const kadim = new Set(kadimMonsters().filter((m) => !gizli.has(m.id)).map((m) => m.id));
+    expect(dex.canavar).toHaveLength(330 + kadim.size);
+    expect(dex.canavar.filter((e) => gizli.has(e.id))).toEqual([]);
+    for (const e of dex.canavar) if (!kadim.has(e.id)) expect((srdMonsters.monsters as Record<string, unknown>)[e.id], e.id).toBeDefined();
     const armorCount = armor.filter((a) => (a as { srd?: string }).srd).length;
     expect(dex.esya).toHaveLength(items.length + weapons.length + armorCount);
     expect(dex.tur.map((e) => e.id).sort()).toEqual(races.map((r) => r.id).sort());

@@ -898,6 +898,8 @@ export const TR_EXTRA = {
     status: { calisir: 'çalışır', kismi: 'kısmi', planli: 'planlı', hikaye: 'hikâye', calismiyor: 'çalışmıyor' } as Record<string, string>,
     noDesc: 'Türkçe açıklama henüz yok.',
     monsterSummary: (size: string, type: string, cr: string, ac: number, hp: number) => `${size} ${type}; CR ${cr}, AC ${ac}, ${hp} HP.`,
+    /** KATALOG-F2: katalog canavarının hız türleri ve haritadaki kaplaması (altıgen). */
+    speedKind: { fly: 'uçuş', swim: 'yüzme', climb: 'tırmanma', hover: 'süzülür' } as Record<string, string>, footprint: 'Kaplama', hexes: (n: number) => `${n} altıgen`,
     /** Dungeondex prospektüsü (harita/belgeler/DUNGEONDEX-PROSPEKTUS.md): bölüm başlıkları ve veriden üretilen satırlar. */
     pro: {
       sec: { ne: 'Ne işe yarar', nasil: 'Nasıl kullanılır', etken: 'Etken içerik', risk: 'Riskler', kimler: 'Kimler kullanamaz', maliyet: 'Maliyet ve ağırlık', durum: 'Oyundaki durum', malzeme: 'Malzeme ve bedel' } as Record<string, string>,
@@ -1003,6 +1005,7 @@ export const TR_EXTRA = {
       "Ejderhalar (kırmızı)": "Ejderhalar (kırmızı)",
       "Ejderha soyu": "Ejderha soyu",
       "Göksel varlıklar": "Göksel varlıklar",
+      "Kadim Yaratıklar": "Kadim Yaratıklar",
     } as Record<string, string>,
   },
 };
