@@ -2,6 +2,18 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## ODA-0: çevrimiçi oda sistemi tasarımı (2026-11-27; yalnız belge, kod/mekanik/kural sürümü/kayıt sürümü değişmedi)
+
+- Belge `harita/belgeler/ODA-TASARIM.md`. Yetkili taraf GM cihazı: oyuncu komut gönderir, yalnız host `execute` çalıştırır,
+  olaylar `seq` ile yayılır, her istemci kendi reducer'ıyla uygular; eşitleme tam olay günlüğü (büyükse durum + son olaylar),
+  yeniden bağlanma `istemciId` + host'un verdiği oturum anahtarıyla. Bağlantı arayüzü `RoomTransport` (bellek/test,
+  BroadcastChannel, yerel ağ WebSocket aktarıcısı `npm run oda-sunucu`, Supabase yer tutucu); kod `src/room/` (saf, tembel),
+  yerel oda kaydı `src/oda/` aynı kalır.
+- Kullanıcı kararlarına iki ek: (1) anonim kimliğe oturum anahtarı eklendi (yoksa başkası kopan oyuncunun yerine geçebilir);
+  (2) "her istemcide reducer" korundu ama gizli bilgi oyuncu cihazının belleğinde de durur; ilk sürümde gizlilik çizimde süzülür
+  (`src/room/view.ts`), host'un izdüşürdüğü sıkı mod karar bekliyor (belge §4.4, §8 madde 1).
+- Aşamalar O1–O5 ve karar bekleyen 8 madde belgede.
+
 ## KATALOG-ON-HAZIRLIK: canavar saldırısı ek hasarı süren etki direncini uygular (2026-11-27; kural sürümü 108, kayıt sürümü 28 aynı)
 
 - **Sorun (tanı DENGE.md "Tanı: çok zor üç boss…"):** `src/battle/riders.ts` `riderExtras` ek hasarın (rider `extra`, `conditional`, hücum ekleri) direncini yalnız hedefin kalıcı `resistances/immunities/vulnerabilities` alanlarından okuyordu; süren etkiden gelen direnç (Protection from Energy, Absorb Elements, paket `direnc`, sim `sim:hazirlik`), aura direnci, Mind Blank'in hasar bağışıklığı, Petrified, Silence işlemiyordu. Aynı saldırının ana hasarı ve kurtarmalı hasar `profileIn` ile hesaplanıyordu.
