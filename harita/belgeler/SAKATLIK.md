@@ -214,5 +214,5 @@ zaten başarısızdı (110 ve 28'e güncellenmemişlerdi).
   imzası **110 = 111 = altın** (MC3 altını); ev kuralı açıkken Çöl/Kale 3 tohum çökmesiz, sakatlık yalnız parti kâğıtlarında.
 - İlgili mevcut testler: `battleSave`, `ruleVersion`, `karar101`, `effects`, `s1`, `mc3`, `k52moral`, `content`,
   `statusFx`, `katalog110`, `te99` geçti (bayat üç beklenti düzeltildikten sonra).
-- `npm run typecheck`, `npm run build`: aşağıdaki satıra bakın.
+- `npm run typecheck`: temiz. `npm run build`: geçti; ana parça 463,83 kB / sınır 500 kB (sakatlık kodu savaş parçasında).
 - `check:harita`, `check:ses`: dokunulmadı. Tam `npm test`: çalıştırılmadı (hafif mod).
