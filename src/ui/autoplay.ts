@@ -43,9 +43,19 @@ export function autoplayEnemyTurns(session: Session, rng: Rng, maxTurns = 40): S
  * saldırır, sahibine bitişik düşmanı öne alır (familiar Yardım ya da Kaçın yapar), sonra turu bitirir.
  */
 export function autoplaySummonTurn(session: Session, rng: Rng): Session {
+  const actor = session.state.combatants[currentActorId(session.state)];
+  if (!actor?.summon) return session;
+  return autoplayPartyTurn(session, rng);
+}
+
+/**
+ * Görev ODA-4: parti savaşçısının (çağrı ya da çevrimiçi odada bağlantısı kopan oyuncunun karakteri, GM kararı "Yapay
+ * zekâ oynasın") turunu yapay zekâ oynar ve bitirir (`chooseCommand`).
+ */
+export function autoplayPartyTurn(session: Session, rng: Rng): Session {
   let s = session;
   const actor = s.state.combatants[currentActorId(s.state)];
-  if (!actor?.summon || actor.side !== 'party' || s.state.status !== 'active') return s;
+  if (!actor || actor.side !== 'party' || s.state.status !== 'active') return s;
   for (let step = 0; step < MAX_STEPS; step++) {
     const cmd = chooseCommand(s.state);
     if (cmd.type === 'end_turn') break;

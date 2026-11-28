@@ -20,7 +20,7 @@ import { komutYetkisi } from './auth';
 import type { SavedCharacter } from '../rules/builder';
 import { anahtarUret } from './code';
 import { kanonikJson, ozet } from './hash';
-import { istemciMesajiMi, mesajMi, type Asama, type HostMesaji, type IstemciMesaji, type OdaOzeti, type SurumBilgisi, type UyeOzeti } from './protocol';
+import { istemciMesajiMi, mesajMi, type Asama, type HostMesaji, type IstemciMesaji, type OdaOzeti, type SurumBilgisi, type UyeKarari, type UyeOzeti } from './protocol';
 import { surumUyusmazligi } from './surum';
 import type { BaglantiDurumu, Rol, RoomTransport, Zarf } from './transport';
 
@@ -37,7 +37,12 @@ export interface HostUye {
   kopyalar: Map<string, SavedCharacter>;
   /** Son komut istek kimlikleri (çift gönderim; en çok 64). */
   istekler?: string[];
+  /** Görev ODA-4: kopukken Game Master kararı (bekle / yapay zekâ / GM oynasın). */
+  karar?: UyeKarari;
 }
+
+/** Görev ODA-4: host sayfası yeniden açılınca odayı aynı kodla diriltmek için saklanan üye bilgisi (kopyalar oda kaydında). */
+export interface KayitliUye { istemciId: string; ad: string; anahtar: string; rol: Rol; kopyalar: SavedCharacter[] }
 
 /** Görev ODA-2: yetkisi denetlenmiş uzak komut (GM'in savaş ekranı çalıştırır, sonucu `komutSonucu` ile bildirir). */
 export interface UzakKomut { istemciId: string; istekId: string; cmd: Command; ctx: CommandContext; ownerId: string }
@@ -51,7 +56,9 @@ export type HostOlayi =
   | { tur: 'karakter_gitti'; istemciId: string; karakterId: string }
   | { tur: 'reddedildi'; istemciId: string; neden: string }
   | { tur: 'istemler' }
-  | { tur: 'yetkisiz'; istemciId: string; sayi: number };
+  | { tur: 'yetkisiz'; istemciId: string; sayi: number }
+  /** Görev ODA-4: üyenin bağlantısı ya da kararı değişti. */
+  | { tur: 'karar'; istemciId: string };
 
 export interface HostSecenek {
   transport: RoomTransport;
@@ -71,6 +78,12 @@ export interface HostSecenek {
   /** Durum tabanı yeniden çekme aralığı (olay): taban + en çok bu kadar son olay. */
   tabanAraligi?: number;
   olay?: (o: HostOlayi) => void;
+  /** Görev ODA-4: dönem sayacının tabanı (diriltilen host farklı dönemle başlasın: eski istemci eksik-olay yoluna girmez). */
+  donemTabani?: number;
+  /** Görev ODA-4: diriltilen odanın üyeleri (anahtarlarıyla; hepsi kopuk başlar). */
+  oncekiUyeler?: readonly KayitliUye[];
+  /** Görev ODA-4 (madde 8): savaş bitince kopyanın yeni durumu (`applyBattleResult`); null: savaşta değil. */
+  sonuc?: (kopya: SavedCharacter, state: BattleState) => unknown;
 }
 
 const asamaOf = (s: BattleState | null): Asama =>
@@ -94,7 +107,9 @@ export class OdaHost {
   private readonly s: HostSecenek;
   private log: BattleEvent[] = [];
   private durumu: BattleState | null = null;
-  private donem = 0;
+  private donem: number;
+  /** Görev ODA-4: gönderilmeyi bekleyen savaş sonuçları (kopuk üye döndüğünde). */
+  private readonly sonuclar = new Map<string, Array<{ karakterId: string; durum: unknown; kimlik: string }>>();
   private yayinSayaci = 0;
   private taban: { seq: number; durum: BattleState } | null = null;
   private oda: OdaBilgisi;
@@ -105,6 +120,50 @@ export class OdaHost {
     this.s = s;
     this.kod = s.kod;
     this.oda = s.oda;
+    this.donem = s.donemTabani ?? 0;
+    for (const u of s.oncekiUyeler ?? []) {
+      this.uyeler.set(u.istemciId, { istemciId: u.istemciId, ad: u.ad, anahtar: u.anahtar, rol: u.rol, bagli: false, kopyalar: new Map(u.kopyalar.map((k) => [k.id, k])) });
+    }
+  }
+
+  /** Görev ODA-4: diriltme için üyeler (anahtar + kopyalar). */
+  kayitliUyeler(): KayitliUye[] {
+    return [...this.uyeler.values()].map((u) => ({ istemciId: u.istemciId, ad: u.ad, anahtar: u.anahtar, rol: u.rol, kopyalar: [...u.kopyalar.values()] }));
+  }
+
+  /** Görev ODA-4: bu `ownerId`'nin (karakter kopyası) sahibi üye, bağlı olsun olmasın. */
+  uyesi(ownerId: string | null | undefined): HostUye | null {
+    if (!ownerId) return null;
+    for (const u of this.uyeler.values()) if (u.kopyalar.has(ownerId)) return u;
+    return null;
+  }
+
+  /**
+   * Görev ODA-4: kopan üye için Game Master kararı. `yz`: üyenin karakterlerini yapay zekâ oynar (komutları `bekle`);
+   * `gm`: GM kendi cihazından oynar; `bekle`: dönmesi beklenir; null: karar kalkar.
+   */
+  kararVer(istemciId: string, karar: UyeKarari | null): void {
+    const u = this.uyeler.get(istemciId);
+    if (!u) return;
+    if (karar) u.karar = karar; else delete u.karar;
+    for (const id of u.kopyalar.keys()) { if (karar === 'yz') this.yzKarakterler.add(id); else this.yzKarakterler.delete(id); }
+    this.gonder({ t: 'uye_durumu', istemciId, bagli: u.bagli, ...(u.karar ? { karar: u.karar } : {}) });
+    this.s.olay?.({ tur: 'karar', istemciId });
+    this.durumYay();
+  }
+
+  /**
+   * Dönen üyenin kararı: `yz` ise o an oynanan turu yapay zekâ bitirir, sıra başkasına geçince kalkar; öteki kararlar
+   * döner dönmez kalkar.
+   */
+  private kararlariGozden(): void {
+    const s = this.durumu;
+    const sira = s && s.status === 'active' ? s.combatants[s.order[s.turnIndex] ?? '']?.ownerId : undefined;
+    for (const u of this.uyeler.values()) {
+      if (!u.bagli || !u.karar) continue;
+      if (u.karar === 'yz' && sira && u.kopyalar.has(sira)) continue;
+      this.kararVer(u.istemciId, null);
+    }
   }
 
   /** Kodu sahiplenir ve dinlemeye başlar (kod doluysa bağdaştırıcının hatası fırlar). */
@@ -131,8 +190,8 @@ export class OdaHost {
   }
 
   odaOzeti(): OdaOzeti {
-    const uyeler: UyeOzeti[] = [...this.uyeler.values()].map((u) => ({ istemciId: u.istemciId, ad: u.ad, rol: u.rol, bagli: u.bagli, karakterler: [...u.kopyalar.keys()] }));
-    return { ...this.oda, asama: this.asama, uyeler };
+    const uyeler: UyeOzeti[] = [...this.uyeler.values()].map((u) => ({ istemciId: u.istemciId, ad: u.ad, rol: u.rol, bagli: u.bagli, karakterler: [...u.kopyalar.keys()], ...(u.karar ? { karar: u.karar } : {}) }));
+    return { ...this.oda, asama: this.asama, uyeler, yzKarakterler: [...this.yzKarakterler] };
   }
 
   /** Oda ayarları değişti (ad, kurallar…): herkese `oda_durumu`. */
@@ -172,6 +231,32 @@ export class OdaHost {
     this.yayinSayaci++;
     if (this.yayinSayaci % (this.s.ozetAraligi ?? 20) === 0) this.ozetGonder();
     if (this.asama !== oncekiAsama) this.durumYay();
+    if (this.asama === 'bitti' && oncekiAsama !== 'bitti') this.sonuclariGonder();
+    this.kararlariGozden();
+  }
+
+  /** Görev ODA-4 (madde 8): savaş bitti: her kopyanın yeni durumu sahibine (kopuksa döndüğünde). */
+  private sonuclariGonder(): void {
+    const st = this.durumu;
+    const f = this.s.sonuc;
+    if (!st || !f) return;
+    for (const u of this.uyeler.values()) {
+      const liste = [...u.kopyalar.values()].flatMap((k) => {
+        if (!Object.values(st.combatants).some((c) => c.ownerId === k.id && c.side === 'party')) return [];
+        const durum = f(k, st);
+        return durum && typeof durum === 'object' ? [{ karakterId: k.id, durum, kimlik: `${this.donem}:${this.log.length}:${k.id}` }] : [];
+      });
+      if (!liste.length) continue;
+      this.sonuclar.set(u.istemciId, liste);
+      if (u.bagli) this.sonucYolla(u.istemciId);
+    }
+  }
+
+  private sonucYolla(istemciId: string): void {
+    const liste = this.sonuclar.get(istemciId);
+    if (!liste) return;
+    this.sonuclar.delete(istemciId);
+    for (const x of liste) this.gonder({ t: 'karakter_sonuc', ...x }, istemciId);
   }
 
   /** Herkese durum özeti (istemci kendi durumunu karşılaştırır; geride kalan yakalar). */
@@ -266,7 +351,8 @@ export class OdaHost {
     const u = this.uyeler.get(d.istemciId);
     if (!u || !u.bagli) return;
     u.bagli = false;
-    this.gonder({ t: 'uye_durumu', istemciId: u.istemciId, bagli: false });
+    this.gonder({ t: 'uye_durumu', istemciId: u.istemciId, bagli: false, ...(u.karar ? { karar: u.karar } : {}) });
+    this.s.olay?.({ tur: 'karar', istemciId: u.istemciId });
     this.durumYay();
   }
 
@@ -282,7 +368,7 @@ export class OdaHost {
     if (m.t === 'katil') { this.katilim(z.kimden, m, z.bag); return; }
     const u = this.uyeler.get(z.kimden);
     if (!u) { this.bozuk++; return; }
-    if (!u.bagli) { u.bagli = true; this.durumYay(); }
+    if (!u.bagli) { u.bagli = true; this.s.olay?.({ tur: 'karar', istemciId: u.istemciId }); this.durumYay(); this.kararlariGozden(); }
     switch (m.t) {
       case 'karakter_gonder': this.karakterAl(u, m.kopya); return;
       case 'karakter_geri_al':
@@ -360,8 +446,14 @@ export class OdaHost {
       else this.gonder({ t: 'tepki_sor', istekId: i.istekId, istek: i.istek, sureMs: 20_000 }, kimden);
     }
     this.durumYay();
-    // Yeniden bağlanan: elindeki günlük bu dönemin bir öneki olabilir; emin olmak için tam anlık (O4'te eksik olaylar).
-    if (this.log.length || eski) this.anlikGonder(kimden);
+    if (eski) { this.s.olay?.({ tur: 'karar', istemciId: kimden }); this.kararlariGozden(); }
+    // Görev ODA-4: yeniden bağlanan aynı dönemin öneki elindeyse yalnız eksik olaylar; değilse tam anlık.
+    const son = m.sonSeq;
+    if (eski && m.donem === this.donem && son !== undefined && son >= 0 && son <= this.log.length && this.log.length) {
+      if (son < this.log.length) this.gonder({ t: 'olaylar', donem: this.donem, ilkSeq: son, olaylar: this.log.slice(son) }, kimden);
+      else this.ozetGonder(kimden);
+    } else if (this.log.length || eski) this.anlikGonder(kimden);
+    this.sonucYolla(kimden);
   }
 
   private karakterAl(u: HostUye, kopya: SavedCharacter): void {

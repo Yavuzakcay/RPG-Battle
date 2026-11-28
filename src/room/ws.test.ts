@@ -187,6 +187,36 @@ describe('oda O2: ws aktarıcısı, canlı savaş', () => {
     expect(yeni.durum).toEqual(m.gm.s.state);
   });
 
+  it('Görev ODA-4: aynı bağlantıda yeniden giriş yalnız eksik olayları alır; host yenilenince aynı kodla dirilir, istemci yeniden bağlanır', async () => {
+    const m = await masa();
+    const yeniA = new OdaIstemci({ transport: ag(), kod: '246810', istemciId: 'A2', ad: 'Ada', surum: SURUM, yeniBaglanti: ag });
+    await yeniA.baglan();
+    await kadar(() => yeniA.sonrakiSeq === m.gm.s.events.length);
+    const anlik = yeniA.sayac.anlik;
+    // Kopma: host günlüğü ilerler; aynı dönemde yeniden giriş → eksik olaylar (tam anlık değil).
+    await (yeniA as unknown as { s: { transport: RoomTransport } }).s.transport.ayril();
+    await kadar(() => m.host.uyeler.get('A2')?.bagli === false);
+    const st = m.gm.s.state;
+    const c = st.combatants[st.order[st.turnIndex] as string];
+    masaGm.calistir?.({ type: 'end_turn', actorId: c?.id ?? '' }, c?.side === 'party' ? { playerId: c.ownerId, isGm: false } : GM_CONTEXT);
+    expect(await yeniA.yenidenBaglan()).toBe(true);
+    await kadar(() => yeniA.sonrakiSeq === m.gm.s.events.length);
+    expect(yeniA.sayac.anlik).toBe(anlik);
+    expect(yeniA.durum).toEqual(m.gm.s.state);
+    // Host sayfası yenilendi: oda kapanır (aktarıcı istemcileri düşürür), aynı kodla kayıtlı üyelerle geri açılır.
+    const uyeler = m.host.kayitliUyeler();
+    await (m.host as unknown as { s: { transport: RoomTransport } }).s.transport.ayril();
+    await bekle(50);
+    expect(await yeniA.yenidenBaglan()).toBe(false); // host henüz yok
+    const host2 = new OdaHost({ transport: ag(), kod: '246810', hostId: 'gm2', surum: SURUM, rng: seeded(2), oda: { ad: 'Ağ', gmAdi: '', kurallarOzeti: [], hpGorunurluk: 'tam', zarModu: 'auto', yzKarakterler: [] }, oncekiUyeler: uyeler, donemTabani: 500 });
+    await host2.baslat();
+    host2.yayinla(m.gm.s.events);
+    expect(await yeniA.yenidenBaglan()).toBe(true);
+    await kadar(() => yeniA.donem === 501 && yeniA.sonrakiSeq === m.gm.s.events.length);
+    expect(yeniA.sayac.anlik).toBe(anlik + 1);
+    expect(host2.uyeler.get('A2')?.bagli).toBe(true);
+    expect(yeniA.durum).toEqual(m.gm.s.state);
+  });
   it('kopup geri gelen oyuncu (aynı anahtar) eşitlenir; kopukken host onu kopuk görür', async () => {
     const m = await masa();
     const anahtar = m.b.anahtar as string;

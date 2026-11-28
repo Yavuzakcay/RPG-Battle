@@ -212,7 +212,8 @@ function RulesReadOnly(props: { rules: OdaKurallar }) {
 
 /** Odaya katıl: oda seç, kendi karakterini seç ("Hazır"); oda kuralları yalnız okunur. */
 export function OdaKatil(props: { characters: SavedCharacter[]; onBack: () => void; roomId?: string; /** Odanın kurallarıyla karakter oluşturucuyu aç. */ onBuild?: (roomId: string, overlay: RoomOverlay) => void;
-  /** Görev ODA-1: çevrimiçi odada savaşı izle (salt izleme oturumu). */ onWatch?: (w: SessionWatch) => void }) {
+  /** Görev ODA-1: çevrimiçi odada savaşı izle (salt izleme oturumu). */ onWatch?: (w: SessionWatch) => void;
+  /** Görev ODA-4: çevrimiçi savaşın sonucunu karakter deposuna yaz. */ onCharacters?: (list: SavedCharacter[]) => void }) {
   const O = t().oda, C = t().common;
   const [rooms, commit] = useRooms();
   const [sel, setSel] = useState<string | null>(props.roomId ?? null);
@@ -225,7 +226,7 @@ export function OdaKatil(props: { characters: SavedCharacter[]; onBack: () => vo
       <main className="app">
         <header><h1>{O.joinTitle}</h1>
           <button className="ghost" onClick={room ? () => setSel(null) : props.onBack}>{room ? O.back : C.home}</button></header>
-        {!room && props.onWatch && <OdaKodlaKatil characters={valid} onWatch={props.onWatch} />}
+        {!room && props.onWatch && <OdaKodlaKatil characters={valid} allCharacters={props.characters} onWatch={props.onWatch} {...(props.onCharacters ? { onCharacters: props.onCharacters } : {})} />}
         {!room && (
           <section className="panel">
             <h2>{O.joinPick}</h2>

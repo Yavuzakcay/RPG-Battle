@@ -2,6 +2,40 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## ODA-4: çevrimiçi oda O4, kopma/yeniden bağlanma, GM karar menüsü, Wake Lock, savaş sonucunun karaktere dönüşü (2026-11-28; kural sürümü 108, kayıt sürümü 28, `ODA_SURUM` 2 ve `ODA_PROTOKOL` 1 değişmedi)
+
+- **Eksik olayla yakalama:** `katil` yeniden girişte `sonSeq` + `donem` taşır; host aynı dönemdeyse yalnız eksik `olaylar` (eşitse `ozet`)
+  yollar, değilse tam `anlik` (O1'de her yeniden girişte tam anlıktı). `OdaIstemci.yenidenBaglan()` yeni bağlantıyla aynı kimlik ve
+  anahtarla katılır, durum ve günlük elde kalır (`IstemciSecenek.yeniBaglanti`).
+- **GM karar menüsü:** sıra bağlantısı kopan oyuncunun karakterine gelince GM'in savaş ekranında üst şerit: **Bekle** / **Yapay zekâ
+  oynasın** / **GM oynasın** / **Turu atla** (`end_turn`). Karar host'ta üye başına (`OdaHost.kararVer`, `uye_durumu.karar`,
+  `oda_durumu.uyeler[].karar`, `yzKarakterler`); "yapay zekâ"da tur `autoplayPartyTurn` (`ui/autoplay.ts`; çağrı yardımcısı da bunu
+  kullanır) ile oynanır ve oyuncunun komutları `bekle` ile reddedilir. Oyuncu dönünce `yz` o an oynanan turu bitirir, sıra başkasına
+  geçince kalkar (`kararlariGozden`); `bekle`/`gm` hemen kalkar. Açık zar/tepki istemleri O2'deki gibi: tepki 20 sn'de öneriyle, zar GM'in
+  cihazında; dönene yeniden gönderilir. Kopan oyuncunun karakteri sıra şeridinde soluk, kesik çerçeveli (`strip-item.kopuk`).
+- **Host diriltme:** etkin host her üye değişiminde `rpg-battle-oda-canli`'ye (localStorage) oda kimliği, kod ve üyelerin kimlik/ad/
+  anahtar/rol/kopya kimliklerini yazar (kopyaların kendisi oda kaydında, `Oda.cevrimici`; kayıt biçimi değişmedi). Sayfa yenilenip oda
+  lobisi ya da odanın savaş ekranı açılınca `hostDirilt` aynı kodla geri açar; üyeler kopuk başlar, anahtarıyla dönen kabul edilir.
+  Diriltilen host'un dönemi rastgele tabandan (`donemTabani`): eski istemci eksik-olay yoluna girmez, tam anlık alır (aynı kayıttan
+  kurulan günlüğün öncekiyle bit bit aynı olduğu garanti değil). "Çevrimiçi kapat" kaydı siler.
+- **İstemcide kendiliğinden yeniden bağlanma:** bağlantı kopunca (Wi-Fi, host sayfası yenilendi: aktarıcı `host_gitti`) 2 sn arayla en çok
+  90 deneme; oyuncu ekranında "Bağlantı koptu, yeniden bağlanılıyor…" (savaşta üst şerit, lobide satır), sonunda "odaya yeniden katıl".
+  GM odayı kapatırsa (`oda_kapandi`) ve aynı kimlik başka bağlantıya geçerse (`degisti`) denenmez. Oyuncu sayfasının kendisi yenilenirse
+  yeniden katılım elle (kimlik ve anahtar sekmede saklı, kod yazılınca anahtarla döner).
+- **Madde 2 (Wake Lock):** `ui/wakeLock.ts` `useWakeLock`: çevrimiçi savaş ekranında (GM host'u ya da oyuncu) `navigator.wakeLock`;
+  sekme görünür olunca yeniden istenir; API yoksa sessiz.
+- **Madde 3 (sürüm):** build kimliği eşitliği ve `ozet` hash denetimi O1'den beri; sürüm reddinde lobide "Sayfayı yenile" düğmesi.
+- **Madde 8 (savaş sonucu):** savaş bitince (`asama` → `bitti`) host her kopyanın yeni durumunu (`applyBattleResult` ile, enjekte
+  `sonuc`) sahibine `karakter_sonuc{karakterId, durum, kimlik}` ile yollar; kopuk üyeye döndüğünde bir kez. Oyuncu cihazı lobiye
+  dönünce uygular: kopya gönderildiğinden beri değişmemiş karaktere sorusuz (`OdaIstemci.gonderilen`: gönderilen kopyanın kanonik JSON'u;
+  GM tarafındaki `kopyaZamani` aynen tutuluyor), değiştiyse (ya da sayfa yenilendiği için gönderim bilinmiyorsa) "Üzerine yaz / Atla".
+  Yalnız savaşlar arası durum (`status`) yazılır. Savaş ortasında karakter eklenmez (O1'den beri kurulumda kilitli).
+- **Testler:** `src/room/reconnect.test.ts` (test 6: kopma + `yz` kararı + eksik olaylar + karar kalkması, `bekle`/`gm`, yanlış anahtar,
+  host diriltme, savaş sonucu ve kopuk üyeye geç teslim), `src/room/ws.test.ts` (gerçek aktarıcıda eksik-olay yeniden girişi ve diriltme).
+  Bellek hub'ı aynı kimlikli bağlı kaydı gönderen sayar (eski kopuk kayıt yeni bağlantının mesajını düşürüyordu; yalnız test bağdaştırıcısı).
+  Ağ e2e O4 adımıyla: Ada'nın cihazı kapanır, sırası gelince GM'de karar menüsü, "Yapay zekâ oynasın" turu oynar.
+- **Ana parça:** 462,27 → 462,24 kB.
+
 ## ODA-3: çevrimiçi oda O3, görünüm süzgeci + tam yetki matrisi (2026-11-28; kural sürümü 108, kayıt sürümü 28, `ODA_SURUM` 2 ve `ODA_PROTOKOL` 1 değişmedi; motor `src/room/`'u içe aktarmaz)
 
 - **Karar (kullanıcı, 2026-11-28):** ODA-TASARIM §8'in sekiz maddesinde belgenin önerisi; madde 4 kalktı (aşağıda).

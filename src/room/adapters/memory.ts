@@ -72,7 +72,8 @@ export function bellekHub(): BellekHub {
         if (hub.hata.dusur?.(q.z)) continue;
         const kez = hub.hata.cogalt?.(q.z) ? 2 : 1;
         for (let i = 0; i < kez; i++) {
-          const gonderen = kayitlar.find((x) => x.uye?.istemciId === q.z.kimden && x.oda === q.z.oda);
+          // Aynı kimlikle kopuk eski kayıt ve yeni bağlantı olabilir (Görev ODA-4): bağlı olan gönderendir.
+          const gonderen = kayitlar.find((x) => x.uye?.istemciId === q.z.kimden && x.oda === q.z.oda && x.bagli) ?? kayitlar.find((x) => x.uye?.istemciId === q.z.kimden && x.oda === q.z.oda);
           if (!gonderen?.bagli) break;
           // Aynı kimlikle birden çok bağlantı varsa adresli mesaj en son katılana gider (aktarıcı kimliği bağlantıya eşler).
           const alicilar = q.z.kime

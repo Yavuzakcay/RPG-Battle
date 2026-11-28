@@ -131,13 +131,29 @@ try {
   if ((await kaydet(gm)) !== 1) throw new Error('GM seçeneklerinde Kaydet yok');
   if ((await kaydet(a)) !== 0) throw new Error('oyuncu cihazında Game Master araçları görünüyor');
   adim('O3: Game Master araçları ve kayıt yalnız GM cihazında');
+  // Görev ODA-4: Ada'nın cihazı kapanır (bağlantı kopar). Sırası gelince GM'e karar menüsü çıkar; "Yapay zekâ oynasın".
+  await a.context().close();
+  let yzOynadi = false;
+  for (let i = 0; i < 14 && !yzOynadi; i++) {
+    const once = await simdiki(gm);
+    const kim = sahip(once);
+    if (kim === a) {
+      await gm.waitForSelector('[data-testid="oda-karar"]', { timeout: 20_000 });
+      await gm.click('[data-testid="oda-karar-yz"]');
+      yzOynadi = true;
+    } else if (kim === b) await b.locator('.radial-btn', { hasText: 'Turu bitir' }).first().click();
+    else await gm.locator('.hud-btn.enemy-play').first().click();
+    await gm.waitForFunction((o) => document.querySelector('.turn-strip .strip-item.now')?.getAttribute('aria-label') !== o, once, { timeout: 30_000 });
+  }
+  if (!yzOynadi) throw new Error('kopan oyuncunun sırası gelmedi');
+  adim('O4: kopan oyuncunun sırasında GM karar menüsü çıktı; "Yapay zekâ oynasın" turu oynadı');
   if (ekran) {
     mkdirSync('docs/oda-2', { recursive: true });
-    await a.screenshot({ path: 'docs/oda-2/oyuncu.png' });
+    await b.screenshot({ path: 'docs/oda-2/oyuncu.png' });
     adim('ekran görüntüsü docs/oda-2/oyuncu.png');
   }
   if (hatalar.length) throw new Error(hatalar[0]);
-  console.log(`tamam: O2/O3 yerel ağ akışı (oyuncu komutu ${oyuncuKomutu}, yetki reddi ${yetkiRed ? 'var' : 'denenmedi'})`);
+  console.log(`tamam: O2/O3/O4 yerel ağ akışı (oyuncu komutu ${oyuncuKomutu}, yetki reddi ${yetkiRed ? 'var' : 'denenmedi'})`);
   sonuc = 0;
 } catch (e) {
   console.error(`HATA: ${String((e as Error)?.message ?? e).split('\n')[0]}`);

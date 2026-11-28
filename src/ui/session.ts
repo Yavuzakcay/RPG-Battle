@@ -28,6 +28,8 @@ export interface SessionWatch {
   prompts?(fn: (p: RemotePrompt) => void): () => void;
   /** Görev ODA-3: bu cihazın izleyicisi (oyuncu: kendi karakterleri; izleyici). Görünüm süzgeci `src/room/view.ts`. */
   viewer?(): import('../room/view').Izleyici;
+  /** Görev ODA-4: bağlantı durumu (kopunca kendiliğinden yeniden bağlanır). */
+  connection?(): 'bagli' | 'yeniden' | 'koptu';
 }
 
 export type RemotePrompt =
