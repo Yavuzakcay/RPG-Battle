@@ -1553,6 +1553,11 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return withCombatant(state, event.actorId, { heads: event.heads, headsLost: event.lost, headsFire: event.fire, headsTurnHp: event.turnHp });
     case 'burst_done':
       return withCombatant(state, event.actorId, { burstDone: true });
+    case 'inspiration_granted': {
+      // Görev HEROIC-INSPIRATION-TAM (111+): hak alana 1 (en çok bir); `lost` durumu değiştirmez.
+      const to = event.toId ? state.combatants[event.toId] : undefined;
+      return to ? withCombatant(state, to.id, { resources: { ...to.resources, heroicInspiration: 1 } }) : state;
+    }
     case 'ai_role_set': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);

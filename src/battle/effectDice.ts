@@ -76,7 +76,8 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   if (c.traits?.includes('halfling-luck')) k18.unshift({ label: 'Luck', die: 'd20', sign: 1, reroll: 'd20', onNatural1: true, holderId: c.id });
   // Kuyruk 18 H3: Heroic Warrior: Heroic Inspiration ile başarısız d20 bir kez yeniden atılır (tur başında yenilenir).
   // Kuyruk 19: Human Resourceful aynı kaynakla (savaş başında bir).
-  if ((c.traits?.includes('heroic-warrior') || c.traits?.includes('resourceful')) && resourceLeft(c, 'heroicInspiration') > 0) {
+  // Görev HEROIC-INSPIRATION-TAM (111+, `hi111` işareti; SRD 5.2.1 s. 7): hakkı olan her oyuncu karakteri (Game Master verdi).
+  if ((c.hi111 || c.traits?.includes('heroic-warrior') || c.traits?.includes('resourceful')) && resourceLeft(c, 'heroicInspiration') > 0) {
     k18.push({ label: 'Heroic Inspiration', die: 'd20', sign: 1, reroll: 'd20', resource: 'heroicInspiration', holderId: c.id, ...ask });
   }
   // Görev P6: ek paket girişleri (d20 alt sınırı, zar mührü, zorla sonuç; menzil `syncAuras` → `pkSans`).

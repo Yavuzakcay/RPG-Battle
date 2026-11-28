@@ -32,6 +32,8 @@ import { version as appVersion } from '../../package.json';
 import { LANGS, setLang, t, useLang } from '../i18n';
 import { APP_NAME } from '../app/appName';
 import { ResourceChip, iconed, plain, sharedIcons } from '../ui/ResourceChip';
+import { HeroicBadge } from '../ui/HeroicGrant';
+import { hasHeroic } from '../rules/heroicInspiration';
 
 /** Görev K5: kayıtlı karakterin yük durumu (Ayarlar'daki kurala göre; hesaplanamazsa sorun yok sayılır). */
 const carryLevel = (sheet: Parameters<typeof carryLoad>[0]): LoadLevel => { try { return carryLoad(sheet, storedCarryRule()).level; } catch { return 'ok'; } };
@@ -180,6 +182,11 @@ function masteryList(sheet: SavedCharacter['sheet']): string {
   }).join(', ');
 }
 
+/** Görev HEROIC-INSPIRATION-TAM: kartta hak rozeti (eksik kâğıtta gösterilmez). */
+function heroicShown(c: SavedCharacter): boolean {
+  try { return hasHeroic(currentStatus(c.sheet, c.status)); } catch { return false; }
+}
+
 function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode; rest?: React.ReactNode }) {
   const { sheet } = props.c;
   const problems = characterProblems(props.c);
@@ -197,6 +204,8 @@ function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode; r
         <strong>{sheet.name || t().common.unnamed}</strong>
         <small>{t().player.cardTitle(raceName(sheet.raceId), sheetClassName(sheet), sheet.level)} · {line}</small>
         {lineageLine(sheet) && <small className="card-lineage">{lineageLine(sheet)}</small>}
+        {/* Görev HEROIC-INSPIRATION-TAM: kâğıttaki hak (savaş sonrası kalır; Human uzun dinlenmede kazanır). */}
+        {heroicShown(props.c) && <small><HeroicBadge status={currentStatus(sheet, props.c.status)} /></small>}
         {/* Görev K5: kural açıkken yük eşiği aşıldıysa uyarı rozeti (eski kayıt açılır, engellenmez). */}
         {((lvl) => lvl !== 'ok' && <small className="carry-badge error">⚖ {t().carry.level[lvl]} ({carriedWeight(sheet)} lb)</small>)(carryLevel(sheet))}
         {(sheet.weaponMasteries ?? []).length > 0 && <small>{t().player.cardMastery(masteryList(sheet))}</small>}

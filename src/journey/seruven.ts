@@ -8,6 +8,7 @@ import { reduceRoam, roamEvents, type RoamCommand, type RoamEvent } from '../wor
 import { withFog } from '../world/seruvenFog';
 import data from '../../data/seruven.json';
 import { longRestStatus, zeroHpWakeHours } from '../rules/characterRest';
+import { grantHeroic, hasHeroic, withHeroic } from '../rules/heroicInspiration';
 import { seededRng } from '../rules/dice';
 import type { CharacterStatus } from '../rules/characterRest';
 import type { CharacterSheet } from '../rules/stats';
@@ -153,6 +154,11 @@ export type SeruvenCommand =
   /** Kuyruk K48: Moral: ölü üyeyi dirilt (yerleşim tapınağı altınla ya da partide diriltme büyüsü). */
   | { type: 'moral_dirilt'; memberId: string; yol: 'tapinak' | 'buyu' }
   /**
+   * Görev HEROIC-INSPIRATION-TAM (SRD 5.2.1 s. 7): Game Master üyeye Heroic Inspiration verir (olay, diyalog, iyi oyun); üyede
+   * varsa `passTo` (hakkı olmayan üye) alır, yoksa yeni hak kaybolur (bir seferde en çok bir).
+   */
+  | { type: 'ilham_ver'; memberId: string; passTo?: string }
+  /**
    * Görev WS92 (SRD 5.2.1 s. 42 "Known Forms"): Wild Shape biçim listesi: boş yere biçim eklenir (sınıra dek, her zaman);
    * dolu listede bir biçim yenisiyle değişir (son uzun dinlenmeden beri bir kez).
    */
@@ -180,6 +186,8 @@ export type SeruvenEvent =
   | { type: 'seruven_moral'; statuses: Record<string, CharacterStatus>; reasons: MoralReason[]; deaths: string[] }
   /** Kuyruk K48: diriltme (tapınak ya da büyü): durumlar (dirilen + büyücünün slotu) ve harcanan altın. */
   | { type: 'seruven_dirildi'; memberId: string; yol: 'tapinak' | 'buyu'; statuses: Record<string, CharacterStatus>; gold: number }
+  /** Görev HEROIC-INSPIRATION-TAM: Heroic Inspiration (Game Master ya da düğüm ödülü); `lost`: üyede vardı, aktarılmadı. */
+  | { type: 'seruven_ilham'; statuses: Record<string, CharacterStatus>; neden: 'gm' | 'odul'; from?: string; lost?: string }
   | { type: 'seruven_leveled'; level: number; /** Görev MC5 (K12): çoklu sınıflı üyelerin seviye aldığı sınıf. */ classOf?: Record<string, string> }
   /** Görev WS92: üyenin Wild Shape biçim listesi değişti (`swap`: değişim, dinlenme sayısına bağlanır). */
   | { type: 'seruven_forms'; memberId: string; forms: string[]; swap: boolean }
@@ -314,7 +322,12 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
         const wake = wakeHoursOf(state, state.party.map((m) => m.status), key);
         return done(state, [{ type: 'seruven_rested', key, statuses: Object.fromEntries(state.party.map((m) => [m.id, longRestStatus(m.sheet, m.status, undefined, zeroHpRest(state))])), ...(wake ? { wakeHours: wake } : {}) }]);
       }
-      return done(state, [{ type: 'seruven_visited', key, gold: stop.reward?.gold ?? 0, potions: stop.reward?.potions ?? 0, items: stop.reward?.items ?? [] }]);
+      const visited: SeruvenEvent = { type: 'seruven_visited', key, gold: stop.reward?.gold ?? 0, potions: stop.reward?.potions ?? 0, items: stop.reward?.items ?? [] };
+      // Görev HEROIC-INSPIRATION-TAM: olay/diyalog ödülü: hakkı olmayan her canlı üyeye bir hak (varsa olduğu gibi kalır).
+      const lacking = stop.reward?.ilham ? state.party.filter((m) => !m.status.dead && !hasHeroic(m.status)) : [];
+      return done(state, lacking.length
+        ? [visited, { type: 'seruven_ilham', neden: 'odul', statuses: Object.fromEntries(lacking.map((m) => [m.id, withHeroic(m.status)])) }]
+        : [visited]);
     }
     case 'yerlesim_enter': case 'yerlesim_leave': case 'yerlesim_map': case 'shop_buy': case 'shop_sell': case 'inn_rest': case 'quest_take': case 'quest_claim':
       return yerlesimCommand(state, page, cmd);
@@ -385,6 +398,13 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
       return done(state, evs);
     }
     case 'moral_dirilt': return moralRevive(state, cmd);
+    case 'ilham_ver': {
+      const r = grantHeroic(state.party, cmd.memberId, cmd.passTo);
+      if (!r.ok) return fail(r.error);
+      const o = r.outcome;
+      return done(state, [{ type: 'seruven_ilham', neden: 'gm', statuses: r.statuses,
+        ...(o.kind === 'aktarildi' ? { from: o.from } : o.kind === 'kayboldu' ? { lost: o.from } : {}) }]);
+    }
     case 'form_swap': return formSwap(state, cmd);
     case 'set_choices': return setChoices(state, cmd);
     case 'world_walk': case 'fast_travel': case 'world_check': {
@@ -443,6 +463,7 @@ function reduceBase(s: SeruvenState | null, e: SeruvenEvent): SeruvenState | nul
     case 'seruven_visited': return { ...s, done: [...s.done, e.key], gold: s.gold + e.gold, potions: s.potions + e.potions, items: [...s.items, ...e.items] };
     case 'seruven_finished': return { ...s, result: e.result };
     case 'seruven_rested': return { ...s, done: [...s.done, e.key], rests: (s.rests ?? 0) + 1, ...(e.wakeHours && s.saat !== undefined ? { saat: s.saat + e.wakeHours } : {}), party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
+    case 'seruven_ilham': return { ...s, party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
     case 'seruven_moral': return { ...s, party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
     case 'seruven_dirildi': return { ...s, gold: s.gold - e.gold, party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
     case 'seruven_forms': return { ...s, party: s.party.map((m) => (m.id === e.memberId ? { ...m, sheet: { ...m.sheet, wildShapeForms: [...e.forms] } } : m)),

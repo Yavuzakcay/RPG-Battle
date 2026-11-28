@@ -48,6 +48,12 @@ const tr = {
     empty: 'Önce karakter oluştur: "Yeni karakter" ile başla.',
     cardLine: (hp: number, ac: number, speed: number) => `HP ${hp} · AC ${ac} · hız ${speed} ft`,
     cardTitle: (race: string, cls: string, level: number) => `${race} ${cls}, ${level}. seviye`,
+    /** Görev HEROIC-INSPIRATION-TAM: kâğıttaki hak (SRD 5.2.1 s. 7; bir seferde en çok bir). */
+    heroic: '✦ Heroic Inspiration', heroicTip: 'Heroic Inspiration: savaşta başarısız d20 Testini bir kez yeniden atar. Bir seferde en çok bir; Game Master verir, Human uzun dinlenmede kazanır.',
+    heroicGive: '✦ İlham ver', heroicGiveTip: 'Game Master Heroic Inspiration verir (olay, diyalog, iyi oyun).',
+    heroicPass: (from: string): string => `${from} zaten Heroic Inspiration taşıyor. Yeni hak:`, heroicLose: 'Kaybolsun', heroicTo: (n: string): string => `${n} alsın`, heroicApply: 'Uygula',
+    heroicDone: (to: string): string => `${to}: Heroic Inspiration kazandı.`, heroicLost: (n: string): string => `${n}: yeni Heroic Inspiration kayboldu (bir seferde en çok bir).`,
+    heroicTitle: 'Heroic Inspiration (Game Master)',
     cardMastery: (list: string) => `Ustalık: ${list}`, notWorking: 'oyunda henüz çalışmıyor',
     rest: {
       status: (hp: number, max: number, dice: number, level: number) => `Durum: HP ${hp}/${max} · HP zarı ${dice}/${level}`,

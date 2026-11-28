@@ -7,7 +7,7 @@
  * - Gnome: Gnomish Cunning (INT, WIS, CHA save avantajı).
  * - Halfling: Brave (Frightened'a save avantajı), Luck (d20'de doğal 1 yeniden), Halfling Nimbleness (büyük yaratığın
  *   altıgeninden geçer), Naturally Stealthy (en az bir boy büyük yaratığın yanında gizlenebilir).
- * - Human: Resourceful (savaşa Heroic Inspiration ile başlar: başarısız d20 bir kez yeniden).
+ * - Human: Resourceful (Heroic Inspiration uzun dinlenmede; 99+ kâğıttaki değer, `rules/heroicInspiration.ts`; başarısız d20 bir kez yeniden).
  * - Orc: Adrenaline Rush (bonus eylem Dash + PB geçici HP; PB kullanım, kısa dinlenme), Relentless Endurance (0 HP'ye
  *   düşünce 1 HP; uzun dinlenmede bir).
  * - Dragonborn: Draconic Flight (5+; bonus eylem, 10 dakika yürüme hızı kadar uçuş; uzun dinlenmede bir).

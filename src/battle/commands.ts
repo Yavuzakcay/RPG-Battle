@@ -133,6 +133,7 @@ import { finishCheck } from './effectDice';
 import { checkMode } from '../rules/skills';
 import { genel96On } from './genel96Surum';
 import { te99On } from './te99Surum';
+import { heroic111On } from './heroic111Surum';
 
 export type { CommandResult } from './common';
 export { canControl, currentActorId } from './common';
@@ -519,6 +520,21 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (!target) return fail('Savaşçı bulunamadı.');
     if (cmd.role !== null && !['hasarci', 'kontrolcu', 'destek', 'tank'].includes(cmd.role)) return fail('Bilinmeyen rol.');
     return finish(state, [{ type: 'ai_role_set', targetId: target.id, role: cmd.role }]);
+  }
+
+  if (cmd.type === 'grant_inspiration') {
+    // Görev HEROIC-INSPIRATION-TAM (111+; SRD 5.2.1 s. 7 "Gaining Heroic Inspiration", "Only One at a Time").
+    if (!ctx.isGm) return fail('Yalnızca Game Master Heroic Inspiration verir.');
+    if (!heroic111On(state)) return fail('Heroic Inspiration vermek bu kayıtta yok (kural sürümü 111 ve üstü).');
+    const target = state.combatants[cmd.targetId];
+    const pc = (c: Combatant | undefined): c is Combatant => !!c && !!c.hi111 && c.life !== 'dead' && !c.summon?.gone;
+    if (!pc(target)) return fail('Heroic Inspiration yalnız oyuncu karakterine verilir.');
+    const has = (c: Combatant) => resourceLeft(c, 'heroicInspiration') > 0;
+    if (!has(target)) return finish(state, [{ type: 'inspiration_granted', targetId: target.id, toId: target.id }]);
+    if (cmd.passToId === undefined) return finish(state, [{ type: 'inspiration_granted', targetId: target.id, lost: true }]);
+    const to = state.combatants[cmd.passToId];
+    if (!pc(to) || to.id === target.id || to.side !== target.side || has(to)) return fail('Hak yalnız partide Heroic Inspiration\'ı olmayan bir karaktere aktarılır.');
+    return finish(state, [{ type: 'inspiration_granted', targetId: target.id, toId: to.id }]);
   }
 
   if (cmd.type === 'set_exhaustion') {

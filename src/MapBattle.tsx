@@ -8,6 +8,7 @@
 import { resourceLabel } from './ui/classLabel';
 import { sinif97On } from './battle/sinif97Surum';
 import { karar101On } from './battle/karar101Surum';
+import { heroic111On } from './battle/heroic111Surum';
 import { heldBy } from './battle/karar101';
 import { activePossession, possessedEffect } from './battle/possessionCore';
 import { setupWardOf } from './battle/possession';
@@ -288,7 +289,8 @@ function wakeNotes(state: Parameters<typeof wakeRule>[0]): string[] {
   ];
 }
 
-function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; notes?: string[]; onExhaustion?: (level: number) => void; onAiRole?: (role: Combatant['aiRole'] | null) => void; onEndPossession?: () => void }) {
+function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; notes?: string[]; onExhaustion?: (level: number) => void;
+  /** Görev HEROIC-INSPIRATION-TAM (111+): Game Master Heroic Inspiration verir (`passToId`: hakkı varken alacak dost). */ onInspire?: (passToId?: string) => void; onAiRole?: (role: Combatant['aiRole'] | null) => void; onEndPossession?: () => void }) {
   const { c } = props;
   // Süren etkiler (Görev R2): tıklayınca açıklama açılır.
   const [openFx, setOpenFx] = useState<string | null>(null);
@@ -362,6 +364,8 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
           )}
         </p>
       )}
+      {/* Görev HEROIC-INSPIRATION-TAM (111+): oyuncu karakterinin hakkı; Game Master verir (varsa aktarır ya da kaybolur). */}
+      {c.hi111 && c.life !== 'dead' && <HeroicRow c={c} state={props.state} onInspire={props.onInspire} />}
       <p>{D.moved(c.movementUsed)}</p>
       <p>{D.skills}: {SKILL_IDS.filter((s) => c.skills[s] !== undefined).map((s) => `${SKILLS[s].name} ${mod(c.skills[s] as number)}`).join(' · ') || D.noSkills}
         {' '}{D.stealth(mod(skillBonus(c, 'stealth')), c.stealthDisadvantage, mod(skillBonus(c, 'perception')))}</p>
@@ -537,6 +541,29 @@ function hexTryKeys(state: BattleState, actorId: string, mk: (h: Offset) => Comm
   }
   return out;
 }
+/** Görev HEROIC-INSPIRATION-TAM: çekmecede Heroic Inspiration satırı (hak var/yok; Game Master verir ya da aktarır). */
+function HeroicRow(props: { c: Combatant; state: BattleState; onInspire?: (passToId?: string) => void }) {
+  const { c } = props;
+  const D = t().battle.drawer;
+  const has = (c.resources.heroicInspiration ?? 0) > 0;
+  const allies = Object.values(props.state.combatants).filter((o) => o.id !== c.id && o.hi111 && o.side === c.side && o.life !== 'dead' && !o.summon?.gone && (o.resources.heroicInspiration ?? 0) <= 0);
+  const [pass, setPass] = useState('');
+  return (
+    <p className="heroic-row">{D.heroic(has)}
+      {props.onInspire && !has && <>{' '}<button type="button" className="hud-btn small" onClick={() => props.onInspire?.()}>{D.heroicGive}</button></>}
+      {props.onInspire && has && (
+        <>{' '}<label>{D.heroicPass}{' '}
+          <select value={pass} onChange={(e: { target: { value: string } }) => setPass(e.target.value)}>
+            <option value="">{D.heroicLose}</option>
+            {allies.map((o) => <option key={o.id} value={o.id}>{D.heroicTo(displayName(o))}</option>)}
+          </select></label>{' '}
+          <button type="button" className="hud-btn small" onClick={() => { props.onInspire?.(pass || undefined); setPass(''); }}>{D.heroicApply}</button>
+        </>
+      )}
+    </p>
+  );
+}
+
 const usableResources = (c: Combatant): Array<[string, number]> =>
   Object.entries(c.resources).filter(([id, n]) => n > 0 && resourceUsable(id));
 
@@ -3898,6 +3925,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
             <Drawer c={state.combatants[drawerId] as Combatant} state={state} onClose={() => setDrawerId(null)}
               notes={state.combatants[drawerId]?.asleep ? wakeNotes(state) : undefined}
               onExhaustion={state.status === 'active' ? (level) => setSession((s) => dispatch(s, { type: 'set_exhaustion', targetId: drawerId, level }, Math.random, GM_CONTEXT)) : undefined}
+              onInspire={state.status === 'active' && heroic111On(state) ? (passToId) => setSession((s) => dispatch(s, { type: 'grant_inspiration', targetId: drawerId, ...(passToId ? { passToId } : {}) }, Math.random, GM_CONTEXT)) : undefined}
               onAiRole={state.status === 'active' ? (role) => setSession((s) => dispatch(s, { type: 'set_ai_role', targetId: drawerId, role: role ?? null }, Math.random, GM_CONTEXT)) : undefined}
               onEndPossession={state.status === 'active' && possessedEffect(state.combatants[drawerId]) ? () => setSession((s) => dispatch(s, { type: 'possession_leave', actorId: drawerId, gm: true }, Math.random, GM_CONTEXT)) : undefined} />
           )}

@@ -258,6 +258,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.mounted(n(event.actorId), n(event.mountId));
     case 'dismounted':
       return event.fell ? L.fellFromMount(n(event.actorId)) : L.dismounted(n(event.actorId));
+    case 'inspiration_granted':
+      return event.lost ? L.heroicLost(n(event.targetId)) : L.heroicGranted(n(event.toId ?? event.targetId), event.toId && event.toId !== event.targetId ? n(event.targetId) : null);
     case 'ai_role_set':
       return L.aiRoleSet(n(event.targetId), event.role);
     case 'exhaustion_changed':

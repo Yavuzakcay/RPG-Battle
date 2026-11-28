@@ -41,6 +41,8 @@ export function SheetView(props: { c: SavedCharacter; model?: SheetModel }) {
             <h1>{m.name || '—'}</h1>
             <p>{m.race} · {m.klass}{m.subclass ? ` (${m.subclass})` : ''} · {S.level(m.level)}{m.background ? ` · ${m.background}` : ''}</p>
             {m.alignment && <p className="sheet-sub">{S.alignment}: {m.alignment}</p>}
+            {/* Görev HEROIC-INSPIRATION-TAM: kâğıttaki hak (bir seferde en çok bir). */}
+            {m.heroic && <p className="sheet-sub" title={t().player.heroicTip}>{t().player.heroic}</p>}
             {m.missing.length > 0 && <p className="sheet-warn">{S.missing}: {m.missing.join(', ')}</p>}
           </div>
         </header>

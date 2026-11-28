@@ -17,6 +17,7 @@ import { MAX_EXHAUSTION, exhaustionAfterLongRest } from './exhaustion';
 import { deriveStats, type CharacterSheet } from './stats';
 import { classesOf, isMultiSheet, keyClassOf, mcImpl, sheetClassLevel } from './mcHook';
 import type { Rng } from './dice';
+import { HEROIC_RESOURCE } from './heroicInspiration';
 
 export interface CharacterStatus {
   hp: number;
@@ -143,6 +144,9 @@ export function currentStatus(sheet: CharacterSheet, status?: CharacterStatus): 
     // Kuyruk P12: yeni kazanılan sayaç kaynağı (`depot`) başlangıç değeriyle gelir (`full.resources`; diğerlerinde en çok değer).
     resources[id] = left === undefined ? (full.resources[id] ?? max) : spent === null ? Math.min(max, Math.max(0, left)) : Math.max(0, max - spent);
   }
+  // Görev HEROIC-INSPIRATION-TAM (SRD 5.2.1 s. 7): Heroic Inspiration her karakterin kâğıdında kalır (Game Master verir,
+  // Heroic Warrior savaşta kazandırır); türün en çoğu olmayan karakterde de en çok 1.
+  if (resources[HEROIC_RESOURCE] === undefined && (status.resources[HEROIC_RESOURCE] ?? 0) > 0) resources[HEROIC_RESOURCE] = 1;
   // K10: HP de aynı kalıpla (seviye atlayınca alınan hasar kadar eksik; 0 HP'de kalan 0 kalır).
   const hp = status.hpMax !== undefined && status.hp > 0
     ? Math.max(1, full.hp - Math.max(0, status.hpMax - status.hp))
@@ -170,7 +174,14 @@ export function currentStatus(sheet: CharacterSheet, status?: CharacterStatus): 
 
 /** Durum tam mı (dinlenmeye gerek yok). */
 export function isRested(sheet: CharacterSheet, status?: CharacterStatus): boolean {
-  return JSON.stringify(currentStatus(sheet, status)) === JSON.stringify(fullStatus(sheet));
+  const full = fullStatus(sheet);
+  const cur = currentStatus(sheet, status);
+  // Görev HEROIC-INSPIRATION-TAM: dinlenmenin vermediği Heroic Inspiration (Game Master'dan) "dinlenmemiş" saydırmaz.
+  if (full.resources[HEROIC_RESOURCE] === undefined && cur.resources[HEROIC_RESOURCE] !== undefined) {
+    const { [HEROIC_RESOURCE]: _h, ...rest } = cur.resources;
+    return JSON.stringify({ ...cur, resources: rest }) === JSON.stringify(full);
+  }
+  return JSON.stringify(cur) === JSON.stringify(full);
 }
 
 function restState(sheet: CharacterSheet, s: CharacterStatus): RestState {

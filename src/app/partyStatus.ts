@@ -9,6 +9,7 @@ import { currentStatus, type CharacterStatus } from '../rules/characterRest';
 import { resourceDef } from '../rules/classFeatures';
 import { isItemResource } from '../rules/itemCharges';
 import { mcImpl } from '../rules/mcHook';
+import { HEROIC_RESOURCE } from '../rules/heroicInspiration';
 
 /** Görev TE99: savaşçıda bulunmayınca sıfırlanmayan kaynaklar (eşya yükü, tür kaynağı). */
 const keepWhenAbsent = (id: string): boolean => isItemResource(id) || !!resourceDef(id)?.race;
@@ -65,7 +66,12 @@ export function applyBattleResult(characters: SavedCharacter[], state: BattleSta
         return by && Object.keys(by).length ? { hitDiceSpentBy: by } : {};
       })(),
       // Görev TE99: savaşta olmayan eşya/tür kaynağı (ör. anahtar kapalı) kayıtlı değerinde kalır.
-      resources: Object.fromEntries(Object.keys(prev.resources).map((id) => [id, c.resources[id] ?? (keepWhenAbsent(id) ? prev.resources[id] ?? 0 : 0)])),
+      resources: {
+        ...Object.fromEntries(Object.keys(prev.resources).map((id) => [id, c.resources[id] ?? (keepWhenAbsent(id) ? prev.resources[id] ?? 0 : 0)])),
+        // Görev HEROIC-INSPIRATION-TAM (SRD 5.2.1 s. 7): savaşta kazanılan ya da harcanan Heroic Inspiration her karakterin
+        // kâğıdına yazılır (en çok 1; Heroic Warrior'ın savaşta verdiği hak da kalır).
+        ...(c.resources[HEROIC_RESOURCE] !== undefined ? { [HEROIC_RESOURCE]: c.resources[HEROIC_RESOURCE]! > 0 ? 1 : 0 } : {}),
+      },
       // Görev WS92: savaşta kazanılan slot (Wild Resurgence, Nature Magician, Font of Magic) karaktere yazılır; üst sınır
       // tablonun en çoğu (`slotMax`). Eskiden savaş başındaki kalan slot üst sınırdı (kazanılan slot savaş sonunda kayboluyordu).
       // Görev B93: Font of Magic ile yaratılan slot (önceden kalan fazla dahil) tablonun üstüne çıkabilir; uzun dinlenmede kaybolur.

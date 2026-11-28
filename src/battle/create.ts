@@ -36,6 +36,7 @@ import { GIANT_RESOURCE } from './giant';
 import { boonResources } from './boons';
 import { itemParts } from './itemEffects';
 import { speciesParts } from './species';
+import { heroic111On } from './heroic111Surum';
 import { celestialFeatures, withCelestial } from './celestial';
 import { withMorale } from './morale';
 import { karadulFeatures, withKaradul } from './karadul';
@@ -1006,7 +1007,10 @@ export function startBattle(
   const m83 = matrisOn(built);
   const g96 = genel96On(built);
   const t99 = te99On(built);
-  const final = m83 || g96 ? { ...built, combatants: Object.fromEntries(Object.entries(built.combatants).map(([k, c]) => [k, { ...c, ...(m83 ? { srd83: true as const } : {}), ...(g96 ? { srd96: true as const } : {}), ...(t99 ? { te99: true as const } : {}) }])) } : built;
+  // Görev HEROIC-INSPIRATION-TAM (111+): oyuncu karakterleri (kâğıttan; canavar ve çağrı değil) Heroic Inspiration'ı işaretsiz kullanır.
+  const h111 = heroic111On(built);
+  const final = m83 || g96 ? { ...built, combatants: Object.fromEntries(Object.entries(built.combatants).map(([k, c]) => [k, { ...c, ...(m83 ? { srd83: true as const } : {}), ...(g96 ? { srd96: true as const } : {}), ...(t99 ? { te99: true as const } : {}),
+    ...(h111 && c.raceId && !c.monsterId && !c.summon && !c.civilian ? { hi111: true as const } : {}) }])) } : built;
   return { state: final, events: [{ type: 'battle_started', state: final }] };
 }
 

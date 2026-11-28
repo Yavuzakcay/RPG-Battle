@@ -891,6 +891,10 @@ header.brand .brand-tools { display: flex; gap: 8px; flex-wrap: wrap; justify-co
 .carry-over { margin: 0; }
 .weight { display: block; color: var(--mute); font-size: 11px; }
 .carry-badge { display: block; }
+/* Görev HEROIC-INSPIRATION-TAM: kâğıttaki hak rozeti ve Game Master verme satırı. */
+.heroic-badge { color: var(--gold, #e0b84a); font-weight: 600; white-space: nowrap; }
+.heroic-grant { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.35rem; }
+.heroic-row select { max-width: 12rem; }
 /* Görev K6: büyü grupları (cantrip, seviye), Kitap/Hazır düğmeleri, kilitli ve oyunda olmayan büyüler. */
 .spell-group h3 { margin: 12px 0 4px; font-size: 16px; color: var(--wz); }
 .spell-group.locked { margin: 8px 0; opacity: 0.7; }

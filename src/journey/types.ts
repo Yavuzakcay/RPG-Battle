@@ -30,7 +30,7 @@ export interface JourneyStop {
   /** Kuyruk 19B V6: bu durakta bir kez, kısa dinlenme sınırına sayılmayan kısa dinlenme (SRD: 1 saat, Hit Dice). */
   kisaDinlenme?: boolean;
   /** Kuyruk 18 V3: ödül durağı (savaşsız): altın, iksir, SRD sihirli eşyaları (`magic-items:<kimlik>`). */
-  reward?: { gold: number; potions: number; items: string[] };
+  reward?: { gold: number; potions: number; items: string[]; /** Görev HEROIC-INSPIRATION-TAM: olay ödülü: hakkı olmayan her canlı üyeye Heroic Inspiration (Serüven). */ ilham?: boolean };
   /**
    * Kuyruk 21 D3: dallanan güzergâhta sonraki duraklar (kimlik). Yoksa sıradaki durak (eski doğrusal güzergâh); boş
    * dizi güzergâhın sonu. Birden çoksa `advance` komutu `to` ile seçer.

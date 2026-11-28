@@ -10,7 +10,7 @@ export type YetkiRed = 'yetki' | 'gecersiz' | 'bekle' | 'izleyici';
 export type Yetki = { ok: true; ctx: CommandContext; ownerId: string } | { ok: false; neden: YetkiRed; hata: string };
 
 /** `actorId` taşısa da yalnız Game Master'ın gönderebileceği komutlar (kurulum ve GM araçları). */
-const GM_KOMUTLARI: ReadonlySet<string> = new Set(['skill_check', 'place', 'choose_civilian_art', 'set_exhaustion', 'set_ai_role', 'place_object', 'place_surface', 'reveal_object']);
+const GM_KOMUTLARI: ReadonlySet<string> = new Set(['skill_check', 'place', 'choose_civilian_art', 'set_exhaustion', 'set_ai_role', 'place_object', 'place_surface', 'reveal_object', 'grant_inspiration']);
 
 export function komutYetkisi(state: BattleState | null, cmd: Command, uye: { rol: Rol; karakterler: ReadonlySet<string> }, yz: ReadonlySet<string> = new Set()): Yetki {
   if (uye.rol !== 'oyuncu') return { ok: false, neden: 'izleyici', hata: 'izleyici' };

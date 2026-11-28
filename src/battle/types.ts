@@ -912,6 +912,8 @@ export interface Combatant {
   srd96?: true;
   /** Görev TE99 (sürüm 99+): savaş başında ve `syncAuras` ile yazılır; durum bilmeyen yollar için sürüm işareti. */
   te99?: true;
+  /** Görev HEROIC-INSPIRATION-TAM (sürüm 111+, savaş başında oyuncu karakterine): Heroic Inspiration işaretsiz kullanılır. */
+  hi111?: true;
   /** Görev TE99: alet yetkinlikleri (`data/srd/tools.json` kimliği; yalnız Thieves' Tools kilit açmada kullanılır). */
   toolProfs?: string[];
   /** Görev TE99: AC'nin taban dışı parçalarının toplamı (kalkan, feat, eşya; `deriveStats` `acParts`). */
@@ -1913,6 +1915,8 @@ export type Command =
   | { type: 'set_exhaustion'; targetId: string; level: number }
   /** Y1 G2: Game Master bir yaratığa yapay zekâ rolü atar (`null`: veriden türet). */
   | { type: 'set_ai_role'; targetId: string; role: 'hasarci' | 'kontrolcu' | 'destek' | 'tank' | null }
+  /** Görev HEROIC-INSPIRATION-TAM (111+): Game Master Heroic Inspiration verir; hedefte varsa `passToId` (hakkı olmayan dost) alır, yoksa kaybolur. */
+  | { type: 'grant_inspiration'; targetId: string; passToId?: string }
   /** Görev A1: Game Master birden çok yaratığı tek can havuzunda birleştirir (`hp`/`max` verilmezse üyelerin toplamı). */
   | { type: 'create_hp_pool'; memberIds: string[]; poolId?: string; hp?: number; max?: number; label?: string }
   /** Görev Y1: Game Master yüzey yerleştirir (yağ, su, buz, zehir bulutu…) ya da altıgenlerdeki yüzeyleri kaldırır (`kind` yok). */
@@ -2509,6 +2513,8 @@ export type BattleEvent =
   | { type: 'exhaustion_changed'; targetId: string; level: number; reason: string }
   /** Y1 G2: yapay zekâ rolü atandı (Game Master). */
   | { type: 'ai_role_set'; targetId: string; role: 'hasarci' | 'kontrolcu' | 'destek' | 'tank' | null }
+  /** Görev HEROIC-INSPIRATION-TAM (111+; kayıt sürümü 29): Heroic Inspiration `toId`'ye geldi; `lost`: hedefte vardı, aktarılmadı. */
+  | { type: 'inspiration_granted'; targetId: string; toId?: string; lost?: true }
   /** Kuyruk 19: canavar yeteneğinin şarjı (kullanıldı ya da tur başı d6). */
   | { type: 'ability_recharge'; actorId: string; abilityId: string; used?: boolean; d6?: number; recharged?: boolean }
   /** Kuyruk 19 (Hydra Multiple Heads): baş sayısı, son turundan beri ölen, ateş hasarı aldı mı, turun başındaki HP. */

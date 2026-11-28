@@ -21,6 +21,8 @@ import { spellComponents } from '../../rules/spellComponents';
 import { alignmentOf, labelOf } from '../../rules/alignment';
 import { filledStory, type StoryField } from '../../rules/story';
 import type { SavedCharacter } from '../../rules/builder';
+import { currentStatus } from '../../rules/characterRest';
+import { hasHeroic } from '../../rules/heroicInspiration';
 import type { Lang } from '../../i18n/strings';
 
 export interface SheetModel {
@@ -34,6 +36,8 @@ export interface SheetModel {
   spells: null | { dc: number | null; attack: number | null; slots: number[]; groups: Array<{ level: number; list: Array<{ name: string; comps: string }> }> };
   gear: { armor: string; shield: boolean; weapons: string[]; items: string[]; weight: number; capacity: number } ;
   alignment: string | null;
+  /** Görev HEROIC-INSPIRATION-TAM: kayıtlı (ya da dinlenmiş) durumda Heroic Inspiration var mı. */
+  heroic: boolean;
   story: Array<{ field: StoryField; text: string }>;
   missing: string[];
 }
@@ -107,6 +111,6 @@ export function sheetModel(c: SavedCharacter, lang: Lang, opts: { carryRule?: Ca
     saves: ABILITIES.map((ab) => ({ ability: ab, bonus: d.saves[ab], proficient: d.saveProficiencies.includes(ab) })),
     skills, attacks, features, spells: spellsBlock,
     gear: { armor: sheet.armorName, shield: sheet.shield, weapons: (sheet.weapons ?? []).map((w) => (w.enchant ? `${w.name} +${w.enchant}` : w.name)), items: sheet.itemNames, weight: load.weight, capacity: load.capacity },
-    alignment: a, story: filledStory(c.hikaye).map(([field, text]) => ({ field, text })), missing,
+    alignment: a, heroic: (() => { try { return hasHeroic(currentStatus(sheet, c.status)); } catch { return false; } })(), story: filledStory(c.hikaye).map(([field, text]) => ({ field, text })), missing,
   };
 }

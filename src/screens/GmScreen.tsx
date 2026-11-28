@@ -48,6 +48,8 @@ import type { ReactNode } from 'react';
 import type { Oda } from '../oda/model';
 import { joinRoom, leaveRoom } from '../oda/store';
 import { houseRuleDefaults, type HouseRuleId } from '../battle/houseRules';
+import { HeroicGrant } from '../ui/HeroicGrant';
+import { hasHeroic } from '../rules/heroicInspiration';
 
 const BASE = import.meta.env.BASE_URL;
 const className = (id: string) => classes.find((c) => c.id === id)?.name ?? id;
@@ -59,6 +61,11 @@ const BLANK_MONSTER: CustomMonsterInput = {
 /** Kayıtlı durumdaki HP: "HP 12/38". */
 function hpText(c: SavedCharacter): string {
   try { return t().gm.partyHp(currentStatus(c.sheet, c.status).hp, fullStatus(c.sheet).hp); } catch { return ''; }
+}
+
+/** Görev HEROIC-INSPIRATION-TAM: kayıtlı (ya da dinlenmiş) durumda Heroic Inspiration var mı. */
+function heroicOf(c: SavedCharacter): boolean {
+  try { return hasHeroic(currentStatus(c.sheet, c.status)); } catch { return false; }
 }
 
 /** Kuyruk 18 H10: yerel görseli 128 px kareye küçültüp data URL yapar (yalnızca tarayıcıda; depoya girmez). */
@@ -115,6 +122,7 @@ export function GmScreen(props: {
   const variant = map?.variants.find((v) => v.id === variantId) ?? map?.variants[0];
   const [options, setOptions] = useState<string[]>([]);
   const [civilians, setCivilians] = useState(4);
+  const [heroicNote, setHeroicNote] = useState<string | null>(null);
   const [civilianPlacement, setCivilianPlacement] = useState<CivilianPlacement>('far');
   const [civilianSeed, setCivilianSeed] = useState(1);
   const [civilianHexes, setCivilianHexes] = useState<Offset[]>([]);
@@ -268,7 +276,7 @@ export function GmScreen(props: {
                   onChange={(e: { target: { checked: boolean } }) => (room
                     ? rm((o) => (e.target.checked ? joinRoom(o, c.id) : leaveRoom(o, c.id)))
                     : setParty(e.target.checked ? (partyFull ? party : [...party, c.id]) : party.filter((x) => x !== c.id)))} />
-                {c.sheet.name} ({sheetClassLevel(c.sheet)}){c.status ? ` · ${hpText(c)}` : ''}
+                {c.sheet.name} ({sheetClassLevel(c.sheet)}){c.status ? ` · ${hpText(c)}` : ''}{heroicOf(c) ? ' ✦' : ''}
               </label>
             ))}
             {blocked.map((c) => (
@@ -290,6 +298,15 @@ export function GmScreen(props: {
                   </select>
                 </label>
               ))}
+            </details>
+          )}
+          {/* Görev HEROIC-INSPIRATION-TAM: Game Master savaş dışında Heroic Inspiration verir (kâğıda yazılır; en çok bir). */}
+          {props.onUpdateCharacters && ready.length > 0 && (
+            <details className="gm-heroic">
+              <summary>{t().player.heroicTitle}</summary>
+              <HeroicGrant members={ready.map((c) => ({ id: c.id, name: c.sheet.name, status: currentStatus(c.sheet, c.status) }))}
+                onGrant={(statuses, note) => { setHeroicNote(note); props.onUpdateCharacters?.(props.characters.map((c) => (statuses[c.id] ? { ...c, status: statuses[c.id] } : c))); }} />
+              {heroicNote && <small className="ok">{heroicNote}</small>}
             </details>
           )}
           {/* Kuyruk K51: hizalanma paneli (ev kuralı açıkken). */}

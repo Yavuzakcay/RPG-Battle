@@ -55,6 +55,7 @@ import { WALK_RULES, findPath, hubsNearSea } from '../world/walk';
 import { REGION_TOGGLE, SWIM, arrivalRegion, type WorldRegion } from '../world/regions';
 import { RegionLoading } from '../ui/world/RegionLoading';
 import { NewDiceNotice } from '../ui/DiceThemePicker';
+import { HeroicBadge, HeroicGrant } from '../ui/HeroicGrant';
 import { isUnlocked, loadDiceStore, recordUnlocks, unlocksFromSeruven } from '../app/diceUnlock';
 const toolOn = () => { try { return location.hash.includes('dugum') || localStorage.getItem('rpg-battle-dugum') === '1'; } catch { return false; } };
 
@@ -441,6 +442,8 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
           const temple = moralOn && m.status.dead && !!(state.yerlesim && yerlesimById(state.yerlesim.id)?.hub.tapinak);
           return <span key={m.id} className={`journey-member${m.status.dead ? ' dead' : m.status.hp <= 0 ? ' down' : ''}${prisonerLook(state) ? ' mahkum' : ''}`}>
             <strong>{m.name}</strong> {m.status.dead ? S.dead : m.status.hp <= 0 ? S.down : `${m.status.hp}/${max}`}
+            {/* Görev HEROIC-INSPIRATION-TAM: kâğıttaki hak. */}
+            {!m.status.dead && <> <HeroicBadge status={m.status} /></>}
             {moralOn && !m.status.dead && <> <MoralBar moral={memberMoral(m)} max={memberMoralMax(m)} /></>}
             {m.status.moralOlum && <> <span className="moral-dead">{moralDeathText(m.name, getLang())}</span></>}
             {temple && <> <button type="button" className="ghost" disabled={state.gold < MORAL.dirilme.tapinakUcreti} onClick={() => run({ type: 'moral_dirilt', memberId: m.id, yol: 'tapinak' })}>{t().view.moral.reviveTemple(MORAL.dirilme.tapinakUcreti)}</button></>}
@@ -451,6 +454,9 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
               {pendingChoices(m.sheet).length ? S.choicesPending : choiceWindows(state).seviye || choiceWindows(state).dinlenme ? S.choicesOpen : S.choices}</button></>}
           </span>;
         })}
+        {/* Görev HEROIC-INSPIRATION-TAM: Game Master (Serüven kuralları paneli açıkken) Heroic Inspiration verir. */}
+        {rules && !state.result && <HeroicGrant title members={state.party.map((m) => ({ id: m.id, name: m.name, status: m.status }))}
+          onPick={(memberId, passTo) => run({ type: 'ilham_ver', memberId, ...(passTo ? { passTo } : {}) })} />}
         {state.tasma && <span className="journey-member" title={S.collarHelp}>⛓ {S.collarOn}</span>}
       </footer>
     </div>
