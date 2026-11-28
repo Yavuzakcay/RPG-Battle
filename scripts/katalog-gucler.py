@@ -84,6 +84,42 @@ for base, (atkn, tiers) in GEM.items():
         mid = {'gammlet': 'gamlet'}.get(base + suf, base + suf)
         put(mid, ekler={atkn: {**spec, "tur": "nefes"}})
 
+
+# ---------------------------------------------------------------- Grup 3: canavar eylemi (alan bırakma, yamalar, efsanevi türleri)
+SV3_STONES = ['ember-core', 'frost-heart', 'storm-spire', 'resonance-seal', 'dissolution-drop', 'venom-essence', 'blinding-sun-shard', 'sepulcher-orb', 'whisper-crystal', 'void-fracture']
+STONES = ['cracked-elemental-stone', 'awakened-elemental-stone', *SV3_STONES]
+NEG = ['Blinded', 'Charmed', 'Deafened', 'Frightened', 'Paralyzed', 'Poisoned', 'Restrained', 'Stunned', 'Grappled']
+# Sanat yüzeyleri (KATALOG-F-TASARIM §5: "N tur yüzey sığmıyor"): ateş, buz, asit, zehir, su.
+put('cimbombom', alanBirak={"molten-anvil-burst": {"yuzey": {"kind": "fire", "rounds": 2}}})
+put('wolfgang', alanBirak={"rime-breath": {"yuzey": {"kind": "ice", "rounds": 3}}})
+put('mothraq', alanBirak={"plague-cloud": {"yuzey": {"kind": "poison", "rounds": 10}}})
+put('stormer', alanBirak={"sky-spear": {"yuzey": {"kind": "water", "rounds": 3}}})
+put('hydraxe', yetenekler={"sulphur-deluge": {"minute": False, "rounds": 3}},
+    alanBirak={"sulphur-deluge": {"alanlar": [{"name": "Sülfür Gölü", "rounds": 3, "spec": {"on": ["start", "enter"], "damage": "2d6", "damageType": "acid", "targets": "all", "hold": "turn", "color": "#7a9a2a", "icon": "🧪"}}]}})
+put('lightaur', yetenekler={"golden-judgment": {"area": {"shape": "cylinder", "sizeFt": 20, "origin": "point", "rangeFt": 60, "heightFt": 40}}},
+    alanBirak={"golden-judgment": {"karanlikSil": True}})
+put('kongark', yetenekler={"star-collapse": {"pre": {"kind": "pull", "rangeFt": 30, "pullFt": 15, "save": {"ability": "str", "dc": 16}}}})
+# Menzilli efsanevi ışın uzaktakini seçer (Mühür Ruhu Sv.3).
+for boss, ray in [('cimbombom', 'flame-spit'), ('kongark', 'void-stone'), ('cerbones', 'black-spark'), ('mirage', 'mind-needle'), ('gongar', 'echo-shot'),
+                  ('lightaur', 'ray-spear'), ('hydraxe', 'acid-spit'), ('mothraq', 'venom-needle'), ('stormer', 'chain-lightning'), ('wolfgang', 'ice-spear')]:
+    put(boss, efsanevi=[{"id": ray, "patch": {"target": "far"}}])
+put('mirage', yetenekEkle=[
+    {"id": "misty-step", "tr": "Misty Step", "en": "Misty Step", "cost": "bonus", "kind": "teleport", "ft": 30, "toward": True, "uses": 3},
+    {"id": "false-shadow", "tr": "Sahte Gölge", "en": "False Shadow", "cost": "action", "kind": "summon", "monster": "shadow", "count": 2, "adjacent": True, "uses": 1}])
+put('mirath', yetenekEkle=[{"id": "misty-step", "tr": "Misty Step", "en": "Misty Step", "cost": "bonus", "kind": "teleport", "ft": 30, "toward": True, "uses": 1}])
+# Kadim
+put('tutsak-dragon', alanBirak={"Continent Roar Breath": {"alanlar": [{"name": "Çatlak Kaya", "rounds": 100000, "spec": {"difficult": 2, "targets": "all", "color": "#6b5a3a", "icon": "🪨"}}]}},
+    efsanevi=[{"id": "seal-pull", "add": {"tr": "Mühür Çekimi", "en": "Seal Pull", "kind": "pull", "save": "str", "dc": 25, "rangeFt": 30, "pullFt": 30, "needsItem": STONES, "oncePerTurn": True}}])
+for a in ['kozmik-anka', 'kozmik-anka-savas']:
+    put(a, alanBirak={"Celestial Glide": {"tasi": True, "alanlar": [
+            {"name": "Kozmik Anka Alevi", "rounds": 3, "spec": {"on": ["start"], "damage": "4d8", "damageType": "fire", "targets": "enemies", "hold": "turn", "color": "#ff8a3d", "icon": "🔥"}},
+            {"name": "Kozmik Anka Alevi (şifa)", "rounds": 3, "spec": {"on": ["start"], "heal": "3d8+10", "targets": "allies", "hold": "turn", "color": "#ffd27a", "icon": "✨"}}]},
+        "Köz Kanat Çırpışı": {"karanlikSil": True}},
+        efsanevi=[{"id": "seal-melting-talon", "add": {"tr": "Mühür Eriten Pençe", "en": "Seal-Melting Talon", "kind": "seal", "rangeFt": 10, "oncePerTurn": True}},
+                  {"id": "star-tear", "add": {"tr": "Yıldız Gözyaşı", "en": "Star Tear", "kind": "heal", "rangeFt": 60, "dice": "6d10+10", "cleanse": NEG, "oncePerTurn": True}}])
+put('ocean-nightmare-open-sea', alanBirak={"Ink Cloud": {"alanlar": [{"name": "Mürekkep Bulutu", "rounds": 10, "spec": {"on": ["start"], "save": "con", "conditions": ["Blinded", "Poisoned"], "obscured": "heavy", "hold": "turn", "targets": "enemies", "color": "#1d1b2e", "icon": "🦑"}}]}})
+put('titan-of-nightmare', alanBirak={"Uçurum Zehir Mürekkebi": {"alanlar": [{"name": "Uçurum Mürekkebi", "rounds": 10, "spec": {"on": ["start"], "save": "con", "conditions": ["Blinded", "Poisoned"], "obscured": "heavy", "silence": True, "hold": "turn", "targets": "enemies", "color": "#1d1b2e", "icon": "🦑"}}]}})
+
 out = {"_not": "Görev KATALOG-GUC-TAM (kural sürümü 109): KATALOG-SIGMAYAN.md güçlerinin verisi, canavar kimliğine göre (src/battle/katalog109Types.ts K109Monster). 108 ve altında okunmaz. Elle düzenlenir; aura yarıçapı altıgen (5 ft). Kaynak harita/belgeler/KATALOG-F2-OZELLIKLER.md, KATALOG-F-TASARIM.md.", "canavarlar": C}
 json.dump(out, open('data/katalog-gucler.json','w', encoding='utf-8'), ensure_ascii=False, indent=1)
 print(len(C), 'canavar yazıldı')

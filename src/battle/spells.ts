@@ -148,7 +148,7 @@ const tierOf = (actor: Combatant) =>
   1 + (actor.level >= 5 ? 1 : 0) + (actor.level >= 11 ? 1 : 0) + (actor.level >= 17 ? 1 : 0);
 
 const SHAPE_NAME: Record<AreaShape, string> = {
-  sphere: 'küre', cube: 'küp', cone: 'koni', line: 'çizgi', emanation: 'yayılım', wall: 'duvar',
+  sphere: 'küre', cube: 'küp', cone: 'koni', line: 'çizgi', emanation: 'yayılım', wall: 'duvar', cylinder: 'silindir',
 };
 
 

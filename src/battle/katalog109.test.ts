@@ -165,3 +165,72 @@ describe('Grup 2: saldırı ekleri ve pasifler', () => {
     expect(ev.some((e) => e.type === 'pushed')).toBe(true);
   });
 });
+
+describe('Grup 3: canavar eylemi', () => {
+  const foe = (id: string, col: number, p: Partial<Combatant> = {}) => mk(id, { ownerId: 'p1', hp: 200, maxHp: 200, pos: { col, row: 3 }, ...p });
+
+  it('yetenek yamaları ve eklemeleri yalnız 109 (Yıldız Çöküşü önce çeker; Mirage Misty Step)', async () => {
+    const { abilitiesOf } = await import('./monsterAbilities');
+    const s = arena109('kongark', [foe('A', 8)]);
+    expect(abilitiesOf(s, C(s, 'D')).find((a) => a.id === 'star-collapse')?.pre).toMatchObject({ kind: 'pull', pullFt: 15 });
+    const old = arena109('kongark', [foe('A', 8)], 108);
+    expect(abilitiesOf(old, C(old, 'D')).find((a) => a.id === 'star-collapse')?.pre).toBeUndefined();
+    const m = arena109('mirage', [foe('A', 8)]);
+    expect(abilitiesOf(m, C(m, 'D')).map((a) => a.id)).toEqual(expect.arrayContaining(['misty-step', 'false-shadow']));
+  });
+
+  it('Yıldız Çöküşü: başarısız STR save çeker, sonra alan', async () => {
+    const { abilitiesOf, abilityEvents } = await import('./monsterAbilities');
+    const s = arena109('kongark', [foe('A', 7)]);
+    const a = abilitiesOf(s, C(s, 'D')).find((x) => x.id === 'star-collapse')!;
+    const ev = abilityEvents(s, C(s, 'D'), a, undefined, undefined, () => 0.01);
+    expect(ev.some((e) => e.type === 'pushed' && e.targetId === 'A')).toBe(true);
+  });
+
+  it('alan bırakma: sanat alev yüzeyi (2 tur); Roar Çatlak Kaya kalıcı alanı', async () => {
+    const { areaLeaveEvents } = await import('./katalog109Alan');
+    const s = arena109('cimbombom', [foe('A', 5)]);
+    const area = (label: string, actorId = 'D') => ({ type: 'area_used', actorId, label, shape: 'emanation', sizeFt: 15, hexes: [{ col: 4, row: 3 }, { col: 5, row: 3 }], targetIds: [], dc: 16 }) as never;
+    const ev = areaLeaveEvents(s, [area('Erimiş Örs Patlaması')]);
+    expect(ev).toHaveLength(1);
+    expect(ev[0]).toMatchObject({ type: 'zone_created', zone: { surface: 'fire', until: s.round + 2 } });
+    expect(areaLeaveEvents({ ...s, kuralSurumu: 108 }, [area('Erimiş Örs Patlaması')])).toEqual([]);
+    const t = arena109('tutsak-dragon', [foe('A', 9)]);
+    const r = areaLeaveEvents(t, [area('Continent Roar Breath')]);
+    expect(r[0]).toMatchObject({ type: 'zone_created', zone: { name: 'Çatlak Kaya', spec: { difficult: 2 } } });
+  });
+
+  it('Celestial Glide: Anka alanın ucuna süzülür, iki alev alanı', async () => {
+    const { areaLeaveEvents } = await import('./katalog109Alan');
+    const s = arena109('kozmik-anka', [foe('A', 9)]);
+    const hexes = [4, 5, 6, 7, 8].map((col) => ({ col, row: 3 }));
+    const ev = areaLeaveEvents(s, [{ type: 'area_used', actorId: 'D', label: 'Celestial Glide', shape: 'line', sizeFt: 120, hexes, targetIds: [] } as never]);
+    expect(ev.filter((e) => e.type === 'zone_created')).toHaveLength(2);
+    expect(ev.find((e) => e.type === 'teleported')).toMatchObject({ to: { col: 8, row: 3 } });
+  });
+
+  it('efsanevi eklemeler: Star Tear dostu iyileştirir ve durumunu siler, Seal-Melting mühürler, Seal Pull taş taşıyanı çeker', async () => {
+    const { legendaryOf, k19Legendary } = await import('./boss');
+    const ally = mk('Y', { side: 'enemies', hp: 20, maxHp: 100, pos: { col: 5, row: 3 }, conditions: ['Stunned'] });
+    const s = arena109('kozmik-anka', [ally, foe('A', 4)]);
+    const spec = legendaryOf(s, C(s, 'D'))!;
+    const tear = spec.actions.find((a) => a.id === 'star-tear')!;
+    const ev = k19Legendary(s, C(s, 'D'), tear, [C(s, 'A')], () => 0.5);
+    const s2 = applyEvents(s, ev);
+    expect(C(s2, 'Y').conditions).not.toContain('Stunned');
+    expect(C(s2, 'Y').hp).toBeGreaterThan(20);
+    const seal = k19Legendary(s, C(s, 'D'), spec.actions.find((a) => a.id === 'seal-melting-talon')!, [C(s, 'A')], () => 0.5);
+    expect(seal[0]).toMatchObject({ type: 'effect_added', targetId: 'A', effect: { k109: { sealed: true } } });
+    const t = arena109('tutsak-dragon', [foe('A', 9, { carried: ['ember-core'] }), foe('B', 7, { pos: { col: 7, row: 6 } })]);
+    const pull = legendaryOf(t, C(t, 'D'))!.actions.find((a) => a.id === 'seal-pull')!;
+    const pe = k19Legendary(t, C(t, 'D'), pull, [C(t, 'A'), C(t, 'B')], () => 0.01);
+    expect(pe.some((e) => e.type === 'pushed' && e.targetId === 'A')).toBe(true);
+    expect(legendaryOf({ ...t, kuralSurumu: 108 }, C(t, 'D'))!.actions.some((a) => a.id === 'seal-pull')).toBe(false);
+  });
+
+  it('ışın uzaktakini seçer (Mühür Ruhu efsanevi)', async () => {
+    const { legendaryOf } = await import('./boss');
+    const s = arena109('cimbombom', [foe('A', 5)]);
+    expect(legendaryOf(s, C(s, 'D'))!.actions.find((a) => a.id === 'flame-spit')?.target).toBe('far');
+  });
+});

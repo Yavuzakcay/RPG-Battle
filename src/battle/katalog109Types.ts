@@ -86,7 +86,14 @@ export interface K109Monster {
   ekler?: Record<string, K109Rider>;
   /** Savaş başında sahibine süren etki (`k109` alanları ve diğer ActiveEffect alanları). */
   pasif?: Record<string, unknown> & { k109?: K109Fx };
-  yetenekler?: Record<string, K109AbilityPatch>;
+  /** Yetenek kimliğine göre yetenek alanlarına yama (`canavar-yetenekleri.json` kaydının üstüne) ve yeni yetenekler. */
+  yetenekler?: Record<string, K109AbilityPatch & Record<string, unknown>>;
+  yetenekEkle?: Array<Record<string, unknown>>;
+  /**
+   * Alan bırakma: saldırı adı (ya da yetenek kimliği/adı) → alanın altıgenlerine yüzey ya da kalıcı alan; `tasi`: saldıran alanın
+   * ucundaki boş altıgene süzülür (fırsat saldırısız; Celestial Glide); `karanlikSil`: alandaki büyülü karanlık biter.
+   */
+  alanBirak?: Record<string, { yuzey?: { kind: string; rounds: number }; alanlar?: Array<{ name: string; rounds: number; spec: Record<string, unknown> }>; tasi?: boolean; karanlikSil?: boolean }>;
   efsanevi?: K109LegendaryPatch[];
   faz2?: K109Faz;
   /** Legendary Resistance kullanınca bir olumsuz etkiyi siler. */

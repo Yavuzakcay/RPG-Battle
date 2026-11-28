@@ -24,3 +24,18 @@ export function k109SetupEffect(s: Pick<BattleState, 'kuralSurumu'>, c: { id: st
   if (!g || (!g.auralar?.length && !g.pasif)) return undefined;
   return { ...(g.pasif ?? {}), id: `k109:${c.id}`, name: c.name, sourceId: c.id, ...(g.auralar?.length ? { auras: g.auralar } : {}) } as import('./types').ActiveEffect;
 }
+
+/** Yetenek listesine 109 yamaları (kimliğe göre alan üstüne yazma) ve yeni yetenekler. */
+export function k109Abilities<T extends { id: string }>(s: Pick<BattleState, 'kuralSurumu'>, monsterId: string | undefined, list: T[]): T[] {
+  const g = gucOf(s, monsterId);
+  if (!g || (!g.yetenekler && !g.yetenekEkle)) return list;
+  return [...list.map((a) => (g.yetenekler?.[a.id] ? { ...a, ...g.yetenekler[a.id] } as T : a)), ...((g.yetenekEkle ?? []) as unknown as T[])];
+}
+/** Efsanevi eylem listesine 109 yamaları ve eklemeleri. */
+export function k109Legendary<T extends { id: string }>(s: Pick<BattleState, 'kuralSurumu'>, monsterId: string | undefined, list: T[]): T[] {
+  const g = gucOf(s, monsterId);
+  if (!g?.efsanevi?.length) return list;
+  const out = list.map((a) => { const p = g.efsanevi?.find((x) => x.id === a.id && x.patch); return p ? { ...a, ...p.patch } as T : a; });
+  for (const x of g.efsanevi) if (x.add) out.push({ id: x.id, ...x.add } as unknown as T);
+  return out;
+}

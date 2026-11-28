@@ -4,6 +4,8 @@
  * (Volkan `lairEruption`): tur başında (inisiyatif 20) lav püskürmesi. Uçan boss yapay zekâsı `ai.ts`'te
  * (`bossFlightMove`). Hepsi Game Master anahtarı; eski savaşlar (sürüm < 11) birebir aynı.
  */
+import { k109Legendary } from './katalog109Data';
+import { k109LegendaryEvents } from './katalog109Leg';
 import { forcedMove, MOTION_VERSION } from './motion';
 import { ruleVersion } from './ruleVersion';
 import data from '../../data/efsanevi.json';
@@ -34,7 +36,11 @@ import { formMonsterId } from './shapeMonsterCore';
 export { registerLegendaryCaster } from './castHook';
 
 export interface LegendaryAction {
-  id: string; tr: string; en: string; kind: 'strike' | 'rays' | 'command' | 'spell' | 'save' | 'teleport' | 'buff' | 'quake' | 'drain';
+  id: string; tr: string; en: string; kind: 'strike' | 'rays' | 'command' | 'spell' | 'save' | 'teleport' | 'buff' | 'quake' | 'drain'
+    /** Görev KATALOG-GUC-TAM (109; yalnız `data/katalog-gucler.json` eklemeleri): dost iyileştirme + durum silme, mühür, çekme. */
+    | 'heal' | 'seal' | 'pull';
+  /** Görev KATALOG-GUC-TAM (109): ışın hedefi en uzaktaki (`far`); save etkisinin süresi tur (`rounds`); silinen durumlar; çekme ft; taşıması gereken eşya. */
+  target?: 'far'; rounds?: number; cleanse?: string[]; pullFt?: number; needsItem?: string[];
   /** Kuyruk 19 (SRD Legendary Actions; `scripts/k19-efsanevi.mjs`): ikinci saldırı seçeneği, ışınlanıp vuruş (Arcane Prowl), fırsat saldırısız yürüyüş. */
   alt?: string; teleportFt?: number; noOA?: boolean;
   /** Büyü (Spellcasting'den; seviye, DC, kendine, ardından yarım uçuş). */
@@ -67,7 +73,10 @@ export function legendaryOf(state: BattleState, c: Combatant): LegendarySpec | n
     const spec = DATA.monsters[id] as LegendarySpec;
     if (spec.k19 && !globalRule(state, 'srdK19')) return null;
     // KAPSAM103: sürümlü eylemler (Weight of Years 103+) eski savaşta yok.
-    return spec.actions.some((a) => a.surum) ? { ...spec, actions: spec.actions.filter((a) => !a.surum || ruleVersion(state) >= a.surum) } : spec;
+    const spec2 = spec.actions.some((a) => a.surum) ? { ...spec, actions: spec.actions.filter((a) => !a.surum || ruleVersion(state) >= a.surum) } : spec;
+    // Görev KATALOG-GUC-TAM (109+): katalog efsanevi yamaları ve eklemeleri.
+    const acts = k109Legendary(state, id, spec2.actions);
+    return acts === spec2.actions ? spec2 : { ...spec2, actions: acts };
   }
   if (state.map?.dragon?.id === c.id) return DATA.yuva;
   return null;
@@ -139,7 +148,8 @@ export function legendaryEvents(state: BattleState, endedId: string, rng: Rng): 
     for (const a of order) {
       if (a.oncePerTurn && b.legendaryUsed?.includes(a.id)) continue;
       if (a.kind === 'rays') {
-        const t = foes.find((f) => distance(f.pos as Offset, b.pos as Offset) * 5 <= (a.rangeFt ?? 120) && canSee(cur, b, f));
+        const pool = a.target === 'far' ? [...foes].reverse() : foes;
+        const t = pool.find((f) => distance(f.pos as Offset, b.pos as Offset) * 5 <= (a.rangeFt ?? 120) && canSee(cur, b, f));
         if (!t) continue;
         done = rayEvents(cur, b, a, t, rng); used = a; break;
       }
@@ -339,6 +349,7 @@ export function k19Legendary(s: BattleState, b: Combatant, a: LegendaryAction, f
     }
     return out.length > moved.length ? out : [];
   }
+  if (a.kind === 'heal' || a.kind === 'seal' || a.kind === 'pull') return k109LegendaryEvents(s, b, a, foes, rng);
   if (a.kind === 'drain') {
     // Psychic Drain: Charmed ya da Grappled bir yaratık varsa 1d10 HP (Consume Memories).
     const has = Object.values(s.combatants).some((c) => c.side !== b.side && c.hp > 0 && (a.needs ?? []).some((n) => c.conditions.includes(n)));
@@ -421,7 +432,7 @@ export function legendarySave(s: BattleState, b: Combatant, a: LegendaryAction, 
     const t = s.combatants[e.targetId];
     if (!t || (a.skipTypes ?? []).includes(t.creatureType ?? '')) continue;
     if ((e.targetHpAfter ?? 1) <= 0) continue;
-    const until = a.minute ? s.round + 10 : s.round + 1;
+    const until = a.rounds ? s.round + a.rounds : a.minute ? s.round + 10 : s.round + 1;
     const fx: Partial<ActiveEffect> = { ...(a.effect ?? {}) };
     if (a.conditions?.length) fx.grants = a.conditions;
     if (a.banish) fx.banished = true as never;

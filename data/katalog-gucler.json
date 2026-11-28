@@ -188,6 +188,32 @@
    },
    "hedefSayisi": {
     "Void-Lightning Strike": 3
+   },
+   "alanBirak": {
+    "Uçurum Zehir Mürekkebi": {
+     "alanlar": [
+      {
+       "name": "Uçurum Mürekkebi",
+       "rounds": 10,
+       "spec": {
+        "on": [
+         "start"
+        ],
+        "save": "con",
+        "conditions": [
+         "Blinded",
+         "Poisoned"
+        ],
+        "obscured": "heavy",
+        "silence": true,
+        "hold": "turn",
+        "targets": "enemies",
+        "color": "#1d1b2e",
+        "icon": "🦑"
+       }
+      }
+     ]
+    }
    }
   },
   "ocean-nightmare": {
@@ -338,6 +364,31 @@
    },
    "pasif": {
     "freeMove": true
+   },
+   "alanBirak": {
+    "Ink Cloud": {
+     "alanlar": [
+      {
+       "name": "Mürekkep Bulutu",
+       "rounds": 10,
+       "spec": {
+        "on": [
+         "start"
+        ],
+        "save": "con",
+        "conditions": [
+         "Blinded",
+         "Poisoned"
+        ],
+        "obscured": "heavy",
+        "hold": "turn",
+        "targets": "enemies",
+        "color": "#1d1b2e",
+        "icon": "🦑"
+       }
+      }
+     ]
+    }
    }
   },
   "kozmik-anka": {
@@ -420,7 +471,80 @@
       "immuneToResist": true
      }
     }
-   }
+   },
+   "alanBirak": {
+    "Celestial Glide": {
+     "tasi": true,
+     "alanlar": [
+      {
+       "name": "Kozmik Anka Alevi",
+       "rounds": 3,
+       "spec": {
+        "on": [
+         "start"
+        ],
+        "damage": "4d8",
+        "damageType": "fire",
+        "targets": "enemies",
+        "hold": "turn",
+        "color": "#ff8a3d",
+        "icon": "🔥"
+       }
+      },
+      {
+       "name": "Kozmik Anka Alevi (şifa)",
+       "rounds": 3,
+       "spec": {
+        "on": [
+         "start"
+        ],
+        "heal": "3d8+10",
+        "targets": "allies",
+        "hold": "turn",
+        "color": "#ffd27a",
+        "icon": "✨"
+       }
+      }
+     ]
+    },
+    "Köz Kanat Çırpışı": {
+     "karanlikSil": true
+    }
+   },
+   "efsanevi": [
+    {
+     "id": "seal-melting-talon",
+     "add": {
+      "tr": "Mühür Eriten Pençe",
+      "en": "Seal-Melting Talon",
+      "kind": "seal",
+      "rangeFt": 10,
+      "oncePerTurn": true
+     }
+    },
+    {
+     "id": "star-tear",
+     "add": {
+      "tr": "Yıldız Gözyaşı",
+      "en": "Star Tear",
+      "kind": "heal",
+      "rangeFt": 60,
+      "dice": "6d10+10",
+      "cleanse": [
+       "Blinded",
+       "Charmed",
+       "Deafened",
+       "Frightened",
+       "Paralyzed",
+       "Poisoned",
+       "Restrained",
+       "Stunned",
+       "Grappled"
+      ],
+      "oncePerTurn": true
+     }
+    }
+   ]
   },
   "kozmik-anka-savas": {
    "auralar": [
@@ -502,7 +626,80 @@
       "immuneToResist": true
      }
     }
-   }
+   },
+   "alanBirak": {
+    "Celestial Glide": {
+     "tasi": true,
+     "alanlar": [
+      {
+       "name": "Kozmik Anka Alevi",
+       "rounds": 3,
+       "spec": {
+        "on": [
+         "start"
+        ],
+        "damage": "4d8",
+        "damageType": "fire",
+        "targets": "enemies",
+        "hold": "turn",
+        "color": "#ff8a3d",
+        "icon": "🔥"
+       }
+      },
+      {
+       "name": "Kozmik Anka Alevi (şifa)",
+       "rounds": 3,
+       "spec": {
+        "on": [
+         "start"
+        ],
+        "heal": "3d8+10",
+        "targets": "allies",
+        "hold": "turn",
+        "color": "#ffd27a",
+        "icon": "✨"
+       }
+      }
+     ]
+    },
+    "Köz Kanat Çırpışı": {
+     "karanlikSil": true
+    }
+   },
+   "efsanevi": [
+    {
+     "id": "seal-melting-talon",
+     "add": {
+      "tr": "Mühür Eriten Pençe",
+      "en": "Seal-Melting Talon",
+      "kind": "seal",
+      "rangeFt": 10,
+      "oncePerTurn": true
+     }
+    },
+    {
+     "id": "star-tear",
+     "add": {
+      "tr": "Yıldız Gözyaşı",
+      "en": "Star Tear",
+      "kind": "heal",
+      "rangeFt": 60,
+      "dice": "6d10+10",
+      "cleanse": [
+       "Blinded",
+       "Charmed",
+       "Deafened",
+       "Frightened",
+       "Paralyzed",
+       "Poisoned",
+       "Restrained",
+       "Stunned",
+       "Grappled"
+      ],
+      "oncePerTurn": true
+     }
+    }
+   ]
   },
   "dragon-of-hexonia-a": {
    "auralar": [
@@ -742,7 +939,43 @@
       }
      }
     }
-   }
+   },
+   "yetenekler": {
+    "sulphur-deluge": {
+     "minute": false,
+     "rounds": 3
+    }
+   },
+   "alanBirak": {
+    "sulphur-deluge": {
+     "alanlar": [
+      {
+       "name": "Sülfür Gölü",
+       "rounds": 3,
+       "spec": {
+        "on": [
+         "start",
+         "enter"
+        ],
+        "damage": "2d6",
+        "damageType": "acid",
+        "targets": "all",
+        "hold": "turn",
+        "color": "#7a9a2a",
+        "icon": "🧪"
+       }
+      }
+     ]
+    }
+   },
+   "efsanevi": [
+    {
+     "id": "acid-spit",
+     "patch": {
+      "target": "far"
+     }
+    }
+   ]
   },
   "cimbombom": {
    "ekler": {
@@ -761,7 +994,23 @@
      },
      "tur": "süre"
     }
-   }
+   },
+   "alanBirak": {
+    "molten-anvil-burst": {
+     "yuzey": {
+      "kind": "fire",
+      "rounds": 2
+     }
+    }
+   },
+   "efsanevi": [
+    {
+     "id": "flame-spit",
+     "patch": {
+      "target": "far"
+     }
+    }
+   ]
   },
   "wolfgang": {
    "ekler": {
@@ -773,7 +1022,23 @@
      },
      "tur": "hız"
     }
-   }
+   },
+   "alanBirak": {
+    "rime-breath": {
+     "yuzey": {
+      "kind": "ice",
+      "rounds": 3
+     }
+    }
+   },
+   "efsanevi": [
+    {
+     "id": "ice-spear",
+     "patch": {
+      "target": "far"
+     }
+    }
+   ]
   },
   "cerbones": {
    "ekler": {
@@ -805,7 +1070,15 @@
      "hitDie": "1d8",
      "hitType": "necrotic"
     }
-   }
+   },
+   "efsanevi": [
+    {
+     "id": "black-spark",
+     "patch": {
+      "target": "far"
+     }
+    }
+   ]
   },
   "mothraq": {
    "pasif": {
@@ -816,21 +1089,66 @@
       ]
      }
     }
-   }
+   },
+   "alanBirak": {
+    "plague-cloud": {
+     "yuzey": {
+      "kind": "poison",
+      "rounds": 10
+     }
+    }
+   },
+   "efsanevi": [
+    {
+     "id": "venom-needle",
+     "patch": {
+      "target": "far"
+     }
+    }
+   ]
   },
   "gongar": {
    "pasif": {
     "k109": {
      "forcedImmune": true
     }
-   }
+   },
+   "efsanevi": [
+    {
+     "id": "echo-shot",
+     "patch": {
+      "target": "far"
+     }
+    }
+   ]
   },
   "kongark": {
    "pasif": {
     "k109": {
      "forcedImmune": true
     }
-   }
+   },
+   "yetenekler": {
+    "star-collapse": {
+     "pre": {
+      "kind": "pull",
+      "rangeFt": 30,
+      "pullFt": 15,
+      "save": {
+       "ability": "str",
+       "dc": 16
+      }
+     }
+    }
+   },
+   "efsanevi": [
+    {
+     "id": "void-stone",
+     "patch": {
+      "target": "far"
+     }
+    }
+   ]
   },
   "tutsak-dragon": {
    "ekler": {
@@ -856,7 +1174,52 @@
       "type": "thunder"
      }
     ]
-   }
+   },
+   "alanBirak": {
+    "Continent Roar Breath": {
+     "alanlar": [
+      {
+       "name": "Çatlak Kaya",
+       "rounds": 100000,
+       "spec": {
+        "difficult": 2,
+        "targets": "all",
+        "color": "#6b5a3a",
+        "icon": "🪨"
+       }
+      }
+     ]
+    }
+   },
+   "efsanevi": [
+    {
+     "id": "seal-pull",
+     "add": {
+      "tr": "Mühür Çekimi",
+      "en": "Seal Pull",
+      "kind": "pull",
+      "save": "str",
+      "dc": 25,
+      "rangeFt": 30,
+      "pullFt": 30,
+      "needsItem": [
+       "cracked-elemental-stone",
+       "awakened-elemental-stone",
+       "ember-core",
+       "frost-heart",
+       "storm-spire",
+       "resonance-seal",
+       "dissolution-drop",
+       "venom-essence",
+       "blinding-sun-shard",
+       "sepulcher-orb",
+       "whisper-crystal",
+       "void-fracture"
+      ],
+      "oncePerTurn": true
+     }
+    }
+   ]
   },
   "omeglet": {
    "ekler": {
@@ -1014,6 +1377,97 @@
      "tur": "nefes"
     }
    }
+  },
+  "stormer": {
+   "alanBirak": {
+    "sky-spear": {
+     "yuzey": {
+      "kind": "water",
+      "rounds": 3
+     }
+    }
+   },
+   "efsanevi": [
+    {
+     "id": "chain-lightning",
+     "patch": {
+      "target": "far"
+     }
+    }
+   ]
+  },
+  "lightaur": {
+   "yetenekler": {
+    "golden-judgment": {
+     "area": {
+      "shape": "cylinder",
+      "sizeFt": 20,
+      "origin": "point",
+      "rangeFt": 60,
+      "heightFt": 40
+     }
+    }
+   },
+   "alanBirak": {
+    "golden-judgment": {
+     "karanlikSil": true
+    }
+   },
+   "efsanevi": [
+    {
+     "id": "ray-spear",
+     "patch": {
+      "target": "far"
+     }
+    }
+   ]
+  },
+  "mirage": {
+   "efsanevi": [
+    {
+     "id": "mind-needle",
+     "patch": {
+      "target": "far"
+     }
+    }
+   ],
+   "yetenekEkle": [
+    {
+     "id": "misty-step",
+     "tr": "Misty Step",
+     "en": "Misty Step",
+     "cost": "bonus",
+     "kind": "teleport",
+     "ft": 30,
+     "toward": true,
+     "uses": 3
+    },
+    {
+     "id": "false-shadow",
+     "tr": "Sahte Gölge",
+     "en": "False Shadow",
+     "cost": "action",
+     "kind": "summon",
+     "monster": "shadow",
+     "count": 2,
+     "adjacent": true,
+     "uses": 1
+    }
+   ]
+  },
+  "mirath": {
+   "yetenekEkle": [
+    {
+     "id": "misty-step",
+     "tr": "Misty Step",
+     "en": "Misty Step",
+     "cost": "bonus",
+     "kind": "teleport",
+     "ft": 30,
+     "toward": true,
+     "uses": 1
+    }
+   ]
   }
  }
 }
