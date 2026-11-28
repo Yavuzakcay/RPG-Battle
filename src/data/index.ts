@@ -1,3 +1,4 @@
+import { setSocketImpl } from '../rules/socketHook';
 import racesJson from '../../data/races.json';
 import classesJson from '../../data/classes.json';
 import armorJson from '../../data/armor.json';
@@ -139,8 +140,11 @@ export function loadClassData(): Promise<void> {
     import('../../data/aciklamalar-en.json'), import('../../data/items-katalog.json'),
     // Görev MC3: çoklu sınıf hesapları ve `data/cok-sinif.json` tembel parçada (ana parça sınırı); tek sınıflı yol çağırmaz.
     import('../rules/mcImpl'),
-  ]).then(([p, m, f, w, sc, s45, isrd, s69, kd, imza, s03, bet, atr, aen, ikat, mci]) => {
+    // Görev KATALOG-GUC-TAM D: mühür taşı yuva kuralı (tembel parça).
+    import('../rules/sockets'),
+  ]).then(([p, m, f, w, sc, s45, isrd, s69, kd, imza, s03, bet, atr, aen, ikat, mci, sock]) => {
     setMcImpl(mci.MC_IMPL);
+    setSocketImpl({ isStone: sock.isStone, socketItemNames: sock.socketItemNames });
     if (classDataLoaded()) return;
     // Kuyruk B2: büyü betimlemeleri (yalnız görünüm; ana parçaya girmez, sınıf verisiyle tembel gelir).
     const { _aciklama: _a, ...descriptions } = bet.default as unknown as SpellDescriptions & { _aciklama?: unknown };

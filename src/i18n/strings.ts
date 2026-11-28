@@ -238,6 +238,9 @@ const tr = {
       attuneCount: (n: number, max: number) => `Uyumlu eşya ${n}/${max}`,
       attuneInfo: (max: number) => `Bazı sihirli eşyalar "uyum" ister (Attunement): aynı anda en çok ${max} tanesine uyum sağlayabilirsin. Uyum istemeyen eşyaların sayı sınırı yok.`,
       attuneFull: (max: number) => `Uyum doldu (${max}/${max}): yeni uyumlu eşya için birini çıkar.`, attuneTag: 'uyum ister',
+      // Görev KATALOG-GUC-TAM D: mühür taşı yuvaları.
+      sockets: 'Yuvalar', socketsSum: (n: number, max: number) => `${n}/${max} taş`, socketEmpty: 'Boş yuva', socketSlot: (i: number) => `Yuva ${i}`,
+      socketTier: (t: number) => `kademe ${t}`, socketPermanent: 'kalıcı kaynaşma (sökülemez)', socketNone: 'Yuva taşıyan zırh, kalkan ya da cübbe yok.', socketInfo: 'Mühür taşı yuvaya takılınca etkisini zırhı giyene verir; yuvada olmayan taş etkisizdir. Sv.1 zırh ve kalkana, Sv.2 nadir ve üstü zırh/kalkan/cübbeye, Sv.3 yalnız Kaltakkıran\'ın Paladin Zırhı ve Koruyucu Ejderha Mührü\'ne.',
       boundWeapon: 'Bağlı silah', boundMain: (w: string) => `ana silah (${w})`, boundNone: 'Uygun silah yok: eşyanın bonusu savaşta işlemez (önce uygun silah ekle).',
       offHandShort: 'İki hafif silahla ek bir vuruş yaparsın (bonus eylem).',
       autoUnarmed: 'Silahsız vuruş', autoUnarmedText: 'Elini kullanırsın: 1 + Güç hasarı. Her zaman hazır.',

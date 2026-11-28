@@ -23,6 +23,8 @@ import { Fold, InfoPop, toggle } from './shared';
 import { GlyphBadges, GlyphText } from '../../ui/glyph/Glyph';
 import { itemGlyphs } from '../../ui/glyph/glyphs';
 import { RecoBar, RecoTag, useRecoSets } from './Reco';
+import { SocketPanel } from './Sockets';
+import { isStone } from '../../rules/sockets';
 import type { Item } from '../../data';
 
 /** Ortak simgeler (glif): eşya özeti ham SRD metnine (`it.text`) düşmediyse simgeli; düştüyse metin aynen. */
@@ -238,6 +240,8 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
             ))}
           </ul>
           {attuneFull && <p className="mute limit-note">{W.attuneFull(MAX_ATTUNED)}</p>}
+          {/* Görev KATALOG-GUC-TAM D: mühür taşı yuvaları. */}
+          <SocketPanel sheet={s} set={set} />
           <Fold title={W.addItem} summary={`(${items.length})`} className="eq-add">
             <input className="item-filter" type="search" placeholder={W.itemFilter} value={itemQ} onChange={(e: { target: { value: string } }) => setItemQ(e.target.value)} />
             {/* Kuyruk K49 B6: türe ve etki seviyesine göre çip süzgeçleri; seçili eşya yukarıda görünür. */}
@@ -250,7 +254,8 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
               {ITEM_TIERS.map((k) => <button key={k} type="button" className={`chip tier-${k}${tierF === k ? ' on' : ''}`} aria-pressed={tierF === k} onClick={() => setTierF(tierF === k ? null : k)}>{W.itemTiers[k]}</button>)}
             </div>
             {ITEM_KINDS.filter((k) => !kindF || kindF === k).map((k) => {
-              const all = items.filter((it) => itemKind(it) === k);
+              // Görev KATALOG-GUC-TAM D: mühür taşları yalnız yuvadan takılır (gevşek taş etkisiz), eşya listesinde yok.
+              const all = items.filter((it) => itemKind(it) === k && !isStone(it.id));
               const list = all.filter((it) => !s.itemNames.includes(it.name) && (!tierF || itemTier(it) === tierF)
                 && (!itemQ || it.name.toLowerCase().includes(itemQ.toLowerCase())));
               if (!list.length) return null;

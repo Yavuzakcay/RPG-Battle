@@ -240,5 +240,10 @@ export function damageProfile(t: Combatant): { resistances: string[]; immunities
     vulnerabilities: t.effects?.some((e) => e.vulnerable?.length) ? [...new Set([...t.vulnerabilities, ...(t.effects ?? []).flatMap((e) => e.vulnerable ?? [])])] : t.vulnerabilities,
     // Kuyruk 19 (srdK19 canavar yetenekleri): emilen hasar türleri (iyileştirir).
     ...(t.effects?.some((e) => e.absorb?.length) ? { absorb: (t.effects ?? []).flatMap((e) => e.absorb ?? []) } : {}),
+    // Görev KATALOG-GUC-TAM D: yuvadaki Çatlak Element Taşı (türe sabit −3; aynı türde en büyüğü).
+    ...(t.effects?.some((e) => e.k109?.flatReduce) ? { flat: (t.effects ?? []).reduce<Record<string, number>>((o, e) => {
+      for (const [k, v] of Object.entries(e.k109?.flatReduce ?? {})) o[k] = Math.max(o[k] ?? 0, v);
+      return o;
+    }, {}) } : {}),
   };
 }

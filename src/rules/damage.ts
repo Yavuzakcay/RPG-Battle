@@ -8,6 +8,8 @@ export interface DamageProfile {
   absorb?: string[];
   /** GENEL96 (sürüm 96+; SRD 5.2.1 s. 17 Order of Application): önce direnç, sonra zayıflık (ikisi birden: yarı, sonra iki kat). */
   srdOrder?: boolean;
+  /** Görev KATALOG-GUC-TAM D: türe sabit azaltma (Çatlak Element Taşı −3; en az 0), direnç/zayıflıktan sonra. */
+  flat?: Record<string, number>;
 }
 
 /** Kuyruk 19: `absorbed` (Fire/Lightning/Acid Absorption): hasar yerine o kadar HP (miktar eksi). */
@@ -26,6 +28,11 @@ export function adjustDamage(
   if (t === '') return { amount, note: null };
   if (has(profile.absorb, t)) return { amount: -amount, note: 'absorbed' };
   if (has(profile.immunities, t)) return { amount: 0, note: 'immune' };
+  const fl = profile.flat?.[t] ?? 0;
+  if (fl > 0) {
+    const r = adjustDamage(amount, type, { ...profile, flat: undefined });
+    return r.amount > 0 ? { amount: Math.max(0, r.amount - fl), note: r.note } : r;
+  }
   if (has(profile.vulnerabilities, t)) {
     // GENEL96 (sürüm 96+): aynı türe direnç de varsa önce yarıya iner, sonra ikiye katlanır (10 → 5 → 10). 95 ve altı: ×2.
     const base = profile.srdOrder && has(profile.resistances, t) ? Math.floor(amount / 2) : amount;

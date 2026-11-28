@@ -1,4 +1,5 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
+import { socketParts } from '../rules/sockets';
 import { soulBondSetup } from './katalog109Ozel';
 import { KARAR104_VERSION } from './karar104Surum';
 import { bindableItem, boundWeaponId } from '../rules/itemBinding';
@@ -182,10 +183,21 @@ export function combatantFromSheet(
   sheet: CharacterSheet,
   opts: { id: string; ownerId: string; height?: Height; carryRule?: CarryRule },
 ): Combatant {
-  if (!isMultiSheet(sheet)) return combatantFromSheet0(sheet, opts);
-  // Görev MC3: kural sürümü 104 ve altında çoklu sınıflı sayfa MC öncesi gibi (ilk sınıf + toplam seviye); 105+ büyü parçaları.
-  if (defaultRuleVersion() < MC3_VERSION) { const { classes: _c, spellClass: _s, ...old } = sheet; return combatantFromSheet0(old, opts); }
-  return mcCombatant(combatantFromSheet0(sheet, opts), sheet);
+  return withSockets(sheet, ((): Combatant => {
+    if (!isMultiSheet(sheet)) return combatantFromSheet0(sheet, opts);
+    // Görev MC3: kural sürümü 104 ve altında çoklu sınıflı sayfa MC öncesi gibi (ilk sınıf + toplam seviye); 105+ büyü parçaları.
+    if (defaultRuleVersion() < MC3_VERSION) { const { classes: _c, spellClass: _s, ...old } = sheet; return combatantFromSheet0(old, opts); }
+    return mcCombatant(combatantFromSheet0(sheet, opts), sheet);
+  })());
+}
+
+/** Görev KATALOG-GUC-TAM D: yuvadaki mühür taşlarının etkileri ve Hükümdar Vuruşu (yuva yoksa aynen). */
+function withSockets(sheet: CharacterSheet, c: Combatant): Combatant {
+  if (!sheet.yuvalar) return c;
+  const sk = socketParts(sheet);
+  if (!sk.effects.length && !sk.hits.length) return c;
+  return { ...c, effects: [...(c.effects ?? []), ...sk.effects.map((e) => ({ ...e, sourceId: c.id }) as unknown as ActiveEffect)],
+    ...(sk.hits.length ? { itemHits: [...(c.itemHits ?? []), ...sk.hits] } : {}) };
 }
 
 function combatantFromSheet0(

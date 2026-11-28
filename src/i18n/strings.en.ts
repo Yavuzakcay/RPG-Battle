@@ -288,7 +288,7 @@ export const en: Strings = {
       katNadirlik: { olagandisi: 'Uncommon', nadir: 'Rare', cokNadir: 'Very Rare', efsanevi: 'Legendary', yadigar: 'Artifact' } as Record<string, string>,
       katDurum: { calisir: 'works', kismi: 'partly works', planli: 'planned (not in the game yet)', calismiyor: 'not working' } as Record<string, string>,
       katKaynak: (ref: string) => `Dice & Hex original item catalog (${ref})`, priceless: 'Cannot be sold / priceless',
-      muhur: { kademe: 'Tier', ruh: 'Seal Spirit', tier: { 1: 'Tier 1 · Cracked Stone', 2: 'Tier 2 · Awakened Stone', 3: 'Tier 3 · Boss Stone' } as Record<number, string> },
+      muhur: { kademe: 'Tier', ruh: 'Seal Spirit', socket: 'Socketable', hosts: { zirh: 'armor', kalkan: 'shield', cubbe: 'robe (rare+)', ozel: "Kaltakkiran's Paladin Armor, Guardian Dragon Sigil" } as Record<string, string>, tier: { 1: 'Tier 1 · Cracked Stone', 2: 'Tier 2 · Awakened Stone', 3: 'Tier 3 · Boss Stone' } as Record<number, string> },
       v: {
         dexMod: 'DEX', dexMax: (n: number) => `DEX (max ${n})`, shield: (n: number) => `+${n} (shield)`,
         minutes: (a: number, b: number) => `${a} min to don, ${b} min to doff`, stealthDis: 'Disadvantage on Dexterity (Stealth) checks',
@@ -626,6 +626,8 @@ export const en: Strings = {
       attuneCount: (n: number, max: number) => `Attuned items ${n}/${max}`,
       attuneInfo: (max: number) => `Some magic items need "attunement": you can attune to at most ${max} at a time. Items that need no attunement have no limit.`,
       attuneFull: (max: number) => `Attunement full (${max}/${max}): remove one to add another attuned item.`, attuneTag: 'needs attunement',
+      sockets: 'Sockets', socketsSum: (n: number, max: number) => `${n}/${max} stones`, socketEmpty: 'Empty socket', socketSlot: (i: number) => `Socket ${i}`,
+      socketTier: (t: number) => `tier ${t}`, socketPermanent: 'permanent fusion (cannot be removed)', socketNone: 'No armor, shield or robe with sockets.', socketInfo: 'A seal stone grants its effect to the wearer only while set in a socket; a loose stone does nothing. Tier 1 goes into armor and shields, tier 2 into rare or better armor/shields/robes, tier 3 only into Kaltakkiran\'s Paladin Armor and the Guardian Dragon Sigil.',
       boundWeapon: 'Bound weapon', boundMain: (w: string) => `main weapon (${w})`, boundNone: 'No suitable weapon: the item’s bonus does not apply in battle (add a suitable weapon first).',
       offHandShort: 'With two light weapons you get an extra strike (bonus action).',
       autoUnarmed: 'Unarmed strike', autoUnarmedText: 'You use your hand: 1 + Strength damage. Always ready.',

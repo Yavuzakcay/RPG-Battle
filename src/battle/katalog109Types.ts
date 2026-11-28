@@ -39,6 +39,8 @@ export interface K109Fx {
   sizeTo?: 'T' | 'S' | 'M' | 'L' | 'H' | 'G';
   /** Ember Egg: bu kimliğin yeniden doğuş yumurtası. */
   eggOf?: string;
+  /** Türe sabit hasar azaltma (yuvadaki Çatlak Element Taşı). */
+  flatReduce?: Record<string, number>;
   /** Uçuş hızı çarpanı (Groggy Veil). */
   flyMult?: number;
   /** Dirençler bu etki süresince yok (Delta Yetişkin nefesi). */
