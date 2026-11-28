@@ -11,7 +11,7 @@ import type { Rng } from '../rules/dice';
 import type { JourneyState } from '../journey/types';
 import { linkById, nodeKapiAt, nodeKey, nodeStop, pageById, toggleOn, type HapisBulgu, type SeruvenCommand, type SeruvenNode, type SeruvenState } from '../journey/seruven';
 import { HAPIS, confiscated, sucById } from '../journey/hapishane';
-import { combatantFromMonster, type Combatant } from '../battle';
+import { combatantFromMonster, sheetFoe, type Combatant } from '../battle';
 import { getMonster } from '../data';
 import { prisonerOutfit } from '../battle/avatar';
 import { DEFAULT_LEVEL, SCENARIOS, enemiesAt } from '../sim/balance';
@@ -22,6 +22,7 @@ import { GM_CONTEXT, dispatch } from '../ui/session';
 import { battleResultCommand, stopParticipants } from './journeyBattle';
 import { kapiAt, varis, yerlesimById, yerlesimHarita } from '../yerlesim/yerlesim';
 import { createMapBattle } from './setup';
+import { combatantCr } from './sheetFoe';
 import type { Session } from '../ui/session';
 
 /** Boss savaşlarının senaryoları (`data/sim-boss.json`): üreteç almaz. */
@@ -45,8 +46,10 @@ export function seruvenEnemies(s: SeruvenState, scenarioId: string, ozel: boolea
  * eski bir savaş eski listesiyle sürer, XP de o listeden gelir (düğümün yeni planından değil).
  */
 export function battleEnemyXp(final: BattleState): number {
-  return Object.values(final.combatants).filter((c) => c.side === 'enemies' && c.monsterId && !c.summon && !c.civilian)
+  const monsters = Object.values(final.combatants).filter((c) => c.side === 'enemies' && c.monsterId && !c.summon && !c.civilian)
     .reduce((n, c) => { try { return n + crXp(getMonster(c.monsterId as string).cr); } catch { return n; } }, 0);
+  // Görev DUSMAN-KAGIT-1: karakter kâğıdından düşmanlar (CR tahmini, `combatantCr`).
+  return monsters + Object.values(final.combatants).filter(sheetFoe).reduce((n, c) => n + crXp(combatantCr(c).cr), 0);
 }
 
 /** Kuyruk K48: Moral tam modu (Serüven anahtarları `moralSistemi` + `moralTam`) savaşta ev kuralı `moralSistemi`. */

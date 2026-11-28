@@ -14,6 +14,8 @@ import { currentStop } from '../journey/engine';
 import type { JourneyCommand, JourneyState } from '../journey/types';
 import { applyBattleResult, withStatus } from './partyStatus';
 import { createMapBattle } from './setup';
+import { KAGIT_PREFIX, isKagitKey, kagitCr, kagitKaydi, sheetFoeCombatant } from './sheetFoe';
+import { crXp } from '../journey/encounter';
 import type { Session } from '../ui/session';
 
 /** Savaşa girebilen üyeler (ölü ve 0 HP'deki savaşamaz). */
@@ -28,9 +30,19 @@ export function stopParticipants(j: JourneyState): { participants: Combatant[]; 
   const foes: Combatant[] = [];
   const list = stop?.enemies ?? enemiesAt(scenario, j.level);
   for (const [id, n] of Object.entries(list)) {
+    // Görev DUSMAN-KAGIT-1: `kagit:<kimlik>` anahtarı karakter kâğıdından düşman (`data/kagit-dusmanlar.json`; kayıt yoksa atlanır).
+    if (isKagitKey(id)) {
+      const k = kagitKaydi(id);
+      for (let i = 1; k && i <= n; i++) foes.push(sheetFoeCombatant(k.sheet, { id: `${id.slice(KAGIT_PREFIX.length)}-${i}`, name: n > 1 ? `${k.sheet.name} ${i}` : k.sheet.name }));
+      continue;
+    }
     for (let i = 1; i <= n; i++) foes.push(combatantFromMonster(getMonster(id), { id: `${id}-${i}`, name: n > 1 ? `${getMonster(id).name} ${i}` : getMonster(id).name }));
   }
-  const xp = stop?.enemies ? scenarioXp({ ...scenario, enemies: list, byLevel: { [j.level]: list } }, j.level) : scenarioXp(scenario, j.level);
+  // Kâğıt anahtarı yoksa XP eskisi gibi; varsa canavarlar eski yoldan, kâğıtlar CR tahmininden.
+  const kagit = Object.entries(list).filter(([id]) => isKagitKey(id));
+  const monsters = kagit.length ? Object.fromEntries(Object.entries(list).filter(([id]) => !isKagitKey(id))) : list;
+  const kagitXp = kagit.reduce((n, [id, k]) => n + crXp(kagitCr(id) ?? '0') * (kagitKaydi(id) ? k : 0), 0);
+  const xp = (stop?.enemies || kagit.length ? scenarioXp({ ...scenario, enemies: monsters, byLevel: { [j.level]: monsters } }, j.level) : scenarioXp(scenario, j.level)) + kagitXp;
   return { participants: [...party, ...foes], scenario, xp };
 }
 

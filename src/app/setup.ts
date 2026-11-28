@@ -8,6 +8,7 @@ import type { CarryRule } from '../rules/carry';
 import { CUSTOM_ATTACK_MAX, CUSTOM_NAME_MAX, MAX_PARTY } from './limits';
 import { CR_STEPS, estimateCr, type CrEstimate } from '../rules/crEstimate';
 import { withStatus } from './partyStatus';
+import { sheetFoeCombatant } from './sheetFoe';
 import type { CharacterStatus } from '../rules/characterRest';
 import { combatantFromMonster, combatantFromSheet, defaultRuleVersion, startBattle, type BattleEvent, type BattleState, type Combatant } from '../battle';
 import type { Monster } from '../data';
@@ -93,6 +94,11 @@ export interface BattlePlan {
   party: Array<{ id: string; sheet: CharacterSheet; status?: CharacterStatus }>;
   /** Düşmanlar: canavar ve adedi. */
   enemies: Array<{ monster: Monster; count: number }>;
+  /**
+   * Görev DUSMAN-KAGIT-1: karakter kâğıdından düşmanlar (`id` kayıtlı karakterin kimliği: partiyle çakışma denetimi).
+   * Savaşçı kâğıdın tam kopyası; savaş sonu karaktere yazılmaz.
+   */
+  sheetEnemies?: Array<{ id: string; sheet: CharacterSheet; count?: number }>;
   mapId: string;
   variantId: string;
   /** Kuyruk 19: yalnızca eski kurulumlar (kural sürümü < 16); yeni savaşta yok sayılır. */
@@ -185,7 +191,9 @@ export function planProblems(plan: BattlePlan): string[] {
   const out: string[] = [];
   if (plan.party.length === 0) out.push('En az bir oyuncu karakteri seçilmeli.');
   if (plan.party.length > MAX_PARTY) out.push(`Partide en fazla ${MAX_PARTY} karakter olabilir.`);
-  const foes = plan.enemies.reduce((n, e) => n + e.count, 0);
+  const foes = plan.enemies.reduce((n, e) => n + e.count, 0) + (plan.sheetEnemies ?? []).reduce((n, e) => n + (e.count ?? 1), 0);
+  // Görev DUSMAN-KAGIT-1: aynı karakter aynı savaşta hem partide hem düşman olamaz.
+  for (const e of plan.sheetEnemies ?? []) if (plan.party.some((p) => p.id === e.id)) out.push(`${e.sheet.name} hem partide hem düşman olamaz.`);
   if (foes === 0) out.push('En az bir düşman seçilmeli.');
   // Görev KATALOG-GUC-TAM: yalnız dost katalog yaratığı (Dragon of Hexonia) düşman olamaz.
   for (const e of plan.enemies) if (e.monster?.id && allyOnlyMonster(e.monster.id)) out.push(`${e.monster.name} yalnız dost olabilir, düşman seçilemez.`);
@@ -208,6 +216,14 @@ export function planParticipants(plan: BattlePlan): Combatant[] {
     for (let i = 1; i <= e.count; i++) {
       const n = enemies.length + 1;
       enemies.push(combatantFromMonster(e.monster, { id: `foe${n}`, name: e.count > 1 ? `${e.monster.name} ${i}` : e.monster.name }));
+    }
+  }
+  // Görev DUSMAN-KAGIT-1: kâğıt düşmanlar canavarlardan sonra, aynı numaralamayla (kayıtlı durumu değil, tam kopya).
+  for (const e of plan.sheetEnemies ?? []) {
+    const count = e.count ?? 1;
+    for (let i = 1; i <= count; i++) {
+      const n = enemies.length + 1;
+      enemies.push(sheetFoeCombatant(e.sheet, { id: `foe${n}`, name: count > 1 ? `${e.sheet.name} ${i}` : e.sheet.name, ...(plan.carryRule ? { carryRule: plan.carryRule } : {}) }));
     }
   }
   return [...party, ...enemies];

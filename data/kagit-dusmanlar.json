@@ -1,0 +1,4 @@
+{
+  "aciklama": "Görev DUSMAN-KAGIT-1: Serüven ve sefer düşman listelerinin `kagit:<kimlik>` anahtarıyla başvurduğu karakter kâğıtları (CharacterSheet). Kod hiçbir kimliği bilmez; boss ve rakip parti kâğıtları buraya veri olarak eklenir. Kayıt: { \"sheet\": CharacterSheet, \"cr\"?: \"<CR>\" } (cr yoksa tahmin).",
+  "kagitlar": {}
+}
