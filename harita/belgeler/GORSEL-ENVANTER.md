@@ -24,7 +24,7 @@
 | Zar teması | 72 | 63 | 0 | 9 | ikon 63, yedek 9 |
 | **Toplam** | **1955** | **1613** | **114** | **228** | |
 
-Dungeondex denetimi: Dungeondex'in 1804 kaydının hepsi eşlemede, her `ref` çözülüyor (public/ dosyası ya da `yedekler` anahtarı): sorun 0. CSV 268 satır.
+Dungeondex denetimi: Dungeondex'in 1804 kaydının hepsi eşlemede, her `ref` çözülüyor (public/ dosyası ya da `yedekler` anahtarı): sorun 0. CSV 267 satır.
 
 ## Eksik ve düzeltilecek
 

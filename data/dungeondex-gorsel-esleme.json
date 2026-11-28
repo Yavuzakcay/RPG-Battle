@@ -1573,7 +1573,7 @@
     "tutsak-dragon": {"kaynak":"jeton","ref":"boss/tutsak-dragon.webp","durum":"var","ad":"Captive Dragon"},
     "dragon-of-hexonia-a": {"kaynak":"jeton","ref":"boss/dragon-of-hexonia-a.webp","durum":"var","ad":"Dragon of Hexonia"},
     "kozmik-anka": {"kaynak":"jeton","ref":"boss/kozmik-anka.webp","durum":"var","ad":"Cosmic Phoenix"},
-    "ember-egg": {"kaynak":"yedek","ref":"yedek:nesne","durum":"yedek","ad":"Ember Egg"},
+    "ember-egg": {"kaynak":"yedek","ref":"yedek:nesne","durum":"yedek","ad":"Ember Egg","not":"yumurta: kozmik-anka jetonuna bağlı"},
     "ocean-nightmare": {"kaynak":"jeton","ref":"boss/ocean-nightmare.webp","durum":"var","ad":"Ocean-Nightmare"},
     "ocean-nightmare-open-sea": {"kaynak":"jeton","ref":"boss/ocean-nightmare.webp","durum":"var","ad":"Ocean-Nightmare (Open Sea)"},
     "titan-of-nightmare": {"kaynak":"jeton","ref":"boss/titan-of-nightmare.webp","durum":"var","ad":"Titan of Nightmare"},

@@ -187,6 +187,9 @@ export function itemRows(): GRow[] {
 
 // ───────────────────────── Canavarlar ─────────────────────────
 const SCALE = read<{ scale: Record<string, number>; race: Record<string, number> }>('data/token-sizes.json');
+/** Yeniden doğuş yumurtası → sahibi (`data/katalog-gucler.json` `ozel.rebirth.egg`). */
+const EGG_OF = new Map(Object.entries(read<{ canavarlar: Record<string, { ozel?: { rebirth?: { egg?: string } } }> }>('data/katalog-gucler.json').canavarlar)
+  .filter(([, g]) => g.ozel?.rebirth?.egg).map(([id, g]) => [g.ozel!.rebirth!.egg as string, id] as [string, string]).reverse());
 export interface MonsterInfo { sameAs: Map<string, string[]>; distinct: number; files: number; uyku: string[] }
 export async function monsterRows(): Promise<{ rows: GRow[]; info: MonsterInfo }> {
   const files = ls('public/monsters').filter((f) => f.endsWith('.webp'));
@@ -206,6 +209,8 @@ export async function monsterRows(): Promise<{ rows: GRow[]; info: MonsterInfo }
     const same = (sameAs.get(m.id) ?? []).filter((x) => !x.endsWith('-uyku'));
     const size = m.size ?? 'M';
     const base = { cat: 'canavar', id: m.id, ad: m.name, tur: `canavar ${size} (ölçek ${SCALE.scale[size] ?? 1})` };
+    // GECE-KATALOG-KALAN: yeniden doğuş yumurtası (Ember Egg) kendi yaratığına bağlı (Kozmik Anka); ayrı jeton eksiği sayılmaz.
+    if (!pub(ref) && EGG_OF.has(m.id)) return { ...base, kaynak: 'yedek', ref: 'yedek:nesne', durum: 'yedek', not: `yumurta: ${EGG_OF.get(m.id)} jetonuna bağlı` };
     if (!pub(ref)) return { ...base, kaynak: 'yedek', ref: 'yedek:nesne', durum: 'yedek', eksik: 'jeton görseli yok', oneri: `public/monsters/${m.id}.webp` };
     return { ...base, kaynak: 'jeton', ref, durum: same.length ? 'genel' : 'var',
       ...(same.length ? { eksik: `kendi görseli yok (aynı görüntü: ${same.join(', ')})`, oneri: `public/monsters/${m.id}.webp`, not: `aynı görüntü: ${same.join(', ')}` } : {}) };

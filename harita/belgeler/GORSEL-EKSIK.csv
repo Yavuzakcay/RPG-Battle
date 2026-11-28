@@ -218,7 +218,6 @@ canavar,ancient-green-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı g�
 canavar,ancient-red-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-red-dragon, red-dragon-wyrmling, young-red-dragon)",public/monsters/ancient-red-dragon.webp
 canavar,ancient-silver-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-silver-dragon, silver-dragon-wyrmling, young-silver-dragon)",public/monsters/ancient-silver-dragon.webp
 canavar,ancient-white-dragon,canavar G (ölçek 3),"kendi görseli yok (aynı görüntü: adult-white-dragon, white-dragon-wyrmling, young-white-dragon)",public/monsters/ancient-white-dragon.webp
-canavar,ember-egg,canavar M (ölçek 1),jeton görseli yok,public/monsters/ember-egg.webp
 yuzey,warning,yüzey,sprite yok (renkli altıgen),assets-ham/sprite/yuzey-warning-1.png → public/sprites/yuzey-warning-1.webp
 nesne,chest,harita nesnesi,sprite yok (emoji 🧰),assets-ham/sprite/nesne-chest.png → public/sprites/nesne-chest.webp
 nesne,table,harita nesnesi,sprite yok (emoji 🪑),assets-ham/sprite/nesne-table.png → public/sprites/nesne-table.webp
