@@ -10,6 +10,9 @@
  *   bağlantı kapanır; yanlış anahtarla gelen hiçbir zaman bağlanmaz, başkasının mesajını alamaz.
  * - Host kopunca odadakilere `host_gitti` gider ve oda kapanır (yeniden açma O4). Bağlı oyuncu kopunca host'a
  *   `uye_gitti`.
+ * - Görev ODA-5 (madde 7): hız sınırı. Aynı kaynaktan (soketin `kaynak`ı: uzak adres; yoksa soket) dakikada en çok
+ *   `katilDk` katılım denemesi (6 haneli kodu deneyerek odaya düşmeyi zorlaştırır); fazlasına `hiz` ve kapanış. Bağlantı
+ *   başına saniyede `mesajSn` mesaj (kova `mesajSn × 3`); taşan mesaj atılır, kova üç kez taşarsa bağlantı kapanır.
  */
 import type { OdaMesaji } from './protocol';
 import { MESAJ_AZAMI } from './protocol';
@@ -17,6 +20,8 @@ import type { Rol, Zarf } from './transport';
 
 export interface AktariciSoket {
   readonly id: string;
+  /** Görev ODA-5: hız sınırı anahtarı (node bağlamasında uzak IP adresi). */
+  readonly kaynak?: string;
   gonder(veri: string): void;
   kapat(): void;
 }
@@ -34,26 +39,34 @@ export type SunucuCercevesi =
   | { k: 'z'; z: Zarf }
   | { k: 'uye_gitti'; istemciId: string }
   | { k: 'host_gitti' }
-  | { k: 'degisti' };
+  | { k: 'degisti' }
+  /** Görev ODA-5: hız sınırı aşıldı (bağlantı kapanır). */
+  | { k: 'hiz' };
 
-interface Baglanti { soket: AktariciSoket; oda: string | null; istemciId: string | null; rol: Rol | null; bagli: boolean; kapandi: boolean }
+/** Görev ODA-5: hız sınırı ayarı. */
+export interface HizSiniri { katilDk: number; mesajSn: number }
+export const HIZ_VARSAYILAN: HizSiniri = { katilDk: 20, mesajSn: 60 };
+
+interface Baglanti { soket: AktariciSoket; oda: string | null; istemciId: string | null; rol: Rol | null; bagli: boolean; kapandi: boolean; kova: number; kovaZamani: number; tasma: number }
 interface Oda { kod: string; host: Baglanti; uyeler: Map<string, Baglanti> }
 
 const KIMLIK = /^[\w.:-]{1,64}$/;
 const KOD = /^[1-9]\d{5}$/;
 
 export class Aktarici {
-  readonly sayac = { bozuk: 0, iletilen: 0 };
+  readonly sayac = { bozuk: 0, iletilen: 0, hiz: 0 };
   private readonly baglantilar = new Map<string, Baglanti>();
   private readonly odalar = new Map<string, Oda>();
-  constructor(private readonly azami = MESAJ_AZAMI + 1000) {}
+  /** Kaynak başına son katılım denemelerinin zamanları (ms). */
+  private readonly katilimlar = new Map<string, number[]>();
+  constructor(private readonly azami = MESAJ_AZAMI + 1000, private readonly hiz: HizSiniri = HIZ_VARSAYILAN, private readonly simdi: () => number = Date.now) {}
 
   get odaSayisi(): number { return this.odalar.size; }
   /** Tanı: odadaki bağlı oyuncu kimlikleri. */
   uyeler(kod: string): string[] { return [...(this.odalar.get(kod)?.uyeler.keys() ?? [])]; }
 
   baglandi(soket: AktariciSoket): void {
-    this.baglantilar.set(soket.id, { soket, oda: null, istemciId: null, rol: null, bagli: false, kapandi: false });
+    this.baglantilar.set(soket.id, { soket, oda: null, istemciId: null, rol: null, bagli: false, kapandi: false, kova: this.hiz.mesajSn * 3, kovaZamani: this.simdi(), tasma: 0 });
   }
 
   kapandi(soket: AktariciSoket): void {
@@ -83,6 +96,8 @@ export class Aktarici {
     const b = this.baglantilar.get(soket.id);
     if (!b || b.kapandi) return;
     if (veri.length > this.azami) { this.sayac.bozuk++; return; }
+    // Host (Game Master) sınırsız: komut başına yayın yapar; düşen yayın istemcide boşluk açardı.
+    if (b.rol !== 'host' && !this.kovadan(b)) return;
     let f: IstemciCercevesi;
     try { f = JSON.parse(veri) as IstemciCercevesi; } catch { this.sayac.bozuk++; return; }
     if (!f || typeof f !== 'object' || typeof (f as { k?: unknown }).k !== 'string') { this.sayac.bozuk++; return; }
@@ -106,7 +121,35 @@ export class Aktarici {
     try { b.soket.kapat(); } catch { /* zaten kapalı */ }
   }
 
+  /** Bağlantının mesaj kovası: doluysa bir mesaj harcar; taşarsa atar, üçüncü taşmada bağlantıyı kapatır. */
+  private kovadan(b: Baglanti): boolean {
+    const t = this.simdi();
+    const azami = this.hiz.mesajSn * 3;
+    b.kova = Math.min(azami, b.kova + ((t - b.kovaZamani) / 1000) * this.hiz.mesajSn);
+    b.kovaZamani = t;
+    if (b.kova >= 1) { b.kova -= 1; return true; }
+    this.sayac.hiz++;
+    if (++b.tasma >= 3 * azami) { this.yolla(b, { k: 'hiz' }); this.kapat(b); this.kapandi(b.soket); }
+    return false;
+  }
+
+  /** Kaynağın son bir dakikadaki katılım denemesi sınırı aşıldı mı (aşmadıysa denemeyi sayar). */
+  private katilimFazla(b: Baglanti): boolean {
+    const k = b.soket.kaynak ?? b.soket.id;
+    const t = this.simdi();
+    const liste = (this.katilimlar.get(k) ?? []).filter((x) => t - x < 60_000);
+    if (liste.length >= this.hiz.katilDk) { this.katilimlar.set(k, liste); return true; }
+    liste.push(t);
+    this.katilimlar.set(k, liste);
+    if (this.katilimlar.size > 10_000) this.katilimlar.clear(); // bellek sınırı
+    return false;
+  }
+
   private katil(b: Baglanti, f: IstemciCercevesi & { k: 'katil' }): void {
+    if (f.uye?.rol !== 'host' && this.katilimFazla(b)) {
+      this.sayac.hiz++;
+      this.yolla(b, { k: 'hiz' }); this.kapat(b); return;
+    }
     const id = f.uye?.istemciId, rol = f.uye?.rol;
     if (b.oda || typeof f.kod !== 'string' || !KOD.test(f.kod) || typeof id !== 'string' || !KIMLIK.test(id) || (rol !== 'host' && rol !== 'oyuncu' && rol !== 'izleyici')) {
       this.yolla(b, { k: 'gecersiz' }); this.kapat(b); return;

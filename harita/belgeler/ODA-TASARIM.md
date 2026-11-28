@@ -22,8 +22,13 @@ kalktı. Ayrıntı DECISIONS.md ODA-3.
 **O4 uygulandı (Görev ODA-4, 2026-11-28):** yeniden girişte aynı dönemdeyse yalnız eksik olaylar (`katil.donem`), GM karar menüsü
 (bekle / yapay zekâ oynasın / GM oynasın / turu atla; `OdaHost.kararVer`, `autoplayPartyTurn`), host sayfası yenilenince odayı aynı kod ve
 anahtarlarla diriltme (`rpg-battle-oda-canli` + `Oda.cevrimici`; diriltilen host farklı dönemle başlar), istemcide kendiliğinden yeniden
-bağlanma (2 sn × 90), Screen Wake Lock (madde 2), kopukluk rozetleri, sürüm reddinde "Sayfayı yenile" (madde 3; build kimliği + `ozet` hash
+bağlanma (ODA-5'ten beri 4 sn × 45), Screen Wake Lock (madde 2), kopukluk rozetleri, sürüm reddinde "Sayfayı yenile" (madde 3; build kimliği + `ozet` hash
 O1'den), savaş sonucunun karaktere dönüşü (`karakter_sonuc`, madde 8). Ayrıntı DECISIONS.md ODA-4.
+
+**O5 hazırlığı (Görev ODA-5, 2026-11-28):** madde 6 (yerel ağda uygulama oda sunucusunun kendi `http://` adresinden: lobide
+`GET /oda/adres` ile `http://<ip>:<port>/?oda=<kod>` katılım adresi, `?oda=` "Odaya katıl"ı kod hazır açar), madde 7 (GM katılım onayı
+`OdaHost.katilimOnayi` + `onay_bekle`/`red{onay}`; aktarıcıda kaynak başına dakikada 20 katılım denemesi ve oyuncu bağlantısı başına mesaj
+kovası, `hiz`). `adapters/supabase.ts` yalnız yer tutucu arayüz (bağlanmaz); Supabase/Google girişi sonraya. Ayrıntı DECISIONS.md ODA-5.
 
 Amaç: Game Master'ın savaşta yaptığı her değişiklik oyuncuların cihazına anında yansısın. Her oyuncu kendi karakterini kendi
 cihazından oynasın. İlk sürümde hesap yok, katılım oda koduyla. Google/Supabase girişi en son, yalnız bir bağlantı türü olarak eklenir.

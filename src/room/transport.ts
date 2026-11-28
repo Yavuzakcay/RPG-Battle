@@ -26,7 +26,7 @@ export interface Zarf {
 export type BaglantiDurumu =
   | { tur: 'baglaniyor' } | { tur: 'bagli' } | { tur: 'koptu'; neden: string }
   | { tur: 'uye_geldi'; uye: Uye } | { tur: 'uye_gitti'; istemciId: string }
-  | { tur: 'kod_dolu' } | { tur: 'oda_yok' };
+  | { tur: 'kod_dolu' } | { tur: 'oda_yok' } | { tur: 'hiz' };
 
 export type TransportTuru = 'bellek' | 'sekme' | 'yerel-ag' | 'supabase';
 
@@ -43,7 +43,8 @@ export interface RoomTransport {
 
 /** Bağdaştırıcının `katil` hatası (durum olarak da bildirilir). */
 export class BaglantiHatasi extends Error {
-  constructor(readonly neden: 'kod_dolu' | 'oda_yok' | 'kapali') { super(neden); }
+  /** Görev ODA-5: `hiz` = aktarıcının hız sınırı (çok fazla katılım denemesi). */
+  constructor(readonly neden: 'kod_dolu' | 'oda_yok' | 'kapali' | 'hiz') { super(neden); }
 }
 
 /** Küçük dinleyici kümesi (bağdaştırıcılar ortak kullanır). */

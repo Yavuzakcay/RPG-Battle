@@ -72,6 +72,23 @@ export function hostOdaGuncelle(o: Oda, acik: boolean): void {
   if (aktif?.odaId === o.id) aktif.host.odaAyarla(odaBilgisi(o));
 }
 
+// ---- Görev ODA-5 (madde 7): katılım onayı (sayfa başına; yerel ağda varsayılan kapalı) ----
+
+let onayAcik = false;
+export const katilimOnayi = (): boolean => aktif?.host.katilimOnayi ?? onayAcik;
+export function katilimOnayiAyarla(acik: boolean): void { onayAcik = acik; aktif?.host.katilimOnayiAyarla(acik); hostOlaylari.yay({ tur: 'katilim' }); }
+
+/** Görev ODA-5 (madde 6): oda sunucusunun yerel ağ adresleri (katılım adresi); sunucu yoksa boş. */
+export async function katilimAdresleri(kod: string): Promise<string[]> {
+  if (typeof fetch !== 'function' || !agAdresi()) return [];
+  try {
+    const r = await fetch('/oda/adres', { cache: 'no-store' });
+    if (!r.ok) return [];
+    const v = await r.json() as { adresler?: unknown };
+    return Array.isArray(v.adresler) ? v.adresler.filter((x): x is string => typeof x === 'string').map((a) => `${a}/?oda=${kod}`) : [];
+  } catch { return []; }
+}
+
 // ---- Görev ODA-4: host'u diriltme (sayfa yenilenince aynı kod, aynı üyeler ve anahtarlar) ----
 
 const CANLI_KEY = 'rpg-battle-oda-canli';
@@ -122,6 +139,7 @@ export async function cevrimiciAc(o: Oda, onceki?: readonly KayitliUye[]): Promi
         donemTabani: Math.floor(rng() * 1e9),
         ...(onceki && kod === o.kod ? { oncekiUyeler: onceki } : {}),
         sonuc: (kopya: SavedCharacter, st: BattleState) => applyBattleResult([kopya], st)[0]?.status ?? null,
+        katilimOnayi: onayAcik,
         karakterKabul: (_id, kopya) => {
           const oda = odaAnlik;
           if (!lobiAcik || !oda) return { neden: 'kilitli' };
@@ -227,8 +245,11 @@ let oturum: Session | null = null;
 export type IstemciBaglantisi = 'bagli' | 'yeniden' | 'koptu';
 let baglanti: IstemciBaglantisi = 'bagli';
 let yenidenZamani: ReturnType<typeof setTimeout> | null = null;
-/** Yeniden bağlanma: 2 sn arayla en çok 3 dakika (Game Master sayfayı yeniliyor olabilir). */
-const YENIDEN_MS = 2000, YENIDEN_DENEME = 90;
+/**
+ * Yeniden bağlanma: 4 sn arayla en çok 3 dakika (Game Master sayfayı yeniliyor olabilir). Aralık aktarıcının katılım hız
+ * sınırının (dakikada 20) altında kalır.
+ */
+const YENIDEN_MS = 4000, YENIDEN_DENEME = 45;
 export const istemciBaglantisi = (): IstemciBaglantisi => baglanti;
 function baglantiAyarla(b: IstemciBaglantisi): void {
   if (baglanti === b) return;
@@ -319,7 +340,7 @@ export async function kodlaKatil(p: { kod: string; ad: string; istemciId?: strin
     try {
       await c.baglan();
     } catch (e) {
-      if (!(e instanceof BaglantiHatasi)) throw e;
+      if (!(e instanceof BaglantiHatasi) || e.neden === 'hiz') throw e;
       continue; // bu türde oda yok ya da tür kapalı: sonraki tür
     }
     secilen = tur;

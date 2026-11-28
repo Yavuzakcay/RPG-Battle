@@ -31,7 +31,7 @@ await new Promise<void>((r, j) => {
 const browser = await chromium.launch(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {});
 const hatalar: string[] = [];
 const adim = (s: string) => console.log(`· ${s}`);
-async function cihaz(ad: string, karakterler: unknown[], boyut = { width: 1280, height: 720 }): Promise<Page> {
+async function cihaz(ad: string, karakterler: unknown[], boyut = { width: 1280, height: 720 }, yol = ''): Promise<Page> {
   const ctx = await browser.newContext({ viewport: boyut });
   await ctx.addInitScript((k: string) => {
     try {
@@ -42,7 +42,7 @@ async function cihaz(ad: string, karakterler: unknown[], boyut = { width: 1280, 
   const p = await ctx.newPage();
   p.setDefaultTimeout(60_000);
   p.on('pageerror', (e) => hatalar.push(`${ad}: ${e}`));
-  await p.goto(url);
+  await p.goto(url + yol);
   return p;
 }
 const simdiki = (p: Page) => p.locator('.turn-strip .strip-item.now').first().getAttribute('aria-label').catch(() => null);
@@ -59,11 +59,19 @@ try {
   const tur = await gm.locator('.oda-kod small').textContent();
   adim(`GM oda açtı: kod ${kod} (${tur})`);
   if (!tur?.includes('Yerel ağ')) throw new Error(`bağlantı türü yerel ağ değil: ${tur}`);
+  // Görev ODA-5 (madde 6): lobide oda sunucusunun yerel ağ adresi + `?oda=<kod>` (makinede yerel ağ adresi varsa).
+  const adres = await gm.locator('[data-testid="oda-adres"] code').first().textContent({ timeout: 5000 }).catch(() => null);
+  if (adres && !adres.endsWith(`/?oda=${kod}`)) throw new Error(`katılım adresi yanlış: ${adres}`);
+  adim(adres ? `O5: katılım adresi gösterildi (${adres})` : 'O5: bu makinede yerel ağ adresi yok (katılım adresi satırı çıkmadı)');
 
   const oyuncular: Page[] = [];
   for (const [ad, k] of [['Ada', K1], ['Bora', K2]] as const) {
-    const p = await cihaz(ad, [k], { width: 844, height: 390 });
-    await p.click('.home-card.join');
+    // Bora katılım adresinden (`?oda=<kod>`) gelir: "Odaya katıl" doğrudan açılır, kod hazır.
+    const p = await cihaz(ad, [k], { width: 844, height: 390 }, ad === 'Bora' ? `/?oda=${kod}` : '');
+    if (ad === 'Bora') {
+      const hazir = await p.locator('[data-testid="oda-kod-gir"]').inputValue();
+      if (hazir !== kod) throw new Error(`katılım adresinden kod gelmedi: ${hazir}`);
+    } else await p.click('.home-card.join');
     await p.fill('[data-testid="oda-kod-gir"]', kod);
     await p.fill('[aria-label="Adın"]', ad);
     await p.click('[data-testid="oda-katil"]');
@@ -153,7 +161,7 @@ try {
     adim('ekran görüntüsü docs/oda-2/oyuncu.png');
   }
   if (hatalar.length) throw new Error(hatalar[0]);
-  console.log(`tamam: O2/O3/O4 yerel ağ akışı (oyuncu komutu ${oyuncuKomutu}, yetki reddi ${yetkiRed ? 'var' : 'denenmedi'})`);
+  console.log(`tamam: O2–O5 yerel ağ akışı (oyuncu komutu ${oyuncuKomutu}, yetki reddi ${yetkiRed ? 'var' : 'denenmedi'})`);
   sonuc = 0;
 } catch (e) {
   console.error(`HATA: ${String((e as Error)?.message ?? e).split('\n')[0]}`);

@@ -4,7 +4,7 @@ import { defineConfig, type Plugin } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { APP_NAME } from './src/app/appName';
 import { splashDieCss, splashStaticHtml } from './src/ui/splashLogic';
-import { odaAktarici } from './src/room/aktariciNode';
+import { adresYaniti, odaAktarici, ODA_ADRES_YOLU } from './src/room/aktariciNode';
 
 /**
  * index.html (Görev L, L2): başlık APP_NAME'den; açılış ekranının stili (zar dönüşü @keyframes dahil) satır içi ve ilk
@@ -39,11 +39,21 @@ function buildId(): string {
  * Görev ODA-2: geliştirme (`npm run dev -- --host`) ve önizleme (`npm run preview -- --host`) sunucusuna oda aktarıcısı
  * (`/oda`, WebSocket). Telefon aynı sunucudan açınca yerel ağ odası çalışır. Test sunucusunda (http sunucusu yok) etkisiz.
  */
+/** Görev ODA-5 (madde 6): `GET /oda/adres` (oda lobisi telefonlara yerel ağ adresini gösterir). */
+function adresUcu(server: { httpServer: unknown; middlewares: { use: (yol: string, fn: (q: unknown, r: { setHeader: (a: string, b: string) => void; end: (s: string) => void }) => void) => void } }): void {
+  server.middlewares.use(ODA_ADRES_YOLU, (_q, r) => {
+    const adr = (server.httpServer as { address?: () => unknown } | null)?.address?.();
+    const port = adr && typeof adr === 'object' && 'port' in adr ? Number((adr as { port: number }).port) : 5173;
+    r.setHeader('Content-Type', 'application/json; charset=utf-8');
+    r.end(adresYaniti(port));
+  });
+}
+
 function odaAktariciEklentisi(): Plugin {
   return {
     name: 'oda-aktarici',
-    configureServer(server) { if (server.httpServer && 'on' in server.httpServer) odaAktarici(server.httpServer as import('node:http').Server); },
-    configurePreviewServer(server) { if (server.httpServer && 'on' in server.httpServer) odaAktarici(server.httpServer as import('node:http').Server); },
+    configureServer(server) { if (server.httpServer && 'on' in server.httpServer) odaAktarici(server.httpServer as import('node:http').Server); adresUcu(server); },
+    configurePreviewServer(server) { if (server.httpServer && 'on' in server.httpServer) odaAktarici(server.httpServer as import('node:http').Server); adresUcu(server); },
   };
 }
 

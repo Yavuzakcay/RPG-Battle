@@ -77,7 +77,8 @@ type Screen =
 
 /** Üst seviye: giriş ekranı, oyuncu ve GM rolleri, haritalı savaş ve durum. */
 export default function App() {
-  const [screen, setScreen] = useState<Screen>({ name: 'home' });
+  // Görev ODA-5 (madde 6): oda sunucusunun gösterdiği katılım adresi (`?oda=<kod>`) doğrudan "Odaya katıl"ı açar.
+  const [screen, setScreen] = useState<Screen>(() => (/[?&]oda=\d{6}/.test(window.location.search) ? { name: 'katil' } : { name: 'home' }));
   const [worldOnly, setWorldOnly] = useState(() => window.location.hash === '#dunya');
   const [galeri, setGaleri] = useState(() => window.location.hash === '#galeri');
   useEffect(() => {

@@ -1736,3 +1736,6 @@ input[type="range"]:disabled { accent-color: var(--off); }
 .mc-panel .mc-add { display: inline-flex; gap: 0.5rem; align-items: center; }
 .mc-features > h4, .mc-spells > h3 { margin-top: 1rem; }
 .seruven-level-class { display: inline-flex; gap: 0.35rem; align-items: center; margin-left: 0.5rem; }
+/* Görev ODA-5: katılım adresi ve onayı (oda lobisi). */
+.oda-adres code { display: inline-block; margin: 2px 6px 2px 0; padding: 2px 6px; border-radius: 6px; background: var(--sel, #333); color: var(--sel-ink, #fff); user-select: all; }
+.oda-onay { display: flex; gap: 6px; align-items: center; margin: 6px 0; }

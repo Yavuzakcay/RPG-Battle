@@ -46,9 +46,9 @@ export function agBaglantisi(o: AgSecenek): RoomTransport {
       host = uye.rol === 'host';
       const s = (o.soket ?? varsayilanSoket)(o.url);
       ws = s;
-      const sonuc = await new Promise<'bagli' | 'kod_dolu' | 'oda_yok' | 'kapali'>((r) => {
+      const sonuc = await new Promise<'bagli' | 'kod_dolu' | 'oda_yok' | 'kapali' | 'hiz'>((r) => {
         const sure = setTimeout(() => r('kapali'), o.baglanmaMs ?? 2500);
-        const bitir = (x: 'bagli' | 'kod_dolu' | 'oda_yok' | 'kapali') => { clearTimeout(sure); r(x); };
+        const bitir = (x: 'bagli' | 'kod_dolu' | 'oda_yok' | 'kapali' | 'hiz') => { clearTimeout(sure); r(x); };
         s.addEventListener('open', () => yolla({ k: 'katil', kod, uye }));
         s.addEventListener('error', () => bitir('kapali'));
         s.addEventListener('close', () => {
@@ -62,6 +62,8 @@ export function agBaglantisi(o: AgSecenek): RoomTransport {
             case 'bagli': bitir('bagli'); return;
             case 'kod_dolu': bitir('kod_dolu'); return;
             case 'oda_yok': case 'gecersiz': bitir('oda_yok'); return;
+            // Görev ODA-5: aktarıcının hız sınırı.
+            case 'hiz': ayrildi = true; bitir('hiz'); durum.yay({ tur: 'koptu', neden: 'hiz' }); return;
             case 'z': if (f.z && typeof f.z === 'object') zarf.yay(f.z); return;
             case 'uye_gitti': durum.yay({ tur: 'uye_gitti', istemciId: f.istemciId }); return;
             case 'host_gitti': durum.yay({ tur: 'koptu', neden: 'host' }); return;
@@ -73,7 +75,7 @@ export function agBaglantisi(o: AgSecenek): RoomTransport {
         ayrildi = true;
         try { s.close(); } catch { /* yok */ }
         ws = null;
-        if (sonuc === 'kod_dolu' || sonuc === 'oda_yok') durum.yay({ tur: sonuc });
+        if (sonuc === 'kod_dolu' || sonuc === 'oda_yok' || sonuc === 'hiz') durum.yay({ tur: sonuc });
         throw new BaglantiHatasi(sonuc);
       }
       durum.yay({ tur: 'bagli' });
