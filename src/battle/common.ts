@@ -37,6 +37,9 @@ export function nextActor(state: BattleState): { id: string; round: number; refl
   const ts = state.timeStop;
   if (ts && ts.left > 0 && state.order[state.turnIndex] === ts.actorId && (state.combatants[ts.actorId]?.hp ?? 0) > 0) return { id: ts.actorId, round: state.round };
   const plain = nextActorPlain(state);
+  // Görev KATALOG-GUC-TAM (109+; Out-of-Time Storm): her turda ikinci oyun (`k109.secondInit`), Thief's Reflexes'in yansıma yoluyla.
+  const second = secondTurnOf(state, plain);
+  if (second) return second;
   // Kuyruk 19 (11–20): Thief's Reflexes (Thief 17): ilk turda ikinci tur, inisiyatif − 10'da (`featuresK19`). Sıra, yansıma turundan sonra kaldığı yerden sürer (`reflexResume`).
   if (state.round !== 1) return plain;
   const nextInit = plain.round > 1 ? -Infinity : state.combatants[plain.id]?.initiative ?? -Infinity;
@@ -50,6 +53,21 @@ export function nextActor(state: BattleState): { id: string; round: number; refl
     }
   }
   return plain;
+}
+
+/** Görev KATALOG-GUC-TAM (109+): bu turda ikinci oyununa gelen yaratık (ilk turu bu turda oynanmış, inisiyatifi sıradakinden düşük değil). */
+function secondTurnOf(state: BattleState, plain: { id: string; round: number }): { id: string; round: number; reflex: number } | null {
+  if ((state.kuralSurumu ?? 1) < 109) return null;
+  const nextInit = plain.round > state.round ? -Infinity : state.combatants[plain.id]?.initiative ?? -Infinity;
+  const at = state.reflexResume ?? state.turnIndex;
+  for (let i = 0; i <= at && i < state.order.length; i++) {
+    const t = state.combatants[state.order[i] as string];
+    const sec = t?.effects?.find((e) => e.k109?.secondInit !== undefined)?.k109?.secondInit;
+    if (!t || sec === undefined || t.hp <= 0 || t.summon?.gone) continue;
+    if ((state.reflexDone ?? []).filter((x) => x === t.id).length >= state.round) continue;
+    if (sec >= nextInit && t.initiative > sec) return { id: t.id, round: state.round, reflex: plain.round > state.round ? state.order.length - 1 : state.order.indexOf(plain.id) - 1 };
+  }
+  return null;
 }
 
 function nextActorPlain(state: BattleState): { id: string; round: number } {

@@ -144,7 +144,9 @@ export function legendaryEvents(state: BattleState, endedId: string, rng: Rng): 
     let used: LegendaryAction | null = null;
     // Kuyruk 19: koruyucu eylem (Shimmering Shield) yalnızca yarı HP'nin altındaki dost varken ve önce denenir.
     const hurt = Object.values(cur.combatants).some((c) => c.side === b.side && c.hp > 0 && c.hp < c.maxHp / 2);
-    const order = spec.actions.filter((a) => a.kind !== 'buff' || hurt).sort((x, y) => Number(y.kind === 'buff') - Number(x.kind === 'buff'));
+    // Görev KATALOG-GUC-TAM (109+; Faz 2): öne çıkan efsanevi eylem önce denenir (`k109.legendFirst`).
+    const first = b.effects?.find((e) => e.k109?.legendFirst)?.k109?.legendFirst;
+    const order = spec.actions.filter((a) => a.kind !== 'buff' || hurt).sort((x, y) => Number(y.kind === 'buff') - Number(x.kind === 'buff') || Number(y.id === first) - Number(x.id === first));
     for (const a of order) {
       if (a.oncePerTurn && b.legendaryUsed?.includes(a.id)) continue;
       if (a.kind === 'rays') {

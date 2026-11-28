@@ -780,9 +780,13 @@
      "pierceResist": {
       "ignoreImmune": true
      },
-     "forcedImmune": true
+     "forcedImmune": true,
+     "negateOnce": true,
+     "secondInit": 15,
+     "reflectSpell": true
     }
-   }
+   },
+   "lrCleanse": true
   },
   "dragon-of-hexonia-b": {
    "auralar": [
@@ -863,9 +867,13 @@
      "pierceResist": {
       "ignoreImmune": true
      },
-     "forcedImmune": true
+     "forcedImmune": true,
+     "negateOnce": true,
+     "secondInit": 15,
+     "reflectSpell": true
     }
-   }
+   },
+   "lrCleanse": true
   },
   "sigmadrake": {
    "auralar": [
@@ -937,6 +945,24 @@
        "dice": "1d8",
        "type": "acid"
       }
+     }
+    },
+    "efsaneviOnce": "acid-drool",
+    "alan": {
+     "name": "Erime Gölü",
+     "radiusFt": 10,
+     "rounds": 100000,
+     "spec": {
+      "on": [
+       "start",
+       "enter"
+      ],
+      "damage": "2d6",
+      "damageType": "acid",
+      "targets": "enemies",
+      "hold": "turn",
+      "color": "#7a9a2a",
+      "icon": "🧪"
      }
     }
    },
@@ -1010,7 +1036,35 @@
       "target": "far"
      }
     }
-   ]
+   ],
+   "faz2": {
+    "oncelik": [
+     "Bite",
+     "Claw"
+    ],
+    "efsaneviOnce": "tail-sweep",
+    "yuzey": {
+     "kind": "fire",
+     "radiusFt": 30,
+     "rounds": 3,
+     "halka": true
+    },
+    "auralar": [
+     {
+      "id": "ember-heat",
+      "name": "Kor Sıcağı",
+      "radius": 3,
+      "filter": "enemies",
+      "trigger": "turnStart",
+      "effect": {
+       "kind": "damage",
+       "dice": "2d6",
+       "type": "fire"
+      },
+      "cesaret": 0
+     }
+    ]
+   }
   },
   "wolfgang": {
    "ekler": {
@@ -1038,7 +1092,19 @@
       "target": "far"
      }
     }
-   ]
+   ],
+   "faz2": {
+    "oncelik": [
+     "Bite",
+     "Claw"
+    ],
+    "efsaneviOnce": "frost-halo",
+    "yuzey": {
+     "kind": "ice",
+     "radiusFt": 30,
+     "rounds": 10
+    }
+   }
   },
   "cerbones": {
    "ekler": {
@@ -1069,6 +1135,15 @@
     "etki": {
      "hitDie": "1d8",
      "hitType": "necrotic"
+    },
+    "oncelik": [
+     "Bite"
+    ],
+    "efsaneviOnce": "ash-halo",
+    "turBasiCagir": {
+     "monster": "skeleton",
+     "count": 2,
+     "max": 6
     }
    },
    "efsanevi": [
@@ -1105,7 +1180,19 @@
       "target": "far"
      }
     }
-   ]
+   ],
+   "faz2": {
+    "oncelik": [
+     "Proboscis",
+     "Wing"
+    ],
+    "efsaneviOnce": "spore-burst",
+    "yuzey": {
+     "kind": "poison",
+     "radiusFt": 15,
+     "rounds": 10
+    }
+   }
   },
   "gongar": {
    "pasif": {
@@ -1120,7 +1207,32 @@
       "target": "far"
      }
     }
-   ]
+   ],
+   "faz2": {
+    "oncelik": [
+     "Shell Ram",
+     "Bell Slam"
+    ],
+    "efsaneviOnce": "shell-spin",
+    "auralar": [
+     {
+      "id": "bell-quake",
+      "name": "Çan Sarsıntısı",
+      "radius": 2,
+      "filter": "enemies",
+      "trigger": "turnStart",
+      "save": {
+       "ability": "con",
+       "dc": 15
+      },
+      "effect": {
+       "kind": "condition",
+       "condition": "Prone"
+      },
+      "cesaret": 0
+     }
+    ]
+   }
   },
   "kongark": {
    "pasif": {
@@ -1148,7 +1260,32 @@
       "target": "far"
      }
     }
-   ]
+   ],
+   "faz2": {
+    "oncelik": [
+     "Grab",
+     "Fist"
+    ],
+    "efsaneviOnce": "gravity-ring",
+    "auralar": [
+     {
+      "id": "void-gravity",
+      "name": "Boşluk Çekimi",
+      "radius": 12,
+      "filter": "enemies",
+      "trigger": "turnStart",
+      "save": {
+       "ability": "str",
+       "dc": 21
+      },
+      "effect": {
+       "kind": "pull",
+       "ft": 15
+      },
+      "cesaret": 0
+     }
+    ]
+   }
   },
   "tutsak-dragon": {
    "ekler": {
@@ -1394,7 +1531,18 @@
       "target": "far"
      }
     }
-   ]
+   ],
+   "faz2": {
+    "oncelik": [
+     "Hoof"
+    ],
+    "efsaneviOnce": "chain-lightning",
+    "yuzey": {
+     "kind": "water",
+     "radiusFt": 20,
+     "rounds": 10
+    }
+   }
   },
   "lightaur": {
    "yetenekler": {
@@ -1420,7 +1568,39 @@
       "target": "far"
      }
     }
-   ]
+   ],
+   "faz2": {
+    "oncelik": [
+     "Gore",
+     "Hoof"
+    ],
+    "efsaneviOnce": "halo-flare",
+    "auralar": [
+     {
+      "id": "sun-glare",
+      "name": "Kör Güneş",
+      "radius": 3,
+      "filter": "enemies",
+      "trigger": "turnStart",
+      "save": {
+       "ability": "con",
+       "dc": 15
+      },
+      "effect": {
+       "kind": "effect",
+       "rounds": 1,
+       "effect": {
+        "name": "Kör Güneş",
+        "icon": "☀",
+        "grants": [
+         "Blinded"
+        ]
+       }
+      },
+      "cesaret": 0
+     }
+    ]
+   }
   },
   "mirage": {
    "efsanevi": [
@@ -1453,7 +1633,31 @@
      "adjacent": true,
      "uses": 1
     }
-   ]
+   ],
+   "faz2": {
+    "efsaneviOnce": "mirror-scream",
+    "etki": {
+     "images": 3
+    },
+    "auralar": [
+     {
+      "id": "whisper-dread",
+      "name": "Vesvese",
+      "radius": 12,
+      "filter": "enemies",
+      "trigger": "turnStart",
+      "save": {
+       "ability": "wis",
+       "dc": 21
+      },
+      "effect": {
+       "kind": "condition",
+       "condition": "Frightened"
+      },
+      "cesaret": 0
+     }
+    ]
+   }
   },
   "mirath": {
    "yetenekEkle": [

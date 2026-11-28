@@ -6,6 +6,8 @@
  * - Tek vuruşta 0 HP'ye düşen yaratık faza girmez; biçim değişimindeyse (`shape`) biçim bitene dek bekler.
  * - Saldırı ve hasar eki süresiz etkide zar olarak (`dice` saldırıya, `hitDie` isabete; sabit sayı da zar ifadesidir).
  */
+import { gucOf } from './katalog109Data';
+import { k109PhaseEvents } from './katalog109Faz';
 import { rollDice, rollTag, type Rng } from '../rules/dice';
 import type { Faz2Block } from '../data';
 import { faz2On } from './faz2Surum';
@@ -25,7 +27,7 @@ const asDice = (v: number | string): string => String(v);
 const nonEmpty = (xs: string[] | undefined): string[] | undefined => (xs?.length ? [...xs] : undefined);
 
 /** Faz bloğundan olay (geçici HP burada atılır). */
-export function phaseChangedEvent(c: Combatant, f: Faz2Block, rng: Rng): BattleEvent {
+export function phaseChangedEvent(c: Combatant, f: Faz2Block, rng: Rng, /** Görev KATALOG-GUC-TAM: savaşın kural sürümü. */ k109v = 0): BattleEvent {
   const tempHp = f.geciciCan !== undefined ? Math.max(0, rollDice(asDice(f.geciciCan), rollTag(rng, { by: c.id })).total) : 0;
   const fx: Partial<ActiveEffect> = {
     ...(f.ac ? { ac: f.ac } : {}),
@@ -40,6 +42,14 @@ export function phaseChangedEvent(c: Combatant, f: Faz2Block, rng: Rng): BattleE
     ...(nonEmpty(f.zayiflikKaldir) ? { vulnerabilities: nonEmpty(f.zayiflikKaldir) } : {}),
     ...(nonEmpty(f.bagisiklikKaldir) ? { immunities: nonEmpty(f.bagisiklikKaldir) } : {}),
   };
+  // Görev KATALOG-GUC-TAM (109+): katalog faz eklemeleri (auralar, süren etki alanları, saldırı tekrarı/sırası, ilk efsanevi).
+  const k = c.monsterId ? gucOf({ kuralSurumu: k109v }, c.monsterId)?.faz2 : undefined;
+  if (k) {
+    if (k.auralar?.length) fx.auras = k.auralar;
+    Object.assign(fx, k.etki ?? {});
+    const kk = { ...((k.etki?.k109 as object) ?? {}), ...(k.tekrar ? { repeat: k.tekrar } : {}), ...(k.oncelik ? { order: k.oncelik } : {}), ...(k.efsaneviOnce ? { legendFirst: k.efsaneviOnce } : {}) };
+    if (Object.keys(kk).length) fx.k109 = kk;
+  }
   return {
     type: 'phase_changed', targetId: c.id, phase: 2,
     ...(tempHp > 0 ? { tempHp } : {}),
@@ -56,7 +66,12 @@ export function phaseChangedEvent(c: Combatant, f: Faz2Block, rng: Rng): BattleE
 export function faz2Events(state: BattleState, rng: Rng): BattleEvent[] {
   if (!faz2On(state)) return [];
   const out: BattleEvent[] = [];
-  for (const c of Object.values(state.combatants)) if (c.faz2 && faz2Due(c)) out.push(phaseChangedEvent(c, c.faz2, rng));
+  for (const c of Object.values(state.combatants)) {
+    if (!c.faz2 || !faz2Due(c)) continue;
+    out.push(phaseChangedEvent(c, c.faz2, rng, state.kuralSurumu ?? 1));
+    // Görev KATALOG-GUC-TAM (109+): faz anında harita/çağırma eklemeleri.
+    out.push(...k109PhaseEvents(state, c));
+  }
   return out;
 }
 

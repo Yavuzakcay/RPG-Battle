@@ -234,3 +234,69 @@ describe('Grup 3: canavar eylemi', () => {
     expect(legendaryOf(s, C(s, 'D'))!.actions.find((a) => a.id === 'flame-spit')?.target).toBe('far');
   });
 });
+
+describe('Grup 4: faz bloğu ve Hexonia çekirdeği', () => {
+  const foe = (id: string, col: number, p: Partial<Combatant> = {}) => mk(id, { ownerId: 'p1', hp: 200, maxHp: 200, pos: { col, row: 3 }, ...p });
+  const toPhase = async (s: BattleState) => {
+    const { execute } = await import('./commands');
+    const { GM } = await import('./fixtures');
+    const r = execute(s, { type: 'adjust_hp', targetId: 'D', hp: Math.floor(C(s, 'D').maxHp / 2) }, GM, () => 0.5);
+    if (!r.ok) throw new Error(r.error);
+    return r;
+  };
+
+  it('Cimbombom Faz 2: aura (2d6 ateş), saldırı sırası, ilk efsanevi, alev halkası', async () => {
+    const r = await toPhase(arena109('cimbombom', [foe('A', 12)]));
+    const fx = C(r.state, 'D').effects?.find((e) => e.id === 'faz2:D');
+    expect(fx?.auras?.[0]?.effect).toMatchObject({ kind: 'damage', dice: '2d6' });
+    expect(fx?.k109).toMatchObject({ order: ['Bite', 'Claw'], legendFirst: 'tail-sweep' });
+    expect(r.events.some((e) => e.type === 'zone_created' && e.zone.surface === 'fire')).toBe(true);
+  });
+
+  it('108 savaşında faz eklemesi yok', async () => {
+    const r = await toPhase(arena109('cimbombom', [foe('A', 12)], 108));
+    expect(C(r.state, 'D').effects?.find((e) => e.id === 'faz2:D')?.auras).toBeUndefined();
+    expect(r.events.some((e) => e.type === 'zone_created')).toBe(false);
+  });
+
+  it('Titan Faz 2: Multiattack 4 dokunaç, aura 90 ft ve çekme', async () => {
+    const { executeMultiattack } = await import('./monsters');
+    const r = await toPhase(arena109('titan-of-nightmare', [foe('A', 5, { hp: 5000, maxHp: 5000 })]));
+    const fx = C(r.state, 'D').effects?.find((e) => e.id === 'faz2:D');
+    expect(fx?.k109?.repeat).toEqual({ 'Eldritch Tentacle': 4 });
+    expect(fx?.auras?.some((a) => a.effect.kind === 'pull')).toBe(true);
+    const m = executeMultiattack(r.state, C(r.state, 'D'), 'A', () => 0.9);
+    if (!m.ok) throw new Error(m.error);
+    expect(m.events.filter((e) => e.type === 'attack_resolved' && e.label === 'Eldritch Tentacle')).toHaveLength(4);
+  });
+
+  it('Cerbones Faz 2: tur başında iskelet çağırır (en çok 6)', async () => {
+    const { phaseTurnStartEvents } = await import('./katalog109Faz');
+    const r = await toPhase(arena109('cerbones', [foe('A', 12)]));
+    expect(phaseTurnStartEvents(r.state, 'D').filter((e) => e.type === 'summoned')).toHaveLength(2);
+    expect(phaseTurnStartEvents(arena109('cerbones', [foe('A', 12)]), 'D')).toHaveLength(0);
+  });
+
+  it('Out-of-Time Storm: ikinci oyun inisiyatif 15; turda bir isabet iptali', async () => {
+    const { nextActor } = await import('./common');
+    const { negateHit } = await import('./katalog109');
+    const s0 = arena109('dragon-of-hexonia-a', [foe('A', 12, { initiative: 20 }), foe('B', 13, { initiative: 10 })]);
+    const cs = { ...s0.combatants, D: { ...C(s0, 'D'), initiative: 30 }, A: { ...C(s0, 'A'), initiative: 20 }, B: { ...C(s0, 'B'), initiative: 10 } };
+    const s = { ...s0, combatants: cs, order: ['D', 'A', 'B'], turnIndex: 1, round: 2, reflexDone: ['D'] };
+    expect(nextActor(s)).toMatchObject({ id: 'D', reflex: 1 });
+    expect(nextActor({ ...s, reflexDone: ['D', 'D'] }).id).toBe('B');
+    expect(nextActor({ ...s, kuralSurumu: 108 }).id).toBe('B');
+    const ctx = { attacker: C(s, 'A'), target: C(s, 'D'), label: 'Slam', total: 30, ac: 30, critical: false, melee: true, ranged: false } as never;
+    const r1 = negateHit(s, ctx);
+    expect(r1?.name).toBe('Out-of-Time Storm');
+    expect(negateHit(applyEvents(s, r1!.events), { ...(ctx as object), target: C(applyEvents(s, r1!.events), 'D') } as never)).toBeNull();
+  });
+
+  it('Legendary Resistance etki siler (Hexonia)', async () => {
+    const { lrCleanseEvents } = await import('./katalog109');
+    const s0 = arena109('dragon-of-hexonia-a', [foe('A', 12)]);
+    const s = applyEvents(s0, [{ type: 'effect_added', targetId: 'D', effect: { id: 'bane', name: 'Bane', sourceId: 'A', dice: { die: '1d4', sign: -1, on: ['attack'] } } }]);
+    const ev = lrCleanseEvents(s, [{ type: 'map_note', text: 'x', bonusDice: [{ resource: 'legendaryResistance', holderId: 'D' }] } as never]);
+    expect(ev[0]).toMatchObject({ type: 'effect_ended', effectId: 'bane' });
+  });
+});
