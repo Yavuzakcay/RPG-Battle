@@ -127,7 +127,7 @@ import { activeTool, hexOwner, openGoalTool, toolbarShown, type ActiveTool, type
 import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
-import { autoplayEnemyTurns, autoplaySummonTurn } from './ui/autoplay';
+import { autoplayEnemyTurns, autoplayPartyTurn, autoplaySummonTurn } from './ui/autoplay';
 import { shiftHexes } from './battle/shift';
 import { brutalOptions, brutalReady, type BrutalBlow } from './battle/brutal';
 import { steedActions } from './battle/steed';
@@ -211,6 +211,7 @@ import { concealed, objectShown } from './battle/hiddenObjects';
 import { OBJECTS, objectAt } from './battle/objectData';
 import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf } from './ui/stealthView';
 import { setViewerHpVis } from './oda/active';
+import { useWakeLock } from './ui/wakeLock';
 import { IZLEYICI_GM, alanGorunur, gmTuzaklari, jetonGorunumu, nesneGorunumu, type Izleyici } from './room/view';
 import { MoralBar } from './ui/MoralBar';
 import { DamageChip, GlyphBadges, GlyphText } from './ui/glyph/Glyph';
@@ -567,7 +568,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   const stateRef = useRef(session.state);
   stateRef.current = session.state;
   const [odaHost, setOdaHost] = useState(false);
-  const kopru = useRef<{ remote: RemoteAsker; sonuc: (k: UzakKomut, hata: string | null) => void; kapat: () => void } | null>(null);
+  const kopru = useRef<import('./screens/odaCanli').HostKoprusu | null>(null);
   const odaMod = useRef<typeof import('./screens/odaCanli') | null>(null);
   const [uzakKuyruk, setUzakKuyruk] = useState<UzakKomut[]>([]);
   const aktifUzak = useRef<UzakKomut | null>(null);
@@ -577,8 +578,12 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     void import('./screens/odaCanli').then((m) => {
       if (iptal) return;
       odaMod.current = m;
-      kopru.current = m.hostSavasBagla(odaId, (u) => setUzakKuyruk((q) => [...q, u]), () => stateRef.current);
-      setOdaHost(!!kopru.current);
+      // Görev ODA-4: sayfa yenilendiyse önceki çevrimiçi oda aynı kodla, kayıtlı üyelerle geri açılır.
+      void m.hostDirilt(odaId).then(() => {
+        if (iptal) return;
+        kopru.current = m.hostSavasBagla(odaId, (u) => setUzakKuyruk((q) => [...q, u]), () => stateRef.current);
+        setOdaHost(!!kopru.current);
+      });
     });
     return () => { iptal = true; kopru.current?.kapat(); kopru.current = null; setOdaHost(false); };
   }, [odaId]);
@@ -586,6 +591,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   // Master: her şeyi görür, düşman HP'si tam. Tek cihazda null: sıradan türeyen perde (`viewerOf`) aynen.
   const iz: Izleyici | null = props.watch?.viewer?.() ?? (odaHost ? IZLEYICI_GM : null);
   const gmAraclari = !props.watch;
+  // Görev ODA-4 (madde 2): çevrimiçi savaşta ekran kilitlenmesin (GM cihazı uyuyunca oda durur).
+  useWakeLock(odaHost || !!props.watch);
   useEffect(() => {
     if (!odaHost) return undefined;
     setViewerHpVis('tam');
@@ -956,6 +963,35 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   // Y2 G2: "Düşmanı oynat" düşman turlarını tek tek oynatır, aralarında bir çerçeve bırakır (yapay zekâ kararları arayüzü
   // uzun süre bloklamasın). Zar ya da tepki beklerken durur; zar istemi iptal edilince zincir de biter.
   const [enemyRun, setEnemyRun] = useState(0);
+  // Görev ODA-4: çevrimiçi odada bağlantısı kopan oyuncunun sırası. Game Master karar verir (bekle / yapay zekâ oynasın /
+  // GM oynasın / turu atla); "yapay zekâ" kararında tur `autoplayPartyTurn` ile oynanır (oyuncu dönünce sıradaki turdan
+  // itibaren kontrol ona geçer: host kararı sıra geçince kaldırır).
+  const [, setKararSurum] = useState(0);
+  useEffect(() => (odaHost ? kopru.current?.abone(() => setKararSurum((n) => n + 1)) : undefined), [odaHost]);
+  const kopuk = odaHost && active && actor && actor.side === 'party' && !actor.civilian ? kopru.current?.sahip(actor.ownerId) ?? null : null;
+  const yzSirasi = !!kopuk && kopru.current?.yz(actor?.ownerId) === true;
+  const yzDenenen = useRef<BattleState | null>(null);
+  useEffect(() => {
+    if (!yzSirasi || dice.pending || dice.reaction || aktifUzak.current || yzDenenen.current === session.state) return;
+    yzDenenen.current = session.state;
+    const timer = window.setTimeout(() => dice.play((rng) => autoplayPartyTurn(session, rng)), 0);
+    return () => window.clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [yzSirasi, session, dice.pending, dice.reaction]);
+  const KC = t().odaCevrimici;
+  const kararBar = kopuk && !kopuk.bagli && kopuk.karar !== 'gm' && actor ? (
+    <div className="oda-izle-bar oda-karar kopuk" role="status" data-testid="oda-karar">
+      <span>{kopuk.karar === 'yz' ? KC.aiPlaying(kopuk.ad) : kopuk.karar === 'bekle' ? KC.waiting(kopuk.ad) : KC.decideTitle(kopuk.ad, actor.name)}</span>
+      {kopuk.karar !== 'yz' && (
+        <span className="oda-karar-btns">
+          {kopuk.karar !== 'bekle' && <button type="button" onClick={() => kopru.current?.karar(kopuk.istemciId, 'bekle')}>{KC.decide.bekle}</button>}
+          <button type="button" data-testid="oda-karar-yz" onClick={() => kopru.current?.karar(kopuk.istemciId, 'yz')}>{KC.decide.yz}</button>
+          <button type="button" onClick={() => kopru.current?.karar(kopuk.istemciId, 'gm')}>{KC.decide.gm}</button>
+          <button type="button" onClick={() => dice.play((rng) => dispatch(session, { type: 'end_turn', actorId: actor.id }, rng))}>{KC.decide.atla}</button>
+        </span>
+      )}
+    </div>
+  ) : null;
   useEffect(() => {
     if (!enemyRun || dice.pending || dice.reaction) return;
     if (!active || actor?.side !== 'enemies') { setEnemyRun(0); return; }
@@ -2622,7 +2658,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                 return <span key={id} role="listitem" className="strip-item unknown" aria-label="Bilinmeyen">?</span>;
               }
               return (
-                <button key={id} role="listitem" className={`strip-item${id === actorId && active ? ' now' : ''}${out ? ' out' : ''}${c.concentration ? ' conc' : ''}`}
+                <button key={id} role="listitem" className={`strip-item${id === actorId && active ? ' now' : ''}${out ? ' out' : ''}${c.concentration ? ' conc' : ''}${odaHost && c.side === 'party' && kopru.current?.sahip(c.ownerId)?.bagli === false ? ' kopuk' : ''}`}
                   onClick={() => setDrawerId(id)} aria-label={B.drawer.details(c.name)} title={c.concentration ? t().view.concentrating(c.concentration.spell) : c.name}>
                   {framedBadge(c, 30, <AvatarBadge avatar={c.avatar} size={30} ring={c.side === 'party' ? 'var(--party)' : 'var(--enemy)'} title={c.name} />)}
                   {c.concentration && <span className="strip-conc" aria-label={t().view.concentrating(c.concentration.spell)}>◎</span>}
@@ -3864,12 +3900,13 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       </div>
   );
   // Görev ODA-1: salt izlemede üst şerit (dokunma kapalı; yalnız çıkış).
+  const baglantiDurumu = props.watch?.connection?.() ?? 'bagli';
   const watchBar = props.watch ? (
-    <div className={`oda-izle-bar${watchCtl ? ' playing' : ''}`} role="status" data-testid="oda-izle-bar">
-      <span>{watchCtl ? t().odaCevrimici.playing : t().odaCevrimici.watching}</span>
+    <div className={`oda-izle-bar${watchCtl ? ' playing' : ''}${baglantiDurumu !== 'bagli' ? ' kopuk' : ''}`} role="status" data-testid="oda-izle-bar">
+      <span>{baglantiDurumu === 'yeniden' ? t().odaCevrimici.reconnecting : baglantiDurumu === 'koptu' ? t().odaCevrimici.reconnectFailed : watchCtl ? t().odaCevrimici.playing : t().odaCevrimici.watching}</span>
       <button type="button" onClick={() => props.onExit(session.state)}>{props.exitLabel ?? t().odaCevrimici.leaveWatch}</button>
     </div>
-  ) : null;
+  ) : kararBar;
   if (!portrait) {
     return (
       <div className={`mb-screen${props.watch && !watchCtl ? ' watching' : ''}`}>

@@ -28,7 +28,9 @@ export interface SurumBilgisi {
 export type RedNedeni = 'surum' | 'anahtar' | 'dolu' | 'kilitli' | 'kapali';
 export type Asama = 'lobi' | 'kurulum' | 'savas' | 'bitti';
 
-export interface UyeOzeti { istemciId: string; ad: string; rol: Rol; bagli: boolean; karakterler: string[] }
+/** Görev ODA-4: kopan üye için Game Master kararı (bekle / yapay zekâ oynasın / GM oynasın). */
+export type UyeKarari = 'bekle' | 'yz' | 'gm';
+export interface UyeOzeti { istemciId: string; ad: string; rol: Rol; bagli: boolean; karakterler: string[]; karar?: UyeKarari }
 
 /** Oda ayarlarının istemciye giden özeti (`src/oda/model.ts`'ten türetilir). */
 export interface OdaOzeti {
@@ -45,7 +47,8 @@ export interface OdaOzeti {
 
 /** İstemci → host. */
 export type IstemciMesaji =
-  | ({ t: 'katil'; istemciId: string; ad: string; anahtar?: string; sonSeq?: number } & SurumBilgisi)
+  /** Görev ODA-4: yeniden girişte `sonSeq` + `donem`: host aynı dönemdeyse yalnız eksik olayları yollar. */
+  | ({ t: 'katil'; istemciId: string; ad: string; anahtar?: string; sonSeq?: number; donem?: number } & SurumBilgisi)
   | { t: 'karakter_gonder'; kopya: SavedCharacter }
   | { t: 'karakter_geri_al'; karakterId: string }
   | { t: 'komut'; istekId: string; cmd: Command; tabanSeq: number }
@@ -76,8 +79,9 @@ export type HostMesaji =
   /** Görev ODA-2: açık zar/tepki istemi kapandı (GM karar verdi, süre doldu ya da cevap alındı). */
   | { t: 'istem_iptal'; istekId: string }
   | { t: 'ozet'; donem: number; seq: number; hash: string }
-  | { t: 'uye_durumu'; istemciId: string; bagli: boolean; karar?: 'bekle' | 'yz' | 'gm' }
-  | { t: 'karakter_sonuc'; karakterId: string; durum: unknown }
+  | { t: 'uye_durumu'; istemciId: string; bagli: boolean; karar?: UyeKarari }
+  /** Görev ODA-4 (madde 8): savaş sonu karakter durumu (HP/kaynak/slot/Exhaustion); `kimlik` aynı sonucu bir kez uygulamak için. */
+  | { t: 'karakter_sonuc'; karakterId: string; durum: unknown; kimlik: string }
   | { t: 'oda_kapandi'; neden: string };
 
 /** Büyük mesajın parçası (O5 aktarıcısının boyut sınırı için; bellek ve sekmede gerekmez). */
@@ -94,11 +98,12 @@ const opt = <T>(v: unknown, f: (x: unknown) => x is T): boolean => v === undefin
 const ROLLER: readonly string[] = ['host', 'oyuncu', 'izleyici'];
 const REDLER: readonly string[] = ['surum', 'anahtar', 'dolu', 'kilitli', 'kapali'];
 const ASAMALAR: readonly string[] = ['lobi', 'kurulum', 'savas', 'bitti'];
+const KARARLAR: readonly string[] = ['bekle', 'yz', 'gm'];
 const strArr = (v: unknown): v is string[] => arr(v) && v.every(str);
 
 /** Tür başına alan denetimi (boyut ayrı). */
 const DENETIM: Record<string, (m: Record<string, unknown>) => boolean> = {
-  katil: (m) => str(m.istemciId) && !!m.istemciId && str(m.ad) && opt(m.anahtar, str) && opt(m.sonSeq, int)
+  katil: (m) => str(m.istemciId) && !!m.istemciId && str(m.ad) && opt(m.anahtar, str) && opt(m.sonSeq, int) && opt(m.donem, int)
     && int(m.protokol) && str(m.uygulama) && num(m.kuralSurumu),
   karakter_gonder: (m) => obj(m.kopya) && str(m.kopya.id) && obj(m.kopya.sheet),
   karakter_geri_al: (m) => str(m.karakterId),
@@ -123,8 +128,8 @@ const DENETIM: Record<string, (m: Record<string, unknown>) => boolean> = {
   istem_iptal: (m) => str(m.istekId),
   ozet: (m) => int(m.donem) && int(m.seq) && str(m.hash),
   karakter_red: (m) => str(m.karakterId) && ['gecersiz', 'dolu', 'kilitli'].includes(m.neden as string) && opt(m.ayrinti, str),
-  uye_durumu: (m) => str(m.istemciId) && typeof m.bagli === 'boolean',
-  karakter_sonuc: (m) => str(m.karakterId),
+  uye_durumu: (m) => str(m.istemciId) && typeof m.bagli === 'boolean' && (m.karar === undefined || KARARLAR.includes(m.karar as string)),
+  karakter_sonuc: (m) => str(m.karakterId) && obj(m.durum) && str(m.kimlik),
   oda_kapandi: (m) => str(m.neden),
   parca: (m) => str(m.kimlik) && int(m.i) && int(m.n) && (m.n as number) > 0 && (m.i as number) >= 0 && (m.i as number) < (m.n as number) && str(m.veri),
 };

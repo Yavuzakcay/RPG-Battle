@@ -271,7 +271,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
           });
         }} />;
     case 'katil':
-      return <OdaKatil characters={characters} onBack={home} roomId={screen.roomId}
+      return <OdaKatil characters={characters} onBack={home} roomId={screen.roomId} onCharacters={store}
         onWatch={(watch) => { const s = watch.current(); if (s) setScreen({ name: 'battle', session: s, watch, restored: true }); }}
         onBuild={(id, overlay) => setScreen({ name: 'builder', character: newCharacter(newId()), oda: { id, overlay } })} />;
     case 'battle':

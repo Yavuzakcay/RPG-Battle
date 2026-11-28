@@ -16,7 +16,8 @@ import { BaglantiHatasi } from '../room/transport';
 import { kodGecerli, kodTemizle } from '../room/code';
 import type { OdaIstemci } from '../room/client';
 import {
-  aktifHost, aktifHostTuru, aktifIstemci, cevrimiciAc, cevrimiciKapat, hostAbone, hostOdaGuncelle, istemciAyril, izleme, kodlaKatil,
+  aktifHost, aktifHostTuru, aktifIstemci, cevrimiciAc, cevrimiciKapat, diriltilebilir, hostAbone, hostDirilt, hostOdaGuncelle, istemciAyril, izleme, kodlaKatil,
+  savasSonuclari, sonucKapat, sonucSorusuz, sonucUygula, istemciBaglantisi,
 } from './odaCanli';
 
 const useYenile = (): (() => void) => { const [, set] = useState(0); return () => set((n) => n + 1); };
@@ -37,6 +38,8 @@ export function OdaCevrimiciPanel(props: { room: Oda; onChange: (fn: (o: Oda) =>
     if (e.tur === 'karakter_gitti') change.current((o) => removeOnlineCopy(o, e.karakterId));
     yenile();
   }), []);
+  // Görev ODA-4: sayfa yenilendiyse önceki çevrimiçi oda aynı kodla, kayıtlı üyelerle geri açılır.
+  useEffect(() => { if (diriltilebilir(room.id)) void hostDirilt(room.id, room).then(() => yenile()); }, [room.id]);
   const host = aktifHost(room.id);
   const tur = aktifHostTuru();
   const ac = async () => {
@@ -86,12 +89,13 @@ function kimlikOku(): SekmeKimligi {
 function kimlikYaz(k: SekmeKimligi): void { try { sessionStorage.setItem(KIMLIK, JSON.stringify(k)); } catch { /* yalnız bu sayfada */ } }
 
 /** Oyuncu: kodla katıl, lobi, karakter kopyası, savaşı izle. */
-export function OdaKodlaKatil(props: { characters: SavedCharacter[]; onWatch: (w: SessionWatch) => void }) {
+export function OdaKodlaKatil(props: { characters: SavedCharacter[]; onWatch: (w: SessionWatch) => void; /** Görev ODA-4: savaş sonucunu karakter deposuna yazar. */ onCharacters?: (list: SavedCharacter[]) => void; /** Bütün karakterler (sonuç yazılırken liste bozulmasın). */ allCharacters?: SavedCharacter[] }) {
   const C = t().odaCevrimici, O = t().oda;
   const yenile = useYenile();
   const [kod, setKod] = useState('');
   const [ad, setAd] = useState(() => props.characters[0]?.sheet.name ?? '');
   const [hata, setHata] = useState<string | null>(null);
+  const [bilgi, setBilgi] = useState<string | null>(null);
   const [bekliyor, setBekliyor] = useState(false);
   const [c, setC] = useState<OdaIstemci | null>(() => aktifIstemci());
   const onWatch = useRef(props.onWatch);
@@ -104,7 +108,8 @@ export function OdaKodlaKatil(props: { characters: SavedCharacter[]; onWatch: (w
     if (o.tur === 'red') setHata(o.neden === 'surum' ? `${C.rejected.surum} (${C.versionField[o.ayrinti ?? ''] ?? o.ayrinti ?? ''})` : C.rejected[o.neden] ?? o.neden);
     if (o.tur === 'karakter_red') setHata(C.charRejected[o.neden] ?? o.neden);
     if (o.tur === 'kapandi') setHata(C.closed);
-    if (o.tur === 'baglanti' && o.d.tur === 'koptu') setHata(C.lost);
+    if (o.tur === 'baglanti' && o.d.tur === 'koptu') setHata(C.reconnecting);
+    if (o.tur === 'kabul') setHata(null);
     // Savaş başlayınca (yeni anlık) izlemeye geç.
     if (o.tur === 'savas' && o.sifirlandi && c.durum) onWatch.current(izleme);
     yenile();
@@ -123,6 +128,19 @@ export function OdaKodlaKatil(props: { characters: SavedCharacter[]; onWatch: (w
     }
     setBekliyor(false);
   };
+  // Görev ODA-4 (madde 8): savaş sonucu. Kopya gönderildiğinden beri değişmeyen karaktere sorusuz yazılır; değiştiyse sorulur.
+  const hepsi = props.allCharacters ?? props.characters;
+  const sonuclar = savasSonuclari().flatMap((r) => { const ch = hepsi.find((x) => x.id === r.karakterId); return ch ? [{ r, ch }] : []; });
+  const sorulacak = sonuclar.filter((x) => !sonucSorusuz(x.ch));
+  const uygula = (list: Array<{ r: (typeof sonuclar)[number]['r']; ch: SavedCharacter }>) => {
+    if (!list.length || !props.onCharacters) return;
+    const yeni = new Map(list.map((x) => [x.ch.id, sonucUygula(x.ch, x.r)]));
+    for (const x of list) sonucKapat(x.r.kimlik);
+    props.onCharacters(hepsi.map((ch) => yeni.get(ch.id) ?? ch));
+    setBilgi(list.map((x) => C.resultApplied(x.ch.sheet.name)).join(' '));
+  };
+  const sorusuz = sonuclar.filter((x) => sonucSorusuz(x.ch));
+  useEffect(() => { if (sorusuz.length) uygula(sorusuz); });
   if (!c) {
     return (
       <section className="panel oda-kodla" data-testid="oda-kodla">
@@ -137,6 +155,7 @@ export function OdaKodlaKatil(props: { characters: SavedCharacter[]; onWatch: (w
       </section>
     );
   }
+  const baglanti = istemciBaglantisi();
   const oda = c.oda;
   const ilk = istemler[0];
   const zarIstemi = ilk?.kind === 'dice' ? ilk : null;
@@ -150,7 +169,16 @@ export function OdaKodlaKatil(props: { characters: SavedCharacter[]; onWatch: (w
         onEnter={(v) => cevapla(v)} onAuto={() => cevapla(null)} onCancel={() => cevapla(null)} />}
       <h2>{oda?.ad ?? C.connecting} <small className="mute">{C.connected(c.kod)}{oda ? ` · ${C.stage[oda.asama] ?? oda.asama}` : ''}</small></h2>
       {oda && <p className="mute">{O.lineGm(oda.gmAdi)}</p>}
-      {hata && <p className="oda-error" role="alert">{hata}</p>}
+      {hata && <p className="oda-error" role="alert">{hata}{hata.startsWith(C.rejected.surum ?? '\u0000') && <> <button type="button" className="ghost" onClick={() => location.reload()}>{C.reload}</button></>}</p>}
+      {!hata && baglanti !== 'bagli' && <p className="oda-error" role="status">{baglanti === 'yeniden' ? C.reconnecting : C.reconnectFailed}</p>}
+      {bilgi && <p className="mute" role="status" data-testid="oda-sonuc-bilgi">{bilgi}</p>}
+      {sorulacak.map(({ r, ch }) => (
+        <div key={r.kimlik} className="oda-card oda-sonuc" data-testid="oda-sonuc-sor">
+          <div className="oda-card-text">{C.resultAsk(ch.sheet.name)}</div>
+          <button type="button" className="cta" onClick={() => uygula([{ r, ch }])}>{C.resultOverwrite}</button>
+          <button type="button" className="ghost" onClick={() => { sonucKapat(r.kimlik); yenile(); }}>{C.resultSkip}</button>
+        </div>
+      ))}
       {oda && (
         <>
           <h3>{C.members}</h3>
