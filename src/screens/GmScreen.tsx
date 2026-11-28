@@ -16,9 +16,11 @@ import REGIONS from '../../harita/_ortak/harita-bolgeleri.json';
 import { TIERS, crNumber, fitsMap, monsterEnv, tierOf, winterPick } from '../data/monsterEnv';
 import { optionalRules } from '../battle/maprules';
 import { characterProblems, type SavedCharacter } from '../rules/builder';
+import type { CharacterSheet } from '../rules/stats';
 import { currentStatus, fullStatus, isRested, longRestStatus } from '../rules/characterRest';
 import { MAX_LEVEL, changeLevel } from '../app/levelChange';
 import { statusBlock } from '../app/partyStatus';
+import { sheetFoeCr } from '../app/sheetFoe';
 import { regenWarning } from '../battle/encounterWarn';
 import { createMapBattle, gargantuanTooBig, customMonster, customMonsterCr, customMonsterProblems, planParticipants, planProblems, type CustomMonsterInput, civilianHexProblem, civilianRule, dragonSetup, maxCivilians, type CivilianPlacement } from '../app/setup';
 import { allHexes, hexCenter, hexPoints, worldOf } from '../ui/mapView';
@@ -57,6 +59,11 @@ const BLANK_MONSTER: CustomMonsterInput = {
 };
 
 /** Kayıtlı durumdaki HP: "HP 12/38". */
+/** Görev DUSMAN-KAGIT-1: kâğıdın tahmini CR'si (hesap hatasında '?'). */
+function foeCr(sheet: CharacterSheet): string {
+  try { return sheetFoeCr(sheet).cr; } catch { return '?'; }
+}
+
 function hpText(c: SavedCharacter): string {
   try { return t().gm.partyHp(currentStatus(c.sheet, c.status).hp, fullStatus(c.sheet).hp); } catch { return ''; }
 }
@@ -101,6 +108,9 @@ export function GmScreen(props: {
   const party = room ? ready.filter((c) => room.parti.includes(c.id)).map((c) => c.id) : chosen ?? ready.slice(0, Math.min(4, MAX_PARTY)).map((c) => c.id);
   const partyFull = party.length >= MAX_PARTY;
   const [counts, setCounts] = useState<Record<string, number>>({ wolf: 2 });
+  // Görev DUSMAN-KAGIT-1: düşman olarak seçilen kayıtlı karakterler (karakter kimliği → adet).
+  const [foeChars, setFoeChars] = useState<Record<string, number>>({});
+  const foeCrs = useMemo(() => Object.fromEntries(valid.map((c) => [c.id, foeCr(c.sheet)])), [props.characters]);
   const [customs, setCustoms] = useState<Monster[]>([]);
   const blankMonster = (): CustomMonsterInput => ({ ...BLANK_MONSTER, attackName: t().gm.custom.defaultAttack });
   const [draft, setDraft] = useState<CustomMonsterInput>(blankMonster);
@@ -200,6 +210,7 @@ export function GmScreen(props: {
     party: ready.filter((c) => party.includes(c.id)).map((c) => ({ id: c.id, sheet: c.sheet, ...(c.status ? { status: c.status } : {}) })),
     carryRule: storedCarryRule(),
     enemies: all.filter((m) => (counts[m.id] ?? 0) > 0).map((m) => ({ monster: m, count: counts[m.id] ?? 0 })),
+    sheetEnemies: valid.filter((c) => (foeChars[c.id] ?? 0) > 0).map((c) => ({ id: c.id, sheet: c.sheet, count: foeChars[c.id] ?? 0 })),
     // Aynalama kaldırıldı (Görev G arayüz, Kuyruk 19 motor: kural sürümü 16); eski aynalı kayıtlar açılır.
     mapId: map.id, variantId: variant.id,
     options: options.filter((o) => optional.some((r) => r.id === o)),
@@ -418,7 +429,7 @@ export function GmScreen(props: {
         </section>
 
         <section className="panel">
-          <h2>{G.enemies(plan.enemies.reduce((n, e) => n + e.count, 0))}</h2>
+          <h2>{G.enemies(plan.enemies.reduce((n, e) => n + e.count, 0) + plan.sheetEnemies.reduce((n, e) => n + e.count, 0))}</h2>
           <div className="monster-filter">
             <input className="monster-search" type="search" placeholder={G.search(pool.length)} aria-label={G.searchLabel}
               value={query} onChange={(e: { target: { value: string } }) => setQuery(e.target.value)} />
@@ -466,6 +477,25 @@ export function GmScreen(props: {
               )),
             ])}
           </div>
+          {valid.length > 0 && (
+            <details className="sheet-foes" open={plan.sheetEnemies.length > 0}>
+              <summary>{G.sheetFoes.title(plan.sheetEnemies.reduce((n, e) => n + e.count, 0))}</summary>
+              <p className="mute">{G.sheetFoes.hint}</p>
+              <div className="monster-list">
+                {valid.map((c) => (
+                  <div className="monster-row" key={c.id}>
+                    <span><b>{c.sheet.name}</b> <small>{G.sheetFoes.line(sheetClassLevel(c.sheet), foeCrs[c.id] ?? '?')}</small>
+                      {party.includes(c.id) && <span className="warn" title={G.sheetFoes.inParty}> ⚠ {G.sheetFoes.inParty}</span>}</span>
+                    <span className="stepper">
+                      <button aria-label={G.sheetFoes.dec(c.sheet.name)} onClick={() => setFoeChars((f) => ({ ...f, [c.id]: Math.max(0, (f[c.id] ?? 0) - 1) }))}>−</button>
+                      <b>{foeChars[c.id] ?? 0}</b>
+                      <button aria-label={G.sheetFoes.inc(c.sheet.name)} onClick={() => setFoeChars((f) => ({ ...f, [c.id]: Math.min(12, (f[c.id] ?? 0) + 1) }))}>+</button>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </details>
+          )}
           <button className="ghost" onClick={() => setShowCustom((x) => !x)}>{G.customToggle(showCustom)}</button>
           {showCustom && (
             <div className="custom-monster">

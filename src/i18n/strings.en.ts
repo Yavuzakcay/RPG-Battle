@@ -943,6 +943,13 @@ export const en: Strings = {
       estimate: (d: string, o: string, cr: string) => `Estimate: defensive CR ${d} (HP, AC), offensive CR ${o} (average damage, bonus) → CR ${cr}. The Game Master can change it.`,
       noEstimate: 'The CR is calculated once the damage expression is valid.', add: 'Add to list', defaultAttack: 'Attack',
       nameCount: (n: number, max: number) => `Name: ${n}/${max} characters` },
+    sheetFoes: {
+      title: (n: number) => `Character foes (${n})`,
+      hint: 'Saved characters as foes: played by the AI or the Game Master, start at full HP and resources; the result is not written to the character.',
+      inParty: 'in party',
+      line: (label: string, cr: string) => `${label} · estimated CR ${cr}`,
+      dec: (n: string) => `Fewer ${n} foes`, inc: (n: string) => `More ${n} foes`,
+    },
     regenWarn: (names: string) => `This encounter needs fire or acid damage: ${names} regenerate(s) and the party has no fire/acid source (spell, breath, Alchemist's Fire, Acid). A regenerating foe only dies to that damage.`,
     setup: 'Set up battle',
     tierNames: { ufak: 'Entry Level', orta: 'Medium', guclu: 'Strong', boss: 'Boss', efsanevi: 'Legendary' } as Record<string, string>,
