@@ -85,6 +85,8 @@ export interface ActiveEffect {
   aura?: import('./auraCore').AuraSpec;
   /** Kuyruk K54: birden çok aura (Son Ders: save bonusu + tur başı Motivasyon). */
   auras?: import('./auraCore').AuraSpec[];
+  /** Görev KATALOG-GUC-TAM (sürüm 109): katalog güçlerinin alanları (`katalog109.ts`). */
+  k109?: import('./katalog109Types').K109Fx;
   /** Kuyruk K54 (sürüm 25): hareketi fırsat saldırısı doğurmaz (Çevik Yaşlı). */
   noProvoke?: boolean;
   /** Kuyruk K54b (sürüm 27): zor zemin ve zemin (yüzey) hasarı yok sayılır (Kuşbakışı Plan; `groundWard.ts`). */

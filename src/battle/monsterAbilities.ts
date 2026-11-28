@@ -39,6 +39,7 @@ import { swarm95On } from './swarm95Surum';
 import { ws92On } from './ws92Surum';
 import ws92Data from '../../data/ws92.json';
 import { insideEffect } from './swallow92';
+import { k109SetupEffect } from './katalog109Data';
 
 export interface MonsterAbility extends Omit<LegendaryAction, 'kind'> {
   kind: LegendaryAction['kind'] | 'grant' | 'heal' | 'pull' | 'drop' | 'swallow' | 'summon' | 'ethereal';
@@ -141,6 +142,9 @@ export function monsterAbilitySetup(state: BattleState, c0: Combatant, m0?: Mons
   // Görev SWARM95 (95+): SRD Swarm altıgen paylaşımı Gaseous Form altyapısıyla (`shareSpace`, `squeeze`) + karşılıklılık (`swarm`).
   if (p.swarm && swarm95On(state)) { fx.swarm = true; fx.shareSpace = true; fx.squeeze = true; }
   if (Object.keys(fx).length) c.effects = [...(c.effects ?? []), { ...fx, id: `srd19:${id}:passive`, name: c.name, sourceId: id } as ActiveEffect];
+  // Görev KATALOG-GUC-TAM (109+): katalog canavar auraları ve pasifleri (`data/katalog-gucler.json`).
+  const k109 = k109SetupEffect(state, c0);
+  if (k109 && !c.effects?.some((x) => x.id === k109.id)) c.effects = [...(c.effects ?? []), k109];
   const traits = [...(p.traits ?? []), ...(p.siegeMonster ? ['siege-monster'] : []), ...(p.greaterMagicResistance ? ['greater-magic-resistance'] : []),
     ...(p.reflectiveCarapace ? ['reflective-carapace'] : []), ...(p.corrosive ? ['corrosive-form'] : []), ...(p.mistyEscape ? ['misty-escape'] : []),
     ...(p.abduct ? ['abduct'] : []), ...(p.earthGlide ? ['earth-glide'] : []), ...(p.berserk ? ['berserk'] : [])];
