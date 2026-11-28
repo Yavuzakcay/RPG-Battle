@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## DUSMAN-KAGIT-1: karakter kâğıdı düşman tarafında (2026-11-28; kural sürümü 110 ve kayıt sürümü 28 değişmedi)
+
+- `combatantFromSheet` `opts.side` (varsayılan parti, savaşçı aynen); `enemies` → `ownerId: null`. Savaşçıda yeni alan yok; kâğıt düşman yüklemle tanınır (`create.ts` `sheetFoe`: düşman, canavar kimliği yok, çağrı/masum/yönetilen değil, seviyeli).
+- Kural sürümü artmadı: eski kayıt/replay'de kâğıt düşman olamaz (önceden kurulamıyordu), yapay zekâ kapıları kâğıt düşman yokken eskisiyle aynı (3 tohum: 109 = 110 = altın).
+- Kâğıt düşman hep **tam kopya** (kayıtlı durum okunmaz), savaş sonu karaktere yazılmaz (`applyBattleResult` yalnız partiye bakar); aynı karakter aynı savaşta hem parti hem düşman olamaz (`planProblems`).
+- 0 HP'de canavar gibi düşer (ölüm save'i yok; SRD "Monsters and Death", Game Master'a bırakılan) — boss için ayrı karar bekliyor.
+- Serüven listesinde `kagit:<kimlik>` → `data/kagit-dusmanlar.json` (boş; ad/kimlik kodda yok). CR `estimateCr` ile (silah + cantrip ölçeği; slotlu büyüler yok, ⚠ büyücüde düşük). Rapor `harita/belgeler/DUSMAN-KAGIT-1.md`.
+
 ## GECE-KATALOG-KALAN: katalog ⚠ düzeltmeleri, kanca listesi 2. tur, motor yaklaşıkları, eşya görsel varyantı (2026-11-28; kural sürümü 109 → 110, kayıt sürümü 28 değişmedi)
 
 - **Kural sürümü 110** (tek sabit `src/battle/katalog110Surum.ts` `KATALOG110_VERSION`, `katalog110On`): 109 savaşları kayıtla açılabildiği için 109'un davranışı değiştirilmedi; bütün davranış farkları 110'a bağlı. Veri katmanı `data/katalog-gucler.json` canavar kaydında `s110` (110+ savaşta kaydın üst anahtarlarının yerine geçer; `katalog109Data.ts` `gucOf`; üretici `python scripts/katalog-gucler.py`). Yeni olay türü yok (`trait_turn`, `map_note`, `spell_cast.countered`, `pushed`, `zone_created`… mevcut olaylar), bu yüzden kayıt sürümü 28 kaldı. Hızlı regresyon `src/sim/katalog110Regresyon.test.ts`: Çöl/Kale/Mağara/Orman 3 tohum, 109 = 110 = MC3 altını.
