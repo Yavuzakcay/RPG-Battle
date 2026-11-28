@@ -24,6 +24,8 @@ import { OdaHost, type HostOlayi, type OdaBilgisi, type UzakKomut } from '../roo
 import { OdaIstemci, type IstemciOlayi } from '../room/client';
 import { guvenliRng, istemciIdUret, kodGecerli, kodUret } from '../room/code';
 import { yerelSurum } from '../room/surum';
+import { olaylariSuz, type Izleyici } from '../room/view';
+import { HP_VIS, setViewerHpVis, type HpVis } from '../oda/active';
 import { BaglantiHatasi, dinleyiciler, type RoomTransport, type TransportTuru } from '../room/transport';
 
 const agAdresi = (): string | null =>
@@ -175,11 +177,15 @@ function oturumGuncelle(c: OdaIstemci, o: IstemciOlayi): void {
   if (o.tur === 'zar_iste') { istemAc({ kind: 'dice', id: o.istekId, request: o.istek, answer: (v) => { acikIstemler.delete(o.istekId); c.zarCevap(o.istekId, v); } }); return; }
   if (o.tur === 'tepki_sor') { istemAc({ kind: 'reaction', id: o.istekId, request: o.istek, answer: (a: ReactionAnswer) => { acikIstemler.delete(o.istekId); c.tepkiCevap(o.istekId, a); } }); return; }
   if (o.tur === 'istem_iptal') { if (acikIstemler.delete(o.istekId)) istemAbone.yay({ kind: 'cancel', id: o.istekId }); return; }
+  if (o.tur === 'oda' && c.oda) { setViewerHpVis((HP_VIS as readonly string[]).includes(c.oda.hpGorunurluk) ? c.oda.hpGorunurluk as HpVis : 'tam'); return; }
   if (o.tur !== 'savas') return;
   if (!c.durum) { oturum = null; return; }
+  // Görev ODA-3: oturumun olayları ve günlüğü izleyiciye göre süzülür (yalnız gösterim; durum host'unkiyle aynı).
+  const iz = izleyiciOf(c);
+  const sec = { hp: (c.oda?.hpGorunurluk ?? 'tam') as HpVis };
   oturum = o.sifirlandi || !oturum
-    ? createSession(c.durum, c.olaylar)
-    : { state: c.durum, events: [...oturum.events, ...o.yeni], lines: [...oturum.lines, ...describeEvents(o.yeni, c.durum)], error: null };
+    ? createSession(c.durum, olaylariSuz(c.olaylar, null, c.durum, iz, sec))
+    : ((yeni) => ({ state: c.durum as BattleState, events: [...(oturum as Session).events, ...yeni], lines: [...(oturum as Session).lines, ...describeEvents(yeni, c.durum as BattleState)], error: null }))(olaylariSuz(o.yeni, oturum.state, c.durum, iz, sec));
   oturumAbone.yay(oturum);
 }
 
@@ -214,8 +220,15 @@ export async function istemciAyril(): Promise<void> {
   const c = istemci;
   istemci = null;
   oturum = null;
+  setViewerHpVis(null);
   acikIstemler.clear();
   if (c) await c.ayril();
+}
+
+/** Görev ODA-3: bu cihazın izleyicisi: oyuncu rolünde kendi karakter kopyaları (savaşta `ownerId`), yoksa izleyici. */
+function izleyiciOf(c: OdaIstemci): Izleyici {
+  if (c.rol !== 'oyuncu') return { tur: 'izleyici' };
+  return { tur: 'oyuncu', ownerIds: c.oda?.uyeler.find((u) => u.istemciId === c.istemciId)?.karakterler ?? [] };
 }
 
 /** Bu cihazın oyuncusu savaştaki bir karakterin sahibi mi (dokunma açık, komutlar host'a). */
@@ -233,4 +246,5 @@ export const izleme: SessionWatch = {
   control: kontrolVar,
   send: (cmd: Command) => { istemci?.komutGonder(cmd); },
   prompts: (fn) => { for (const p of [...acikIstemler.values()]) fn(p); return istemAbone.ekle(fn); },
+  viewer: () => (istemci ? izleyiciOf(istemci) : { tur: 'izleyici' }),
 };

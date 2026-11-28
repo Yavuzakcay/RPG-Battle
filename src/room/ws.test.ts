@@ -20,7 +20,7 @@ import { OdaIstemci, type IstemciOlayi } from './client';
 import type { SurumBilgisi } from './protocol';
 import type { BaglantiDurumu, RoomTransport } from './transport';
 
-const SURUM: SurumBilgisi = { protokol: 1, uygulama: 'ws-test', kuralSurumu: 108, icerik: 'yok' };
+const SURUM: SurumBilgisi = { protokol: 1, uygulama: 'ws-test', kuralSurumu: 108 };
 const bekle = (ms: number) => new Promise((r) => setTimeout(r, ms));
 async function kadar(f: () => boolean, ms = 4000): Promise<void> {
   const son = Date.now() + ms;

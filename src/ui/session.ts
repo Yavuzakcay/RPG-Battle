@@ -26,6 +26,8 @@ export interface SessionWatch {
   send?(cmd: Command): void;
   /** Görev ODA-2: host'un bu cihaza yolladığı zar/tepki istemleri. */
   prompts?(fn: (p: RemotePrompt) => void): () => void;
+  /** Görev ODA-3: bu cihazın izleyicisi (oyuncu: kendi karakterleri; izleyici). Görünüm süzgeci `src/room/view.ts`. */
+  viewer?(): import('../room/view').Izleyici;
 }
 
 export type RemotePrompt =

@@ -235,7 +235,7 @@ export const TR_EXTRA = {
     join: 'Katıl', joining: 'Bağlanıyor…', badCode: 'Kod 6 haneli olmalı.', leave: 'Odadan ayrıl',
     noRoom: 'Bu kodla açık oda bulunamadı.', codeTaken: 'Kod kullanımda.',
     rejected: { surum: 'Sürüm uyuşmuyor: iki sekmeyi de yenile.', anahtar: 'Oturum anahtarı tutmadı: yeniden katıl.', dolu: 'Oda dolu.', kilitli: 'Oda kilitli.', kapali: 'Oda kapalı.' } as Record<string, string>,
-    versionField: { protokol: 'protokol', uygulama: 'uygulama sürümü', kuralSurumu: 'kural sürümü', icerik: 'dış içerik' } as Record<string, string>,
+    versionField: { protokol: 'protokol', uygulama: 'uygulama sürümü', kuralSurumu: 'kural sürümü' } as Record<string, string>,
     connected: (code: string): string => `Bağlı: oda ${code}`, connecting: 'Bağlanıyor…', lost: 'Bağlantı koptu.', closed: 'Game Master odayı kapattı.',
     stage: { lobi: 'Lobi', kurulum: 'Savaş kuruluyor', savas: 'Savaş sürüyor', bitti: 'Savaş bitti' } as Record<string, string>,
     myChars: 'Karakterlerin', send: 'Kopya gönder', sent: 'Gönderildi', withdraw: 'Geri al',
@@ -245,6 +245,7 @@ export const TR_EXTRA = {
     remoteFrom: 'Game Master istiyor',
     transport: { 'yerel-ag': 'Yerel ağ', sekme: 'Bu tarayıcının sekmeleri', bellek: 'Bellek', supabase: 'İnternet' } as Record<string, string>,
     playing: 'Oynuyorsun: kendi karakterini kendi sıranda yönet',
+    gmTrap: 'Bulunmamış tuzak (yalnız Game Master görür)',
     watch: 'Savaşı izle', watching: 'İzliyorsun: Game Master\'ın savaşı (salt izleme)', leaveWatch: 'Lobiye dön',
   },
   roomRules: {
