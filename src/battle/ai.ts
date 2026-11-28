@@ -128,10 +128,17 @@ import aiRoles from '../../data/yz-roller.json';
 import { bonusPoolCands } from './ai/behaviors';
 import { aiStats, previewCommand } from './ai/preview';
 import { kalan100On } from './kalan100Surum';
+import { sheetFoe } from './create';
 
 const noRoll = () => 0.5;
 const ctxOf = (c: Combatant): CommandContext =>
   c.side === 'enemies' || c.civilian ? { playerId: 'gm', isGm: true } : { playerId: c.ownerId, isGm: false };
+/**
+ * Görev DUSMAN-KAGIT-1: sınıf özelliği sezgileri kâğıt düşmanı (`sheetFoe`) parti üyesi gibi oynar; harita/hedef
+ * sezgileri (sızma, çadır, hedef koşucusu, uyuyan ejderha) tarafa bağlı kalır.
+ */
+/** Sınıf özelliği sezgilerinin kapısı: parti ya da kâğıt düşman (kâğıt düşman yoksa eski `side === 'party'`). */
+const pcSide = (c: Combatant): boolean => c.side === 'party' || sheetFoe(c);
 /**
  * Y2 G2: aynı durumda aynı komutun deneme sonucu önbellekte (durum değişmez nesne; `noRoll` deterministik): karar
  * içinde ve ardışık kararlarda (metamagic, Usta ileri bakışı, hareket yeri taraması) tekrar eden `execute` çağrıları.
@@ -923,7 +930,7 @@ function healAlly(state: BattleState, actor: Combatant): Command | null {
   const heals = castable(actor).filter((s) => s.mechanics.kind === 'heal');
   if (heals.length === 0) return null;
   const hurt = Object.values(state.combatants)
-    .filter((c) => c.side === 'party' && !c.civilian && !c.summon && c.life !== 'dead' && (c.life === 'dying' || c.hp < c.maxHp * 0.25))
+    .filter((c) => c.side === (sheetFoe(actor) ? 'enemies' : 'party') && !c.civilian && !c.summon && c.life !== 'dead' && (c.life === 'dying' || c.hp < c.maxHp * 0.25))
     .sort((a, b) => a.hp - b.hp);
   for (const ally of hurt) {
     for (const s of heals.sort((a, b) => (a.castingTime === 'bonus' ? -1 : 1) - (b.castingTime === 'bonus' ? -1 : 1))) {
@@ -996,7 +1003,7 @@ function bestNowUncached(state: BattleState, actor: Combatant): Command | null {
   const foes = byPriority(actor, foesOf(state, actor), state);
   const shove = deadlyShove(state, actor, foes);
   if (shove) return shove;
-  if (actor.side === 'party' && !actor.summon) {
+  if (pcSide(actor) && !actor.summon) {
     const heal = healAlly(state, actor);
     if (heal) return heal;
     const cut = finishRegen(state, actor);
@@ -1472,7 +1479,7 @@ const at = (state: BattleState, actor: Combatant, to: Offset, altFt?: number): B
  * saldırısı. Yoksa null.
  */
 function bonusFeature(state: BattleState, actor: Combatant, canAct: boolean): Command | null {
-  if (actor.side !== 'party' || actor.civilian || actor.economy.bonus) return null;
+  if (!pcSide(actor) || actor.civilian || actor.economy.bonus) return null;
   const id = actor.id;
   const ok = (cmd: Command) => tryCmd(state, actor, cmd).ok;
   if (resourceLeft(actor, 'secondWind') > 0 && actor.hp <= actor.maxHp / 2 && ok({ type: 'second_wind', actorId: id })) {
@@ -1595,7 +1602,7 @@ function bestNowAgainst(state: BattleState, actor: Combatant, target: Combatant)
 
 /** Steady Aim: özelliği var, bu tur yürümedi, bonus eylemi boş, şimdiki saldırı avantajsız (Sneak Attack tutmuyor). */
 function steadyAimFirst(state: BattleState, actor: Combatant, now: Command | null): Command | null {
-  if (!now || now.type !== 'attack' || actor.side !== 'party' || !hasTrait(actor, 'steady-aim') || actor.movementUsed > 0 || actor.economy.bonus) return null;
+  if (!now || now.type !== 'attack' || !pcSide(actor) || !hasTrait(actor, 'steady-aim') || actor.movementUsed > 0 || actor.economy.bonus) return null;
   if (actor.steadyAim === turnKey(state)) return null;
   // Bitişikte düşman varken nişan almaz (yerinde kalır, yakın dövüşte; önce ayrılıp yer değiştirmeyi seçer).
   if (Object.values(state.combatants).some((c) => c.side !== actor.side && !c.civilian && c.hp > 0 && c.pos && actor.pos && gap(state, c, actor) === 1)) return null;
@@ -1639,7 +1646,7 @@ function withBrutal(state: BattleState, actor: Combatant, cmd: Command): Command
 
 /** Horde Breaker: bu tur saldırdığı yaratığın 5 ft yakınındaki başka bir düşmana en iyi silahıyla. */
 function hordeBreakerCmd(state: BattleState, actor: Combatant): Command | null {
-  if (actor.side !== 'party' || !hasTrait(actor, 'horde-breaker') || !actor.economy.lastTargetId) return null;
+  if (!pcSide(actor) || !hasTrait(actor, 'horde-breaker') || !actor.economy.lastTargetId) return null;
   const options = [...actor.weaponOptions].filter((o) => !o.spell).sort((a, b) => avg(b.damage) - avg(a.damage));
   for (const f of byPriority(actor, foesOf(state, actor), state)) {
     for (const option of options) {
@@ -2012,7 +2019,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   const horde = hordeBreakerCmd(state, actor);
   if (horde) return horde;
   // Yan el ek saldırısı: Nick varsa hemen (Attack eyleminin içinde), yoksa eylem bitince bonus eylem boşsa.
-  if (actor.side === 'party' && actor.offHandOption && offhandProblem(actor) === null && (actor.nickOffhand || (!canAct && !actor.economy.bonus))) {
+  if (pcSide(actor) && actor.offHandOption && offhandProblem(actor) === null && (actor.nickOffhand || (!canAct && !actor.economy.bonus))) {
     for (const f of byPriority(actor, foesOf(state, actor), state)) {
       const cmd: Command = { type: 'offhand_attack', actorId, targetId: f.id };
       if (tryCmd(state, actor, cmd).ok) return cmd;
@@ -2020,7 +2027,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   }
   // Smite (basit kural): yakın dövüş isabetinden sonra bonus eylem boşsa; slotsuz kullanım (Paladin's Smite) hep,
   // slotla yalnızca kritik vuruşta ya da hedef 10 HP'den fazlaysa.
-  if (actor.side === 'party' && actor.economy.meleeHit && !actor.economy.bonus) {
+  if (pcSide(actor) && actor.economy.meleeHit && !actor.economy.bonus) {
     const hit = actor.economy.meleeHit;
     const target = state.combatants[hit.targetId];
     const smites = castable(actor).filter((s) => s.mechanics.kind === 'smite').sort((a, b) => Number(freeCast(actor, b.name)) - Number(freeCast(actor, a.name)) || a.level - b.level);
@@ -2038,14 +2045,14 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   }
   // Monk (basit kurallar, veriden): Monk silahı isabetinden sonra Stunning Strike (hedef 15 HP'den fazlaysa ya da
   // kritikse); Attack eylemi bitince Flurry of Blows (Focus varsa) ya da Martial Arts'ın bonus vuruşu.
-  if (actor.side === 'party' && actor.stunning && actor.economy.meleeHit) {
+  if (pcSide(actor) && actor.stunning && actor.economy.meleeHit) {
     const hit = actor.economy.meleeHit;
     const target = state.combatants[hit.targetId];
     const cmd: Command = { type: 'stunning_strike', actorId, targetId: hit.targetId };
     if (target && target.hp > 0 && (target.hp > 15 || hit.critical) && !target.conditions.includes(actor.stunning.condition)
       && tryCmd(state, actor, cmd).ok) return cmd;
   }
-  if (actor.side === 'party' && actor.bonusStrike) {
+  if (pcSide(actor) && actor.bonusStrike) {
     const foes = byPriority(actor, foesOf(state, actor), state);
     const strike = (): Command | null => {
       for (const f of foes) {
@@ -2073,7 +2080,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
     }
   }
   // Süren güçlendirme özelliği (Sacred Weapon; basit kural): saldırabilecekken, etkin değilse ve yakında düşman varsa.
-  if (actor.side === 'party' && canAct) {
+  if (pcSide(actor) && canAct) {
     for (const f of (actor.features ?? []).filter((x) => x.effect.kind === 'buff')) {
       if (activeBuffs(state, actor).some((b) => b.source === f.name)) continue;
       const near = foesOf(state, actor).some((c) => (state.map ? !!c.pos && !!actor.pos && gap(state, c, actor) <= 2 : heightOf(state, c) === heightOf(state, actor)));
@@ -2156,7 +2163,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // Saldırı zarı güçlendirmesi (Bless; basit kural, veriden: dostlara saldırı zarı eklentisi veren etki büyüsü): eylemi
   // duruyorsa, konsantre değilse ve sürdürülen daha güçlü konsantrasyon büyüsü (Spirit Guardians, Spiritual Weapon)
   // yoksa; menzildeki dostlar (önce kendisi), hedef sayısı kadar. Konsantrasyonu bozmaz (`castable` süzer).
-  if (actor.side === 'party' && !actor.economy.action && !actor.concentration && foesOf(state, actor).length > 0) {
+  if (pcSide(actor) && !actor.economy.action && !actor.concentration && foesOf(state, actor).length > 0) {
     const lingering = castable(actor).some((s) => s.concentration && !!s.mechanics.lingering);
     const buff = lingering ? undefined : castable(actor).find((s) => s.mechanics.kind === 'effect' && s.mechanics.effect?.side === 'ally'
       && s.mechanics.effect.dice?.on.includes('attack'));
@@ -2169,14 +2176,14 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
     }
   }
   // Reckless Attack (basit kural): HP yarıdan fazlaysa ve şu an yapılacak en iyi şey STR ile silah saldırısıysa.
-  if (actor.side === 'party' && actor.canReckless && actor.hp > actor.maxHp / 2 && recklessProblem(actor) === null) {
+  if (pcSide(actor) && actor.canReckless && actor.hp > actor.maxHp / 2 && recklessProblem(actor) === null) {
     const first = bestNow(state, actor);
     if (first?.type === 'attack' && first.option.ability === 'str' && !first.option.spell) return { type: 'reckless', actorId };
   }
 
   // Haritasız savaş: düşman en düşük HP oranlıya saldırır; parti en iyi seçeneği seçer.
   if (!state.map || !actor.pos) {
-    if (actor.side === 'enemies') {
+    if (actor.side === 'enemies' && !sheetFoe(actor)) {
       if (!canAct) return end;
       const target = Object.values(state.combatants)
         .filter((c) => c.side === 'party' && c.hp > 0 && !hiddenFromTruesight(state, actor, c))
@@ -2249,7 +2256,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   if (k73c) return k73c;
   // Parti: bu tur yürüyerek çok daha iyi bir saldırı yapabiliyorsa (en az %25 fazla ortalama
   // hasar; örn. savaşçı arbalet yerine kılıç) önce oraya yürür. Güvenli ve en ucuz yerler.
-  if (now && canAct && actor.side === 'party' && !actor.civilian && actor.movementUsed < speedHexes(actor)) {
+  if (now && canAct && pcSide(actor) && !actor.civilian && actor.movementUsed < speedHexes(actor)) {
     // Y2: karşılaştırma iki uçta aynı ölçüyle (`bestNow`): değerlendiricinin buradaki seçimi ile eski kuralın oradaki
     // seçimi farklı komutlar olunca iki altıgen arasında ileri-geri yürüyordu (Mağara beraberlikleri; YZ-DENETIM Y2).
     const legacyHere = state.yz?.eski ? null : bestNow(state, actor);
@@ -2337,7 +2344,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // Kuyruk K71c: uçan düşmanın yer ve düşük düzey yerleri (birleşik uçuş).
   const spots0 = reachable(state, actor);
   let spots = cellsOn(state) ? [...spots0, ...airSpots(state, actor, spots0)] : spots0;
-  const ranged = actor.side === 'party' && actor.weaponOptions.some((o) => o.ranged);
+  const ranged = pcSide(actor) && actor.weaponOptions.some((o) => o.ranged);
   // Kuyruk 43: `h` çapasındaki gövdeden hedefin gövdesine (çok altıgen kapalıyken `distance`).
   const gapFrom = (h: Offset, t: Combatant) => footprintDistance(bodyAt(state, actor, h), bodyOf(state, t));
   const enemyNear = (h: Offset) => foes.some((f) => f.pos && gapFrom(h, f) === 1);
@@ -3455,7 +3462,7 @@ function aiHelpers(state: BattleState, actor: Combatant): AiHelpers {
   };
 }
 
-const partyBranch = (a: Combatant) => a.side === 'party' && !a.summon;
+const partyBranch = (a: Combatant) => pcSide(a) && !a.summon;
 const monsterBranch = (a: Combatant) => !partyBranch(a);
 
 /** Eylem (ya da bonus/serbest) harcayan imza özelliklerinin adayları (ipucu sezgiselleri kapısız, yoksa hedef listesi). */

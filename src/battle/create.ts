@@ -59,7 +59,7 @@ import { hasBonusUnarmed, offHandAttackOption, unarmedStrikeOption, weaponAttack
 import { activeMasteries, weaponMasteryId } from '../rules/mastery';
 import { classKit, classResources, depotStart, gainedFeatures, resourceDef } from '../rules/classFeatures';
 import { environmentFor, getMap, resolveMapChoice } from '../map/maps';
-import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type AttackOption, type UsableFeature, type Avatar, type BattleEvent, type BattleState, type ActiveEffect, type Combatant, type DragonWakeMode, type Goals, type GroupState, type MapState, type SleepGroup, type SpellZone, type SurfaceKind } from './types';
+import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type AttackOption, type UsableFeature, type Avatar, type BattleEvent, type BattleState, type ActiveEffect, type Combatant, type DragonWakeMode, type Goals, type GroupState, type MapState, type SleepGroup, type SpellZone, type SurfaceKind, type Side } from './types';
 import { civilianLook, defaultCivilianLook } from './civilianLooks';
 import { exhaustionD20Penalty } from '../rules/exhaustion';
 import { classesOf, isMultiSheet, keyClassOf, mcImpl, sheetClassLevel } from '../rules/mcHook';
@@ -180,6 +180,22 @@ const armorStealthDisadvantage = (name: string): boolean =>
  * etkiler, isabet ekleri, silah ve büyü bonusu, yüklü büyüler (slotsuz, kaynak `item:<id>`).
  */
 export function combatantFromSheet(
+  sheet: CharacterSheet,
+  opts: { id: string; ownerId: string; height?: Height; carryRule?: CarryRule; side?: Side },
+): Combatant {
+  const c = combatantFromSheetSide(sheet, opts);
+  // Görev DUSMAN-KAGIT-1: karakter kâğıdından düşman (Game Master'ın tarafı: sahibi yok, ölüm save'i yok, savaş sonu
+  // karaktere yazılmaz). Varsayılan parti: savaşçı aynen.
+  return opts.side === 'enemies' ? { ...c, side: 'enemies', ownerId: null } : c;
+}
+
+/**
+ * Görev DUSMAN-KAGIT-1: karakter kâğıdından kurulan düşman mı (canavar kimliği yok; çağrı, masum ya da yönetilen değil;
+ * seviyeli). Yapay zekâ ve Serüven XP'si için; savaşçıda ayrı alan yok.
+ */
+export const sheetFoe = (c: Combatant): boolean => c.side === 'enemies' && !c.monsterId && !c.summon && !c.civilian && !c.allegiance && c.level > 0;
+
+function combatantFromSheetSide(
   sheet: CharacterSheet,
   opts: { id: string; ownerId: string; height?: Height; carryRule?: CarryRule },
 ): Combatant {
