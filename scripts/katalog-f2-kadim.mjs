@@ -29,6 +29,8 @@ const HATLAR = {
       { tr: ', 15 ft itilir ve Prone olur', en: 'is pushed 15 feet and has the Prone condition' },
       { tr: ', 30 ft itilir, Prone olur ve konsantrasyonu bozulur', en: 'is pushed 30 feet, has the Prone condition, and loses Concentration' }],
     ekVeri: [{ prone: {} }, { prone: {} }, { prone: {} }],
+    // Rider tablosunda yazılmayan parça (109+ katalog-gucler.json `ekler` katmanında); yoksa ek tam ('uygulandı').
+    ekEksik: ['itme (109: katalog-gucler ekler)', 'itme (109: katalog-gucler ekler)', 'itme ve konsantrasyon kaybı (109: katalog-gucler ekler)'],
     bag: { tr: 'Binicisine gök gürültüsü direnci verir; tepkisiyle bir müttefik saldırısı yapar.', en: 'Grants its rider Resistance to Thunder damage; it makes an ally attack as a Reaction.' },
     pasif: { tr: 'Taşıyıcının STR ya da CON puanı 20 olunca: Far Realm yaratıklarına +2d10 hasar, dostlara AC +2.', en: 'When the carrier\'s Strength or Constitution is 20: +2d10 damage against Far Realm creatures and +2 AC for allies.' },
   },
@@ -42,6 +44,7 @@ const HATLAR = {
       { tr: ' ve 1 tur iyileşemez', en: 'can\'t regain Hit Points for 1 round' },
       { tr: ', 1 tur iyileşemez ve en yüksek canı aldığı hasar kadar düşer', en: 'can\'t regain Hit Points for 1 round, and its Hit Point maximum decreases by the damage taken' }],
     ekVeri: [null, null, { drainMax: {} }],
+    ekEksik: [null, null, 'iyileşme engeli (109: katalog-gucler ekler)'],
     bag: { tr: 'Binicisine nekrotik direnci verir; binicinin darbesi hedefin iyileşmesini engeller.', en: 'Grants its rider Resistance to Necrotic damage; the rider\'s hits stop the target from healing.' },
     pasif: { tr: 'Taşıyıcının CON puanı 20 olunca: düşen rakipten 25 geçici can kazanır ve rakibin yenilenmesini kilitler.', en: 'When the carrier\'s Constitution is 20: gains 25 Temporary Hit Points from a foe that falls and locks the foe\'s regeneration.' },
   },
@@ -55,6 +58,7 @@ const HATLAR = {
       { tr: ' ve sonraki zarlarından 1d6 düşer', en: 'subtracts 1d6 from its next rolls' },
       { tr: ', 1 tur Stunned olur ve bütün dirençlerini 1 tur kaybeder', en: 'has the Stunned condition for 1 round and loses all its Resistances for 1 round' }],
     ekVeri: [null, null, { conditions: [{ condition: 'Stunned', owner: 'target', end: 'turnEnd', rounds: 1 }] }],
+    ekEksik: [null, null, 'direnç kaybı (109: katalog-gucler ekler)'],
     bag: { tr: 'Binicisine psişik direnç ve tuzak ile illüzyonlara karşı avantaj verir.', en: 'Grants its rider Resistance to Psychic damage and Advantage against traps and illusions.' },
     pasif: { tr: 'Taşıyıcının INT puanı 20 olunca: 60 ft içindeki görünmezleri ve illüzyonları açığa çıkarır, saldırılarına 1d8 psişik hasar ekler.', en: 'When the carrier\'s Intelligence is 20: reveals invisible creatures and illusions within 60 feet, and its attacks deal an extra 1d8 Psychic damage.' },
   },
@@ -568,7 +572,7 @@ function gemDragon(hat, i) {
       `${breathName}: ${ek.tr.replace(/^, /, '').replace(/^ ve /, '')} — yalnız veriyle bağlanan durumlar uygulanır`,
       `Türetilen değerler (CR tablosu, KATALOG-F2-PROSPEKTUS.md): yetenek puanları, Bite/Claw${adult ? '/Tail, Body Sweep/Wing Buffet, Elemental Pulse' : ''}, kurtarma, beceriler, bağışıklık, karanlık görüş, Recharge, yarı hasar`,
     ],
-    riders: { Bite: bite.ek, ...(H.ekVeri[i] ? { [breathName]: { ...H.ekVeri[i], status: 'kısmen' } } : {}) },
+    riders: { Bite: bite.ek, ...(H.ekVeri[i] ? { [breathName]: { ...H.ekVeri[i], ...(H.ekEksik?.[i] ? { status: 'kısmen', unsupported: H.ekEksik[i] } : { status: 'uygulandı' }) } } : {}) },
     dex: { type: 'dragon', alignment: H.hizalanma, conditionImmunities: [], ...(climb ? { tirmanma: climb } : {}), ...(H.suzulme ? { suzulme: true } : {}) },
     ...(adult ? { efsanevi: { uses: 2, srd: 'KATALOG-F2 (KATALOG-F2-OZELLIKLER.md §6): Yetişkin Efsanevi Eylem hakkı 2/tur; SRD 5.2.1: her eylem 1 hak (KATALOG-LA-SRD: belgedeki 3 puan bedelliyle eş hasar için 3 → 2); değerler türetildi', actions: [
       { id: 'tail', tr: 'Kuyruk', en: 'Tail', kind: 'strike', attack: 'Tail' },

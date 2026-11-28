@@ -1553,7 +1553,8 @@
     },
     "Thunder Breath": {
      "prone": {},
-     "status": "kısmen"
+     "status": "kısmen",
+     "unsupported": "itme (109: katalog-gucler ekler)"
     }
    }
   },
@@ -1660,7 +1661,8 @@
     },
     "Thunder Breath": {
      "prone": {},
-     "status": "kısmen"
+     "status": "kısmen",
+     "unsupported": "itme (109: katalog-gucler ekler)"
     }
    }
   },
@@ -1777,7 +1779,8 @@
     },
     "Thunder Breath": {
      "prone": {},
-     "status": "kısmen"
+     "status": "kısmen",
+     "unsupported": "itme ve konsantrasyon kaybı (109: katalog-gucler ekler)"
     }
    }
   },
@@ -2096,7 +2099,8 @@
     },
     "Necrotic Breath": {
      "drainMax": {},
-     "status": "kısmen"
+     "status": "kısmen",
+     "unsupported": "iyileşme engeli (109: katalog-gucler ekler)"
     }
    }
   },
@@ -2425,7 +2429,8 @@
        "rounds": 1
       }
      ],
-     "status": "kısmen"
+     "status": "kısmen",
+     "unsupported": "direnç kaybı (109: katalog-gucler ekler)"
     }
    }
   },
@@ -2537,7 +2542,7 @@
        "rounds": 1
       }
      ],
-     "status": "kısmen"
+     "status": "uygulandı"
     }
    }
   },
@@ -2650,7 +2655,7 @@
        "rounds": 1
       }
      ],
-     "status": "kısmen"
+     "status": "uygulandı"
     }
    }
   },
@@ -2773,7 +2778,7 @@
        "rounds": 1
       }
      ],
-     "status": "kısmen"
+     "status": "uygulandı"
     }
    }
   },

@@ -210,7 +210,8 @@ export async function monsterRows(): Promise<{ rows: GRow[]; info: MonsterInfo }
     const size = m.size ?? 'M';
     const base = { cat: 'canavar', id: m.id, ad: m.name, tur: `canavar ${size} (ölçek ${SCALE.scale[size] ?? 1})` };
     // GECE-KATALOG-KALAN: yeniden doğuş yumurtası (Ember Egg) kendi yaratığına bağlı (Kozmik Anka); ayrı jeton eksiği sayılmaz.
-    if (!pub(ref) && EGG_OF.has(m.id)) return { ...base, kaynak: 'yedek', ref: 'yedek:nesne', durum: 'yedek', not: `yumurta: ${EGG_OF.get(m.id)} jetonuna bağlı` };
+    // (Eşlemeye not yazılmaz: kadim üreticisi `katalog-f2-kadim.mjs` aynı satırı yazar.)
+    if (!pub(ref) && EGG_OF.has(m.id)) return { ...base, kaynak: 'yedek', ref: 'yedek:nesne', durum: 'yedek' };
     if (!pub(ref)) return { ...base, kaynak: 'yedek', ref: 'yedek:nesne', durum: 'yedek', eksik: 'jeton görseli yok', oneri: `public/monsters/${m.id}.webp` };
     return { ...base, kaynak: 'jeton', ref, durum: same.length ? 'genel' : 'var',
       ...(same.length ? { eksik: `kendi görseli yok (aynı görüntü: ${same.join(', ')})`, oneri: `public/monsters/${m.id}.webp`, not: `aynı görüntü: ${same.join(', ')}` } : {}) };
