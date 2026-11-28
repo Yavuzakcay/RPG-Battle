@@ -69,6 +69,72 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   beklentileri çıktı. Ağ e2e (`scripts/oda-ag-e2e.ts`) O3 adımıyla: oyuncunun seçeneklerinde Kaydet yok, GM'de var.
 - **Ana parça:** 462,14 → 462,27 kB (`oda/active.ts`). `src/room/view.ts` savaş parçasında.
 
+## Görev KATALOG-GUC-TAM: katalog güçleri motorda, mühür taşı yuvaları (2026-11-28; kural sürümü 108 → 109, kayıt sürümü 28 değişmedi)
+
+- **Karar (kullanıcı):** KATALOG-SIGMAYAN.md'de "sığmayan" ve "yaklaşık" yazılan katalog güçleri motorda çalışsın; mekanik donmasına
+  bilinçli istisna (Faz 2 kararı gibi). Tek sabit `src/battle/katalog109Surum.ts` `KATALOG109_VERSION` (109). Yeni olay türü yok
+  (bütün ilkeller mevcut olaylarla: `effect_added`, `zone_created`, `summoned`, `hp_adjusted`, `trait_turn`, `pushed`…), bu yüzden
+  kayıt sürümü 28 kaldı. 108 ve altı: `data/katalog-gucler.json` hiç okunmaz (`gucOf` boş döner), eski kayıt/replay aynen.
+- **Veri tek dosyada:** `data/katalog-gucler.json` (canavar kimliğine göre; üretici `python scripts/katalog-gucler.py`, tek kaynak; değerler
+  KATALOG-F2-OZELLIKLER.md ve KATALOG-F-TASARIM.md §5). Kodda yaratık adıyla koşul yok; Rng enjeksiyonu ve Command → execute → Events
+  → reducer aynen. Mühür Ruhu/kadim üretici betikleri ve canavar verisi değişmedi (yamalar 109 katmanında birleşir).
+- **Ortak ilkeller (gruplar):**
+  1. **Canavar aurası** (`auraCore` girişi; savaş başında `k109:<id>` süren etkisi): tur başı/giriş save + süren etki (Non-Euclidean Aura
+     −1d6 + tepki yok + Cosmic Madness `madAlly`, Dread Tide −1d4), dost auraları (Ten Seals Core +6 save, korku/büyü bağışıklığı, tur
+     başı 50 geçici can), yeni aura türleri `pull` (çekme), `cleanse` (durum silme; Anka halesi), `healMult` (pasif iyileşme çarpanı,
+     Cerbones Faz 2), `requiresItem` (eşya taşıyana: Armor's Betrayal), `'$owner'` değeri (aura sahibinin kimliği).
+  2. **Saldırı eki:** katalog A2 ekleri (`ekler`, A2 biçimi; itme/çekme, aşındırma, yanma, Star Mark, Kıta Pençesi AC −3, 0 HP'de
+     atomlara ayrılma, yutma) + yeni A2 alanları `splash` (hedef çevresine savurma, Continent Tail) ve `dropConc`; direnç delme
+     (`k109.pierceResist`: türler, bağışıklığı dirence indirme ya da yok sayma; `profileIn` kaynağıyla, 109'da canavar saldırısının tek
+     hedef save ve isabet yolları da kaynağı geçirir), direnç kaybı (`noResist`), zorla harekete bağışıklık (`forcedImmune`, `forcedMove`
+     başı), yakın dövüşte karşı hasar (`meleeRetaliate`), Star Mark (Invisible düşer, konsantrasyon bonusu yok), iyileşme çarpanı ve
+     mühür (`healMult`, `sealed`; reducer `healed`), save yolunda ikinci hasar türü (`saveEk`; zar bir kez, başarıda yarı) ve tek hedefli
+     save saldırısının hedef sayısı (`hedefSayisi`; tek şarj).
+  3. **Canavar eylemi:** alan bırakma (`alanBirak`: komut sonu `area_used`'tan yüzey ya da kalıcı alan, süzülme `tasi`, karanlık silme),
+     yetenek yamaları/eklemeleri (`yetenekler`, `yetenekEkle`: önce çek sonra vur `pre`, Sülfür Tufanı 3 tur `rounds`, silindir alan,
+     Misty Step, Sahte Gölge), efsanevi yamaları (ışın `target: far`) ve yeni türler `heal` (Star Tear), `seal` (Seal-Melting Talon),
+     `pull` (Seal Pull, `needsItem`).
+  4. **Faz bloğu** (`faz2`, faz olayının ardından): auralar, süren etki alanları (`etki`), Multiattack tekrarı/sırası (`repeat`, `order`),
+     ilk efsanevi eylem (`legendFirst`), su altıgenlerine zorlu arazi, bossun çevresine yüzey/halka ve kalıcı alan, faz anında ve tur başı
+     çağırma (`turBasiCagir`). Mühür Ruhu Taş Uyanışı gmNot'ları veriye çevrildi (KATALOG-SIGMAYAN kalanlar).
+  5. **Hexonia:** Size Shift (`resize` yeteneği, maliyet `free`, turda 2; boyut `effect.k109.sizeTo` ile reducer'da; gövde `bodyFitProblem`
+     ile sığmalı), Kıta Ölçeği (sahibine bağlı alan: dosta yarım siper, düşmana zorlu arazi; yarıçap 2 sabit), yalnız dost
+     (`yalnizDost`: Game Master kurulumu `planProblems` reddeder), Out-of-Time Storm (ikinci oyun `secondInit` 15: Thief's Reflexes'in
+     yansıma yoluyla her tur; turda bir isabet iptali `negateOnce`, `registerAllyHit`), Spell-Reflecting Crystal Shell (save'i geçince
+     büyü atıcısına slotsuz yeniden yapılır), LR'nin etki silmesi (`lrCleanse`).
+  6. **Anka:** Rebirth from Ashes (0 HP'de bir kez Supernova + Ember Egg; yumurtanın turunda ayaktaysa 450 HP ile kalkış ve Celestial
+     Glide dolumu; kırılırsa ölü kalır; 109'da Faz 2'nin eski %5 yaklaşığı işlemez), Hunter Soul Bond (savaş başında Avcı = aynı
+     taraftaki ilk Ranger; sırada Avcı'nın ardı, Avcı'ya konsantrasyon avantajı, 60 ft içinde komut başına hasarın yarısını üstlenme).
+  7. **Mücevher binek bağı:** Genç ve Yetişkin eğitimli binek (kontrollü binek, MB2) + binene türüne direnç etkisi.
+  8. **Captive:** Groggy Veil (ilk 2 tur uçuş yarı `flyMult`, INT save dezavantajı; `baslangic`), Armor's Betrayal (Kaltakkıran zırhı
+     taşıyana aura: hız 0, ejderhaya dezavantaj, ejderhadan avantaj), Seal Pull. Karakterde taşınan katalog eşyaları `Combatant.carried`.
+- **Yorum seçimleri (⚠ PDF'te değer yok):** Lightaur "40 ft silindir" = yerde 20 ft yarıçap, 40 ft yükseklik; Hydraxe Sülfür Gölü ve
+  Erime Gölü 2d6 asit; sanat yüzeyleri (Cimbombom alev 2 tur, Wolfgang buz 3, Mothraq zehir 10, Stormer su 3); Kongark çekimi her tur
+  (PDF "her 2 turda"); Mirage Frightened aurası 60 ft içindeki herkese (PDF "bir oyuncuya"); Misty Step = 30 ft ışınlanma yeteneği
+  (en az 2 düşmanın yanına); Soul Bond Avcı'sı ilk Ranger; Out-of-Time yalnız saldırı iptali (büyü kancası hedef görmüyor).
+- **Serüven'e ait, sorulacak (motora girmedi):** Ten Stones Resonance, mücevher yumurta izleyicisi, Ocean-Nightmare'in üç faz zinciri ve
+  gemi nesnesi, Kaltakkıran parçalanınca taşların bölgeye düşmesi (yalnız veri alanı), Taşıyıcı'ya göre binek DC'si (KATALOG-SIGMAYAN
+  "Serüven'e ait").
+- **Mühür taşları = zırha takılan artifact (kullanıcı kararı):** `data/yuva-kurallari.json` + `src/rules/sockets.ts` (tembel; `loadClassData`
+  `setSocketImpl` ile kaydeder, ana parça sınırı). Taş ayrı kapsayıcı değil: yuvaya takılınca etkisini yuvanın eşyasını giyene verir;
+  **gevşek taşınan mühür taşı etkisiz** (eski "tılsım modu" kalktı; oluşturucu eşya listesinde taş yok, `katalogD.test` güncellendi).
+  Kurallar (PDF §6 + en basit tutarlı ek):
+  - Her zırh/kalkan/cübbe tek normal yuva (PDF "bir zırhta en fazla 1 normal soket"); giyilen SRD zırhı ve kalkanı kademe 1 yuva;
+    katalog zırhı/kalkanı nadir, çok nadir, efsanevi, yadigar nadirlikte kademe 2. Taş kademesi ≤ yuva kademesi.
+  - Sv.1 zırh ve kalkana (PDF: cübbeye takılmaz); Sv.2 kademe 2 zırh/kalkan/cübbeye; Sv.3 yalnız Kaltakkıran'ın Paladin Zırhı (10 yuva,
+    kalıcı kaynaşma: oluşturucu takılı taşı kilitler) ve Koruyucu Ejderha Mührü (10 yuva; boss ruhlarını, yani Seviye 3 taşları toplayan
+    artifact; kolye değil; ejder tasviri yok).
+  - Etkiler: Sv.1 türüne sabit −3 (yeni `DamageProfile.flat`, dirençten sonra, en az 0), Sv.2 eşya kaydının kendi etkisi (direnç + turda
+    bir +1d4), Sv.3 türüne bağışıklık; Kaltakkıran 5+ taşta AC +1 ve fiziksel direnç, 10 taşta AC +2 ve fiziksel bağışıklık, Hükümdar
+    Vuruşu (ilk taşın türü, 1d6/1d8/2d6; turda bir sınırı yok). Sv.3 Savaş Sanatları planlı (oyuncu eşya eylemi yolu yok).
+  - Oluşturucu: Ekipman adımında "Yuvalar" katı (yuva başına tek seçim kutusu, SD3 görünen seçenek sayısını artırmaz); Dungeondex taş
+    kartında "Takılabilir" satırı. Karakterde `yuvalar` (konak → taş kimlikleri); geçersiz taş sessizce düşer.
+- **Kanca listesi (bu turda 1 kanca):** sabit hasar azaltma (`flat`, `*` her tür) 6 zırhta bağlandı (ZK#17, #22, #23, #26, #28, #29);
+  "her darbede" yerine her hasar örneğinde (alan ve süregelen dahil) ⚠.
+- **Denge:** yalnız `node scripts/katalog-denge-tablo.mjs` (109 verisi: ikinci hasar türü, hedef sayısı, Faz 2 tekrarı ve hasarlı aurası
+  yarı ağırlıkla). Tablo içindeki kayıtlarda etkin CR değişmedi (Cimbombom 29, Captive 28, Ocean-Nightmare 28); tablo dışı Hexonia 522 →
+  596, Titan 188 → 222 tur hasarı. Düşman listesi/HP denemesi yapılmadı.
+
 ## Görev KATALOG-LA-SRD: kadim ve mücevher efsanevi eylemleri SRD 5.2.1 kuralına (2026-11-27; motor, şema, kural sürümü (108) ve kayıt sürümü (28) değişmedi)
 
 - **Karar (kullanıcı):** bedelli efsanevi eylem mekaniği eklenmedi; SRD 5.2.1'e uyuldu ("The monster expends one use whenever it takes a Legendary Action"). Motor zaten her eylemde 1 hak düşüyordu (`src/battle/boss.ts`); değişen yalnız veri ve metin.
