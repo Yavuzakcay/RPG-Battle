@@ -39,8 +39,10 @@ import { swarm95On } from './swarm95Surum';
 import { ws92On } from './ws92Surum';
 import ws92Data from '../../data/ws92.json';
 import { insideEffect } from './swallow92';
+import { k109Abilities, k109SetupEffect } from './katalog109Data';
+import type { K109AbilityPatch } from './katalog109Types';
 
-export interface MonsterAbility extends Omit<LegendaryAction, 'kind'> {
+export interface MonsterAbility extends Omit<LegendaryAction, 'kind'>, Pick<K109AbilityPatch, 'pre'> {
   kind: LegendaryAction['kind'] | 'grant' | 'heal' | 'pull' | 'drop' | 'swallow' | 'summon' | 'ethereal';
   cost: 'action' | 'bonus';
   uses?: number; recharge?: number;
@@ -94,7 +96,8 @@ export const passiveOf = (s: BattleState, c: Combatant): MonsterPassive | undefi
 // Yetenekle çağrılan yaratığın (Animate Trees ağacı) özel yeteneği yok (SRD: yalnızca Slam); zincirleme çağırma olmaz.
 // KAPSAM103: sürümlü yetenekler (`surum`: Cloud Giant Misty Step, Gold Dragon Weakening Breath 103+) eski savaşta yok.
 export const abilitiesOf = (s: BattleState, c: Combatant): MonsterAbility[] => (on(s) && !c.summon?.spellId.startsWith('mab:')
-  ? (entryOf(c, s)?.abilities ?? []).filter((a) => !a.surum || ruleVersion(s) >= a.surum) : []);
+  // Görev KATALOG-GUC-TAM (109+): katalog yetenek yamaları ve eklemeleri (`data/katalog-gucler.json`).
+  ? k109Abilities(s, formMonsterId(c), (entryOf(c, s)?.abilities ?? []).filter((a) => !a.surum || ruleVersion(s) >= a.surum)) : []);
 
 /** Kullanılabilir mi (kullanım hakkı, şarj). */
 export function abilityReady(c: Combatant, a: MonsterAbility): boolean {
@@ -141,6 +144,9 @@ export function monsterAbilitySetup(state: BattleState, c0: Combatant, m0?: Mons
   // Görev SWARM95 (95+): SRD Swarm altıgen paylaşımı Gaseous Form altyapısıyla (`shareSpace`, `squeeze`) + karşılıklılık (`swarm`).
   if (p.swarm && swarm95On(state)) { fx.swarm = true; fx.shareSpace = true; fx.squeeze = true; }
   if (Object.keys(fx).length) c.effects = [...(c.effects ?? []), { ...fx, id: `srd19:${id}:passive`, name: c.name, sourceId: id } as ActiveEffect];
+  // Görev KATALOG-GUC-TAM (109+): katalog canavar auraları ve pasifleri (`data/katalog-gucler.json`).
+  const k109 = k109SetupEffect(state, c0);
+  if (k109 && !c.effects?.some((x) => x.id === k109.id)) c.effects = [...(c.effects ?? []), k109];
   const traits = [...(p.traits ?? []), ...(p.siegeMonster ? ['siege-monster'] : []), ...(p.greaterMagicResistance ? ['greater-magic-resistance'] : []),
     ...(p.reflectiveCarapace ? ['reflective-carapace'] : []), ...(p.corrosive ? ['corrosive-form'] : []), ...(p.mistyEscape ? ['misty-escape'] : []),
     ...(p.abduct ? ['abduct'] : []), ...(p.earthGlide ? ['earth-glide'] : []), ...(p.berserk ? ['berserk'] : [])];
@@ -214,6 +220,21 @@ export function executeMonsterAbility(state: BattleState, actor: Combatant, abil
 /** Yeteneğin olayları (yapay zekâ da kullanır; boşsa kullanılamaz). */
 export function abilityEvents(state: BattleState, actor: Combatant, a: MonsterAbility, targetId: string | undefined, targetHex: Offset | undefined,
   rng: Rng, opt?: string, cross = false): BattleEvent[] {
+  // Görev KATALOG-GUC-TAM (109; `pre`): önce menzildeki düşmanları çeker (STR save), sonra yeteneğin kendisi (Yıldız Çöküşü).
+  if (a.pre && a.pre.kind === 'pull') {
+    const pre: BattleEvent[] = [];
+    let cur = state;
+    for (const f of foesOf(state, actor).filter((x) => distance(hexOf(x), hexOf(actor)) * 5 <= (a.pre?.rangeFt ?? 30) && distance(hexOf(x), hexOf(actor)) > 1)) {
+      const t = cur.combatants[f.id] as Combatant;
+      const sv = a.pre.save ? saveEffect(t, 'katalog109', a.tr, a.pre.save.ability, a.pre.save.dc, rng) : null;
+      const evs = sv ? [sv] : [];
+      if (!sv || (sv.type === 'map_effect' && sv.roll && !sv.roll.success)) evs.push(...pullToward(applyEvents(cur, evs), cur.combatants[actor.id] as Combatant, t, Math.floor(a.pre.pullFt / 5), rng));
+      pre.push(...evs);
+      cur = applyEvents(cur, evs);
+    }
+    const rest = abilityEvents(cur, cur.combatants[actor.id] as Combatant, { ...a, pre: undefined }, targetId, targetHex, rng, opt, cross);
+    return rest.length ? [...pre, ...rest] : pre;
+  }
   let foes = foesOf(state, actor);
   // Görev OYUNCU-HEDEF-DOST: onaylı hedef (`crossSide`) tarafından bağımsız (SRD yetenekleri "a creature/target"); yoksa düşmanlar.
   if (targetId) foes = cross ? Object.values(state.combatants).filter((o) => o.id === targetId && o.id !== actor.id && o.hp > 0 && !!o.pos && isTargetable(o) && canSee(state, actor, o))

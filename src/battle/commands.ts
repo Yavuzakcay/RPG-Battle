@@ -94,6 +94,8 @@ import './underwater';
 import './lycanthrope';
 // Görev KATALOG-F0: yarı can fazı (komut sonu kancası, sürüm 107+).
 import './faz2';
+import './katalog109';
+import './katalog109Alan';
 import { executeDropItem, executePickUp, unconsciousDropEvents } from './heldItems';
 import { allyStoredOwner } from './paket/p11cast';
 import { executeDropBlade } from './s2spells';

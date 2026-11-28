@@ -19,7 +19,8 @@ import {
   axialToOffset, distance, isInside, line, offsetToAxial, ring, sameHex, withinRange, type GridSize, type Offset,
 } from './hex';
 
-export type AreaShape = 'sphere' | 'cube' | 'cone' | 'line' | 'emanation' | 'wall';
+/** Görev KATALOG-GUC-TAM (109): `cylinder` haritada küre gibi (yerde daire; yükseklik `heightFt`). */
+export type AreaShape = 'sphere' | 'cube' | 'cone' | 'line' | 'emanation' | 'wall' | 'cylinder';
 
 export interface AreaSpec {
   shape: AreaShape;

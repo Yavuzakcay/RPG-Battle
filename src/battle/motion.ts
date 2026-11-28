@@ -9,6 +9,7 @@
  *   çarpılan yaratık da yarıda kalan altıgen kadar 1d6 (en çok 3d6) alır (ayrı zar).
  * Saf; `rng` enjekte.
  */
+import { katalog109On } from './katalog109Surum';
 import { applyEvents } from './reduce';
 import { auraStepEvents } from './features';
 import { zoneStepEvents } from './zones';
@@ -166,6 +167,8 @@ export function forcedMove(state: BattleState, targetId: string, mode: ForcedMod
   // Kuyruk P11 (sürüm 42+, paket `koruma.itmeDirenci`): yaratığın yol açtığı zorla harekete avantajlı STR kurtulması (başarıda kımıldamaz).
   // Kuyruk K66a (sürüm 50): yarığın içindeki (eksi irtifa) uçmayan yaratık yatay itilmez.
   const held = state.combatants[targetId];
+  // Görev KATALOG-GUC-TAM (109+): zorla harekete bağışık (Gongar, Kongark, Kıta Ölçeği; `k109.forcedImmune`).
+  if (held && katalog109On(state) && held.effects?.some((e) => e.k109?.forcedImmune)) return [];
   if (held && (held.altitudeFt ?? 0) < 0 && !isAirborne(held) && ruleVersion(state) >= 50) return [];
   const res = pushResist(state, targetId, by, rng);
   if (res) return res;

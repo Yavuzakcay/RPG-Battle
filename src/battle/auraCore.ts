@@ -14,7 +14,7 @@
 import motion from '../../data/hareket.json';
 import { globalRule } from './ruleControl';
 import { ruleVersion } from './ruleVersion';
-import { MOTION_VERSION } from './motion';
+import { MOTION_VERSION, forcedMove } from './motion';
 import { auraDist } from './adjacency';
 import { damageEffect } from './maprules';
 import { saveDice } from './effectDice';
@@ -44,7 +44,15 @@ export type AuraEffect =
   | { kind: 'deathSaveAdv'; belowHalf?: boolean }
   | { kind: 'tempHp'; amount: number; belowHalf?: boolean }
   /** Kuyruk K54b: başarısız kurtulmada süren etki (`rounds` tur) ve isteğe bağlı hasar (Dunganga Çağrısı: Uykulu + 2d10). */
-  | { kind: 'effect'; effect: { name: string; icon?: string } & Record<string, unknown>; rounds: number; dice?: string; type?: string };
+  | { kind: 'effect'; effect: { name: string; icon?: string } & Record<string, unknown>; rounds: number; dice?: string; type?: string }
+  /**
+   * Görev KATALOG-GUC-TAM (sürüm 109; yalnız `data/katalog-gucler.json` canavar auralarında): başarısız save'de aura sahibine doğru
+   * çekme (`ft`; K53 zorla hareket) ve durum temizleme (`conditions`: Frightened, Invisible…; isteğe bağlı hasar zarı).
+   */
+  | { kind: 'pull'; ft: number }
+  /** Pasif: aldığı iyileşme bu katsayıyla (Cerbones Faz 2; en düşüğü). */
+  | { kind: 'healMult'; mult: number }
+  | { kind: 'cleanse'; conditions: string[]; dice?: string; type?: string };
 export interface AuraSpec {
   id: string;
   name: string;
@@ -110,14 +118,15 @@ export function strongest(list: Array<{ owner: Combatant; spec: AuraSpec }>): Ar
 }
 
 /** Pasif aura alanları (syncAuras): save bonusu, durum bağışıklığı, can yenileyemez, ölüm save dezavantajı. */
-export function passiveAuraOf(state: BattleState, v: Combatant): { saveBonus: number; immune: string[]; noHeal: boolean; deathDis: boolean; deathAdv: boolean; resist: string[]; saveDis: boolean } {
+export function passiveAuraOf(state: BattleState, v: Combatant): { saveBonus: number; immune: string[]; noHeal: boolean; deathDis: boolean; deathAdv: boolean; resist: string[]; saveDis: boolean; healMult: number } {
   const list = strongest(aurasOn(state, v).filter((x) => x.spec.trigger === 'passive'));
-  const out = { saveBonus: 0, immune: [] as string[], noHeal: false, deathDis: false, deathAdv: false, resist: [] as string[], saveDis: false };
+  const out = { saveBonus: 0, immune: [] as string[], noHeal: false, deathDis: false, deathAdv: false, resist: [] as string[], saveDis: false, healMult: 1 };
   for (const { spec } of list) {
     const e = spec.effect;
     if (e.kind === 'saveBonus') out.saveBonus = Math.max(out.saveBonus, e.amount);
     else if (e.kind === 'conditionImmune') out.immune = [...new Set([...out.immune, ...e.conditions])];
     else if (e.kind === 'noHeal') out.noHeal = true;
+    else if (e.kind === 'healMult') out.healMult = Math.min(out.healMult, e.mult);
     else if (e.kind === 'resist') out.resist = [...new Set([...out.resist, ...e.types])];
     else if (e.kind === 'saveDis') out.saveDis = true;
     else if (e.kind === 'deathSaveDis') out.deathDis = true;
@@ -159,6 +168,13 @@ export function auraTriggerEvents(state: BattleState, victimId: string, trigger:
       if (e.dice) out.push(damageEffect(v, 'auraCore', spec.name, { dice: e.dice, type: e.type ?? '' }, rng));
       const id = `aura:${spec.id}:${owner.id}`;
       out.push({ type: 'effect_added', targetId: v.id, effect: { ...e.effect, id, name: e.effect.name, sourceId: owner.id, until: state.round + e.rounds } as import('./types').ActiveEffect });
+    }
+    if (e.kind === 'pull' && failed && owner.pos && v.pos && auraDist(state, owner, v) > 1) out.push(...forcedMove(state, v.id, 'pull', e.ft, owner.id, rng, { origin: owner.pos }));
+    if (e.kind === 'cleanse') {
+      const gone = e.conditions.filter((x) => v.conditions.includes(x));
+      for (const x of gone) out.push({ type: 'map_effect', rule: 'auraCore', targetId: v.id, text: `${spec.name}: ${x} silindi`, removeCondition: x });
+      for (const fx of v.effects ?? []) if (fx.grants?.some((g) => e.conditions.includes(g))) out.push({ type: 'effect_ended', targetId: v.id, effectId: fx.id, name: fx.name, reason: 'dispelled' });
+      if (e.dice && (gone.length || v.effects?.some((fx) => fx.grants?.some((g) => e.conditions.includes(g))))) out.push(damageEffect(v, 'auraCore', spec.name, { dice: e.dice, type: e.type ?? 'force' }, rng));
     }
     if (e.kind === 'condition' && failed && !v.conditions.includes(e.condition)) out.push({ type: 'map_effect', rule: 'auraCore', targetId: v.id, text: spec.name, addCondition: e.condition });
     // Kuyruk K54: tur başı Motivasyon (yalnız Moral tam modunda: savaşçıda moralMax) ve geçici can (yarı canın altındakilere).
