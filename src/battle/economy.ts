@@ -300,6 +300,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       // Kuyruk 19: SRD canavar yeteneği (eylem ya da bonus eylem; `monsterAbilities.ts`).
       const ab = abilitiesOf(state, actor).find((x) => x.id === cmd.abilityId);
       if (!ab) return fail('Bu yaratığın böyle bir yeteneği yok.');
+      // Görev KATALOG-GUC-TAM (109): serbest yetenek (Size Shift) eylem harcamaz.
+      if (ab.cost === 'free') return { ok: true, event: null };
       return spend(actor, ab.cost, ab.tr);
     }
     case 'hide':

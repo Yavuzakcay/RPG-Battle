@@ -234,3 +234,150 @@ describe('Grup 3: canavar eylemi', () => {
     expect(legendaryOf(s, C(s, 'D'))!.actions.find((a) => a.id === 'flame-spit')?.target).toBe('far');
   });
 });
+
+describe('Grup 4: faz bloğu ve Hexonia çekirdeği', () => {
+  const foe = (id: string, col: number, p: Partial<Combatant> = {}) => mk(id, { ownerId: 'p1', hp: 200, maxHp: 200, pos: { col, row: 3 }, ...p });
+  const toPhase = async (s: BattleState) => {
+    const { execute } = await import('./commands');
+    const { GM } = await import('./fixtures');
+    const r = execute(s, { type: 'adjust_hp', targetId: 'D', hp: Math.floor(C(s, 'D').maxHp / 2) }, GM, () => 0.5);
+    if (!r.ok) throw new Error(r.error);
+    return r;
+  };
+
+  it('Cimbombom Faz 2: aura (2d6 ateş), saldırı sırası, ilk efsanevi, alev halkası', async () => {
+    const r = await toPhase(arena109('cimbombom', [foe('A', 12)]));
+    const fx = C(r.state, 'D').effects?.find((e) => e.id === 'faz2:D');
+    expect(fx?.auras?.[0]?.effect).toMatchObject({ kind: 'damage', dice: '2d6' });
+    expect(fx?.k109).toMatchObject({ order: ['Bite', 'Claw'], legendFirst: 'tail-sweep' });
+    expect(r.events.some((e) => e.type === 'zone_created' && e.zone.surface === 'fire')).toBe(true);
+  });
+
+  it('108 savaşında faz eklemesi yok', async () => {
+    const r = await toPhase(arena109('cimbombom', [foe('A', 12)], 108));
+    expect(C(r.state, 'D').effects?.find((e) => e.id === 'faz2:D')?.auras).toBeUndefined();
+    expect(r.events.some((e) => e.type === 'zone_created')).toBe(false);
+  });
+
+  it('Titan Faz 2: Multiattack 4 dokunaç, aura 90 ft ve çekme', async () => {
+    const { executeMultiattack } = await import('./monsters');
+    const r = await toPhase(arena109('titan-of-nightmare', [foe('A', 5, { hp: 5000, maxHp: 5000 })]));
+    const fx = C(r.state, 'D').effects?.find((e) => e.id === 'faz2:D');
+    expect(fx?.k109?.repeat).toEqual({ 'Eldritch Tentacle': 4 });
+    expect(fx?.auras?.some((a) => a.effect.kind === 'pull')).toBe(true);
+    const m = executeMultiattack(r.state, C(r.state, 'D'), 'A', () => 0.9);
+    if (!m.ok) throw new Error(m.error);
+    expect(m.events.filter((e) => e.type === 'attack_resolved' && e.label === 'Eldritch Tentacle')).toHaveLength(4);
+  });
+
+  it('Cerbones Faz 2: tur başında iskelet çağırır (en çok 6)', async () => {
+    const { phaseTurnStartEvents } = await import('./katalog109Faz');
+    const r = await toPhase(arena109('cerbones', [foe('A', 12)]));
+    expect(phaseTurnStartEvents(r.state, 'D').filter((e) => e.type === 'summoned')).toHaveLength(2);
+    expect(phaseTurnStartEvents(arena109('cerbones', [foe('A', 12)]), 'D')).toHaveLength(0);
+  });
+
+  it('Out-of-Time Storm: ikinci oyun inisiyatif 15; turda bir isabet iptali', async () => {
+    const { nextActor } = await import('./common');
+    const { negateHit } = await import('./katalog109');
+    const s0 = arena109('dragon-of-hexonia-a', [foe('A', 12, { initiative: 20 }), foe('B', 13, { initiative: 10 })]);
+    const cs = { ...s0.combatants, D: { ...C(s0, 'D'), initiative: 30 }, A: { ...C(s0, 'A'), initiative: 20 }, B: { ...C(s0, 'B'), initiative: 10 } };
+    const s = { ...s0, combatants: cs, order: ['D', 'A', 'B'], turnIndex: 1, round: 2, reflexDone: ['D'] };
+    expect(nextActor(s)).toMatchObject({ id: 'D', reflex: 1 });
+    expect(nextActor({ ...s, reflexDone: ['D', 'D'] }).id).toBe('B');
+    expect(nextActor({ ...s, kuralSurumu: 108 }).id).toBe('B');
+    const ctx = { attacker: C(s, 'A'), target: C(s, 'D'), label: 'Slam', total: 30, ac: 30, critical: false, melee: true, ranged: false } as never;
+    const r1 = negateHit(s, ctx);
+    expect(r1?.name).toBe('Out-of-Time Storm');
+    expect(negateHit(applyEvents(s, r1!.events), { ...(ctx as object), target: C(applyEvents(s, r1!.events), 'D') } as never)).toBeNull();
+  });
+
+  it('Legendary Resistance etki siler (Hexonia)', async () => {
+    const { lrCleanseEvents } = await import('./katalog109');
+    const s0 = arena109('dragon-of-hexonia-a', [foe('A', 12)]);
+    const s = applyEvents(s0, [{ type: 'effect_added', targetId: 'D', effect: { id: 'bane', name: 'Bane', sourceId: 'A', dice: { die: '1d4', sign: -1, on: ['attack'] } } }]);
+    const ev = lrCleanseEvents(s, [{ type: 'map_note', text: 'x', bonusDice: [{ resource: 'legendaryResistance', holderId: 'D' }] } as never]);
+    expect(ev[0]).toMatchObject({ type: 'effect_ended', effectId: 'bane' });
+  });
+});
+
+describe('Grup 5–8: Hexonia, Anka, mücevher, Captive', () => {
+  const foe = (id: string, col: number, p: Partial<Combatant> = {}) => mk(id, { ownerId: 'p1', hp: 200, maxHp: 200, pos: { col, row: 3 }, ...p });
+
+  it('Size Shift: serbest, turda en çok 2; boyut değişir; Kıta Ölçeği alanı; yalnız dost', async () => {
+    const { abilitiesOf, abilityEvents } = await import('./monsterAbilities');
+    const { allyOnlyMonster } = await import('./katalog109Data');
+    let s = arena109('dragon-of-hexonia-a', [foe('A', 12)]);
+    const a = abilitiesOf(s, C(s, 'D')).find((x) => x.id === 'size-shift')!;
+    expect(a.cost).toBe('free');
+    for (const to of ['H', 'L']) {
+      const ev = abilityEvents(s, C(s, 'D'), a, undefined, undefined, () => 0.5, to);
+      s = applyEvents(s, ev);
+      expect(C(s, 'D').size).toBe(to);
+    }
+    expect(abilityEvents(s, C(s, 'D'), a, undefined, undefined, () => 0.5, 'M')).toEqual([]);
+    expect(s.map?.zones?.some((z) => z.name === 'Kıta Ölçeği' && z.anchorId === 'D')).toBe(true);
+    expect(allyOnlyMonster('dragon-of-hexonia-b')).toBe(true);
+    expect(allyOnlyMonster('tutsak-dragon')).toBe(false);
+  });
+
+  it('Rebirth: 0 HP → Supernova + Ember Egg; yumurtanın turunda Anka 450 HP ile kalkar; kırılırsa kalkmaz', async () => {
+    const { rebirthEvents, eggHatchEvents } = await import('./katalog109Ozel');
+    const s0 = arena109('kozmik-anka', [foe('A', 6)]);
+    const dead = applyEvents(s0, [{ type: 'hp_adjusted', targetId: 'D', hpAfter: 0, life: 'dead' }]);
+    const ev = rebirthEvents(dead, () => 0.5);
+    expect(ev.some((e) => e.type === 'save_resolved' || (e.type === 'map_effect' && e.targetId === 'A'))).toBe(true);
+    const egg = ev.find((e) => e.type === 'summoned');
+    expect(egg).toBeDefined();
+    const s1 = applyEvents(dead, ev);
+    expect(rebirthEvents(s1, () => 0.5)).toEqual([]);
+    const eggId = (egg as { combatant: Combatant }).combatant.id;
+    const s2 = applyEvents(s1, eggHatchEvents(s1, eggId));
+    expect(C(s2, 'D').hp).toBe(450);
+    expect(C(s2, eggId).hp).toBe(0);
+    const broken = applyEvents(s1, [{ type: 'hp_adjusted', targetId: eggId, hpAfter: 0, life: 'dead' }]);
+    expect(eggHatchEvents(broken, eggId)).toEqual([]);
+    // Faz 2'nin eski %5 yaklaşığı 109'da işlemez.
+    const { faz2Events } = await import('./faz2');
+    const low = applyEvents(s0, [{ type: 'hp_adjusted', targetId: 'D', hpAfter: 10, life: 'alive' }]);
+    expect(faz2Events(low, () => 0.5)).toEqual([]);
+  });
+
+  it('Hunter Soul Bond: Anka Avcı ardına girer; Avcı hasarının yarısını üstlenir', async () => {
+    const { soulShareEvents } = await import('./katalog109Ozel');
+    const hunter = mk('H', { ownerId: 'p1', hp: 100, maxHp: 100, initiative: 5, pos: { col: 4, row: 3 }, avatar: { src: 'x', bg: '#000', label: 'H', look: { raceId: 'human', classId: 'ranger' } } as never });
+    const d = { ...combatantFromMonster(getMonster('kozmik-anka'), { id: 'D', kuralSurumu: CURRENT_RULES }), side: 'party' as const, initiativeBonus: 30 };
+    const st = startBattle('k', 'd-z-zemin', [d, hunter, foe('A', 10)], scripted([20, 20], [20, 1], [20, 10]), { map: { id: 'col' }, kuralSurumu: CURRENT_RULES }).state;
+    expect(st.order.indexOf('D')).toBe(st.order.indexOf('H') + 1);
+    expect(C(st, 'H').effects?.some((e) => e.concAdv)).toBe(true);
+    const s = { ...st, combatants: { ...st.combatants, D: { ...C(st, 'D'), pos: { col: 5, row: 3 } }, H: { ...C(st, 'H'), pos: { col: 4, row: 3 } } } };
+    const hit = applyEvents(s, [{ type: 'hp_adjusted', targetId: 'H', hpAfter: 60, life: 'alive' }]);
+    const ev = soulShareEvents(s, hit);
+    const s2 = applyEvents(hit, ev);
+    expect(C(s2, 'H').hp).toBe(80);
+    expect(C(s2, 'D').hp).toBe(C(s, 'D').hp - 20);
+  });
+
+  it('Groggy Veil ilk 2 tur: uçuş yarı, INT save dezavantajı; Armor\'s Betrayal yalnız zırh taşıyana', async () => {
+    const { flySpeed } = await import('./flight');
+    const s = arena109('tutsak-dragon', [foe('A', 8, { carried: ['kaltakkirans-paladin-armor'] }), foe('B', 9, { pos: { col: 9, row: 5 } })]);
+    const g = C(s, 'D').effects?.find((e) => e.name === 'Groggy Veil');
+    expect(g).toMatchObject({ until: 2, saveDis: ['int'] });
+    expect(flySpeed(C(s, 'D'))).toBe(50);
+    const a = applyEvents(s, auraTriggerEvents(s, 'A', 'turnStart', scripted([20, 1])));
+    expect(C(a, 'A').effects?.find((e) => e.name === "Armor's Betrayal")).toMatchObject({ speedZero: true, attackDisVs: 'D', attackedAdvBy: 'D' });
+    expect(auraTriggerEvents(s, 'B', 'turnStart', scripted([20, 1]))).toHaveLength(0);
+  });
+
+  it('mücevher binek bağı: Genç eğitimli binek; binene direnç etkisi, inince kalkar', async () => {
+    const { mountBondEvents } = await import('./katalog109Ozel');
+    const s = arena109('alphyr', [foe('A', 4)]);
+    expect(C(s, 'D').egitimli).toBe(true);
+    const ride = { ...s, combatants: { ...s.combatants, A: { ...C(s, 'A'), riding: 'D' } } };
+    const ev = mountBondEvents(ride);
+    expect(ev[0]).toMatchObject({ type: 'effect_added', targetId: 'A', effect: { resist: ['thunder'] } });
+    const s2 = applyEvents(ride, ev);
+    const off = { ...s2, combatants: { ...s2.combatants, A: { ...C(s2, 'A'), riding: undefined } } };
+    expect(mountBondEvents(off)[0]).toMatchObject({ type: 'effect_ended', targetId: 'A' });
+  });
+});

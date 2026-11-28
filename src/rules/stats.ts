@@ -2,6 +2,7 @@
  * Karakter formundan türetilen değerler: skorlar, AC, HP, hız, save'ler, büyü DC'si ve slotlar.
  * Saf fonksiyonlar: ekran veya depolama bilmez, aynı girdiye hep aynı sonucu verir.
  */
+import { socketImpl } from './socketHook';
 import { SHIELD, armor as armorList, getClass, getRace, items as itemList, spellSlots } from '../data';
 import { ABILITIES, abilityModifier, proficiencyBonus, type Ability } from './abilities';
 import { isSkill, SKILLS, skillTable, type Skill } from './skills';
@@ -44,6 +45,11 @@ export interface CharacterSheet {
   shield: boolean;
   /** data/items.json içindeki item adları. */
   itemNames: string[];
+  /**
+   * Görev KATALOG-GUC-TAM: zırh/kalkan/cübbe yuvalarına takılı mühür taşları (eşya kimliği → takılı taş kimlikleri; `src/rules/sockets.ts`).
+   * Taş ayrı bir kapsayıcı değil; takılınca etkisini yuvanın eşyasını giyene verir.
+   */
+  yuvalar?: Record<string, string[]>;
   /** Bildiği veya hazırladığı büyüler (data/spells.json içindeki adlar). */
   spellNames?: string[];
   /** Görev K6: büyü kitabındaki seviyeli büyüler (Wizard); hazırlananlar kitaptan seçilir. Yoksa (eski kayıt) hazırlananlar kitapta sayılır. */
@@ -183,13 +189,18 @@ export const MAX_ATTUNED = 3;
  * Görev K4: etkisi uygulanan eşyalar. Uyum gerektirmeyenlerin hepsi; uyum gerektirenlerden listedeki ilk 3'ü (fazlası
  * oluşturucuda sorun sayılır, eski kayıtta etkisiz kalır).
  */
-export function activeItemNames(sheet: Pick<CharacterSheet, 'itemNames'>): string[] {
+export function activeItemNames(sheet: Pick<CharacterSheet, 'itemNames'> & Partial<Pick<CharacterSheet, 'yuvalar' | 'armorName' | 'shield'>>): string[] {
   let attuned = 0;
-  return sheet.itemNames.filter((n) => {
-    if (!itemList.find((i) => i.name === n)?.attunement) return true;
+  const base = sheet.itemNames.filter((n) => {
+    const it = itemList.find((i) => i.name === n);
+    // Görev KATALOG-GUC-TAM D: yuva sistemine kayıtlı mühür taşı gevşek taşınınca etkisiz (yalnız yuvada; `sockets.ts`).
+    if (it && socketImpl()?.isStone(it.id)) return false;
+    if (!it?.attunement) return true;
     attuned += 1;
     return attuned <= MAX_ATTUNED;
   });
+  const sock = sheet.yuvalar ? socketImpl()?.socketItemNames(sheet) ?? [] : [];
+  return sock.length ? [...base, ...sock.filter((n) => !base.includes(n))] : base;
 }
 
 function findItem(name: string) {

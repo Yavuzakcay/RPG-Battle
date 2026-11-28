@@ -9427,26 +9427,26 @@
      {
       "ad": "Zırh",
       "metin": "Temel AC 18'dir (5+ kaynaşmış taşta AC 19, 10/10 taşta AC 20); Stealth dezavantajı verir. Ağır zırh giyme (10 dk) ve çıkarma (5 dk) kuralları geçerlidir; savaş içinde değiştirilemez.",
-      "durum": "kismi",
-      "not": "Plate Armor (18, Stealth dezavantajı) çalışır; 5+ ve 10 taşta AC 19/20 kademesi soket sistemi bekler; giyme/çıkarma süresi savaş dışı"
+      "durum": "calisir",
+      "not": "Plate Armor (18, Stealth dezavantajı); KATALOG-GUC-TAM D: 5+ taşta AC +1, 10 taşta +2 (yuva kademesi); giyme/çıkarma süresi savaş dışı"
      },
      {
       "ad": "Kalıcı Kaynaşma",
       "metin": "Savaş dışında bir Seviye 3 Taş zırhın göğsündeki boş yuvaya basıldığında anında metalle kaynaşır ve bir daha asla sökülemez. Zırh giyildiği sürece kaynaşmış bütün taşların bağışıklıkları, pasifleri ve aktif Savaş Sanatları aynı anda çalışır.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "kismi",
+      "not": "KATALOG-GUC-TAM D: 10 Seviye 3 yuvası, kaynaşan taş sökülemez (oluşturucu kilitler), taşların bağışıklıkları çalışır; Savaş Sanatları planlı"
      },
      {
       "ad": "Gövde Onarımı ve Uyum Bedeli",
       "metin": "0– 4 taşta 1 Uyum yuvası kaplar; 5–9 taşta 2 Uyum yuvası kaplar ve ezici, delici ve kesici hasarlara Direnç verir; 10/10 taşta 3 Uyum yuvasının tamamını kilitler ve ezici, delici ve kesici hasarlara da Tam Bağışıklık (Immunity) açar (İhanet Çatlağı anları hariç).",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "kismi",
+      "not": "KATALOG-GUC-TAM D: 5–9 taşta fiziksel direnç, 10 taşta fiziksel bağışıklık; Uyum yuvası bedeli ve İhanet Çatlağı anları yok"
      },
      {
       "ad": "Hükümdar Vuruşu",
       "metin": "En az 1 taş kaynaşmışken, turda bir kez isabetli silah saldırına kaynaşmış taşlarından seçtiğin birinin hasar türünden +1d6 ek hasar katarsın (5+ taşta +1d8, 10 taşta +2d6 ve seçilen türde direnç yok sayma).",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "kismi",
+      "not": "KATALOG-GUC-TAM D: silah isabetine ilk taşın türünden 1d6 / 1d8 (5+) / 2d6 (10); turda bir kez sınırı ve tür seçimi yok"
      }
     ],
     "riskler": "Zırh giyiliyken bitirilen her savaş ve uzun dinlenme Kararma Sayacı'nı yükseltir; kaynaşmış taş sayısı arttıkça kararma katlanır. 50+ Kararmada iyi diyalog seçimleri kapanır, 75+ Kararmada zırhı çıkarmak WIS kurtarma zarı ister, 100 Kararmada zırh bedene kilitlenir. Ayrıca ejderha veya kadim varlıklar karşısında Üstün Varlık Çekimi (İhanet) riski doğar.",
@@ -13038,8 +13038,8 @@
      {
       "ad": "Temel etki",
       "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
-      "durum": "planli",
-      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+      "durum": "calisir",
+      "not": "KATALOG-GUC-TAM D: yuvaya takılınca türüne sabit −3 (data/yuva-kurallari.json, src/rules/sockets.ts); gevşek taş etkisiz"
      }
     ],
     "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
@@ -13066,8 +13066,8 @@
      {
       "ad": "Temel etki",
       "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
-      "durum": "planli",
-      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+      "durum": "calisir",
+      "not": "KATALOG-GUC-TAM D: yuvaya takılınca türüne sabit −3 (data/yuva-kurallari.json, src/rules/sockets.ts); gevşek taş etkisiz"
      }
     ],
     "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
@@ -13094,8 +13094,8 @@
      {
       "ad": "Temel etki",
       "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
-      "durum": "planli",
-      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+      "durum": "calisir",
+      "not": "KATALOG-GUC-TAM D: yuvaya takılınca türüne sabit −3 (data/yuva-kurallari.json, src/rules/sockets.ts); gevşek taş etkisiz"
      }
     ],
     "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
@@ -13122,8 +13122,8 @@
      {
       "ad": "Temel etki",
       "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
-      "durum": "planli",
-      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+      "durum": "calisir",
+      "not": "KATALOG-GUC-TAM D: yuvaya takılınca türüne sabit −3 (data/yuva-kurallari.json, src/rules/sockets.ts); gevşek taş etkisiz"
      }
     ],
     "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
@@ -13150,8 +13150,8 @@
      {
       "ad": "Temel etki",
       "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
-      "durum": "planli",
-      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+      "durum": "calisir",
+      "not": "KATALOG-GUC-TAM D: yuvaya takılınca türüne sabit −3 (data/yuva-kurallari.json, src/rules/sockets.ts); gevşek taş etkisiz"
      }
     ],
     "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
@@ -13178,8 +13178,8 @@
      {
       "ad": "Temel etki",
       "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
-      "durum": "planli",
-      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+      "durum": "calisir",
+      "not": "KATALOG-GUC-TAM D: yuvaya takılınca türüne sabit −3 (data/yuva-kurallari.json, src/rules/sockets.ts); gevşek taş etkisiz"
      }
     ],
     "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
@@ -13206,8 +13206,8 @@
      {
       "ad": "Temel etki",
       "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
-      "durum": "planli",
-      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+      "durum": "calisir",
+      "not": "KATALOG-GUC-TAM D: yuvaya takılınca türüne sabit −3 (data/yuva-kurallari.json, src/rules/sockets.ts); gevşek taş etkisiz"
      }
     ],
     "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
@@ -13234,8 +13234,8 @@
      {
       "ad": "Temel etki",
       "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
-      "durum": "planli",
-      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+      "durum": "calisir",
+      "not": "KATALOG-GUC-TAM D: yuvaya takılınca türüne sabit −3 (data/yuva-kurallari.json, src/rules/sockets.ts); gevşek taş etkisiz"
      }
     ],
     "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
@@ -13262,8 +13262,8 @@
      {
       "ad": "Temel etki",
       "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
-      "durum": "planli",
-      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+      "durum": "calisir",
+      "not": "KATALOG-GUC-TAM D: yuvaya takılınca türüne sabit −3 (data/yuva-kurallari.json, src/rules/sockets.ts); gevşek taş etkisiz"
      }
     ],
     "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
@@ -13290,8 +13290,8 @@
      {
       "ad": "Temel etki",
       "metin": "Savaş dışında 1. kademe soket yuvası taşıyan bir zırha (Hafif, Orta veya Ağır) takılır (bir zırhta en fazla 1 normal soket bulunur). Takılı olduğu sürece taşın türüne ait (ateş, soğuk, yıldırım, gürültü, asit, zehir, ışıltı, nekrotik, psişik veya kuvvet) aldığın her hasar 3 puan azalır (minimum 0). Üç adet aynı tür Seviye 1 taş demircide 1 adet Seviye 2 taşa birleştirilebilir.",
-      "durum": "planli",
-      "not": "K3: soket sistemi yok, taş tılsım olarak taşınır; türe özel sabit −3 hasar azaltma motorda yok (sabit azaltma kancası)"
+      "durum": "calisir",
+      "not": "KATALOG-GUC-TAM D: yuvaya takılınca türüne sabit −3 (data/yuva-kurallari.json, src/rules/sockets.ts); gevşek taş etkisiz"
      }
     ],
     "riskler": "Direnç vermez; yüksek tekil patlamalarda yalnızca 3 puan keser. Zırh değiştirildiğinde taş demircide yeni zırha aktarılmalıdır.",
@@ -13336,7 +13336,7 @@
       "ad": "Temel etki",
       "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
       "durum": "calisir",
-      "not": "K3 tılsım modu (soket yok, taşınırken etkin): ateş direnci ve turda bir silah isabetine +1d4 ateş (paket ekHasar turdaBir)"
+      "not": "KATALOG-GUC-TAM D: yuvaya (kademe 2) takılınca direnç ve turda bir silah isabetine +1d4 (paket ekHasar turdaBir); gevşek taş etkisiz"
      }
     ],
     "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
@@ -13381,7 +13381,7 @@
       "ad": "Temel etki",
       "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
       "durum": "calisir",
-      "not": "K3 tılsım modu (soket yok, taşınırken etkin): soğuk direnci ve turda bir silah isabetine +1d4 soğuk (paket ekHasar turdaBir)"
+      "not": "KATALOG-GUC-TAM D: yuvaya (kademe 2) takılınca direnç ve turda bir silah isabetine +1d4 (paket ekHasar turdaBir); gevşek taş etkisiz"
      }
     ],
     "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
@@ -13426,7 +13426,7 @@
       "ad": "Temel etki",
       "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
       "durum": "calisir",
-      "not": "K3 tılsım modu (soket yok, taşınırken etkin): yıldırım direnci ve turda bir silah isabetine +1d4 yıldırım (paket ekHasar turdaBir)"
+      "not": "KATALOG-GUC-TAM D: yuvaya (kademe 2) takılınca direnç ve turda bir silah isabetine +1d4 (paket ekHasar turdaBir); gevşek taş etkisiz"
      }
     ],
     "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
@@ -13471,7 +13471,7 @@
       "ad": "Temel etki",
       "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
       "durum": "calisir",
-      "not": "K3 tılsım modu (soket yok, taşınırken etkin): gürültü direnci ve turda bir silah isabetine +1d4 gürültü (paket ekHasar turdaBir)"
+      "not": "KATALOG-GUC-TAM D: yuvaya (kademe 2) takılınca direnç ve turda bir silah isabetine +1d4 (paket ekHasar turdaBir); gevşek taş etkisiz"
      }
     ],
     "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
@@ -13516,7 +13516,7 @@
       "ad": "Temel etki",
       "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
       "durum": "calisir",
-      "not": "K3 tılsım modu (soket yok, taşınırken etkin): asit direnci ve turda bir silah isabetine +1d4 asit (paket ekHasar turdaBir)"
+      "not": "KATALOG-GUC-TAM D: yuvaya (kademe 2) takılınca direnç ve turda bir silah isabetine +1d4 (paket ekHasar turdaBir); gevşek taş etkisiz"
      }
     ],
     "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
@@ -13561,7 +13561,7 @@
       "ad": "Temel etki",
       "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
       "durum": "calisir",
-      "not": "K3 tılsım modu (soket yok, taşınırken etkin): zehir direnci ve turda bir silah isabetine +1d4 zehir (paket ekHasar turdaBir)"
+      "not": "KATALOG-GUC-TAM D: yuvaya (kademe 2) takılınca direnç ve turda bir silah isabetine +1d4 (paket ekHasar turdaBir); gevşek taş etkisiz"
      }
     ],
     "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
@@ -13606,7 +13606,7 @@
       "ad": "Temel etki",
       "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
       "durum": "calisir",
-      "not": "K3 tılsım modu (soket yok, taşınırken etkin): ışıltı direnci ve turda bir silah isabetine +1d4 ışıltı (paket ekHasar turdaBir)"
+      "not": "KATALOG-GUC-TAM D: yuvaya (kademe 2) takılınca direnç ve turda bir silah isabetine +1d4 (paket ekHasar turdaBir); gevşek taş etkisiz"
      }
     ],
     "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
@@ -13651,7 +13651,7 @@
       "ad": "Temel etki",
       "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
       "durum": "calisir",
-      "not": "K3 tılsım modu (soket yok, taşınırken etkin): nekrotik direnci ve turda bir silah isabetine +1d4 nekrotik (paket ekHasar turdaBir)"
+      "not": "KATALOG-GUC-TAM D: yuvaya (kademe 2) takılınca direnç ve turda bir silah isabetine +1d4 (paket ekHasar turdaBir); gevşek taş etkisiz"
      }
     ],
     "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
@@ -13696,7 +13696,7 @@
       "ad": "Temel etki",
       "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
       "durum": "calisir",
-      "not": "K3 tılsım modu (soket yok, taşınırken etkin): psişik direnci ve turda bir silah isabetine +1d4 psişik (paket ekHasar turdaBir)"
+      "not": "KATALOG-GUC-TAM D: yuvaya (kademe 2) takılınca direnç ve turda bir silah isabetine +1d4 (paket ekHasar turdaBir); gevşek taş etkisiz"
      }
     ],
     "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
@@ -13741,7 +13741,7 @@
       "ad": "Temel etki",
       "metin": "Savaş dışında 2. kademe soket yuvasına sahip Nadir veya Çok Nadir bir zırha takılır. Takılı olduğu sürece taşın türüne ait (10 element/düzlem türünden biri) hasarlara Direnç (yarı hasar) kazanırsın ve kendi turunda ilk kez bir silah saldırısıyla isabet ettiğinde +1d4 o türden ek hasar verirsin.",
       "durum": "calisir",
-      "not": "K3 tılsım modu (soket yok, taşınırken etkin): kuvvet direnci ve turda bir silah isabetine +1d4 kuvvet (paket ekHasar turdaBir)"
+      "not": "KATALOG-GUC-TAM D: yuvaya (kademe 2) takılınca direnç ve turda bir silah isabetine +1d4 (paket ekHasar turdaBir); gevşek taş etkisiz"
      }
     ],
     "riskler": "Sıradan veya Sıra Dışı (1. kademe soketli) zırhlara sığmaz; zaten aynı türe direnç veren bir eşyayla dirençler üst üste binmez.",
@@ -13769,8 +13769,8 @@
      {
       "ad": "Temel etki",
       "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken ateş hasarına Tam Bağışıklık (Immunity) ve Burning durumuna bağışıklık kazanırsın (alev ve lav yüzeylerinin ateş hasarı 0 vurur).",
-      "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "durum": "kismi",
+      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Erimiş Örs Patlaması (1/UD, Eylem)",
@@ -13804,8 +13804,8 @@
      {
       "ad": "Temel etki",
       "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken soğuk hasarına Tam Bağışıklık (Immunity) kazanır, buz ve kar yüzeylerinde zorlu arazi veya kayma (Prone) yaşamazsın (iceWalker).",
-      "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "durum": "kismi",
+      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Kırağı Nefesi (1/UD, Eylem)",
@@ -13839,8 +13839,8 @@
      {
       "ad": "Temel etki",
       "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken yıldırım hasarına Tam Bağışıklık (Immunity) kazanırsın (su×yıldırım zincir tepkimesi dahil) ve yıldırım kaynaklı tepki kesme etkileri sana işlemez.",
-      "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "durum": "kismi",
+      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Gök Mızrağı (1/UD, Eylem)",
@@ -13874,8 +13874,8 @@
      {
       "ad": "Temel etki",
       "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken gürültü hasarına Tam Bağışıklık (Immunity) ve Deafened durumuna bağışıklık kazanırsın; ses dalgası kaynaklı zorla itilmeler seni sarsamaz.",
-      "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "durum": "kismi",
+      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Kanyon Yırtığı (1/UD, Eylem)",
@@ -13909,8 +13909,8 @@
      {
       "ad": "Temel etki",
       "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken asit hasarına Tam Bağışıklık (Immunity) kazanırsın; asit yüzeyleri ve AC düşüren aşındırma etkileri sana işlemez.",
-      "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "durum": "kismi",
+      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Sülfür Tufanı (1/UD, Eylem)",
@@ -13944,8 +13944,8 @@
      {
       "ad": "Temel etki",
       "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken zehir hasarına Tam Bağışıklık (Immunity) ve Poisoned durumuna bağışıklık kazanırsın; zehir bulutları görüşünü veya nefesini etkilemez.",
-      "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "durum": "kismi",
+      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Veba Bulutu (1/UD, Eylem)",
@@ -13980,8 +13980,8 @@
      {
       "ad": "Temel etki",
       "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken ışıltı hasarına Tam Bağışıklık (Immunity) ve Blinded durumuna bağışıklık kazanırsın; istenildiğinde bonus eylemle 20 ft parlak ışık açılıp kapatılabilir.",
-      "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "durum": "kismi",
+      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Altın Yargı Sütunu (1/UD, Eylem)",
@@ -14015,8 +14015,8 @@
      {
       "ad": "Temel etki",
       "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken nekrotik hasarına Tam Bağışıklık (Immunity) kazanırsın; maksimum canını azaltan ve iyileşmeni engelleyen etkiler (noHeal) sana işlemez.",
-      "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "durum": "kismi",
+      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Kara Alev Kesiği (1/UD, Eylem)",
@@ -14050,8 +14050,8 @@
      {
       "ad": "Temel etki",
       "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken psişik hasarına Tam Bağışıklık (Immunity) ile Charmed ve Frightened durumlarına bağışıklık kazanırsın (bu bağışıklık zırhın kendi Üstün Varlık Çekimi irade zarını ortadan kaldırmaz).",
-      "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "durum": "kismi",
+      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Zihin Kıran Çığlık (1/UD, Eylem)",
@@ -14085,8 +14085,8 @@
      {
       "ad": "Temel etki",
       "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken kuvvet hasarına Tam Bağışıklık (Immunity) kazanırsın (Magic Missile, Eldritch Blast dahil) ve iraden dışında hiçbir etki seni zorla itemez, çekemez veya ışınlayamaz.",
-      "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "durum": "kismi",
+      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Yıldız Çöküşü (1/UD, Eylem)",

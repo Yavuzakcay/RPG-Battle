@@ -5,6 +5,7 @@
  * Saf modül: React, DOM, localStorage yok; metinler parametreyle gelen dil tablosundan. SRD'nin İngilizce ham metni
  * (`Item.text`) ve sayfa numarası hiç kullanılmaz.
  */
+import { isStone, stoneHostKinds } from '../../rules/sockets';
 import { aciklamaOf, armor, isMagicItem, items, katalogMonsters, trAciklama, weapons } from '../../data';
 import type { Armor, Item, Monster, Weapon } from '../../data';
 import type { Lang, Strings } from '../../i18n';
@@ -148,6 +149,8 @@ export function esyaProspektus(id: string, L: ProStrings, lang: Lang): ProSectio
     }
     for (const o of k.ozellikler) S.nasil.push({ label: `${o.ad} · ${L.katDurum[o.durum] ?? o.durum}`, text: o.not ? `${o.metin} (${o.not})` : o.metin, trOnly: tr || undefined });
     S.etken.push(...row(L.l.category, k.yuva, T));
+    // Görev KATALOG-GUC-TAM D: mühür taşı yuvaya takılır (gevşek taş etkisiz; `src/rules/sockets.ts`).
+    if (isStone(id)) S.etken.push(...row(L.muhur.socket, stoneHostKinds(id).map((h) => L.muhur.hosts[h] ?? h).join(', ')));
     S.etken.push(...row(L.l.rarity, L.katNadirlik[k.nadirlik] ?? k.nadirlik));
     if (it.attunement) S.etken.push(...row(L.l.attune, k.uyumKosulu ? `${L.v.attune} (${k.uyumKosulu})` : L.v.attune, !!k.uyumKosulu));
     S.etken.push(...row(L.l.bonus, k.bonus, T));

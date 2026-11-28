@@ -24,6 +24,10 @@ export function k109SetupEffect(s: Pick<BattleState, 'kuralSurumu'>, c: { id: st
   if (!g || (!g.auralar?.length && !g.pasif)) return undefined;
   return { ...(g.pasif ?? {}), id: `k109:${c.id}`, name: c.name, sourceId: c.id, ...(g.auralar?.length ? { auras: g.auralar } : {}) } as import('./types').ActiveEffect;
 }
+/** Savaş başının süreli etkileri (`baslangic`; Groggy Veil): mutlak tura dek. */
+export function k109StartEffects(s: Pick<BattleState, 'kuralSurumu'>, c: { id: string; monsterId?: string }): import('./types').ActiveEffect[] {
+  return (gucOf(s, c.monsterId)?.baslangic ?? []).map((b, i) => ({ ...b.etki, id: `k109:${c.id}:start:${i}`, sourceId: c.id, until: b.tur }) as import('./types').ActiveEffect);
+}
 
 /** Yetenek listesine 109 yamaları (kimliğe göre alan üstüne yazma) ve yeni yetenekler. */
 export function k109Abilities<T extends { id: string }>(s: Pick<BattleState, 'kuralSurumu'>, monsterId: string | undefined, list: T[]): T[] {
@@ -39,3 +43,11 @@ export function k109Legendary<T extends { id: string }>(s: Pick<BattleState, 'ku
   for (const x of g.efsanevi) if (x.add) out.push({ id: x.id, ...x.add } as unknown as T);
   return out;
 }
+
+/** Sahibine bağlı alanlar (savaş başında; `bagliAlanlar`). */
+export function k109SetupZones(s: Pick<BattleState, 'kuralSurumu'>, c: { id: string; side: import('./types').Side; monsterId?: string }): import('./types').SpellZone[] {
+  return (gucOf(s, c.monsterId)?.bagliAlanlar ?? []).map((z, i) => ({ id: `k109:${c.id}:bagli:${i}`, spellId: `k109:${z.name}`, name: z.name, casterId: c.id, side: c.side,
+    dc: 0, slotLevel: 0, hexes: [], anchorId: c.id, radius: z.radius, spec: z.spec as import('./types').SpellZone['spec'] }));
+}
+/** Yalnız dost olabilen katalog canavarları (sürümden bağımsız kurulum kuralı). */
+export const allyOnlyMonster = (monsterId: string): boolean => !!DATA[monsterId]?.yalnizDost;

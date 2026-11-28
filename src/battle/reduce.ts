@@ -866,7 +866,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const effects = [...(c.effects ?? []).filter((e) => e.id !== effect.id), effect];
       // Görev S1: etkinin verdiği durumlar (Invisibility → Invisible) etki sürdükçe.
       const grants = (effect.grants ?? []).filter((g) => !c.conditions.includes(g));
-      return withCombatant(state, c.id, { effects, ...(grants.length ? { conditions: [...c.conditions, ...grants] } : {}) });
+      // Görev KATALOG-GUC-TAM (109; Size Shift): boyut değişimi (alan yalnız 109 savaşında oluşur; hasar/saldırı değişmez).
+      const resized = effect.k109?.sizeTo ? { size: effect.k109.sizeTo } : {};
+      return withCombatant(state, c.id, { effects, ...resized, ...(grants.length ? { conditions: [...c.conditions, ...grants] } : {}) });
     }
     case 'effect_ended': {
       const c = state.combatants[event.targetId];

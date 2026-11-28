@@ -444,10 +444,16 @@ export function executeMultiattack(state: BattleState, actor: Combatant, targetI
   // Görev WS87 (87+): "ya … ya da …" Multiattack'ta tek seçenek (Barbed Devil 4 → 2, Medusa 6 → 3): hedefe hepsi ulaşan
   // ilk seçenek, yoksa ilk seçenek.
   const opt = multiOptionChoice(state, actor, first);
-  for (let i = 0; i < actor.attacks.length; i++) {
+  // Görev KATALOG-GUC-TAM (109+; Faz 2): saldırı tekrarı (Titan 4 dokunaç) ve sırası (Kongark: Grab → Fist).
+  const kfx = katalog109On(state) ? (actor.effects ?? []).flatMap((e) => (e.k109 ? [e.k109] : [])) : [];
+  const rep: Record<string, number> = Object.assign({}, ...kfx.map((f) => f.repeat ?? {}));
+  const ord = kfx.find((f) => f.order)?.order;
+  const rank = (i: number) => { const r = ord ? ord.indexOf(actor.attacks[i]?.name ?? '') : -1; return r < 0 ? 99 : r; };
+  const idxs = [...actor.attacks.keys()].sort((x, y) => rank(x) - rank(y) || x - y);
+  for (const i of idxs) {
     const atk = actor.attacks[i];
     if (!atk || atk.recharge) continue;
-    const times = opt ? opt[atk.name] ?? 0 : atk.repeat + (i === plusAt ? plus : 0);
+    const times = opt ? opt[atk.name] ?? 0 : (rep[atk.name] ?? atk.repeat) + (i === plusAt ? plus : 0);
     for (let k = 0; k < times; k++) {
       const t = current.combatants[targetId];
       // Tepkiyle (Hellish Rebuke, Retaliation) düşen saldıran devam edemez.

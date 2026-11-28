@@ -27,7 +27,7 @@ import { fail, finish, isTargetable, type CommandResult } from './common';
 import { castWithoutAction } from './castHook';
 import { k19Legendary, legendarySave, legendaryTeleport, pounceMove, type LegendaryAction } from './boss';
 import { executeHide } from './stealth';
-import { executeMove, moveCostFn, occupantAt, terrainAt } from './movement';
+import { bodyFitProblem, executeMove, moveCostFn, occupantAt, terrainAt } from './movement';
 import { canReact, reactionUsable, reactionUsed, registerInk } from './reactions';
 import { retreatMove } from './boss';
 import { speedHexes } from './reduce';
@@ -39,12 +39,16 @@ import { swarm95On } from './swarm95Surum';
 import { ws92On } from './ws92Surum';
 import ws92Data from '../../data/ws92.json';
 import { insideEffect } from './swallow92';
-import { k109Abilities, k109SetupEffect } from './katalog109Data';
+import { gucOf, k109Abilities, k109SetupEffect, k109SetupZones, k109StartEffects } from './katalog109Data';
 import type { K109AbilityPatch } from './katalog109Types';
 
 export interface MonsterAbility extends Omit<LegendaryAction, 'kind'>, Pick<K109AbilityPatch, 'pre'> {
-  kind: LegendaryAction['kind'] | 'grant' | 'heal' | 'pull' | 'drop' | 'swallow' | 'summon' | 'ethereal';
-  cost: 'action' | 'bonus';
+  kind: LegendaryAction['kind'] | 'grant' | 'heal' | 'pull' | 'drop' | 'swallow' | 'summon' | 'ethereal'
+    /** Görev KATALOG-GUC-TAM (109): Size Shift (seçenek = hedef boyut; turda `perTurn` kez). */
+    | 'resize';
+  /** Görev KATALOG-GUC-TAM (109): `free` = eylem harcamaz (Size Shift). */
+  cost: 'action' | 'bonus' | 'free';
+  perTurn?: number;
   uses?: number; recharge?: number;
   moveOnly?: boolean; fullMove?: boolean; waterOnly?: boolean; dimOnly?: boolean; fullMoveNoOA?: boolean;
   grant?: Array<'dash' | 'disengage' | 'hide'>; jumpFt?: number; leapFt?: number; pushOnSave?: number; noHalf?: boolean;
@@ -147,6 +151,10 @@ export function monsterAbilitySetup(state: BattleState, c0: Combatant, m0?: Mons
   // Görev KATALOG-GUC-TAM (109+): katalog canavar auraları ve pasifleri (`data/katalog-gucler.json`).
   const k109 = k109SetupEffect(state, c0);
   if (k109 && !c.effects?.some((x) => x.id === k109.id)) c.effects = [...(c.effects ?? []), k109];
+  // Görev KATALOG-GUC-TAM (109+): mücevher binek bağı: eğitimli binek (kontrollü binek turu, MB2).
+  if (gucOf(state, c0.monsterId)?.ozel?.binekBag) c.egitimli = true;
+  // Savaşta sonradan eklenen canavarın (round > 1) başlangıç etkisi yok.
+  if ((state.round ?? 1) <= 1) for (const x of k109StartEffects(state, c0)) if (!c.effects?.some((y) => y.id === x.id)) c.effects = [...(c.effects ?? []), x];
   const traits = [...(p.traits ?? []), ...(p.siegeMonster ? ['siege-monster'] : []), ...(p.greaterMagicResistance ? ['greater-magic-resistance'] : []),
     ...(p.reflectiveCarapace ? ['reflective-carapace'] : []), ...(p.corrosive ? ['corrosive-form'] : []), ...(p.mistyEscape ? ['misty-escape'] : []),
     ...(p.abduct ? ['abduct'] : []), ...(p.earthGlide ? ['earth-glide'] : []), ...(p.berserk ? ['berserk'] : [])];
@@ -177,6 +185,8 @@ export function monsterAbilitySetup(state: BattleState, c0: Combatant, m0?: Mons
     c.rechargeUsed = [...new Set([...c.rechargeUsed, ...idx.slice(1).filter((i) => i >= 0)])];
     c.resources = { ...c.resources, 'mab:roar': 0 };
   }
+  // Görev KATALOG-GUC-TAM (109+): sahibine bağlı alanlar (Continent Scale).
+  zones.push(...k109SetupZones(state, c0));
   for (const au of p.auras ?? []) {
     zones.push({ id: `srd19:${id}:${au.name}`, spellId: `srd19:${au.name}`, name: au.name, casterId: id, side: c.side, dc: au.dc ?? 0, slotLevel: 0, hexes: [],
       anchorId: id, radius: Math.floor(au.radiusFt / 5),
@@ -388,6 +398,18 @@ export function abilityEvents(state: BattleState, actor: Combatant, a: MonsterAb
         }
       }
       return [];
+    }
+    case 'resize': {
+      // Görev KATALOG-GUC-TAM (109): Size Shift: boyut seçeneği; gövde şu anki çapada sığmalı; turda `perTurn` kez.
+      const to = (opt ?? '') as 'T' | 'S' | 'M' | 'L' | 'H' | 'G';
+      if (!SIZE_ORDER.includes(to) || to === actor.size || !actor.pos) return [];
+      const mark = `mab:${a.id}`;
+      const key = turnKey(state);
+      const used = actor.traitTurns?.[mark]?.startsWith(`${key}#`) ? Number(actor.traitTurns[mark]!.split('#')[1]) : 0;
+      if (used >= (a.perTurn ?? 2)) return [];
+      if (bodyFitProblem(state, { ...actor, size: to }, actor.pos, [actor.id])) return [];
+      return [{ type: 'trait_turn', actorId: actor.id, trait: mark, key: `${key}#${used + 1}` },
+        { type: 'effect_added', targetId: actor.id, effect: { id: `k109:size:${actor.id}`, name: `${a.tr}: ${to}`, sourceId: actor.id, k109: { sizeTo: to } } as ActiveEffect }];
     }
     case 'ethereal': {
       // Ethereal Jaunt / Stride / Etherealness: Ethereal düzleme geçer (hedef alınmaz) ya da geri döner.

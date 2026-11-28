@@ -2055,7 +2055,9 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       const foe = targetId && state.combatants[targetId]?.side !== actor.side ? targetId : undefined;
       // Görev OYUNCU-HEDEF-DOST: seçili dost hedef (kendisi değil) onaylı `crossSide` ile (yutma, çekme, hedefli yetenek).
       const ally = !foe && targetId && targetId !== actorId && state.combatants[targetId]?.side === actor.side ? targetId : undefined;
-      const opts: Array<string | undefined> = a.kind === 'grant' && (a.grant?.length ?? 0) > 1 ? a.grant ?? [] : [undefined];
+      // Görev KATALOG-GUC-TAM (109): Size Shift seçenekleri (şu anki boyut dışında).
+      const opts: Array<string | undefined> = a.kind === 'resize' ? ['T', 'S', 'M', 'L', 'H', 'G'].filter((x) => x !== actor.size)
+        : a.kind === 'grant' && (a.grant?.length ?? 0) > 1 ? a.grant ?? [] : [undefined];
       return opts.map((opt): Item => {
         const plain: Command = { type: 'monster_ability', actorId, abilityId: a.id, ...(foe ? { targetId: foe } : {}), ...(opt ? { option: opt } : {}) };
         const crossCmd: Command | null = ally ? { type: 'monster_ability', actorId, abilityId: a.id, targetId: ally, crossSide: true, ...(opt ? { option: opt } : {}) } : null;

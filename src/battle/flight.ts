@@ -11,7 +11,9 @@ import type { BattleState, Combatant } from './types';
 export function flySpeed(c: Pick<Combatant, 'fly' | 'effects'>): number {
   let ft = c.fly;
   for (const e of c.effects ?? []) if (e.fly && e.fly > ft) ft = e.fly;
-  return ft;
+  // Görev KATALOG-GUC-TAM (109; Groggy Veil): uçuş hızı çarpanı (etki yalnız 109 savaşında oluşur).
+  const k = Math.min(1, ...(c.effects ?? []).map((e) => e.k109?.flyMult ?? 1));
+  return k < 1 && ft > 0 ? Math.max(5, Math.floor((ft * k) / 5) * 5) : ft;
 }
 
 /** Uçuyor ya da süzülüyor mu (uçuş hızı var ya da Levitate gibi bir etki); tırmanma sayılmaz. */

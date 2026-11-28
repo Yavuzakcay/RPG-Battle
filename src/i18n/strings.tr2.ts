@@ -558,7 +558,7 @@ export const TR_EXTRA = {
       groups: { combat: 'Dövüş', heal: 'Şifa ve koruma', shape: 'Hayvan formu', slots: 'Slot yenile', summon: 'Büyü ve çağrılar', other: 'Diğer' } as Record<string, string>,
       noSpellsHere: 'Şu an yapabileceğin büyü yok.', noSpecialHere: 'Şu an yapabileceğin özel bir şey yok.',
       // Serüven öncesi: canavar yetenekleri (`monster_ability`; biçim, çağrı ve Game Master canavarı) Özel ▸ Dövüş'te.
-      mab: (name: string, opt?: string) => (opt ? `${name}: ${opt}` : name), mabOpt: { dash: 'Koş', disengage: 'Geri Çekil', hide: 'Gizlen' } as Record<string, string>,
+      mab: (name: string, opt?: string) => (opt ? `${name}: ${opt}` : name), mabOpt: { dash: 'Koş', disengage: 'Geri Çekil', hide: 'Gizlen', T: 'Minik', S: 'Küçük', M: 'Orta', L: 'Büyük', H: 'Dev', G: 'Devasa' } as Record<string, string>,
       mabNotReady: 'Kullanım hakkı yok ya da şarj olmadı.',
       floor: 'Merdivenden geç', steady: 'Steady Aim', horde: 'Horde Breaker', cunning: 'Cunning Strike',
       cunningName: { trip: 'Trip', withdraw: 'Withdraw', poison: 'Poison', daze: 'Daze', 'knock-out': 'Knock Out', obscure: 'Obscure' } as Record<string, string>,
@@ -975,7 +975,7 @@ export const TR_EXTRA = {
       katDurum: { calisir: 'çalışır', kismi: 'kısmen çalışır', planli: 'planlı (henüz oyunda yok)', calismiyor: 'çalışmıyor' } as Record<string, string>,
       katKaynak: (ref: string) => `Dice & Hex özgün eşya kataloğu (${ref})`, priceless: 'Satılamaz / paha biçilemez',
       // Görev MUHUR-TASI-PROSPEKTUS: Mühür taşı bilgi satırları (kademe PDF Kaltakkıran §4 tablosundan; ruh data/bosslar-muhur.json `ganimet`).
-      muhur: { kademe: 'Kademe', ruh: 'Mühür Ruhu', tier: { 1: 'Seviye 1 · Çatlak Taş', 2: 'Seviye 2 · Uyanmış Taş', 3: 'Seviye 3 · Kaltakkıran Parçası' } as Record<number, string> },
+      muhur: { kademe: 'Kademe', ruh: 'Mühür Ruhu', socket: 'Takılabilir', hosts: { zirh: 'zırh', kalkan: 'kalkan', cubbe: 'cübbe (nadir ve üstü)', ozel: "Kaltakkıran'ın Paladin Zırhı, Koruyucu Ejderha Mührü" } as Record<string, string>, tier: { 1: 'Seviye 1 · Çatlak Taş', 2: 'Seviye 2 · Uyanmış Taş', 3: 'Seviye 3 · Kaltakkıran Parçası' } as Record<number, string> },
       v: {
         dexMod: 'DEX', dexMax: (n: number) => `DEX (en çok ${n})`, shield: (n: number) => `+${n} (kalkan)`,
         minutes: (a: number, b: number) => `${a} dk giyme, ${b} dk çıkarma`, stealthDis: 'Gizlen (Stealth) zarlarında dezavantaj',

@@ -544,7 +544,24 @@
       "oncePerTurn": true
      }
     }
-   ]
+   ],
+   "ozel": {
+    "rebirth": {
+     "radiusFt": 60,
+     "dc": 27,
+     "dice": "16d10",
+     "type": "fire",
+     "healAllies": 80,
+     "egg": "ember-egg",
+     "hp": 450,
+     "yenile": "Celestial Glide"
+    },
+    "soulBond": {
+     "sinif": "ranger",
+     "radiusFt": 60,
+     "pay": 0.5
+    }
+   }
   },
   "kozmik-anka-savas": {
    "auralar": [
@@ -699,7 +716,24 @@
       "oncePerTurn": true
      }
     }
-   ]
+   ],
+   "ozel": {
+    "rebirth": {
+     "radiusFt": 60,
+     "dc": 27,
+     "dice": "16d10",
+     "type": "fire",
+     "healAllies": 80,
+     "egg": "ember-egg",
+     "hp": 450,
+     "yenile": "Celestial Glide"
+    },
+    "soulBond": {
+     "sinif": "ranger",
+     "radiusFt": 60,
+     "pay": 0.5
+    }
+   }
   },
   "dragon-of-hexonia-a": {
    "auralar": [
@@ -780,9 +814,38 @@
      "pierceResist": {
       "ignoreImmune": true
      },
-     "forcedImmune": true
+     "forcedImmune": true,
+     "negateOnce": true,
+     "secondInit": 15,
+     "reflectSpell": true
     }
-   }
+   },
+   "lrCleanse": true,
+   "yalnizDost": true,
+   "yetenekEkle": [
+    {
+     "id": "size-shift",
+     "tr": "Boyut Değiştirme",
+     "en": "Size Shift",
+     "cost": "free",
+     "kind": "resize",
+     "perTurn": 2
+    }
+   ],
+   "bagliAlanlar": [
+    {
+     "name": "Kıta Ölçeği",
+     "radius": 2,
+     "spec": {
+      "difficult": 2,
+      "difficultFor": "enemies",
+      "coverFor": "allies",
+      "targets": "all",
+      "color": "#c9a227",
+      "icon": "🛡"
+     }
+    }
+   ]
   },
   "dragon-of-hexonia-b": {
    "auralar": [
@@ -863,9 +926,38 @@
      "pierceResist": {
       "ignoreImmune": true
      },
-     "forcedImmune": true
+     "forcedImmune": true,
+     "negateOnce": true,
+     "secondInit": 15,
+     "reflectSpell": true
     }
-   }
+   },
+   "lrCleanse": true,
+   "yalnizDost": true,
+   "yetenekEkle": [
+    {
+     "id": "size-shift",
+     "tr": "Boyut Değiştirme",
+     "en": "Size Shift",
+     "cost": "free",
+     "kind": "resize",
+     "perTurn": 2
+    }
+   ],
+   "bagliAlanlar": [
+    {
+     "name": "Kıta Ölçeği",
+     "radius": 2,
+     "spec": {
+      "difficult": 2,
+      "difficultFor": "enemies",
+      "coverFor": "allies",
+      "targets": "all",
+      "color": "#c9a227",
+      "icon": "🛡"
+     }
+    }
+   ]
   },
   "sigmadrake": {
    "auralar": [
@@ -884,7 +976,18 @@
      },
      "cesaret": 0
     }
-   ]
+   ],
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "radiant"
+      ],
+      "icon": "💎"
+     }
+    }
+   }
   },
   "deltadrake": {
    "auralar": [
@@ -919,6 +1022,17 @@
      },
      "tur": "nefes"
     }
+   },
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "psychic"
+      ],
+      "icon": "💎"
+     }
+    }
    }
   },
   "hydraxe": {
@@ -937,6 +1051,24 @@
        "dice": "1d8",
        "type": "acid"
       }
+     }
+    },
+    "efsaneviOnce": "acid-drool",
+    "alan": {
+     "name": "Erime Gölü",
+     "radiusFt": 10,
+     "rounds": 100000,
+     "spec": {
+      "on": [
+       "start",
+       "enter"
+      ],
+      "damage": "2d6",
+      "damageType": "acid",
+      "targets": "enemies",
+      "hold": "turn",
+      "color": "#7a9a2a",
+      "icon": "🧪"
      }
     }
    },
@@ -1010,7 +1142,35 @@
       "target": "far"
      }
     }
-   ]
+   ],
+   "faz2": {
+    "oncelik": [
+     "Bite",
+     "Claw"
+    ],
+    "efsaneviOnce": "tail-sweep",
+    "yuzey": {
+     "kind": "fire",
+     "radiusFt": 30,
+     "rounds": 3,
+     "halka": true
+    },
+    "auralar": [
+     {
+      "id": "ember-heat",
+      "name": "Kor Sıcağı",
+      "radius": 3,
+      "filter": "enemies",
+      "trigger": "turnStart",
+      "effect": {
+       "kind": "damage",
+       "dice": "2d6",
+       "type": "fire"
+      },
+      "cesaret": 0
+     }
+    ]
+   }
   },
   "wolfgang": {
    "ekler": {
@@ -1038,7 +1198,19 @@
       "target": "far"
      }
     }
-   ]
+   ],
+   "faz2": {
+    "oncelik": [
+     "Bite",
+     "Claw"
+    ],
+    "efsaneviOnce": "frost-halo",
+    "yuzey": {
+     "kind": "ice",
+     "radiusFt": 30,
+     "rounds": 10
+    }
+   }
   },
   "cerbones": {
    "ekler": {
@@ -1069,6 +1241,15 @@
     "etki": {
      "hitDie": "1d8",
      "hitType": "necrotic"
+    },
+    "oncelik": [
+     "Bite"
+    ],
+    "efsaneviOnce": "ash-halo",
+    "turBasiCagir": {
+     "monster": "skeleton",
+     "count": 2,
+     "max": 6
     }
    },
    "efsanevi": [
@@ -1105,7 +1286,19 @@
       "target": "far"
      }
     }
-   ]
+   ],
+   "faz2": {
+    "oncelik": [
+     "Proboscis",
+     "Wing"
+    ],
+    "efsaneviOnce": "spore-burst",
+    "yuzey": {
+     "kind": "poison",
+     "radiusFt": 15,
+     "rounds": 10
+    }
+   }
   },
   "gongar": {
    "pasif": {
@@ -1120,7 +1313,32 @@
       "target": "far"
      }
     }
-   ]
+   ],
+   "faz2": {
+    "oncelik": [
+     "Shell Ram",
+     "Bell Slam"
+    ],
+    "efsaneviOnce": "shell-spin",
+    "auralar": [
+     {
+      "id": "bell-quake",
+      "name": "Çan Sarsıntısı",
+      "radius": 2,
+      "filter": "enemies",
+      "trigger": "turnStart",
+      "save": {
+       "ability": "con",
+       "dc": 15
+      },
+      "effect": {
+       "kind": "condition",
+       "condition": "Prone"
+      },
+      "cesaret": 0
+     }
+    ]
+   }
   },
   "kongark": {
    "pasif": {
@@ -1148,7 +1366,32 @@
       "target": "far"
      }
     }
-   ]
+   ],
+   "faz2": {
+    "oncelik": [
+     "Grab",
+     "Fist"
+    ],
+    "efsaneviOnce": "gravity-ring",
+    "auralar": [
+     {
+      "id": "void-gravity",
+      "name": "Boşluk Çekimi",
+      "radius": 12,
+      "filter": "enemies",
+      "trigger": "turnStart",
+      "save": {
+       "ability": "str",
+       "dc": 21
+      },
+      "effect": {
+       "kind": "pull",
+       "ft": 15
+      },
+      "cesaret": 0
+     }
+    ]
+   }
   },
   "tutsak-dragon": {
    "ekler": {
@@ -1219,6 +1462,49 @@
       "oncePerTurn": true
      }
     }
+   ],
+   "baslangic": [
+    {
+     "tur": 2,
+     "etki": {
+      "name": "Groggy Veil",
+      "icon": "💤",
+      "saveDis": [
+       "int"
+      ],
+      "k109": {
+       "flyMult": 0.5
+      }
+     }
+    }
+   ],
+   "auralar": [
+    {
+     "id": "armors-betrayal",
+     "name": "Armor's Betrayal",
+     "radius": 12,
+     "filter": "enemies",
+     "trigger": "turnStart",
+     "save": {
+      "ability": "wis",
+      "dc": 24
+     },
+     "requiresItem": [
+      "kaltakkirans-paladin-armor"
+     ],
+     "cesaret": 0,
+     "effect": {
+      "kind": "effect",
+      "rounds": 1,
+      "effect": {
+       "name": "Armor's Betrayal",
+       "icon": "⛓",
+       "speedZero": true,
+       "attackDisVs": "$owner",
+       "attackedAdvBy": "$owner"
+      }
+     }
+    }
    ]
   },
   "omeglet": {
@@ -1243,6 +1529,17 @@
      },
      "tur": "nefes"
     }
+   },
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "necrotic"
+      ],
+      "icon": "💎"
+     }
+    }
    }
   },
   "omegadrake": {
@@ -1254,6 +1551,17 @@
       "noHeal": true
      },
      "tur": "nefes"
+    }
+   },
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "necrotic"
+      ],
+      "icon": "💎"
+     }
     }
    }
   },
@@ -1295,6 +1603,17 @@
      },
      "tur": "nefes"
     }
+   },
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "psychic"
+      ],
+      "icon": "💎"
+     }
+    }
    }
   },
   "alphlet": {
@@ -1317,6 +1636,17 @@
      },
      "tur": "nefes"
     }
+   },
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "thunder"
+      ],
+      "icon": "💎"
+     }
+    }
    }
   },
   "alphadrake": {
@@ -1328,6 +1658,17 @@
      },
      "dropConc": true,
      "tur": "nefes"
+    }
+   },
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "thunder"
+      ],
+      "icon": "💎"
+     }
     }
    }
   },
@@ -1357,6 +1698,17 @@
      },
      "tur": "nefes"
     }
+   },
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "force"
+      ],
+      "icon": "💎"
+     }
+    }
    }
   },
   "gammadrake": {
@@ -1376,6 +1728,17 @@
      },
      "tur": "nefes"
     }
+   },
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "force"
+      ],
+      "icon": "💎"
+     }
+    }
    }
   },
   "stormer": {
@@ -1394,7 +1757,18 @@
       "target": "far"
      }
     }
-   ]
+   ],
+   "faz2": {
+    "oncelik": [
+     "Hoof"
+    ],
+    "efsaneviOnce": "chain-lightning",
+    "yuzey": {
+     "kind": "water",
+     "radiusFt": 20,
+     "rounds": 10
+    }
+   }
   },
   "lightaur": {
    "yetenekler": {
@@ -1420,7 +1794,39 @@
       "target": "far"
      }
     }
-   ]
+   ],
+   "faz2": {
+    "oncelik": [
+     "Gore",
+     "Hoof"
+    ],
+    "efsaneviOnce": "halo-flare",
+    "auralar": [
+     {
+      "id": "sun-glare",
+      "name": "Kör Güneş",
+      "radius": 3,
+      "filter": "enemies",
+      "trigger": "turnStart",
+      "save": {
+       "ability": "con",
+       "dc": 15
+      },
+      "effect": {
+       "kind": "effect",
+       "rounds": 1,
+       "effect": {
+        "name": "Kör Güneş",
+        "icon": "☀",
+        "grants": [
+         "Blinded"
+        ]
+       }
+      },
+      "cesaret": 0
+     }
+    ]
+   }
   },
   "mirage": {
    "efsanevi": [
@@ -1453,7 +1859,31 @@
      "adjacent": true,
      "uses": 1
     }
-   ]
+   ],
+   "faz2": {
+    "efsaneviOnce": "mirror-scream",
+    "etki": {
+     "images": 3
+    },
+    "auralar": [
+     {
+      "id": "whisper-dread",
+      "name": "Vesvese",
+      "radius": 12,
+      "filter": "enemies",
+      "trigger": "turnStart",
+      "save": {
+       "ability": "wis",
+       "dc": 21
+      },
+      "effect": {
+       "kind": "condition",
+       "condition": "Frightened"
+      },
+      "cesaret": 0
+     }
+    ]
+   }
   },
   "mirath": {
    "yetenekEkle": [
@@ -1468,6 +1898,19 @@
      "uses": 1
     }
    ]
+  },
+  "sigmyr": {
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "radiant"
+      ],
+      "icon": "💎"
+     }
+    }
+   }
   }
  }
 }

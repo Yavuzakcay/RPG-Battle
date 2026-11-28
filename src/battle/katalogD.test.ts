@@ -53,12 +53,17 @@ describe('KATALOG-1 D: yüzük, tılsım, mühür taşı', () => {
     const a = battle(sheet(['Ember Sigil Stone']));
     expect(passiveBody(prims(a).find((p) => p.tur === 'zarEtkisi')!, a)).toEqual(expect.objectContaining({ pkCritOn: 19 }));
   });
-  it('Sv.2 (tılsım modu): türüne direnç + turda bir silaha 1d4; Sv.1 ve Sv.3 planlı; Mühür kurtarma +1 ve Frightened bağışıklığı', () => {
+  // Görev KATALOG-GUC-TAM D (kullanıcı kararı): taş yalnız yuvada etki verir (gevşek taşınan etkisiz); Sv.2 etkileri yuvadan aynı.
+  it('Sv.2 (yuvada): türüne direnç + turda bir silaha 1d4; gevşek taş etkisiz; Sv.1/Sv.3 temel etki yuvadan; Mühür kurtarma +1 ve Frightened bağışıklığı', () => {
     const p = itemParts(['Awakened Elemental Stone (Fire)'], 'p1').effects[0]!;
     expect(p.resist).toEqual(['fire']);
-    const a = battle(sheet(['Awakened Elemental Stone (Fire)']));
+    expect(prims(battle(sheet(['Awakened Elemental Stone (Fire)']))).find((x) => x.tur === 'ekHasar')).toBeUndefined();
+    const a = battle(sheet(['Twilight Leather'], { yuvalar: { 'twilight-leather': ['awakened-elemental-stone-fire'] } }));
     expect(prims(a).find((x) => x.tur === 'ekHasar')).toEqual(expect.objectContaining({ zar: '1d4', hasarTuru: 'fire', turdaBir: true }));
-    for (const x of TAS.filter((t) => /^BOSS#(7[a-j]|9|1[0-8])$/.test(t.katalog.ref))) for (const f of x.katalog.ozellikler) expect(f.durum, `${x.id}/${f.ad}`).toBe('planli');
+    // Yuva sistemiyle: Sv.1 temel etki çalışır, Sv.3 temel etki kısmi (bağışıklık); Savaş Sanatları planlı.
+    for (const x of TAS.filter((t) => /^BOSS#(7[a-j]|9|1[0-8])$/.test(t.katalog.ref))) for (const f of x.katalog.ozellikler) {
+      expect(f.durum, `${x.id}/${f.ad}`).toBe(f.ad === 'Temel etki' ? (x.katalog.ref.startsWith('BOSS#7') ? 'calisir' : 'kismi') : 'planli');
+    }
     expect(make(sheet(['Guardian Dragon Sigil'])).saves.dex - make(sheet([])).saves.dex).toBe(1);
     expect(itemParts(['Guardian Dragon Sigil'], 'p1').effects[0]!.immune).toEqual(['Frightened']);
   });

@@ -1,0 +1,327 @@
+{
+ "_not": "Görev KATALOG-GUC-TAM D: mühür taşı yuvaları (zırha takılan artifact; src/rules/sockets.ts). Kaynak: PDF §6 (data/items-katalog.json BOSS#7a–#19 metinleri) ve kullanıcı kararı; PDF'te olmayan kurallar DECISIONS.md'de. Elle düzenlenir.",
+ "konak": {
+  "_not": "Her zırh/kalkan/cübbe tek normal yuva taşır (PDF: bir zırhta en çok 1 normal soket). Kademe 2 yuva: nadirlikte. Giyilen SRD zırhı ($armor) ve kalkanı ($shield) kademe 1 yuva. Sv.1 cübbeye takılmaz (PDF).",
+  "kademe2Nadirlik": [
+   "nadir",
+   "cokNadir",
+   "efsanevi",
+   "yadigar"
+  ],
+  "turler": {
+   "zirh": true,
+   "kalkan": true
+  },
+  "cubbeYuvasi": "zırhsız",
+  "cubbeEnAz": 2,
+  "ozel": {
+   "kaltakkirans-paladin-armor": {
+    "yuva": 10,
+    "kademe": 3,
+    "yalnizKademe": 3,
+    "kalici": true,
+    "kademeler": [
+     {
+      "enAz": 5,
+      "etki": {
+       "ac": 1,
+       "resist": [
+        "bludgeoning",
+        "piercing",
+        "slashing"
+       ]
+      }
+     },
+     {
+      "enAz": 10,
+      "etki": {
+       "ac": 2,
+       "immuneDamage": [
+        "bludgeoning",
+        "piercing",
+        "slashing"
+       ]
+      }
+     }
+    ],
+    "vurus": [
+     {
+      "enAz": 1,
+      "zar": "1d6"
+     },
+     {
+      "enAz": 5,
+      "zar": "1d8"
+     },
+     {
+      "enAz": 10,
+      "zar": "2d6"
+     }
+    ],
+    "parcalaninca": {
+     "taslar": "bolgeye-duser",
+     "not": "Serüven tarafı: zırh parçalanınca kaynaşmış taşlar ait oldukları bölgeye düşer (yalnız veri)."
+    }
+   },
+   "guardian-dragon-sigil": {
+    "yuva": 10,
+    "kademe": 3,
+    "yalnizKademe": 3,
+    "ruh": true,
+    "not": "Koruyucu Ejderha Mührü: boss ruhlarını (Seviye 3 taşları) toplayan artifact yuvası; ejder tasviri yok."
+   }
+  }
+ },
+ "taslar": {
+  "cracked-elemental-stone-fire": {
+   "kademe": 1,
+   "tur": "fire",
+   "etki": {
+    "k109": {
+     "flatReduce": {
+      "fire": 3
+     }
+    }
+   }
+  },
+  "awakened-elemental-stone-fire": {
+   "kademe": 2,
+   "tur": "fire",
+   "esya": true
+  },
+  "cracked-elemental-stone-cold": {
+   "kademe": 1,
+   "tur": "cold",
+   "etki": {
+    "k109": {
+     "flatReduce": {
+      "cold": 3
+     }
+    }
+   }
+  },
+  "awakened-elemental-stone-cold": {
+   "kademe": 2,
+   "tur": "cold",
+   "esya": true
+  },
+  "cracked-elemental-stone-lightning": {
+   "kademe": 1,
+   "tur": "lightning",
+   "etki": {
+    "k109": {
+     "flatReduce": {
+      "lightning": 3
+     }
+    }
+   }
+  },
+  "awakened-elemental-stone-lightning": {
+   "kademe": 2,
+   "tur": "lightning",
+   "esya": true
+  },
+  "cracked-elemental-stone-thunder": {
+   "kademe": 1,
+   "tur": "thunder",
+   "etki": {
+    "k109": {
+     "flatReduce": {
+      "thunder": 3
+     }
+    }
+   }
+  },
+  "awakened-elemental-stone-thunder": {
+   "kademe": 2,
+   "tur": "thunder",
+   "esya": true
+  },
+  "cracked-elemental-stone-acid": {
+   "kademe": 1,
+   "tur": "acid",
+   "etki": {
+    "k109": {
+     "flatReduce": {
+      "acid": 3
+     }
+    }
+   }
+  },
+  "awakened-elemental-stone-acid": {
+   "kademe": 2,
+   "tur": "acid",
+   "esya": true
+  },
+  "cracked-elemental-stone-poison": {
+   "kademe": 1,
+   "tur": "poison",
+   "etki": {
+    "k109": {
+     "flatReduce": {
+      "poison": 3
+     }
+    }
+   }
+  },
+  "awakened-elemental-stone-poison": {
+   "kademe": 2,
+   "tur": "poison",
+   "esya": true
+  },
+  "cracked-elemental-stone-radiant": {
+   "kademe": 1,
+   "tur": "radiant",
+   "etki": {
+    "k109": {
+     "flatReduce": {
+      "radiant": 3
+     }
+    }
+   }
+  },
+  "awakened-elemental-stone-radiant": {
+   "kademe": 2,
+   "tur": "radiant",
+   "esya": true
+  },
+  "cracked-elemental-stone-necrotic": {
+   "kademe": 1,
+   "tur": "necrotic",
+   "etki": {
+    "k109": {
+     "flatReduce": {
+      "necrotic": 3
+     }
+    }
+   }
+  },
+  "awakened-elemental-stone-necrotic": {
+   "kademe": 2,
+   "tur": "necrotic",
+   "esya": true
+  },
+  "cracked-elemental-stone-psychic": {
+   "kademe": 1,
+   "tur": "psychic",
+   "etki": {
+    "k109": {
+     "flatReduce": {
+      "psychic": 3
+     }
+    }
+   }
+  },
+  "awakened-elemental-stone-psychic": {
+   "kademe": 2,
+   "tur": "psychic",
+   "esya": true
+  },
+  "cracked-elemental-stone-force": {
+   "kademe": 1,
+   "tur": "force",
+   "etki": {
+    "k109": {
+     "flatReduce": {
+      "force": 3
+     }
+    }
+   }
+  },
+  "awakened-elemental-stone-force": {
+   "kademe": 2,
+   "tur": "force",
+   "esya": true
+  },
+  "ember-core": {
+   "kademe": 3,
+   "tur": "fire",
+   "etki": {
+    "immuneDamage": [
+     "fire"
+    ]
+   }
+  },
+  "frost-heart": {
+   "kademe": 3,
+   "tur": "cold",
+   "etki": {
+    "immuneDamage": [
+     "cold"
+    ]
+   }
+  },
+  "storm-spire": {
+   "kademe": 3,
+   "tur": "lightning",
+   "etki": {
+    "immuneDamage": [
+     "lightning"
+    ]
+   }
+  },
+  "resonance-seal": {
+   "kademe": 3,
+   "tur": "thunder",
+   "etki": {
+    "immuneDamage": [
+     "thunder"
+    ]
+   }
+  },
+  "dissolution-drop": {
+   "kademe": 3,
+   "tur": "acid",
+   "etki": {
+    "immuneDamage": [
+     "acid"
+    ]
+   }
+  },
+  "venom-essence": {
+   "kademe": 3,
+   "tur": "poison",
+   "etki": {
+    "immuneDamage": [
+     "poison"
+    ]
+   }
+  },
+  "blinding-sun-shard": {
+   "kademe": 3,
+   "tur": "radiant",
+   "etki": {
+    "immuneDamage": [
+     "radiant"
+    ]
+   }
+  },
+  "sepulcher-orb": {
+   "kademe": 3,
+   "tur": "necrotic",
+   "etki": {
+    "immuneDamage": [
+     "necrotic"
+    ]
+   }
+  },
+  "whisper-crystal": {
+   "kademe": 3,
+   "tur": "psychic",
+   "etki": {
+    "immuneDamage": [
+     "psychic"
+    ]
+   }
+  },
+  "void-fracture": {
+   "kademe": 3,
+   "tur": "force",
+   "etki": {
+    "immuneDamage": [
+     "force"
+    ]
+   }
+  }
+ }
+}

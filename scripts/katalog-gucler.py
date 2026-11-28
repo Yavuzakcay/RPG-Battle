@@ -120,6 +120,50 @@ for a in ['kozmik-anka', 'kozmik-anka-savas']:
 put('ocean-nightmare-open-sea', alanBirak={"Ink Cloud": {"alanlar": [{"name": "Mürekkep Bulutu", "rounds": 10, "spec": {"on": ["start"], "save": "con", "conditions": ["Blinded", "Poisoned"], "obscured": "heavy", "hold": "turn", "targets": "enemies", "color": "#1d1b2e", "icon": "🦑"}}]}})
 put('titan-of-nightmare', alanBirak={"Uçurum Zehir Mürekkebi": {"alanlar": [{"name": "Uçurum Mürekkebi", "rounds": 10, "spec": {"on": ["start"], "save": "con", "conditions": ["Blinded", "Poisoned"], "obscured": "heavy", "silence": True, "hold": "turn", "targets": "enemies", "color": "#1d1b2e", "icon": "🦑"}}]}})
 
+
+# ---------------------------------------------------------------- Grup 4: Faz 2 (Taş Uyanışı; KATALOG-F-TASARIM §5 gmNot ve hamle tablosu)
+def aura(id_, name, radius, trig, effect, save=None, filt='enemies'):
+    return dict(id=id_, name=name, radius=radius, filter=filt, trigger=trig, **({'save': save} if save else {}), effect=effect, cesaret=0)
+put('cimbombom', faz2={"oncelik": ["Bite", "Claw"], "efsaneviOnce": "tail-sweep", "yuzey": {"kind": "fire", "radiusFt": 30, "rounds": 3, "halka": True},
+    "auralar": [aura('ember-heat', 'Kor Sıcağı', 3, 'turnStart', {"kind": "damage", "dice": "2d6", "type": "fire"})]})
+put('kongark', faz2={"oncelik": ["Grab", "Fist"], "efsaneviOnce": "gravity-ring",
+    "auralar": [aura('void-gravity', 'Boşluk Çekimi', 12, 'turnStart', {"kind": "pull", "ft": 15}, {"ability": "str", "dc": 21})]})
+put('cerbones', faz2={"oncelik": ["Bite"], "efsaneviOnce": "ash-halo", "turBasiCagir": {"monster": "skeleton", "count": 2, "max": 6}})
+put('mirage', faz2={"efsaneviOnce": "mirror-scream", "etki": {"images": 3},
+    "auralar": [aura('whisper-dread', 'Vesvese', 12, 'turnStart', {"kind": "condition", "condition": "Frightened"}, {"ability": "wis", "dc": 21})]})
+put('gongar', faz2={"oncelik": ["Shell Ram", "Bell Slam"], "efsaneviOnce": "shell-spin",
+    "auralar": [aura('bell-quake', 'Çan Sarsıntısı', 2, 'turnStart', {"kind": "condition", "condition": "Prone"}, {"ability": "con", "dc": 15})]})
+put('lightaur', faz2={"oncelik": ["Gore", "Hoof"], "efsaneviOnce": "halo-flare",
+    "auralar": [aura('sun-glare', 'Kör Güneş', 3, 'turnStart', {"kind": "effect", "rounds": 1, "effect": {"name": "Kör Güneş", "icon": "☀", "grants": ["Blinded"]}}, {"ability": "con", "dc": 15})]})
+put('hydraxe', faz2={"efsaneviOnce": "acid-drool",
+    "alan": {"name": "Erime Gölü", "radiusFt": 10, "rounds": 100000, "spec": {"on": ["start", "enter"], "damage": "2d6", "damageType": "acid", "targets": "enemies", "hold": "turn", "color": "#7a9a2a", "icon": "🧪"}}})
+put('mothraq', faz2={"oncelik": ["Proboscis", "Wing"], "efsaneviOnce": "spore-burst", "yuzey": {"kind": "poison", "radiusFt": 15, "rounds": 10}})
+put('stormer', faz2={"oncelik": ["Hoof"], "efsaneviOnce": "chain-lightning", "yuzey": {"kind": "water", "radiusFt": 20, "rounds": 10}})
+put('wolfgang', faz2={"oncelik": ["Bite", "Claw"], "efsaneviOnce": "frost-halo", "yuzey": {"kind": "ice", "radiusFt": 30, "rounds": 10}})
+
+
+# Hexonia: Out-of-Time Storm (ikinci inisiyatif 15, turda bir isabet iptali), Crystal Shell, LR etki silmesi.
+for h in ['dragon-of-hexonia-a', 'dragon-of-hexonia-b']:
+    put(h, pasif={"k109": {"negateOnce": True, "secondInit": 15, "reflectSpell": True}}, lrCleanse=True)
+
+
+# ---------------------------------------------------------------- Grup 5–8: Hexonia, Anka, mücevher, Captive
+for h in ['dragon-of-hexonia-a', 'dragon-of-hexonia-b']:
+    put(h, yalnizDost=True,
+        yetenekEkle=[{"id": "size-shift", "tr": "Boyut Değiştirme", "en": "Size Shift", "cost": "free", "kind": "resize", "perTurn": 2}],
+        bagliAlanlar=[{"name": "Kıta Ölçeği", "radius": 2, "spec": {"difficult": 2, "difficultFor": "enemies", "coverFor": "allies", "targets": "all", "color": "#c9a227", "icon": "🛡"}}])
+for a in ['kozmik-anka', 'kozmik-anka-savas']:
+    put(a, ozel={"rebirth": {"radiusFt": 60, "dc": 27, "dice": "16d10", "type": "fire", "healAllies": 80, "egg": "ember-egg", "hp": 450, "yenile": "Celestial Glide"},
+                 "soulBond": {"sinif": "ranger", "radiusFt": 60, "pay": 0.5}})
+put('tutsak-dragon', baslangic=[{"tur": 2, "etki": {"name": "Groggy Veil", "icon": "💤", "saveDis": ["int"], "k109": {"flyMult": 0.5}}}],
+    auralar=[dict(id='armors-betrayal', name="Armor's Betrayal", radius=12, filter='enemies', trigger='turnStart', save={"ability": "wis", "dc": 24},
+                  requiresItem=['kaltakkirans-paladin-armor'], cesaret=0,
+                  effect={"kind": "effect", "rounds": 1, "effect": {"name": "Armor's Betrayal", "icon": "⛓", "speedZero": True, "attackDisVs": "$owner", "attackedAdvBy": "$owner"}})])
+BAG = {'sigm': 'radiant', 'omeg': 'necrotic', 'delt': 'psychic', 'alph': 'thunder', 'gamm': 'force'}
+for base, t in BAG.items():
+    for mid in (base + 'yr', base + 'adrake'):
+        put(mid, ozel={"binekBag": {"name": "Mücevher Binek Bağı", "etki": {"resist": [t], "icon": "💎"}}})
+
 out = {"_not": "Görev KATALOG-GUC-TAM (kural sürümü 109): KATALOG-SIGMAYAN.md güçlerinin verisi, canavar kimliğine göre (src/battle/katalog109Types.ts K109Monster). 108 ve altında okunmaz. Elle düzenlenir; aura yarıçapı altıgen (5 ft). Kaynak harita/belgeler/KATALOG-F2-OZELLIKLER.md, KATALOG-F-TASARIM.md.", "canavarlar": C}
 json.dump(out, open('data/katalog-gucler.json','w', encoding='utf-8'), ensure_ascii=False, indent=1)
 print(len(C), 'canavar yazıldı')

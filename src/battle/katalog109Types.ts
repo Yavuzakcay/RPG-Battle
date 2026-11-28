@@ -23,12 +23,26 @@ export interface K109Fx {
   sealed?: boolean;
   /** Spell-Reflecting Crystal Shell: hedef alan büyüde save'i geçerse büyü atıcısına seker. */
   reflectSpell?: boolean;
-  /** Out-of-Time Storm: turda bir kez kendisine gelen saldırı ya da büyüyü tepkisiz iptal eder. */
+  /** Out-of-Time Storm: turda (round) bir kez kendisine isabet eden saldırıyı tepkisiz iptal eder. */
   negateOnce?: boolean;
+  /** Out-of-Time Storm: her turda bu inisiyatifte ikinci kez oynar (ilk turundan sonra). */
+  secondInit?: number;
   /** Continent Scale: gövde altıgenleri dosta sığınak (yarım siper), düşmana zorlu arazi. */
   scale?: boolean;
   /** Armor's Betrayal: bu yaratığa saldırısı dezavantajlı, bu yaratığın ona saldırısı avantajlı. */
   betrayedBy?: string;
+  /** Faz 2: Multiattack saldırı tekrarı (ad → sayı), saldırı sırası, ilk denenen efsanevi eylem. */
+  repeat?: Record<string, number>;
+  order?: string[];
+  legendFirst?: string;
+  /** Size Shift: savaşçının boyutu bu olur (T/S/M/L/H/G; ayak izi `multiHex` açıkken). */
+  sizeTo?: 'T' | 'S' | 'M' | 'L' | 'H' | 'G';
+  /** Ember Egg: bu kimliğin yeniden doğuş yumurtası. */
+  eggOf?: string;
+  /** Türe sabit hasar azaltma (yuvadaki Çatlak Element Taşı). */
+  flatReduce?: Record<string, number>;
+  /** Uçuş hızı çarpanı (Groggy Veil). */
+  flyMult?: number;
   /** Dirençler bu etki süresince yok (Delta Yetişkin nefesi). */
   noResist?: boolean;
   /** Hunter Soul Bond: bağlı yaratığın (Avcı) aldığı hasarın yarısını bu yaratık üstlenir (60 ft içinde). */
@@ -67,8 +81,14 @@ export interface K109Faz {
   auralar?: AuraSpec[];
   /** Haritadaki bu zemin harflerine (su/kıyı) zorlu arazi alanı. */
   zorluZemin?: { su?: boolean; harfler?: string[]; maliyet: number };
-  /** Bossun çevresine yüzey (yarıçap ft, tur). */
-  yuzey?: { kind: string; radiusFt: number; rounds: number };
+  /** Bossun çevresine yüzey (yarıçap ft, tur; `halka`: yalnız o uzaklıktaki altıgenler). Dolu altıgenlere konmaz. */
+  yuzey?: { kind: string; radiusFt: number; rounds: number; halka?: boolean };
+  /** Bossun çevresine kalıcı alan (`SpellZone.spec`). */
+  alan?: { name: string; radiusFt: number; rounds: number; spec: Record<string, unknown> };
+  /** Bossun her tur başında çağırdığı canavarlar (en çok `max` canlı). */
+  turBasiCagir?: { monster: string; count: number; max: number };
+  /** İlk denenen efsanevi eylem. */
+  efsaneviOnce?: string;
   /** Çağrılan canavarlar (kimlik → sayı). */
   cagir?: Record<string, number>;
   /** Saldırı tekrarı değişimi (Multiattack: ad → sayı). */
@@ -96,6 +116,12 @@ export interface K109Monster {
   alanBirak?: Record<string, { yuzey?: { kind: string; rounds: number }; alanlar?: Array<{ name: string; rounds: number; spec: Record<string, unknown> }>; tasi?: boolean; karanlikSil?: boolean }>;
   efsanevi?: K109LegendaryPatch[];
   faz2?: K109Faz;
+  /** Sahibine bağlı (birlikte yürüyen) alanlar: yarıçap altıgen, alan kuralı (Continent Scale: dosta siper, düşmana zorlu arazi). */
+  bagliAlanlar?: Array<{ name: string; radius: number; spec: Record<string, unknown> }>;
+  /** Düşman olamaz (Game Master kurulumu reddeder; Dragon of Hexonia). */
+  yalnizDost?: boolean;
+  /** Savaş başında süren etkiler (`tur`: bu mutlak tura dek; Groggy Veil ilk 2 tur). */
+  baslangic?: Array<{ tur: number; etki: Record<string, unknown> & { name: string } }>;
   /** Legendary Resistance kullanınca bir olumsuz etkiyi siler. */
   lrCleanse?: boolean;
   /** Save'li saldırının başarısız (ve yarı) hasarına ikinci zar (saldırı adı → parçalar). */
