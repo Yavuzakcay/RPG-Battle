@@ -2,6 +2,7 @@
  * Bütünleşik uygulamanın saf yardımcıları (Adım 13): GM'in savaş kurması (parti, düşmanlar,
  * harita), özel canavar, savaş sonu özeti. Ekranı bilmez.
  */
+import { allyOnlyMonster } from '../battle/katalog109Data';
 import { characterHouseRules } from './features';
 import type { CarryRule } from '../rules/carry';
 import { CUSTOM_ATTACK_MAX, CUSTOM_NAME_MAX, MAX_PARTY } from './limits';
@@ -186,6 +187,8 @@ export function planProblems(plan: BattlePlan): string[] {
   if (plan.party.length > MAX_PARTY) out.push(`Partide en fazla ${MAX_PARTY} karakter olabilir.`);
   const foes = plan.enemies.reduce((n, e) => n + e.count, 0);
   if (foes === 0) out.push('En az bir düşman seçilmeli.');
+  // Görev KATALOG-GUC-TAM: yalnız dost katalog yaratığı (Dragon of Hexonia) düşman olamaz.
+  for (const e of plan.enemies) if (e.monster?.id && allyOnlyMonster(e.monster.id)) out.push(`${e.monster.name} yalnız dost olabilir, düşman seçilemez.`);
   const map = getMap(plan.mapId, { variantId: plan.variantId });
   if (plan.party.length > map.startZones.players.length) out.push(`Haritada en çok ${map.startZones.players.length} oyuncu yeri var.`);
   if (foes > map.startZones.enemies.length) out.push(`Haritada en çok ${map.startZones.enemies.length} düşman yeri var.`);

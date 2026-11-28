@@ -544,7 +544,24 @@
       "oncePerTurn": true
      }
     }
-   ]
+   ],
+   "ozel": {
+    "rebirth": {
+     "radiusFt": 60,
+     "dc": 27,
+     "dice": "16d10",
+     "type": "fire",
+     "healAllies": 80,
+     "egg": "ember-egg",
+     "hp": 450,
+     "yenile": "Celestial Glide"
+    },
+    "soulBond": {
+     "sinif": "ranger",
+     "radiusFt": 60,
+     "pay": 0.5
+    }
+   }
   },
   "kozmik-anka-savas": {
    "auralar": [
@@ -699,7 +716,24 @@
       "oncePerTurn": true
      }
     }
-   ]
+   ],
+   "ozel": {
+    "rebirth": {
+     "radiusFt": 60,
+     "dc": 27,
+     "dice": "16d10",
+     "type": "fire",
+     "healAllies": 80,
+     "egg": "ember-egg",
+     "hp": 450,
+     "yenile": "Celestial Glide"
+    },
+    "soulBond": {
+     "sinif": "ranger",
+     "radiusFt": 60,
+     "pay": 0.5
+    }
+   }
   },
   "dragon-of-hexonia-a": {
    "auralar": [
@@ -786,7 +820,32 @@
      "reflectSpell": true
     }
    },
-   "lrCleanse": true
+   "lrCleanse": true,
+   "yalnizDost": true,
+   "yetenekEkle": [
+    {
+     "id": "size-shift",
+     "tr": "Boyut Değiştirme",
+     "en": "Size Shift",
+     "cost": "free",
+     "kind": "resize",
+     "perTurn": 2
+    }
+   ],
+   "bagliAlanlar": [
+    {
+     "name": "Kıta Ölçeği",
+     "radius": 2,
+     "spec": {
+      "difficult": 2,
+      "difficultFor": "enemies",
+      "coverFor": "allies",
+      "targets": "all",
+      "color": "#c9a227",
+      "icon": "🛡"
+     }
+    }
+   ]
   },
   "dragon-of-hexonia-b": {
    "auralar": [
@@ -873,7 +932,32 @@
      "reflectSpell": true
     }
    },
-   "lrCleanse": true
+   "lrCleanse": true,
+   "yalnizDost": true,
+   "yetenekEkle": [
+    {
+     "id": "size-shift",
+     "tr": "Boyut Değiştirme",
+     "en": "Size Shift",
+     "cost": "free",
+     "kind": "resize",
+     "perTurn": 2
+    }
+   ],
+   "bagliAlanlar": [
+    {
+     "name": "Kıta Ölçeği",
+     "radius": 2,
+     "spec": {
+      "difficult": 2,
+      "difficultFor": "enemies",
+      "coverFor": "allies",
+      "targets": "all",
+      "color": "#c9a227",
+      "icon": "🛡"
+     }
+    }
+   ]
   },
   "sigmadrake": {
    "auralar": [
@@ -892,7 +976,18 @@
      },
      "cesaret": 0
     }
-   ]
+   ],
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "radiant"
+      ],
+      "icon": "💎"
+     }
+    }
+   }
   },
   "deltadrake": {
    "auralar": [
@@ -926,6 +1021,17 @@
       }
      },
      "tur": "nefes"
+    }
+   },
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "psychic"
+      ],
+      "icon": "💎"
+     }
     }
    }
   },
@@ -1356,6 +1462,49 @@
       "oncePerTurn": true
      }
     }
+   ],
+   "baslangic": [
+    {
+     "tur": 2,
+     "etki": {
+      "name": "Groggy Veil",
+      "icon": "💤",
+      "saveDis": [
+       "int"
+      ],
+      "k109": {
+       "flyMult": 0.5
+      }
+     }
+    }
+   ],
+   "auralar": [
+    {
+     "id": "armors-betrayal",
+     "name": "Armor's Betrayal",
+     "radius": 12,
+     "filter": "enemies",
+     "trigger": "turnStart",
+     "save": {
+      "ability": "wis",
+      "dc": 24
+     },
+     "requiresItem": [
+      "kaltakkirans-paladin-armor"
+     ],
+     "cesaret": 0,
+     "effect": {
+      "kind": "effect",
+      "rounds": 1,
+      "effect": {
+       "name": "Armor's Betrayal",
+       "icon": "⛓",
+       "speedZero": true,
+       "attackDisVs": "$owner",
+       "attackedAdvBy": "$owner"
+      }
+     }
+    }
    ]
   },
   "omeglet": {
@@ -1380,6 +1529,17 @@
      },
      "tur": "nefes"
     }
+   },
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "necrotic"
+      ],
+      "icon": "💎"
+     }
+    }
    }
   },
   "omegadrake": {
@@ -1391,6 +1551,17 @@
       "noHeal": true
      },
      "tur": "nefes"
+    }
+   },
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "necrotic"
+      ],
+      "icon": "💎"
+     }
     }
    }
   },
@@ -1432,6 +1603,17 @@
      },
      "tur": "nefes"
     }
+   },
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "psychic"
+      ],
+      "icon": "💎"
+     }
+    }
    }
   },
   "alphlet": {
@@ -1454,6 +1636,17 @@
      },
      "tur": "nefes"
     }
+   },
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "thunder"
+      ],
+      "icon": "💎"
+     }
+    }
    }
   },
   "alphadrake": {
@@ -1465,6 +1658,17 @@
      },
      "dropConc": true,
      "tur": "nefes"
+    }
+   },
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "thunder"
+      ],
+      "icon": "💎"
+     }
     }
    }
   },
@@ -1494,6 +1698,17 @@
      },
      "tur": "nefes"
     }
+   },
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "force"
+      ],
+      "icon": "💎"
+     }
+    }
    }
   },
   "gammadrake": {
@@ -1512,6 +1727,17 @@
       ]
      },
      "tur": "nefes"
+    }
+   },
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "force"
+      ],
+      "icon": "💎"
+     }
     }
    }
   },
@@ -1672,6 +1898,19 @@
      "uses": 1
     }
    ]
+  },
+  "sigmyr": {
+   "ozel": {
+    "binekBag": {
+     "name": "Mücevher Binek Bağı",
+     "etki": {
+      "resist": [
+       "radiant"
+      ],
+      "icon": "💎"
+     }
+    }
+   }
   }
  }
 }

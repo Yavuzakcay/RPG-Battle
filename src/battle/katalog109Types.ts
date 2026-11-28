@@ -35,6 +35,12 @@ export interface K109Fx {
   repeat?: Record<string, number>;
   order?: string[];
   legendFirst?: string;
+  /** Size Shift: savaşçının boyutu bu olur (T/S/M/L/H/G; ayak izi `multiHex` açıkken). */
+  sizeTo?: 'T' | 'S' | 'M' | 'L' | 'H' | 'G';
+  /** Ember Egg: bu kimliğin yeniden doğuş yumurtası. */
+  eggOf?: string;
+  /** Uçuş hızı çarpanı (Groggy Veil). */
+  flyMult?: number;
   /** Dirençler bu etki süresince yok (Delta Yetişkin nefesi). */
   noResist?: boolean;
   /** Hunter Soul Bond: bağlı yaratığın (Avcı) aldığı hasarın yarısını bu yaratık üstlenir (60 ft içinde). */
@@ -108,6 +114,12 @@ export interface K109Monster {
   alanBirak?: Record<string, { yuzey?: { kind: string; rounds: number }; alanlar?: Array<{ name: string; rounds: number; spec: Record<string, unknown> }>; tasi?: boolean; karanlikSil?: boolean }>;
   efsanevi?: K109LegendaryPatch[];
   faz2?: K109Faz;
+  /** Sahibine bağlı (birlikte yürüyen) alanlar: yarıçap altıgen, alan kuralı (Continent Scale: dosta siper, düşmana zorlu arazi). */
+  bagliAlanlar?: Array<{ name: string; radius: number; spec: Record<string, unknown> }>;
+  /** Düşman olamaz (Game Master kurulumu reddeder; Dragon of Hexonia). */
+  yalnizDost?: boolean;
+  /** Savaş başında süren etkiler (`tur`: bu mutlak tura dek; Groggy Veil ilk 2 tur). */
+  baslangic?: Array<{ tur: number; etki: Record<string, unknown> & { name: string } }>;
   /** Legendary Resistance kullanınca bir olumsuz etkiyi siler. */
   lrCleanse?: boolean;
   /** Save'li saldırının başarısız (ve yarı) hasarına ikinci zar (saldırı adı → parçalar). */

@@ -44,6 +44,11 @@ export interface CharacterSheet {
   shield: boolean;
   /** data/items.json içindeki item adları. */
   itemNames: string[];
+  /**
+   * Görev KATALOG-GUC-TAM: zırh/kalkan/cübbe yuvalarına takılı mühür taşları (eşya kimliği → takılı taş kimlikleri; `src/rules/sockets.ts`).
+   * Taş ayrı bir kapsayıcı değil; takılınca etkisini yuvanın eşyasını giyene verir.
+   */
+  yuvalar?: Record<string, string[]>;
   /** Bildiği veya hazırladığı büyüler (data/spells.json içindeki adlar). */
   spellNames?: string[];
   /** Görev K6: büyü kitabındaki seviyeli büyüler (Wizard); hazırlananlar kitaptan seçilir. Yoksa (eski kayıt) hazırlananlar kitapta sayılır. */

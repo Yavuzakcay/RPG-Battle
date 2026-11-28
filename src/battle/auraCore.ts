@@ -65,6 +65,8 @@ export interface AuraSpec {
   cesaret?: number;
   /** Kuyruk K54b: yalnız bu durumdaki yaratıklar (Kâbus: Frightened). */
   requires?: string;
+  /** Görev KATALOG-GUC-TAM (109): yalnız bu eşyalardan birini taşıyanlar (`carried` önek; Armor's Betrayal). */
+  requiresItem?: string[];
 }
 
 export const AURA = motion.aura;
@@ -94,7 +96,8 @@ const passes = (spec: AuraSpec, owner: Combatant, v: Combatant) =>
 export function aurasOn(state: BattleState, v: Combatant, at: Offset | null = v.pos): Array<{ owner: Combatant; spec: AuraSpec }> {
   if (!at || !auraCoreOn(state)) return [];
   const probe = at === v.pos ? v : { ...v, pos: at };
-  return activeAuras(state).filter(({ owner, spec }) => passes(spec, owner, v) && (!spec.requires || v.conditions.includes(spec.requires)) && auraDist(state, owner, probe) <= spec.radius);
+  return activeAuras(state).filter(({ owner, spec }) => passes(spec, owner, v) && (!spec.requires || v.conditions.includes(spec.requires))
+    && (!spec.requiresItem || !!v.carried?.some((x) => spec.requiresItem!.some((p) => x === p || x.startsWith(p)))) && auraDist(state, owner, probe) <= spec.radius);
 }
 
 /** Etki gücü (en güçlüsü seçimi için): hasarda ortalama zar, bonusta miktar, diğerlerinde 1. */
@@ -167,7 +170,9 @@ export function auraTriggerEvents(state: BattleState, victimId: string, trigger:
     if (e.kind === 'effect' && failed) {
       if (e.dice) out.push(damageEffect(v, 'auraCore', spec.name, { dice: e.dice, type: e.type ?? '' }, rng));
       const id = `aura:${spec.id}:${owner.id}`;
-      out.push({ type: 'effect_added', targetId: v.id, effect: { ...e.effect, id, name: e.effect.name, sourceId: owner.id, until: state.round + e.rounds } as import('./types').ActiveEffect });
+      // Görev KATALOG-GUC-TAM (109): '$owner' değeri aura sahibinin kimliğine çözülür (attackDisVs, attackedAdvBy).
+      const fx = Object.fromEntries(Object.entries(e.effect).map(([k, x]) => [k, x === '$owner' ? owner.id : x]));
+      out.push({ type: 'effect_added', targetId: v.id, effect: { ...fx, id, name: e.effect.name, sourceId: owner.id, until: state.round + e.rounds } as import('./types').ActiveEffect });
     }
     if (e.kind === 'pull' && failed && owner.pos && v.pos && auraDist(state, owner, v) > 1) out.push(...forcedMove(state, v.id, 'pull', e.ft, owner.id, rng, { origin: owner.pos }));
     if (e.kind === 'cleanse') {

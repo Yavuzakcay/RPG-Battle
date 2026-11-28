@@ -6,6 +6,7 @@
  * - Tek vuruşta 0 HP'ye düşen yaratık faza girmez; biçim değişimindeyse (`shape`) biçim bitene dek bekler.
  * - Saldırı ve hasar eki süresiz etkide zar olarak (`dice` saldırıya, `hitDie` isabete; sabit sayı da zar ifadesidir).
  */
+import { rebirthReplacesPhase } from './katalog109Ozel';
 import { gucOf } from './katalog109Data';
 import { k109PhaseEvents } from './katalog109Faz';
 import { rollDice, rollTag, type Rng } from '../rules/dice';
@@ -68,6 +69,8 @@ export function faz2Events(state: BattleState, rng: Rng): BattleEvent[] {
   const out: BattleEvent[] = [];
   for (const c of Object.values(state.combatants)) {
     if (!c.faz2 || !faz2Due(c)) continue;
+    // Görev KATALOG-GUC-TAM (109+): yeniden doğuşu olan (Kozmik Anka) eski %5 can yaklaşığı yerine Rebirth from Ashes.
+    if (rebirthReplacesPhase(state, c)) continue;
     out.push(phaseChangedEvent(c, c.faz2, rng, state.kuralSurumu ?? 1));
     // Görev KATALOG-GUC-TAM (109+): faz anında harita/çağırma eklemeleri.
     out.push(...k109PhaseEvents(state, c));

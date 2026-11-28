@@ -1368,7 +1368,7 @@ export const en: Strings = {
       special: 'Special', items: 'Items', other: 'Other', more: 'More ›', fast: 'Quick action', fastMark: 'quick', cantrip: 'Cantrips', spellLevel: (n: number) => `Level ${n}`,
       groups: { combat: 'Fighting', heal: 'Healing & protection', shape: 'Animal form', slots: 'Refresh slots', summon: 'Spells & summons', other: 'Other' } as Record<string, string>,
       noSpellsHere: 'No spell you can cast right now.', noSpecialHere: 'Nothing special you can do right now.',
-      mab: (name: string, opt?: string) => (opt ? `${name}: ${opt}` : name), mabOpt: { dash: 'Dash', disengage: 'Disengage', hide: 'Hide' } as Record<string, string>,
+      mab: (name: string, opt?: string) => (opt ? `${name}: ${opt}` : name), mabOpt: { dash: 'Dash', disengage: 'Disengage', hide: 'Hide', T: 'Tiny', S: 'Small', M: 'Medium', L: 'Large', H: 'Huge', G: 'Gargantuan' } as Record<string, string>,
       mabNotReady: 'No uses left or not recharged.',
       floor: 'Take the stairs', steady: 'Steady Aim', horde: 'Horde Breaker', cunning: 'Cunning Strike',
       cunningName: { trip: 'Trip', withdraw: 'Withdraw', poison: 'Poison', daze: 'Daze', 'knock-out': 'Knock Out', obscure: 'Obscure' } as Record<string, string>,

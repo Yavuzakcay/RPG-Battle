@@ -1,4 +1,5 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
+import { soulBondSetup } from './katalog109Ozel';
 import { KARAR104_VERSION } from './karar104Surum';
 import { bindableItem, boundWeaponId } from '../rules/itemBinding';
 import { SINIF97_VERSION } from './sinif97Surum';
@@ -400,6 +401,12 @@ function combatantFromSheetBase(
     ...((): Partial<Combatant> => {
       const own = (sheet.itemNames ?? []).map((n) => items.find((i) => i.name === n)).filter((i) => i?.use);
       return own.length ? { consumables: Object.fromEntries(own.map((i) => [i!.id, 1])) } : {};
+    })(),
+    // Görev KATALOG-GUC-TAM (109): taşınan katalog eşyaları ve zırh yuvasına takılı mühür taşları (Seal Pull, Armor's Betrayal; yalnız veri).
+    ...((): Partial<Combatant> => {
+      const carried = [...new Set([...(sheet.itemNames ?? []).map((n) => items.find((i) => i.name === n)).filter((i) => i?.kaynak === 'katalog-1').map((i) => i!.id),
+        ...Object.values(sheet.yuvalar ?? {}).flat()])];
+      return carried.length ? { carried } : {};
     })(),
     ...((): Partial<Combatant> => {
       // Kuyruk 41b: Divine Intervention gibi listeli kaynak, bilinen uygun büyülere slotsuz kullanım bağlar (feat önce).
@@ -951,7 +958,8 @@ export function startBattle(
     return { ...p, initiative: d + p.initiativeBonus + soyInitMod(p, { kuralSurumu: rules, map }) - exhaustionD20Penalty(p.exhaustion) };
   });
   // Aynı toplamda, listede önce gelen önce oynar (sıralama kararlıdır).
-  const sorted = [...rolled].sort((a, b) => b.initiative - a.initiative);
+  // Görev KATALOG-GUC-TAM (109+): Hunter Soul Bond (bağlı yaratık Avcı'nın ardına).
+  const sorted = soulBondSetup({ kuralSurumu: rules }, [...rolled].sort((a, b) => b.initiative - a.initiative));
   const combatants: Record<string, Combatant> = {};
   for (const c of sorted) combatants[c.id] = c;
   const state: BattleState = {

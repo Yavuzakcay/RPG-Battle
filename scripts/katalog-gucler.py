@@ -146,6 +146,24 @@ put('wolfgang', faz2={"oncelik": ["Bite", "Claw"], "efsaneviOnce": "frost-halo",
 for h in ['dragon-of-hexonia-a', 'dragon-of-hexonia-b']:
     put(h, pasif={"k109": {"negateOnce": True, "secondInit": 15, "reflectSpell": True}}, lrCleanse=True)
 
+
+# ---------------------------------------------------------------- Grup 5–8: Hexonia, Anka, mücevher, Captive
+for h in ['dragon-of-hexonia-a', 'dragon-of-hexonia-b']:
+    put(h, yalnizDost=True,
+        yetenekEkle=[{"id": "size-shift", "tr": "Boyut Değiştirme", "en": "Size Shift", "cost": "free", "kind": "resize", "perTurn": 2}],
+        bagliAlanlar=[{"name": "Kıta Ölçeği", "radius": 2, "spec": {"difficult": 2, "difficultFor": "enemies", "coverFor": "allies", "targets": "all", "color": "#c9a227", "icon": "🛡"}}])
+for a in ['kozmik-anka', 'kozmik-anka-savas']:
+    put(a, ozel={"rebirth": {"radiusFt": 60, "dc": 27, "dice": "16d10", "type": "fire", "healAllies": 80, "egg": "ember-egg", "hp": 450, "yenile": "Celestial Glide"},
+                 "soulBond": {"sinif": "ranger", "radiusFt": 60, "pay": 0.5}})
+put('tutsak-dragon', baslangic=[{"tur": 2, "etki": {"name": "Groggy Veil", "icon": "💤", "saveDis": ["int"], "k109": {"flyMult": 0.5}}}],
+    auralar=[dict(id='armors-betrayal', name="Armor's Betrayal", radius=12, filter='enemies', trigger='turnStart', save={"ability": "wis", "dc": 24},
+                  requiresItem=['kaltakkirans-paladin-armor'], cesaret=0,
+                  effect={"kind": "effect", "rounds": 1, "effect": {"name": "Armor's Betrayal", "icon": "⛓", "speedZero": True, "attackDisVs": "$owner", "attackedAdvBy": "$owner"}})])
+BAG = {'sigm': 'radiant', 'omeg': 'necrotic', 'delt': 'psychic', 'alph': 'thunder', 'gamm': 'force'}
+for base, t in BAG.items():
+    for mid in (base + 'yr', base + 'adrake'):
+        put(mid, ozel={"binekBag": {"name": "Mücevher Binek Bağı", "etki": {"resist": [t], "icon": "💎"}}})
+
 out = {"_not": "Görev KATALOG-GUC-TAM (kural sürümü 109): KATALOG-SIGMAYAN.md güçlerinin verisi, canavar kimliğine göre (src/battle/katalog109Types.ts K109Monster). 108 ve altında okunmaz. Elle düzenlenir; aura yarıçapı altıgen (5 ft). Kaynak harita/belgeler/KATALOG-F2-OZELLIKLER.md, KATALOG-F-TASARIM.md.", "canavarlar": C}
 json.dump(out, open('data/katalog-gucler.json','w', encoding='utf-8'), ensure_ascii=False, indent=1)
 print(len(C), 'canavar yazıldı')

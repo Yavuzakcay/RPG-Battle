@@ -536,7 +536,7 @@ export const TR_EXTRA = {
       groups: { combat: 'Dövüş', heal: 'Şifa ve koruma', shape: 'Hayvan formu', slots: 'Slot yenile', summon: 'Büyü ve çağrılar', other: 'Diğer' } as Record<string, string>,
       noSpellsHere: 'Şu an yapabileceğin büyü yok.', noSpecialHere: 'Şu an yapabileceğin özel bir şey yok.',
       // Serüven öncesi: canavar yetenekleri (`monster_ability`; biçim, çağrı ve Game Master canavarı) Özel ▸ Dövüş'te.
-      mab: (name: string, opt?: string) => (opt ? `${name}: ${opt}` : name), mabOpt: { dash: 'Koş', disengage: 'Geri Çekil', hide: 'Gizlen' } as Record<string, string>,
+      mab: (name: string, opt?: string) => (opt ? `${name}: ${opt}` : name), mabOpt: { dash: 'Koş', disengage: 'Geri Çekil', hide: 'Gizlen', T: 'Minik', S: 'Küçük', M: 'Orta', L: 'Büyük', H: 'Dev', G: 'Devasa' } as Record<string, string>,
       mabNotReady: 'Kullanım hakkı yok ya da şarj olmadı.',
       floor: 'Merdivenden geç', steady: 'Steady Aim', horde: 'Horde Breaker', cunning: 'Cunning Strike',
       cunningName: { trip: 'Trip', withdraw: 'Withdraw', poison: 'Poison', daze: 'Daze', 'knock-out': 'Knock Out', obscure: 'Obscure' } as Record<string, string>,
