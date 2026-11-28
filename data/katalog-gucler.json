@@ -170,6 +170,18 @@
     "Void-Lightning Strike": {
      "dropConc": true,
      "tur": "süre"
+    },
+    "Abyssal Swallow": {
+     "swallow": {
+      "dice": "8d6",
+      "type": "acid",
+      "dice2": "6d6",
+      "type2": "psychic",
+      "escapeDamage": 80,
+      "escapeDc": 27,
+      "maxSize": "H"
+     },
+     "tur": "yutma"
     }
    },
    "saveEk": {
@@ -214,6 +226,23 @@
       }
      ]
     }
+   },
+   "pasif": {
+    "immune": [
+     "Blinded",
+     "Charmed",
+     "Exhaustion",
+     "Frightened",
+     "Grappled",
+     "Paralyzed",
+     "Petrified",
+     "Poisoned",
+     "Prone",
+     "Restrained",
+     "Stunned",
+     "Unconscious"
+    ],
+    "hover": true
    }
   },
   "ocean-nightmare": {
@@ -288,7 +317,12 @@
     "Storm Lightning": 3
    },
    "pasif": {
-    "freeMove": true
+    "freeMove": true,
+    "immune": [
+     "Frightened",
+     "Paralyzed",
+     "Restrained"
+    ]
    }
   },
   "ocean-nightmare-open-sea": {
@@ -357,13 +391,28 @@
       "ft": 60
      },
      "tur": "itme"
+    },
+    "Abyssal Swallow": {
+     "swallow": {
+      "dice": "6d6",
+      "type": "acid",
+      "escapeDamage": 70,
+      "escapeDc": 25,
+      "maxSize": "H"
+     },
+     "tur": "yutma"
     }
    },
    "hedefSayisi": {
     "Storm Lightning": 3
    },
    "pasif": {
-    "freeMove": true
+    "freeMove": true,
+    "immune": [
+     "Frightened",
+     "Paralyzed",
+     "Restrained"
+    ]
    },
    "alanBirak": {
     "Ink Cloud": {
@@ -470,7 +519,21 @@
       ],
       "immuneToResist": true
      }
-    }
+    },
+    "immune": [
+     "Blinded",
+     "Charmed",
+     "Exhaustion",
+     "Frightened",
+     "Grappled",
+     "Paralyzed",
+     "Petrified",
+     "Poisoned",
+     "Prone",
+     "Restrained",
+     "Unconscious"
+    ],
+    "hover": true
    },
    "alanBirak": {
     "Celestial Glide": {
@@ -642,7 +705,21 @@
       ],
       "immuneToResist": true
      }
-    }
+    },
+    "immune": [
+     "Blinded",
+     "Charmed",
+     "Exhaustion",
+     "Frightened",
+     "Grappled",
+     "Paralyzed",
+     "Petrified",
+     "Poisoned",
+     "Prone",
+     "Restrained",
+     "Unconscious"
+    ],
+    "hover": true
    },
    "alanBirak": {
     "Celestial Glide": {
@@ -818,7 +895,23 @@
      "negateOnce": true,
      "secondInit": 15,
      "reflectSpell": true
-    }
+    },
+    "immune": [
+     "Blinded",
+     "Charmed",
+     "Deafened",
+     "Exhaustion",
+     "Frightened",
+     "Grappled",
+     "Paralyzed",
+     "Petrified",
+     "Poisoned",
+     "Prone",
+     "Restrained",
+     "Stunned",
+     "Unconscious"
+    ],
+    "hover": true
    },
    "lrCleanse": true,
    "yalnizDost": true,
@@ -930,7 +1023,23 @@
      "negateOnce": true,
      "secondInit": 15,
      "reflectSpell": true
-    }
+    },
+    "immune": [
+     "Blinded",
+     "Charmed",
+     "Deafened",
+     "Exhaustion",
+     "Frightened",
+     "Grappled",
+     "Paralyzed",
+     "Petrified",
+     "Poisoned",
+     "Prone",
+     "Restrained",
+     "Stunned",
+     "Unconscious"
+    ],
+    "hover": true
    },
    "lrCleanse": true,
    "yalnizDost": true,
@@ -1033,6 +1142,9 @@
       "icon": "💎"
      }
     }
+   },
+   "pasif": {
+    "hover": true
    }
   },
   "hydraxe": {
@@ -1505,7 +1617,15 @@
       }
      }
     }
-   ]
+   ],
+   "pasif": {
+    "immune": [
+     "Frightened",
+     "Paralyzed",
+     "Petrified",
+     "Unconscious"
+    ]
+   }
   },
   "omeglet": {
    "ekler": {
@@ -1583,6 +1703,9 @@
      },
      "tur": "nefes"
     }
+   },
+   "pasif": {
+    "hover": true
    }
   },
   "deltyr": {
@@ -1614,6 +1737,9 @@
       "icon": "💎"
      }
     }
+   },
+   "pasif": {
+    "hover": true
    }
   },
   "alphlet": {
@@ -1910,6 +2036,23 @@
       "icon": "💎"
      }
     }
+   }
+  },
+  "ember-egg": {
+   "pasif": {
+    "immune": [
+     "Blinded",
+     "Charmed",
+     "Deafened",
+     "Exhaustion",
+     "Frightened",
+     "Paralyzed",
+     "Petrified",
+     "Poisoned",
+     "Prone",
+     "Stunned",
+     "Unconscious"
+    ]
    }
   }
  }

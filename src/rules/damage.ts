@@ -28,7 +28,8 @@ export function adjustDamage(
   if (t === '') return { amount, note: null };
   if (has(profile.absorb, t)) return { amount: -amount, note: 'absorbed' };
   if (has(profile.immunities, t)) return { amount: 0, note: 'immune' };
-  const fl = profile.flat?.[t] ?? 0;
+  // `*`: her hasar türü (Cehennem Ocağı Plakası −2); tür ve `*` toplanmaz, büyüğü.
+  const fl = Math.max(profile.flat?.[t] ?? 0, profile.flat?.['*'] ?? 0);
   if (fl > 0) {
     const r = adjustDamage(amount, type, { ...profile, flat: undefined });
     return r.amount > 0 ? { amount: Math.max(0, r.amount - fl), note: r.note } : r;

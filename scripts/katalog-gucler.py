@@ -164,6 +164,17 @@ for base, t in BAG.items():
     for mid in (base + 'yr', base + 'adrake'):
         put(mid, ozel={"binekBag": {"name": "Mücevher Binek Bağı", "etki": {"resist": [t], "icon": "💎"}}})
 
+
+# Abyssal Swallow (yutma; A2 swallow yolu), kadim durum bağışıklıkları (Dungeondex yan tablosu `dex`), süzülme (Hover).
+put('ocean-nightmare-open-sea', ekler={"Abyssal Swallow": {"swallow": {"dice": "6d6", "type": "acid", "escapeDamage": 70, "escapeDc": 25, "maxSize": "H"}, "tur": "yutma"}})
+put('titan-of-nightmare', ekler={"Abyssal Swallow": {"swallow": {"dice": "8d6", "type": "acid", "dice2": "6d6", "type2": "psychic", "escapeDamage": 80, "escapeDc": 27, "maxSize": "H"}, "tur": "yutma"}})
+_kadim = json.load(open('data/canavarlar-kadim.json', encoding='utf-8'))
+for mid, dx in _kadim.get('dex', {}).items():
+    if dx.get('conditionImmunities'):
+        put(mid, pasif={"immune": dx['conditionImmunities']})
+for mid in ['dragon-of-hexonia-a', 'dragon-of-hexonia-b', 'kozmik-anka', 'kozmik-anka-savas', 'titan-of-nightmare', 'deltlet', 'deltyr', 'deltadrake']:
+    put(mid, pasif={"hover": True})
+
 out = {"_not": "Görev KATALOG-GUC-TAM (kural sürümü 109): KATALOG-SIGMAYAN.md güçlerinin verisi, canavar kimliğine göre (src/battle/katalog109Types.ts K109Monster). 108 ve altında okunmaz. Elle düzenlenir; aura yarıçapı altıgen (5 ft). Kaynak harita/belgeler/KATALOG-F2-OZELLIKLER.md, KATALOG-F-TASARIM.md.", "canavarlar": C}
 json.dump(out, open('data/katalog-gucler.json','w', encoding='utf-8'), ensure_ascii=False, indent=1)
 print(len(C), 'canavar yazıldı')

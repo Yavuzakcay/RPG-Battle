@@ -7218,7 +7218,12 @@
    "passive": {
     "resist": [
      "lightning"
-    ]
+    ],
+    "k109": {
+     "flatReduce": {
+      "slashing": 1
+     }
+    }
    },
    "katalog": {
     "ref": "ZK#17",
@@ -7240,8 +7245,8 @@
      {
       "ad": "Zırh ek etkisi",
       "metin": "Yıldırım hasarına direnç ve gelen kesici hasarda 1 puan azalma kazanırsın.",
-      "durum": "kismi",
-      "not": "yıldırım direnci çalışır; kesici hasarda −1 yok (sabit hasar azaltma kancası)"
+      "durum": "calisir",
+      "not": "yıldırım direnci ve kesici hasarda −1 çalışır (KATALOG-GUC-TAM: sabit azaltma `k109.flatReduce`)"
      },
      {
       "ad": "Çarpan Halka (2 yük, UD 1d2)",
@@ -7430,7 +7435,12 @@
    "passive": {
     "resist": [
      "fire"
-    ]
+    ],
+    "k109": {
+     "flatReduce": {
+      "*": 2
+     }
+    }
    },
    "katalog": {
     "ref": "ZK#22",
@@ -7454,7 +7464,7 @@
       "ad": "Zırh ek etkisi",
       "metin": "Ateş hasarına direnç, Burning durumuna bağışıklık ve gelen tüm hasarlarda 2 puan azalma kazanırsın.",
       "durum": "kismi",
-      "not": "ateş direnci çalışır; Burning bağışıklığı ve tüm hasarda −2 yok"
+      "not": "ateş direnci ve tüm hasarda −2 çalışır (KATALOG-GUC-TAM: sabit azaltma); Burning bağışıklığı yok"
      },
      {
       "ad": "Kor Karşılığı",
@@ -7504,8 +7514,8 @@
      {
       "ad": "Zırh ek etkisi",
       "metin": "Aldığın tüm ezici, delici ve kesici hasarları 2 puan azalır ve tüm kurtarma zarlarına +1 bonus kazanırsın.",
-      "durum": "kismi",
-      "not": "tüm kurtarma +1 çalışır; ezici/delici/kesici hasarda −2 yok"
+      "durum": "calisir",
+      "not": "tüm kurtarma +1 ve ezici/delici/kesici hasarda −2 çalışır (KATALOG-GUC-TAM: sabit azaltma)"
      },
      {
       "ad": "Kaya Duruşu",
@@ -7516,6 +7526,15 @@
     ],
     "riskler": "STR 15 altındaki kullanıcıların yürüme hızı 10 ft düşer; 65 lb ağırlığı derin su ve batak kurallarında ağır zırh risklerini taşır.",
     "kimlerKullanamaz": "Ağır zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan Kaya Duruşu'nu açamaz."
+   },
+   "passive": {
+    "k109": {
+     "flatReduce": {
+      "bludgeoning": 2,
+      "piercing": 2,
+      "slashing": 2
+     }
+    }
    }
   },
   {
@@ -7620,7 +7639,12 @@
    "passive": {
     "resist": [
      "fire"
-    ]
+    ],
+    "k109": {
+     "flatReduce": {
+      "*": 1
+     }
+    }
    },
    "katalog": {
     "ref": "ZK#26",
@@ -7642,8 +7666,8 @@
      {
       "ad": "Zırh ek etkisi",
       "metin": "Uyum hâlindeyken ateş hasarına direnç, bütün kurtarma zarlarına +2 bonus ve aldığın tüm hasarlarda 1 puan azalma kazanırsın.",
-      "durum": "kismi",
-      "not": "ateş direnci ve tüm kurtarma +2 çalışır; tüm hasarda −1 yok"
+      "durum": "calisir",
+      "not": "ateş direnci, tüm kurtarma +2 ve tüm hasarda −1 çalışır (KATALOG-GUC-TAM: sabit azaltma)"
      }
     ],
     "riskler": "STR 15 altında hız −10 ft düşer; aktif bir alan veya iyileştirme gücü bulunmaz, tamamen sürekli savunmaya dayanır.",
@@ -7706,7 +7730,12 @@
     ],
     "saveAdv": [
      "wis"
-    ]
+    ],
+    "k109": {
+     "flatReduce": {
+      "*": 1
+     }
+    }
    },
    "katalog": {
     "ref": "ZK#28",
@@ -7728,8 +7757,8 @@
      {
       "ad": "Zırh ek etkisi",
       "metin": "Giydiğin sürece Frightened durumuna bağışıklık, WIS kurtarma zarlarında avantaj ve gelen tüm hasarlarda 1 puan azalma kazanırsın.",
-      "durum": "kismi",
-      "not": "Frightened bağışıklığı ve WIS kurtarma avantajı çalışır; tüm hasarda −1 yok"
+      "durum": "calisir",
+      "not": "Frightened bağışıklığı, WIS kurtarma avantajı ve tüm hasarda −1 çalışır (KATALOG-GUC-TAM: sabit azaltma)"
      }
     ],
     "riskler": "STR 15 altında hız −10 ft düşer; Charmed ve Paralyzed gibi diğer zihinsel durumlara tam bağışıklık vermez (yalnız WIS kurtarma avantajı sağlar).",
@@ -7747,6 +7776,11 @@
    "passive": {
     "saveMod": {
      "con": 1
+    },
+    "k109": {
+     "flatReduce": {
+      "piercing": 2
+     }
     }
    },
    "katalog": {
@@ -7770,7 +7804,7 @@
       "ad": "Zırh ek etkisi",
       "metin": "Uyum hâlindeyken en yüksek canın +10 artar, CON kurtarma zarlarına +1 bonus alırsın ve gelen delici hasarları 2 puan azalır.",
       "durum": "kismi",
-      "not": "CON kurtarma +1 çalışır; en yüksek can +10 ve delici hasarda −2 yok"
+      "not": "CON kurtarma +1 ve delici hasarda −2 çalışır (KATALOG-GUC-TAM: sabit azaltma); en yüksek can +10 yok"
      }
     ],
     "riskler": "STR 15 altında yürüme hızı 10 ft düşer; zırh çıkarıldığında +10 en yüksek can bonusu da geri düşer.",

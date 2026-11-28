@@ -55,3 +55,14 @@ describe('mühür taşı yuvaları', () => {
     expect(damageProfile(c).immunities).toEqual(expect.arrayContaining(['fire', 'cold', 'lightning', 'thunder', 'acid']));
   });
 });
+
+describe('sabit hasar azaltma kancası (kanca listesi)', () => {
+  it('Kıvılcım Yeleği kesici −1; Cehennem Ocağı Plakası her türe −2 (dirençten sonra)', () => {
+    const a = damageProfile(combatantFromSheet(bor({ itemNames: [nm('sparkmesh-chain-shirt')] }), { id: 'b', ownerId: 'p' }));
+    expect(adjustDamage(10, 'slashing', a).amount).toBe(9);
+    expect(adjustDamage(10, 'lightning', a).amount).toBe(5);
+    const h = damageProfile(combatantFromSheet(bor({ itemNames: [nm('hellforge-plate')] }), { id: 'b', ownerId: 'p' }));
+    expect(adjustDamage(10, 'cold', h).amount).toBe(8);
+    expect(adjustDamage(10, 'fire', h).amount).toBe(3);
+  });
+});

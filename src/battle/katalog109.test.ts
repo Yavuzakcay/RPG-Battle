@@ -381,3 +381,13 @@ describe('Grup 5–8: Hexonia, Anka, mücevher, Captive', () => {
     expect(mountBondEvents(off)[0]).toMatchObject({ type: 'effect_ended', targetId: 'A' });
   });
 });
+
+describe('Kalan veriler: yutma, kadim durum bağışıklığı', () => {
+  it('Abyssal Swallow başarısız save\'de yutar (Titan: asit + psişik); kadim durum bağışıklığı savaşta', async () => {
+    const { a2Events } = await import('./ridersA2');
+    const s = arena109('titan-of-nightmare', [mk('A', { ownerId: 'p1', hp: 300, maxHp: 300, pos: { col: 5, row: 3 } })]);
+    const ev = a2Events(s, C(s, 'D'), C(s, 'A'), 'Abyssal Swallow', () => 0.5);
+    expect(ev.find((e) => e.type === 'effect_added')).toMatchObject({ effect: { swallowedBy: 'D', swallow: { dice: '8d6', dice2: '6d6', type2: 'psychic' } } });
+    expect(C(s, 'D').effects?.find((e) => e.id === 'k109:D')?.immune).toEqual(expect.arrayContaining(['Frightened', 'Stunned']));
+  });
+});

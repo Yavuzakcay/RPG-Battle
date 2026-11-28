@@ -45,6 +45,8 @@ export interface A2Spec {
   kill?: { hpAtMost: number; dies?: boolean; else?: Part & { dice2?: string; type2?: string } };
   zeroHp?: { dies?: boolean; stable?: boolean; conditions?: Array<Spec & { condition: string }> };
   swallow?: { dice: string; type: string; escapeDamage: number; escapeDc: number; maxSize?: string; grappledOnly?: boolean; escapeCheck?: number;
+    /** Görev KATALOG-GUC-TAM (109; yalnız katalog `ekler`): ikinci tur başı hasarı (Titan: 6d6 psişik). */
+    dice2?: string; type2?: string;
     /** Görev KARAR104 (sürüm 104, A3): içine alınan nefes alamaz (Gelatinous Cube Engulf). */
     noBreath?: boolean };
   corrode?: { armor?: boolean; weapon?: boolean };
@@ -191,6 +193,7 @@ export function a2Events(state: BattleState, actor: Combatant, target: Combatant
     if (target.grapple) out.push({ type: 'grapple_ended', targetId: target.id, reason: label });
     out.push({ type: 'effect_added', targetId: target.id, effect: { id: `swallow:${actor.id}:${target.id}`, name: `${attackName} (${actor.name})`, sourceId: actor.id, swallowedBy: actor.id,
       grants: ['Blinded', 'Restrained'], until: state.round + 6000, swallow: { dice: s.dice, type: s.type, escapeDamage: s.escapeDamage, escapeDc: s.escapeDc,
+        ...(s.dice2 ? { dice2: s.dice2, type2: s.type2 ?? s.type } : {}),
         // Görev WS92 (92+): yutulan midede (konum yutanınki, Total Cover).
         ...(ws92On(state) ? { inside: true } : {}) },
       ...(s.escapeCheck ? { escapeCheck: { dc: s.escapeCheck } } : {}),
