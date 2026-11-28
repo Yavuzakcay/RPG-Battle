@@ -68,7 +68,8 @@ describe('KATALOG-1 A: silahlar', () => {
     const L = t().dex.pro;
     for (const x of kat) {
       const it = items.find((i) => i.id === x.id)!;
-      if (it.paket) expect(ilkelErrors(it.paket.ilkeller, x.id, { kaynaklar: new Set(), sinifKaynaklari: new Set(), yaratiklar: new Set() }), x.id).toEqual([]);
+      // GECE-KATALOG-KALAN: yalnız `paket.s110` taşıyan eşyada taban ilkel listesi yok (s110 katalogKanca110.test.ts'te).
+      if (it.paket?.ilkeller) expect(ilkelErrors(it.paket.ilkeller, x.id, { kaynaklar: new Set(), sinifKaynaklari: new Set(), yaratiklar: new Set() }), x.id).toEqual([]);
       const pro = esyaProspektus(x.id, L, 'tr')!;
       for (const s of pro) if (s.key !== 'durum') expect(s.rows.length, `${x.id}/${s.key}`).toBeGreaterThan(0);
       expect(pro.map((s) => s.key)).toEqual(expect.arrayContaining(['ne', 'nasil', 'etken', 'maliyet', 'durum']));

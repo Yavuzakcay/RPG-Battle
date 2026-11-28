@@ -653,7 +653,7 @@ registerHitHook((state, actor, target, ctx, rng) => {
     if (p.tur !== 'ekHasar') return;
     const s = val<string>(p, 'saldiri');
     const okKind = s === 'hepsi' || (s === 'buyu' ? ctx.spell : !ctx.spell && (s === 'silah' || (s === 'yakin' && ctx.melee) || (s === 'menzilli' && ctx.ranged)));
-    if (!okKind || !kosulOk(state, actor, p, target, ctx.advantage) || !canPay(actor, p) || (p.turdaBir && usedThisTurn(state, actor, feat.key, i))) return;
+    if (!okKind || !kosulOk(state, actor, p, target, ctx.advantage, ctx.critical) || !canPay(actor, p) || (p.turdaBir && usedThisTurn(state, actor, feat.key, i))) return;
     const roll = rollDice(formul(p.zar, actor), rollTag(rng, { kind: 'damage', by: actor.id }), ctx.critical);
     const type = val<string>(p, 'hasarTuru') === 'silah' ? ctx.weaponType : val<string>(p, 'hasarTuru');
     // P10 (sürüm 39+): yan hedef: vurulana bitişik başka bir düşmana (yoksa vurulana).

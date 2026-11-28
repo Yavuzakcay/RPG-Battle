@@ -6,6 +6,7 @@
 import { getProgression, items } from '../../data';
 import { findSubclass } from '../../rules/subclasses';
 import { ILKELLER, kullanimKaynak, paketKaynakId } from '../../content/ilkelSema';
+import { KATALOG110_VERSION } from '../katalog110Surum';
 import type { CharacterSheet } from '../../rules/stats';
 
 export type Ilkel = Record<string, unknown> & { tur: string };
@@ -74,17 +75,19 @@ export function paketBag(sheet: Pick<CharacterSheet, 'classId' | 'subclassId' | 
  * Speed → `ekSaldiri`) savaşçının paketine eklenir. Özellik anahtarı `esya:<eşya>`, yaratık ve kaynak kimlikleri eşya
  * kimliğiyle öneklenir (çakışmaz); kaynaklar sınıf tablosunda değil, savaşçıda başlar (her savaş dolu; dinlenme takibi yok).
  */
-export function itemBag(names: string[]): { bag: PaketBag; resources: Record<string, number> } | undefined {
+export function itemBag(names: string[], /** GECE-KATALOG-KALAN: savaşın kural sürümü (110+ `paket.s110` ilkelleri eklenir). */ ruleVersion = 0): { bag: PaketBag; resources: Record<string, number> } | undefined {
   const ozellikler: PaketOzellik[] = [];
   const yaratiklar: Record<string, Record<string, unknown>> = {};
   const kaynaklar: Record<string, string> = {};
   const resources: Record<string, number> = {};
   for (const n of names) {
-    const it = items.find((i) => i.name === n) as ({ id: string; name: string; paket?: { ilkeller: Ilkel[]; yaratiklar?: Array<Record<string, unknown>> } } | undefined);
-    if (!it?.paket?.ilkeller?.length) continue;
+    const it = items.find((i) => i.name === n) as ({ id: string; name: string; paket?: { ilkeller?: Ilkel[]; yaratiklar?: Array<Record<string, unknown>>; s110?: { ilkeller: Ilkel[] } } } | undefined);
+    // GECE-KATALOG-KALAN (kural sürümü 110): katalog kanca listesinin 2. turu `paket.s110` (109 ve altında yüklenmez).
+    const all = [...(it?.paket?.ilkeller ?? []), ...(ruleVersion >= KATALOG110_VERSION ? it?.paket?.s110?.ilkeller ?? [] : [])];
+    if (!it || !all.length) continue;
     const ref = (id: string) => `${it.id}-${id}`;
-    for (const y of it.paket.yaratiklar ?? []) yaratiklar[ref(y.id as string)] = { ...y, id: ref(y.id as string) };
-    const ilkeller = it.paket.ilkeller.filter((p) => !!ILKELLER[p.tur]).map((p) => {
+    for (const y of it.paket?.yaratiklar ?? []) yaratiklar[ref(y.id as string)] = { ...y, id: ref(y.id as string) };
+    const ilkeller = all.filter((p) => !!ILKELLER[p.tur]).map((p) => {
       const q: Ilkel = { ...p };
       if (typeof q.yaratik === 'string') q.yaratik = ref(q.yaratik);
       if (Array.isArray(q.rastgele)) q.rastgele = (q.rastgele as string[]).map(ref);

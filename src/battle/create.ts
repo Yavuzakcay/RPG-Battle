@@ -207,7 +207,7 @@ function combatantFromSheet0(
   // Kuyruk AS1b: savaş sürümü < 71'de oluşan savaşçıda alt soy mekaniği kapalı (türetme `lineageEtki`).
   const c0 = combatantFromSheetBase(defaultRuleVersion() < ALT_SOY_VERSION ? { ...sheet, soyKapali: true } : sheet, opts);
   // Görev P7: eşya kancaları (eşyanın paket ilkelleri savaşçının paketine).
-  const ib = itemBag(activeItemNames(sheet));
+  const ib = itemBag(activeItemNames(sheet), defaultRuleVersion());
   const c = ib ? { ...c0, paket: mergeBags(c0.paket, ib.bag), resources: { ...c0.resources, ...ib.resources } } : c0;
   // Görev KARAR104 (A10): silah eşyasının bağlı silahı (yalnız 104+ savaşta kullanılır: `k104Alt`, `k104` işareti).
   const p = itemParts(activeItemNames(sheet), opts.id, (n) => (bindableItem(n) ? boundWeaponId(sheet, n) : undefined));

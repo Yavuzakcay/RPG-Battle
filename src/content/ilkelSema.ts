@@ -30,7 +30,15 @@ export type Tetik = typeof TETIKLER[number];
 export const DUGME_TETIKLERI: readonly Tetik[] = ['eylem', 'bonus', 'serbest'];
 /** Koşul sözcükleri; `bicim:<id>` ve `isaretli:<id>` önekli. */
 export const KOSULLAR = ['ofke', 'yarimCanAlti', 'zirhsiz', 'avantajli', 'dostBitisik', 'konsantrasyon', /** P6. */ 'buyuTurunda', 'seviyeliBuyuTurunda', /** P7: hedef sahibinden büyük. */ 'hedefBuyuk',
-  /** P9: bu tur Flurry of Blows sürüyor; savaşın ilk turu. */ 'flurryVurusu', 'ilkTur', /** P11: zar yarışını kazandığın hedef. */ 'zarYarisi'] as const;
+  /** P9: bu tur Flurry of Blows sürüyor; savaşın ilk turu. */ 'flurryVurusu', 'ilkTur', /** P11: zar yarışını kazandığın hedef. */ 'zarYarisi',
+  /**
+   * GECE-KATALOG-KALAN (kural sürümü 110; katalog eşya kancaları `paket.s110`): canın yarısı ya da altı, yaralı (canı tam değil),
+   * kalkansız; hedefin canı yarısı ya da altı, hedef tam canda, kritik vuruş, hedef bu savaşın 1. turunda henüz oynamadı.
+   * Önekliler: `hedefDurum:<A>/<B>` (hedefte durumlardan biri), `hedefTur:<a>/<b>` (yaratık türü), `hedefBoyut:<T|S|M|L|H|G>` (en az).
+   */
+  'yariCan', 'yarali', 'kalkansiz', 'hedefYariCan', 'hedefTamCan', 'kritik', 'hedefOynamadi'] as const;
+/** GECE-KATALOG-KALAN (110): önekli hedef koşulları. */
+export const KOSUL_ONEKLERI = /^(hedefDurum:[A-Z][A-Za-z]+(\/[A-Z][A-Za-z]+)*|hedefTur:[a-z]+(\/[a-z]+)*|hedefBoyut:[TSMLHG])$/;
 /** P6: `harita:<bölge>` koşulunun bölgeleri (`harita/_ortak/harita-bolgeleri.json`). */
 export const HARITA_TEMALARI: readonly string[] = ((bolgeler as { bolgeler?: Array<{ id: string }> }).bolgeler ?? []).map((b) => b.id);
 export const HEDEFLER = ['kendi', 'dost', 'dostVeyaKendi', 'dostlar', 'dusman', 'dusmanlar', 'bitisikDusmanlar', 'alan', 'vurulan'] as const;
@@ -84,7 +92,7 @@ export const ORTAK_ALANLAR: Record<string, AlanSpec> = {
   tetik: { tip: 'enum', degerler: TETIKLER, not: 'Ne zaman çalışır (ilkelin izin verdikleri; yazılmazsa ilki).' },
   hedef: { tip: 'enum', degerler: HEDEFLER, not: 'Kime (ilkelin izin verdikleri; yazılmazsa ilki).' },
   kaynak: { tip: 'kaynakRef', not: 'Harcanan kaynak: `{ "id": "<kaynak ilkeli id ya da sınıf kaynağı (rage, focus, channelDivinity…)>", "maliyet": 1 }`. Düğmede yalnızca ilk kaynaklı ilkel harcar (düğme başına bir kez).' },
-  kosul: { tip: 'kosullar', not: 'Hepsi doğruysa çalışır: ofke, yarimCanAlti, zirhsiz, avantajli (isabet), dostBitisik (hedefe bitişik dost), konsantrasyon, buyuTurunda (bu tur büyü yaptın), seviyeliBuyuTurunda (bu tur slotlu büyü), hedefBuyuk (hedef senden büyük), bicim:<id>, isaretli:<id> (hedef bu işaretle işaretli), harita:<bölge> (savaş haritasının bölgesi); P9: flurryVurusu (bu tur Flurry of Blows kullanıldı), ilkTur (savaşın 1. turu); P11: zarYarisi (hedefe karşı `zarYarisi` kazanıldı).' },
+  kosul: { tip: 'kosullar', not: 'Hepsi doğruysa çalışır: ofke, yarimCanAlti, zirhsiz, avantajli (isabet), dostBitisik (hedefe bitişik dost), konsantrasyon, buyuTurunda (bu tur büyü yaptın), seviyeliBuyuTurunda (bu tur slotlu büyü), hedefBuyuk (hedef senden büyük), bicim:<id>, isaretli:<id> (hedef bu işaretle işaretli), harita:<bölge> (savaş haritasının bölgesi); P9: flurryVurusu (bu tur Flurry of Blows kullanıldı), ilkTur (savaşın 1. turu); P11: zarYarisi (hedefe karşı `zarYarisi` kazanıldı); 110: yariCan (canın yarısı ya da altı), yarali, kalkansiz, hedefYariCan, hedefTamCan, kritik (isabet kritik), hedefOynamadi (savaşın 1. turunda hedef henüz oynamadı), hedefDurum:<A>/<B>, hedefTur:<a>/<b>, hedefBoyut:<boy> (en az).' },
   turdaBir: B('Turda en çok bir kez (her savaşçının kendi turu sayılır).'),
   ad: { tip: 'metin', not: 'Düğme/günlük adı (yoksa özelliğin TR adı).' },
 };
@@ -697,7 +705,7 @@ function alanHatasi(spec: AlanSpec, v: unknown, ctx: Ctx): boolean {
     case 'yaratikRefler': return !Array.isArray(v) || v.length === 0 || v.length > 12 || v.some((x) => typeof x !== 'string' || !ctx.yaratiklar.has(x));
     case 'buyular': return !Array.isArray(v) || v.length === 0 || v.some((n) => typeof n !== 'string' || !spells.some((s) => s.name === n));
     case 'kosullar': return !Array.isArray(v) || v.some((x) => typeof x !== 'string' || !((KOSULLAR as readonly string[]).includes(x)
-      || (/^bicim:[a-z0-9-]+$/.test(x) && ctx.ilkelIdleri.has(x.slice(6))) || /^isaretli:[a-z0-9-]+$/.test(x) || (x.startsWith('harita:') && HARITA_TEMALARI.includes(x.slice(7)))));
+      || (/^bicim:[a-z0-9-]+$/.test(x) && ctx.ilkelIdleri.has(x.slice(6))) || /^isaretli:[a-z0-9-]+$/.test(x) || (x.startsWith('harita:') && HARITA_TEMALARI.includes(x.slice(7))) || KOSUL_ONEKLERI.test(x)));
     case 'kaynakRef': return !isObj(v) || typeof v.id !== 'string' || !(ctx.kaynaklar.has(v.id) || ctx.sinifKaynaklari.has(v.id))
       || (v.maliyet !== undefined && (!Number.isInteger(v.maliyet) || (v.maliyet as number) < 0)) || Object.keys(v).some((k) => k !== 'id' && k !== 'maliyet');
     case 'rastgeleListe': return !isObj(v) || !Number.isInteger(v.sayi) || (v.sayi as number) < 2 || (v.sayi as number) > 20 || Object.keys(v).some((k) => k !== 'sayi');

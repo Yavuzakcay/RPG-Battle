@@ -103,8 +103,19 @@ function mapRegion(state: BattleState): string | undefined {
 }
 
 /** Koşullar (hepsi). `target`: isabet/hedef; `adv`: saldırı avantajlıydı. */
-export function kosulOk(state: BattleState, actor: Combatant, p: Ilkel, target?: Combatant, adv = false): boolean {
+export function kosulOk(state: BattleState, actor: Combatant, p: Ilkel, target?: Combatant, adv = false, /** GECE-KATALOG-KALAN (110): isabet kritik. */ crit = false): boolean {
   for (const k of (p.kosul as string[] | undefined) ?? []) {
+    // GECE-KATALOG-KALAN (110; yalnız `paket.s110` eşya kancalarının verisinde): can, kalkan ve hedef koşulları.
+    if (k === 'yariCan' && !(actor.hp <= actor.maxHp / 2)) return false;
+    if (k === 'yarali' && !(actor.hp < actor.maxHp)) return false;
+    if (k === 'kalkansiz' && actor.shieldHeld && !actor.shieldOff) return false;
+    if (k === 'kritik' && !crit) return false;
+    if (k === 'hedefYariCan' && !(target && target.hp <= target.maxHp / 2)) return false;
+    if (k === 'hedefTamCan' && !(target && target.hp >= target.maxHp)) return false;
+    if (k === 'hedefOynamadi' && !(target && state.round === 1 && state.order.indexOf(target.id) > state.turnIndex)) return false;
+    if (k.startsWith('hedefDurum:') && !(target && k.slice(11).split('/').some((x) => target.conditions.includes(x)))) return false;
+    if (k.startsWith('hedefTur:') && !(target && k.slice(9).split('/').includes((target.creatureType ?? '').toLowerCase()))) return false;
+    if (k.startsWith('hedefBoyut:') && !(target && sizeRank(target.size) >= sizeRank(k.slice(11) as Combatant['size']))) return false;
     if (k === 'ofke' && !actor.rage) return false;
     if (k === 'yarimCanAlti' && !(actor.hp < actor.maxHp / 2)) return false;
     if (k === 'zirhsiz' && !actor.paket?.zirhsiz) return false;

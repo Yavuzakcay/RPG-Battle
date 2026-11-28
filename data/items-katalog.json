@@ -37,8 +37,8 @@
      {
       "ad": "İri Avı",
       "metin": "Large veya daha büyük hedeflere isabette turda bir kez ek 1d8 kesici hasarı verir ve hedef DC 16 STR kurtarma zarını geçemezse Prone olur.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "kismi",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı: ek 1d8 çalışır; STR 16 save ve Prone yok."
      },
      {
       "ad": "Dev Duruşu",
@@ -49,6 +49,22 @@
     ],
     "riskler": "Heavy özelliği nedeniyle STR skoru 13 altındaki karakterler saldırı zarlarında dezavantaj alır; kalkanla birlikte kullanılamaz. Boyut artışı tavanı alçak iç mekânlarda dikey hareket sınırını düşürebilir.",
     "kimlerKullanamaz": "Uyum yapmayan karakter büyülü özelliklerini açamaz; Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "ekHasar",
+       "zar": "1d8",
+       "hasarTuru": "slashing",
+       "saldiri": "silah",
+       "kosul": [
+        "hedefBoyut:L"
+       ],
+       "turdaBir": true
+      }
+     ]
+    }
    }
   },
   {
@@ -826,8 +842,8 @@
      {
       "ad": "Acı Yeri",
       "metin": "Bu silahla yaptığın kritik vuruşlara ek 1d8 delici hasarı eklenir.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı: ⚠ ek zar kritik kuralıyla iki kat atılır (SRD: kritikte bütün hasar zarları)."
      },
      {
       "ad": "Donduran Mühür",
@@ -837,6 +853,21 @@
     ],
     "riskler": "Hold Person yalnızca Humanoid hedeflere işler ve konsantrasyon gerektirir; mevcut konsantrasyon büyün varsa sonlanır.",
     "kimlerKullanamaz": "Simple silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "ekHasar",
+       "zar": "1d8",
+       "hasarTuru": "piercing",
+       "saldiri": "silah",
+       "kosul": [
+        "kritik"
+       ]
+      }
+     ]
+    }
    }
   },
   {
@@ -1156,12 +1187,27 @@
      {
       "ad": "Kan Hırsı",
       "metin": "Kendi canın en yüksek canının yarısında veya altındayken isabetlere ek 1d4 kesici hasarı eklenir.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı."
      }
     ],
     "riskler": "Kan Hırsı yalnızca yarı canın altına inildiğinde açılır; bu eşikte kalmak düşme riskini artırır.",
     "kimlerKullanamaz": "Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "ekHasar",
+       "zar": "1d4",
+       "hasarTuru": "slashing",
+       "saldiri": "silah",
+       "kosul": [
+        "yariCan"
+       ]
+      }
+     ]
+    }
    }
   },
   {
@@ -1306,8 +1352,8 @@
      {
       "ad": "Büyü Kalkanı",
       "metin": "Büyülere karşı kurtarma zarlarında avantaj kazanırsın.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı."
      },
      {
       "ad": "Bağları Parçala",
@@ -1318,6 +1364,17 @@
     ],
     "riskler": "Bağları Parçala eylem harcar ve yalnızca 5 ft içindeki tek bir dosta dokunarak kullanılabilir; kendi üzerindeki Paralyzed/Stunned durumunu kaldıramaz.",
     "kimlerKullanamaz": "Uyum yapmayan karakter büyü kurtarma avantajı ve Bağları Parçala gücünü kullanamaz; Martial silah yetkinliği olmayan yetkinlik bonusunu ekleyemez."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "koruma",
+       "tetik": "pasif",
+       "buyulereAvantaj": true
+      }
+     ]
+    }
    }
   },
   {
@@ -1454,8 +1511,8 @@
      {
       "ad": "Yel Örtüsü",
       "metin": "Eldeyken yürüme hızın +10 ft artar ve düşme hasarına direnç kazanırsın.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "kismi",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı: +10 ft çalışır; düşme hasarı direnci yok."
      },
      {
       "ad": "Gök Patlaması",
@@ -1466,6 +1523,17 @@
     ],
     "riskler": "Gök Patlaması hedefin 10 ft içindeki dost yaratıkları da vurur; yakın dövüşteki müttefiklerin yanına fırlatmak tehlikelidir.",
     "kimlerKullanamaz": "Uyum yapmayan karakter geri dönüş, Yel Örtüsü ve Gök Patlaması özelliklerini kullanamaz; Martial silah yetkinliği olmayan yetkinlik bonusunu ekleyemez."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "hiz",
+       "tetik": "pasif",
+       "artiFt": 10
+      }
+     ]
+    }
    }
   },
   {
@@ -1585,12 +1653,34 @@
      {
       "ad": "Şimşek Ucu",
       "metin": "İsabet anında 1 yük harcayarak ek 1d8 yıldırım hasarı eklersin (su yüzeyinde yıldırım zincirini tetikler). 2 yükü vardır; uzun dinlenmede 1d2 yük yenilenir.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı: ⚠ yük varken her isabette kendiliğinden harcanır; su zinciri yok; yük her savaş başında dolu (eşya yükünde dinlenme takibi yok); UD 1d2 yenilenme yerine tam."
      }
     ],
     "riskler": "Oluşan su yüzeyi üstünde duran dostlar düşman yıldırım veya soğuk saldırılarına karşı risk altına girebilir.",
     "kimlerKullanamaz": "Uyum yapmayan karakter su yüzeyi ve yıldırım yüklerini kullanamaz; Martial silah yetkinliği olmayan yetkinlik bonusunu ekleyemez."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "tidecaller-trident",
+       "sayi": 2,
+       "yenilenme": "uzun"
+      },
+      {
+       "tur": "ekHasar",
+       "zar": "1d8",
+       "hasarTuru": "lightning",
+       "saldiri": "silah",
+       "kaynak": {
+        "id": "tidecaller-trident",
+        "maliyet": 1
+       }
+      }
+     ]
+    }
    }
   },
   {
@@ -1962,8 +2052,8 @@
      {
       "ad": "Işık İşareti (3 yük, uzun dinlenme 1d3)",
       "metin": "İsabet hâlinde 1 yük harcayarak ek 2d6 ışıltı hasarı eklersin ve hedefe bir sonraki saldırı avantajlı olur.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "kismi",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı: ek 2d6 ışıltı çalışır (yük varken her isabette kendiliğinden); sonraki saldırı avantajı yok; yük her savaş başında dolu (eşya yükünde dinlenme takibi yok); UD 1d2 yenilenme yerine tam."
      },
      {
       "ad": "Gök İvmesi (1 yük, uzun dinlenme)",
@@ -1974,6 +2064,28 @@
     ],
     "riskler": "Bonus eylem 3 tur Haste DEX 13 altında Heavy menzilli silah dezavantajı uygulanır; 150 ft ötesi ve 5 ft içinde düşman varken yapılan atışlar dezavantajlıdır. Gök İvmesi konsantrasyon kırılırsa erken biter.",
     "kimlerKullanamaz": "Uyum yapmayan karakter ışık işareti ve Gök İvmesi güçlerini kullanamaz; Martial silah yetkinliği olmayan yetkinlik bonusunu ekleyemez."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "skylight-longbow",
+       "sayi": 3,
+       "yenilenme": "uzun"
+      },
+      {
+       "tur": "ekHasar",
+       "zar": "2d6",
+       "hasarTuru": "radiant",
+       "saldiri": "silah",
+       "kaynak": {
+        "id": "skylight-longbow",
+        "maliyet": 1
+       }
+      }
+     ]
+    }
    }
   },
   {
@@ -2413,8 +2525,8 @@
      {
       "ad": "Zehir Takibi",
       "metin": "Poisoned durumundaki hedeflere yaptığın saldırılara ek 1d4 zehir hasarı eklenir.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı."
      },
      {
       "ad": "Batak Dumanı (2 yük, UD 1d2)",
@@ -2425,6 +2537,21 @@
     ],
     "riskler": "Zehir bağışıklığı olan Undead ve Construct hedeflerde ek hasar ve bulut etkisizdir; ev kuralı açıkken ateşle bulut patlayabilir.",
     "kimlerKullanamaz": "Uyum yapmayan karakter Batak Dumanı gücünü kullanamaz; Martial silah yetkinliği olmayan yetkinlik bonusunu ekleyemez."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "ekHasar",
+       "zar": "1d4",
+       "hasarTuru": "poison",
+       "saldiri": "silah",
+       "kosul": [
+        "hedefDurum:Poisoned"
+       ]
+      }
+     ]
+    }
    }
   },
   {
@@ -2522,8 +2649,8 @@
      {
       "ad": "Avı Zehirle",
       "metin": "Restrained veya Grappled durumundaki hedeflere isabette ek 1d6 zehir hasarı verirsin.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı."
      },
      {
       "ad": "İpek Bağ (2 yük, UD 1d2)",
@@ -2534,6 +2661,21 @@
     ],
     "riskler": "Oluşan ağ yüzeyi ateş değdiğinde tutuşur (yanan ağ) ve suyla temas ettiğinde çözülür.",
     "kimlerKullanamaz": "Uyum yapmayan karakter Web Walker ve İpek Bağ özelliklerini kullanamaz; Martial silah yetkinliği olmayan yetkinlik bonusunu ekleyemez."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "ekHasar",
+       "zar": "1d6",
+       "hasarTuru": "poison",
+       "saldiri": "silah",
+       "kosul": [
+        "hedefDurum:Restrained/Grappled"
+       ]
+      }
+     ]
+    }
    }
   },
   {
@@ -2765,8 +2907,8 @@
      {
       "ad": "Göz Alıcı Darbe",
       "metin": "İsabette Undead hedeflere ek 1d6 ışıltı hasarı verir.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı."
      },
      {
       "ad": "Şafak Patlaması (2 yük, UD 1d2)",
@@ -2777,6 +2919,21 @@
     ],
     "riskler": "Şafak Patlaması 10 ft çevredeki düşmanlara uygulanır ancak tam siper arkasındakileri etkilemez; eylem harcar.",
     "kimlerKullanamaz": "Uyum yapmayan karakter Şafak Patlaması gücünü kullanamaz; Martial silah yetkinliği olmayan yetkinlik bonusunu ekleyemez."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "ekHasar",
+       "zar": "1d6",
+       "hasarTuru": "radiant",
+       "saldiri": "silah",
+       "kosul": [
+        "hedefTur:undead"
+       ]
+      }
+     ]
+    }
    }
   },
   {
@@ -3407,12 +3564,27 @@
      {
       "ad": "Canavar Avcısı",
       "metin": "Monstrosity türündeki düşmanlara isabette ek 1d4 delici hasarı verirsin.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı."
      }
     ],
     "riskler": "18 lb ağırlığı taşıma sınırında yüksektir; STR 13 altında dezavantaj verir ve kalkanla kullanılamaz.",
     "kimlerKullanamaz": "Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "ekHasar",
+       "zar": "1d4",
+       "hasarTuru": "piercing",
+       "saldiri": "silah",
+       "kosul": [
+        "hedefTur:monstrosity"
+       ]
+      }
+     ]
+    }
    }
   },
   {
@@ -3499,8 +3671,8 @@
      {
       "ad": "Acımasız Kesik",
       "metin": "Avantajla yaptığın isabetli saldırılara turda bir kez ek 1d8 delici hasarı eklenir; canı yarısında veya altında olan hedeflere ayrıca +1d4 delici hasarı vurur.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı: ⚠ yarı can eki de avantajlı isabette (metin \"ayrıca\")."
      },
      {
       "ad": "Kızıl Sis (2 yük, UD 1d2)",
@@ -3511,6 +3683,33 @@
     ],
     "riskler": "Truesight veya Blindsight menzilindeki düşmanlar Kızıl Sis görünmezliğini aşar; saldırı yapıldığında görünmezlik anında biter.",
     "kimlerKullanamaz": "Uyum yapmayan karakter Acımasız Kesik ve Kızıl Sis güçlerini kullanamaz; Martial silah yetkinliği olmayan yetkinlik bonusunu ekleyemez."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "ekHasar",
+       "zar": "1d8",
+       "hasarTuru": "piercing",
+       "saldiri": "silah",
+       "kosul": [
+        "avantajli"
+       ],
+       "turdaBir": true
+      },
+      {
+       "tur": "ekHasar",
+       "zar": "1d4",
+       "hasarTuru": "piercing",
+       "saldiri": "silah",
+       "kosul": [
+        "avantajli",
+        "hedefYariCan"
+       ],
+       "turdaBir": true
+      }
+     ]
+    }
    }
   },
   {
@@ -3641,7 +3840,20 @@
       "tetik": "pasif",
       "inisiyatifBonusu": 2
      }
-    ]
+    ],
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "ekHasar",
+       "zar": "1d6",
+       "hasarTuru": "necrotic",
+       "saldiri": "silah",
+       "kosul": [
+        "hedefOynamadi"
+       ]
+      }
+     ]
+    }
    },
    "katalog": {
     "ref": "S2#70",
@@ -3674,8 +3886,8 @@
      {
       "ad": "Öncü Darbesi",
       "metin": "Savaşın 1. turunda henüz kendi sırasını almamış hedeflere yapılan isabetlere ek 1d6 nekrotik hasarı eklenir.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı."
      }
     ],
     "riskler": "Öncü Darbesi yalnızca savaşın 1. turunda ve senden düşük inisiyatifli düşmanlara karşı çalışır; uzayan savaşlarda ek hasar kapanır.",
@@ -3771,18 +3983,42 @@
      {
       "ad": "Acı Kesiği",
       "metin": "Bu hançerle yaptığın kritik vuruşlara +6 sabit delici hasarı eklenir.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı: sabit +6 kritikte ikiye katlanmaz."
      },
      {
       "ad": "Savunmasız Av",
       "metin": "Paralyzed veya Unconscious durumundaki hedeflere isabette ek 1d6 nekrotik hasarı verirsin.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı."
      }
     ],
     "riskler": "Normal isabetlerde taban zar küçüktür (1d4 + 1); gerçek gücünü kritik şansı yüksek ya da kontrol büyüsü destekli partilerde gösterir.",
     "kimlerKullanamaz": "Uyum yapmayan karakter Acı Kesiği ve Savunmasız Av pasiflerini kullanamaz; Simple silah yetkinliği olmayan yetkinlik bonusunu ekleyemez."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "ekHasar",
+       "zar": "1d6",
+       "hasarTuru": "necrotic",
+       "saldiri": "silah",
+       "kosul": [
+        "hedefDurum:Paralyzed/Unconscious"
+       ]
+      },
+      {
+       "tur": "ekHasar",
+       "zar": "6",
+       "hasarTuru": "piercing",
+       "saldiri": "silah",
+       "kosul": [
+        "kritik"
+       ]
+      }
+     ]
+    }
    }
   },
   {
@@ -3821,12 +4057,28 @@
      {
       "ad": "Zihin Çatlağı",
       "metin": "Avantajla yaptığın isabetli saldırılara turda bir kez ek 1d6 psişik hasarı eklenir. Vex ustalığıyla vurduğun hedefe sonraki saldırın avantajlı olduğu için ikinci vuruşta Zihin Çatlağı kendiliğinden tetiklenebilir.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı."
      }
     ],
     "riskler": "Avantaj ve dezavantaj birbirini götürdüğünde (normal zar) Zihin Çatlağı tetiklenmez; psişik bağışıklığı olan Construct'larda ek hasar işlemez.",
     "kimlerKullanamaz": "Martial silah yetkinliği olmayan saldırı zarına yetkinlik bonusunu ekleyemez."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "ekHasar",
+       "zar": "1d6",
+       "hasarTuru": "psychic",
+       "saldiri": "silah",
+       "kosul": [
+        "avantajli"
+       ],
+       "turdaBir": true
+      }
+     ]
+    }
    }
   },
   {
@@ -3926,12 +4178,33 @@
      {
       "ad": "Yuva Geri Kazanımı (1 yük, UD)",
       "metin": "Bonus eylemle harcanmış en fazla 5. seviye 1 büyü yuvasını geri kazanırsın.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı."
      }
     ],
     "riskler": "Yuva Geri Kazanımı 6–9. seviye büyü yuvalarını yenilemez; Örgü Emici yalnızca büyü kaynaklı kurtarma zarlarında tetiklenir.",
     "kimlerKullanamaz": "Spellcasting veya Pact Magic özelliği olmayan karakterler bu asayla uyum yapamaz."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "archmages-conduit-staff",
+       "sayi": 1,
+       "yenilenme": "uzun"
+      },
+      {
+       "tur": "yuvaGeriKazan",
+       "tetik": "bonus",
+       "enCokSeviye": 5,
+       "kaynak": {
+        "id": "archmages-conduit-staff",
+        "maliyet": 1
+       }
+      }
+     ]
+    }
    }
   },
   {
@@ -4459,8 +4732,8 @@
      {
       "ad": "Korku Avcısı",
       "metin": "Frightened durumundaki hedeflere yaptığın saldırı zarlarına +2 ve hasar zarlarına +1d4 psişik hasarı eklenir.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "kismi",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı: ek 1d4 psişik çalışır; saldırı zarına +2 yok (hedef koşullu saldırı bonusu yok)."
      },
      {
       "ad": "Ürperten Ok (3 yük, UD 1d3)",
@@ -4471,6 +4744,21 @@
     ],
     "riskler": "Frightened bağışıklığı olan yaratıklar (birçok Construct ve Undead) Ürperten Ok etkisinden etkilenmez; 80 ft ötesi dezavantajlıdır.",
     "kimlerKullanamaz": "Uyum yapmayan karakter Korku Avcısı ve Ürperten Ok güçlerini kullanamaz; Simple silah yetkinliği olmayan yetkinlik bonusunu ekleyemez."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "ekHasar",
+       "zar": "1d4",
+       "hasarTuru": "psychic",
+       "saldiri": "silah",
+       "kosul": [
+        "hedefDurum:Frightened"
+       ]
+      }
+     ]
+    }
    }
   },
   {
@@ -4660,12 +4948,27 @@
      {
       "ad": "Özgür Savunma",
       "metin": "Hiçbir zırh ve kalkan taşımıyorken bütün kurtarma zarlarına +1 bonus kazanırsın.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı."
      }
     ],
     "riskler": "Herhangi bir zırh veya kalkan kuşanıldığı anda Özgür Savunma kurtarma bonusu devre dışı kalır; asanın kendi saldırılarında +1 bonusu yoktur.",
     "kimlerKullanamaz": "Uyum yapmayan karakter Yalın Yumruk ve Özgür Savunma pasiflerini kullanamaz; Simple silah yetkinliği olmayan yetkinlik bonusunu ekleyemez."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "zarEtkisi",
+       "tetik": "pasif",
+       "kurtulmaBonusu": 1,
+       "kosul": [
+        "zirhsiz",
+        "kalkansiz"
+       ]
+      }
+     ]
+    }
    }
   },
   {
@@ -6453,7 +6756,27 @@
       "tetik": "pasif",
       "inisiyatifBonusu": 2
      }
-    ]
+    ],
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "ravenwing-leather",
+       "sayi": 2,
+       "yenilenme": "uzun"
+      },
+      {
+       "tur": "ucus",
+       "tetik": "bonus",
+       "hizFt": "yurume",
+       "sure": 5,
+       "kaynak": {
+        "id": "ravenwing-leather",
+        "maliyet": 1
+       }
+      }
+     ]
+    }
    },
    "katalog": {
     "ref": "ZK#1",
@@ -6487,8 +6810,8 @@
      {
       "ad": "Kuzgun Kanadı (2 yük, UD 1d2)",
       "metin": "Bonus eylemle 1 yük harcayarak 5 tur boyunca yürüme hızın kadar uçuş hızı (Fly) kazanırsın (konsantrasyon gerekmez).",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı: yük her savaş başında dolu (eşya yükünde dinlenme takibi yok); UD 1d2 yenilenme yerine tam."
      }
     ],
     "riskler": "Uçuş süresi havadayken biterse veya Prone/Incapacitated olunursa düşme hasarı kuralı uygulanır; tavanlı iç mekânlarda yükselme tavanla sınırlıdır.",
@@ -6814,8 +7137,8 @@
      {
       "ad": "İnatçı Kaptan (1 yük, UD)",
       "metin": "0 HP'ye düşecekken düşmek yerine 1 HP'de kalır ve 8 geçici can kazanırsın.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "kismi",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı: 1 HP'de kalma çalışır; 8 geçici can yok."
      },
      {
       "ad": "Kaptanın Emri (1 yük, UD)",
@@ -6826,6 +7149,26 @@
     ],
     "riskler": "İnatçı Kaptan anında ölüm (ör. lav düşüşü veya Power Word Kill) durumlarını önlemez; Charmed dost hasarıyla bozulur.",
     "kimlerKullanamaz": "Hafif zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan aktif güçleri kullanamaz."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "corsair-captains-coat",
+       "sayi": 1,
+       "yenilenme": "uzun"
+      },
+      {
+       "tur": "olumdenDon",
+       "hp": "1",
+       "kaynak": {
+        "id": "corsair-captains-coat",
+        "maliyet": 1
+       }
+      }
+     ]
+    }
    }
   },
   {
@@ -6997,12 +7340,35 @@
      {
       "ad": "Karanlık Kalkanı (1 yük, UD)",
       "metin": "Bonus eylemle 3 tur boyunca +2 AC kazanırsın (konsantrasyon gerekir).",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "kismi",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı: +2 AC 3 tur çalışır; konsantrasyon bağı yok."
      }
     ],
     "riskler": "Karanlık Kalkanı konsantrasyon gerektirir; mevcut konsantrasyon büyünü sonlandırır ve parlak ışıkta hasar azaltma pasifi kapanır.",
     "kimlerKullanamaz": "Orta zırh eğitimi olmayan STR/DEX testlerinde dezavantaj alır ve büyü yapamaz; uyum yapmayan gölge özelliklerini açamaz."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "shadowknight-half-plate",
+       "sayi": 1,
+       "yenilenme": "uzun"
+      },
+      {
+       "tur": "zarEtkisi",
+       "tetik": "bonus",
+       "hedef": "kendi",
+       "acBonusu": 2,
+       "sure": 3,
+       "kaynak": {
+        "id": "shadowknight-half-plate",
+        "maliyet": 1
+       }
+      }
+     ]
+    }
    }
   },
   {
@@ -7475,12 +7841,34 @@
      {
       "ad": "Alev Kanadı (1 yük, UD)",
       "metin": "Bonus eylemle 3 tur uçuş hızı (Fly, 60 ft) kazanırsın.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı."
      }
     ],
     "riskler": "45 lb ağırlığı düşük STR'li büyücülerde taşıma kapasitesini zorlayabilir; Stealth dezavantajı sürer.",
     "kimlerKullanamaz": "Uyum yapmayan karakter eğitimsiz giyme muafiyetini, hasar azaltmayı ve aktif güçleri kullanamaz."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "hellforge-plate",
+       "sayi": 1,
+       "yenilenme": "uzun"
+      },
+      {
+       "tur": "ucus",
+       "tetik": "bonus",
+       "hizFt": 60,
+       "sure": 3,
+       "kaynak": {
+        "id": "hellforge-plate",
+        "maliyet": 1
+       }
+      }
+     ]
+    }
    }
   },
   {
@@ -9406,8 +9794,8 @@
      {
       "ad": "Dağın Derisi",
       "metin": "Barbar Öfkesi (veya benzeri savaş duruşu) açıkken psişik hasarı dışındaki tüm hasar türlerine Direnç kazanırsın.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı: ⚠ yalnız Barbar Öfkesi (benzeri savaş duruşu yok)."
      },
      {
       "ad": "Kaya Yankısı",
@@ -9418,8 +9806,8 @@
      {
       "ad": "Yıkılmaz Duruş",
       "metin": "Zorla itilmeye/çekilmeye (forcedMove) ve irade dışı Prone etkisine bağışıklık.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "kismi",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı: zorla itme/çekmeye direnç çalışır; irade dışı Prone bağışıklığı yok."
      },
      {
       "ad": "\"Sağlam Oyuncak!\" Meydan Okuması (2/UD, Bonus Eylem)",
@@ -9436,6 +9824,39 @@
     ],
     "riskler": "Çatlak Zihin Mirası: Koşumu giyen karakter psişik hasarına Zayıflık (Vulnerability · 2×) ve INT kurtarma zarlarında Dezavantaj alır. Hantal Kaya Kütlesi: Tüm Stealth kontrolleri Dezavantajlıdır; yüzme ve tırmanma hızı yarıya iner.",
     "kimlerKullanamaz": "Uyum yapmayan karakter koşumun direnç, yansıma ve meydan okuma güçlerini açamaz; zırhla birlikte giyilemez."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "direnc",
+       "tetik": "pasif",
+       "tip": "direnc",
+       "kosul": [
+        "ofke"
+       ],
+       "turler": [
+        "acid",
+        "bludgeoning",
+        "cold",
+        "fire",
+        "force",
+        "lightning",
+        "necrotic",
+        "piercing",
+        "poison",
+        "radiant",
+        "slashing",
+        "thunder"
+       ]
+      },
+      {
+       "tur": "koruma",
+       "tetik": "pasif",
+       "itmeDirenci": true
+      }
+     ]
+    }
    }
   },
   {
@@ -9811,8 +10232,8 @@
      {
       "ad": "Yaralı Öfke",
       "metin": "Mevcut canın en yüksek canının altındayken (en az 1 hasar almışsan) yakın dövüş silah ve silahsız saldırılarına +1 isabet ve +2 nekrotik hasarı eklenir.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "kismi",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı: +2 nekrotik çalışır; +1 isabet yok."
      },
      {
       "ad": "Sönmeyen Hırs",
@@ -9823,6 +10244,21 @@
     ],
     "riskler": "Düşmanlardan uzak kalınan veya kontrol büyüsüne yakalanılan turlarda 1d4 kendine hasar konsantrasyon bozabilir ya da düşük canda tehlikeli olabilir.",
     "kimlerKullanamaz": "Uyum yapmayan karakter Yaralı Öfke bonusunu alamaz."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "ekHasar",
+       "zar": "2",
+       "hasarTuru": "necrotic",
+       "saldiri": "yakin",
+       "kosul": [
+        "yarali"
+       ]
+      }
+     ]
+    }
    }
   },
   {
@@ -11976,12 +12412,35 @@
      {
       "ad": "Kök Şifası (1 yük, UD)",
       "metin": "Bonus eylemle 1. seviye Healing Word (60 ft, 2d4 + 2 can iyileştirme) yaparsın.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı: Healing Word yerine eşdeğer iyileştirme düğmesi."
      }
     ],
     "riskler": "İksir içmeye değil, büyü ve özellik iyileştirmelerine +2 ekler; Healing Word yükü uzun dinlenmeye dek yenilenmez.",
     "kimlerKullanamaz": "Herkes takabilir (büyücü olmayan sınıflar da Kök Şifası yükünü kullanabilir)."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "rootgrip-ring",
+       "sayi": 1,
+       "yenilenme": "uzun"
+      },
+      {
+       "tur": "iyilestirme",
+       "tetik": "bonus",
+       "hedef": "dostVeyaKendi",
+       "miktar": "2d4+2",
+       "menzilFt": 60,
+       "kaynak": {
+        "id": "rootgrip-ring",
+        "maliyet": 1
+       }
+      }
+     ]
+    }
    }
   },
   {
@@ -12047,12 +12506,37 @@
      {
       "ad": "Yaşam Pınarı (1 yük, UD)",
       "metin": "Bonus eylemle 4d8 + 4 can iyileşirsin ve üzerindeki Poisoned durumunu temizlersin.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı."
      }
     ],
     "riskler": "Tılsım çıkarıldığında veya uyum bozulduğunda CON 21'den gelen ek maksimum can anında düşer; mevcut can yeni tavanı aşamaz.",
     "kimlerKullanamaz": "Uyum yapmayan karakter CON sabitlemesi, kurtarma avantajı ve Yaşam Pınarı gücünü kullanamaz."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "lifespring-amulet",
+       "sayi": 1,
+       "yenilenme": "uzun"
+      },
+      {
+       "tur": "iyilestirme",
+       "tetik": "bonus",
+       "hedef": "kendi",
+       "miktar": "4d8+4",
+       "durumKaldir": [
+        "Poisoned"
+       ],
+       "kaynak": {
+        "id": "lifespring-amulet",
+        "maliyet": 1
+       }
+      }
+     ]
+    }
    }
   },
   {
@@ -12082,12 +12566,33 @@
      {
       "ad": "Yuva Pınarı (1 yük, UD)",
       "metin": "Bonus eylemle harcanmış en fazla 6. seviye 1 büyü yuvasını (veya Warlock için 1 Pact Magic yuvasını) geri kazanırsın.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "kismi",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı: büyü yuvası çalışır; Warlock Pact Magic yuvası ayrı seçilmez."
      }
     ],
     "riskler": "7–9. seviye büyü yuvalarını yenilemez; 1–6. seviye arasında harcanmış yuvan yoksa bonus eylem boşa gider.",
     "kimlerKullanamaz": "Spellcasting veya Pact Magic özelliği olmayan karakterler bu kolyeyle uyum yapamaz."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "spellwell-amulet",
+       "sayi": 1,
+       "yenilenme": "uzun"
+      },
+      {
+       "tur": "yuvaGeriKazan",
+       "tetik": "bonus",
+       "enCokSeviye": 6,
+       "kaynak": {
+        "id": "spellwell-amulet",
+        "maliyet": 1
+       }
+      }
+     ]
+    }
    }
   },
   {
@@ -12145,12 +12650,36 @@
      {
       "ad": "İlahi Akış (1 yük, UD)",
       "metin": "Bonus eylemle harcanmış 1 Channel Divinity kullanımını geri kazanırsın.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı."
      }
     ],
     "riskler": "Channel Divinity havuzu zaten doluysa İlahi Akış tavanın üzerine çıkmaz; saldırı zarlarına bonus vermez.",
     "kimlerKullanamaz": "Channel Divinity özelliği olmayan karakterler (Cleric ve Paladin dışındakiler) uyum yapamaz."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "devouts-medallion",
+       "sayi": 1,
+       "yenilenme": "uzun"
+      },
+      {
+       "tur": "kaynakYenile",
+       "tetik": "bonus",
+       "yenile": {
+        "id": "channelDivinity",
+        "maliyet": 1
+       },
+       "kaynak": {
+        "id": "devouts-medallion",
+        "maliyet": 1
+       }
+      }
+     ]
+    }
    }
   },
   {
@@ -12465,12 +12994,35 @@
      {
       "ad": "Acil Müdahale (2 yük, UD 1d2)",
       "metin": "Bonus eylemle 1 yük harcayarak 1. seviye Healing Word (60 ft, 2d4 + 2 can) yaparsın; ya da eylemle 2 yük harcayarak 15 ft çevrendeki en fazla 3 dostu 1d6 + 2 can iyileştirirsin.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "kismi",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı: bonus eylem kolu çalışır; eylemle 3 dosta 1d6 + 2 kolu yok; yük her savaş başında dolu (eşya yükünde dinlenme takibi yok); UD 1d2 yenilenme yerine tam."
      }
     ],
     "riskler": "Undead ve Construct dostlara şifa işlemez; 2 yükü toplu şifaya harcamak acil tekil kaldırma hakkını tüketir.",
     "kimlerKullanamaz": "Herkes takabilir."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "silverthread-locket",
+       "sayi": 2,
+       "yenilenme": "uzun"
+      },
+      {
+       "tur": "iyilestirme",
+       "tetik": "bonus",
+       "hedef": "dostVeyaKendi",
+       "miktar": "2d4+2",
+       "menzilFt": 60,
+       "kaynak": {
+        "id": "silverthread-locket",
+        "maliyet": 1
+       }
+      }
+     ]
+    }
    }
   },
   {
@@ -12503,12 +13055,27 @@
      {
       "ad": "Son Kor",
       "metin": "Mevcut canın en yüksek canının yarısında veya altındayken bütün yakın dövüş silah ve Unarmed Strike isabetlerine ek 1d4 ateş hasarı eklenir.",
-      "durum": "planli",
-      "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
+      "durum": "calisir",
+      "not": "GECE-KATALOG-KALAN (kural sürümü 110) ile bağlandı: ⚠ Unarmed Strike yakın dövüş saldırısı olarak sayılır."
      }
     ],
     "riskler": "Menzilli saldırılarda çalışmaz; yarı canın üzerinde yalnızca ateş direnci sağlar.",
     "kimlerKullanamaz": "Herkes takabilir."
+   },
+   "paket": {
+    "s110": {
+     "ilkeller": [
+      {
+       "tur": "ekHasar",
+       "zar": "1d4",
+       "hasarTuru": "fire",
+       "saldiri": "yakin",
+       "kosul": [
+        "yariCan"
+       ]
+      }
+     ]
+    }
    }
   },
   {

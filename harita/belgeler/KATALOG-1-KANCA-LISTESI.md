@@ -27,6 +27,50 @@ atanır (ilk eşleşen); bir güç birden çok kancaya ihtiyaç duyabilir. Üret
 | Yük harcayan özgün aktif güçler (eylem/bonus/tepki; SRD büyüsüyle birebir değil) | 121 |
 | Durum/koşul kancaları (yarı can, konsantrasyon, su/yüzey, zırhsız, binek…) | 138 |
 
+## 2. tur: GECE-KATALOG-KALAN (kural sürümü 110; bağlanan 32 güç)
+
+Veri `data/items-katalog.json` eşyada `paket.s110.ilkeller` (üretici `python scripts/katalog-kanca-110.py`, tekrar çalıştırılabilir); 110+
+savaşta eşya torbasına (`paket/bag.ts` `itemBag`) girer, 109 ve altında yüklenmez. Yeni ilkel koşulları: `yariCan`, `yarali`, `kalkansiz`,
+`hedefYariCan`, `hedefTamCan`, `kritik`, `hedefOynamadi`, `hedefDurum:<A>/<B>`, `hedefTur:<a>/<b>`, `hedefBoyut:<boy>` (`paket/core.ts`
+`kosulOk`). Aşağıdaki tablo kayıttaki güncel durumu verir; alttaki 1. tur tabloları geçmiş kaydıdır (durum sütunu o günkü).
+Bağlanmayanlar (hedef koşullu saldırı avantajı/bonusu, yüzey ve zincir tepkileri, çok parçalı alan aktifleri, konsantrasyon bonusu,
+yönlü itme) aynı yollar genişleyince sonraki turda.
+
+| Ref | Eşya | Güç | Durum | Not |
+|---|---|---|---|---|
+| S1#1 | Devkıran Pala | İri Avı | kismi | ek 1d8 çalışır; STR 16 save ve Prone yok |
+| S1#16 | Sızıntı Bıçağı | Acı Yeri | calisir | ⚠ ek zar kritik kuralıyla iki kat atılır (SRD: kritikte bütün hasar zarları) |
+| S1#22 | Büyü Kıran Balta | Kan Hırsı | calisir | — |
+| S1#25 | Zincir Kıran Çekiç | Büyü Kalkanı | calisir | — |
+| S1#28 | Fırtına Zıpkını | Yel Örtüsü | kismi | +10 ft çalışır; düşme hasarı direnci yok |
+| S1#30 | Dalga Zıpkını | Şimşek Ucu | calisir | ⚠ yük varken her isabette kendiliğinden harcanır; su zinciri yok; yük her savaş başında dolu (eşya yükünde dinlenme takibi yok); UD 1d2 yenilenme yerine tam |
+| S1#37 | Gök Işığı Uzun Yayı | Işık İşareti (3 yük, uzun dinlenme 1d3) | kismi | ek 2d6 ışıltı çalışır (yük varken her isabette kendiliğinden); sonraki saldırı avantajı yok; yük her savaş başında dolu (eşya yükünde dinlenme takibi yok); UD 1d2 yenilenme yerine tam |
+| S2#45 | Bataklık Dişi Palası | Zehir Takibi | calisir | — |
+| S2#47 | Ağkesen Uzun Kılıç | Avı Zehirle | calisir | — |
+| S2#52 | Kutsal Yıldız Gürzü | Göz Alıcı Darbe | calisir | — |
+| S2#65 | Sıçrama Kargısı | Canavar Avcısı | calisir | — |
+| S2#67 | Kırmızı Fısıltı | Acımasız Kesik | calisir | ⚠ yarı can eki de avantajlı isabette (metin "ayrıca") |
+| S2#70 | Pusu Kısa Kılıcı | Öncü Darbesi | calisir | — |
+| S2#72 | Keder Hançeri | Acı Kesiği | calisir | sabit +6 kritikte ikiye katlanmaz |
+| S2#72 | Keder Hançeri | Savunmasız Av | calisir | — |
+| S2#73 | Akıl Kıran Kısa Kılıç | Zihin Çatlağı | calisir | — |
+| S2#75 | Başbüyücü Odası Asası | Yuva Geri Kazanımı (1 yük, UD) | calisir | — |
+| S2#85 | Yakarış Uzun Yayı | Korku Avcısı | kismi | ek 1d4 psişik çalışır; saldırı zarına +2 yok (hedef koşullu saldırı bonusu yok) |
+| S2#89 | Zırhsız Denge Asası | Özgür Savunma | calisir | — |
+| ZK#1 | Kuzgun Kanadı Derisi | Kuzgun Kanadı (2 yük, UD 1d2) | calisir | yük her savaş başında dolu (eşya yükünde dinlenme takibi yok); UD 1d2 yenilenme yerine tam |
+| ZK#8 | Korsan Kaptanı Ceketi | İnatçı Kaptan (1 yük, UD) | kismi | 1 HP'de kalma çalışır; 8 geçici can yok |
+| ZK#12 | Gölge Şövalyesi Yarım Plakası | Karanlık Kalkanı (1 yük, UD) | kismi | +2 AC 3 tur çalışır; konsantrasyon bağı yok |
+| ZK#22 | Cehennem Ocağı Plakası | Alev Kanadı (1 yük, UD) | calisir | — |
+| BOSS#4 | Şampiyonun Kaya Koşumu | Dağın Derisi | calisir | ⚠ yalnız Barbar Öfkesi (benzeri savaş duruşu yok) |
+| BOSS#4 | Şampiyonun Kaya Koşumu | Yıkılmaz Duruş | kismi | zorla itme/çekmeye direnç çalışır; irade dışı Prone bağışıklığı yok |
+| GY#7 | Kızıl Hiddet Tacı | Yaralı Öfke | kismi | +2 nekrotik çalışır; +1 isabet yok |
+| YT#17 | Çiftçi Kökü Yüzüğü | Kök Şifası (1 yük, UD) | calisir | Healing Word yerine eşdeğer iyileştirme düğmesi |
+| YT#19 | Yaşam Kaynağı Tılsımı | Yaşam Pınarı (1 yük, UD) | calisir | — |
+| YT#20 | Yedek Yuva Kolyesi | Yuva Pınarı (1 yük, UD) | kismi | büyü yuvası çalışır; Warlock Pact Magic yuvası ayrı seçilmez |
+| YT#22 | Adanmışlık Tılsımı | İlahi Akış (1 yük, UD) | calisir | — |
+| YT#32 | Gümüş İğne Muskası | Acil Müdahale (2 yük, UD 1d2) | kismi | bonus eylem kolu çalışır; eylemle 3 dosta 1d6 + 2 kolu yok; yük her savaş başında dolu (eşya yükünde dinlenme takibi yok); UD 1d2 yenilenme yerine tam |
+| YT#33 | Kızgın Yürek Tılsımı | Son Kor | calisir | ⚠ Unarmed Strike yakın dövüş saldırısı olarak sayılır |
+
 ## Zırh/eşya bağı ve kaynaşma (yalnız belli zırh giyiliyken; Kaltakkıran paketi)
 
 | Parça | Ref | Eşya | Güç | Durum | Not |
