@@ -21,6 +21,7 @@ import { GlyphBadges, GlyphText } from '../ui/glyph/Glyph';
 import { altSinifProspektus, buyuProspektus, esyaProspektus, featProspektus, type ProSection } from '../dungeondex/prospektus';
 import { subclassesOf } from '../rules/classFeatures';
 import { ProspektusSections } from '../dungeondex/prospektus/ProspektusSections';
+import { currentVariant, defeatedBosses, itemVariants } from '../app/itemVariant';
 import './dungeondex.css';
 
 const BASE = import.meta.env.BASE_URL;
@@ -194,12 +195,33 @@ function Vitrine(props: { entry: DexEntry | null }) {
   // Katalog canavarları (kadim yaratıklar, mücevher ejderhaları) da: jetonları `avatar` (ör. boss/<kimlik>.webp).
   const src = e?.cat === 'canavar' ? ((monsters.find((m) => m.id === e.id) ?? katalogMonsters.find((m) => m.id === e.id))?.avatar ?? `monsters/${e.id}.webp`) : null;
   if (src && broken !== src) return <img src={`${BASE}${src}`} alt={e!.name} onError={() => setBroken(src)} />;
+  // GECE-KATALOG-KALAN (yalnız görünüm): görsel varyantı olan eşyada seçici (varsayılan: boss yenildiyse kuraldaki varyant).
+  const vars = e?.cat === 'esya' ? itemVariants(e.id) : null;
+  if (vars && Object.keys(vars.varyantlar).length > 1 && e) return <VariantVitrine key={e.id} id={e.id} name={e.name} />;
   const rec = e && gal ? gal.dexRecord(e.cat, e.id) : null;
   if (rec && gal) {
     const animated = spriteAnim && !reducedMotion();
     return <div className="ddk-vitrin-vis" role="img" aria-label={e!.name}><gal.Visual r={rec} animated={animated} /></div>;
   }
   return <div className="ddk-vitrin-ph" aria-label={L.vitrine}><IconBook size={48} /><span>{e ? L.cat[e.cat] : L.toc}</span></div>;
+}
+
+/** Görsel varyantlı eşyanın vitrini: seçili varyantın görseli ve altında varyant düğmeleri (TR/EN adlar `dex.pro.gorselVaryant`). */
+function VariantVitrine(props: { id: string; name: string }) {
+  const L = t().dex;
+  const defs = itemVariants(props.id) as NonNullable<ReturnType<typeof itemVariants>>;
+  const [pick, setPick] = useState<string>(() => currentVariant(props.id, defeatedBosses()) ?? defs.varsayilan);
+  const file = defs.varyantlar[pick] ?? defs.varyantlar[defs.varsayilan];
+  return (
+    <div className="ddk-vitrin-vis dex-variant" data-testid="dex-variant">
+      <img src={`${BASE}${file}`} alt={`${props.name}: ${L.pro.gorselVaryant[pick] ?? pick}`} />
+      <div className="dex-variant-pick" role="radiogroup" aria-label={L.variantPick}>
+        {Object.keys(defs.varyantlar).map((k) => (
+          <button key={k} type="button" role="radio" aria-checked={k === pick} className={k === pick ? 'on' : ''} onClick={() => setPick(k)}>{L.pro.gorselVaryant[k] ?? k}</button>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function Filters(props: { filters: ReturnType<typeof dexFilters>; sel: Record<string, string>; onChange: (s: Record<string, string>) => void }) {

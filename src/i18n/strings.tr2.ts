@@ -913,7 +913,7 @@ export const TR_EXTRA = {
   /** Dungeondex (harita/belgeler/DUNGEONDEX-TASARIM.md; yalnız arayüz). */
   dex: {
     cover: { top: 'Dungeondex', tap: 'Dokun, aç', open: 'Dungeondex kapağı: dokun, aç', counts: (s: number, e: number, c: number) => `${s} büyü · ${e} eşya · ${c} canavar` },
-    toc: 'İçindekiler', prev: 'Önceki kayıt', next: 'Sonraki kayıt', vitrine: 'Vitrin',
+    toc: 'İçindekiler', prev: 'Önceki kayıt', next: 'Sonraki kayıt', vitrine: 'Vitrin', variantPick: 'Görünüm',
     title: 'Dungeondex', back: 'Geri', search: 'Ara (Türkçe ya da İngilizce ad)', categories: 'Kategoriler', loading: 'Yükleniyor…',
     error: 'Dungeondex verisi yüklenemedi.',
     cat: { buyu: 'Büyüler', esya: 'Eşyalar', canavar: 'Canavarlar', tur: 'Türler', altsoy: 'Alt soylar', sinif: 'Sınıflar', altsinif: 'Alt sınıflar', feat: "Feat'ler", gecmis: 'Geçmişler', durum: 'Durumlar' } as Record<string, string>,

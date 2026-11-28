@@ -1,5 +1,5 @@
 {
-  "_not": "Görev BOSS-IMZA-GORSEL: birden çok görünümü olan eşyalar (yalnız görsel, mekanik yok). `varyantlar`: varyant anahtarı → public/ altındaki dosya (npm run esya-ikon -- --manifest data/katalog-ikon-sayfalar.json üretir; manifestte varyant kimliği `<kimlik>/<varyant>`, dosya adı `<kimlik>--<varyant>.webp`, 96 px kopyası esya/kucuk/). `varsayilan` Dungeondex'in bugün gösterdiği görsel (esya/<kimlik>.webp). Varyant adları i18n `dex.pro.gorselVaryant`. Test: src/data/esyaGorselVaryant.test.ts.",
+  "_not": "Görev BOSS-IMZA-GORSEL: birden çok görünümü olan eşyalar (yalnız görsel, mekanik yok). `varyantlar`: varyant anahtarı → public/ altındaki dosya (npm run esya-ikon -- --manifest data/katalog-ikon-sayfalar.json üretir; manifestte varyant kimliği `<kimlik>/<varyant>`, dosya adı `<kimlik>--<varyant>.webp`, 96 px kopyası esya/kucuk/). `varsayilan` Dungeondex'in bugün gösterdiği görsel (esya/<kimlik>.webp). Varyant adları i18n `dex.pro.gorselVaryant`. Test: src/data/esyaGorselVaryant.test.ts. GECE-KATALOG-KALAN: `bossYenilince` (boss: canavar kimliği, varyant): o boss bir savaşta yenilince (düşman tarafında 0 HP/ölü) eşyanın görünen varyantı bu olur (oyuncu profili başına `localStorage` `rpg-battle-boss-yenilgi`, `src/app/itemVariant.ts`; savaşa, kayda ve replay'e girmez). Dungeondex eşya sayfasında varyant seçici (`varyantlar` 2+ iken).",
   "esyalar": {
     "kaltakkirans-maw-chain-greatsword": {
       "varsayilan": "kapali",
@@ -14,6 +14,10 @@
         "kapali": "esya/kaltakkirans-paladin-armor.webp",
         "acik": "esya/kaltakkirans-paladin-armor--acik.webp",
         "hasarli": "esya/kaltakkirans-paladin-armor--hasarli.webp"
+      },
+      "bossYenilince": {
+        "boss": "hex",
+        "varyant": "hasarli"
       }
     }
   }

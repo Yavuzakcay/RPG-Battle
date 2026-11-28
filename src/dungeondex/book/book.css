@@ -30,6 +30,13 @@
 .ddk-vitrin-vis .gal-img { max-width: 78cqmin; max-height: 78cqmin; width: 78cqmin; height: 78cqmin; object-fit: contain; }
 .ddk-vitrin-vis .gal-glyph { width: 46cqmin; height: 46cqmin; font-size: 26cqmin; border-width: 0.8cqmin; border-radius: 6cqmin; background: rgba(255, 255, 255, 0.04); }
 .ddk-vitrin-vis svg:not(.gal-fx) { max-width: 78cqmin; max-height: 78cqmin; }
+/* GECE-KATALOG-KALAN: eşya görsel varyant seçici (vitrinin altında; dokunma hedefi ≥ 32 px). */
+.dex-variant { grid-template-rows: 1fr auto; gap: 2cqmin; padding-bottom: 2cqmin; }
+.dex-variant img { max-height: 70cqh; }
+.dex-variant-pick { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5cqmin; }
+.dex-variant-pick button { min-height: 32px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--ddk-bakir); background: rgba(43, 43, 46, 0.85);
+  color: var(--ddk-krem); font-size: clamp(11px, 5cqmin, 15px); }
+.dex-variant-pick button.on { background: var(--ddk-bakir); color: #fff; border-color: var(--ddk-bakir2); }
 .ddk-vitrin-ph { display: grid; place-items: center; gap: 4px; color: var(--ddk-bakir2); opacity: 0.8; text-align: center; font-size: clamp(11px, 7cqmin, 20px); }
 .ddk-vitrin-ph svg { width: 34cqmin; height: 34cqmin; }
 .ddk-serit { display: flex; align-items: center; justify-content: center; gap: 0.6em; padding: 0 3%; overflow: hidden; container-type: size;

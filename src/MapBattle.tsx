@@ -55,6 +55,7 @@ import { CUNNING, cunningOptions, hasTrait, usedThisTurn } from './battle/classT
 import { offhandProblem } from './battle/offhand';
 import { featureProblem } from './battle/divine';
 import { ilhamOf, inspirePayable } from './battle/bard';
+import { bossDefeatsIn, markBossesDefeated } from './app/itemVariant';
 import { loadSettings as loadPreviewSettings, loadStore as loadDiscovery, record as recordDiscovery, saveStore as saveDiscovery } from './app/discovery';
 import { focusActionProblem, stunningProblem } from './battle/martial';
 import { civiliansAlive, isTargetable } from './battle/common';
@@ -881,6 +882,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   useEffect(() => {
     const outcome = liveFinish(lastStatus.current, state);
     if (outcome) {
+      // GECE-KATALOG-KALAN (yalnız görünüm): görsel varyant kuralındaki boss yenildiyse (Hex → Hex'in Paladin Zırhı hasarlı).
+      markBossesDefeated(bossDefeatsIn(state));
       setEndFx(outcome);
       const plan = endVideoPlan(outcome, getLang(), { enabled: storedEndVideo(), reducedMotion: reduceMotion });
       playEndJingle(endKey.current, outcome, plan?.jingleMs);
