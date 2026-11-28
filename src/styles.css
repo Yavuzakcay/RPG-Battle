@@ -107,6 +107,7 @@ input[type='number'] { width: 90px; }
 @keyframes conveyor-flow { from { transform: translateX(-6px); } to { transform: translateX(6px); } }
 @media (prefers-reduced-motion: reduce) { .conveyor-arrow > g { animation: none; } }
 .trap-mark { font-size: 30px; text-anchor: middle; pointer-events: none; fill: #ffcf33; paint-order: stroke; stroke: #000; stroke-width: 3px; }
+.trap-mark.gm-trap { opacity: 0.45; fill: #ff8a3d; } /* Görev ODA-3: Game Master tuzak katmanı */
 .cost { font-size: 18px; fill: #fff; text-anchor: middle; paint-order: stroke; stroke: rgba(0, 0, 0, 0.7); stroke-width: 3px; pointer-events: none; }
 .token { cursor: pointer; }
 .token .ring { fill: none; stroke-width: 5; }

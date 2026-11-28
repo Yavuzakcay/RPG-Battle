@@ -194,7 +194,7 @@ export const en: Strings = {
     join: 'Join', joining: 'Connecting…', badCode: 'The code must have 6 digits.', leave: 'Leave room',
     noRoom: 'No open room with this code.', codeTaken: 'Code in use.',
     rejected: { surum: 'Version mismatch: reload both tabs.', anahtar: 'Session key did not match: join again.', dolu: 'Room full.', kilitli: 'Room locked.', kapali: 'Room closed.' } as Record<string, string>,
-    versionField: { protokol: 'protocol', uygulama: 'app version', kuralSurumu: 'rules version', icerik: 'external content' } as Record<string, string>,
+    versionField: { protokol: 'protocol', uygulama: 'app version', kuralSurumu: 'rules version' } as Record<string, string>,
     connected: (code: string): string => `Connected: room ${code}`, connecting: 'Connecting…', lost: 'Connection lost.', closed: 'The Game Master closed the room.',
     stage: { lobi: 'Lobby', kurulum: 'Setting up battle', savas: 'Battle in progress', bitti: 'Battle over' } as Record<string, string>,
     myChars: 'Your characters', send: 'Send copy', sent: 'Sent', withdraw: 'Withdraw',
@@ -204,6 +204,7 @@ export const en: Strings = {
     remoteFrom: 'The Game Master asks',
     transport: { 'yerel-ag': 'Local network', sekme: 'Tabs of this browser', bellek: 'Memory', supabase: 'Internet' } as Record<string, string>,
     playing: 'Playing: control your own character on your turn',
+    gmTrap: 'Undiscovered trap (Game Master only)',
     watch: 'Watch battle', watching: 'Watching: the Game Master\'s battle (watch only)', leaveWatch: 'Back to lobby',
   },
   roomRules: {

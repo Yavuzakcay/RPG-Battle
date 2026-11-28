@@ -121,13 +121,23 @@ try {
     adim(`${kim ? `oyuncu (${once}) komut gönderdi` : 'GM düşmanı oynattı'}: GM ve iki oyuncuda sıra ${g}`);
   }
   if (oyuncuKomutu < 1) throw new Error('oyuncu sırası gelmedi');
+  // Görev ODA-3: görünüm süzgeci. Seçenekler menüsünde Game Master araçları ve kayıt/yükleme oyuncu cihazında yok.
+  const kaydet = async (p: Page): Promise<number> => {
+    await p.locator('.hud-corner.tl > .hud-btn').first().click();
+    const n = await p.locator('.hud-corner.tl .hud-pop button', { hasText: /^Kaydet$/ }).count();
+    await p.locator('.hud-corner.tl > .hud-btn').first().click();
+    return n;
+  };
+  if ((await kaydet(gm)) !== 1) throw new Error('GM seçeneklerinde Kaydet yok');
+  if ((await kaydet(a)) !== 0) throw new Error('oyuncu cihazında Game Master araçları görünüyor');
+  adim('O3: Game Master araçları ve kayıt yalnız GM cihazında');
   if (ekran) {
     mkdirSync('docs/oda-2', { recursive: true });
     await a.screenshot({ path: 'docs/oda-2/oyuncu.png' });
     adim('ekran görüntüsü docs/oda-2/oyuncu.png');
   }
   if (hatalar.length) throw new Error(hatalar[0]);
-  console.log(`tamam: O2 yerel ağ akışı (oyuncu komutu ${oyuncuKomutu}, yetki reddi ${yetkiRed ? 'var' : 'denenmedi'})`);
+  console.log(`tamam: O2/O3 yerel ağ akışı (oyuncu komutu ${oyuncuKomutu}, yetki reddi ${yetkiRed ? 'var' : 'denenmedi'})`);
   sonuc = 0;
 } catch (e) {
   console.error(`HATA: ${String((e as Error)?.message ?? e).split('\n')[0]}`);

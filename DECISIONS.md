@@ -2,6 +2,39 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## ODA-3: çevrimiçi oda O3, görünüm süzgeci + tam yetki matrisi (2026-11-28; kural sürümü 108, kayıt sürümü 28, `ODA_SURUM` 2 ve `ODA_PROTOKOL` 1 değişmedi; motor `src/room/`'u içe aktarmaz)
+
+- **Karar (kullanıcı, 2026-11-28):** ODA-TASARIM §8'in sekiz maddesinde belgenin önerisi; madde 4 kalktı (aşağıda).
+- **Madde 1 (gizlilik):** görünüm süzgeci. Ham olaylar ve durum her cihazda aynı; süzme yalnız çizimde, saf `src/room/view.ts`
+  (`Izleyici` gm/oyuncu/izleyici, `jetonGorunumu`, `alanGorunur`, `nesneGorunumu`, `gmTuzaklari`, `hpGorunumu`, `olayiSuz`/`olaylariSuz`).
+  İzleyici cihaza sabit: oyuncu cihazında `SessionWatch.viewer` (oyuncu rolünde kendi karakter kopyaları = savaştaki `ownerId`'ler,
+  çağrılar dahil), çevrimiçi host'un savaş ekranında Game Master. Tek cihazda izleyici yok: `viewerOf` perdesi ve anahtarlar aynen.
+  - **Game Master** her şeyi görür: gizlenen düşman (örtüyle), partinin gizlenen jetonu (anahtarsız), bütün alanlar, bulunmamış nesne
+    soluk, **GM tuzak katmanı** (bulunmamış/tetiklenmemiş tuzak ve sarmaşık kapanı soluk ⚠; Bilinen eksikler satırı ağ için kapandı),
+    düşman HP'si tam (`setViewerHpVis('tam')`; kayda yazılan değer `savedHpVis`, izleyiciden bağımsız).
+  - **Oyuncu:** gizlenen düşman ve bulunmamış nesne/tuzak çizilmez; gizli alan yalnız kendi savaşçılarından biri biliyorsa
+    (`zoneKnownBy`: Spike Growth yalnız fark edenin oyuncusunda, Phantasmal Force yalnız hedefin oyuncusunda); izleyici rolünde parti
+    düzeyi (`zoneShownTo`). Düşman HP'si odanın kademesi (`oda_durumu.hpGorunurluk`; önceden oyuncu cihazında örtü yoktu, HP tam
+    görünüyordu).
+  - **Olay süzgeci** (yalnız oyuncu cihazının oturumunda: günlük, toast, zar tepsisi, hasar/patlama animasyonu; reducer, kayıt, replay ve
+    özet hash'i ham olaylarla): önce ve sonra gizli kalan karşı taraf yaratığın `moved`/`jumped`/`teleported`/`altitude_changed`'i,
+    karşı tarafın ve ortamın `check` zarları (Stealth, Algı), gizlenen yaratığın zarları, karşı tarafın `hide_attempted`/`skill_checked`'i,
+    `dragon_perception`/`rouse_roll`/`patrol_moved`, görülmeyen alanın `zone_created`/`zone_moved`/`zone_triggered`'i (kendi savaşçısını
+    vuran tetik görünür), HP kademesi tam değilken düşman can havuzu olayları. Açığa çıkan (grubun başında gizli, sonunda değil) yaratığın
+    hareketi görünür. `gmNote`/`sigmayan` notları büyü kartında kalır (ayrı olay değil; sınıflandırma ertelendi).
+  - **Oyuncu cihazında Game Master araçları yok:** seçenekler menüsünün harita tetikleri, kapı, yüzey/nesne aracı, alarm, ejderhayı
+    uyandır, gizli jeton/alan anahtarları, Kaydet/Yükle (`gmAraclari`); host zaten reddediyordu.
+- **Madde 4 (kullanıcı kararı):** 108 paket oyuna gömülecek, GM cihazında eksik paket sorunu yok. Sürüm el sıkışmasından `icerik` alanı ve
+  `icerikOzeti` kalktı (`SurumBilgisi` = protokol + build + kural sürümü; aynı build aynı içerik). Eski istemcinin fazladan `icerik`'i yok
+  sayılır; yeni istemci eski host'a `icerik`siz `katil` yollarsa o host mesajı bozuk sayar (iki uç zaten aynı build ister, protokol 1 kaldı).
+  Oda yolunda "içerik eksik" durumu yok; tek cihazdaki rozet (karakter listesi) aynen.
+- **Tam yetki matrisi** (`src/room/auth.test.ts`): kendi karakteri ve çağrısı, başkasının/düşmanın/masumun savaşçısı, actorId'li GM aracı,
+  actorId'siz ve `gm` bayraklı komut, izleyici, yapay zekâdaki karakter (`bekle`), savaş yokken, bilinmeyen savaşçı; host üstünden 20.
+  yetkisizde tek olay, başkasına sorulmuş zar/tepki cevabının yok sayılması. Kod değişmedi (O2'de yazılmıştı).
+- **Testler:** `src/room/view.test.ts` (test 9), `src/room/auth.test.ts` (test 3 tam); `protocol.test.ts`/`host.test.ts` içerik alanı
+  beklentileri çıktı. Ağ e2e (`scripts/oda-ag-e2e.ts`) O3 adımıyla: oyuncunun seçeneklerinde Kaydet yok, GM'de var.
+- **Ana parça:** 462,14 → 462,27 kB (`oda/active.ts`). `src/room/view.ts` savaş parçasında.
+
 ## Görev KATALOG-LA-SRD: kadim ve mücevher efsanevi eylemleri SRD 5.2.1 kuralına (2026-11-27; motor, şema, kural sürümü (108) ve kayıt sürümü (28) değişmedi)
 
 - **Karar (kullanıcı):** bedelli efsanevi eylem mekaniği eklenmedi; SRD 5.2.1'e uyuldu ("The monster expends one use whenever it takes a Legendary Action"). Motor zaten her eylemde 1 hak düşüyordu (`src/battle/boss.ts`); değişen yalnız veri ve metin.

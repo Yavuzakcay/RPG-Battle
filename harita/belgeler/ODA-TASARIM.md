@@ -12,6 +12,13 @@ alanı ve `karakter_red` mesajı eklendi; katılımda `kuralSurumuAzami` yerine 
 istemleri (`RemoteAsker`). Belgeden farklar: sunucu betiği `.ts` (vite-node); aynı kimlikle ikinci bağlantı için `Zarf.bag` (aday bağlantı,
 host'un `kabul`'ü bağlar); `istem_iptal` mesajı; oyuncu cihazında ayrı `SavasSurucusu` yerine `dispatch` çıkışı. Ayrıntı DECISIONS.md ODA-2.
 
+**O3 uygulandı (Görev ODA-3, 2026-11-28):** görünüm süzgeci `src/room/view.ts` (madde 1 önerisi: süzme çizimde, ham olaylar herkese;
+sıkı mod O5'te ayrı karar). İzleyici cihaza sabit: oyuncu cihazında kendi kopyaları, çevrimiçi host'ta Game Master; tek cihazda yok
+(sıradan türeyen perde aynen). HP kademesi izleyiciye bağlı (`oda/active.ts` `setViewerHpVis`; kayda `savedHpVis`), jeton/alan/nesne,
+GM tuzak katmanı, oyuncu cihazında olay süzgeci (gizlenen düşmanın hareketi, Stealth/Algı zarları, GM olayları, gizli alan, düşman can
+havuzu), oyuncu cihazında GM araçları/kayıt yok. Madde 4 (kullanıcı kararı): paketler oyuna gömülü, sürüm el sıkışmasından `icerik`
+kalktı. Ayrıntı DECISIONS.md ODA-3.
+
 Amaç: Game Master'ın savaşta yaptığı her değişiklik oyuncuların cihazına anında yansısın. Her oyuncu kendi karakterini kendi
 cihazından oynasın. İlk sürümde hesap yok, katılım oda koduyla. Google/Supabase girişi en son, yalnız bir bağlantı türü olarak eklenir.
 Ağ katmanı bu yüzden değiştirilebilir olmalı.

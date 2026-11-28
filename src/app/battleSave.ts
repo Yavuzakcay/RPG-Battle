@@ -9,7 +9,7 @@ import { createSession, type Session } from '../ui/session';
 import { externalSubclasses } from '../rules/subclasses';
 
 import { SAVE_KEY, hasSavedBattle } from './saveKey';
-import { HP_VIS, enemyHpVis, type HpVis } from '../oda/active';
+import { HP_VIS, savedHpVis, type HpVis } from '../oda/active';
 
 export { SAVE_KEY, hasSavedBattle };
 /**
@@ -58,7 +58,7 @@ const store = (): Store | null => {
 
 export function serializeSession(session: Session, now = new Date()): string {
   const content = [...new Set(externalSubclasses().map((s) => s.pack).filter((x): x is string => !!x))];
-  const file: SaveFile = { version: SAVE_VERSION, savedAt: now.toISOString(), events: session.events, hp: enemyHpVis(), ...(content.length ? { content } : {}) };
+  const file: SaveFile = { version: SAVE_VERSION, savedAt: now.toISOString(), events: session.events, hp: savedHpVis(), ...(content.length ? { content } : {}) };
   return JSON.stringify(file);
 }
 

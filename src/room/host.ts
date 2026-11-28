@@ -4,7 +4,7 @@
  * sıra numarasıyla (`seq` = günlükteki sıra, `battle_started` = 0) yayar. İstemciler yalnız izler (O1: salt izleme;
  * `komut` geri çevrilir, O2'de açılır).
  *
- * - Katılım: sürüm el sıkışması (build + kural sürümü + içerik özeti; Karar 3), oturum anahtarı (ilk girişte üretilir,
+ * - Katılım: sürüm el sıkışması (protokol + build + kural sürümü; Karar 3; içerik özeti ODA-3'te kalktı), oturum anahtarı (ilk girişte üretilir,
  *   yeniden girişte `istemciId` ile birlikte istenir; yanlışsa `red{anahtar}`).
  * - Eşitleme: yeni katılana / yakalayana `anlik` (tam günlük; günlük `anlikEsik` karakteri aşarsa durum tabanı + son
  *   olaylar), boşluk isteyene eksik `olaylar`, her `ozetAraligi` yayında bir `ozet{seq, hash}`.

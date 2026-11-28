@@ -13,7 +13,7 @@ import { chooseCommand } from '../battle/ai';
 import type { SurumBilgisi } from './protocol';
 import type { RoomTransport } from './transport';
 
-const SURUM: SurumBilgisi = { protokol: 1, uygulama: 'b', kuralSurumu: 108, icerik: 'yok' };
+const SURUM: SurumBilgisi = { protokol: 1, uygulama: 'b', kuralSurumu: 108 };
 const ODA: OdaBilgisi = { ad: 'Sekme', gmAdi: '', kurallarOzeti: [], hpGorunurluk: 'tam', zarModu: 'auto', yzKarakterler: [] };
 const HIZLI = { sahiplenmeMs: 40, bulmaMs: 200, nabizMs: 30, kopmaMs: 150 };
 const bekle = (ms: number) => new Promise((r) => setTimeout(r, ms));

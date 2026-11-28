@@ -13,15 +13,16 @@ export const ODA_PROTOKOL = 1;
 /** Tek mesajın azami boyutu (JSON karakter sayısı); büyük `anlik` parçalanır. */
 export const MESAJ_AZAMI = 4_000_000;
 
-/** Katılımda karşılaştırılan sürüm bilgisi (Karar 3: build + kural sürümü + içerik özeti eşit olmalı). */
+/**
+ * Katılımda karşılaştırılan sürüm bilgisi (Karar 3: build + kural sürümü eşit olmalı). Görev ODA-3 (madde 4, kullanıcı
+ * kararı 2026-11-28): dış içerik özeti kalktı; 108 paket oyuna gömülü, aynı build aynı içeriği taşır.
+ */
 export interface SurumBilgisi {
   protokol: number;
   /** Build kimliği (Vite `define` `__APP_BUILD__`). */
   uygulama: string;
   /** `defaultRuleVersion()`: yeni savaşın kural sürümü. */
   kuralSurumu: number;
-  /** Yüklü dış içeriğin özeti (`icerikOzeti`). Karar 4: paket JSON gönderilmez, aynı içerik şart. */
-  icerik: string;
 }
 
 export type RedNedeni = 'surum' | 'anahtar' | 'dolu' | 'kilitli' | 'kapali';
@@ -98,7 +99,7 @@ const strArr = (v: unknown): v is string[] => arr(v) && v.every(str);
 /** Tür başına alan denetimi (boyut ayrı). */
 const DENETIM: Record<string, (m: Record<string, unknown>) => boolean> = {
   katil: (m) => str(m.istemciId) && !!m.istemciId && str(m.ad) && opt(m.anahtar, str) && opt(m.sonSeq, int)
-    && int(m.protokol) && str(m.uygulama) && num(m.kuralSurumu) && str(m.icerik),
+    && int(m.protokol) && str(m.uygulama) && num(m.kuralSurumu),
   karakter_gonder: (m) => obj(m.kopya) && str(m.kopya.id) && obj(m.kopya.sheet),
   karakter_geri_al: (m) => str(m.karakterId),
   komut: (m) => str(m.istekId) && obj(m.cmd) && str(m.cmd.type) && int(m.tabanSeq),
