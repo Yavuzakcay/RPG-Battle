@@ -15,15 +15,23 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { readingLines } from './srd/pdf.mjs';
 
-const root = new URL('../', import.meta.url);
-const read = (p) => JSON.parse(fs.readFileSync(new URL(p, root), 'utf8'));
+// Windows: `URL.pathname` "/D:/..." verir; dosya yolları hep `fileURLToPath` + `node:path` ile.
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(HERE, '..');
+const at = (p) => path.join(ROOT, p);
+/** Hata verip çıkar (hiçbir çıktı yazılmaz). */
+const dur = (msg) => { console.error(`en-aciklama-uret: ${msg} Hiçbir dosya yazılmadı.`); process.exit(1); };
+const read = (p) => {
+  try { return JSON.parse(fs.readFileSync(at(p), 'utf8')); } catch (e) { return dur(`${p} okunamadı (${e.message}).`); }
+};
 const TR = read('data/aciklamalar-tr.json');
 const SRC = read('scripts/en-aciklama/ceviri.json');
 const CEVIRI = SRC.ceviri ?? {};
 const FARK = SRC.farklar ?? {};
-const KINDS = ['buyu', 'esya', 'tur', 'yetenek', 'altsinif', 'invocation', 'buyuSecenek', 'durum'];
+const KINDS = ['buyu', 'esya', 'tur', 'yetenek', 'altsinif', 'invocation', 'buyuSecenek', 'durum', 'muhurTasi'];
 
 const slug = (s) => s.toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 /** PDF/JSON metnini tek biçime getirir: satır sonu tireleri, fazla boşluk; paragraflar "\n". */
@@ -110,13 +118,20 @@ const invocationNames = new Map(Object.values(read('data/class-features.json').f
 const invocationText = (id) => section(invocationNames.get(id) ?? title(id), { from: 60 });
 const conditionText = (id) => section(`${CONDITIONS[id] ?? title(id)} [Condition]`, { from: 170 });
 
-const SRD = { buyu: spellText, esya: itemText, tur: traitText, yetenek: featureText, altsinif: () => undefined, invocation: invocationText, buyuSecenek: () => undefined, durum: conditionText };
+const SRD = { buyu: spellText, esya: itemText, tur: traitText, yetenek: featureText, altsinif: () => undefined, invocation: invocationText, buyuSecenek: () => undefined, durum: conditionText, muhurTasi: () => undefined };
 
 // --- Canavar: scripts/srd-canavar-ozellik.mjs --metin (aynı ayrıştırıcı; canavar-ozellik.json'u aynen yeniden yazar). ---
 const tmp = path.join(os.tmpdir(), `en-canavar-${process.pid}.json`);
-execFileSync(process.execPath, [new URL('srd-canavar-ozellik.mjs', import.meta.url).pathname, '--metin', tmp], { stdio: 'ignore' });
-const monsterSrd = JSON.parse(fs.readFileSync(tmp, 'utf8'));
-fs.unlinkSync(tmp);
+let monsterSrd;
+try {
+  execFileSync(process.execPath, [path.join(HERE, 'srd-canavar-ozellik.mjs'), '--metin', tmp], { stdio: ['ignore', 'ignore', 'pipe'] });
+  monsterSrd = JSON.parse(fs.readFileSync(tmp, 'utf8'));
+} catch (e) {
+  dur(`canavar SRD metni üretilemedi ya da okunamadı (scripts/srd-canavar-ozellik.mjs: ${String(e.stderr ?? e.message).trim().split('\n')[0]}).`);
+} finally {
+  try { fs.unlinkSync(tmp); } catch { /* yoksa */ }
+}
+if (!monsterSrd || typeof monsterSrd !== 'object' || Object.keys(monsterSrd).length === 0) dur('canavar SRD metni boş geldi.');
 const monsterText = (key) => {
   const [mon, k] = [key.slice(0, key.indexOf('/')), key.slice(key.indexOf('/') + 1)];
   const e = monsterSrd[mon]?.entries.find((x) => x.key === k);
@@ -150,11 +165,49 @@ const invocationIds = Object.values(read('data/class-features.json').features).f
 // EN arayüzde SRD metni).
 const turkishNoteItems = [...gameItems.values()].filter((i) => !TR.esya?.[i.id] && /[çşğıöüÇŞĞİÖÜ]/.test(i.text ?? '')).map((i) => i.id);
 for (const k of KINDS) en[k] = build(k, SRD[k], k === 'invocation' ? invocationIds : k === 'esya' ? turkishNoteItems : []);
-const canavar = build('canavar', monsterText);
+// Canavar kimlikleri Türkçe canavar dosyasından (canavar açıklamaları aciklamalar-tr.json'dan ayrıldı; oradan okununca 0 kayıt
+// çıkıp boş dosya yazılıyordu).
+// Yalnız SRD canavarlarının anahtarları üretilir (`monsterSrd`); SRD dışı katalog canavarları (scripts/katalog-f2-kadim.mjs) üretilmez,
+// aşağıdaki birleştirmede mevcut dosyadan aynen korunur (karar EN-ACIKLAMA-YOL (a)).
+const srdMonster = (key) => Object.hasOwn(monsterSrd, key.slice(0, key.indexOf('/')));
+const canavarUret = build('canavar', monsterText, Object.keys(read('data/aciklamalar-tr-canavar.json').canavar ?? {}).filter(srdMonster));
 en._kaynak = Object.fromEntries(KINDS.map((k) => [k, kaynak[k]]));
+// Boş çıktı koruması: SRD tarafı 0 kayıt ürettiyse hiçbir dosya yazılmaz (mevcut dolu dosyanın üstüne boş içerik gelmesin). Önce
+// hepsi denetlenir, sonra yazılır (yarım yazım olmasın).
+const sayEn = KINDS.reduce((n, k) => n + Object.keys(en[k]).length, 0);
+const sayCanavar = Object.keys(canavarUret).length;
+if (sayEn === 0) dur('data/aciklamalar-en.json için üretilen kayıt sayısı 0.');
+if (sayCanavar === 0) dur('data/aciklamalar-en-canavar.json için üretilen kayıt sayısı 0.');
+// Birleştirme (karar EN-ACIKLAMA-YOL (a)): mevcut dosyada olup yeni çıktıda olmayan kayıt SRD dışıysa (ör. katalog canavarı) aynen
+// korunur; SRD kaynaklıysa (SRD metni hâlâ var ama kayıt üretilmedi) betik durur. Çakışan kimlikte yeni çıktı kazanır. Anahtar sırası
+// mevcut dosyanınki (git diff küçük kalsın); yeni anahtarlar sona, üretim sırasıyla.
+let korunan = 0;
+const kayip = [];
+const mevcutOku = (rel) => {
+  if (!fs.existsSync(at(rel))) return null;
+  try { return JSON.parse(fs.readFileSync(at(rel), 'utf8')); } catch (e) { return dur(`${rel} okunamadı (${e.message}).`); }
+};
+function birlestir(etiket, eski, yeni, srdKaynakli) {
+  if (!eski) return yeni;
+  const out = {};
+  for (const [id, text] of Object.entries(eski)) {
+    if (Object.hasOwn(yeni, id)) out[id] = yeni[id];
+    else if (srdKaynakli(id)) kayip.push(`${etiket}/${id}`);
+    else { out[id] = text; korunan++; }
+  }
+  for (const [id, text] of Object.entries(yeni)) if (!Object.hasOwn(out, id)) out[id] = text;
+  return out;
+}
+const enEski = mevcutOku('data/aciklamalar-en.json');
+for (const k of KINDS) en[k] = birlestir(k, enEski?.[k], en[k], (id) => !CEVIRI[k]?.[id] && !!SRD[k](id));
+const canavar = birlestir('canavar', mevcutOku('data/aciklamalar-en-canavar.json')?.canavar, canavarUret, srdMonster);
+if (kayip.length) dur(`${kayip.length} SRD kaynaklı mevcut kayıt yeni çıktıda yok (ör. ${kayip.slice(0, 3).join(', ')}).`);
 const mon = { _aciklama: 'English monster trait/action descriptions (key `<monster>/<kind>:<slug>`, list data/canavar-ozellik.json); SRD 5.2.1 text, generated by `node scripts/en-aciklama-uret.mjs`. Loaded only by the Dungeondex (`loadDexExtras`).', _kaynak: { canavar: kaynak.canavar }, canavar };
-fs.writeFileSync(new URL('data/aciklamalar-en.json', root), `${JSON.stringify(en, null, 1)}\n`);
-fs.writeFileSync(new URL('data/aciklamalar-en-canavar.json', root), `${JSON.stringify(mon, null, 1)}\n`);
+fs.writeFileSync(at('data/aciklamalar-en.json'), `${JSON.stringify(en, null, 1)}\n`);
+fs.writeFileSync(at('data/aciklamalar-en-canavar.json'), `${JSON.stringify(mon, null, 1)}\n`);
+const saySrd = [...KINDS, 'canavar'].reduce((n, k) => n + kaynak[k].srd, 0);
+console.log(`yazıldı: SRD kaydı yenilendi ${saySrd} (üretilen toplam ${sayEn + sayCanavar}: SRD + elle çeviri), SRD dışı kayıt korundu ${korunan}; `
+  + `toplam aciklamalar-en.json ${KINDS.reduce((n, k) => n + Object.keys(en[k]).length, 0)}, aciklamalar-en-canavar.json ${Object.keys(canavar).length}`);
 const bet = read('data/buyu-betimleme.json');
 const betEn = Object.entries(bet).filter(([k, v]) => !k.startsWith('_') && v?.en).length;
 console.log(JSON.stringify({ ...en._kaynak, canavar: kaynak.canavar, betimlemeEn: betEn, buyuPdfYok: spellFallback }));

@@ -24,5 +24,13 @@ export function setRoomOverlay(o: RoomOverlay | null): void { current = o; }
 /** Görev OD1B: kayıttan devam eden savaşın kaydındaki HP görünürlüğü (oda örtüsünden önce gelir). */
 let battleHp: HpVis | null = null;
 export function setBattleHpVis(h: HpVis | null): void { battleHp = h; }
-/** Savaş ekranındaki düşman HP görünürlüğü; kayıtlı değer, yoksa oda; ikisi de yoksa (Hızlı savaş, Serüven…) tam. */
-export const enemyHpVis = (): HpVis => battleHp ?? current?.hp ?? 'tam';
+/**
+ * Görev ODA-3 (O3): çevrimiçi odada HP kademesi izleyiciye bağlı. Game Master cihazı (host) her zaman tam; oyuncu
+ * cihazı odanın kademesini (`oda_durumu.hpGorunurluk`) görür. Tek cihazda null (kayıt/oda değeri aynen).
+ */
+let viewerHp: HpVis | null = null;
+export function setViewerHpVis(h: HpVis | null): void { viewerHp = h; }
+/** Kayda yazılan HP görünürlüğü (izleyiciden bağımsız: GM'in tam görmesi kayda geçmez). */
+export const savedHpVis = (): HpVis => battleHp ?? current?.hp ?? 'tam';
+/** Savaş ekranındaki düşman HP görünürlüğü; çevrimiçi izleyici, kayıtlı değer, oda; hiçbiri yoksa (Hızlı savaş, Serüven…) tam. */
+export const enemyHpVis = (): HpVis => viewerHp ?? savedHpVis();

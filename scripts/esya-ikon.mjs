@@ -213,16 +213,21 @@ function komsuTasmasi(tut, out, w, h, ic) {
 export const dosyaAdi = (id) => id.replace(/\//g, '--');
 export const sayfaAdi = (dosya) => dosya.replace(/\.[a-z]+$/i, '');
 
-/** Hücre dikdörtgenleri (okuma sırası). `hucre: "kare ~667 px"` → N px kare hücre, sol üstten; yoksa W/kolon × H/satır. */
+/**
+ * Hücre dikdörtgenleri (okuma sırası). `hucre: "kare ~667 px"` → N px kare hücre, sol üstten; yoksa W/kolon × H/satır.
+ * Görev BOSS-IMZA-GORSEL: `kolonSinir` (kaynak px, kolon − 1 iç sınır) eşit olmayan kolon bölmesi (ayraç ortada değilse).
+ */
 export function hucreler(W, H, sayfa) {
   const kare = /kare\D*(\d+)/.exec(String(sayfa.hucre ?? ''));
   const cw = kare ? Number(kare[1]) : W / sayfa.kolon;
   const ch = kare ? Number(kare[1]) : H / sayfa.satir;
+  const sinir = Array.isArray(sayfa.kolonSinir) && sayfa.kolonSinir.length === sayfa.kolon - 1 ? sayfa.kolonSinir : null;
+  const kx = (c) => (sinir ? (c === 0 ? 0 : c === sayfa.kolon ? W : sinir[c - 1]) : Math.min(W, Math.round(c * cw)));
   const out = [];
   for (let r = 0; r < sayfa.satir; r++) for (let c = 0; c < sayfa.kolon; c++) {
-    const x = Math.round(c * cw); const y = Math.round(r * ch);
+    const x = kx(c); const y = Math.round(r * ch);
     // Son kolon/satır sayfa kenarına dek uzar (kare hücrede sayfa artığı boştur; taşan uç kesilmez).
-    const x1 = c === sayfa.kolon - 1 ? W : Math.min(W, Math.round((c + 1) * cw));
+    const x1 = c === sayfa.kolon - 1 ? W : kx(c + 1);
     const y1 = r === sayfa.satir - 1 ? H : Math.min(H, Math.round((r + 1) * ch));
     out.push({ x, y, w: x1 - x, h: y1 - y });
   }
@@ -569,6 +574,17 @@ async function kare(rgba, w, h, kutu, boyut) {
 export async function sayfaIsle(dosyaYolu, sayfa, hepsiniTut, tamDespill = new Set(), cepTemizle = new Set(), boslukKapali = new Set(), boslukZorla = new Set()) {
   const { data, info } = await sharp(dosyaYolu).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const W = info.width; const H = info.height;
+  // Görev BOSS-IMZA-GORSEL: `zeminBoya` [[x0, y0, x1, y1], …] (kaynak px, uçlar hariç) sayfa çerçevesi ve hücre ayracı; zemin
+  // örneklenmeden önce sayfa zeminiyle (`sayfa.zeminRenk` ya da #FF00FF) boyanır (siyah çerçeveli sayfada köşe zemini bozulmasın).
+  if (Array.isArray(sayfa.zeminBoya)) {
+    const z = /^#?([0-9a-f]{6})$/i.exec(String(sayfa.zeminRenk ?? '#FF00FF'))[1];
+    const zc = [0, 2, 4].map((i) => parseInt(z.slice(i, i + 2), 16));
+    for (const [a, b, c2, d] of sayfa.zeminBoya) {
+      for (let y = Math.max(0, b); y < Math.min(H, d); y++) for (let x = Math.max(0, a); x < Math.min(W, c2); x++) {
+        const i = (y * W + x) * 3; data[i] = zc[0]; data[i + 1] = zc[1]; data[i + 2] = zc[2];
+      }
+    }
+  }
   const zemin = zeminRengi(data, W, H);
   const out = [];
   const rects = hucreler(W, H, sayfa);

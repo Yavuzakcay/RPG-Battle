@@ -8,6 +8,178 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **(2) Efsanevi hak:** Yetişkin mücevher ejderhaları ve Ocean-Nightmare efsanevi hakkı 2'de kalıyor (SRD kalıbı 3 / Lair 4, motorda Lair ek hakkı yok).
 - **(3) Hexonia:** Hexonia'nın üç efsanevi eylemi de turda bir (`oncePerTurn`). Tekrar yok; bir turda en çok 3 eylem, 5 hakkın 2'si kullanılmıyor. Denge turunda simülasyonda ölçülecek (açık iş `harita/belgeler/DENGE.md`).
 
+## Görev BOSS-IMZA-GORSEL: ana boss ve imza eşya görselleri, Hex / Kaltakkıran ad birleştirmesi (2026-11-28; yalnız görsel ve veri; kural sürümü (109) ve kayıt sürümü (28) değişmedi)
+
+- **Adlar (kullanıcı kararı):** 3. ana boss **Hex, Princeps Tenebrarum** (erkek, Celestial, Kırık Kanat); imza kılıcın adı **Kaltakkıran** (tek kılıç; kapalı ve açık/uyanık mod). Bosslar: Hex, **Dağezen Tarvok** ("Dağ Ezen" yazımı birleşti), **Al-İha Mora**. Adlar i18n `dex.pro.anaBoss` (TR `strings.tr2.ts`, EN `strings.en.ts`; Dungeondex metinleri TR'de tembel parçada); EN Tarvok "Tarvok the Mountain-Crusher" (eşya adı Mountain-Crusher's'tan).
+- **Çakışan eski ad tek yerde birleşti:** PDF'te boss "Kaltakkıran", zırh "Kaltakkıran'ın Paladin Zırhı", kılıç "Çeneli Zincir Kılıcı"ydı. Kimlikler değişmedi (`kaltakkirans-paladin-armor`, `kaltakkirans-maw-chain-greatsword`, anlatım `kaltakkiran*`). Görünen ad: zırh "Hex's Paladin Armor" / "Hex'in Paladin Zırhı", kılıç "Kaltakkıran" (TR ve EN); eşyada `katalog.eskiAd`. Anlatım kaydı `kaltakkiran`: tr/en "Hex, Princeps Tenebrarum", `eskiAd` "Kaltakkıran", `gorsel` `boss/hex.webp`; paket adı "Hex'in Paladin Zırhı ve On Mühür Taşı Sistemi". Kişi olarak geçen "Kaltakkıran" metinlerde Hex'e (ünlü uyumlu ekle), "Çeneli Zincir Kılıcı" Kaltakkıran'a çevrildi: `items-katalog.json`, `katalog-anlatim.json`, `aciklamalar-{tr,en}*.json`, `canavarlar-kadim.json`, `scripts/en-aciklama/ceviri.json`, `scripts/katalog-f2-kadim.mjs`, `KATALOG-F2-OZELLIKLER.md` (kaynak; yeniden üretimde geri dönmesin). Sv.3 taş kademesi "Kaltakkıran Parçası" → **"Boss Taşı"** (PDF Bölüm 8 adı, EN "Boss Stone" ile aynı). **Değişmeyen:** PDF başlığı ve atıf alanları (`kaynak`, `bolum`, `pdf`, "PDF Kaltakkıran §4") belgenin kendi adı olduğu için; KATALOG-1 envanter/kanca/prospektüs belgeleri (geçmiş kaydı).
+- **Kayıt geçişi:** karakter eşyayı adıyla tutar; `data/esya-ad-degisim.json` + `src/rules/itemRename.ts` `migrateItemNames` açılışta `itemNames` ve `silahBagi` anahtarındaki eski adı yeniye çevirir (App eski kayıt zinciri; bildirim yok). Kayıtlı savaş/replay savaşçıda kopya taşıdığı için etkilenmez.
+- **Boss görselleri** (`scripts/boss-gorsel.mjs --grup ana` → `public/boss/{hex,tarvok,mora}.webp`, `data/boss-gorsel.json` `ana`): aynı hat (kenardan dolum, geçişte dekontaminasyon, 3 px despill, küçük pembe parça silme). İç boşluk kimlik başına: **Hex `saf`** (kapalı alanda yalnız saf #FF00FF'e uzaklığı < 48 ve ≥ 40 px bileşen: kanat–gövde ve kılıç–bacak arası cepler gider; alındaki yıldız (haresi 184,42,186, saf macentaya ≈107) ve zırh taşları kalır; renk tonu ölçütlü gölgeli boşluk geçişi kapalı, mor tonu yakalayabileceği için). **Mora `saf+ton`**: ayrıca gölgeli boşluk geçişi sıkı eşikle (R≈B ±40, min(R,B) − G tohum > 120, büyüme > 90, ≥ 130 tam saydam): fener kafesinin çubuk arası cepleri gölgeli saf macenta (215,30,212 → 172,13,167) ve gider; cam/teal alev (G yüksek) ve mor-mavi el alevi (|R − B| büyük) kalır. ⚠ Camın alt yanlarında cam içinden görünen ince pembe çizgiler camın parçası sayıldı, bırakıldı. Tarvok `tarvok.jpg` (yedek `tarvok-sert.jpg` bağlanmadı), varsayılan kip. Kontrol: `harita/belgeler/boss-gorsel-kontrol/sayfa-ana.jpg`, siyah/beyaz/gri zemin `ana-siyah-beyaz.jpg`.
+- **Eşya görselleri** (`npm run esya-ikon -- --manifest data/katalog-ikon-sayfalar.json`; sayfalar düzeltme sayfalarından önce): Kaltakkıran kapalı (varsayılan ikon) + açık (`<kimlik>/acik` → `kaltakkirans-maw-chain-greatsword--acik.webp`; zincir halkasının içi kapalı macenta, delik olarak silindi), Hex zırhı kapalı (varsayılan) + açık + hasarlı (`hex-zirh-hurda.jpg` → `--hasarli`); varyant verisi `data/esya-gorsel-varyant.json` (varsayılan + dosyalar; adlar `dex.pro.gorselVaryant`). Dungeondex bugün varsayılanı gösterir; varyant seçici arayüzü yok. `yumurtalar.jpg` iki hücre: **Mücevher Ejderha Yumurtası** (`mucevher-ejderha-yumurtasi`, "Gem Dragon Egg", BOSS#20; tek görsel, rengi ileride Alignment kararına göre) ve **Kor Yumurtası** (`kor-yumurtasi`, "Ember Egg", BOSS#21); kimlik = kullanıcının verdiği dosya adı (SRD dışı katalog kaydı, `kaynak: katalog-1`), güç uydurulmadı: hikâye eşyası, özellik `planli`, `offCombat`. Kadim yaratık Ember Egg'in kendi jeton görseli hâlâ yok (bağlanmadı). Ek olarak imza setleri bağlandı: `tarvok-set.jpg` (Zincirli Dikilitaş, Kaya Koşumu; üst siyah çerçeve ve ayraç `zeminBoya` ile zemine boyanır), `al-iha-mora-set.jpg` (Filakteri Sarkacı, Kör Nokta Cübbesi; ayraç ortada değil: `kolonSinir` 1304). Yeni manifest alanları `scripts/esya-ikon.mjs` `hucreler`/`sayfaIsle`. Altı boss imza eşyası `esya-ikonsuz-izin.json`'dan çıktı. Kontrol (siyah/beyaz/gri): `harita/belgeler/boss-gorsel-kontrol/imza-esya-siyah-beyaz.jpg`; kenarda macenta piksel 0.
+- **Bulunamayan:** `assets-ham/boss/mora-yansima.jpg` (Mora'nın yedeği) klasörde yok. Hex zırhı sayfaları `assets-ham/boss/` değil `assets-ham/esya/` altında; `al-iha-mora-set.jpg` ve `tarvok-set.jpg` de `esya/` altında.
+- **Testler:** `src/data/bossImzaGorsel.test.ts` (yeni); veriye bağlı değerler: `data.test.ts` eşya 766 → 768 ve `katalogG.test.ts` BOSS kimliği 37 → 39 (iki yumurta), `katalogG` Hex kaydının alanları (`eskiAd`, `gorsel`), `muhurTasi.test.ts` Sv.3 etiketi "Boss Taşı", `katalogB.test.ts` sayfa eşya adı "Kaltakkıran"; `esyaIkon.test.ts` katalog dosya adı varyant kimliğini `dosyaAdi` ile çevirir.
+- **Birlesik üstüne rebase (KATALOG-GUC-TAM, ODA-3–5 sonrası):** çakışmalar `data/items-katalog.json` (10 Sv.3 taşının "Temel etki" gücü: `durum`/`not` KATALOG-GUC-TAM'dan, metindeki zırh adı Hex'in Paladin Zırhı), `strings.tr2.ts`/`strings.en.ts` `dex.pro.muhur` (birlesik'in `socket`/`hosts` alanları kaldı; `hosts.ozel` zırh adı Hex, Sv.3 etiketi "Boss Taşı"). Otomatik birleşen yerlerde eski ad: `dungeondex-gorsel-esleme.json` iki `ad`, `src/rules/sockets.ts` ve `src/battle/types.ts` yorumları. Katalog 367 + 2 yumurta = 369 kayıt; birlesik içeriğinde ad dışı fark yok.
+
+## ODA-5: çevrimiçi oda O5 hazırlığı, katılım adresi, katılım onayı, aktarıcıda hız sınırı, Supabase yer tutucusu (2026-11-28; kural sürümü, kayıt sürümü, `ODA_SURUM` 2 ve `ODA_PROTOKOL` 1 değişmedi)
+
+- **Kapsam (kullanıcı kararı):** Supabase ve Google OAuth bu görevde yok; hesap bağlama sonraya. `src/room/adapters/supabase.ts` yalnız
+  yer tutucu: `SupabaseSecenek` (url, anon anahtar ortam ayarından, kanal öneki, parçalama eşiği), `supabaseBaglantisi()` tam
+  `RoomTransport` arayüzüyle döner ama `katil` `BaglantiHatasi('kapali')` fırlatır; `supabaseHazir = false`. SDK içe aktarılmaz;
+  uygulama bu dosyayı içe aktarmıyor (`baglantiSec('supabase')` eskisi gibi `kapali`). O5 planı dosyanın başında.
+- **Madde 6 (yerel ağda uygulama oda sunucusundan):** oda sunucusu (`scripts/oda-sunucu.ts`) ve geliştirme/önizleme sunucusu
+  (`vite.config.ts` `adresUcu`) `GET /oda/adres` → `{ adresler: ["http://<ip>:<port>"] }` (`aktariciNode.ts` `yerelAdresler`,
+  `adresYaniti`). GM lobisi yerel ağ bağlantısında bunu okuyup telefonlara `http://<ip>:<port>/?oda=<kod>` gösterir (seçilebilir metin;
+  QR terminalde kalır). Bağlantı sekmeye düştüyse ve sayfa http(s) ise "oda sunucusundan açılmadı" uyarısı. `?oda=<kod>` ile açılan
+  uygulama doğrudan "Odaya katıl"a gider, kod hazır (`App.tsx` ilk ekran, `OdaKodlaKatil`). APK cleartext izni ayrı karar (O1 kararı 6
+  aynen: telefonda tarayıcı).
+- **Madde 7 (katılım onayı):** `OdaHost.katilimOnayi` (varsayılan kapalı; lobide "Katılım onayı iste", sayfa başına, oda kaydına
+  yazılmaz): açıkken bilinmeyen `istemciId`'nin `katil`'i bekletilir, adaya `onay_bekle` (oyuncuda "Game Master onayı bekleniyor…"),
+  GM lobisinde "Katılmak isteyenler: Kabul / Ret"; ret `red{neden:'onay'}`. Anahtarıyla dönen eski üye onaysız; onay kapatılınca
+  bekleyenler kabul edilir. Savaş sürerken yeni katılan yalnız izleyici (O1'den beri). İnternet odasında (O5) varsayılan açık olacak.
+  Bilinen sınır: onay beklerken bağlantısı kopan adayı aktarıcı host'a bildirmez; GM sonradan kabul ederse üye bağlı görünür, ilk
+  mesajında düzelir.
+- **Madde 7 (hız sınırı, aktarıcı):** kaynak (node'da uzak IP; `AktariciSoket.kaynak`) başına son 60 sn'de en çok 20 oyuncu katılım
+  denemesi (6 haneli kodu tarayarak odaya düşmeyi yavaşlatır), fazlasına `{k:'hiz'}` + kapanış; istemcide `BaglantiHatasi('hiz')` ve "Çok
+  fazla deneme" iletisi. Oyuncu bağlantısı başına saniyede 60 mesaj (kova 180); taşan mesaj atılır, kovanın üç katı taşmada bağlantı
+  kapanır. Host bağlantısı sınırsız (komut başına yayın; düşen yayın boşluk açardı). Yeniden bağlanma aralığı bu yüzden 2 → 4 sn
+  (dakikada 15 deneme, 3 dakika).
+- **Protokol:** `onay_bekle`, `red.neden` `onay` eklendi; aynı build şartı sürdüğü için protokol sürümü 1 kaldı.
+- **Testler:** `src/room/o5.test.ts` (hız sınırı saatli, mesaj kovası, host sınırsız, katılım onayı kabul/ret/eski üye/kapatma, Supabase
+  yer tutucusu, yeni mesajlar). Ağ e2e O5 adımlarıyla: GM lobisinde `…/?oda=<kod>` katılım adresi, Bora bu adresten gelir (kod hazır).
+  Sekme e2e (O1) de geçti; geliştirme sunucusunda `/oda/adres` elle denendi.
+- **Ana parça:** 462,24 → 462,30 kB (`App.tsx` `?oda=` yönlendirmesi).
+
+## ODA-4: çevrimiçi oda O4, kopma/yeniden bağlanma, GM karar menüsü, Wake Lock, savaş sonucunun karaktere dönüşü (2026-11-28; kural sürümü 108, kayıt sürümü 28, `ODA_SURUM` 2 ve `ODA_PROTOKOL` 1 değişmedi)
+
+- **Eksik olayla yakalama:** `katil` yeniden girişte `sonSeq` + `donem` taşır; host aynı dönemdeyse yalnız eksik `olaylar` (eşitse `ozet`)
+  yollar, değilse tam `anlik` (O1'de her yeniden girişte tam anlıktı). `OdaIstemci.yenidenBaglan()` yeni bağlantıyla aynı kimlik ve
+  anahtarla katılır, durum ve günlük elde kalır (`IstemciSecenek.yeniBaglanti`).
+- **GM karar menüsü:** sıra bağlantısı kopan oyuncunun karakterine gelince GM'in savaş ekranında üst şerit: **Bekle** / **Yapay zekâ
+  oynasın** / **GM oynasın** / **Turu atla** (`end_turn`). Karar host'ta üye başına (`OdaHost.kararVer`, `uye_durumu.karar`,
+  `oda_durumu.uyeler[].karar`, `yzKarakterler`); "yapay zekâ"da tur `autoplayPartyTurn` (`ui/autoplay.ts`; çağrı yardımcısı da bunu
+  kullanır) ile oynanır ve oyuncunun komutları `bekle` ile reddedilir. Oyuncu dönünce `yz` o an oynanan turu bitirir, sıra başkasına
+  geçince kalkar (`kararlariGozden`); `bekle`/`gm` hemen kalkar. Açık zar/tepki istemleri O2'deki gibi: tepki 20 sn'de öneriyle, zar GM'in
+  cihazında; dönene yeniden gönderilir. Kopan oyuncunun karakteri sıra şeridinde soluk, kesik çerçeveli (`strip-item.kopuk`).
+- **Host diriltme:** etkin host her üye değişiminde `rpg-battle-oda-canli`'ye (localStorage) oda kimliği, kod ve üyelerin kimlik/ad/
+  anahtar/rol/kopya kimliklerini yazar (kopyaların kendisi oda kaydında, `Oda.cevrimici`; kayıt biçimi değişmedi). Sayfa yenilenip oda
+  lobisi ya da odanın savaş ekranı açılınca `hostDirilt` aynı kodla geri açar; üyeler kopuk başlar, anahtarıyla dönen kabul edilir.
+  Diriltilen host'un dönemi rastgele tabandan (`donemTabani`): eski istemci eksik-olay yoluna girmez, tam anlık alır (aynı kayıttan
+  kurulan günlüğün öncekiyle bit bit aynı olduğu garanti değil). "Çevrimiçi kapat" kaydı siler.
+- **İstemcide kendiliğinden yeniden bağlanma:** bağlantı kopunca (Wi-Fi, host sayfası yenilendi: aktarıcı `host_gitti`) 2 sn arayla en çok
+  90 deneme; oyuncu ekranında "Bağlantı koptu, yeniden bağlanılıyor…" (savaşta üst şerit, lobide satır), sonunda "odaya yeniden katıl".
+  GM odayı kapatırsa (`oda_kapandi`) ve aynı kimlik başka bağlantıya geçerse (`degisti`) denenmez. Oyuncu sayfasının kendisi yenilenirse
+  yeniden katılım elle (kimlik ve anahtar sekmede saklı, kod yazılınca anahtarla döner).
+- **Madde 2 (Wake Lock):** `ui/wakeLock.ts` `useWakeLock`: çevrimiçi savaş ekranında (GM host'u ya da oyuncu) `navigator.wakeLock`;
+  sekme görünür olunca yeniden istenir; API yoksa sessiz.
+- **Madde 3 (sürüm):** build kimliği eşitliği ve `ozet` hash denetimi O1'den beri; sürüm reddinde lobide "Sayfayı yenile" düğmesi.
+- **Madde 8 (savaş sonucu):** savaş bitince (`asama` → `bitti`) host her kopyanın yeni durumunu (`applyBattleResult` ile, enjekte
+  `sonuc`) sahibine `karakter_sonuc{karakterId, durum, kimlik}` ile yollar; kopuk üyeye döndüğünde bir kez. Oyuncu cihazı lobiye
+  dönünce uygular: kopya gönderildiğinden beri değişmemiş karaktere sorusuz (`OdaIstemci.gonderilen`: gönderilen kopyanın kanonik JSON'u;
+  GM tarafındaki `kopyaZamani` aynen tutuluyor), değiştiyse (ya da sayfa yenilendiği için gönderim bilinmiyorsa) "Üzerine yaz / Atla".
+  Yalnız savaşlar arası durum (`status`) yazılır. Savaş ortasında karakter eklenmez (O1'den beri kurulumda kilitli).
+- **Testler:** `src/room/reconnect.test.ts` (test 6: kopma + `yz` kararı + eksik olaylar + karar kalkması, `bekle`/`gm`, yanlış anahtar,
+  host diriltme, savaş sonucu ve kopuk üyeye geç teslim), `src/room/ws.test.ts` (gerçek aktarıcıda eksik-olay yeniden girişi ve diriltme).
+  Bellek hub'ı aynı kimlikli bağlı kaydı gönderen sayar (eski kopuk kayıt yeni bağlantının mesajını düşürüyordu; yalnız test bağdaştırıcısı).
+  Ağ e2e O4 adımıyla: Ada'nın cihazı kapanır, sırası gelince GM'de karar menüsü, "Yapay zekâ oynasın" turu oynar.
+- **Ana parça:** 462,27 → 462,24 kB.
+
+## ODA-3: çevrimiçi oda O3, görünüm süzgeci + tam yetki matrisi (2026-11-28; kural sürümü 108, kayıt sürümü 28, `ODA_SURUM` 2 ve `ODA_PROTOKOL` 1 değişmedi; motor `src/room/`'u içe aktarmaz)
+
+- **Karar (kullanıcı, 2026-11-28):** ODA-TASARIM §8'in sekiz maddesinde belgenin önerisi; madde 4 kalktı (aşağıda).
+- **Madde 1 (gizlilik):** görünüm süzgeci. Ham olaylar ve durum her cihazda aynı; süzme yalnız çizimde, saf `src/room/view.ts`
+  (`Izleyici` gm/oyuncu/izleyici, `jetonGorunumu`, `alanGorunur`, `nesneGorunumu`, `gmTuzaklari`, `hpGorunumu`, `olayiSuz`/`olaylariSuz`).
+  İzleyici cihaza sabit: oyuncu cihazında `SessionWatch.viewer` (oyuncu rolünde kendi karakter kopyaları = savaştaki `ownerId`'ler,
+  çağrılar dahil), çevrimiçi host'un savaş ekranında Game Master. Tek cihazda izleyici yok: `viewerOf` perdesi ve anahtarlar aynen.
+  - **Game Master** her şeyi görür: gizlenen düşman (örtüyle), partinin gizlenen jetonu (anahtarsız), bütün alanlar, bulunmamış nesne
+    soluk, **GM tuzak katmanı** (bulunmamış/tetiklenmemiş tuzak ve sarmaşık kapanı soluk ⚠; Bilinen eksikler satırı ağ için kapandı),
+    düşman HP'si tam (`setViewerHpVis('tam')`; kayda yazılan değer `savedHpVis`, izleyiciden bağımsız).
+  - **Oyuncu:** gizlenen düşman ve bulunmamış nesne/tuzak çizilmez; gizli alan yalnız kendi savaşçılarından biri biliyorsa
+    (`zoneKnownBy`: Spike Growth yalnız fark edenin oyuncusunda, Phantasmal Force yalnız hedefin oyuncusunda); izleyici rolünde parti
+    düzeyi (`zoneShownTo`). Düşman HP'si odanın kademesi (`oda_durumu.hpGorunurluk`; önceden oyuncu cihazında örtü yoktu, HP tam
+    görünüyordu).
+  - **Olay süzgeci** (yalnız oyuncu cihazının oturumunda: günlük, toast, zar tepsisi, hasar/patlama animasyonu; reducer, kayıt, replay ve
+    özet hash'i ham olaylarla): önce ve sonra gizli kalan karşı taraf yaratığın `moved`/`jumped`/`teleported`/`altitude_changed`'i,
+    karşı tarafın ve ortamın `check` zarları (Stealth, Algı), gizlenen yaratığın zarları, karşı tarafın `hide_attempted`/`skill_checked`'i,
+    `dragon_perception`/`rouse_roll`/`patrol_moved`, görülmeyen alanın `zone_created`/`zone_moved`/`zone_triggered`'i (kendi savaşçısını
+    vuran tetik görünür), HP kademesi tam değilken düşman can havuzu olayları. Açığa çıkan (grubun başında gizli, sonunda değil) yaratığın
+    hareketi görünür. `gmNote`/`sigmayan` notları büyü kartında kalır (ayrı olay değil; sınıflandırma ertelendi).
+  - **Oyuncu cihazında Game Master araçları yok:** seçenekler menüsünün harita tetikleri, kapı, yüzey/nesne aracı, alarm, ejderhayı
+    uyandır, gizli jeton/alan anahtarları, Kaydet/Yükle (`gmAraclari`); host zaten reddediyordu.
+- **Madde 4 (kullanıcı kararı):** 108 paket oyuna gömülecek, GM cihazında eksik paket sorunu yok. Sürüm el sıkışmasından `icerik` alanı ve
+  `icerikOzeti` kalktı (`SurumBilgisi` = protokol + build + kural sürümü; aynı build aynı içerik). Eski istemcinin fazladan `icerik`'i yok
+  sayılır; yeni istemci eski host'a `icerik`siz `katil` yollarsa o host mesajı bozuk sayar (iki uç zaten aynı build ister, protokol 1 kaldı).
+  Oda yolunda "içerik eksik" durumu yok; tek cihazdaki rozet (karakter listesi) aynen.
+- **Tam yetki matrisi** (`src/room/auth.test.ts`): kendi karakteri ve çağrısı, başkasının/düşmanın/masumun savaşçısı, actorId'li GM aracı,
+  actorId'siz ve `gm` bayraklı komut, izleyici, yapay zekâdaki karakter (`bekle`), savaş yokken, bilinmeyen savaşçı; host üstünden 20.
+  yetkisizde tek olay, başkasına sorulmuş zar/tepki cevabının yok sayılması. Kod değişmedi (O2'de yazılmıştı).
+- **Testler:** `src/room/view.test.ts` (test 9), `src/room/auth.test.ts` (test 3 tam); `protocol.test.ts`/`host.test.ts` içerik alanı
+  beklentileri çıktı. Ağ e2e (`scripts/oda-ag-e2e.ts`) O3 adımıyla: oyuncunun seçeneklerinde Kaydet yok, GM'de var.
+- **Ana parça:** 462,14 → 462,27 kB (`oda/active.ts`). `src/room/view.ts` savaş parçasında.
+
+## Görev KATALOG-GUC-TAM: katalog güçleri motorda, mühür taşı yuvaları (2026-11-28; kural sürümü 108 → 109, kayıt sürümü 28 değişmedi)
+
+- **Karar (kullanıcı):** KATALOG-SIGMAYAN.md'de "sığmayan" ve "yaklaşık" yazılan katalog güçleri motorda çalışsın; mekanik donmasına
+  bilinçli istisna (Faz 2 kararı gibi). Tek sabit `src/battle/katalog109Surum.ts` `KATALOG109_VERSION` (109). Yeni olay türü yok
+  (bütün ilkeller mevcut olaylarla: `effect_added`, `zone_created`, `summoned`, `hp_adjusted`, `trait_turn`, `pushed`…), bu yüzden
+  kayıt sürümü 28 kaldı. 108 ve altı: `data/katalog-gucler.json` hiç okunmaz (`gucOf` boş döner), eski kayıt/replay aynen.
+- **Veri tek dosyada:** `data/katalog-gucler.json` (canavar kimliğine göre; üretici `python scripts/katalog-gucler.py`, tek kaynak; değerler
+  KATALOG-F2-OZELLIKLER.md ve KATALOG-F-TASARIM.md §5). Kodda yaratık adıyla koşul yok; Rng enjeksiyonu ve Command → execute → Events
+  → reducer aynen. Mühür Ruhu/kadim üretici betikleri ve canavar verisi değişmedi (yamalar 109 katmanında birleşir).
+- **Ortak ilkeller (gruplar):**
+  1. **Canavar aurası** (`auraCore` girişi; savaş başında `k109:<id>` süren etkisi): tur başı/giriş save + süren etki (Non-Euclidean Aura
+     −1d6 + tepki yok + Cosmic Madness `madAlly`, Dread Tide −1d4), dost auraları (Ten Seals Core +6 save, korku/büyü bağışıklığı, tur
+     başı 50 geçici can), yeni aura türleri `pull` (çekme), `cleanse` (durum silme; Anka halesi), `healMult` (pasif iyileşme çarpanı,
+     Cerbones Faz 2), `requiresItem` (eşya taşıyana: Armor's Betrayal), `'$owner'` değeri (aura sahibinin kimliği).
+  2. **Saldırı eki:** katalog A2 ekleri (`ekler`, A2 biçimi; itme/çekme, aşındırma, yanma, Star Mark, Kıta Pençesi AC −3, 0 HP'de
+     atomlara ayrılma, yutma) + yeni A2 alanları `splash` (hedef çevresine savurma, Continent Tail) ve `dropConc`; direnç delme
+     (`k109.pierceResist`: türler, bağışıklığı dirence indirme ya da yok sayma; `profileIn` kaynağıyla, 109'da canavar saldırısının tek
+     hedef save ve isabet yolları da kaynağı geçirir), direnç kaybı (`noResist`), zorla harekete bağışıklık (`forcedImmune`, `forcedMove`
+     başı), yakın dövüşte karşı hasar (`meleeRetaliate`), Star Mark (Invisible düşer, konsantrasyon bonusu yok), iyileşme çarpanı ve
+     mühür (`healMult`, `sealed`; reducer `healed`), save yolunda ikinci hasar türü (`saveEk`; zar bir kez, başarıda yarı) ve tek hedefli
+     save saldırısının hedef sayısı (`hedefSayisi`; tek şarj).
+  3. **Canavar eylemi:** alan bırakma (`alanBirak`: komut sonu `area_used`'tan yüzey ya da kalıcı alan, süzülme `tasi`, karanlık silme),
+     yetenek yamaları/eklemeleri (`yetenekler`, `yetenekEkle`: önce çek sonra vur `pre`, Sülfür Tufanı 3 tur `rounds`, silindir alan,
+     Misty Step, Sahte Gölge), efsanevi yamaları (ışın `target: far`) ve yeni türler `heal` (Star Tear), `seal` (Seal-Melting Talon),
+     `pull` (Seal Pull, `needsItem`).
+  4. **Faz bloğu** (`faz2`, faz olayının ardından): auralar, süren etki alanları (`etki`), Multiattack tekrarı/sırası (`repeat`, `order`),
+     ilk efsanevi eylem (`legendFirst`), su altıgenlerine zorlu arazi, bossun çevresine yüzey/halka ve kalıcı alan, faz anında ve tur başı
+     çağırma (`turBasiCagir`). Mühür Ruhu Taş Uyanışı gmNot'ları veriye çevrildi (KATALOG-SIGMAYAN kalanlar).
+  5. **Hexonia:** Size Shift (`resize` yeteneği, maliyet `free`, turda 2; boyut `effect.k109.sizeTo` ile reducer'da; gövde `bodyFitProblem`
+     ile sığmalı), Kıta Ölçeği (sahibine bağlı alan: dosta yarım siper, düşmana zorlu arazi; yarıçap 2 sabit), yalnız dost
+     (`yalnizDost`: Game Master kurulumu `planProblems` reddeder), Out-of-Time Storm (ikinci oyun `secondInit` 15: Thief's Reflexes'in
+     yansıma yoluyla her tur; turda bir isabet iptali `negateOnce`, `registerAllyHit`), Spell-Reflecting Crystal Shell (save'i geçince
+     büyü atıcısına slotsuz yeniden yapılır), LR'nin etki silmesi (`lrCleanse`).
+  6. **Anka:** Rebirth from Ashes (0 HP'de bir kez Supernova + Ember Egg; yumurtanın turunda ayaktaysa 450 HP ile kalkış ve Celestial
+     Glide dolumu; kırılırsa ölü kalır; 109'da Faz 2'nin eski %5 yaklaşığı işlemez), Hunter Soul Bond (savaş başında Avcı = aynı
+     taraftaki ilk Ranger; sırada Avcı'nın ardı, Avcı'ya konsantrasyon avantajı, 60 ft içinde komut başına hasarın yarısını üstlenme).
+  7. **Mücevher binek bağı:** Genç ve Yetişkin eğitimli binek (kontrollü binek, MB2) + binene türüne direnç etkisi.
+  8. **Captive:** Groggy Veil (ilk 2 tur uçuş yarı `flyMult`, INT save dezavantajı; `baslangic`), Armor's Betrayal (Kaltakkıran zırhı
+     taşıyana aura: hız 0, ejderhaya dezavantaj, ejderhadan avantaj), Seal Pull. Karakterde taşınan katalog eşyaları `Combatant.carried`.
+- **Yorum seçimleri (⚠ PDF'te değer yok):** Lightaur "40 ft silindir" = yerde 20 ft yarıçap, 40 ft yükseklik; Hydraxe Sülfür Gölü ve
+  Erime Gölü 2d6 asit; sanat yüzeyleri (Cimbombom alev 2 tur, Wolfgang buz 3, Mothraq zehir 10, Stormer su 3); Kongark çekimi her tur
+  (PDF "her 2 turda"); Mirage Frightened aurası 60 ft içindeki herkese (PDF "bir oyuncuya"); Misty Step = 30 ft ışınlanma yeteneği
+  (en az 2 düşmanın yanına); Soul Bond Avcı'sı ilk Ranger; Out-of-Time yalnız saldırı iptali (büyü kancası hedef görmüyor).
+- **Serüven'e ait, sorulacak (motora girmedi):** Ten Stones Resonance, mücevher yumurta izleyicisi, Ocean-Nightmare'in üç faz zinciri ve
+  gemi nesnesi, Kaltakkıran parçalanınca taşların bölgeye düşmesi (yalnız veri alanı), Taşıyıcı'ya göre binek DC'si (KATALOG-SIGMAYAN
+  "Serüven'e ait").
+- **Mühür taşları = zırha takılan artifact (kullanıcı kararı):** `data/yuva-kurallari.json` + `src/rules/sockets.ts` (tembel; `loadClassData`
+  `setSocketImpl` ile kaydeder, ana parça sınırı). Taş ayrı kapsayıcı değil: yuvaya takılınca etkisini yuvanın eşyasını giyene verir;
+  **gevşek taşınan mühür taşı etkisiz** (eski "tılsım modu" kalktı; oluşturucu eşya listesinde taş yok, `katalogD.test` güncellendi).
+  Kurallar (PDF §6 + en basit tutarlı ek):
+  - Her zırh/kalkan/cübbe tek normal yuva (PDF "bir zırhta en fazla 1 normal soket"); giyilen SRD zırhı ve kalkanı kademe 1 yuva;
+    katalog zırhı/kalkanı nadir, çok nadir, efsanevi, yadigar nadirlikte kademe 2. Taş kademesi ≤ yuva kademesi.
+  - Sv.1 zırh ve kalkana (PDF: cübbeye takılmaz); Sv.2 kademe 2 zırh/kalkan/cübbeye; Sv.3 yalnız Kaltakkıran'ın Paladin Zırhı (10 yuva,
+    kalıcı kaynaşma: oluşturucu takılı taşı kilitler) ve Koruyucu Ejderha Mührü (10 yuva; boss ruhlarını, yani Seviye 3 taşları toplayan
+    artifact; kolye değil; ejder tasviri yok).
+  - Etkiler: Sv.1 türüne sabit −3 (yeni `DamageProfile.flat`, dirençten sonra, en az 0), Sv.2 eşya kaydının kendi etkisi (direnç + turda
+    bir +1d4), Sv.3 türüne bağışıklık; Kaltakkıran 5+ taşta AC +1 ve fiziksel direnç, 10 taşta AC +2 ve fiziksel bağışıklık, Hükümdar
+    Vuruşu (ilk taşın türü, 1d6/1d8/2d6; turda bir sınırı yok). Sv.3 Savaş Sanatları planlı (oyuncu eşya eylemi yolu yok).
+  - Oluşturucu: Ekipman adımında "Yuvalar" katı (yuva başına tek seçim kutusu, SD3 görünen seçenek sayısını artırmaz); Dungeondex taş
+    kartında "Takılabilir" satırı. Karakterde `yuvalar` (konak → taş kimlikleri); geçersiz taş sessizce düşer.
+- **Kanca listesi (bu turda 1 kanca):** sabit hasar azaltma (`flat`, `*` her tür) 6 zırhta bağlandı (ZK#17, #22, #23, #26, #28, #29);
+  "her darbede" yerine her hasar örneğinde (alan ve süregelen dahil) ⚠.
+- **Denge:** yalnız `node scripts/katalog-denge-tablo.mjs` (109 verisi: ikinci hasar türü, hedef sayısı, Faz 2 tekrarı ve hasarlı aurası
+  yarı ağırlıkla). Tablo içindeki kayıtlarda etkin CR değişmedi (Cimbombom 29, Captive 28, Ocean-Nightmare 28); tablo dışı Hexonia 522 →
+  596, Titan 188 → 222 tur hasarı. Düşman listesi/HP denemesi yapılmadı.
 ## Görev KATALOG-LA-SRD: kadim ve mücevher efsanevi eylemleri SRD 5.2.1 kuralına (2026-11-27; motor, şema, kural sürümü (108) ve kayıt sürümü (28) değişmedi)
 
 - **Karar (kullanıcı):** bedelli efsanevi eylem mekaniği eklenmedi; SRD 5.2.1'e uyuldu ("The monster expends one use whenever it takes a Legendary Action"). Motor zaten her eylemde 1 hak düşüyordu (`src/battle/boss.ts`); değişen yalnız veri ve metin.
@@ -25,6 +197,30 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Tablo:** CR 30 kayıtları (tutsak-dragon, ocean-nightmare, ocean-nightmare-open-sea) zaten DMG CR 30 satırıyla karşılaştırılıyordu; "tablo dışı" yalnız CR > 30. Tablo yeniden üretildi.
 - **Efsanevi eylem bedeli: uygulanmadı.** Motor şeması (`src/battle/boss.ts` `LegendaryAction`) eylem başına bedel alanı taşımıyor; her kullanım 1 hak düşer (`legendary_used.left = legendaryLeft − 1`). Eksik alan: `LegendaryAction` üstünde eylem başına puan bedeli (ör. `cost`) ve onu düşen sayaç. Görev "yeni mekanik ekleme" dediğinden `data/efsanevi.json`'a dokunulmadı; kart metnindeki 1/2/3 puan yalnız görünüm.
 - **Testler:** `src/data/katalogF2.test.ts` Genç HP ve nefes zarı beklentileri yeni değerlere (veriye bağlı değer). Belgeler: `KATALOG-F2-PROSPEKTUS.md` Genç satırları, TR/EN canavar açıklamaları betikten.
+## EN-ACIKLAMA-YOL: `en-aciklama-uret` Windows yol hatası ve boş/eksik çıktı koruması (2026-11-27; veri, kural ve kayıt sürümü değişmedi)
+
+- **Windows yolu:** `scripts/en-aciklama-uret.mjs` alt betiği `new URL(...).pathname` ile çağırıyordu (Windows'ta `/D:/...`); artık
+  `fileURLToPath` + `node:path` (`HERE`, `ROOT`, `at()`); dosya okuma/yazmaları da aynı yoldan.
+- **Boş çıktı koruması:** kaynak JSON okunamazsa, canavar SRD metni üretilemez/boş gelirse ya da bir çıktının kayıt sayısı 0 ise betik
+  hata verip çıkar, hiçbir dosya yazılmaz (önce hepsi denetlenir, sonra yazılır).
+- **Canavar kimlikleri:** canavar TR açıklamaları `data/aciklamalar-tr-canavar.json`'a ayrıldığından beri betik kimlikleri eski
+  `aciklamalar-tr.json`'dan okuyup 0 canavar üretiyor ve **boş** `aciklamalar-en-canavar.json` yazıyordu (Linux'ta da); kimlikler yeni
+  dosyadan okunur.
+- **Düşme koruması (karar bekliyor):** mevcut çıktıda olup yeni çıktıda olmayan kayıt varsa betik yazmaz. Şu an çalıştırınca durur:
+  `aciklamalar-en-canavar.json`'daki 231 kayıt (KATALOG-F2'nin 24 kadim/mücevher canavarı, `scripts/katalog-f2-kadim.mjs` aynı dosyaya
+  ekler) SRD metninden üretilmediği için düşerdi (1549 → 1318). Seçenekler: (a) betik SRD dışı mevcut kayıtları korusun (öneri), (b)
+  katalog EN kayıtları ayrı dosyaya, (c) her çalıştırmadan sonra `katalog-f2-kadim.mjs`. Veri dosyaları bu görevde değişmedi; yalnız
+  alt betiğin yeniden ürettiği `data/canavar-ozellik.json` notu yeni TR canavar dosyasını gösteriyor.
+- **Karar (kullanıcı, 2026-11-28): (a) uygulandı.** Betik yalnız SRD kayıtlarını yeniler, SRD dışı mevcut kayıtları korur. Canavar
+  üretimi yalnız SRD'de olan canavarların anahtarlarıyla (`monsterSrd`; `_kaynak.canavar` 1318/0 eksik aynı kalır). Yazmadan önce
+  mevcut dosyayla birleştirilir: çakışan kimlikte yeni çıktı kazanır, yeni çıktıda olmayan SRD dışı kayıt (KATALOG-F2'nin 24 kadim/
+  mücevher canavarının 231 kaydı) aynen ve mevcut sırada kalır, yeni anahtar sona eklenir. Düşme koruması daraldı: yalnız SRD kaynaklı
+  bir kayıt (canavarı SRD'de olan ya da SRD metni hâlâ bulunan, elle çeviri olmayan) düşecekse durur, hiçbir dosya yazılmaz. Boş
+  kaynak/0 kayıt koruması aynı. Konsol: yenilenen SRD kaydı (1940) ve korunan SRD dışı kayıt (231). Çalıştırma sonucu
+  `aciklamalar-en-canavar.json` 1549 → 1549, veri dosyalarında fark yok; ikinci çalıştırma bit bit aynı.
+- **Aynı yol hatası (bilinçli olarak bırakıldı, 2026-11-28 kararı):** `scripts/sehir-gorunum.mjs:12`, `scripts/ses-yer-tutucu.mjs:11`; `scripts/harita-karo.mjs:21`
+  elle `/D:` düzeltmesiyle çalışıyor; `scripts/logo.ts:18`, `scripts/dungeondex-kitap.ts:14` `import.meta.dirname` yoksa aynı yedeğe düşer.
+
 ## ODA-2: çevrimiçi oda O2, yerel ağ aktarıcısı + canlı savaşta oyuncu komutları (2026-11-27; kural sürümü 108, kayıt sürümü 28 ve `ODA_SURUM` 2 değişmedi)
 
 - **Aktarıcı:** saf çekirdek `src/room/aktarici.ts` (oda kodu → host + oyuncu bağlantıları, `kimden`'i aktarıcı yazar, oyun mantığı
@@ -244,6 +440,19 @@ Kaynak PDF (11 sayfa, depo dışı `docs/katalog/`). Tek üretici `node scripts/
 - **Kuvvet çizgisinin adı:** Kongcuk → Kongilla → Kongark (ayrı kayıt aşağıda, "KATALOG-1 F: Kuvvet çizgisinin adı"). Tarihçe: eski kimlikler `darkit`/`darkath`/`darkape` yalnız bu satırda.
 - **Ölçek veride, görsele gömülmez:** Sv.1 0,25, Sv.2 0,6, Sv.3 1 (`olcek`). Dungeondex vitrini aynı dosyayı gösterebilir; Dungeondex arayüzü değişmedi. Ana parçaya veri girmez.
 - **MUHUR-OLCEK (jeton kademe ölçeği; yalnız görünüm, mekanik ve boyut sınıfı aynı):** `olcek` çizginin Sv.3 bossunun jetonuna göredir (`data/boss-gorsel.json` notu: "boss yüksekliğine göre"), yaratığın kendi boyut sınıfına göre değil. Üretici `jetonOlcek` = `token-sizes.json` `scale[<Sv.3 boyutu>]` × `olcek` yazar (Huge boss çizgisinde Sv.1 0,5, Sv.2 1,2; Mirage (Medium) çizgisinde 0,25 ve 0,6; Large Lightaur/Stormer çizgisinde 0,375 ve 0,9). `monsterAvatar` bunu `Avatar.scale`'e koyar, `tokenScale` boyut sınıfı yerine onu kullanır (oyuncu karakteri ırktan kalır); okunabilirlik alt sınırı (`minJetonPx` 18) aynen geçerli. Eski kayıtların jetonunda alan yok, boyut sınıfı ölçeği. Testler `src/data/bosslarMuhur.test.ts`, `src/ui/tokenSize.test.ts`; ekran `harita/belgeler/boss-gorsel-kontrol/jeton-olcek.jpg`.
+## Görev MUHUR-TASI-PROSPEKTUS: Mühür taşları Dungeondex'te bilgi olarak (2026-11-27; mekanik yok, kural ve kayıt sürümü değişmedi)
+
+Bağlam (kullanıcı): Mühür taşı, bir Mühür Ruhu'nun taşa hapsedilmiş hâlidir; hikâyesi Serüven'de. Şimdilik yalnız Dungeondex'te okunur bilgi.
+
+- **Durum:** 30 taş zaten katalog eşyası (`data/items-katalog.json`: 10 `cracked-elemental-stone-<tür>` BOSS#…, 10 `awakened-…`, 10 Sv.3 taşı) ve her biri tam bir Mühür Ruhu'nun ganimeti (`data/bosslar-muhur.json` `ganimet`, 30 ↔ 30). `data/katalog-anlatim.json`'da taş başına bilgi kaydı yoktu (yalnız `on-muhur` bağı ve `esyalar` listeleri); taşı ruhla ilişkilendiren metin de yoktu.
+- **Biçim (karar):** yeni veri dosyası açılmadı; ruh ve kademe tek kaynaktan, `bosslar-muhur.json` `ganimet`/`kademe` (yinelenmez). Paragraf açıklama yolunda yeni tür `muhurTasi` (kimlik = eşya kimliği): TR `data/aciklamalar-tr.json`, EN `scripts/en-aciklama/ceviri.json` `ceviri.muhurTasi` → `data/aciklamalar-en.json` (üreteç `KINDS`'e eklendi). `katalog-anlatim.json` 14 kayıtta kaldı (KATALOG-1 G testi aynen).
+- **Gösterim:** eşya prospektüsünün "Ne işe yarar" bölümünde PDF özetinin altında "Kademe", "Mühür Ruhu" (canavar adı) ve bilgi paragrafı (`src/dungeondex/prospektus/esya.ts` `muhurRuhu`). Mühür Ruhu Dungeondex canavar listesinde olmadığı için bağlantı yok.
+- **Metin (PDF'e sadık):** kademe etiketi ve "nereden bulunur" PDF §4 tablosundan (Sv.1 sandık/elit ganimet/şehir tüccarları, 3× Sv.1 → Sv.2; Sv.2 zindan ara boss'ları ya da 3× Sv.1 dövme; Sv.3 "Kaltakkıran Parçası", yalnız bölge bossu), Sv.3'te §6 girişi (zırh parçalanınca taş bölgeye düşer, bölge bossunu doğurur) ve bölge adı (`on-muhur.baglar.bolge`). "Hapsedilmiştir" cümlesi kullanıcının görev bağlamı (PDF'te yok). PDF'in §6 Faz 1 kimlik cümleleri alınmadı: eski boss tasarımını anlatıyor (ör. lav golemi; bugünkü Cimbombom aslan), yanıltır.
+- **EN:** kademe etiketleri Tier 1 · Cracked Stone / Tier 2 · Awakened Stone / Tier 3 · Boss Stone (Sv.3 için PDF Bölüm 8 "Boss Taşı"; "Kaltakkıran Parçası"nın EN adı yok, öneri). EN paragrafta Kaltakkıran ve bölge adları Türkçe özel ad olarak kalır (`aciklamalarEn.test.ts` `PROPER_NAMES` bunları `on-muhur` bağından okur).
+- **İkon:** 30 taşın hiçbirinin ikonu yok (`public/esya/` yok); hepsi zaten `data/esya-ikonsuz-izin.json`'da (Sv.1, Sv.2, Sv.3 grupları). Yeni ikon istenmedi.
+- **Kayıt açılmayan:** PDF'te her kademe için tek ortak metin var; ayrı ad/kademe yok. YT#… soket "mühür taşları" (ör. `umbral-sigil-stone`) Mühür Ruhu taşı değil, satır almaz.
+- **Üreteç notu:** `node scripts/en-aciklama-uret.mjs` Windows'ta canavar adımında (`srd-canavar-ozellik.mjs` alt süreci, `URL.pathname` yolu) kırılıyor; çıktı yalnız `muhurTasi` farkıyla alındı, canavar dosyaları değişmedi (önceden var olan sorun, bu görevde düzeltilmedi).
+- Testler: `src/dungeondex/prospektus/muhurTasi.test.ts` (30 ↔ 30, TR/EN dolu, kimlik eşlemesi, prospektüs satırları TR/EN, korumalı ad taraması temiz).
 
 ## KATALOG-1 F: Kuvvet çizgisinin adı (2026-11-27; kural ve kayıt sürümü değişmedi)
 

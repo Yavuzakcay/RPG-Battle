@@ -17,6 +17,7 @@ import trData from '../../data/aciklamalar-tr.json';
 import enData from '../../data/aciklamalar-en.json';
 import enMon from '../../data/aciklamalar-en-canavar.json';
 import betimleme from '../../data/buyu-betimleme.json';
+import anlatim from '../../data/katalog-anlatim.json';
 
 type Table = Record<string, Record<string, string>>;
 const TR = trData as unknown as Table;
@@ -24,7 +25,9 @@ const EN: Table = { ...(enData as unknown as Table), canavar: (enMon as unknown 
 const KINDS = Object.keys(TR).filter((k) => !k.startsWith('_'));
 const TURKISH = /[çşğıöüÇŞĞİÖÜ]/;
 /** Özel adlar: Türkçe harfli olup İngilizce metinde kalabilecek adlar (alt sınıf ve geçmiş adları SD4'te Türkçe). */
-const PROPER_NAMES: string[] = [];
+// Görev MUHUR-TASI-PROSPEKTUS: Mühür taşı paragraflarında Hex ve Sv.3 taşlarının düştüğü bölge adları (Türkçe özel ad).
+const PROPER_NAMES: string[] = ['Kaltakkıran', ...(anlatim as unknown as { anlatimlar: Array<{ id: string; baglar?: Array<{ bolge: string }> }> })
+  .anlatimlar.find((a) => a.id === 'on-muhur')!.baglar!.map((b) => b.bolge)];
 const numbersOf = (s: string) => new Set((s.replace(/(\d+)[- ](feet|foot)/g, '$1 ft').match(/\b\d+d\d+\b|DC \d+|\b\d+ ft\b/g) ?? []));
 const invocationIds = () => Object.values(classData.mechanics.features).flatMap((m) => (m.invocations ?? []).map((v) => v.id));
 

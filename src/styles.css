@@ -107,6 +107,7 @@ input[type='number'] { width: 90px; }
 @keyframes conveyor-flow { from { transform: translateX(-6px); } to { transform: translateX(6px); } }
 @media (prefers-reduced-motion: reduce) { .conveyor-arrow > g { animation: none; } }
 .trap-mark { font-size: 30px; text-anchor: middle; pointer-events: none; fill: #ffcf33; paint-order: stroke; stroke: #000; stroke-width: 3px; }
+.trap-mark.gm-trap { opacity: 0.45; fill: #ff8a3d; } /* Görev ODA-3: Game Master tuzak katmanı */
 .cost { font-size: 18px; fill: #fff; text-anchor: middle; paint-order: stroke; stroke: rgba(0, 0, 0, 0.7); stroke-width: 3px; pointer-events: none; }
 .token { cursor: pointer; }
 .token .ring { fill: none; stroke-width: 5; }
@@ -1580,6 +1581,12 @@ input[type="range"]:disabled { accent-color: var(--off); }
 .oda-izle-bar { position: fixed; top: 8px; left: 50%; transform: translateX(-50%); z-index: 60; display: flex; gap: 10px; align-items: center;
   padding: 6px 12px; border-radius: 10px; background: var(--panel); color: var(--ink); box-shadow: 0 2px 10px rgb(0 0 0 / 0.35); max-width: calc(100vw - 32px); }
 .oda-izle-bar span { font-size: 0.9rem; }
+/* Görev ODA-4: kopukluk (oyuncu bağlantısı, GM karar menüsü, sıra şeridindeki kopuk oyuncunun karakteri). */
+.oda-izle-bar.kopuk { outline: 2px solid var(--off, #c0392b); }
+.oda-karar { flex-wrap: wrap; justify-content: center; }
+.oda-karar-btns { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.strip-item.kopuk { opacity: 0.55; outline: 2px dashed var(--off, #c0392b); outline-offset: -2px; }
+.oda-sonuc { flex-wrap: wrap; gap: 8px; }
 
 /* Görev SD13: büyü bileşen etiketleri (V/S/M). SD10: dolu = turuncu; olmayan gösterilmez; Sessizlikte V vurgulu (çerçeve). */
 .spell-comps { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 3px; margin-inline-start: 6px; vertical-align: middle; }
@@ -1729,3 +1736,6 @@ input[type="range"]:disabled { accent-color: var(--off); }
 .mc-panel .mc-add { display: inline-flex; gap: 0.5rem; align-items: center; }
 .mc-features > h4, .mc-spells > h3 { margin-top: 1rem; }
 .seruven-level-class { display: inline-flex; gap: 0.35rem; align-items: center; margin-left: 0.5rem; }
+/* Görev ODA-5: katılım adresi ve onayı (oda lobisi). */
+.oda-adres code { display: inline-block; margin: 2px 6px 2px 0; padding: 2px 6px; border-radius: 6px; background: var(--sel, #333); color: var(--sel-ink, #fff); user-select: all; }
+.oda-onay { display: flex; gap: 6px; align-items: center; margin: 6px 0; }

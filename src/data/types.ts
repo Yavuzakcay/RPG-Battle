@@ -1029,6 +1029,8 @@ export interface KatalogEsya {
   ref: string;
   /** Türkçe ad (EN-AD `Item.name`). */
   tr: string;
+  /** Görev BOSS-IMZA-GORSEL: değişmeden önceki EN ad (kayıt geçişi `data/esya-ad-degisim.json`). */
+  eskiAd?: string;
   nadirlik: 'olagandisi' | 'nadir' | 'cokNadir' | 'efsanevi' | 'yadigar';
   tur: 'silah' | 'zirh' | 'kalkan' | 'tuketilebilir' | 'aksesuar' | 'sihirli';
   /** PDF başlığındaki sınıf/yuva ("Savaş silahı (yakın dövüş)", "başlık", "yüzük"…). */

@@ -13,21 +13,25 @@ export const ODA_PROTOKOL = 1;
 /** Tek mesajın azami boyutu (JSON karakter sayısı); büyük `anlik` parçalanır. */
 export const MESAJ_AZAMI = 4_000_000;
 
-/** Katılımda karşılaştırılan sürüm bilgisi (Karar 3: build + kural sürümü + içerik özeti eşit olmalı). */
+/**
+ * Katılımda karşılaştırılan sürüm bilgisi (Karar 3: build + kural sürümü eşit olmalı). Görev ODA-3 (madde 4, kullanıcı
+ * kararı 2026-11-28): dış içerik özeti kalktı; 108 paket oyuna gömülü, aynı build aynı içeriği taşır.
+ */
 export interface SurumBilgisi {
   protokol: number;
   /** Build kimliği (Vite `define` `__APP_BUILD__`). */
   uygulama: string;
   /** `defaultRuleVersion()`: yeni savaşın kural sürümü. */
   kuralSurumu: number;
-  /** Yüklü dış içeriğin özeti (`icerikOzeti`). Karar 4: paket JSON gönderilmez, aynı içerik şart. */
-  icerik: string;
 }
 
-export type RedNedeni = 'surum' | 'anahtar' | 'dolu' | 'kilitli' | 'kapali';
+/** Görev ODA-5: `onay` = Game Master katılımı reddetti (katılım onayı açıkken). */
+export type RedNedeni = 'surum' | 'anahtar' | 'dolu' | 'kilitli' | 'kapali' | 'onay';
 export type Asama = 'lobi' | 'kurulum' | 'savas' | 'bitti';
 
-export interface UyeOzeti { istemciId: string; ad: string; rol: Rol; bagli: boolean; karakterler: string[] }
+/** Görev ODA-4: kopan üye için Game Master kararı (bekle / yapay zekâ oynasın / GM oynasın). */
+export type UyeKarari = 'bekle' | 'yz' | 'gm';
+export interface UyeOzeti { istemciId: string; ad: string; rol: Rol; bagli: boolean; karakterler: string[]; karar?: UyeKarari }
 
 /** Oda ayarlarının istemciye giden özeti (`src/oda/model.ts`'ten türetilir). */
 export interface OdaOzeti {
@@ -44,7 +48,8 @@ export interface OdaOzeti {
 
 /** İstemci → host. */
 export type IstemciMesaji =
-  | ({ t: 'katil'; istemciId: string; ad: string; anahtar?: string; sonSeq?: number } & SurumBilgisi)
+  /** Görev ODA-4: yeniden girişte `sonSeq` + `donem`: host aynı dönemdeyse yalnız eksik olayları yollar. */
+  | ({ t: 'katil'; istemciId: string; ad: string; anahtar?: string; sonSeq?: number; donem?: number } & SurumBilgisi)
   | { t: 'karakter_gonder'; kopya: SavedCharacter }
   | { t: 'karakter_geri_al'; karakterId: string }
   | { t: 'komut'; istekId: string; cmd: Command; tabanSeq: number }
@@ -58,6 +63,8 @@ export type IstemciMesaji =
 export type HostMesaji =
   | { t: 'kabul'; istemciId: string; anahtar: string; rol: Rol; karakterler: string[] }
   | { t: 'red'; neden: RedNedeni; ayrinti?: string }
+  /** Görev ODA-5 (madde 7): katılım onayı açık; Game Master'ın kararı bekleniyor. */
+  | { t: 'onay_bekle' }
   | ({ t: 'oda_durumu' } & OdaOzeti)
   /**
    * Eşitleme tabanı: `durum` yoksa `olaylar` tam günlüktür (seq 0'dan); varsa `durum` ilk `tabanSeq` olayın sonucudur.
@@ -75,8 +82,9 @@ export type HostMesaji =
   /** Görev ODA-2: açık zar/tepki istemi kapandı (GM karar verdi, süre doldu ya da cevap alındı). */
   | { t: 'istem_iptal'; istekId: string }
   | { t: 'ozet'; donem: number; seq: number; hash: string }
-  | { t: 'uye_durumu'; istemciId: string; bagli: boolean; karar?: 'bekle' | 'yz' | 'gm' }
-  | { t: 'karakter_sonuc'; karakterId: string; durum: unknown }
+  | { t: 'uye_durumu'; istemciId: string; bagli: boolean; karar?: UyeKarari }
+  /** Görev ODA-4 (madde 8): savaş sonu karakter durumu (HP/kaynak/slot/Exhaustion); `kimlik` aynı sonucu bir kez uygulamak için. */
+  | { t: 'karakter_sonuc'; karakterId: string; durum: unknown; kimlik: string }
   | { t: 'oda_kapandi'; neden: string };
 
 /** Büyük mesajın parçası (O5 aktarıcısının boyut sınırı için; bellek ve sekmede gerekmez). */
@@ -91,14 +99,15 @@ const arr = (v: unknown): v is unknown[] => Array.isArray(v);
 const obj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 const opt = <T>(v: unknown, f: (x: unknown) => x is T): boolean => v === undefined || f(v);
 const ROLLER: readonly string[] = ['host', 'oyuncu', 'izleyici'];
-const REDLER: readonly string[] = ['surum', 'anahtar', 'dolu', 'kilitli', 'kapali'];
+const REDLER: readonly string[] = ['surum', 'anahtar', 'dolu', 'kilitli', 'kapali', 'onay'];
 const ASAMALAR: readonly string[] = ['lobi', 'kurulum', 'savas', 'bitti'];
+const KARARLAR: readonly string[] = ['bekle', 'yz', 'gm'];
 const strArr = (v: unknown): v is string[] => arr(v) && v.every(str);
 
 /** Tür başına alan denetimi (boyut ayrı). */
 const DENETIM: Record<string, (m: Record<string, unknown>) => boolean> = {
-  katil: (m) => str(m.istemciId) && !!m.istemciId && str(m.ad) && opt(m.anahtar, str) && opt(m.sonSeq, int)
-    && int(m.protokol) && str(m.uygulama) && num(m.kuralSurumu) && str(m.icerik),
+  katil: (m) => str(m.istemciId) && !!m.istemciId && str(m.ad) && opt(m.anahtar, str) && opt(m.sonSeq, int) && opt(m.donem, int)
+    && int(m.protokol) && str(m.uygulama) && num(m.kuralSurumu),
   karakter_gonder: (m) => obj(m.kopya) && str(m.kopya.id) && obj(m.kopya.sheet),
   karakter_geri_al: (m) => str(m.karakterId),
   komut: (m) => str(m.istekId) && obj(m.cmd) && str(m.cmd.type) && int(m.tabanSeq),
@@ -109,6 +118,7 @@ const DENETIM: Record<string, (m: Record<string, unknown>) => boolean> = {
   nabiz: () => true,
   kabul: (m) => str(m.istemciId) && str(m.anahtar) && ROLLER.includes(m.rol as string) && strArr(m.karakterler),
   red: (m) => REDLER.includes(m.neden as string) && opt(m.ayrinti, str),
+  onay_bekle: () => true,
   oda_durumu: (m) => str(m.ad) && str(m.gmAdi) && ASAMALAR.includes(m.asama as string)
     && arr(m.uyeler) && m.uyeler.every((u) => obj(u) && str(u.istemciId) && str(u.ad) && ROLLER.includes(u.rol as string) && typeof u.bagli === 'boolean' && strArr(u.karakterler))
     && arr(m.kurallarOzeti) && str(m.hpGorunurluk) && str(m.zarModu) && strArr(m.yzKarakterler),
@@ -122,8 +132,8 @@ const DENETIM: Record<string, (m: Record<string, unknown>) => boolean> = {
   istem_iptal: (m) => str(m.istekId),
   ozet: (m) => int(m.donem) && int(m.seq) && str(m.hash),
   karakter_red: (m) => str(m.karakterId) && ['gecersiz', 'dolu', 'kilitli'].includes(m.neden as string) && opt(m.ayrinti, str),
-  uye_durumu: (m) => str(m.istemciId) && typeof m.bagli === 'boolean',
-  karakter_sonuc: (m) => str(m.karakterId),
+  uye_durumu: (m) => str(m.istemciId) && typeof m.bagli === 'boolean' && (m.karar === undefined || KARARLAR.includes(m.karar as string)),
+  karakter_sonuc: (m) => str(m.karakterId) && obj(m.durum) && str(m.kimlik),
   oda_kapandi: (m) => str(m.neden),
   parca: (m) => str(m.kimlik) && int(m.i) && int(m.n) && (m.n as number) > 0 && (m.i as number) >= 0 && (m.i as number) < (m.n as number) && str(m.veri),
 };

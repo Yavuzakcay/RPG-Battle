@@ -85,6 +85,8 @@ export interface ActiveEffect {
   aura?: import('./auraCore').AuraSpec;
   /** Kuyruk K54: birden çok aura (Son Ders: save bonusu + tur başı Motivasyon). */
   auras?: import('./auraCore').AuraSpec[];
+  /** Görev KATALOG-GUC-TAM (sürüm 109): katalog güçlerinin alanları (`katalog109.ts`). */
+  k109?: import('./katalog109Types').K109Fx;
   /** Kuyruk K54 (sürüm 25): hareketi fırsat saldırısı doğurmaz (Çevik Yaşlı). */
   noProvoke?: boolean;
   /** Kuyruk K54b (sürüm 27): zor zemin ve zemin (yüzey) hasarı yok sayılır (Kuşbakışı Plan; `groundWard.ts`). */
@@ -845,6 +847,8 @@ export interface Combatant {
   /** Kuyruk K53 S5: pasif auralardan (syncAuras): durum bağışıklığı, can yenileyemez, ölüm save dezavantajı. */
   auraImmune?: string[];
   auraNoHeal?: true;
+  /** Görev KATALOG-GUC-TAM (109): pasif aura iyileşme çarpanı (`auraCore` `healMult`). */
+  auraHealMult?: number;
   auraDeathDis?: true;
   /** Kuyruk K54: aura ölüm save avantajı (Dar Gün Aurası). */
   auraDeathAdv?: true;
@@ -1028,6 +1032,8 @@ export interface Combatant {
   legendaryExtra?: number;
   /** Kuyruk 43: savaşta kullanılabilen sarf eşyaları (eşya kimliği → adet; iksirler). */
   consumables?: Record<string, number>;
+  /** Görev KATALOG-GUC-TAM (109): taşınan katalog eşyalarının kimlikleri (Mühür taşı, Hex'in zırhı; Seal Pull, Armor's Betrayal). */
+  carried?: string[];
   /** Kuyruk 43: Legendary Resistance bu turlar arasında kullanıldı (kendi turunun başında kalkar). */
   lrLock?: boolean;
   /** Kuyruk 19 (srdK19): 30 ft içindeki Sphinx of Wonder'ın Burst of Ingenuity'si (reducer `syncAuras` yazar). */

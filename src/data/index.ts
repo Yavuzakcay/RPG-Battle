@@ -1,3 +1,4 @@
+import { setSocketImpl } from '../rules/socketHook';
 import racesJson from '../../data/races.json';
 import classesJson from '../../data/classes.json';
 import armorJson from '../../data/armor.json';
@@ -97,8 +98,9 @@ export const spellDescriptionShown = (id: string, lang: Lang): string | undefine
  */
 /** `buyuSecenek`: büyü seçeneğinin Game Master notu (anahtar `<büyü kimliği>/<seçenek>`; Control Water, sürüm 84). */
 /** `canavar`: Kuyruk A İş 4, canavar özellik/eylemi (anahtar `<canavar>/<tür>:<ad-slug>`, liste `data/canavar-ozellik.json`). */
-export type AciklamaTuru = 'buyu' | 'esya' | 'tur' | 'yetenek' | 'altsinif' | 'invocation' | 'buyuSecenek' | 'durum' | 'canavar';
-export const trDescriptions: Record<AciklamaTuru, Record<string, string>> = { buyu: {}, esya: {}, tur: {}, yetenek: {}, altsinif: {}, invocation: {}, buyuSecenek: {}, durum: {}, canavar: {} };
+/** `muhurTasi`: Görev MUHUR-TASI-PROSPEKTUS, Mühür taşının Dungeondex bilgi paragrafı (kimlik = eşya kimliği; yalnız Dungeondex prospektüsü). */
+export type AciklamaTuru = 'buyu' | 'esya' | 'tur' | 'yetenek' | 'altsinif' | 'invocation' | 'buyuSecenek' | 'durum' | 'canavar' | 'muhurTasi';
+export const trDescriptions: Record<AciklamaTuru, Record<string, string>> = { buyu: {}, esya: {}, tur: {}, yetenek: {}, altsinif: {}, invocation: {}, buyuSecenek: {}, durum: {}, canavar: {}, muhurTasi: {} };
 export const trAciklama = (tur: AciklamaTuru, id: string): string | undefined => trDescriptions[tur][id];
 /**
  * Paket (Serüven öncesi): canavar açıklamaları (≈215 kB) `data/aciklamalar-tr-canavar.json` ayrı tembel parçada; yalnız Dungeondex
@@ -116,7 +118,7 @@ export function loadMonsterDescriptions(): Promise<void> {
  * `node scripts/en-aciklama-uret.mjs`). `loadClassData` tembel parçayla doldurur; canavar özellikleri ayrı dosyada
  * (`data/aciklamalar-en-canavar.json`), yalnız Dungeondex `loadEnMonsterDescriptions` ile yükler. Kayıt yoksa undefined.
  */
-export const enDescriptions: Record<AciklamaTuru, Record<string, string>> = { buyu: {}, esya: {}, tur: {}, yetenek: {}, altsinif: {}, invocation: {}, buyuSecenek: {}, durum: {}, canavar: {} };
+export const enDescriptions: Record<AciklamaTuru, Record<string, string>> = { buyu: {}, esya: {}, tur: {}, yetenek: {}, altsinif: {}, invocation: {}, buyuSecenek: {}, durum: {}, canavar: {}, muhurTasi: {} };
 export const enAciklama = (tur: AciklamaTuru, id: string): string | undefined => enDescriptions[tur][id];
 /** Dile göre açıklama: tr → Türkçe, en → İngilizce (yoksa undefined; "yalnız Türkçe" notu arayüzün işi). */
 export const aciklamaOf = (tur: AciklamaTuru, id: string, lang: Lang): string | undefined => (lang === 'en' ? enAciklama(tur, id) : trAciklama(tur, id));
@@ -138,8 +140,11 @@ export function loadClassData(): Promise<void> {
     import('../../data/aciklamalar-en.json'), import('../../data/items-katalog.json'),
     // Görev MC3: çoklu sınıf hesapları ve `data/cok-sinif.json` tembel parçada (ana parça sınırı); tek sınıflı yol çağırmaz.
     import('../rules/mcImpl'),
-  ]).then(([p, m, f, w, sc, s45, isrd, s69, kd, imza, s03, bet, atr, aen, ikat, mci]) => {
+    // Görev KATALOG-GUC-TAM D: mühür taşı yuva kuralı (tembel parça).
+    import('../rules/sockets'),
+  ]).then(([p, m, f, w, sc, s45, isrd, s69, kd, imza, s03, bet, atr, aen, ikat, mci, sock]) => {
     setMcImpl(mci.MC_IMPL);
+    setSocketImpl({ isStone: sock.isStone, socketItemNames: sock.socketItemNames });
     if (classDataLoaded()) return;
     // Kuyruk B2: büyü betimlemeleri (yalnız görünüm; ana parçaya girmez, sınıf verisiyle tembel gelir).
     const { _aciklama: _a, ...descriptions } = bet.default as unknown as SpellDescriptions & { _aciklama?: unknown };

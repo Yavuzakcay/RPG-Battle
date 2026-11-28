@@ -866,7 +866,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const effects = [...(c.effects ?? []).filter((e) => e.id !== effect.id), effect];
       // Görev S1: etkinin verdiği durumlar (Invisibility → Invisible) etki sürdükçe.
       const grants = (effect.grants ?? []).filter((g) => !c.conditions.includes(g));
-      return withCombatant(state, c.id, { effects, ...(grants.length ? { conditions: [...c.conditions, ...grants] } : {}) });
+      // Görev KATALOG-GUC-TAM (109; Size Shift): boyut değişimi (alan yalnız 109 savaşında oluşur; hasar/saldırı değişmez).
+      const resized = effect.k109?.sizeTo ? { size: effect.k109.sizeTo } : {};
+      return withCombatant(state, c.id, { effects, ...resized, ...(grants.length ? { conditions: [...c.conditions, ...grants] } : {}) });
     }
     case 'effect_ended': {
       const c = state.combatants[event.targetId];
@@ -1160,15 +1162,18 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       // Kuyruk 19 (Swarm, Mucus Cloud): HP kazanamaz.
-      if ((c.effects?.some((e) => e.noHeal) || c.auraNoHeal) && event.targetHpAfter > c.hp) return state;
+      if ((c.effects?.some((e) => e.noHeal || e.k109?.sealed) || c.auraNoHeal) && event.targetHpAfter > c.hp) return state;
+      // Görev KATALOG-GUC-TAM (109; alanlar yalnız 109 savaşında oluşur): iyileşme çarpanı (Cerbones Faz 2 aurası, `k109.healMult`).
+      const healK = Math.min(c.auraHealMult ?? 1, ...(c.effects ?? []).map((e) => e.k109?.healMult ?? 1));
+      const hpTo = healK < 1 && event.targetHpAfter > c.hp ? c.hp + Math.floor((event.targetHpAfter - c.hp) * healK) : event.targetHpAfter;
       // 0 HP'deki karakter iyileşince ayağa kalkar.
-      if (c.hp === 0 && event.targetHpAfter > 0 && (c.life === 'dying' || c.life === 'stable')) {
+      if (c.hp === 0 && hpTo > 0 && (c.life === 'dying' || c.life === 'stable')) {
         return withCombatant(state, event.targetId, {
-          hp: event.targetHpAfter, life: 'alive', deathSaves: { successes: 0, failures: 0 },
+          hp: hpTo, life: 'alive', deathSaves: { successes: 0, failures: 0 },
           conditions: c.conditions.filter((x) => x !== 'Unconscious'),
         });
       }
-      return withCombatant(state, event.targetId, { hp: event.targetHpAfter });
+      return withCombatant(state, event.targetId, { hp: hpTo });
     }
     case 'death_save': {
       const c = state.combatants[event.actorId];

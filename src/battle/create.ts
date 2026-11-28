@@ -1,4 +1,6 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
+import { socketParts } from '../rules/sockets';
+import { soulBondSetup } from './katalog109Ozel';
 import { KARAR104_VERSION } from './karar104Surum';
 import { bindableItem, boundWeaponId } from '../rules/itemBinding';
 import { SINIF97_VERSION } from './sinif97Surum';
@@ -181,10 +183,21 @@ export function combatantFromSheet(
   sheet: CharacterSheet,
   opts: { id: string; ownerId: string; height?: Height; carryRule?: CarryRule },
 ): Combatant {
-  if (!isMultiSheet(sheet)) return combatantFromSheet0(sheet, opts);
-  // Görev MC3: kural sürümü 104 ve altında çoklu sınıflı sayfa MC öncesi gibi (ilk sınıf + toplam seviye); 105+ büyü parçaları.
-  if (defaultRuleVersion() < MC3_VERSION) { const { classes: _c, spellClass: _s, ...old } = sheet; return combatantFromSheet0(old, opts); }
-  return mcCombatant(combatantFromSheet0(sheet, opts), sheet);
+  return withSockets(sheet, ((): Combatant => {
+    if (!isMultiSheet(sheet)) return combatantFromSheet0(sheet, opts);
+    // Görev MC3: kural sürümü 104 ve altında çoklu sınıflı sayfa MC öncesi gibi (ilk sınıf + toplam seviye); 105+ büyü parçaları.
+    if (defaultRuleVersion() < MC3_VERSION) { const { classes: _c, spellClass: _s, ...old } = sheet; return combatantFromSheet0(old, opts); }
+    return mcCombatant(combatantFromSheet0(sheet, opts), sheet);
+  })());
+}
+
+/** Görev KATALOG-GUC-TAM D: yuvadaki mühür taşlarının etkileri ve Hükümdar Vuruşu (yuva yoksa aynen). */
+function withSockets(sheet: CharacterSheet, c: Combatant): Combatant {
+  if (!sheet.yuvalar) return c;
+  const sk = socketParts(sheet);
+  if (!sk.effects.length && !sk.hits.length) return c;
+  return { ...c, effects: [...(c.effects ?? []), ...sk.effects.map((e) => ({ ...e, sourceId: c.id }) as unknown as ActiveEffect)],
+    ...(sk.hits.length ? { itemHits: [...(c.itemHits ?? []), ...sk.hits] } : {}) };
 }
 
 function combatantFromSheet0(
@@ -400,6 +413,12 @@ function combatantFromSheetBase(
     ...((): Partial<Combatant> => {
       const own = (sheet.itemNames ?? []).map((n) => items.find((i) => i.name === n)).filter((i) => i?.use);
       return own.length ? { consumables: Object.fromEntries(own.map((i) => [i!.id, 1])) } : {};
+    })(),
+    // Görev KATALOG-GUC-TAM (109): taşınan katalog eşyaları ve zırh yuvasına takılı mühür taşları (Seal Pull, Armor's Betrayal; yalnız veri).
+    ...((): Partial<Combatant> => {
+      const carried = [...new Set([...(sheet.itemNames ?? []).map((n) => items.find((i) => i.name === n)).filter((i) => i?.kaynak === 'katalog-1').map((i) => i!.id),
+        ...Object.values(sheet.yuvalar ?? {}).flat()])];
+      return carried.length ? { carried } : {};
     })(),
     ...((): Partial<Combatant> => {
       // Kuyruk 41b: Divine Intervention gibi listeli kaynak, bilinen uygun büyülere slotsuz kullanım bağlar (feat önce).
@@ -951,7 +970,8 @@ export function startBattle(
     return { ...p, initiative: d + p.initiativeBonus + soyInitMod(p, { kuralSurumu: rules, map }) - exhaustionD20Penalty(p.exhaustion) };
   });
   // Aynı toplamda, listede önce gelen önce oynar (sıralama kararlıdır).
-  const sorted = [...rolled].sort((a, b) => b.initiative - a.initiative);
+  // Görev KATALOG-GUC-TAM (109+): Hunter Soul Bond (bağlı yaratık Avcı'nın ardına).
+  const sorted = soulBondSetup({ kuralSurumu: rules }, [...rolled].sort((a, b) => b.initiative - a.initiative));
   const combatants: Record<string, Combatant> = {};
   for (const c of sorted) combatants[c.id] = c;
   const state: BattleState = {

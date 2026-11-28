@@ -1,18 +1,18 @@
 {
- "_not": "Görev KATALOG-1 G (harita/belgeler/KATALOG-1-ENVANTER.md 7. bölüm G, K4, K14): Kaltakkıran paketinin anlatım verisi (PDF 'Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi'). Yalnız veri: kod, kural ve savaş etkisi yok; durum 'anlatim', yer 'seruven' (Serüven'de ve Dungeondex'te gösterilecek; uygulama bu dosyayı henüz içe aktarmaz, ana parçaya girmez). Metin PDF'ten birebir (paragraf, madde, tablo hücresi; başlık ve 7. bölüm başlığı üst üste basılı olduğu için altlıktan/harf kümesinden). tr/en: kaydın adı; en PDF'teki motor modülü kimliğinden (Bölüm 8) okunur ad, modülü olmayan kayıtta öneri (enAdOneri). esyalar: data/items-katalog.json kimlikleri. on-muhur.baglar: bölge ↔ Sv.3 taşı ↔ bölge bossu (Mühür Ruhu); boss adı ve unvanı kullanıcının verdiği gibi, PDF adı eskiAd. Eşya güçleri ve eşya metinleri items-katalog.json'da (B, D); Mora, Tarvok ve Kaltakkıran karakter kayıtları K4 ile MC sonrasına, bölge bossu fazları ve stat blokları H parçasına.",
+ "_not": "Görev KATALOG-1 G (harita/belgeler/KATALOG-1-ENVANTER.md 7. bölüm G, K4, K14): Hex paketinin anlatım verisi (PDF 'Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi'). Yalnız veri: kod, kural ve savaş etkisi yok; durum 'anlatim', yer 'seruven' (Serüven'de ve Dungeondex'te gösterilecek; uygulama bu dosyayı henüz içe aktarmaz, ana parçaya girmez). Metin PDF'ten birebir (paragraf, madde, tablo hücresi; başlık ve 7. bölüm başlığı üst üste basılı olduğu için altlıktan/harf kümesinden). tr/en: kaydın adı; en PDF'teki motor modülü kimliğinden (Bölüm 8) okunur ad, modülü olmayan kayıtta öneri (enAdOneri). esyalar: data/items-katalog.json kimlikleri. on-muhur.baglar: bölge ↔ Sv.3 taşı ↔ bölge bossu (Mühür Ruhu); boss adı ve unvanı kullanıcının verdiği gibi, PDF adı eskiAd. Eşya güçleri ve eşya metinleri items-katalog.json'da (B, D); Mora, Tarvok ve Hex karakter kayıtları K4 ile MC sonrasına, bölge bossu fazları ve stat blokları H parçasına. BOSS-IMZA-GORSEL (kullanıcı kararı 2026-11-28): 3. ana boss artık Hex, Princeps Tenebrarum (kayıt `kaltakkiran`, `eskiAd` PDF adı, `gorsel` public/ yolu); Kaltakkıran imza kılıcın adı (data/items-katalog.json `kaltakkirans-maw-chain-greatsword`); kimlikler ve PDF atıfları (`bolum`, `pdf`, `kaynak`) değişmedi.",
  "kaynak": "katalog-1",
  "pdf": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
  "anlatimlar": [
   {
    "id": "kaltakkiran-paketi",
    "ref": "KK#0",
-   "tr": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
-   "en": "Kaltakkıran's Paladin Armor and Ten Seal Stone System",
+   "tr": "Hex'in Paladin Zırhı ve On Mühür Taşı Sistemi",
+   "en": "Hex's Paladin Armor and Ten Seal Stone System",
    "enAdOneri": true,
    "bolum": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
    "paragraflar": [
     {
-     "metin": "Bu özel tasarım dosyası, Dice & Hex Serüven modunun ana oyun sonu eksenini kuran Kaltakkıran'ın Paladin Zırhı sistemini bütün kural, prospektüs, boss fazları ve final yollarıyla tanımlar. Oyuncular 3. büyük boss olan Kaltakkıran'ı yendiklerinde, onun üzerindeki mutlak zırh parçalanır: oyuncu elinde yalnızca çatlak gövde kabuğunu ve zırha bağlı Çeneli Zincir Kılıcı'nı tutarken, zırhı besleyen 10 adet Seviye 3 Mühür Taşı kıtanın on farklı bölgesine saçılır ve her biri düştüğü yerin doğasını yozlaştırarak kendi taşını koruyan ayrı bir bölge boss'una dönüşür."
+     "metin": "Bu özel tasarım dosyası, Dice & Hex Serüven modunun ana oyun sonu eksenini kuran Hex'in Paladin Zırhı sistemini bütün kural, prospektüs, boss fazları ve final yollarıyla tanımlar. Oyuncular 3. büyük boss olan Hex'i yendiklerinde, onun üzerindeki mutlak zırh parçalanır: oyuncu elinde yalnızca çatlak gövde kabuğunu ve zırha bağlı Kaltakkıran'ı tutarken, zırhı besleyen 10 adet Seviye 3 Mühür Taşı kıtanın on farklı bölgesine saçılır ve her biri düştüğü yerin doğasını yozlaştırarak kendi taşını koruyan ayrı bir bölge boss'una dönüşür."
     }
    ],
    "esyalar": [
@@ -62,10 +62,10 @@
    "bolum": "Kaltakkıran'ın Paladin Zırhı ve On Mühür Taşı Sistemi",
    "maddeler": [
     "Seviye 1 ve 2 Taşlar kıta boyunca bulunabilir ve uygun soketli sıradan/büyülü zırhlara lanetsiz takılır.",
-    "Seviye 3 Taşlar yalnızca Kaltakkıran'ın Paladin Zırhı'na yerleşir; takıldığı an metalle kalıcı olarak kaynaşır, bir daha sökülemez ve zırh giyildiğinde kaynaşmış tüm taşlar aynı anda aktif olur.",
-    "Çeneli Zincir Kılıcı yalnızca zırh giyiliyken çalışır; İyi Final'de zırh Kıta Ejderhası'na geçtiğinde gücü kalıcı olarak söner ve bir Devrim Simgesi olarak kalır, Karanlık Final'de ise tam gücüyle kullanılır.",
+    "Seviye 3 Taşlar yalnızca Hex'in Paladin Zırhı'na yerleşir; takıldığı an metalle kalıcı olarak kaynaşır, bir daha sökülemez ve zırh giyildiğinde kaynaşmış tüm taşlar aynı anda aktif olur.",
+    "Kaltakkıran yalnızca zırh giyiliyken çalışır; İyi Final'de zırh Kıta Ejderhası'na geçtiğinde gücü kalıcı olarak söner ve bir Devrim Simgesi olarak kalır, Karanlık Final'de ise tam gücüyle kullanılır.",
     "Zırhı giymek Kararma Sayacı (0–100) biriktirir; 50'den itibaren iyi seçimler kilitlenir, 100'de zırh bedene mühürlenir.",
-    "Yolculuk zirvesinde oyuncu iki büyük finalden birini seçer: zırhı Kıta Ejderhası'na bırakıp kıtanın ölümsüz koruyucusunu uyandırmak ya da sevdiği insanların bedelini ödeyerek Yeni Düzenin Kaltakkıranı olmak."
+    "Yolculuk zirvesinde oyuncu iki büyük finalden birini seçer: zırhı Kıta Ejderhası'na bırakıp kıtanın ölümsüz koruyucusunu uyandırmak ya da sevdiği insanların bedelini ödeyerek Yeni Düzenin Hex'i olmak."
    ],
    "esyalar": [
     "kaltakkirans-paladin-armor",
@@ -87,12 +87,14 @@
   {
    "id": "kaltakkiran",
    "ref": "KK#1",
-   "tr": "Kaltakkıran",
-   "en": "Kaltakkıran",
+   "tr": "Hex, Princeps Tenebrarum",
+   "en": "Hex, Princeps Tenebrarum",
+   "eskiAd": "Kaltakkıran",
+   "gorsel": "boss/hex.webp",
    "bolum": "3. Ana Boss Dosyası — Kaltakkıran (20. Seviye Kırık Kanat)",
    "paragraflar": [
     {
-     "metin": "Bir zamanlar düzeni koruyan göksel bir şövalyeyken yeminini kırıp kanatlarını yitiren Kaltakkıran, kaybolan Lich Kara Malek'in çırağı Al-İha Mora ile kader birliği yaparak kıtayı tahakküm altına almıştır. Mora, zırhın tek zaafı olan Kıta Ejderhası'nı yüz yıl boyunca rüya hapsinde tutarken; Kaltakkıran hem kıtanın düzenini kılıçla ezmiş hem de dağda bulunan yetim Dağ Ezen Tarvok'u bir arena canavarına dönüştürmüştür."
+     "metin": "Bir zamanlar düzeni koruyan göksel bir şövalyeyken yeminini kırıp kanatlarını yitiren Hex, kaybolan Lich Kara Malek'in çırağı Al-İha Mora ile kader birliği yaparak kıtayı tahakküm altına almıştır. Mora, zırhın tek zaafı olan Kıta Ejderhası'nı yüz yıl boyunca rüya hapsinde tutarken; Hex hem kıtanın düzenini kılıçla ezmiş hem de dağda bulunan yetim Dağezen Tarvok'u bir arena canavarına dönüştürmüştür."
     }
    ],
    "not": "K4: kimlik alanı (tür, geçmiş, çoklu sınıf, nitelikler), Kırık Kanat Uyanışı, Çoklu Sınıf Savaş Mimarisi ve Taktik Özet karakter kaydına (MC sonrası); burada yalnız anlatım.",
@@ -110,11 +112,11 @@
    "paragraflar": [
     {
      "baslik": "Kıta Ejderhası'nın İradesi (Psikolojik İhanet)",
-     "metin": "Zırh, Kaltakkıran'ın yarım kalmış göksel gücünü kadim ejderha iradesi karşısında küçümser; duruşu kırıldığı turlarda İhanet Çatlağı açılıp bağışıklıkları düşer (Bölüm 3)."
+     "metin": "Zırh, Hex'in yarım kalmış göksel gücünü kadim ejderha iradesi karşısında küçümser; duruşu kırıldığı turlarda İhanet Çatlağı açılıp bağışıklıkları düşer (Bölüm 3)."
     },
     {
-     "baslik": "B. 3. Boss Kaltakkıran'ı Yenmenin Anahtarı",
-     "metin": "Kaltakkıran savaşında zırh henüz parçalanmamış ve 10 taşla tam bütünlüktedir; düz kaba kuvvetle ona hasar vermek neredeyse imkânsızdır. Parti bu savaşı zırhın kibrini Kaltakkıran'a çevirerek kazanır: (1) Savaş alanındaki kadim ejderha çağrı çanını/mührünü tetiklemek ya da üstün bir varlığın gölgesini arenaya çekmek, (2) Kaltakkıran'ı art arda Prone, Shove, Intimidation veya yüksek kurtarma zarı baskısıyla zayıf düşürüp mutlak hâkimiyet duruşunu kırmak. Duruşu kırıldığı her tur zırh Kaltakkıran'dan şüphe duyup İhanet Çatlağı açar; bağışıklıkları düşen Kaltakkıran hasar alır ve 0 HP'ye indiğinde zırh onu reddederek paramparça olur, 10 Seviye 3 taşı kıtaya savurur."
+     "baslik": "B. 3. Boss Hex'i Yenmenin Anahtarı",
+     "metin": "Hex savaşında zırh henüz parçalanmamış ve 10 taşla tam bütünlüktedir; düz kaba kuvvetle ona hasar vermek neredeyse imkânsızdır. Parti bu savaşı zırhın kibrini Hex'e çevirerek kazanır: (1) Savaş alanındaki kadim ejderha çağrı çanını/mührünü tetiklemek ya da üstün bir varlığın gölgesini arenaya çekmek, (2) Hex'i art arda Prone, Shove, Intimidation veya yüksek kurtarma zarı baskısıyla zayıf düşürüp mutlak hâkimiyet duruşunu kırmak. Duruşu kırıldığı her tur zırh Hex'ten şüphe duyup İhanet Çatlağı açar; bağışıklıkları düşen Hex hasar alır ve 0 HP'ye indiğinde zırh onu reddederek paramparça olur, 10 Seviye 3 taşı kıtaya savurur."
     }
    ],
    "esyalar": [
@@ -131,7 +133,7 @@
     "whisper-crystal",
     "void-fracture"
    ],
-   "not": "K14: Kaltakkıran savaşı yalnız anlatım; duruş kırılması ve İhanet Çatlağı motorda yok.",
+   "not": "K14: Hex savaşı yalnız anlatım; duruş kırılması ve İhanet Çatlağı motorda yok.",
    "durum": "anlatim",
    "yer": "seruven"
   },
@@ -144,7 +146,7 @@
    "kanca": "corruptionTrack",
    "paragraflar": [
     {
-     "metin": "Kaltakkıran'ın Paladin Zırhı, taşıyıcısının merhametini ve vicdanını zamanla bastırır. Oyuncu bu zırhı bir sürekli gündelik kıyafet gibi giyemez; hangi zindanda giyip hangi şehir etkileşiminden önce çıkaracağını hesaplamak zorundadır."
+     "metin": "Hex'in Paladin Zırhı, taşıyıcısının merhametini ve vicdanını zamanla bastırır. Oyuncu bu zırhı bir sürekli gündelik kıyafet gibi giyemez; hangi zindanda giyip hangi şehir etkileşiminden önce çıkaracağını hesaplamak zorundadır."
     },
     {
      "baslik": "Tek Satır Kural",
@@ -253,14 +255,14 @@
       ],
       [
        "75–99",
-       "Kaltakkıran'ın İradesi",
+       "Hex'in İradesi",
        "İyi seçimler arayüzden tamamen silinir; şehir içi barışçıl görev çözümleri kilitlenir. Zırhı sırtından çıkarmak için günde bir kez DC 10 + Takılı Taş WIS kurtarma zarı gerekir (başarısızsa zırh o gün çıkarılamaz).",
        "Portre gölgelenir; iyi yeminli müttefikler partiden ayrılma eşiğine gelir."
       ],
       [
        "100",
        "Mühürlü İrade (Kalıcı Kilit)",
-       "Zırh bedene kalıcı olarak kilitlenir; artık normal yollarla çıkarılamaz, dinlenme veya tapınak duası Kararmayı düşürmez. Kıta Ejderhası Zirvesi'ne çağrı açılır: oyuncu ya Psikolojik İhanet Kırılımı ile zırhı ejderhaya bırakıp arınır ya da bedelini ödeyerek Yeni Düzenin Kaltakkıranı olur (Bölüm 3 ve 7).",
+       "Zırh bedene kalıcı olarak kilitlenir; artık normal yollarla çıkarılamaz, dinlenme veya tapınak duası Kararmayı düşürmez. Kıta Ejderhası Zirvesi'ne çağrı açılır: oyuncu ya Psikolojik İhanet Kırılımı ile zırhı ejderhaya bırakıp arınır ya da bedelini ödeyerek Yeni Düzenin Hex'i olur (Bölüm 3 ve 7).",
        "Halk korkuyla dağılır; Kıta Ejderhası zırhın çağrısını uzaktan hisseder."
       ]
      ]
@@ -281,7 +283,7 @@
    "kanca": "superiorBeingBetrayal",
    "paragraflar": [
     {
-     "metin": "Kaltakkıran'ın Paladin Zırhı ve içine kaynaşmış taşlar, taşıyıcılarına sadık birer alet değildir; tıpkı efendisini arayan iradeli bir yadigâr gibi yalnızca mutlak güç ve tahakkümün yanında dururlar. Zırh, karşısında mevcut sahibinden daha baskın bir varlık (örneğin bir Kadim/Yetişkin Ejderha, bir İblis Lordu veya Kaltakkıran'ın kendisi) sezdiği anda sahibini bırakıp o daha güçlü bedene geçmek için kıvranmaya başlar."
+     "metin": "Hex'in Paladin Zırhı ve içine kaynaşmış taşlar, taşıyıcılarına sadık birer alet değildir; tıpkı efendisini arayan iradeli bir yadigâr gibi yalnızca mutlak güç ve tahakkümün yanında dururlar. Zırh, karşısında mevcut sahibinden daha baskın bir varlık (örneğin bir Kadim/Yetişkin Ejderha, bir İblis Lordu veya Hex'in kendisi) sezdiği anda sahibini bırakıp o daha güçlü bedene geçmek için kıvranmaya başlar."
     },
     {
      "baslik": "A. Üstün Varlık Çekimi (Savaşta Psikolojik İhanet)",
@@ -337,7 +339,7 @@
    ],
    "paragraflar": [
     {
-     "metin": "Taş ekosistemi oyunun başından sonuna kadar kesintisiz bir ilerleme sunar. Seviye 1 ve 2 taşlar normal zırh soketlerine girerken, Seviye 3 taşlar yalnızca Kaltakkıran'ın Paladin Zırhı'na özeldir."
+     "metin": "Taş ekosistemi oyunun başından sonuna kadar kesintisiz bir ilerleme sunar. Seviye 1 ve 2 taşlar normal zırh soketlerine girerken, Seviye 3 taşlar yalnızca Hex'in Paladin Zırhı'na özeldir."
     }
    ],
    "tablolar": [
@@ -365,9 +367,9 @@
        "Demircide değiştirilebilir · Lanetsiz"
       ],
       [
-       "Seviye 3 Kaltakkıran Parçası",
+       "Seviye 3 Boss Taşı",
        "Yalnızca kıtadaki 10 Bölge Bossu'ndan (her türden 1 adet)",
-       "Yalnızca Kaltakkıran'ın Paladin Zırhı (sıradan zırh çatlar)",
+       "Yalnızca Hex'in Paladin Zırhı (sıradan zırh çatlar)",
        "O hasar türüne Tam Bağışıklık (Immunity) + durum koruması + Boss Savaş Sanatı (1/UD)",
        "Geri sökülemez · Kararmayı hızlandırır"
       ]
@@ -419,11 +421,11 @@
    "bolum": "5. Kaltakkıran'ın 10 Parçası — Seviye 3 Taş Prospektüsleri (#1–#10)",
    "paragraflar": [
     {
-     "metin": "Aşağıdaki 10 benzersiz taş, yalnızca Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşabilir. Her taş kendi türünde mutlak bağışıklık (saldırılar, büyüler ve harita yüzeyleri dahil) ve o taşı taşıyan bölge boss'undan miras kalan 1 İmza Boss Savaş Sanatı (uzun dinlenmede 1 kez) kazandırır."
+     "metin": "Aşağıdaki 10 benzersiz taş, yalnızca Hex'in Paladin Zırhı'na kalıcı olarak kaynaşabilir. Her taş kendi türünde mutlak bağışıklık (saldırılar, büyüler ve harita yüzeyleri dahil) ve o taşı taşıyan bölge boss'undan miras kalan 1 İmza Boss Savaş Sanatı (uzun dinlenmede 1 kez) kazandırır."
     },
     {
      "baslik": "6. On Bölge Bossu ve %50 Can “Taş Uyanışı” Fazları",
-     "metin": "Kaltakkıran yenilip zırhı parçalandığında her Seviye 3 taş kıtanın bir bölgesine düşer ve bir bölge boss'unu doğurur. Her boss kendi taşının hasar türüne bağışıktır ve canı %50'nin altına düştüğü an göğsündeki Seviye 3 taş çatlayıp taşarak altıgen arenayı kökten değiştiren Taş Uyanışı (Faz 2) geçişini tetikler."
+     "metin": "Hex yenilip zırhı parçalandığında her Seviye 3 taş kıtanın bir bölgesine düşer ve bir bölge boss'unu doğurur. Her boss kendi taşının hasar türüne bağışıktır ve canı %50'nin altına düştüğü an göğsündeki Seviye 3 taş çatlayıp taşarak altıgen arenayı kökten değiştiren Taş Uyanışı (Faz 2) geçişini tetikler."
     }
    ],
    "bossSinifi": {
@@ -582,7 +584,7 @@
   {
    "id": "iki-final-yolu",
    "ref": "KK#7",
-   "tr": "İki Büyük Final Yolu — Ölümsüz Koruyucu veya Yeni Düzenin Kaltakkıranı",
+   "tr": "İki Büyük Final Yolu — Ölümsüz Koruyucu veya Yeni Düzenin Hex'i",
    "en": "Two Great Final Paths",
    "enAdOneri": true,
    "bolum": "7. İki Büyük Final Yolu — Ölümsüz Koruyucu veya Yeni Düzenin Kaltakkıranı",
@@ -601,7 +603,7 @@
      "sutunlar": [
       "Boyut",
       "Yol A — Ölümsüz Koruyucu (Ejderha Evrimi)",
-      "Yol B — Yeni Düzenin Kaltakkıranı (Karanlık)"
+      "Yol B — Yeni Düzenin Hex'i (Karanlık)"
      ],
      "satirlar": [
       [
@@ -610,7 +612,7 @@
        "10/10 tam bağışıklık (13 hasar türü) ve AC 20 gücüyle kalıcı olarak oyuncuda kalır."
       ],
       [
-       "Çeneli Zincir Kılıcı",
+       "Kaltakkıran",
        "Zırh bağı koptuğundan gücü söner; savaş dışı bir Devrim Simgesi olarak kalır.",
        "Tam gücüyle zırhla birlikte aktif kalır; Boğucu Kıskaç yükü 3/UD'ye yükselir."
       ],
@@ -645,11 +647,11 @@
    "paragraflar": [
     {
      "baslik": "Ejderhanın Bilgeliği ve Evrimi",
-     "metin": "Oyuncu Psikolojik İhanet Kırılımı ile (veya gönüllü olarak) zırhı Kıta Ejderhası'na teslim ettiğinde, zırh yeni ve daha güçlü efendisine atlar. Ancak Kıta Ejderhası'nın binlerce yıllık kadim WIS iradesi, Kaltakkıran'ın kinini ve taşların karanlık çekimini anında yakıp söndürür; geriye yalnızca on elementin saf dengesi kalır. Zırh sıvı metal gibi ejderhanın pullarına işler, on taş sırt omurgası boyunca dizilir ve yaşlı ejderha efsanevi bir evrim geçirerek tüm hasar türlerini dengeleyen Kıtanın Ölümsüz Koruyucusu formuna yükselir."
+     "metin": "Oyuncu Psikolojik İhanet Kırılımı ile (veya gönüllü olarak) zırhı Kıta Ejderhası'na teslim ettiğinde, zırh yeni ve daha güçlü efendisine atlar. Ancak Kıta Ejderhası'nın binlerce yıllık kadim WIS iradesi, Hex'in kinini ve taşların karanlık çekimini anında yakıp söndürür; geriye yalnızca on elementin saf dengesi kalır. Zırh sıvı metal gibi ejderhanın pullarına işler, on taş sırt omurgası boyunca dizilir ve yaşlı ejderha efsanevi bir evrim geçirerek tüm hasar türlerini dengeleyen Kıtanın Ölümsüz Koruyucusu formuna yükselir."
     },
     {
-     "baslik": "Çeneli Zincir Kılıcı'nın Akıbeti (Devrim Simgesi)",
-     "metin": "Zırh artık ejderhaya bağlandığı için, yalnızca zırhla uyanan Kaltakkıran'ın Çeneli Zincir Kılıcı'nın rün hattı ve zincir mekanizması kalıcı olarak söner. Kılıç bir daha savaşta kullanılmaz; oyuncunun mutlak güç ayartmasına yenilmediğinin ve eski tiranlık düzenini kırdığının anıtı olarak envanterde ya da şehir meydanında bir Devrim Simgesi şeklinde kalır."
+     "baslik": "Kaltakkıran'ın Akıbeti (Devrim Simgesi)",
+     "metin": "Zırh artık ejderhaya bağlandığı için, yalnızca zırhla uyanan Kaltakkıran'ın rün hattı ve zincir mekanizması kalıcı olarak söner. Kılıç bir daha savaşta kullanılmaz; oyuncunun mutlak güç ayartmasına yenilmediğinin ve eski tiranlık düzenini kırdığının anıtı olarak envanterde ya da şehir meydanında bir Devrim Simgesi şeklinde kalır."
     },
     {
      "baslik": "Ejderhanın Armağanı",
@@ -668,18 +670,18 @@
   {
    "id": "yol-b",
    "ref": "KK#7B",
-   "tr": "Yol B — Yeni Düzenin Kaltakkıranı (Karanlık Final ve Sevilenlerin Bedeli)",
+   "tr": "Yol B — Yeni Düzenin Hex'i (Karanlık Final ve Sevilenlerin Bedeli)",
    "en": "Bond Sacrifice Ledger",
    "bolum": "7. İki Büyük Final Yolu — Ölümsüz Koruyucu veya Yeni Düzenin Kaltakkıranı",
    "kanca": "bondSacrificeLedger",
    "paragraflar": [
     {
      "baslik": "Mutlak Gücü Sahiplenme",
-     "metin": "Oyuncu zırhı bırakmayı reddedip Kıta Ejderhası'nın çağrısına baş kaldırdığında (veya zirvede karanlık yemini mühürlediğinde) 10/10 taşlı Kaltakkıran'ın Paladin Zırhı ile Çeneli Zincir Kılıcı'nı kalıcı olarak elinde tutar. Kılıcın Boğucu Kıskaç ve Zaaf Akımı yükü 2 → 3 / Uzun Dinlenme olur; oyuncu kıtanın kalan tüm meydan okumalarında bu mutlak yarı-tanrı gücünü sınır tanımadan kullanabilir."
+     "metin": "Oyuncu zırhı bırakmayı reddedip Kıta Ejderhası'nın çağrısına baş kaldırdığında (veya zirvede karanlık yemini mühürlediğinde) 10/10 taşlı Hex'in Paladin Zırhı ile Kaltakkıran'ı kalıcı olarak elinde tutar. Kılıcın Boğucu Kıskaç ve Zaaf Akımı yükü 2 → 3 / Uzun Dinlenme olur; oyuncu kıtanın kalan tüm meydan okumalarında bu mutlak yarı-tanrı gücünü sınır tanımadan kullanabilir."
     },
     {
      "baslik": "Sevilenlerin Bedeli",
-     "metin": "Karanlık taht bedava gelmez. Zırhın iradesi merhameti ve bağlılığı tamamen söndürdüğü için, yolculuk boyunca oyuncunun dostluk, sadakat veya sevgi bağı kurduğu en yakın yoldaşlar ve NPC'ler (bondSacrificeLedger) bu dönüşüme karşı çıkar. Karar eşiğinde sevdiği insanlar ya oyuncuyu kalıcı olarak terk eder ya da onu durdurmak için son cephede karşısına dikilir. Oyuncu Yeni Düzenin Kaltakkıranı olabilmek için kendi elleriyle bu bağları koparmak ve sevdiği insanları kaybetme bedelini ödemek zorundadır."
+     "metin": "Karanlık taht bedava gelmez. Zırhın iradesi merhameti ve bağlılığı tamamen söndürdüğü için, yolculuk boyunca oyuncunun dostluk, sadakat veya sevgi bağı kurduğu en yakın yoldaşlar ve NPC'ler (bondSacrificeLedger) bu dönüşüme karşı çıkar. Karar eşiğinde sevdiği insanlar ya oyuncuyu kalıcı olarak terk eder ya da onu durdurmak için son cephede karşısına dikilir. Oyuncu Yeni Düzenin Hex'i olabilmek için kendi elleriyle bu bağları koparmak ve sevdiği insanları kaybetme bedelini ödemek zorundadır."
     },
     {
      "baslik": "Yalnız Hükümdarlık",
@@ -702,7 +704,7 @@
    "bolum": "8. Sistem Özeti ve Motor Kancaları (9 Modül)",
    "paragraflar": [
     {
-     "metin": "Kaltakkıran paketi toplam 15 özgün parça içerir: 1 Yadigâr Paladin Zırhı, 1 Zırha Kilitli Çeneli Zincir Kılıcı, 2 normal soket taşı şablonu (Seviye 1 ve 2 · 10'ar element varyantlı), 10 benzersiz Seviye 3 Boss Taşı ve 1 Koruyucu Ejderha Mührü. 10 bölge boss'unun tamamı yalnızca kendi Seviye 3 Taşlarını korur; diğer iki ana hikâye boss'unun imza ekipmanları ayrı bir katalogda tasarlanacaktır."
+     "metin": "Hex paketi toplam 15 özgün parça içerir: 1 Yadigâr Paladin Zırhı, 1 Zırha Kilitli Kaltakkıran, 2 normal soket taşı şablonu (Seviye 1 ve 2 · 10'ar element varyantlı), 10 benzersiz Seviye 3 Boss Taşı ve 1 Koruyucu Ejderha Mührü. 10 bölge boss'unun tamamı yalnızca kendi Seviye 3 Taşlarını korur; diğer iki ana hikâye boss'unun imza ekipmanları ayrı bir katalogda tasarlanacaktır."
     }
    ],
    "tablolar": [
@@ -740,12 +742,12 @@
       ],
       [
        "adaptiveWeaknessResolver",
-       "Çeneli Zincir Kılıcı",
+       "Kaltakkıran",
        "Saldırı anında hedefin zayıflık/direnç/bağışıklık ve en düşük statını okuyup adaptif büyü/element türünü seçme."
       ],
       [
        "chainFormTether",
-       "Çeneli Zincir Kılıcı",
+       "Kaltakkıran",
        "Yalnızca Paladin Zırhı giyiliyken aktifleştirme, 5 ft / 15 ft form geçişi, sarmal bağı ve İyi Final'de Devrim Simgesi kilidi."
       ],
       [

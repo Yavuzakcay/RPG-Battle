@@ -17,7 +17,7 @@ import { OdaIstemci } from './client';
 import { BaglantiHatasi } from './transport';
 import type { SurumBilgisi } from './protocol';
 
-const SURUM: SurumBilgisi = { protokol: 1, uygulama: 'test-build', kuralSurumu: 108, icerik: 'yok' };
+const SURUM: SurumBilgisi = { protokol: 1, uygulama: 'test-build', kuralSurumu: 108 };
 const ODA: OdaBilgisi = { ad: 'Masa', gmAdi: 'Ayşe', kurallarOzeti: [], hpGorunurluk: 'tam', zarModu: 'auto', yzKarakterler: [] };
 
 /** Yapay zekâyla oynanan savaş: her komuttan sonra `adim(oturum)` çağrılır (GM'in savaş ekranı). */
@@ -93,9 +93,9 @@ describe('oda: katılım', () => {
     expect(geri.rol).toBe('oyuncu');
     expect(geri.anahtar).toBe(dogru);
   });
-  it('sürüm uyuşmazlığı (build, kural sürümü, içerik, protokol) reddedilir', async () => {
+  it('sürüm uyuşmazlığı (build, kural sürümü, protokol) reddedilir', async () => {
     const m = await masa();
-    for (const [alan, deger] of [['uygulama', 'baska-build'], ['kuralSurumu', 107], ['icerik', 'farkli'], ['protokol', 2]] as const) {
+    for (const [alan, deger] of [['uygulama', 'baska-build'], ['kuralSurumu', 107], ['protokol', 2]] as const) {
       const c = new OdaIstemci({ transport: m.hub.baglanti(), kod: '123456', istemciId: `V-${alan}`, ad: 'V', surum: { ...SURUM, [alan]: deger } });
       const red: string[] = [];
       c.abone((o) => { if (o.tur === 'red') red.push(`${o.neden}:${o.ayrinti}`); });

@@ -9,6 +9,7 @@ import type { BattleState } from './battle/types';
 import { applyBattleResult } from './app/partyStatus';
 import { migrateSubclasses, newCharacter, type SavedCharacter } from './rules/builder';
 import { migrateLineages } from './rules/lineage';
+import { migrateItemNames } from './rules/itemRename';
 import { newPendingLineages } from './app/lineageNotice';
 import { repairSlots } from './rules/characterRest';
 import type { Session, SessionWatch } from './ui/session';
@@ -77,7 +78,8 @@ type Screen =
 
 /** Üst seviye: giriş ekranı, oyuncu ve GM rolleri, haritalı savaş ve durum. */
 export default function App() {
-  const [screen, setScreen] = useState<Screen>({ name: 'home' });
+  // Görev ODA-5 (madde 6): oda sunucusunun gösterdiği katılım adresi (`?oda=<kod>`) doğrudan "Odaya katıl"ı açar.
+  const [screen, setScreen] = useState<Screen>(() => (/[?&]oda=\d{6}/.test(window.location.search) ? { name: 'katil' } : { name: 'home' }));
   const [worldOnly, setWorldOnly] = useState(() => window.location.hash === '#dunya');
   const [galeri, setGaleri] = useState(() => window.location.hash === '#galeri');
   useEffect(() => {
@@ -190,14 +192,15 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
   const [subclassNotice, setSubclassNotice] = useState<string | null>(null);
   useEffect(() => {
     if (!classInfo.ready) return;
-    const m = migrateSubclasses(characters);
+    // Görev BOSS-IMZA-GORSEL: adı değişen eşyalar (Kaltakkıran → Hex'in zırhı, kılıç Kaltakkıran) eski kayıtta yeni ada çevrilir.
+    const m = migrateSubclasses(migrateItemNames(characters));
     // Görev K3: soyu boş (ya da bulunmayan) Elf/Gnome/Goliath/Tiefling/Dragonborn karakterlere ilk soy (bir kerelik not).
     const g = migrateLineages(m.list);
     // H-SLOT: eski kayıtlı durumda (slot en çoğu yok) slotlar sınıf ve seviyenin tablosuna tamamlanır.
     const r = repairSlots(g.list);
     // Kuyruk AS1a: soyu isteğe bağlı türdeki eski kayıtlar soysuz kalır; her karakter için yalnızca bir kez bildirilir.
     const pick = newPendingLineages(g.pending);
-    if (m.assigned.length === 0 && g.assigned.length === 0 && r.list === g.list && pick.length === 0) return;
+    if (m.list === characters && m.assigned.length === 0 && g.assigned.length === 0 && r.list === g.list && pick.length === 0) return;
     store(r.list);
     if (m.assigned.length === 0 && g.assigned.length === 0 && r.repaired.length === 0 && pick.length === 0) return;
     setSubclassNotice([
@@ -271,7 +274,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
           });
         }} />;
     case 'katil':
-      return <OdaKatil characters={characters} onBack={home} roomId={screen.roomId}
+      return <OdaKatil characters={characters} onBack={home} roomId={screen.roomId} onCharacters={store}
         onWatch={(watch) => { const s = watch.current(); if (s) setScreen({ name: 'battle', session: s, watch, restored: true }); }}
         onBuild={(id, overlay) => setScreen({ name: 'builder', character: newCharacter(newId()), oda: { id, overlay } })} />;
     case 'battle':

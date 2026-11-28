@@ -9,6 +9,7 @@
   - **Etkin HP:** HP + Legendary Resistance (kullanım başına CR 1–4: 10, 5–10: 20, 11–16: 30, 17+: 45) + Faz 2 geçici canı. Tek element bağışıklığı ve zayıflık etkin HP'ye katılmadı.
   - **Savunma CR'si:** etkin HP'nin satırı, AC farkının her 2 puanı 1 basamak.
   - **Tur hasarı (3 tur ortalaması):** 1. tur en güçlü alan/nefes saldırısı 2 hedefe (başarısız save, tam hasar) ya da çoklu saldırı, hangisi büyükse; 2–3. tur çoklu saldırı. Saldırı ekleri (`riders.extra`) dahil. Her tura efsanevi eylemler eklenir (SRD 5.2.1: her eylem 1 hak; hak kadar eylem, her eylem bir kez, en güçlüler; alanlı efsanevi eylem 2 hedef). Puan bedeli yok (KATALOG-LA-SRD).
+  - **Katalog güçleri (kural sürümü 109, `data/katalog-gucler.json`):** save yolundaki ikinci hasar türü save saldırısının ortalamasına eklenir; çok hedefli tek hedef save saldırısı (Storm Lightning, Void-Lightning 3 hedef) hedef sayısıyla; Faz 2 saldırı tekrarı (Titan 4 dokunaç) ve Faz 2'nin hasarlı aurası (Cimbombom 2d6, 2 hedef) dövüşün yarısında, yarı ağırlıkla. Yüzey/alan bırakma, auraların zar cezası, direnç delme ve çağrılar katılmadı.
   - **Saldırı CR'si:** tur hasarının satırı, saldırı bonusu farkının her 2 puanı 1 basamak (yakın saldırısı olmayan kayıtta kurtarma DC'si).
   - **Etkin CR:** savunma ve saldırı CR'sinin ortalamasına en yakın basamak. "+" ve "(tavan)": değer CR 30 satırını aştı.
 - **Fark sütunları:** HP ve tur hasarı için "bantta" ya da bandın kaç puan altında/üstünde olduğu; AC, saldırı bonusu ve DC için kayıt − DMG.
@@ -78,7 +79,7 @@
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | cim | 3 | Bite×2 | 22 | +5 | +4 | — | 13 | — | — | 22 | 21–26 | bantta | — | 1 | 3 | 2 |
 | cimbom | 10 | Bite×2 | 57 | +8 | +7 | Lesser Hellfire Roar: 18 (DC 16) | 16 | 0 | — | 57 | 63–68 | -6 (altında) | — | 8 | 9 | 8 |
-| cimbombom | 26 | Bite + Claw×2 | 173 | +12 | +12 | Hellfire Roar: 105 (DC 21) | 21 | 0 | 3 eylem, 3 hak/tur (≈107 hasar/tur) | 292 | 231–248 | +44 (üstünde) | eşik %50; zayıflık kalkar (soğuk); nefes dolar; nefes alanı ×1,25 | 29 | 29 | 29 |
+| cimbombom | 26 | Bite + Claw×2 | 173 | +12 | +12 | Hellfire Roar: 105 (DC 21) | 21 | 0 | 3 eylem, 3 hak/tur (≈107 hasar/tur) | 299 | 231–248 | +51 (üstünde) | eşik %50; zayıflık kalkar (soğuk); nefes dolar; nefes alanı ×1,25 | 29 | 29 | 29 |
 | doggie | 2 | Bite | 16 | +5 | +3 | — | 13 | — | — | 16 | 15–20 | bantta | — | 1/2 | 3 | 2 |
 | wolfie | 8 | Bite×2 | 46 | +7 | +7 | Lesser Blizzard Breath: 14 (DC 16) | 16 | 0 | — | 46 | 51–56 | -5 (altında) | — | 6 | 7 | 6 |
 | wolfgang | 20 | Bite + Claw | 91 | +10 | +10 | Blizzard Breath: 55 (DC 19) | 19 | 0 | 3 eylem, 3 hak/tur (≈60 hasar/tur) | 157 | 123–140 | +17 (üstünde) | eşik %50; zayıflık kalkar (ateş); nefes dolar; nefes alanı ×1,25 | 22 | 21 | 21 |
@@ -106,15 +107,15 @@
 | kongcuk | 3 | Fist×2 | 22 | +5 | +4 | — | 13 | — | — | 22 | 21–26 | bantta | — | 1 | 3 | 2 |
 | kongilla | 9 | Fist×2 | 50 | +7 | +7 | Lesser Void Roar: 14 (DC 16) | 16 | 0 | — | 50 | 57–62 | -7 (altında) | — | 9 | 7 | 8 |
 | kongark | 25 | Fist×2 + Grab | 156 | +12 | +12 | Void Roar: 99 (DC 21) | 21 | 0 | 3 eylem, 3 hak/tur (≈98 hasar/tur) | 268 | 213–230 | +38 (üstünde) | eşik %50; zayıflık kalkar (psişik); nefes dolar; nefes alanı ×1,25 | 27 | 28 | 27 |
-| tutsak-dragon | 30 | Bite + Claw×2 | 87 | +19 | +14 | Continent Roar Breath: 68 (DC 26) | 23 | +3 | 2 eylem, 3 hak/tur (≈74 hasar/tur) | 177 | 303–320 | -126 (altında) | — | 30+ | 27 | 28 (tavan) |
-| dragon-of-hexonia-a | 40 | World-Breaker Bite + Continent-Shaper Claw×2 + Continent Tail | 289 | +25 | tablo dışı | Continent Judgment Breath: 165 (DC 32) | tablo dışı | — | 3 eylem, 5 hak/tur (≈220 hasar/tur) | 522 | tablo dışı | — | — | tablo dışı | tablo dışı | tablo dışı |
-| dragon-of-hexonia-b | 40 | World-Breaker Bite + Continent-Shaper Claw×2 + Continent Tail | 289 | +25 | tablo dışı | Continent Judgment Breath: 165 (DC 32) | tablo dışı | — | 3 eylem, 5 hak/tur (≈220 hasar/tur) | 522 | tablo dışı | — | — | tablo dışı | tablo dışı | tablo dışı |
+| tutsak-dragon | 30 | Bite + Claw×2 | 87 | +19 | +14 | Continent Roar Breath: 104 (DC 26) | 23 | +3 | 2 eylem, 3 hak/tur (≈74 hasar/tur) | 201 | 303–320 | -102 (altında) | — | 30+ | 27 | 28 (tavan) |
+| dragon-of-hexonia-a | 40 | World-Breaker Bite + Continent-Shaper Claw×2 + Continent Tail | 289 | +25 | tablo dışı | Continent Judgment Breath: 275 (DC 32) | tablo dışı | — | 3 eylem, 5 hak/tur (≈220 hasar/tur) | 596 | tablo dışı | — | — | tablo dışı | tablo dışı | tablo dışı |
+| dragon-of-hexonia-b | 40 | World-Breaker Bite + Continent-Shaper Claw×2 + Continent Tail | 289 | +25 | tablo dışı | Continent Judgment Breath: 275 (DC 32) | tablo dışı | — | 3 eylem, 5 hak/tur (≈220 hasar/tur) | 596 | tablo dışı | — | — | tablo dışı | tablo dışı | tablo dışı |
 | kozmik-anka | 32 | Cosmic Beak + Starfire Talons×2 | 128 | +19 | tablo dışı | Celestial Glide: 77 (DC 27) | tablo dışı | — | 1 eylem, 3 hak/tur (≈36 hasar/tur) | 172 | tablo dışı | — | eşik %5; +450 geçici can; nefes dolar | tablo dışı | tablo dışı | tablo dışı |
 | kozmik-anka-savas | 32 | Cosmic Beak + Starfire Talons×2 | 128 | +19 | tablo dışı | Celestial Glide: 77 (DC 27) | tablo dışı | — | 1 eylem, 3 hak/tur (≈36 hasar/tur) | 172 | tablo dışı | — | eşik %5; +450 geçici can; nefes dolar | tablo dışı | tablo dışı | tablo dışı |
 | ember-egg | 0 | — | 0 | — | +3 | — | 13 | — | — | 0 | 0–1 | bantta | — | 9 | 0 | 4 |
-| ocean-nightmare | 30 | Tentacle×3 | 114 | +20 | +14 | Storm Lightning: 44 (DC 25) | 23 | +3 | 3 eylem, 2 hak/tur (≈74 hasar/tur) | 188 | 303–320 | -115 (altında) | — | 30 | 27 | 28 |
-| ocean-nightmare-open-sea | 30 | Tentacle×3 | 114 | +20 | +14 | Storm Lightning: 44 (DC 25) | 23 | +3 | 3 eylem, 2 hak/tur (≈74 hasar/tur) | 188 | 303–320 | -115 (altında) | — | 30 | 27 | 28 |
-| titan-of-nightmare | 35 | Eldritch Tentacle×3 | 144 | +22 | tablo dışı | Maddening Gaze: 44 (DC 27) | tablo dışı | — | 2 eylem, 4 hak/tur (≈44 hasar/tur) | 188 | tablo dışı | — | eşik %50 | tablo dışı | tablo dışı | tablo dışı |
+| ocean-nightmare | 30 | Tentacle×3 | 114 | +20 | +14 | Storm Lightning: 66 (DC 25) | 23 | +3 | 3 eylem, 2 hak/tur (≈74 hasar/tur) | 194 | 303–320 | -109 (altında) | — | 30 | 27 | 28 |
+| ocean-nightmare-open-sea | 30 | Tentacle×3 | 114 | +20 | +14 | Storm Lightning: 66 (DC 25) | 23 | +3 | 3 eylem, 2 hak/tur (≈74 hasar/tur) | 194 | 303–320 | -109 (altında) | — | 30 | 27 | 28 |
+| titan-of-nightmare | 35 | Eldritch Tentacle×3 | 168 | +22 | tablo dışı | Void-Lightning Strike: 99 (DC 27) | tablo dışı | — | 2 eylem, 4 hak/tur (≈44 hasar/tur) | 222 | tablo dışı | — | eşik %50 | tablo dışı | tablo dışı | tablo dışı |
 | alphlet | 7 | Bite + Claw×2 | 36 | +6 | +6 | Thunder Breath: 36 (DC 16) | 15 | +1 | — | 48 | 45–50 | bantta | — | 7 | 7 | 7 |
 | alphyr | 19 | Bite + Claw×2 | 100 | +10 | +10 | Thunder Breath: 77 (DC 21) | 19 | +2 | — | 117 | 117–122 | bantta | — | 19 | 19 | 19 |
 | alphadrake | 28 | Bite + Claw×2 | 165 | +13 | +13 | Thunder Breath: 105 (DC 25) | 22 | +3 | 3 eylem, 2 hak/tur (≈156 hasar/tur) | 336 | 267–284 | +52 (üstünde) | — | 27 | 30+ | 28 (tavan) |

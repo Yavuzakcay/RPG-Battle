@@ -127,7 +127,7 @@ import { activeTool, hexOwner, openGoalTool, toolbarShown, type ActiveTool, type
 import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
-import { autoplayEnemyTurns, autoplaySummonTurn } from './ui/autoplay';
+import { autoplayEnemyTurns, autoplayPartyTurn, autoplaySummonTurn } from './ui/autoplay';
 import { shiftHexes } from './battle/shift';
 import { brutalOptions, brutalReady, type BrutalBlow } from './battle/brutal';
 import { steedActions } from './battle/steed';
@@ -210,6 +210,9 @@ import { throwProblem } from './battle/objectMotion';
 import { concealed, objectShown } from './battle/hiddenObjects';
 import { OBJECTS, objectAt } from './battle/objectData';
 import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf } from './ui/stealthView';
+import { setViewerHpVis } from './oda/active';
+import { useWakeLock } from './ui/wakeLock';
+import { IZLEYICI_GM, alanGorunur, gmTuzaklari, jetonGorunumu, nesneGorunumu, type Izleyici } from './room/view';
 import { MoralBar } from './ui/MoralBar';
 import { DamageChip, GlyphBadges, GlyphText } from './ui/glyph/Glyph';
 import { glyphLabel } from './ui/glyph/glyphs';
@@ -564,7 +567,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   const odaId = props.odaId;
   const stateRef = useRef(session.state);
   stateRef.current = session.state;
-  const kopru = useRef<{ remote: RemoteAsker; sonuc: (k: UzakKomut, hata: string | null) => void; kapat: () => void } | null>(null);
+  const [odaHost, setOdaHost] = useState(false);
+  const kopru = useRef<import('./screens/odaCanli').HostKoprusu | null>(null);
   const odaMod = useRef<typeof import('./screens/odaCanli') | null>(null);
   const [uzakKuyruk, setUzakKuyruk] = useState<UzakKomut[]>([]);
   const aktifUzak = useRef<UzakKomut | null>(null);
@@ -574,10 +578,26 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     void import('./screens/odaCanli').then((m) => {
       if (iptal) return;
       odaMod.current = m;
-      kopru.current = m.hostSavasBagla(odaId, (u) => setUzakKuyruk((q) => [...q, u]), () => stateRef.current);
+      // Görev ODA-4: sayfa yenilendiyse önceki çevrimiçi oda aynı kodla, kayıtlı üyelerle geri açılır.
+      void m.hostDirilt(odaId).then(() => {
+        if (iptal) return;
+        kopru.current = m.hostSavasBagla(odaId, (u) => setUzakKuyruk((q) => [...q, u]), () => stateRef.current);
+        setOdaHost(!!kopru.current);
+      });
     });
-    return () => { iptal = true; kopru.current?.kapat(); kopru.current = null; };
+    return () => { iptal = true; kopru.current?.kapat(); kopru.current = null; setOdaHost(false); };
   }, [odaId]);
+  // Görev ODA-3: izleyici. Oyuncu cihazında izlemenin söylediği (kendi karakterleri), GM cihazında (çevrimiçi host) Game
+  // Master: her şeyi görür, düşman HP'si tam. Tek cihazda null: sıradan türeyen perde (`viewerOf`) aynen.
+  const iz: Izleyici | null = props.watch?.viewer?.() ?? (odaHost ? IZLEYICI_GM : null);
+  const gmAraclari = !props.watch;
+  // Görev ODA-4 (madde 2): çevrimiçi savaşta ekran kilitlenmesin (GM cihazı uyuyunca oda durur).
+  useWakeLock(odaHost || !!props.watch);
+  useEffect(() => {
+    if (!odaHost) return undefined;
+    setViewerHpVis('tam');
+    return () => setViewerHpVis(null);
+  }, [odaHost]);
   const remoteAsker: RemoteAsker = {
     dice: (r) => kopru.current?.remote.dice(r) ?? null,
     reaction: (r) => kopru.current?.remote.reaction(r) ?? null,
@@ -943,6 +963,35 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   // Y2 G2: "Düşmanı oynat" düşman turlarını tek tek oynatır, aralarında bir çerçeve bırakır (yapay zekâ kararları arayüzü
   // uzun süre bloklamasın). Zar ya da tepki beklerken durur; zar istemi iptal edilince zincir de biter.
   const [enemyRun, setEnemyRun] = useState(0);
+  // Görev ODA-4: çevrimiçi odada bağlantısı kopan oyuncunun sırası. Game Master karar verir (bekle / yapay zekâ oynasın /
+  // GM oynasın / turu atla); "yapay zekâ" kararında tur `autoplayPartyTurn` ile oynanır (oyuncu dönünce sıradaki turdan
+  // itibaren kontrol ona geçer: host kararı sıra geçince kaldırır).
+  const [, setKararSurum] = useState(0);
+  useEffect(() => (odaHost ? kopru.current?.abone(() => setKararSurum((n) => n + 1)) : undefined), [odaHost]);
+  const kopuk = odaHost && active && actor && actor.side === 'party' && !actor.civilian ? kopru.current?.sahip(actor.ownerId) ?? null : null;
+  const yzSirasi = !!kopuk && kopru.current?.yz(actor?.ownerId) === true;
+  const yzDenenen = useRef<BattleState | null>(null);
+  useEffect(() => {
+    if (!yzSirasi || dice.pending || dice.reaction || aktifUzak.current || yzDenenen.current === session.state) return;
+    yzDenenen.current = session.state;
+    const timer = window.setTimeout(() => dice.play((rng) => autoplayPartyTurn(session, rng)), 0);
+    return () => window.clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [yzSirasi, session, dice.pending, dice.reaction]);
+  const KC = t().odaCevrimici;
+  const kararBar = kopuk && !kopuk.bagli && kopuk.karar !== 'gm' && actor ? (
+    <div className="oda-izle-bar oda-karar kopuk" role="status" data-testid="oda-karar">
+      <span>{kopuk.karar === 'yz' ? KC.aiPlaying(kopuk.ad) : kopuk.karar === 'bekle' ? KC.waiting(kopuk.ad) : KC.decideTitle(kopuk.ad, actor.name)}</span>
+      {kopuk.karar !== 'yz' && (
+        <span className="oda-karar-btns">
+          {kopuk.karar !== 'bekle' && <button type="button" onClick={() => kopru.current?.karar(kopuk.istemciId, 'bekle')}>{KC.decide.bekle}</button>}
+          <button type="button" data-testid="oda-karar-yz" onClick={() => kopru.current?.karar(kopuk.istemciId, 'yz')}>{KC.decide.yz}</button>
+          <button type="button" onClick={() => kopru.current?.karar(kopuk.istemciId, 'gm')}>{KC.decide.gm}</button>
+          <button type="button" onClick={() => dice.play((rng) => dispatch(session, { type: 'end_turn', actorId: actor.id }, rng))}>{KC.decide.atla}</button>
+        </span>
+      )}
+    </div>
+  ) : null;
   useEffect(() => {
     if (!enemyRun || dice.pending || dice.reaction) return;
     if (!active || actor?.side !== 'enemies') { setEnemyRun(0); return; }
@@ -1468,7 +1517,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     }
     const obj0 = objectAt(state, h);
     const secretObj = !!obj0 && concealed(state, obj0);
-    const obj = obj0 && (!secretObj || showHidden) ? obj0 : null;
+    const obj = obj0 && (!secretObj || (iz ? iz.tur === 'gm' : showHidden)) ? obj0 : null;
     // A1: "Nesne fırlat": önce bitişik nesne, sonra hedef altıgen (motor geçerliliği vurgular).
     if (obj && active && actor && mode === 'throwObj') {
       const why0 = throwProblem(state, actor, obj);
@@ -1629,6 +1678,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
 
   const zoneKeys = useMemo(() => new Set(setup && selected ? placeHexes(state, selected).map(hexKey) : []), [state, setup, selected]);
   const marks = useMemo(() => mapMarks(state), [state]);
+  const gmTuzak = useMemo(() => (iz ? gmTuzaklari(state, iz) : []), [state, iz?.tur]);
   const gm = useMemo(() => gmMapActions(state), [state]);
   const areaKeys = new Set(area.map(hexKey));
   const summonKeys = useMemo(() => new Set(active && mode === 'summon' && spell ? summonHexes(state, actorId, spell, choicePick).map(hexKey)
@@ -2005,7 +2055,9 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       const foe = targetId && state.combatants[targetId]?.side !== actor.side ? targetId : undefined;
       // Görev OYUNCU-HEDEF-DOST: seçili dost hedef (kendisi değil) onaylı `crossSide` ile (yutma, çekme, hedefli yetenek).
       const ally = !foe && targetId && targetId !== actorId && state.combatants[targetId]?.side === actor.side ? targetId : undefined;
-      const opts: Array<string | undefined> = a.kind === 'grant' && (a.grant?.length ?? 0) > 1 ? a.grant ?? [] : [undefined];
+      // Görev KATALOG-GUC-TAM (109): Size Shift seçenekleri (şu anki boyut dışında).
+      const opts: Array<string | undefined> = a.kind === 'resize' ? ['T', 'S', 'M', 'L', 'H', 'G'].filter((x) => x !== actor.size)
+        : a.kind === 'grant' && (a.grant?.length ?? 0) > 1 ? a.grant ?? [] : [undefined];
       return opts.map((opt): Item => {
         const plain: Command = { type: 'monster_ability', actorId, abilityId: a.id, ...(foe ? { targetId: foe } : {}), ...(opt ? { option: opt } : {}) };
         const crossCmd: Command | null = ally ? { type: 'monster_ability', actorId, abilityId: a.id, targetId: ally, crossSide: true, ...(opt ? { option: opt } : {}) } : null;
@@ -2166,6 +2218,11 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
             const c = hexCenter({ col: col ?? 0, row: row ?? 0 });
             return <text key={`t${key}`} x={c.x} y={c.y + 10} className="trap-mark">⚠</text>;
           })}
+          {/* Görev ODA-3: Game Master tuzak katmanı (çevrimiçi odada GM cihazı): bulunmamış tuzaklar soluk. */}
+          {gmTuzak.map((h) => {
+            const c = hexCenter(h);
+            return <text key={`gt${hexKey(h)}`} x={c.x} y={c.y + 10} className="trap-mark gm-trap"><title>{t().odaCevrimici.gmTrap}</title>⚠</text>;
+          })}
           {/* Görev B2: büyü alanları (kalıcı zemin, rüzgâr duvarı, yürüyen alanlar). Kuyruk 16 K16A: sprite'lı alanlar tek
               katmanda (tür önceliği, önbellekli taban); sprite'ı olmayanlar eskisi gibi renkli altıgen ve simge. */}
           {((zs) => {
@@ -2197,7 +2254,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                 })}
               </>
             );
-          })((state.map?.zones ?? []).filter((z) => zoneShownTo(state, z, 'party', showHiddenZones)))}
+          })((state.map?.zones ?? []).filter((z) => (iz ? alanGorunur(state, z, iz) : zoneShownTo(state, z, 'party', showHiddenZones))))}
           {/* Kuyruk K68b (sürüm 52): Call Lightning bulutunun sınırı (60 ft); nişanda büyücünün çevresinde önizleme. */}
           {((rings) => rings.map(({ id, hexes, base }) => (
             <g key={`cloud${id}`} className="cloud-ring" aria-hidden="true">
@@ -2223,7 +2280,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
             const c = hexCenter(ob.at);
             const def = OBJECTS[ob.kind];
             // Kuyruk 30 D1: bulunmamış gizli nesne oyuncuya çizilmez; Game Master görünümünde (gizlileri göster) soluk.
-            const shown = objectShown(state, ob, showHidden);
+            const shown = iz ? nesneGorunumu(state, ob, iz) : objectShown(state, ob, showHidden);
             if (shown === 'none') return null;
             const secret = shown === 'faded';
             return (
@@ -2252,7 +2309,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
             // Görünen jetonlar; ölçek boyut sınıfından (data/token-sizes.json), mekanik olarak tek altıgen.
             const shown = Object.values(state.combatants)
               .filter((c) => c.pos && c.life !== 'dead' && (c.hp > 0 || c.life !== 'alive' || c.regenPending))
-              .map((c) => ({ c, view: tokenView(state, c, showHidden) }))
+              .map((c) => ({ c, view: iz ? jetonGorunumu(c, iz) : tokenView(state, c, showHidden) }))
               .filter((x) => x.view !== 'invisible')
               .map((x) => ({ ...x, id: x.c.id, pos: x.c.pos as Offset, y: hexCenter(x.c.pos as Offset).y, scale: readableScale(tokenScale(x.c), readable) }));
             // Aşağıdaki jeton üstte; büyük jeton komşusundaki küçüğü örtmez (drawOrder).
@@ -2599,11 +2656,11 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
               if (!c || c.summon?.gone) return null;
               const out = c.life === 'dead' || (c.hp <= 0 && c.life === 'alive' && !c.regenPending);
               // Karşı tarafın gizli savaşçısı sıra şeridinde de belli olmasın.
-              if (tokenView(state, c, showHidden) === 'invisible') {
+              if ((iz ? jetonGorunumu(c, iz) : tokenView(state, c, showHidden)) === 'invisible') {
                 return <span key={id} role="listitem" className="strip-item unknown" aria-label="Bilinmeyen">?</span>;
               }
               return (
-                <button key={id} role="listitem" className={`strip-item${id === actorId && active ? ' now' : ''}${out ? ' out' : ''}${c.concentration ? ' conc' : ''}`}
+                <button key={id} role="listitem" className={`strip-item${id === actorId && active ? ' now' : ''}${out ? ' out' : ''}${c.concentration ? ' conc' : ''}${odaHost && c.side === 'party' && kopru.current?.sahip(c.ownerId)?.bagli === false ? ' kopuk' : ''}`}
                   onClick={() => setDrawerId(id)} aria-label={B.drawer.details(c.name)} title={c.concentration ? t().view.concentrating(c.concentration.spell) : c.name}>
                   {framedBadge(c, 30, <AvatarBadge avatar={c.avatar} size={30} ring={c.side === 'party' ? 'var(--party)' : 'var(--enemy)'} title={c.name} />)}
                   {c.concentration && <span className="strip-conc" aria-label={t().view.concentrating(c.concentration.spell)}>◎</span>}
@@ -2631,6 +2688,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
             {optionsOpen && (
               <div className="hud-pop">
                 <SoundPanel />
+                {/* Görev ODA-3: Game Master araçları, kayıt ve yükleme oyuncu cihazında yok. */}
+                {gmAraclari && (<>
                 {active && gm.triggers.includes('eruption') && <button onClick={() => { reset(); setMode('erupt'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.erupt}</button>}
                 {active && gm.triggers.includes('lavaRise') && <button onClick={() => { run({ type: 'map_trigger', rule: 'lavaRise' }); setOptionsOpen(false); }}>{B.gm.lavaRise}</button>}
                 {active && gm.triggers.includes('avalanche') && <button onClick={() => { run({ type: 'map_trigger', rule: 'avalanche' }); setOptionsOpen(false); }}>{B.gm.avalanche}</button>}
@@ -2649,7 +2708,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                 {active && sleepingDragon(state) && (
                   <button onClick={() => { setConfirmWake(true); setOptionsOpen(false); }}>{B.gm.wake}</button>
                 )}
-                {viewerOf(state) === 'gm' && Object.values(state.combatants).some((c) => c.side === 'party' && c.hidden) && (
+                {!iz && viewerOf(state) === 'gm' && Object.values(state.combatants).some((c) => c.side === 'party' && c.hidden) && (
                   <button onClick={() => setShowHidden((v) => !v)}>{B.hiddenTokens(showHidden)}</button>
                 )}
                 <button onClick={() => { toast(saveBattle(session) ? B.saved : B.saveFailed); setOptionsOpen(false); }}>{B.save}</button>
@@ -2665,9 +2724,10 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                   } else toast(r.error);
                   setOptionsOpen(false);
                 }}>{B.load}</button>
+                </>)}
                 {active && <button onClick={() => { setShowZones((v) => !v); setOptionsOpen(false); }}>{t().view.zones(showZones)}</button>}
                 {active && <button onClick={() => { setHazardOn((v) => { try { localStorage.setItem('rpg-battle-tehlike', v ? '0' : '1'); } catch { /* yok */ } return !v; }); setOptionsOpen(false); }}>{t().view.hazard(hazardOn)}</button>}
-                {ruleVersion(state) >= 41 && <button onClick={() => { setShowHiddenZones((v) => !v); setOptionsOpen(false); }}>{t().view.hiddenZones(showHiddenZones)}</button>}
+                {gmAraclari && !iz && ruleVersion(state) >= 41 && <button onClick={() => { setShowHiddenZones((v) => !v); setOptionsOpen(false); }}>{t().view.hiddenZones(showHiddenZones)}</button>}
                 <ThemeButton className="" />
                 <button onClick={cycleDiceAnim}>{t().dice.anim.label(t().dice.anim[diceAnim])}</button>
                 
@@ -3842,12 +3902,13 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       </div>
   );
   // Görev ODA-1: salt izlemede üst şerit (dokunma kapalı; yalnız çıkış).
+  const baglantiDurumu = props.watch?.connection?.() ?? 'bagli';
   const watchBar = props.watch ? (
-    <div className={`oda-izle-bar${watchCtl ? ' playing' : ''}`} role="status" data-testid="oda-izle-bar">
-      <span>{watchCtl ? t().odaCevrimici.playing : t().odaCevrimici.watching}</span>
+    <div className={`oda-izle-bar${watchCtl ? ' playing' : ''}${baglantiDurumu !== 'bagli' ? ' kopuk' : ''}`} role="status" data-testid="oda-izle-bar">
+      <span>{baglantiDurumu === 'yeniden' ? t().odaCevrimici.reconnecting : baglantiDurumu === 'koptu' ? t().odaCevrimici.reconnectFailed : watchCtl ? t().odaCevrimici.playing : t().odaCevrimici.watching}</span>
       <button type="button" onClick={() => props.onExit(session.state)}>{props.exitLabel ?? t().odaCevrimici.leaveWatch}</button>
     </div>
-  ) : null;
+  ) : kararBar;
   if (!portrait) {
     return (
       <div className={`mb-screen${props.watch && !watchCtl ? ' watching' : ''}`}>

@@ -12,6 +12,13 @@
 // Ruhu kontrol sayfaları yalnız 30 Mühür Ruhu birlikte işlenince yeniden çizilir.
 // KATALOG-DEX-DENGE-HAZIRLIK: kadim yaratıklar (`--grup kadim`; kaynak dosya adı = kimlik), çıktı `kadim` bölümüne; aynı görseli
 // paylaşan varyant (KADIM_ORTAK: Ocean-Nightmare açık deniz fazı) ayrı dosya üretmez, `ortak` ile kaynağın dosyasını gösterir.
+// BOSS-IMZA-GORSEL: üç ana boss (`--grup ana`: Hex, Princeps Tenebrarum; Dağezen Tarvok; Al-İha Mora; kaynak dosya adı = kimlik), çıktı
+// `ana` bölümüne. İç boşluk kipi kimlik başına (ANA_IC): `yok` = yalnız kenardan erişilen zemin silinir, `saf` = ayrıca kapalı alanda yalnız saf
+// #FF00FF'e dar toleranslı (SAF_T) ve en az SAF_MIN px bileşenler saydam (Mora: asanın fener kafesi çubukları arası, fener camı ve teal
+// alev uzak tonlar; Hex: kanat–gövde ve kılıç–bacak arası cepler, alındaki yıldız (saf macentaya ≈107) ve zırh taşları uzak tonlar,
+// zemine bağlı değiller). Gölgeli kapalı boşluk geçişi (renk tonu ölçütü; Hex'in yıldız haresi 184,42,186 gibi mor tonları da
+// yakalayabilir) `saf`/`yok` kipinde kapalı; `saf+ton` (Mora) kipinde sıkı eşiklerle açık: kafes içindeki cepler gölgeli saf macenta
+// (215,30,212 → 172,13,167), cam ve teal alevde G yüksek, mor-mavi el alevinde |R − B| büyük.
 // Yön: kaynak görseller sağa bakar (sprite kuralı, src/ui/tokenFacing.ts). Kadim yan tablosunda `yon: "sol"` olan kayıt
 // (Dragon of Hexonia b) yatay aynalanır; `yon: "sag"` ve yönsüz kayıtlar kaynaktaki gibi.
 import fs from 'node:fs';
@@ -48,6 +55,12 @@ const KADIM = ['tutsak-dragon', 'dragon-of-hexonia-a', 'dragon-of-hexonia-b', 'k
 const KADIM_ORTAK = { 'ocean-nightmare-open-sea': 'ocean-nightmare' };
 const KADIM_DEX = fs.existsSync('data/canavarlar-kadim.json') ? JSON.parse(fs.readFileSync('data/canavarlar-kadim.json', 'utf8')).dex ?? {} : {};
 const AYNA = new Set(KADIM.filter((id) => KADIM_DEX[id]?.yon === 'sol'));
+/** Ana bosslar ve iç boşluk kipi (bkz. başlık). Tarvok'un yedeği tarvok-sert.jpg bağlanmaz. */
+const ANA = ['hex', 'tarvok', 'mora'];
+const ANA_IC = { hex: 'saf', tarvok: 'varsayilan', mora: 'saf+ton' };
+/** `saf` kipinde saf macentaya (255, 0, 255) RGB uzaklık sınırı ve en küçük bileşen (işlem boyunda px). */
+const SAF_T = 48;
+const SAF_MIN = 40;
 const WORK = 1024; // işlem boyu (uzun kenar)
 const OUT_H = 512; // çıktı uzun kenarı
 
@@ -109,15 +122,22 @@ async function processOne(id) {
     if (x > 0) seed(x - 1, y); if (x < w - 1) seed(x + 1, y); if (y > 0) seed(x, y - 1); if (y < h - 1) seed(x, y + 1);
   }
   // İç boşluklar: zemine çok yakın (d < T0) ve en az 0,05 % alan kaplayan bileşenler de zemin.
+  // BOSS-IMZA-GORSEL: `yok` kipinde iç boşluk yok; `saf` kipinde ölçüt saf macentaya uzaklık (< SAF_T).
+  const icKip = ANA_IC[id] ?? 'varsayilan';
+  const saf = new Float32Array(w * h);
+  for (let j = 0; j < w * h; j++) saf[j] = Math.hypot(px[j * 4] - 255, px[j * 4 + 1], px[j * 4 + 2] - 255);
+  const safKip = icKip === 'saf' || icKip === 'saf+ton';
+  const icZemin = (j) => (safKip ? saf[j] < SAF_T : dist[j] < T0);
   const seen = new Uint8Array(w * h); let holes = 0;
   for (let j0 = 0; j0 < w * h; j0++) {
-    if (outside[j0] || seen[j0] || dist[j0] >= T0) continue;
+    if (icKip === 'yok') break;
+    if (outside[j0] || seen[j0] || !icZemin(j0)) continue;
     const comp = []; const st = [j0]; seen[j0] = 1;
     while (st.length) { const j = st.pop(); comp.push(j); const x = j % w, y = (j / w) | 0;
-      for (const [nx, ny] of [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]]) { if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue; const k = ny * w + nx; if (!seen[k] && !outside[k] && dist[k] < T0) { seen[k] = 1; st.push(k); } } }
+      for (const [nx, ny] of [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]]) { if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue; const k = ny * w + nx; if (!seen[k] && !outside[k] && icZemin(k)) { seen[k] = 1; st.push(k); } } }
     // Zemine çok yakın (d < T0) kapalı boşluk (kaburga arası, kristaller arası): HOLE_MIN'den (renkli zeminde 12 px) büyükse zemin; çevresindeki
     // geçiş pikselleri (d < T1) de zemine taşar.
-    if (comp.length >= HOLE_MIN) { holes++; for (const j of comp) { outside[j] = 1; stack.push(j); } }
+    if (comp.length >= (safKip ? SAF_MIN : HOLE_MIN)) { holes++; for (const j of comp) { outside[j] = 1; stack.push(j); } }
   }
   while (stack.length) {
     const j = stack.pop(); const x = j % w, y = (j / w) | 0;
@@ -128,26 +148,29 @@ async function processOne(id) {
   // olmayan çizim renkleri (hidra kuyruğu tonları) bu ölçüte girmez.
   const bgM = [0, 1, 2].map((c) => (tl[c] + tr[c] + bl[c] + br[c]) / 4);
   const KH = [0, 1, 2].filter((c) => bgM[c] > 128), OH = [0, 1, 2].filter((c) => bgM[c] <= 128);
+  // BOSS-IMZA-GORSEL: `saf+ton` kipinde (Mora) eşikler sıkı: tohum > 120, büyüme > 90, |R − B| < 40, tam saydam ≥ 130.
+  const TON = icKip === 'saf+ton' ? { tohum: 120, buyume: 90, fark: 40, tam: 130 } : { tohum: 80, buyume: 50, fark: 70, tam: 90 };
   const hueSpill = (j) => { const i = j * 4; if (!KH.length || !OH.length) return 0; const ks = KH.map((c) => px[i + c]);
-    return (Math.max(...ks) - Math.min(...ks) < 70) ? Math.min(...ks) - Math.max(...OH.map((c) => px[i + c])) : 0; };
+    return (Math.max(...ks) - Math.min(...ks) < TON.fark) ? Math.min(...ks) - Math.max(...OH.map((c) => px[i + c])) : 0; };
   const shade = new Float32Array(w * h).fill(-1);
   const seen2 = new Uint8Array(w * h); let shadeHoles = 0;
   for (let j0 = 0; j0 < w * h; j0++) {
-    if (outside[j0] || seen2[j0] || hueSpill(j0) <= 80) continue;
+    if (icKip === 'saf' || icKip === 'yok') break;
+    if (outside[j0] || seen2[j0] || hueSpill(j0) <= TON.tohum) continue;
     const comp = []; const st = [j0]; seen2[j0] = 1;
     while (st.length) { const j = st.pop(); comp.push(j); const x = j % w, y = (j / w) | 0;
-      for (const [nx, ny] of [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]]) { if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue; const k = ny * w + nx; if (!seen2[k] && !outside[k] && hueSpill(k) > 50) { seen2[k] = 1; st.push(k); } } }
+      for (const [nx, ny] of [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]]) { if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue; const k = ny * w + nx; if (!seen2[k] && !outside[k] && hueSpill(k) > TON.buyume) { seen2[k] = 1; st.push(k); } } }
     // İnce halka (çizgi ile zemin arasındaki koyu macenta kenar) değil, geniş gölgeli boşluk olmalı: 3×3 komşuluğunun hepsi
     // doygun olan "çekirdek" piksel en az 15.
     let core = 0;
     for (const j of comp) {
-      const x = j % w, y = (j / w) | 0; if (x < 1 || y < 1 || x >= w - 1 || y >= h - 1 || hueSpill(j) <= 80) continue;
-      let all = true; for (let dy = -1; dy <= 1 && all; dy++) for (let dx = -1; dx <= 1; dx++) if (hueSpill((y + dy) * w + x + dx) <= 50) { all = false; break; }
+      const x = j % w, y = (j / w) | 0; if (x < 1 || y < 1 || x >= w - 1 || y >= h - 1 || hueSpill(j) <= TON.tohum) continue;
+      let all = true; for (let dy = -1; dy <= 1 && all; dy++) for (let dx = -1; dx <= 1; dx++) if (hueSpill((y + dy) * w + x + dx) <= TON.buyume) { all = false; break; }
       if (all) core++;
     }
     if (core < 15) continue;
     shadeHoles++;
-    for (const j of comp) { const sp = hueSpill(j); shade[j] = sp >= 90 ? 0 : 1 - (sp - 50) / 40; }
+    for (const j of comp) { const sp = hueSpill(j); shade[j] = sp >= TON.tam ? 0 : 1 - (sp - TON.buyume) / (TON.tam - TON.buyume); }
   }
   for (let j = 0; j < w * h; j++) if (shade[j] >= 0) { const i = j * 4; px[i + 3] = Math.round(255 * shade[j]); }
   holes += shadeHoles;
@@ -218,7 +241,7 @@ async function processOne(id) {
 
 const MUHUR_IDS = Object.values(CIZGI).flat();
 const MUCEVHER_IDS = Object.values(MUCEVHER).flat();
-const GRUPLAR = { muhur: MUHUR_IDS, mucevher: MUCEVHER_IDS, kadim: KADIM };
+const GRUPLAR = { muhur: MUHUR_IDS, mucevher: MUCEVHER_IDS, kadim: KADIM, ana: ANA };
 const ids = Object.entries(GRUPLAR).filter(([g]) => !GRUP || GRUP === g).flatMap(([, v]) => v).filter((id) => !ONLY || ONLY.includes(id));
 const rows = [];
 for (const id of ids) { const r = await processOne(id); rows.push(r); console.log(id, r.yok ? 'YOK' : `${r.file} → ${r.cikti.join('x')} zemin ${r.zemin} sızıntı ${r.kenarSizinti} silinen ${r.silinenParca}`); }
@@ -234,7 +257,12 @@ if (!DRY) {
   const gorseller = { ...(prev.gorseller ?? {}) };
   const mucevher = { ...(prev.mucevher ?? {}) };
   const kadim = { ...(prev.kadim ?? {}) };
+  const ana = { ...(prev.ana ?? {}) };
   for (const r of rows) {
+    if (ANA.includes(r.id)) {
+      ana[r.id] = r.yok ? { dosya: null, kaynak: r.id } : { dosya: `boss/${r.id}.webp`, kaynak: r.file, icBosluk: ANA_IC[r.id], boyut: r.cikti, hamBoyut: r.ham, zemin: r.zemin };
+      continue;
+    }
     if (MUHUR_IDS.includes(r.id)) {
       const k = kademeOf(r.id);
       gorseller[r.id] = r.yok ? { dosya: null, kademe: k, cizgi: cizgiOf(r.id), olcek: OLCEK[k] }
@@ -248,7 +276,7 @@ if (!DRY) {
   }
   const order = (o, list) => Object.fromEntries(list.filter((id) => o[id]).map((id) => [id, o[id]]));
   const out = {
-    _not: 'BOSS-GORSEL-1: Mühür Ruhu yaratık görselleri; scripts/boss-gorsel.mjs üretir (kaynak depo dışı assets-ham/boss/), elle düzenlenmez. `dosya` public/ altındaki yol; görsel yoksa null (jeton yedek görünüme düşer). `olcek`: jeton görsel boyutu boss yüksekliğine göre (Sv.1 0.25, Sv.2 0.6, Sv.3 1); görsele gömülmez. `mucevher` (GORSEL-MUCEVHER-EJDERHA): 15 mücevher ejderhası (`hat`, `evre` 1 Yavru / 2 Genç / 3 Yetişkin, `kaynak` ham dosya); ölçek yok, jeton boyutu boyut sınıfından; scripts/katalog-f2-kadim.mjs `avatar` olarak bağlar. `kadim` (KATALOG-DEX-DENGE-HAZIRLIK): kadim yaratıklar, aynı biçim; `ortak` = görseli paylaşılan kaydın kimliği (ayrı dosya yok); `ayna`: kaynak yatay aynalandı (yan tabloda `yon: sol`). Kontrol: harita/belgeler/BOSS-GORSEL-KONTROL.md.',
+    _not: 'BOSS-GORSEL-1: Mühür Ruhu yaratık görselleri; scripts/boss-gorsel.mjs üretir (kaynak depo dışı assets-ham/boss/), elle düzenlenmez. `dosya` public/ altındaki yol; görsel yoksa null (jeton yedek görünüme düşer). `olcek`: jeton görsel boyutu boss yüksekliğine göre (Sv.1 0.25, Sv.2 0.6, Sv.3 1); görsele gömülmez. `mucevher` (GORSEL-MUCEVHER-EJDERHA): 15 mücevher ejderhası (`hat`, `evre` 1 Yavru / 2 Genç / 3 Yetişkin, `kaynak` ham dosya); ölçek yok, jeton boyutu boyut sınıfından; scripts/katalog-f2-kadim.mjs `avatar` olarak bağlar. `kadim` (KATALOG-DEX-DENGE-HAZIRLIK): kadim yaratıklar, aynı biçim; `ortak` = görseli paylaşılan kaydın kimliği (ayrı dosya yok); `ayna`: kaynak yatay aynalandı (yan tabloda `yon: sol`). `ana` (BOSS-IMZA-GORSEL): üç ana boss (hex = Hex, Princeps Tenebrarum; tarvok = Dağezen Tarvok; mora = Al-İha Mora; adlar i18n `dex.pro.anaBoss`), `icBosluk` iç boşluk kipi (yok: yalnız kenardan; saf: kapalı alanda yalnız saf #FF00FF). Kontrol: harita/belgeler/BOSS-GORSEL-KONTROL.md.',
     olcek: OLCEK,
     gorseller: order(gorseller, [...MUHUR_IDS, ...Object.keys(gorseller).filter((id) => !MUHUR_IDS.includes(id))]),
     mucevher: order(mucevher, MUCEVHER_IDS),
@@ -256,6 +284,7 @@ if (!DRY) {
       ...order(kadim, KADIM),
       ...Object.fromEntries(Object.entries(KADIM_ORTAK).filter(([, src]) => kadim[src]?.dosya).map(([id, src]) => [id, { dosya: kadim[src].dosya, ortak: src }])),
     },
+    ana: order(ana, ANA),
   };
   fs.writeFileSync(JSON_YOL, JSON.stringify(out, null, 2) + '\n');
 }
@@ -297,6 +326,7 @@ if (!DRY) {
   if (all(MUHUR_IDS)) { const lines = Object.entries(CIZGI); await page(lines.slice(0, 5), 'sayfa-1.jpg'); await page(lines.slice(5, 10), 'sayfa-2.jpg'); }
   if (all(MUCEVHER_IDS)) await page(Object.entries(MUCEVHER), 'sayfa-mucevher.jpg');
   if (all(KADIM)) await page([['a', KADIM.slice(0, 4)], ['b', KADIM.slice(4)]], 'sayfa-kadim.jpg');
+  if (all(ANA)) await page([['ana', ANA]], 'sayfa-ana.jpg');
   // Ölçüm dökümü: işlenen kayıtlar güncellenir ya da sona eklenir, diğerleri korunur.
   const OLCUM = path.join(KONTROL, 'olcum.json');
   const olcum = fs.existsSync(OLCUM) ? JSON.parse(fs.readFileSync(OLCUM, 'utf8')) : [];

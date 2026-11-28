@@ -27,7 +27,7 @@ import { fail, finish, isTargetable, type CommandResult } from './common';
 import { castWithoutAction } from './castHook';
 import { k19Legendary, legendarySave, legendaryTeleport, pounceMove, type LegendaryAction } from './boss';
 import { executeHide } from './stealth';
-import { executeMove, moveCostFn, occupantAt, terrainAt } from './movement';
+import { bodyFitProblem, executeMove, moveCostFn, occupantAt, terrainAt } from './movement';
 import { canReact, reactionUsable, reactionUsed, registerInk } from './reactions';
 import { retreatMove } from './boss';
 import { speedHexes } from './reduce';
@@ -39,10 +39,16 @@ import { swarm95On } from './swarm95Surum';
 import { ws92On } from './ws92Surum';
 import ws92Data from '../../data/ws92.json';
 import { insideEffect } from './swallow92';
+import { gucOf, k109Abilities, k109SetupEffect, k109SetupZones, k109StartEffects } from './katalog109Data';
+import type { K109AbilityPatch } from './katalog109Types';
 
-export interface MonsterAbility extends Omit<LegendaryAction, 'kind'> {
-  kind: LegendaryAction['kind'] | 'grant' | 'heal' | 'pull' | 'drop' | 'swallow' | 'summon' | 'ethereal';
-  cost: 'action' | 'bonus';
+export interface MonsterAbility extends Omit<LegendaryAction, 'kind'>, Pick<K109AbilityPatch, 'pre'> {
+  kind: LegendaryAction['kind'] | 'grant' | 'heal' | 'pull' | 'drop' | 'swallow' | 'summon' | 'ethereal'
+    /** Görev KATALOG-GUC-TAM (109): Size Shift (seçenek = hedef boyut; turda `perTurn` kez). */
+    | 'resize';
+  /** Görev KATALOG-GUC-TAM (109): `free` = eylem harcamaz (Size Shift). */
+  cost: 'action' | 'bonus' | 'free';
+  perTurn?: number;
   uses?: number; recharge?: number;
   moveOnly?: boolean; fullMove?: boolean; waterOnly?: boolean; dimOnly?: boolean; fullMoveNoOA?: boolean;
   grant?: Array<'dash' | 'disengage' | 'hide'>; jumpFt?: number; leapFt?: number; pushOnSave?: number; noHalf?: boolean;
@@ -94,7 +100,8 @@ export const passiveOf = (s: BattleState, c: Combatant): MonsterPassive | undefi
 // Yetenekle çağrılan yaratığın (Animate Trees ağacı) özel yeteneği yok (SRD: yalnızca Slam); zincirleme çağırma olmaz.
 // KAPSAM103: sürümlü yetenekler (`surum`: Cloud Giant Misty Step, Gold Dragon Weakening Breath 103+) eski savaşta yok.
 export const abilitiesOf = (s: BattleState, c: Combatant): MonsterAbility[] => (on(s) && !c.summon?.spellId.startsWith('mab:')
-  ? (entryOf(c, s)?.abilities ?? []).filter((a) => !a.surum || ruleVersion(s) >= a.surum) : []);
+  // Görev KATALOG-GUC-TAM (109+): katalog yetenek yamaları ve eklemeleri (`data/katalog-gucler.json`).
+  ? k109Abilities(s, formMonsterId(c), (entryOf(c, s)?.abilities ?? []).filter((a) => !a.surum || ruleVersion(s) >= a.surum)) : []);
 
 /** Kullanılabilir mi (kullanım hakkı, şarj). */
 export function abilityReady(c: Combatant, a: MonsterAbility): boolean {
@@ -141,6 +148,13 @@ export function monsterAbilitySetup(state: BattleState, c0: Combatant, m0?: Mons
   // Görev SWARM95 (95+): SRD Swarm altıgen paylaşımı Gaseous Form altyapısıyla (`shareSpace`, `squeeze`) + karşılıklılık (`swarm`).
   if (p.swarm && swarm95On(state)) { fx.swarm = true; fx.shareSpace = true; fx.squeeze = true; }
   if (Object.keys(fx).length) c.effects = [...(c.effects ?? []), { ...fx, id: `srd19:${id}:passive`, name: c.name, sourceId: id } as ActiveEffect];
+  // Görev KATALOG-GUC-TAM (109+): katalog canavar auraları ve pasifleri (`data/katalog-gucler.json`).
+  const k109 = k109SetupEffect(state, c0);
+  if (k109 && !c.effects?.some((x) => x.id === k109.id)) c.effects = [...(c.effects ?? []), k109];
+  // Görev KATALOG-GUC-TAM (109+): mücevher binek bağı: eğitimli binek (kontrollü binek turu, MB2).
+  if (gucOf(state, c0.monsterId)?.ozel?.binekBag) c.egitimli = true;
+  // Savaşta sonradan eklenen canavarın (round > 1) başlangıç etkisi yok.
+  if ((state.round ?? 1) <= 1) for (const x of k109StartEffects(state, c0)) if (!c.effects?.some((y) => y.id === x.id)) c.effects = [...(c.effects ?? []), x];
   const traits = [...(p.traits ?? []), ...(p.siegeMonster ? ['siege-monster'] : []), ...(p.greaterMagicResistance ? ['greater-magic-resistance'] : []),
     ...(p.reflectiveCarapace ? ['reflective-carapace'] : []), ...(p.corrosive ? ['corrosive-form'] : []), ...(p.mistyEscape ? ['misty-escape'] : []),
     ...(p.abduct ? ['abduct'] : []), ...(p.earthGlide ? ['earth-glide'] : []), ...(p.berserk ? ['berserk'] : [])];
@@ -171,6 +185,8 @@ export function monsterAbilitySetup(state: BattleState, c0: Combatant, m0?: Mons
     c.rechargeUsed = [...new Set([...c.rechargeUsed, ...idx.slice(1).filter((i) => i >= 0)])];
     c.resources = { ...c.resources, 'mab:roar': 0 };
   }
+  // Görev KATALOG-GUC-TAM (109+): sahibine bağlı alanlar (Continent Scale).
+  zones.push(...k109SetupZones(state, c0));
   for (const au of p.auras ?? []) {
     zones.push({ id: `srd19:${id}:${au.name}`, spellId: `srd19:${au.name}`, name: au.name, casterId: id, side: c.side, dc: au.dc ?? 0, slotLevel: 0, hexes: [],
       anchorId: id, radius: Math.floor(au.radiusFt / 5),
@@ -214,6 +230,21 @@ export function executeMonsterAbility(state: BattleState, actor: Combatant, abil
 /** Yeteneğin olayları (yapay zekâ da kullanır; boşsa kullanılamaz). */
 export function abilityEvents(state: BattleState, actor: Combatant, a: MonsterAbility, targetId: string | undefined, targetHex: Offset | undefined,
   rng: Rng, opt?: string, cross = false): BattleEvent[] {
+  // Görev KATALOG-GUC-TAM (109; `pre`): önce menzildeki düşmanları çeker (STR save), sonra yeteneğin kendisi (Yıldız Çöküşü).
+  if (a.pre && a.pre.kind === 'pull') {
+    const pre: BattleEvent[] = [];
+    let cur = state;
+    for (const f of foesOf(state, actor).filter((x) => distance(hexOf(x), hexOf(actor)) * 5 <= (a.pre?.rangeFt ?? 30) && distance(hexOf(x), hexOf(actor)) > 1)) {
+      const t = cur.combatants[f.id] as Combatant;
+      const sv = a.pre.save ? saveEffect(t, 'katalog109', a.tr, a.pre.save.ability, a.pre.save.dc, rng) : null;
+      const evs = sv ? [sv] : [];
+      if (!sv || (sv.type === 'map_effect' && sv.roll && !sv.roll.success)) evs.push(...pullToward(applyEvents(cur, evs), cur.combatants[actor.id] as Combatant, t, Math.floor(a.pre.pullFt / 5), rng));
+      pre.push(...evs);
+      cur = applyEvents(cur, evs);
+    }
+    const rest = abilityEvents(cur, cur.combatants[actor.id] as Combatant, { ...a, pre: undefined }, targetId, targetHex, rng, opt, cross);
+    return rest.length ? [...pre, ...rest] : pre;
+  }
   let foes = foesOf(state, actor);
   // Görev OYUNCU-HEDEF-DOST: onaylı hedef (`crossSide`) tarafından bağımsız (SRD yetenekleri "a creature/target"); yoksa düşmanlar.
   if (targetId) foes = cross ? Object.values(state.combatants).filter((o) => o.id === targetId && o.id !== actor.id && o.hp > 0 && !!o.pos && isTargetable(o) && canSee(state, actor, o))
@@ -367,6 +398,18 @@ export function abilityEvents(state: BattleState, actor: Combatant, a: MonsterAb
         }
       }
       return [];
+    }
+    case 'resize': {
+      // Görev KATALOG-GUC-TAM (109): Size Shift: boyut seçeneği; gövde şu anki çapada sığmalı; turda `perTurn` kez.
+      const to = (opt ?? '') as 'T' | 'S' | 'M' | 'L' | 'H' | 'G';
+      if (!SIZE_ORDER.includes(to) || to === actor.size || !actor.pos) return [];
+      const mark = `mab:${a.id}`;
+      const key = turnKey(state);
+      const used = actor.traitTurns?.[mark]?.startsWith(`${key}#`) ? Number(actor.traitTurns[mark]!.split('#')[1]) : 0;
+      if (used >= (a.perTurn ?? 2)) return [];
+      if (bodyFitProblem(state, { ...actor, size: to }, actor.pos, [actor.id])) return [];
+      return [{ type: 'trait_turn', actorId: actor.id, trait: mark, key: `${key}#${used + 1}` },
+        { type: 'effect_added', targetId: actor.id, effect: { id: `k109:size:${actor.id}`, name: `${a.tr}: ${to}`, sourceId: actor.id, k109: { sizeTo: to } } as ActiveEffect }];
     }
     case 'ethereal': {
       // Ethereal Jaunt / Stride / Etherealness: Ethereal düzleme geçer (hedef alınmaz) ya da geri döner.

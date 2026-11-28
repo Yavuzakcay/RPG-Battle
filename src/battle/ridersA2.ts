@@ -7,6 +7,7 @@
  * (`swallowedBy`, monsterAbilities.ts) ve Corrosive Form cezası (`corroded`). Çağrı yeri `riderConditionEvents` (isabet,
  * tek hedefli save ve alan save'i yolları) ve hasar eklentisi için `withA2Extras`/`a2AreaDamage`. Saf.
  */
+import { gucOf } from './katalog109Data';
 import { karar104On } from './karar104Surum';
 import { ws92On } from './ws92Surum';
 import data from '../../data/canavar-ekleri-a2.json';
@@ -44,6 +45,8 @@ export interface A2Spec {
   kill?: { hpAtMost: number; dies?: boolean; else?: Part & { dice2?: string; type2?: string } };
   zeroHp?: { dies?: boolean; stable?: boolean; conditions?: Array<Spec & { condition: string }> };
   swallow?: { dice: string; type: string; escapeDamage: number; escapeDc: number; maxSize?: string; grappledOnly?: boolean; escapeCheck?: number;
+    /** Görev KATALOG-GUC-TAM (109; yalnız katalog `ekler`): ikinci tur başı hasarı (Titan: 6d6 psişik). */
+    dice2?: string; type2?: string;
     /** Görev KARAR104 (sürüm 104, A3): içine alınan nefes alamaz (Gelatinous Cube Engulf). */
     noBreath?: boolean };
   corrode?: { armor?: boolean; weapon?: boolean };
@@ -53,6 +56,12 @@ export interface A2Spec {
    * tarafında 10 HP'li canavara dönüşür (`lycanthrope.ts`; SRD "becomes a Werewolf under the GM's control").
    */
   lanet?: { dc: number; kind: string };
+  /**
+   * Görev KATALOG-GUC-TAM (109; yalnız `data/katalog-gucler.json` `ekler`): hedefin `radiusFt` çevresindeki (hedef dahil) yaratıklar
+   * saldırandan uzağa `pushFt` savrulur, isteğe bağlı Prone (Continent Tail); `dropConc`: hedefin konsantrasyonu biter (Alfa nefesi).
+   */
+  splash?: { radiusFt: number; pushFt: number; prone?: boolean };
+  dropConc?: boolean;
   tur: string;
   /** Görev WS92: bu kural sürümünden itibaren (yoksa A2'den beri). */
   surum?: number;
@@ -62,7 +71,10 @@ export interface A2Spec {
 export const A2_RIDERS = (data as unknown as { ekler: Record<string, A2Spec> }).ekler;
 
 export function a2Of(state: Pick<BattleState, 'kuralSurumu'>, monsterId: string | undefined, attackName: string): A2Spec | undefined {
-  const a = monsterId && ridersA2On(state) ? A2_RIDERS[`${monsterId}:${attackName}`] : undefined;
+  const a0 = monsterId && ridersA2On(state) ? A2_RIDERS[`${monsterId}:${attackName}`] : undefined;
+  // Görev KATALOG-GUC-TAM (109+): katalog canavarlarının A2 ekleri `data/katalog-gucler.json` `ekler` (aynı biçim).
+  const k = gucOf(state, monsterId)?.ekler?.[attackName] as A2Spec | undefined;
+  const a = k ? { ...(a0 ?? {}), ...k } as A2Spec : a0;
   // Görev WS92: sonradan eklenen ek, kaydındaki kural sürümünden önceki savaşta yok sayılır (`surum`).
   return a && (a.surum ?? 0) > ruleVersion(state) ? undefined : a;
 }
@@ -181,6 +193,7 @@ export function a2Events(state: BattleState, actor: Combatant, target: Combatant
     if (target.grapple) out.push({ type: 'grapple_ended', targetId: target.id, reason: label });
     out.push({ type: 'effect_added', targetId: target.id, effect: { id: `swallow:${actor.id}:${target.id}`, name: `${attackName} (${actor.name})`, sourceId: actor.id, swallowedBy: actor.id,
       grants: ['Blinded', 'Restrained'], until: state.round + 6000, swallow: { dice: s.dice, type: s.type, escapeDamage: s.escapeDamage, escapeDc: s.escapeDc,
+        ...(s.dice2 ? { dice2: s.dice2, type2: s.type2 ?? s.type } : {}),
         // Görev WS92 (92+): yutulan midede (konum yutanınki, Total Cover).
         ...(ws92On(state) ? { inside: true } : {}) },
       ...(s.escapeCheck ? { escapeCheck: { dc: s.escapeCheck } } : {}),
@@ -199,6 +212,17 @@ export function a2Events(state: BattleState, actor: Combatant, target: Combatant
         const cur = target.effects?.find((e) => e.id === `corrode:${target.id}`)?.corroded ?? {};
         out.push({ type: 'effect_added', targetId: target.id, effect: { id: `corrode:${target.id}`, name: 'Paslanmış silah', sourceId: actor.id, until: 1e9, corroded: { ...cur, [wkey]: Math.min(5, (cur[wkey] ?? 0) + 1) } } });
       }
+    }
+  }
+  if (a.dropConc && target.concentration) out.push({ type: 'concentration_ended', actorId: target.id, label });
+  if (a.splash && target.pos && actor.pos) {
+    const sp = a.splash;
+    const center = target.pos;
+    const hit = Object.values(state.combatants).filter((o) => o.id !== actor.id && o.hp > 0 && o.pos && !o.summon?.gone && distance(o.pos, center) * 5 <= sp.radiusFt);
+    for (const o of hit) {
+      const cur = applyEvents(state, out);
+      out.push(...forcedMove(cur, o.id, 'push', sp.pushFt, actor.id, rng, { origin: actor.pos }));
+      if (sp.prone && !o.conditions.includes('Prone')) out.push({ type: 'condition_changed', targetId: o.id, condition: 'Prone', present: true, reason: label });
     }
   }
   // İtme/çekme (K53 forcedMove; çarpma ev kuralı kendiliğinden). Çekmede `adjacent`: bitişiğe dek.

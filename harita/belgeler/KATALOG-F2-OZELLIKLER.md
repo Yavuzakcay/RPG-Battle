@@ -30,7 +30,7 @@ Kaynak: "Kadim Yaratıklar ve Mücevher Ejderhası Kataloğu" PDF'i. İsimler bi
 **Özellikler**
 1. **Legendary Resistance (4/Gün):** Başarısız save'i başarılı sayar.
 2. **Groggy Veil (Mahmurluk Perdesi):** Savaşın ilk 2 turunda uçuş hızı yarıya (50 ft) iner, INT save'leri dezavantajlı. 3. turda zincirleri kırar, tam hıza döner.
-3. **Armor's Betrayal (Kaltakkıran seti kancası):** 60 ft içinde Kaltakkıran'ın Paladin Zırhı'nı giyen karakter her tur başı DC 24 WIS atar. Başarısızsa zırh kilitlenir (Hız 0), karakterin ejderhaya saldırıları dezavantajlı, ejderhanın ona saldırıları avantajlı olur.
+3. **Armor's Betrayal (Hex seti kancası):** 60 ft içinde Hex'in Paladin Zırhı'nı giyen karakter her tur başı DC 24 WIS atar. Başarısızsa zırh kilitlenir (Hız 0), karakterin ejderhaya saldırıları dezavantajlı, ejderhanın ona saldırıları avantajlı olur.
 4. **Ten Stones Resonance (On Taş Rezonansı, Yol A):** Parti 10 Mühür Taşı'nı sunağa bırakırsa ejderha taşlardaki karanlığı yutar ve Dragon of Hexonia'ya evrilir. *(Dungeondex'te yalnız bilgi.)*
 
 **Eylemler**
@@ -77,7 +77,7 @@ Kaynak: "Kadim Yaratıklar ve Mücevher Ejderhası Kataloğu" PDF'i. İsimler bi
 9. **Continent-Shaper Claw:** +25, 5d10+13 kesici + 4d10 kuvvet; hedefe 1 tur AC −3.
 10. **Continent Tail:** +25, 5d12+13 ezici + 15 ft yarıçapta 40 ft savurma ve Prone.
 11. **Continent Judgment Breath (Recharge 5–6):** 300×30 ft hat (ya da gökten 60 ft yarıçaplı dikey sütun). DC 32 CON; başarısızsa 30d10 kuvvet + 20d10 ışıltı, 0 HP'ye inen düşman atomlarına ayrılır; başarıda yarı. **Dost birimlere ve şehirlere sıfır zarar.**
-12. **Seal That Strips Darkness (1/Uzun Dinlenme):** 300 ft içindeki bir eserin ya da hedefin tüm lanetlerini siler. Kaltakkıran zırhını parçalar, kılıcı Devrim Simgesi yapar, partiye Koruyucu Ejderha Mührü verir.
+12. **Seal That Strips Darkness (1/Uzun Dinlenme):** 300 ft içindeki bir eserin ya da hedefin tüm lanetlerini siler. Hex zırhını parçalar, kılıcı Devrim Simgesi yapar, partiye Koruyucu Ejderha Mührü verir.
 
 **Efsanevi Eylemler (5 puan/tur)**
 13. **Tectonic Shift (1):** 60 ft alanı ±30 ft yükseltir/çökertir + Prone.

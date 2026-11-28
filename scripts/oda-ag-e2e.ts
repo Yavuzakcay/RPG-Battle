@@ -31,7 +31,7 @@ await new Promise<void>((r, j) => {
 const browser = await chromium.launch(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {});
 const hatalar: string[] = [];
 const adim = (s: string) => console.log(`· ${s}`);
-async function cihaz(ad: string, karakterler: unknown[], boyut = { width: 1280, height: 720 }): Promise<Page> {
+async function cihaz(ad: string, karakterler: unknown[], boyut = { width: 1280, height: 720 }, yol = ''): Promise<Page> {
   const ctx = await browser.newContext({ viewport: boyut });
   await ctx.addInitScript((k: string) => {
     try {
@@ -42,7 +42,7 @@ async function cihaz(ad: string, karakterler: unknown[], boyut = { width: 1280, 
   const p = await ctx.newPage();
   p.setDefaultTimeout(60_000);
   p.on('pageerror', (e) => hatalar.push(`${ad}: ${e}`));
-  await p.goto(url);
+  await p.goto(url + yol);
   return p;
 }
 const simdiki = (p: Page) => p.locator('.turn-strip .strip-item.now').first().getAttribute('aria-label').catch(() => null);
@@ -59,11 +59,19 @@ try {
   const tur = await gm.locator('.oda-kod small').textContent();
   adim(`GM oda açtı: kod ${kod} (${tur})`);
   if (!tur?.includes('Yerel ağ')) throw new Error(`bağlantı türü yerel ağ değil: ${tur}`);
+  // Görev ODA-5 (madde 6): lobide oda sunucusunun yerel ağ adresi + `?oda=<kod>` (makinede yerel ağ adresi varsa).
+  const adres = await gm.locator('[data-testid="oda-adres"] code').first().textContent({ timeout: 5000 }).catch(() => null);
+  if (adres && !adres.endsWith(`/?oda=${kod}`)) throw new Error(`katılım adresi yanlış: ${adres}`);
+  adim(adres ? `O5: katılım adresi gösterildi (${adres})` : 'O5: bu makinede yerel ağ adresi yok (katılım adresi satırı çıkmadı)');
 
   const oyuncular: Page[] = [];
   for (const [ad, k] of [['Ada', K1], ['Bora', K2]] as const) {
-    const p = await cihaz(ad, [k], { width: 844, height: 390 });
-    await p.click('.home-card.join');
+    // Bora katılım adresinden (`?oda=<kod>`) gelir: "Odaya katıl" doğrudan açılır, kod hazır.
+    const p = await cihaz(ad, [k], { width: 844, height: 390 }, ad === 'Bora' ? `/?oda=${kod}` : '');
+    if (ad === 'Bora') {
+      const hazir = await p.locator('[data-testid="oda-kod-gir"]').inputValue();
+      if (hazir !== kod) throw new Error(`katılım adresinden kod gelmedi: ${hazir}`);
+    } else await p.click('.home-card.join');
     await p.fill('[data-testid="oda-kod-gir"]', kod);
     await p.fill('[aria-label="Adın"]', ad);
     await p.click('[data-testid="oda-katil"]');
@@ -121,13 +129,39 @@ try {
     adim(`${kim ? `oyuncu (${once}) komut gönderdi` : 'GM düşmanı oynattı'}: GM ve iki oyuncuda sıra ${g}`);
   }
   if (oyuncuKomutu < 1) throw new Error('oyuncu sırası gelmedi');
+  // Görev ODA-3: görünüm süzgeci. Seçenekler menüsünde Game Master araçları ve kayıt/yükleme oyuncu cihazında yok.
+  const kaydet = async (p: Page): Promise<number> => {
+    await p.locator('.hud-corner.tl > .hud-btn').first().click();
+    const n = await p.locator('.hud-corner.tl .hud-pop button', { hasText: /^Kaydet$/ }).count();
+    await p.locator('.hud-corner.tl > .hud-btn').first().click();
+    return n;
+  };
+  if ((await kaydet(gm)) !== 1) throw new Error('GM seçeneklerinde Kaydet yok');
+  if ((await kaydet(a)) !== 0) throw new Error('oyuncu cihazında Game Master araçları görünüyor');
+  adim('O3: Game Master araçları ve kayıt yalnız GM cihazında');
+  // Görev ODA-4: Ada'nın cihazı kapanır (bağlantı kopar). Sırası gelince GM'e karar menüsü çıkar; "Yapay zekâ oynasın".
+  await a.context().close();
+  let yzOynadi = false;
+  for (let i = 0; i < 14 && !yzOynadi; i++) {
+    const once = await simdiki(gm);
+    const kim = sahip(once);
+    if (kim === a) {
+      await gm.waitForSelector('[data-testid="oda-karar"]', { timeout: 20_000 });
+      await gm.click('[data-testid="oda-karar-yz"]');
+      yzOynadi = true;
+    } else if (kim === b) await b.locator('.radial-btn', { hasText: 'Turu bitir' }).first().click();
+    else await gm.locator('.hud-btn.enemy-play').first().click();
+    await gm.waitForFunction((o) => document.querySelector('.turn-strip .strip-item.now')?.getAttribute('aria-label') !== o, once, { timeout: 30_000 });
+  }
+  if (!yzOynadi) throw new Error('kopan oyuncunun sırası gelmedi');
+  adim('O4: kopan oyuncunun sırasında GM karar menüsü çıktı; "Yapay zekâ oynasın" turu oynadı');
   if (ekran) {
     mkdirSync('docs/oda-2', { recursive: true });
-    await a.screenshot({ path: 'docs/oda-2/oyuncu.png' });
+    await b.screenshot({ path: 'docs/oda-2/oyuncu.png' });
     adim('ekran görüntüsü docs/oda-2/oyuncu.png');
   }
   if (hatalar.length) throw new Error(hatalar[0]);
-  console.log(`tamam: O2 yerel ağ akışı (oyuncu komutu ${oyuncuKomutu}, yetki reddi ${yetkiRed ? 'var' : 'denenmedi'})`);
+  console.log(`tamam: O2–O5 yerel ağ akışı (oyuncu komutu ${oyuncuKomutu}, yetki reddi ${yetkiRed ? 'var' : 'denenmedi'})`);
   sonuc = 0;
 } catch (e) {
   console.error(`HATA: ${String((e as Error)?.message ?? e).split('\n')[0]}`);

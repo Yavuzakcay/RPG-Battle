@@ -1454,5 +1454,89 @@
   "silinenParca": 1,
   "kalanParca": 0,
   "kenarSizinti": 0
+ },
+ {
+  "id": "hex",
+  "file": "hex.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   511,
+   512
+  ],
+  "zemin": "#ea01fc",
+  "koseler": [
+   "#ea00fb",
+   "#ea00fc",
+   "#ea01fd",
+   "#ea01fd"
+  ],
+  "gurultu": 4,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 7,
+  "silinenParca": 0,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "tarvok",
+  "file": "tarvok.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   370,
+   512
+  ],
+  "zemin": "#fb01fd",
+  "koseler": [
+   "#fb00fd",
+   "#fb00fd",
+   "#fb00fd",
+   "#fb02fd"
+  ],
+  "gurultu": 4,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 1,
+  "silinenParca": 2,
+  "kalanParca": 0,
+  "kenarSizinti": 0
+ },
+ {
+  "id": "mora",
+  "file": "mora.jpg",
+  "ham": [
+   2048,
+   2048
+  ],
+  "cikti": [
+   377,
+   512
+  ],
+  "zemin": "#fd01fc",
+  "koseler": [
+   "#fd00fd",
+   "#fe01fc",
+   "#fd01fc",
+   "#fd02fc"
+  ],
+  "gurultu": 4,
+  "esik": [
+   28,
+   83
+  ],
+  "icBosluk": 10,
+  "silinenParca": 4,
+  "kalanParca": 4,
+  "kenarSizinti": 0
  }
 ]

@@ -3,10 +3,10 @@ import { describe, it, expect } from 'vitest';
 import { birlestirici, mesajMi, parcala, type OdaMesaji, type ParcaMesaji } from './protocol';
 import { anahtarUret, kodGecerli, kodTemizle, kodUret } from './code';
 import { kanonikJson, ozet } from './hash';
-import { icerikOzeti, surumUyusmazligi } from './surum';
+import { surumUyusmazligi } from './surum';
 import { seededRng } from '../rules/dice';
 
-const SURUM = { protokol: 1, uygulama: 'b1', kuralSurumu: 108, icerik: 'yok' };
+const SURUM = { protokol: 1, uygulama: 'b1', kuralSurumu: 108 };
 
 describe('oda protokolü', () => {
   it('geçerli örnekler kabul edilir', () => {
@@ -72,12 +72,12 @@ describe('oda kodu, anahtar, özet, sürüm', () => {
     expect(ozet({ a: 1, b: 2 })).toBe(ozet({ b: 2, a: 1 }));
     expect(ozet({ a: 1 })).not.toBe(ozet({ a: 2 }));
   });
-  it('sürüm uyuşmazlığı ilk farklı alanı söyler; içerik özeti sıradan bağımsız', () => {
+  it('sürüm uyuşmazlığı ilk farklı alanı söyler; dış içerik özeti alanı yok (ODA-3 madde 4)', () => {
     expect(surumUyusmazligi(SURUM, { ...SURUM })).toBe(null);
     expect(surumUyusmazligi(SURUM, { ...SURUM, uygulama: 'b2' })).toBe('uygulama');
     expect(surumUyusmazligi(SURUM, { ...SURUM, kuralSurumu: 107 })).toBe('kuralSurumu');
-    expect(surumUyusmazligi(SURUM, { ...SURUM, icerik: 'x' })).toBe('icerik');
-    expect(icerikOzeti([])).toBe('yok');
-    expect(icerikOzeti([{ id: 'a' }, { id: 'b' }])).toBe(icerikOzeti([{ id: 'b' }, { id: 'a' }]));
+    expect(surumUyusmazligi(SURUM, { ...SURUM, protokol: 2 })).toBe('protokol');
+    // Eski istemcinin fazladan `icerik` alanı yok sayılır (aynı build şartı yeter).
+    expect(surumUyusmazligi(SURUM, { ...SURUM, icerik: 'x' } as typeof SURUM)).toBe(null);
   });
 });

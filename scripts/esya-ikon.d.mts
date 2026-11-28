@@ -1,6 +1,8 @@
 // scripts/esya-ikon.mjs saf parçalarının türleri (testler ve rapor içe aktarır).
 export interface Oge { id: string; ad?: string; kaynak?: string }
-export interface Sayfa { dosya: string; kolon: number; satir: number; hucre?: string; zemin?: string; ogeler: Array<Oge | null> }
+export interface Sayfa { dosya: string; kolon: number; satir: number; hucre?: string; zemin?: string; ogeler: Array<Oge | null>;
+  /** Görev BOSS-IMZA-GORSEL: eşit olmayan kolon sınırları (kaynak px) ve zemin rengine boyanan çerçeve/ayraç dikdörtgenleri. */
+  kolonSinir?: number[]; zeminBoya?: Array<[number, number, number, number]>; zeminRenk?: string }
 export interface Manifest {
   sayfalar: Sayfa[]; yoksay?: string[]; ayniGorsel?: Record<string, string[]>; hepsiniTut?: string[]; tamDespill?: string[]; cepTemizle?: string[]; boslukKapali?: string[];
   yenidenUretilecek?: Record<string, string>; belirsiz?: unknown;
@@ -11,7 +13,7 @@ export const BUYUK: number;
 export const KUCUK: number;
 export function dosyaAdi(id: string): string;
 export function sayfaAdi(dosya: string): string;
-export function hucreler(W: number, H: number, sayfa: Pick<Sayfa, 'kolon' | 'satir' | 'hucre'>): Array<{ x: number; y: number; w: number; h: number }>;
+export function hucreler(W: number, H: number, sayfa: Pick<Sayfa, 'kolon' | 'satir' | 'hucre' | 'kolonSinir'>): Array<{ x: number; y: number; w: number; h: number }>;
 export function plan(manifest: Manifest, varMi?: (dosya: string) => boolean): { son: Map<string, Konum>; ezilen: Array<[string, string, string]>; atlanan: string[]; etkisiz: string[] };
 export function oyunKayitlari(root?: string): Kayit[];
 export function varyantEsle(id: string, kayitlar: Kayit[]): { id?: string; belirsiz?: string[]; yok?: string };

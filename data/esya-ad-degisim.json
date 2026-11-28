@@ -1,0 +1,8 @@
+{
+  "_not": "Görev BOSS-IMZA-GORSEL: görünen adı değişen eşyalar (eski ad → yeni ad). Kayıtlı karakter eşyayı adıyla tutar (CharacterSheet.itemNames, silahBagi anahtarı); src/rules/itemRename.ts migrateItemNames açılışta eski adı yeniye çevirir. Kimlikler değişmez. 2026-11-28: 3. ana boss Hex, Princeps Tenebrarum; imza kılıcın adı Kaltakkıran.",
+  "adlar": {
+    "Kaltakkıran's Paladin Armor": "Hex's Paladin Armor",
+    "Kaltakkıran's Maw-Chain Greatsword": "Kaltakkıran",
+    "Kaltakkiran's Maw-Chain Greatsword": "Kaltakkıran"
+  }
+}

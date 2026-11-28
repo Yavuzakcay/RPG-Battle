@@ -1,4 +1,7 @@
 /** Canavar saldırıları: şablondan gelen saldırılar, nefes (save), Recharge ve Multiattack. */
+import { gucOf } from './katalog109Data';
+import { saveExtraEvents, saveExtraRolls } from './katalog109Hit';
+import { katalog109On } from './katalog109Surum';
 import { attachBlock, attachEvents, attachSources } from './attach';
 import { submerged } from './underwaterCore';
 import { hasSwimSpeed } from './deepWater';
@@ -54,10 +57,12 @@ export function monsterAttackEvents(
   index: number,
   rng: Rng,
   opportunity = false,
+  /** Görev KATALOG-GUC-TAM (109): çok hedefli save saldırısının sonraki hedefi (şarj denetimi ve şarj olayı yok). */
+  chain = false,
 ): { ok: true; events: BattleEvent[] } | Failure {
   const atk = actor.attacks[index];
   if (!atk) return fail('Böyle bir saldırı yok.');
-  if (atk.recharge && actor.rechargeUsed.includes(index)) return fail(`${atk.name} henüz şarj olmadı.`);
+  if (atk.recharge && actor.rechargeUsed.includes(index) && !chain) return fail(`${atk.name} henüz şarj olmadı.`);
   const inReach = checkReach(state, actor, target, monsterAttackReach(atk));
   if (!inReach.ok) return { ok: false, error: `${atk.name}: ${inReach.error}` };
   // Görev KARAR104 (sürüm 104, A2): yapışıkken saldırı kısıtı (Stirge, Cloaker, Darkmantle).
@@ -114,7 +119,7 @@ export function monsterAttackEvents(
     const sType = atk.damageType ?? a2d?.type;
     const raw = sDice ? rollDice(sDice, rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };
     const amount = saveDamage(target, atk.save.ability, save.success, raw.total, !!atk.save.halfOnSave);
-    const adj = amount > 0 ? adjustDamage(amount, sType, profileIn(state, target)) : { amount: 0, note: null };
+    const adj = amount > 0 ? adjustDamage(amount, sType, profileIn(state, target, false, katalog109On(state) ? actor : undefined)) : { amount: 0, note: null };
     const fx = damageEffects(target, adj.amount, sType ?? '', false, rng);
     events.push({
       type: 'save_resolved', actorId: actor.id, targetId: target.id, label: atk.name,
@@ -131,6 +136,8 @@ export function monsterAttackEvents(
     if (effect && !save.success && fx.hpAfter > 0) events.push(timedCondition(state, target.id, effect, actor.id, `${actor.name}: ${atk.name}`));
     // Rider durum etkileri (Prone, yakalama, süreli durumlar; attack-riders.json): save başarısızsa.
     if (!save.success) events.push(...riderConditionEvents(state, actor, { ...target, hp: fx.hpAfter }, riderOf(formMonsterId(actor), atk.name), atk.name, rng));
+    // Görev KATALOG-GUC-TAM (109+): ikinci hasar türü (`saveEk`; başarıda yarı).
+    if (katalog109On(state)) events.push(...saveExtraEvents({ ...target, hp: fx.hpAfter }, atk.name, saveExtraRolls(state, actor, atk.name, rng), save.success, !!atk.save.halfOnSave));
     // Kuyruk 19: kalıcı azalmalar (Life Drain save başarısızsa).
     if (!save.success) events.push(...drainEvents(state, actor, target, riderOf(formMonsterId(actor), atk.name), adj.amount, atk.damageType ?? '', [], atk.name, rng));
     // Kuyruk K64a: ele geçirme (başarısızsa başlar, başarılıysa bağışıklık; SRD 24 saat = savaş sonuna dek).
@@ -211,14 +218,14 @@ export function monsterAttackEvents(
     // Görev B1: saldıranın hasar cezası (Ray of Enfeeblement; Reduce yalnızca silahta: canavar saldırısı silah sayılır).
     const penalty = hit && raw > 0 ? damagePenalty(actor, raw, true, rng) : null;
     if (penalty) raw = penalty.total;
-    const adj = hit && raw > 0 ? adjustDamage(raw, dmgType, nonmagicalProfile(actor, target, dmgType, profileIn(state, target))) : { amount: 0, note: null };
+    const adj = hit && raw > 0 ? adjustDamage(raw, dmgType, nonmagicalProfile(actor, target, dmgType, profileIn(state, target, false, katalog109On(state) ? actor : undefined))) : { amount: 0, note: null };
     // İsabette ek hasarlar (her zaman olanlar ve koşulu tutanlar); kritikte zarlar ikiye katlanır.
     let extras = hit ? riderExtras(spec, { mode, critical, actor, target, state }, rollTag(rng, { kind: 'damage', by: actor.id })) : [];
     // Görev P7 (sürüm 34): süren etkinin isabet zarı (`hitDie`: Enlarge, paket çağrı güçlendirmesi) canavar saldırısında da.
     if (hit && ruleVersion(state) >= 34) for (const e of (actor.effects ?? []).filter((x) => x.hitDie)) {
       const d = rollDice(e.hitDie as string, rollTag(rng, { kind: 'damage', by: actor.id }), critical);
       const t = e.hitType ?? dmgType ?? '';
-      const a = adjustDamage(d.total, t, nonmagicalProfile(actor, target, t, profileIn(state, target)));
+      const a = adjustDamage(d.total, t, nonmagicalProfile(actor, target, t, profileIn(state, target, false, katalog109On(state) ? actor : undefined)));
       extras = [...extras, { label: e.name, rolls: d.rolls, raw: d.total, applied: a.amount, type: t, note: a.note }];
     }
     // Hedefin isabet tepkisi (Görev R1): Shield ıskalatabilir; Uncanny Dodge, Deflect Attacks hasarı azaltır.
@@ -259,11 +266,29 @@ export function monsterAttackEvents(
     // Görev KARAR104 (sürüm 104, A2): yapışma (Darkmantle örtmesi avantajlı saldırıda).
     if (hit) events.push(...attachEvents(applyEvents(state, events), actor, { ...target, hp: fx.hpAfter }, atk.name, mode === 'advantage'));
   }
-  if (atk.recharge) events.push({ type: 'recharge_used', actorId: actor.id, attackIndex: index });
+  if (atk.recharge && !chain) events.push({ type: 'recharge_used', actorId: actor.id, attackIndex: index });
   // Geri yöneltme, karşılık saldırısı ve hasar alanın tepkisi (Görev R1).
   const after = applyEvents(state, events);
   const dealt = target.hp - (after.combatants[target.id]?.hp ?? target.hp);
   events.push(...afterAttackReactions(after, actor.id, target.id, hr, { melee, damageType, dealt }, rng));
+  // Görev KATALOG-GUC-TAM (109+): tek hedefli save saldırısının hedef sayısı (`hedefSayisi`: Storm Lightning, Void-Lightning 3).
+  const n = atk.save && !atk.area && !chain && katalog109On(state) ? gucOf(state, formMonsterId(actor))?.hedefSayisi?.[atk.name] ?? 1 : 1;
+  if (n > 1) {
+    let cur = applyEvents(state, events);
+    const done = new Set([target.id]);
+    for (let i = 1; i < n; i++) {
+      const me = cur.combatants[actor.id];
+      if (!me || me.hp <= 0) break;
+      const next = Object.values(cur.combatants).filter((o) => o.side !== actor.side && !o.civilian && o.hp > 0 && !done.has(o.id) && isTargetable(o) && checkReach(cur, me, o, monsterAttackReach(atk)).ok)
+        .sort((x, y) => (x.pos && me.pos && y.pos ? distance(x.pos, me.pos) - distance(y.pos, me.pos) : 0) || x.id.localeCompare(y.id))[0];
+      if (!next) break;
+      done.add(next.id);
+      const r = monsterAttackEvents(cur, me, next, index, rng, false, true);
+      if (!r.ok) break;
+      events.push(...r.events);
+      cur = applyEvents(cur, r.events);
+    }
+  }
   return { ok: true, events };
 }
 
@@ -419,10 +444,16 @@ export function executeMultiattack(state: BattleState, actor: Combatant, targetI
   // Görev WS87 (87+): "ya … ya da …" Multiattack'ta tek seçenek (Barbed Devil 4 → 2, Medusa 6 → 3): hedefe hepsi ulaşan
   // ilk seçenek, yoksa ilk seçenek.
   const opt = multiOptionChoice(state, actor, first);
-  for (let i = 0; i < actor.attacks.length; i++) {
+  // Görev KATALOG-GUC-TAM (109+; Faz 2): saldırı tekrarı (Titan 4 dokunaç) ve sırası (Kongark: Grab → Fist).
+  const kfx = katalog109On(state) ? (actor.effects ?? []).flatMap((e) => (e.k109 ? [e.k109] : [])) : [];
+  const rep: Record<string, number> = Object.assign({}, ...kfx.map((f) => f.repeat ?? {}));
+  const ord = kfx.find((f) => f.order)?.order;
+  const rank = (i: number) => { const r = ord ? ord.indexOf(actor.attacks[i]?.name ?? '') : -1; return r < 0 ? 99 : r; };
+  const idxs = [...actor.attacks.keys()].sort((x, y) => rank(x) - rank(y) || x - y);
+  for (const i of idxs) {
     const atk = actor.attacks[i];
     if (!atk || atk.recharge) continue;
-    const times = opt ? opt[atk.name] ?? 0 : atk.repeat + (i === plusAt ? plus : 0);
+    const times = opt ? opt[atk.name] ?? 0 : (rep[atk.name] ?? atk.repeat) + (i === plusAt ? plus : 0);
     for (let k = 0; k < times; k++) {
       const t = current.combatants[targetId];
       // Tepkiyle (Hellish Rebuke, Retaliation) düşen saldıran devam edemez.

@@ -87,14 +87,14 @@ describe('KATALOG-1 B: zırh, cübbe, kalkan ve imza eşyaları', () => {
     expect(body.ac).toBe(1);
     expect(body.saveMod).toEqual({ str: 2, dex: 2, con: 2, int: 2, wis: 2, cha: 2 });
   });
-  it('Zincirli Dikilitaş: +3 ve 1d8 gürültü yalnız bağlı Maul ile; Çeneli Zincir Kılıcı zırh bağı yokken bonus vermez', () => {
+  it('Zincirli Dikilitaş: +3 ve 1d8 gürültü yalnız bağlı Maul ile; Kaltakkıran zırh bağı yokken bonus vermez', () => {
     const { a } = battle(sheet(["Mountain-Crusher's Chained Monolith"], { weapons: [{ name: 'Maul' }, { name: 'Dagger' }] }));
     const maul = a.weaponOptions.find((o) => o.weaponId === 'maul' && !o.ranged)!, dg = a.weaponOptions.find((o) => o.weaponId === 'dagger' && !o.ranged)!;
     expect(maul.enchant).toBe(3);
     expect(dg.enchant ?? 0).toBe(0);
     const foe = mk('F', { side: 'enemies' });
     expect(itemHitsFor(a, maul, foe).map((h) => `${h.dice} ${h.type}`)).toContain('1d8 thunder');
-    const { a: k } = battle(sheet(["Kaltakkıran's Maw-Chain Greatsword"], { weapons: [{ name: 'Greatsword' }] }));
+    const { a: k } = battle(sheet(["Kaltakkıran"], { weapons: [{ name: 'Greatsword' }] }));
     expect(k.weaponOptions.find((o) => o.weaponId === 'greatsword')!.enchant ?? 0).toBe(0);
   });
 });

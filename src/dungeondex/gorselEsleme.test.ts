@@ -51,7 +51,7 @@ describe('Dungeondex görsel eşlemesi', () => {
     for (const w of weapons) has('esya', w.id);
     for (const a of armor as Array<{ srd?: string }>) if (a.srd) has('esya', a.srd.split(':')[1]!);
     // Görev KATALOG-1 A: 449 SRD/oyun eşyası + 125 özgün katalog silahı (yedek ikon); B: + 66 zırh/cübbe/kalkan/imza eşyası; C: + 55 giyilebilir; D: + 76 yüzük, tılsım, taş; E: + 45 tüketilebilir (ikonlu).
-    expect(Object.keys(E.kategoriler.esya)).toHaveLength(816);
+    expect(Object.keys(E.kategoriler.esya)).toHaveLength(818); // Görev BOSS-IMZA-GORSEL: + iki yumurta
     for (const id of Object.keys((srdMonsters as unknown as { monsters: Record<string, unknown> }).monsters)) has('canavar', id);
     // Görev KATALOG-F2: + Dungeondex'teki kadim yaratıklar (görsel hazırlanıyor: yedek glifi).
     // KATALOG-DEX-DENGE-HAZIRLIK: + Mühür Ruhu (30).

@@ -21,6 +21,8 @@ const kadimJson = read('data/canavarlar-kadim.json');
 const kadim = kadimJson.canavarlar;
 const LEG = read('data/efsanevi.json').monsters;
 const ABIL = read('data/canavar-yetenekleri.json');
+// KATALOG-GUC-TAM (kural sürümü 109): katalog güçleri (save yolunda ikinci hasar türü, çok hedefli save saldırısı, Faz 2 saldırı tekrarı ve hasarlı aura).
+const GUC = read('data/katalog-gucler.json').canavarlar;
 
 const num = (cr) => { const [a, b] = String(cr).split('/').map(Number); return b ? a / b : a; };
 const fmt = (x) => (Number.isInteger(x) ? String(x) : x.toFixed(1).replace('.', ','));
@@ -52,17 +54,23 @@ const EVRE = ['Yavru', 'Genç', 'Yetişkin'];
 const gemEvre = Object.fromEntries(Object.values(kadimJson.hatlar).flatMap((h) => h.kimlikler.map((id, i) => [id, `${EVRE[i]} (${h.ad.tr})`])));
 
 function analyse(m, grup) {
+  const g = GUC[m.id] ?? {};
   const riders = m.riders ?? {};
+  const saveEk = (a) => (g.saveEk?.[a.name] ?? []).reduce((t, e) => t + avg(e.dice), 0);
+  const nHedef = (a) => g.hedefSayisi?.[a.name] ?? 1;
   const extraOf = (a) => (riders[a.name]?.extra ?? []).reduce((s, e) => s + avg(e.dice), 0);
   const hitAvg = (a) => avg(a.damageDice) + extraOf(a);
   const atks = m.attacks ?? [];
   const strikes = atks.filter((a) => !a.save && a.damageDice);
   const multi = strikes.filter((a) => (a.repeat ?? 0) > 0);
-  const melee = multi.length ? multi.reduce((s, a) => s + hitAvg(a) * a.repeat, 0) : Math.max(0, ...strikes.map(hitAvg));
+  const melee0 = multi.length ? multi.reduce((s, a) => s + hitAvg(a) * a.repeat, 0) : Math.max(0, ...strikes.map(hitAvg));
+  // 109: Faz 2 saldırı tekrarı (Titan 4 dokunaç) dövüşün yarısında (yarı ağırlık).
+  const melee2 = g.faz2?.tekrar && multi.length ? multi.reduce((s, a) => s + hitAvg(a) * (g.faz2.tekrar[a.name] ?? a.repeat), 0) : melee0;
+  const melee = (melee0 + melee2) / 2;
   const meleeParts = (multi.length ? multi : strikes.slice(0, 1)).map((a) => `${a.name}${(a.repeat ?? 1) > 1 ? `×${a.repeat}` : ''}`).join(' + ');
   // Alan/nefes: save'li alan saldırıları ve alanlı yetenekler (tek hedef ortalaması, başarısız save).
   const areas = [
-    ...atks.filter((a) => a.save && a.damageDice).map((a) => ({ ad: a.name, ort: avg(a.damageDice) + extraOf(a), dc: a.save.dc, alan: !!a.area || true })),
+    ...atks.filter((a) => a.save && a.damageDice).map((a) => ({ ad: a.name, ort: (avg(a.damageDice) + extraOf(a) + saveEk(a)) * (a.area ? 1 : nHedef(a) / DMG.alanHedef), dc: a.save.dc, alan: !!a.area || true })),
     ...(ABIL[m.id]?.abilities ?? []).filter((a) => a.damage && a.area).map((a) => ({ ad: a.en ?? a.id, ort: avg(a.damage), dc: a.dc, alan: true })),
   ];
   const top = areas.reduce((b, a) => (a.ort > (b?.ort ?? -1) ? a : b), null);
@@ -75,7 +83,9 @@ function analyse(m, grup) {
   };
   const legPerRound = leg ? [...leg.actions.map(legVal)].sort((x, y) => y - x).slice(0, leg.uses ?? 3).reduce((s, v) => s + v, 0) : 0;
   const r1 = Math.max(melee, (top?.ort ?? 0) * DMG.alanHedef);
-  const dpr3 = (r1 + melee * (DMG.turSayisi - 1)) / DMG.turSayisi + legPerRound;
+  // 109: Faz 2'nin tur başı hasarlı aurası (2 hedefe, yarı ağırlık).
+  const auraDpr = (g.faz2?.auralar ?? []).filter((a) => a.effect?.kind === 'damage').reduce((t, a) => t + avg(a.effect.dice) * DMG.alanHedef / 2, 0);
+  const dpr3 = (r1 + melee * (DMG.turSayisi - 1)) / DMG.turSayisi + legPerRound + auraDpr;
   const bonus = Math.max(0, ...strikes.map((a) => a.bonus ?? 0));
   const dcs = [...areas.map((a) => a.dc), ...(leg?.actions ?? []).map((a) => a.dc).filter(Boolean)];
   const dc = dcs.length ? Math.max(...dcs) : null;
@@ -160,6 +170,7 @@ const md = `# KATALOG-DENGE-TABLO: katalog yaratıkları ve DMG CR tablosu
   - **Etkin HP:** HP + Legendary Resistance (kullanım başına CR 1–4: 10, 5–10: 20, 11–16: 30, 17+: 45) + Faz 2 geçici canı. Tek element bağışıklığı ve zayıflık etkin HP'ye katılmadı.
   - **Savunma CR'si:** etkin HP'nin satırı, AC farkının her 2 puanı 1 basamak.
   - **Tur hasarı (3 tur ortalaması):** 1. tur en güçlü alan/nefes saldırısı 2 hedefe (başarısız save, tam hasar) ya da çoklu saldırı, hangisi büyükse; 2–3. tur çoklu saldırı. Saldırı ekleri (\`riders.extra\`) dahil. Her tura efsanevi eylemler eklenir (SRD 5.2.1: her eylem 1 hak; hak kadar eylem, her eylem bir kez, en güçlüler; alanlı efsanevi eylem 2 hedef). Puan bedeli yok (KATALOG-LA-SRD).
+  - **Katalog güçleri (kural sürümü 109, \`data/katalog-gucler.json\`):** save yolundaki ikinci hasar türü save saldırısının ortalamasına eklenir; çok hedefli tek hedef save saldırısı (Storm Lightning, Void-Lightning 3 hedef) hedef sayısıyla; Faz 2 saldırı tekrarı (Titan 4 dokunaç) ve Faz 2'nin hasarlı aurası (Cimbombom 2d6, 2 hedef) dövüşün yarısında, yarı ağırlıkla. Yüzey/alan bırakma, auraların zar cezası, direnç delme ve çağrılar katılmadı.
   - **Saldırı CR'si:** tur hasarının satırı, saldırı bonusu farkının her 2 puanı 1 basamak (yakın saldırısı olmayan kayıtta kurtarma DC'si).
   - **Etkin CR:** savunma ve saldırı CR'sinin ortalamasına en yakın basamak. "+" ve "(tavan)": değer CR 30 satırını aştı.
 - **Fark sütunları:** HP ve tur hasarı için "bantta" ya da bandın kaç puan altında/üstünde olduğu; AC, saldırı bonusu ve DC için kayıt − DMG.
