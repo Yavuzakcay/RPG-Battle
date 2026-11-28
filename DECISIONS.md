@@ -2,7 +2,7 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
-## KATALOG-LA-SRD sonrası kullanıcı kararları (2026-11-28; veri, kod, kural sürümü (108) ve kayıt sürümü (28) değişmedi)
+## KATALOG-LA-SRD sonrası kullanıcı kararları (2026-11-28; yalnız belge: veri, kod, kural sürümü ve kayıt sürümü değişmedi)
 
 - **(1) Etkin CR:** Ocean-Nightmare ve tutsak-dragon etkin CR 28, yazılan 30 kalıyor; sorun olursa sonra zar ya da CR etiketiyle ayarlanır.
 - **(2) Efsanevi hak:** Yetişkin mücevher ejderhaları ve Ocean-Nightmare efsanevi hakkı 2'de kalıyor (SRD kalıbı 3 / Lair 4, motorda Lair ek hakkı yok).
