@@ -79,3 +79,66 @@ describe('Mirage: Vesvese tek hedef', () => {
     expect(C(s2, 'A').conditions).toContain('Frightened');
   });
 });
+
+describe('4. adım: motor yaklaşıkları (110)', () => {
+  it('Out-of-Time Storm: düşmanın doğrudan hedef aldığı büyü turda bir iptal (saldırı iptaliyle ortak hak); 109 yok', async () => {
+    const { outOfTimeSpellEvents } = await import('./katalog110');
+    const s = arena109('dragon-of-hexonia-a', [foe('A', 8)]);
+    const a = C(s, 'A');
+    const ev = outOfTimeSpellEvents(s, a, ['D'], 'Hold Monster');
+    expect(ev?.[0]).toMatchObject({ type: 'trait_turn', trait: 'k109:negate' });
+    expect(outOfTimeSpellEvents(applyEvents(s, ev!), a, ['D'], 'Hold Monster')).toBeNull();
+    expect(outOfTimeSpellEvents(s, a, ['A'], 'Bless')).toBeNull();
+    expect(outOfTimeSpellEvents(arena109('dragon-of-hexonia-a', [foe('A', 8)], 109), a, ['D'], 'Hold Monster')).toBeNull();
+  });
+
+  it('dokunaç yakalama sınırı: Titan 12 yaratık tutarken yeni yakalama yok', async () => {
+    const { grappleCapReached } = await import('./katalog110');
+    const s = arena109('titan-of-nightmare', [foe('A', 8)]);
+    expect(grappleCapReached(s, C(s, 'D'))).toBe(false);
+    const many: Record<string, Combatant> = { ...s.combatants };
+    for (let i = 0; i < 12; i++) many[`G${i}`] = { ...foe(`G${i}`, 1), grapple: { by: 'D', escapeDc: 27 } } as Combatant;
+    expect(grappleCapReached({ ...s, combatants: many }, C(s, 'D'))).toBe(true);
+    expect(grappleCapReached({ ...arena109('titan-of-nightmare', [foe('A', 8)], 109), combatants: many }, C(s, 'D'))).toBe(false);
+  });
+
+  it('Kongark düşük yerçekimi: Faz 2\'de zorla hareket 5 ft uzar', async () => {
+    const { lowGravityFt } = await import('./katalog110');
+    const s = inPhase(arena109('kongark', [foe('A', 8)]));
+    expect(lowGravityFt(s)).toBe(5);
+    expect(lowGravityFt(inPhase(arena109('kongark', [foe('A', 8)], 109)))).toBe(0);
+  });
+
+  it('kadim duyular ve Siege Monster savaşçıya geçer; 109 geçmez', () => {
+    const s = arena109('titan-of-nightmare', [foe('A', 8)]);
+    expect(C(s, 'D').senses).toMatchObject({ truesight: 180 });
+    expect(C(s, 'D').traits).toContain('siege-monster');
+    expect(C(arena109('dragon-of-hexonia-a', [foe('A', 8)]), 'D').senses).toMatchObject({ truesight: 300, tremorsense: 5280 });
+    // 109'da Truesight/Blindsight zaten `unsupported` duyu satırından; 110'un kattığı "1 mil" Tremorsense ve Siege Monster.
+    const old = arena109('titan-of-nightmare', [foe('A', 8)], 109);
+    expect(C(old, 'D').traits ?? []).not.toContain('siege-monster');
+    expect(C(arena109('dragon-of-hexonia-a', [foe('A', 8)], 109), 'D').senses?.tremorsense).toBeUndefined();
+  });
+
+  it('Titan Dream Call: başarısız WIS save → 30 ft bossa çekilir', async () => {
+    const { legendarySave } = await import('./boss');
+    const { k109Legendary } = await import('./katalog109Data');
+    const s = arena109('titan-of-nightmare', [foe('A', 14)]);
+    const act = k109Legendary(s, 'titan-of-nightmare', [] as Array<{ id: string }>).find((x) => x.id === 'dream-call');
+    expect(act).toMatchObject({ kind: 'save', save: 'wis', dc: 27, pull: 30, dropHeld: true });
+    const ev = legendarySave(s, C(s, 'D'), act as never, [C(s, 'A')], scripted([20, 1], [20, 1]));
+    const s2 = applyEvents(s, ev);
+    expect(C(s2, 'A').pos!.col).toBeLessThan(14);
+    expect(k109Legendary({ kuralSurumu: 109 }, 'titan-of-nightmare', [] as Array<{ id: string }>).some((x) => x.id === 'dream-call')).toBe(false);
+  });
+
+  it('Cimbombom Faz 2: arena kenarı alev; Lightaur Faz 2: harita ışık alanı', () => {
+    const s = inPhase(arena109('cimbombom', [foe('A', 8)]));
+    const fire = (s.map?.zones ?? []).find((z) => z.surface === 'fire' || z.spellId.includes('fire') || z.name.toLowerCase().includes('alev'));
+    expect(fire).toBeDefined();
+    const rows = s.map!.tiles.length, cols = s.map!.tiles[0]!.length;
+    expect(fire!.hexes.every((h) => h.row === 0 || h.col === 0 || h.row === rows - 1 || h.col === cols - 1)).toBe(true);
+    const l = inPhase(arena109('lightaur', [foe('A', 8)]));
+    expect((l.map?.zones ?? []).find((z) => z.name === 'Kör Güneş Işığı')?.spec).toMatchObject({ light: 1 });
+  });
+});

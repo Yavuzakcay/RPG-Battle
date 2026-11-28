@@ -62,7 +62,9 @@ export function k109PhaseEvents(state: BattleState, c: Combatant): BattleEvent[]
   }
   if (f.yuzey) {
     const r = Math.floor(f.yuzey.radiusFt / 5);
-    const hexes = (f.yuzey.halka ? ring(c.pos, r, size) : withinRange(c.pos, r, size)).filter((h) => distance(h, c.pos as Offset) > 0 && free(state, h));
+    // GECE-KATALOG-KALAN (110; `s110` verisinde `kenar`): haritanın kenar altıgenleri (arena kenarı).
+    const edge = (): Offset[] => { const out: Offset[] = []; for (let row = 0; row < size.rows; row++) for (let col = 0; col < size.cols; col++) if (row === 0 || col === 0 || row === size.rows - 1 || col === size.cols - 1) out.push({ col, row }); return out; };
+    const hexes = (f.yuzey.kenar ? edge() : f.yuzey.halka ? ring(c.pos, r, size) : withinRange(c.pos, r, size)).filter((h) => distance(h, c.pos as Offset) > 0 && free(state, h));
     if (hexes.length) {
       const ev = surfaceEvent(state, f.yuzey.kind as SurfaceKind, hexes, c.id, c.side);
       if (ev.type === 'zone_created') ev.zone.until = state.round + f.yuzey.rounds;

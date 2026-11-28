@@ -151,6 +151,10 @@ export function monsterAbilitySetup(state: BattleState, c0: Combatant, m0?: Mons
   // Görev KATALOG-GUC-TAM (109+): katalog canavar auraları ve pasifleri (`data/katalog-gucler.json`).
   const k109 = k109SetupEffect(state, c0);
   if (k109 && !c.effects?.some((x) => x.id === k109.id)) c.effects = [...(c.effects ?? []), k109];
+  // GECE-KATALOG-KALAN (110+): katalog kayıtlarının duyuları ve Siege Monster (`duyular`, `kusatma`; SRD kayıtlarının yolu `senses`/`siege-monster`).
+  const g110 = gucOf(state, c0.monsterId);
+  if (g110?.duyular) c.senses = { ...(c.senses ?? {}), ...g110.duyular };
+  if (g110?.kusatma) c.traits = [...new Set([...(c.traits ?? []), 'siege-monster'])];
   // Görev KATALOG-GUC-TAM (109+): mücevher binek bağı: eğitimli binek (kontrollü binek turu, MB2).
   if (gucOf(state, c0.monsterId)?.ozel?.binekBag) c.egitimli = true;
   // Savaşta sonradan eklenen canavarın (round > 1) başlangıç etkisi yok.

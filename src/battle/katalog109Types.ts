@@ -49,6 +49,8 @@ export interface K109Fx {
   soulBondOf?: string;
   /** Soul Bond'un Avcı tarafı: konsantrasyon save'leri avantajlı. */
   concAdv?: boolean;
+  /** GECE-KATALOG-KALAN (110): düşük yerçekimi: bu yaratık ayaktayken zorla hareket N ft uzar (Kongark Taş Uyanışı). */
+  lowGravity?: number;
 }
 
 /** Canavar saldırısı eki (A2 biçimi; `ekler`). */
@@ -82,7 +84,7 @@ export interface K109Faz {
   /** Haritadaki bu zemin harflerine (su/kıyı) zorlu arazi alanı. */
   zorluZemin?: { su?: boolean; harfler?: string[]; maliyet: number };
   /** Bossun çevresine yüzey (yarıçap ft, tur; `halka`: yalnız o uzaklıktaki altıgenler). Dolu altıgenlere konmaz. */
-  yuzey?: { kind: string; radiusFt: number; rounds: number; halka?: boolean };
+  yuzey?: { kind: string; radiusFt: number; rounds: number; halka?: boolean; /** GECE-KATALOG-KALAN (110): haritanın kenar altıgenleri (arena kenarı). */ kenar?: boolean };
   /** Bossun çevresine kalıcı alan (`SpellZone.spec`). */
   alan?: { name: string; radiusFt: number; rounds: number; spec: Record<string, unknown> };
   /** Bossun her tur başında çağırdığı canavarlar (en çok `max` canlı). */
@@ -130,6 +132,12 @@ export interface K109Monster {
   hedefSayisi?: Record<string, number>;
   /** Özel güçler (katalog109Ozel.ts). */
   ozel?: Record<string, unknown>;
+  /** GECE-KATALOG-KALAN (110): aynı anda en çok bu kadar yaratık yakalar (dokunaç hedef sınırı). */
+  yakalamaSiniri?: number;
+  /** GECE-KATALOG-KALAN (110): özel duyular (ft; canavar kurulumunda `senses`'e). */
+  duyular?: { blindsight?: number; truesight?: number; tremorsense?: number };
+  /** GECE-KATALOG-KALAN (110): Siege Monster (nesne ve yapılara çift hasar; iz `siege-monster`). */
+  kusatma?: boolean;
   /** GECE-KATALOG-KALAN (110): 110+ savaşta bu anahtarlar kaydın aynı anahtarlarının yerine geçer. */
   s110?: Omit<K109Monster, 's110'>;
 }

@@ -243,6 +243,29 @@
      "Unconscious"
     ],
     "hover": true
+   },
+   "s110": {
+    "duyular": {
+     "truesight": 180
+    },
+    "kusatma": true,
+    "yakalamaSiniri": 12,
+    "efsanevi": [
+     {
+      "id": "dream-call",
+      "add": {
+       "tr": "Rüya Çağrısı",
+       "en": "Dream Call",
+       "kind": "save",
+       "save": "wis",
+       "dc": 27,
+       "rangeFt": 120,
+       "pull": 30,
+       "dropHeld": true,
+       "oncePerTurn": true
+      }
+     }
+    ]
    }
   },
   "ocean-nightmare": {
@@ -323,6 +346,13 @@
      "Paralyzed",
      "Restrained"
     ]
+   },
+   "s110": {
+    "duyular": {
+     "truesight": 120
+    },
+    "kusatma": true,
+    "yakalamaSiniri": 8
    }
   },
   "ocean-nightmare-open-sea": {
@@ -438,6 +468,13 @@
       }
      ]
     }
+   },
+   "s110": {
+    "duyular": {
+     "truesight": 120
+    },
+    "kusatma": true,
+    "yakalamaSiniri": 8
    }
   },
   "kozmik-anka": {
@@ -623,6 +660,11 @@
      "sinif": "ranger",
      "radiusFt": 60,
      "pay": 0.5
+    }
+   },
+   "s110": {
+    "duyular": {
+     "truesight": 120
     }
    }
   },
@@ -810,6 +852,11 @@
      "radiusFt": 60,
      "pay": 0.5
     }
+   },
+   "s110": {
+    "duyular": {
+     "truesight": 120
+    }
    }
   },
   "dragon-of-hexonia-a": {
@@ -938,7 +985,13 @@
       "icon": "🛡"
      }
     }
-   ]
+   ],
+   "s110": {
+    "duyular": {
+     "truesight": 300,
+     "tremorsense": 5280
+    }
+   }
   },
   "dragon-of-hexonia-b": {
    "auralar": [
@@ -1066,7 +1119,13 @@
       "icon": "🛡"
      }
     }
-   ]
+   ],
+   "s110": {
+    "duyular": {
+     "truesight": 300,
+     "tremorsense": 5280
+    }
+   }
   },
   "sigmadrake": {
    "auralar": [
@@ -1282,6 +1341,36 @@
       "cesaret": 0
      }
     ]
+   },
+   "s110": {
+    "faz2": {
+     "oncelik": [
+      "Bite",
+      "Claw"
+     ],
+     "efsaneviOnce": "tail-sweep",
+     "yuzey": {
+      "kind": "fire",
+      "radiusFt": 30,
+      "rounds": 3,
+      "kenar": true
+     },
+     "auralar": [
+      {
+       "id": "ember-heat",
+       "name": "Kor Sıcağı",
+       "radius": 3,
+       "filter": "enemies",
+       "trigger": "turnStart",
+       "effect": {
+        "kind": "damage",
+        "dice": "2d6",
+        "type": "fire"
+       },
+       "cesaret": 0
+      }
+     ]
+    }
    }
   },
   "wolfgang": {
@@ -1529,7 +1618,12 @@
        "cesaret": 0,
        "everyRounds": 2
       }
-     ]
+     ],
+     "etki": {
+      "k109": {
+       "lowGravity": 5
+      }
+     }
     }
    }
   },
@@ -1653,6 +1747,11 @@
      "Petrified",
      "Unconscious"
     ]
+   },
+   "s110": {
+    "duyular": {
+     "blindsight": 60
+    }
    }
   },
   "omeglet": {
@@ -1980,6 +2079,49 @@
       "cesaret": 0
      }
     ]
+   },
+   "s110": {
+    "faz2": {
+     "oncelik": [
+      "Gore",
+      "Hoof"
+     ],
+     "efsaneviOnce": "halo-flare",
+     "auralar": [
+      {
+       "id": "sun-glare",
+       "name": "Kör Güneş",
+       "radius": 3,
+       "filter": "enemies",
+       "trigger": "turnStart",
+       "save": {
+        "ability": "con",
+        "dc": 15
+       },
+       "effect": {
+        "kind": "effect",
+        "rounds": 1,
+        "effect": {
+         "name": "Kör Güneş",
+         "icon": "☀",
+         "grants": [
+          "Blinded"
+         ]
+        }
+       },
+       "cesaret": 0
+      }
+     ],
+     "alan": {
+      "name": "Kör Güneş Işığı",
+      "radiusFt": 1000,
+      "rounds": 100000,
+      "spec": {
+       "light": 1,
+       "targets": "all"
+      }
+     }
+    }
    }
   },
   "mirage": {

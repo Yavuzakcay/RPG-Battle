@@ -10,6 +10,7 @@
  * - Hücum ("20+ ft düz koşup vurursa"): turdaki son düz koşu (`run`) en az o kadar ve hedef koşu
  *   yönünde bitişikse tutar.
  */
+import { grappleCapReached } from './katalog110';
 import { cuttingWordsCheck } from './reactions';
 import { formMonsterId } from './shapeMonsterCore';
 import { ws92On } from './ws92Surum';
@@ -201,7 +202,8 @@ export function riderConditionEvents(
   };
   if (spec.prone) proneBy(label, spec.prone.maxSize, spec.prone.save);
   if (spec.charge?.prone && fitsSize(target, spec.charge.maxSize) && chargeHolds(actor, target, spec.charge.feet)) proneBy(`${label} (hücum)`, undefined, spec.charge.save);
-  if (spec.grapple && !target.grapple && fitsSize(target, spec.grapple.maxSize)) {
+  // GECE-KATALOG-KALAN (110+): dokunaç hedef sınırı (`yakalamaSiniri`; Ocean-Nightmare 8, Titan 12).
+  if (spec.grapple && !target.grapple && fitsSize(target, spec.grapple.maxSize) && !grappleCapReached(state, actor)) {
     out.push({ type: 'grappled', targetId: target.id, by: actor.id, escapeDc: spec.grapple.escapeDc, restrained: spec.grapple.restrained, label });
   }
   return [...out, ...a2];

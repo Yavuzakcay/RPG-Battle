@@ -7,6 +7,7 @@
 import { k109Legendary } from './katalog109Data';
 import { k109LegendaryEvents } from './katalog109Leg';
 import { forcedMove, MOTION_VERSION } from './motion';
+import { dropEvents, handsOn, heldWeapons } from './heldItems';
 import { ruleVersion } from './ruleVersion';
 import data from '../../data/efsanevi.json';
 import { distance, sameHex, type Offset } from '../rules/hex';
@@ -41,6 +42,8 @@ export interface LegendaryAction {
     | 'heal' | 'seal' | 'pull';
   /** Görev KATALOG-GUC-TAM (109): ışın hedefi en uzaktaki (`far`); save etkisinin süresi tur (`rounds`); silinen durumlar; çekme ft; taşıması gereken eşya. */
   target?: 'far'; rounds?: number; cleanse?: string[]; pullFt?: number; needsItem?: string[];
+  /** GECE-KATALOG-KALAN (110): save eyleminde başarısız hedef bossa doğru N ft çekilir ve elindeki silahları düşürür. */
+  pull?: number; dropHeld?: boolean;
   /** Kuyruk 19 (SRD Legendary Actions; `scripts/k19-efsanevi.mjs`): ikinci saldırı seçeneği, ışınlanıp vuruş (Arcane Prowl), fırsat saldırısız yürüyüş. */
   alt?: string; teleportFt?: number; noOA?: boolean;
   /** Büyü (Spellcasting'den; seviye, DC, kendine, ardından yarım uçuş). */
@@ -441,6 +444,13 @@ export function legendarySave(s: BattleState, b: Combatant, a: LegendaryAction, 
     if (Object.keys(fx).length) out.push({ type: 'effect_added', targetId: t.id, effect: { id: `leg:${b.id}:${a.id}:${t.id}`, name: a.tr, sourceId: b.id, until, ...fx } as ActiveEffect });
     if (a.exhaustion) out.push({ type: 'exhaustion_changed', targetId: t.id, level: Math.min(6, (t.exhaustion ?? 0) + a.exhaustion), reason: a.tr });
     if (a.push && t.pos && b.pos) out.push(...pushAway(applyEvents(s, out), b, t, Math.floor(a.push / 5), rng));
+    // GECE-KATALOG-KALAN (110; yalnız `data/katalog-gucler.json` `s110` efsanevi eklemesi): başarısızda bossa doğru çekme ve
+    // elde tutulan silahları düşürme (Titan Dream Call; el modeli açıkken).
+    if (a.pull && t.pos && b.pos) out.push(...forcedMove(applyEvents(s, out), t.id, 'pull', a.pull, b.id, rng, { origin: b.pos }));
+    if (a.dropHeld && handsOn(s)) {
+      let st = applyEvents(s, out);
+      for (const w of heldWeapons(st.combatants[t.id] as Combatant)) { const evs = dropEvents(st, st.combatants[t.id] as Combatant, w, `${a.tr}: silahı düştü`, true); out.push(...evs); st = applyEvents(st, evs); }
+    }
   }
   if (a.moveAfter === 'full') out.push(...pounceMove({ ...applyEvents(s, out), combatants: { ...applyEvents(s, out).combatants, [b.id]: { ...b, movementUsed: -speedHexes(b) } } }, b, foes, rng));
   return out;

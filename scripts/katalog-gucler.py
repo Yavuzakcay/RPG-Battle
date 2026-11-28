@@ -189,6 +189,32 @@ faz2_110('kongark', auralar=[{**a, "everyRounds": 2} for a in C['kongark']['faz2
 # ⚠ düzeltmesi (kullanıcı kararı): Mirage Vesvese her tur başında 60 ft içindeki rastgele **bir** parti üyesine (PDF "bir oyuncuya").
 faz2_110('mirage', auralar=[{**a, "trigger": "ownerTurnStart"} for a in C['mirage']['faz2']['auralar']])
 
+# GECE-KATALOG-KALAN 4 (110): motor yaklaşıkları. Değerler kayıttaki PDF metninden; sayı vermeyen güç (Stormer, Mothraq, Wolfgang
+# Taş Uyanışı ayrıntıları) eklenmedi (KATALOG-SIGMAYAN.md).
+import re
+MIL = 5280
+for m in _kadim['canavarlar']:
+    sens = {}
+    for u in m.get('unsupported', []):
+        if not u.startswith('Duyu:'): continue
+        for name, key in (('Blindsight', 'blindsight'), ('Truesight', 'truesight'), ('Tremorsense', 'tremorsense')):
+            mm = re.search(name + r' (\d+) (ft|mil)', u)
+            if mm: sens[key] = int(mm.group(1)) * (MIL if mm.group(2) == 'mil' else 1)
+    if sens: put110(m['id'], 'duyular', sens)
+    if 'Siege Monster' in (m.get('traits') or ''): put110(m['id'], 'kusatma', True)
+# Dokunaç hedef sınırı (KATALOG-F2-OZELLIKLER: Ocean-Nightmare 8, Titan 12).
+for mid, cap in [('ocean-nightmare', 8), ('ocean-nightmare-open-sea', 8), ('titan-of-nightmare', 12)]:
+    put110(mid, 'yakalamaSiniri', cap)
+# Titan Dream Call (KATALOG-F2-OZELLIKLER §5.14): 120 ft, DC 27 WIS; kaybeden 30 ft yaklaşır ve silahını düşürür.
+put110('titan-of-nightmare', 'efsanevi', [*C['titan-of-nightmare'].get('efsanevi', []),
+    {"id": "dream-call", "add": {"tr": "Rüya Çağrısı", "en": "Dream Call", "kind": "save", "save": "wis", "dc": 27, "rangeFt": 120, "pull": 30, "dropHeld": True, "oncePerTurn": True}}])
+# Kongark Taş Uyanışı: düşük yerçekimi, itme/çekme +5 ft (2 turda bir çekimle birlikte; yukarıdaki faz2_110'un üstüne).
+C['kongark']['s110']['faz2']['etki'] = {**C['kongark']['s110']['faz2'].get('etki', {}), "k109": {"lowGravity": 5}}
+# Cimbombom Taş Uyanışı: arena kenarı 3 tur alev (bossun çevresindeki 30 ft halka yerine).
+faz2_110('cimbombom', yuzey={"kind": "fire", "radiusFt": 30, "rounds": 3, "kenar": True})
+# Lightaur Taş Uyanışı: harita parlak ışıkla dolar (bütün harita ışık alanı; savaş boyu).
+faz2_110('lightaur', alan={"name": "Kör Güneş Işığı", "radiusFt": 1000, "rounds": 100000, "spec": {"light": 1, "targets": "all"}})
+
 out = {"_not": "Görev KATALOG-GUC-TAM (kural sürümü 109): KATALOG-SIGMAYAN.md güçlerinin verisi, canavar kimliğine göre (src/battle/katalog109Types.ts K109Monster). 108 ve altında okunmaz. Elle düzenlenir; aura yarıçapı altıgen (5 ft). Kaynak harita/belgeler/KATALOG-F2-OZELLIKLER.md, KATALOG-F-TASARIM.md.", "canavarlar": C}
 json.dump(out, open('data/katalog-gucler.json','w', encoding='utf-8'), ensure_ascii=False, indent=1)
 print(len(C), 'canavar yazıldı')

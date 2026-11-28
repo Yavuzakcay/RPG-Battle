@@ -84,6 +84,7 @@ import { cantripBonus, healBonus, healDice, healSelfAfter } from './cleric';
 import { castWithMetamagic, empowerCount, empowerRolls, innateFor, POINTS } from './sorcerer';
 import { oneDieBonus, SKIP_ALL, usedOnce, type OnceSkip } from './oneDieBonus';
 import { buyucu93On } from './buyucu93Surum';
+import { outOfTimeSpellEvents } from './katalog110';
 import { counterspellCheck, cuttingWordsDamage, damagedReactions, hitReactions, hunterDefenseEvents, targetedReactions } from './reactions';
 import { resourceLeft } from './types';
 import { resourceDef } from '../rules/classFeatures';
@@ -637,6 +638,14 @@ function executeCastAt(state: BattleState, actor00: Combatant, cmd: CastCommand,
 }
 
 function executeCastWith(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
+  // GECE-KATALOG-KALAN (110+): Out-of-Time Storm doğrudan hedef alınan büyüyü (turda bir, saldırı iptaliyle ortak hak) boşa çıkarır.
+  const oot = outOfTimeSpellEvents(state, actor, [...(cmd.targetId ? [cmd.targetId] : []), ...(((cmd as { targetIds?: string[] }).targetIds) ?? [])], spell.name);
+  if (oot) {
+    const dry = castSpell(state, actor, cmd, spell, () => 0.5);
+    if (!dry.ok) return dry;
+    return finish(state, [...oot, { type: 'spell_cast', actorId: actor.id, targetId: cmd.targetId ?? null, label: spell.name, slotLevel: null,
+      note: 'Out-of-Time Storm ile iptal: büyü boşa gitti, slot harcanmadı.', countered: true as const }]);
+  }
   // Subtle Spell: bileşensiz büyü görülmez; Counterspell tetiklenmez.
   const watched = !cmd.metamagic?.includes('subtle') && Object.values(state.combatants).some((c) => c.side !== actor.side && c.reactions?.some((r) => r.kind === 'counterspell'))
     // Kuyruk P9: ek paket tepkisi `dusmanBuyuAtiyor` (büyü yapılırken kancası `registerCastHook`).

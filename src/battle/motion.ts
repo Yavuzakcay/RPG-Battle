@@ -9,6 +9,7 @@
  *   çarpılan yaratık da yarıda kalan altıgen kadar 1d6 (en çok 3d6) alır (ayrı zar).
  * Saf; `rng` enjekte.
  */
+import { lowGravityFt } from './katalog110';
 import { katalog109On } from './katalog109Surum';
 import { applyEvents } from './reduce';
 import { auraStepEvents } from './features';
@@ -174,7 +175,8 @@ export function forcedMove(state: BattleState, targetId: string, mode: ForcedMod
   if (res) return res;
   const events: BattleEvent[] = [];
   let current = state;
-  const total = Math.floor(feet / 5);
+  // GECE-KATALOG-KALAN (110+): düşük yerçekimi (Kongark Taş Uyanışı) itme/çekmeyi uzatır.
+  const total = Math.floor((feet + (feet > 0 ? lowGravityFt(state) : 0)) / 5);
   for (let step = 0; step < total; step++) {
     const t = current.combatants[targetId];
     if (!t?.pos || t.hp <= 0 || t.life === 'dead') break;
