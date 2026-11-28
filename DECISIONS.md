@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## KATALOG-LA-SRD sonrası kullanıcı kararları (2026-11-28; veri, kod, kural sürümü (108) ve kayıt sürümü (28) değişmedi)
+
+- **(1) Etkin CR:** Ocean-Nightmare ve tutsak-dragon etkin CR 28, yazılan 30 kalıyor; sorun olursa sonra zar ya da CR etiketiyle ayarlanır.
+- **(2) Efsanevi hak:** Yetişkin mücevher ejderhaları ve Ocean-Nightmare efsanevi hakkı 2'de kalıyor (SRD kalıbı 3 / Lair 4, motorda Lair ek hakkı yok).
+- **(3) Hexonia:** Hexonia'nın üç efsanevi eylemi de turda bir (`oncePerTurn`). Tekrar yok; bir turda en çok 3 eylem, 5 hakkın 2'si kullanılmıyor. Denge turunda simülasyonda ölçülecek (açık iş `harita/belgeler/DENGE.md`).
+
 ## Görev KATALOG-LA-SRD: kadim ve mücevher efsanevi eylemleri SRD 5.2.1 kuralına (2026-11-27; motor, şema, kural sürümü (108) ve kayıt sürümü (28) değişmedi)
 
 - **Karar (kullanıcı):** bedelli efsanevi eylem mekaniği eklenmedi; SRD 5.2.1'e uyuldu ("The monster expends one use whenever it takes a Legendary Action"). Motor zaten her eylemde 1 hak düşüyordu (`src/battle/boss.ts`); değişen yalnız veri ve metin.

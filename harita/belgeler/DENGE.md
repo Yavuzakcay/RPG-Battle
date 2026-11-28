@@ -2,6 +2,10 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Denge turu açık iş: Hexonia efsanevi eylemleri (2026-11-28, KATALOG-LA-SRD sonrası; ölçülmedi)
+
+- Hexonia 3 eylem/tur, 220 tablo tavanı; simülasyonda ölç. Efsanevi hakkın 2'si hiç kullanılmıyor: denge turunda ya 5 → 3'e indirilecek ya da oncePerTurn gevşetilecek, simülasyon sonucuna göre.
+
 ## Not: KATALOG-1 F Aşama 2 (2026-11-27, kural sürümü 107) — Mühür Ruhu bossları
 
 Komut: `npm run sim:boss -- 100 --boss <kimlik> --parti <parti>` (kol başına; `--kol dirençsiz|hazırlıklı`). 20. seviye,
