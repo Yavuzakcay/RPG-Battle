@@ -130,4 +130,6 @@ export interface K109Monster {
   hedefSayisi?: Record<string, number>;
   /** Özel güçler (katalog109Ozel.ts). */
   ozel?: Record<string, unknown>;
+  /** GECE-KATALOG-KALAN (110): 110+ savaşta bu anahtarlar kaydın aynı anahtarlarının yerine geçer. */
+  s110?: Omit<K109Monster, 's110'>;
 }

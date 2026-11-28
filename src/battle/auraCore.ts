@@ -22,12 +22,16 @@ import { saveMode } from './durations';
 import { turnKey } from './economy';
 import { isIncapacitated } from '../rules/conditions';
 import { resolveSave } from '../rules/attack';
-import { rollTag, type Rng } from '../rules/dice';
+import { rollDie, rollTag, type Rng } from '../rules/dice';
 import type { Ability } from '../rules/abilities';
 import type { Offset } from '../rules/hex';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
-export type AuraTrigger = 'turnStart' | 'turnEnd' | 'enter' | 'passive';
+/**
+ * GECE-KATALOG-KALAN (kural sürümü 110; yalnız `data/katalog-gucler.json` `s110`): `ownerTurnStart` sahibinin tur başında
+ * yarıçaptaki uygun yaratıklardan **birine** (rastgele) işler (Mirage Vesvese).
+ */
+export type AuraTrigger = 'turnStart' | 'turnEnd' | 'enter' | 'passive' | 'ownerTurnStart';
 export type AuraEffect =
   | { kind: 'damage'; dice: string; type: string; half?: boolean }
   | { kind: 'condition'; condition: string }
@@ -67,6 +71,11 @@ export interface AuraSpec {
   requires?: string;
   /** Görev KATALOG-GUC-TAM (109): yalnız bu eşyalardan birini taşıyanlar (`carried` önek; Armor's Betrayal). */
   requiresItem?: string[];
+  /**
+   * GECE-KATALOG-KALAN (110): yalnız N turda bir işler (sahibine bağlı sayaç: ilk işlediği turdan sonra her N'inci tur; Kongark
+   * Boşluk Çekimi "her 2 turda bir"). Sayaç sahibin `traitTurns` alanında `aura-every:<id>` = `r<tur>`.
+   */
+  everyRounds?: number;
 }
 
 export const AURA = motion.aura;
@@ -142,11 +151,32 @@ export function passiveAuraOf(state: BattleState, v: Combatant): { saveBonus: nu
 export function auraTriggerEvents(state: BattleState, victimId: string, trigger: 'turnStart' | 'turnEnd' | 'enter', rng: Rng, at?: Offset | null): BattleEvent[] {
   const v = state.combatants[victimId];
   if (!v || v.hp <= 0 || !auraCoreOn(state)) return [];
+  const out: BattleEvent[] = [];
+  for (const { owner, spec } of strongest(aurasOn(state, v, at ?? v.pos).filter((x) => x.spec.trigger === trigger))) out.push(...fireAura(state, owner, spec, v, rng));
+  return out;
+}
+
+/** Sayaçlı auranın (`everyRounds`) bu turda işleyip işlemeyeceği; işleyecekse sayacın olayı (ilk kez bu turda). */
+function everyGate(state: BattleState, owner: Combatant, spec: AuraSpec): BattleEvent[] | null {
+  if (!spec.everyRounds || spec.everyRounds <= 1) return [];
+  const mark = `aura-every:${spec.id}`;
+  const raw = owner.traitTurns?.[mark];
+  const last = raw ? Number(raw.slice(1)) : undefined;
+  if (last === state.round) return [];
+  if (last !== undefined && state.round - last < spec.everyRounds) return null;
+  return [{ type: 'trait_turn', actorId: owner.id, trait: mark, key: `r${state.round}` }];
+}
+
+/** Bir auranın bir yaratığa işlemesi: turda bir işareti, save, etki (tetikten bağımsız gövde). */
+function fireAura(state: BattleState, owner: Combatant, spec: AuraSpec, v: Combatant, rng: Rng): BattleEvent[] {
   const key = turnKey(state);
   const out: BattleEvent[] = [];
-  for (const { owner, spec } of strongest(aurasOn(state, v, at ?? v.pos).filter((x) => x.spec.trigger === trigger))) {
+  {
     const mark = `aura:${spec.id}:${owner.id}`;
-    if (v.traitTurns?.[mark] === key || hasResistImmunity(v, 'aura', spec.id, owner.id)) continue;
+    if (v.traitTurns?.[mark] === key || hasResistImmunity(v, 'aura', spec.id, owner.id)) return [];
+    const gate = everyGate(state, owner, spec);
+    if (!gate) return [];
+    out.push(...gate);
     out.push({ type: 'trait_turn', actorId: v.id, trait: mark, key });
     let failed = true;
     if (spec.save) {
@@ -189,6 +219,29 @@ export function auraTriggerEvents(state: BattleState, victimId: string, trigger:
       if (to !== now) out.push({ type: 'moral_changed', targetId: v.id, delta: to - now, moral: to, reason: 'toparlama', byId: owner.id });
     }
     if (e.kind === 'tempHp' && (!e.belowHalf || v.hp < v.maxHp / 2) && e.amount > (v.tempHp ?? 0)) out.push({ type: 'temp_hp', targetId: v.id, amount: e.amount, label: spec.name });
+  }
+  return out;
+}
+
+/**
+ * GECE-KATALOG-KALAN (110): sahibinin tur başı auraları (`ownerTurnStart`): yarıçaptaki uygun yaratıklardan biri rastgele seçilir
+ * (sıra kimliğe göre, zar `rollDie`), etki ona işler. Sahibi Incapacitated ya da düşmüşse işlemez.
+ */
+export function auraOwnerTurnEvents(state: BattleState, ownerId: string, rng: Rng): BattleEvent[] {
+  const owner = state.combatants[ownerId];
+  if (!owner || owner.hp <= 0 || !owner.pos || isIncapacitated(owner.conditions) || !auraCoreOn(state)) return [];
+  const key = turnKey(state);
+  const out: BattleEvent[] = [];
+  for (const e of owner.effects ?? []) for (const spec of [...(e.aura ? [e.aura] : []), ...(e.auras ?? [])]) {
+    if (spec.trigger !== 'ownerTurnStart') continue;
+    const pool = Object.values(state.combatants).filter((v) => v.hp > 0 && !!v.pos && !v.summon?.gone && !v.offFloor && passes(spec, owner, v)
+      && (!spec.requires || v.conditions.includes(spec.requires)) && auraDist(state, owner, v) <= spec.radius
+      && v.traitTurns?.[`aura:${spec.id}:${owner.id}`] !== key && !hasResistImmunity(v, 'aura', spec.id, owner.id)
+      && !(spec.effect.kind === 'condition' && v.conditions.includes(spec.effect.condition)))
+      .sort((a, b) => a.id.localeCompare(b.id));
+    if (!pool.length) continue;
+    const pick = (pool.length === 1 ? pool[0] : pool[rollDie(pool.length, rollTag(rng, { by: owner.id, kind: 'percent' })) - 1]) as Combatant;
+    out.push({ type: 'map_note', text: `${owner.name}: ${spec.name} → ${pick.name}` }, ...fireAura(state, owner, spec, pick, rng));
   }
   return out;
 }

@@ -175,6 +175,20 @@ for mid, dx in _kadim.get('dex', {}).items():
 for mid in ['dragon-of-hexonia-a', 'dragon-of-hexonia-b', 'kozmik-anka', 'kozmik-anka-savas', 'titan-of-nightmare', 'deltlet', 'deltyr', 'deltadrake']:
     put(mid, pasif={"hover": True})
 
+# ---------------------------------------------------------------- GECE-KATALOG-KALAN (kural sürümü 110): `s110` katmanı
+# 110+ savaşta `s110` anahtarları kaydın aynı üst anahtarlarının yerine geçer (109 ve altı eski değerleri okur). Tam değer yazılır.
+import copy
+def put110(mid, key, value):
+    C.setdefault(mid, {}).setdefault('s110', {})[key] = value
+def faz2_110(mid, **kw):
+    f = copy.deepcopy(C[mid]['faz2'])
+    f.update(kw)
+    put110(mid, 'faz2', f)
+# ⚠ düzeltmesi (kullanıcı kararı): Kongark Boşluk Çekimi her 2 turda bir (PDF "2 turda bir").
+faz2_110('kongark', auralar=[{**a, "everyRounds": 2} for a in C['kongark']['faz2']['auralar']])
+# ⚠ düzeltmesi (kullanıcı kararı): Mirage Vesvese her tur başında 60 ft içindeki rastgele **bir** parti üyesine (PDF "bir oyuncuya").
+faz2_110('mirage', auralar=[{**a, "trigger": "ownerTurnStart"} for a in C['mirage']['faz2']['auralar']])
+
 out = {"_not": "Görev KATALOG-GUC-TAM (kural sürümü 109): KATALOG-SIGMAYAN.md güçlerinin verisi, canavar kimliğine göre (src/battle/katalog109Types.ts K109Monster). 108 ve altında okunmaz. Elle düzenlenir; aura yarıçapı altıgen (5 ft). Kaynak harita/belgeler/KATALOG-F2-OZELLIKLER.md, KATALOG-F-TASARIM.md.", "canavarlar": C}
 json.dump(out, open('data/katalog-gucler.json','w', encoding='utf-8'), ensure_ascii=False, indent=1)
 print(len(C), 'canavar yazıldı')

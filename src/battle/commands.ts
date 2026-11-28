@@ -10,7 +10,7 @@ import { beadAfterEvents, beadTurnEndEvents, executeBeadTouch } from './bead';
 import { distance } from '../rules/hex';
 import { exhaustionGain } from './deathWard';
 import { commandEndHookEvents, turnStartHookEvents } from './turnHooks';
-import { auraTriggerEvents } from './auraCore';
+import { auraOwnerTurnEvents, auraTriggerEvents } from './auraCore';
 import { executeDismount, executeMount, riderCleanup } from './mounted';
 import { controlledCommandProblem, controlledMountOf, controlledNow, ridMountIds } from './binekMb2';
 import { binekMb2On } from './binekMb2Surum';
@@ -1156,6 +1156,8 @@ function turnStartChain(state: BattleState, id: string, rng: Rng): { events: Bat
   push(zoneStart);
   const auraStart = auraTriggerEvents(cur, id, 'turnStart', rng);
   push(auraStart);
+  // GECE-KATALOG-KALAN (110; yalnız veride `ownerTurnStart` aura varken): sahibinin tur başında tek hedefli aura (Mirage Vesvese).
+  push(auraOwnerTurnEvents(cur, id, rng));
   // Kuyruk K54b: kayıtlı tur başı kancaları (imza: Arazi Okuma).
   const hooked = turnStartHookEvents(cur, id, rng, applyEvents);
   push(hooked);

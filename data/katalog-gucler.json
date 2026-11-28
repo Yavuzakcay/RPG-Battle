@@ -1503,6 +1503,34 @@
       "cesaret": 0
      }
     ]
+   },
+   "s110": {
+    "faz2": {
+     "oncelik": [
+      "Grab",
+      "Fist"
+     ],
+     "efsaneviOnce": "gravity-ring",
+     "auralar": [
+      {
+       "id": "void-gravity",
+       "name": "Boşluk Çekimi",
+       "radius": 12,
+       "filter": "enemies",
+       "trigger": "turnStart",
+       "save": {
+        "ability": "str",
+        "dc": 21
+       },
+       "effect": {
+        "kind": "pull",
+        "ft": 15
+       },
+       "cesaret": 0,
+       "everyRounds": 2
+      }
+     ]
+    }
    }
   },
   "tutsak-dragon": {
@@ -2009,6 +2037,32 @@
       "cesaret": 0
      }
     ]
+   },
+   "s110": {
+    "faz2": {
+     "efsaneviOnce": "mirror-scream",
+     "etki": {
+      "images": 3
+     },
+     "auralar": [
+      {
+       "id": "whisper-dread",
+       "name": "Vesvese",
+       "radius": 12,
+       "filter": "enemies",
+       "trigger": "ownerTurnStart",
+       "save": {
+        "ability": "wis",
+        "dc": 21
+       },
+       "effect": {
+        "kind": "condition",
+        "condition": "Frightened"
+       },
+       "cesaret": 0
+      }
+     ]
+    }
    }
   },
   "mirath": {
