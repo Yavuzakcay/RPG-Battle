@@ -1,15 +1,7 @@
 {
  "_aciklama": "Görsel galerisi testi (src/ui/galeri/galeri.test.tsx): ikonu henüz olmayan (Dungeondex eşlemesinde durum 'yedek') bilinen eşyalar. Bu listede olmayan hiçbir eşya ikonsuz olamaz (test kırılır). İkonu gelen eşya listeden çıkarılır; test listede kalıp ikon kazananı uyarıyla bildirir. KATALOG-1 birleşmesinden (bbbf1d62) beri.",
  "gruplar": {
-  "boss imza eşyaları": [
-   "abandoned-phylactery-pendulum",
-   "robe-of-the-blindspot",
-   "mountain-crushers-chained-monolith",
-   "champions-crag-harness",
-   "kaltakkirans-paladin-armor",
-   "kaltakkirans-maw-chain-greatsword"
-  ],
-  "Kaltakkıran taşları Sv.1 (çatlak element taşı)": [
+  "Hex taşları Sv.1 (çatlak element taşı)": [
    "cracked-elemental-stone-fire",
    "cracked-elemental-stone-cold",
    "cracked-elemental-stone-lightning",
@@ -21,7 +13,7 @@
    "cracked-elemental-stone-psychic",
    "cracked-elemental-stone-force"
   ],
-  "Kaltakkıran taşları Sv.2 (uyanmış element taşı)": [
+  "Hex taşları Sv.2 (uyanmış element taşı)": [
    "awakened-elemental-stone-fire",
    "awakened-elemental-stone-cold",
    "awakened-elemental-stone-lightning",
@@ -33,7 +25,7 @@
    "awakened-elemental-stone-psychic",
    "awakened-elemental-stone-force"
   ],
-  "Kaltakkıran taşları Sv.3": [
+  "Hex taşları Sv.3": [
    "ember-core",
    "frost-heart",
    "storm-spire",

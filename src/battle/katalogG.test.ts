@@ -1,5 +1,5 @@
 /**
- * Görev KATALOG-1 G: Kaltakkıran anlatım verisi (`data/katalog-anlatim.json`). Yalnız veri (K4, K14): kod, kural ve savaş
+ * Görev KATALOG-1 G: Hex anlatım verisi (`data/katalog-anlatim.json`). Yalnız veri (K4, K14): kod, kural ve savaş
  * etkisi yok. Denetlenen: kimlikler (sabit, tekil, eşya kimlikleriyle çakışmaz), sayılar (14 kayıt, tablolar, On Mühür bağı),
  * metin eşleşmesi (Kararma tablosu PDF'in tek satır kuralıyla, bağ eşya kayıtlarıyla, eski boss adı yalnız `eskiAd`).
  */
@@ -24,13 +24,13 @@ const E = (id: string) => kat.find((x) => x.id === id)!;
 const BOSS = kat.filter((x) => x.katalog.ref.startsWith('BOSS#'));
 const tablo = (id: string, i = 0) => K(id).tablolar![i]!;
 
-describe('KATALOG-1 G: Kaltakkıran anlatım verisi', () => {
-  it('kimlikler: 14 sabit kayıt, tekil, eşya ve 37 boss/imza kimliğiyle çakışmaz; hepsi anlatım (Serüven)', () => {
+describe('KATALOG-1 G: Hex anlatım verisi', () => {
+  it('kimlikler: 14 sabit kayıt, tekil, eşya ve 39 boss/imza kimliğiyle çakışmaz; hepsi anlatım (Serüven)', () => {
     expect(A.map((k) => k.id)).toEqual(['kaltakkiran-paketi', 'kaltakkiran-bes-kural', 'kaltakkiran', 'kaltakkiran-yenilme-anahtari',
       'kararma-sayaci', 'kararma-esikleri', 'psikolojik-ihanet', 'kararma-kilidi-kirilimi', 'tas-soket-sistemi', 'on-muhur',
       'iki-final-yolu', 'yol-a', 'yol-b', 'sistem-ozeti']);
     expect(new Set(A.map((k) => k.ref)).size).toBe(A.length);
-    expect(BOSS).toHaveLength(37);
+    expect(BOSS).toHaveLength(39); // Görev BOSS-IMZA-GORSEL: + iki yumurta (BOSS#20–21)
     const itemIds = new Set(items.map((i) => i.id));
     for (const k of A) {
       expect(k.id, k.id).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
@@ -72,7 +72,7 @@ describe('KATALOG-1 G: Kaltakkıran anlatım verisi', () => {
       expect(dc, r[0]).toEqual(n.length > 1 ? [10 + n[0]!, 10 + n[2]!] : [10 + n[0]!]);
     });
     expect(tablo('kararma-esikleri').satirlar.map((r) => `${r[0]} ${r[1]}`)).toEqual(['0–24 Berrak', '25–49 Fısıltı', '50–74 Gölgelenme',
-      "75–99 Kaltakkıran'ın İradesi", '100 Mühürlü İrade (Kalıcı Kilit)']);
+      "75–99 Hex'in İradesi", '100 Mühürlü İrade (Kalıcı Kilit)']);
   });
 
   it('On Mühür: 10 bölge ↔ Sv.3 taşı ↔ Mühür Ruhu; taş adları eşya kayıtlarıyla, bölge taşın özetinde; PDF boss adı yalnız eskiAd', () => {
@@ -102,19 +102,21 @@ describe('KATALOG-1 G: Kaltakkıran anlatım verisi', () => {
     const sigil = E('guardian-dragon-sigil');
     expect(ya.paragraflar!.find((p) => p.baslik === 'Ejderhanın Armağanı')!.metin).toContain(sigil.katalog.tr);
     expect(sigil.katalog.riskler).toContain('Yol A');
-    expect(ya.paragraflar!.map((p) => p.baslik)).toEqual(['Ejderhanın Bilgeliği ve Evrimi', "Çeneli Zincir Kılıcı'nın Akıbeti (Devrim Simgesi)", 'Ejderhanın Armağanı']);
+    expect(ya.paragraflar!.map((p) => p.baslik)).toEqual(['Ejderhanın Bilgeliği ve Evrimi', "Kaltakkıran'ın Akıbeti (Devrim Simgesi)", 'Ejderhanın Armağanı']);
     expect(K('yol-b').paragraflar!.map((p) => p.baslik)).toEqual(['Mutlak Gücü Sahiplenme', 'Sevilenlerin Bedeli', 'Yalnız Hükümdarlık']);
     expect(K('yol-b').paragraflar![1]!.metin).toContain('(bondSacrificeLedger)');
     const kilic = E('kaltakkirans-maw-chain-greatsword').katalog.riskler!;
     expect(kilic).toContain('Devrim Simgesi');
     expect(kilic).toContain('3/UD Boğucu Kıskaç');
     const kars = tablo('iki-final-yolu').satirlar;
-    expect(kars.map((r) => r[0])).toEqual(['Paladin Zırhı', 'Çeneli Zincir Kılıcı', 'Ödül / Kazanç', 'Ödenen Bedel']);
+    expect(kars.map((r) => r[0])).toEqual(['Paladin Zırhı', 'Kaltakkıran', 'Ödül / Kazanç', 'Ödenen Bedel']);
     expect(kars[2]![1]).toContain(sigil.katalog.tr);
-    // Kaltakkıran: yalnız anlatım (K4); savaş/karakter alanı yok
+    // Hex: yalnız anlatım (K4); savaş/karakter alanı yok
     const kk = K('kaltakkiran');
     expect(kk.paragraflar).toHaveLength(1);
     expect(kk.paragraflar![0]!.metin).toMatch(/^Bir zamanlar düzeni koruyan göksel bir şövalyeyken/);
-    expect(Object.keys(kk).sort()).toEqual(['bolum', 'durum', 'en', 'id', 'not', 'paragraflar', 'ref', 'tr', 'yer']);
+    // Görev BOSS-IMZA-GORSEL: boss adı Hex, Princeps Tenebrarum (PDF adı `eskiAd`), görsel `boss/hex.webp`.
+    expect(kk.tr).toBe('Hex, Princeps Tenebrarum');
+    expect(Object.keys(kk).sort()).toEqual(['bolum', 'durum', 'en', 'eskiAd', 'gorsel', 'id', 'not', 'paragraflar', 'ref', 'tr', 'yer']);
   });
 });

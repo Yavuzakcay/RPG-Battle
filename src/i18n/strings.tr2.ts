@@ -975,7 +975,14 @@ export const TR_EXTRA = {
       katDurum: { calisir: 'çalışır', kismi: 'kısmen çalışır', planli: 'planlı (henüz oyunda yok)', calismiyor: 'çalışmıyor' } as Record<string, string>,
       katKaynak: (ref: string) => `Dice & Hex özgün eşya kataloğu (${ref})`, priceless: 'Satılamaz / paha biçilemez',
       // Görev MUHUR-TASI-PROSPEKTUS: Mühür taşı bilgi satırları (kademe PDF Kaltakkıran §4 tablosundan; ruh data/bosslar-muhur.json `ganimet`).
-      muhur: { kademe: 'Kademe', ruh: 'Mühür Ruhu', socket: 'Takılabilir', hosts: { zirh: 'zırh', kalkan: 'kalkan', cubbe: 'cübbe (nadir ve üstü)', ozel: "Kaltakkıran'ın Paladin Zırhı, Koruyucu Ejderha Mührü" } as Record<string, string>, tier: { 1: 'Seviye 1 · Çatlak Taş', 2: 'Seviye 2 · Uyanmış Taş', 3: 'Seviye 3 · Kaltakkıran Parçası' } as Record<number, string> },
+      muhur: { kademe: 'Kademe', ruh: 'Mühür Ruhu', socket: 'Takılabilir', hosts: { zirh: 'zırh', kalkan: 'kalkan', cubbe: 'cübbe (nadir ve üstü)', ozel: "Hex'in Paladin Zırhı, Koruyucu Ejderha Mührü" } as Record<string, string>, tier: { 1: 'Seviye 1 · Çatlak Taş', 2: 'Seviye 2 · Uyanmış Taş', 3: 'Seviye 3 · Boss Taşı' } as Record<number, string> },
+      // Görev BOSS-IMZA-GORSEL: üç ana boss (görsel data/boss-gorsel.json `ana`) ve eşya görsel varyantları (data/esya-gorsel-varyant.json).
+      anaBoss: {
+        hex: { ad: 'Hex', unvan: 'Princeps Tenebrarum', tam: 'Hex, Princeps Tenebrarum' },
+        tarvok: { ad: 'Tarvok', unvan: 'Dağezen', tam: 'Dağezen Tarvok' },
+        mora: { ad: 'Mora', unvan: 'Al-İha', tam: 'Al-İha Mora' },
+      } as Record<string, { ad: string; unvan: string; tam: string }>,
+      gorselVaryant: { kapali: 'Kapalı', acik: 'Açık (uyanık)', hasarli: 'Hasarlı' } as Record<string, string>,
       v: {
         dexMod: 'DEX', dexMax: (n: number) => `DEX (en çok ${n})`, shield: (n: number) => `+${n} (kalkan)`,
         minutes: (a: number, b: number) => `${a} dk giyme, ${b} dk çıkarma`, stealthDis: 'Gizlen (Stealth) zarlarında dezavantaj',

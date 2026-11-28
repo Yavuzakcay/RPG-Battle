@@ -25,7 +25,7 @@ const EN: Table = { ...(enData as unknown as Table), canavar: (enMon as unknown 
 const KINDS = Object.keys(TR).filter((k) => !k.startsWith('_'));
 const TURKISH = /[çşğıöüÇŞĞİÖÜ]/;
 /** Özel adlar: Türkçe harfli olup İngilizce metinde kalabilecek adlar (alt sınıf ve geçmiş adları SD4'te Türkçe). */
-// Görev MUHUR-TASI-PROSPEKTUS: Mühür taşı paragraflarında Kaltakkıran ve Sv.3 taşlarının düştüğü bölge adları (Türkçe özel ad).
+// Görev MUHUR-TASI-PROSPEKTUS: Mühür taşı paragraflarında Hex ve Sv.3 taşlarının düştüğü bölge adları (Türkçe özel ad).
 const PROPER_NAMES: string[] = ['Kaltakkıran', ...(anlatim as unknown as { anlatimlar: Array<{ id: string; baglar?: Array<{ bolge: string }> }> })
   .anlatimlar.find((a) => a.id === 'on-muhur')!.baglar!.map((b) => b.bolge)];
 const numbersOf = (s: string) => new Set((s.replace(/(\d+)[- ](feet|foot)/g, '$1 ft').match(/\b\d+d\d+\b|DC \d+|\b\d+ ft\b/g) ?? []));

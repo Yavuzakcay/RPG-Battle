@@ -1,5 +1,5 @@
 /**
- * Görev KATALOG-1 D: özgün yüzük, tılsım ve mühür taşları (Yüzük ve Tılsım Kataloğu #1–45) ile Kaltakkıran paketinin taşları
+ * Görev KATALOG-1 D: özgün yüzük, tılsım ve mühür taşları (Yüzük ve Tılsım Kataloğu #1–45) ile Hex paketinin taşları
  * (Sv.1 ve Sv.2 on tür varyantı, Sv.3 on taş) ve Koruyucu Ejderha Mührü. K3: mühür taşları tılsım modunda (soket yok; yalnız
  * Tılsım yuvası etkisi), zanaat eklentileri yalnız veri; Sv.3 güçleri zırh bağı beklediği için planlı.
  */
@@ -27,7 +27,7 @@ const battle = (sh: CharacterSheet) => startBattle('kat-d', 'd', [{ ...make(sh),
 const prims = (a: Combatant) => (a.paket?.ozellikler ?? []).flatMap((f) => f.ilkeller);
 
 describe('KATALOG-1 D: yüzük, tılsım, mühür taşı', () => {
-  it('45 katalog parçası; Kaltakkıran taşları 10 + 10 varyant + 10 Sv.3 + Mühür; K7 adları', () => {
+  it('45 katalog parçası; Hex taşları 10 + 10 varyant + 10 Sv.3 + Mühür; K7 adları', () => {
     expect(YT).toHaveLength(45);
     expect(TAS).toHaveLength(30);
     expect(kat.some((x) => x.katalog.ref === 'BOSS#19' && x.id === 'guardian-dragon-sigil')).toBe(true);

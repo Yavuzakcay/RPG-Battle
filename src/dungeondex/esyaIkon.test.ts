@@ -19,8 +19,10 @@ const KATALOG = manifestKimlikleri(katalog);
 const ad = (f: string) => f.slice(f.lastIndexOf('/') + 1);
 const ESYA = Object.keys(import.meta.glob('/public/esya/*.webp')).map(ad);
 const KUCUK = new Set(Object.keys(import.meta.glob('/public/esya/kucuk/*.webp')).map(ad));
+/** Katalog manifestinin dosya adları (Görev BOSS-IMZA-GORSEL: varyant kimliği `<kimlik>/<varyant>` → `<kimlik>--<varyant>`). */
+const KATALOG_DOSYA = new Set([...KATALOG].map(dosyaAdi));
 /** Oyun kaydı hattının dosyaları (katalog manifestinin kayıtsız hedefleri hariç). */
-const ESYA_OYUN = ESYA.filter((f) => !KATALOG.has(f.replace(/\.webp$/, '')));
+const ESYA_OYUN = ESYA.filter((f) => !KATALOG_DOSYA.has(f.replace(/\.webp$/, '')));
 /** assets-ham/esya ham sayfa adları (yalnız ad; görsel açılmaz, depo dışı: CI'da boş). */
 const HAM = new Set(Object.keys(import.meta.glob('/assets-ham/esya/*.{jpg,png,webp}')).map(ad));
 
@@ -170,7 +172,7 @@ describe('Eşya ikon hattı: katalog manifesti', () => {
 
   it('public/esya: katalog dosyaları yalnız katalog kimlikleri; büyük ve küçük kopya birlikte', () => {
     for (const f of ESYA.filter((x) => !ESYA_OYUN.includes(x))) {
-      expect(KATALOG.has(f.replace(/\.webp$/, '')), f).toBe(true);
+      expect(KATALOG_DOSYA.has(f.replace(/\.webp$/, '')), f).toBe(true);
       expect(KUCUK.has(f), f).toBe(true);
     }
   });

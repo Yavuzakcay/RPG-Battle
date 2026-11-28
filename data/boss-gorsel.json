@@ -1,5 +1,5 @@
 {
-  "_not": "BOSS-GORSEL-1: Mühür Ruhu yaratık görselleri; scripts/boss-gorsel.mjs üretir (kaynak depo dışı assets-ham/boss/), elle düzenlenmez. `dosya` public/ altındaki yol; görsel yoksa null (jeton yedek görünüme düşer). `olcek`: jeton görsel boyutu boss yüksekliğine göre (Sv.1 0.25, Sv.2 0.6, Sv.3 1); görsele gömülmez. `mucevher` (GORSEL-MUCEVHER-EJDERHA): 15 mücevher ejderhası (`hat`, `evre` 1 Yavru / 2 Genç / 3 Yetişkin, `kaynak` ham dosya); ölçek yok, jeton boyutu boyut sınıfından; scripts/katalog-f2-kadim.mjs `avatar` olarak bağlar. `kadim` (KATALOG-DEX-DENGE-HAZIRLIK): kadim yaratıklar, aynı biçim; `ortak` = görseli paylaşılan kaydın kimliği (ayrı dosya yok); `ayna`: kaynak yatay aynalandı (yan tabloda `yon: sol`). Kontrol: harita/belgeler/BOSS-GORSEL-KONTROL.md.",
+  "_not": "BOSS-GORSEL-1: Mühür Ruhu yaratık görselleri; scripts/boss-gorsel.mjs üretir (kaynak depo dışı assets-ham/boss/), elle düzenlenmez. `dosya` public/ altındaki yol; görsel yoksa null (jeton yedek görünüme düşer). `olcek`: jeton görsel boyutu boss yüksekliğine göre (Sv.1 0.25, Sv.2 0.6, Sv.3 1); görsele gömülmez. `mucevher` (GORSEL-MUCEVHER-EJDERHA): 15 mücevher ejderhası (`hat`, `evre` 1 Yavru / 2 Genç / 3 Yetişkin, `kaynak` ham dosya); ölçek yok, jeton boyutu boyut sınıfından; scripts/katalog-f2-kadim.mjs `avatar` olarak bağlar. `kadim` (KATALOG-DEX-DENGE-HAZIRLIK): kadim yaratıklar, aynı biçim; `ortak` = görseli paylaşılan kaydın kimliği (ayrı dosya yok); `ayna`: kaynak yatay aynalandı (yan tabloda `yon: sol`). `ana` (BOSS-IMZA-GORSEL): üç ana boss (hex = Hex, Princeps Tenebrarum; tarvok = Dağezen Tarvok; mora = Al-İha Mora; adlar i18n `dex.pro.anaBoss`), `icBosluk` iç boşluk kipi (yok: yalnız kenardan; saf: kapalı alanda yalnız saf #FF00FF). Kontrol: harita/belgeler/BOSS-GORSEL-KONTROL.md.",
   "olcek": {
     "1": 0.25,
     "2": 0.6,
@@ -780,6 +780,50 @@
     "ocean-nightmare-open-sea": {
       "dosya": "boss/ocean-nightmare.webp",
       "ortak": "ocean-nightmare"
+    }
+  },
+  "ana": {
+    "hex": {
+      "dosya": "boss/hex.webp",
+      "kaynak": "hex.jpg",
+      "icBosluk": "saf",
+      "boyut": [
+        511,
+        512
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#ea01fc"
+    },
+    "tarvok": {
+      "dosya": "boss/tarvok.webp",
+      "kaynak": "tarvok.jpg",
+      "icBosluk": "varsayilan",
+      "boyut": [
+        370,
+        512
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#fb01fd"
+    },
+    "mora": {
+      "dosya": "boss/mora.webp",
+      "kaynak": "mora.jpg",
+      "icBosluk": "saf+ton",
+      "boyut": [
+        377,
+        512
+      ],
+      "hamBoyut": [
+        2048,
+        2048
+      ],
+      "zemin": "#fd01fc"
     }
   }
 }

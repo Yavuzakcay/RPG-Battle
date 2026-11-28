@@ -1032,7 +1032,7 @@ export interface Combatant {
   legendaryExtra?: number;
   /** Kuyruk 43: savaşta kullanılabilen sarf eşyaları (eşya kimliği → adet; iksirler). */
   consumables?: Record<string, number>;
-  /** Görev KATALOG-GUC-TAM (109): taşınan katalog eşyalarının kimlikleri (Mühür taşı, Kaltakkıran zırhı; Seal Pull, Armor's Betrayal). */
+  /** Görev KATALOG-GUC-TAM (109): taşınan katalog eşyalarının kimlikleri (Mühür taşı, Hex'in zırhı; Seal Pull, Armor's Betrayal). */
   carried?: string[];
   /** Kuyruk 43: Legendary Resistance bu turlar arasında kullanıldı (kendi turunun başında kalkar). */
   lrLock?: boolean;

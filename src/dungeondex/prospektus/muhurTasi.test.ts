@@ -77,7 +77,7 @@ describe('Mühür taşları (Dungeondex bilgisi)', () => {
     expect(en.find((x) => x.label === 'Seal Spirit')?.text).toBe('Cim');
     expect(en.some((x) => !x.label && x.text === EN[r.ganimet] && !x.trOnly)).toBe(true);
     const sv3 = ne('ember-core', 'tr');
-    expect(sv3.find((x) => x.label === 'Kademe')?.text).toBe('Seviye 3 · Kaltakkıran Parçası');
+    expect(sv3.find((x) => x.label === 'Kademe')?.text).toBe('Seviye 3 · Boss Taşı');
     expect(sv3.find((x) => x.label === 'Mühür Ruhu')?.text).toBe('Cimbombom, Lion of the Hell');
     // Taş olmayan katalog eşyası (soket mühür taşı YT#40 dahil) Mühür Ruhu satırı almaz
     for (const id of ['umbral-sigil-stone', 'brimstone-flail', 'kaltakkirans-paladin-armor']) {

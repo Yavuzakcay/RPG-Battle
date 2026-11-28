@@ -1,0 +1,20 @@
+{
+  "_not": "Görev BOSS-IMZA-GORSEL: birden çok görünümü olan eşyalar (yalnız görsel, mekanik yok). `varyantlar`: varyant anahtarı → public/ altındaki dosya (npm run esya-ikon -- --manifest data/katalog-ikon-sayfalar.json üretir; manifestte varyant kimliği `<kimlik>/<varyant>`, dosya adı `<kimlik>--<varyant>.webp`, 96 px kopyası esya/kucuk/). `varsayilan` Dungeondex'in bugün gösterdiği görsel (esya/<kimlik>.webp). Varyant adları i18n `dex.pro.gorselVaryant`. Test: src/data/esyaGorselVaryant.test.ts.",
+  "esyalar": {
+    "kaltakkirans-maw-chain-greatsword": {
+      "varsayilan": "kapali",
+      "varyantlar": {
+        "kapali": "esya/kaltakkirans-maw-chain-greatsword.webp",
+        "acik": "esya/kaltakkirans-maw-chain-greatsword--acik.webp"
+      }
+    },
+    "kaltakkirans-paladin-armor": {
+      "varsayilan": "kapali",
+      "varyantlar": {
+        "kapali": "esya/kaltakkirans-paladin-armor.webp",
+        "acik": "esya/kaltakkirans-paladin-armor--acik.webp",
+        "hasarli": "esya/kaltakkirans-paladin-armor--hasarli.webp"
+      }
+    }
+  }
+}

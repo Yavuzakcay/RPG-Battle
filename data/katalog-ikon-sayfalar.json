@@ -1781,6 +1781,142 @@
    "not": "Gemini 7 eşya çizdi; hücre 5 (kehribar taşlı kemik yüzük) yedek, kullanılmaz (KATALOG-IKON-AKTAR-2)."
   },
   {
+   "dosya": "kaltakkiran-kapali.jpg",
+   "kolon": 1,
+   "satir": 1,
+   "not": "BOSS-IMZA-GORSEL: Kaltakkıran (imza kılıç) kapalı mod = varsayılan ikon.",
+   "ogeler": [
+    {
+     "id": "kaltakkirans-maw-chain-greatsword",
+     "ad": "Kaltakkıran (kapalı)"
+    }
+   ]
+  },
+  {
+   "dosya": "kaltakkiran-acik.jpg",
+   "kolon": 1,
+   "satir": 1,
+   "not": "BOSS-IMZA-GORSEL: Kaltakkıran açık/uyanık mod varyantı (eklem halkasının içi kapalı macenta, delik olarak silinir).",
+   "ogeler": [
+    {
+     "id": "kaltakkirans-maw-chain-greatsword/acik",
+     "ad": "Kaltakkıran (açık)"
+    }
+   ]
+  },
+  {
+   "dosya": "hex-zirh-kapali.jpg",
+   "kolon": 1,
+   "satir": 1,
+   "not": "BOSS-IMZA-GORSEL: Hex'in Paladin Zırhı kapalı = varsayılan ikon.",
+   "ogeler": [
+    {
+     "id": "kaltakkirans-paladin-armor",
+     "ad": "Hex's Paladin Armor (kapalı)"
+    }
+   ]
+  },
+  {
+   "dosya": "hex-zirh-acik.jpg",
+   "kolon": 1,
+   "satir": 1,
+   "not": "BOSS-IMZA-GORSEL: Hex'in Paladin Zırhı açık (taşlar yanık) varyantı.",
+   "ogeler": [
+    {
+     "id": "kaltakkirans-paladin-armor/acik",
+     "ad": "Hex's Paladin Armor (açık)"
+    }
+   ]
+  },
+  {
+   "dosya": "hex-zirh-hurda.jpg",
+   "kolon": 1,
+   "satir": 1,
+   "not": "BOSS-IMZA-GORSEL: Hex'in Paladin Zırhı hasarlı (parçalanmış kabuk) varyantı.",
+   "ogeler": [
+    {
+     "id": "kaltakkirans-paladin-armor/hasarli",
+     "ad": "Hex's Paladin Armor (hasarlı)"
+    }
+   ]
+  },
+  {
+   "dosya": "yumurtalar.jpg",
+   "kolon": 2,
+   "satir": 1,
+   "not": "BOSS-IMZA-GORSEL: sol Mücevher Ejderha Yumurtası, sağ Kor Yumurtası.",
+   "ogeler": [
+    {
+     "id": "mucevher-ejderha-yumurtasi",
+     "ad": "Gem Dragon Egg"
+    },
+    {
+     "id": "kor-yumurtasi",
+     "ad": "Ember Egg"
+    }
+   ]
+  },
+  {
+   "dosya": "tarvok-set.jpg",
+   "kolon": 2,
+   "satir": 1,
+   "kolonSinir": [
+    1024
+   ],
+   "zeminBoya": [
+    [
+     0,
+     0,
+     2048,
+     14
+    ],
+    [
+     1010,
+     0,
+     1038,
+     1028
+    ]
+   ],
+   "not": "BOSS-IMZA-GORSEL: Tarvok imza eşyaları; üstteki siyah çerçeve ve ortadaki ayraç zemin rengine boyanır (zeminBoya).",
+   "ogeler": [
+    {
+     "id": "mountain-crushers-chained-monolith",
+     "ad": "Mountain-Crusher's Chained Monolith"
+    },
+    {
+     "id": "champions-crag-harness",
+     "ad": "Champion's Crag Harness"
+    }
+   ]
+  },
+  {
+   "dosya": "al-iha-mora-set.jpg",
+   "kolon": 2,
+   "satir": 1,
+   "kolonSinir": [
+    1304
+   ],
+   "zeminBoya": [
+    [
+     1284,
+     0,
+     1324,
+     1972
+    ]
+   ],
+   "not": "BOSS-IMZA-GORSEL: Mora imza eşyaları; ayraç ortada değil (kolonSinir 1304), ayraç zemin rengine boyanır.",
+   "ogeler": [
+    {
+     "id": "abandoned-phylactery-pendulum",
+     "ad": "Abandoned Phylactery Pendulum"
+    },
+    {
+     "id": "robe-of-the-blindspot",
+     "ad": "Robe of the Blindspot"
+    }
+   ]
+  },
+  {
    "dosya": "katalog-duzeltme-01.jpg",
    "kolon": 4,
    "satir": 4,

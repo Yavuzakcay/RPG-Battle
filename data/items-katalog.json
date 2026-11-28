@@ -9169,7 +9169,7 @@
    "name": "Abandoned Phylactery Pendulum",
    "kaynak": "katalog-1",
    "attunement": true,
-   "text": "Kara Malek'in klonlama teknolojisine geçtikten sonra kulesinde bıraktığı boş filakteriden yapılma, Kaltakkıran'ın kırık yemin demiriyle kelepçelenmiş sarkaçlı asa: üç büyü sınıfını tek odakta birleştirir ve korkuyu doğrudan psişik kâbus uykusuna çevirir.",
+   "text": "Kara Malek'in klonlama teknolojisine geçtikten sonra kulesinde bıraktığı boş filakteriden yapılma, Hex'in kırık yemin demiriyle kelepçelenmiş sarkaçlı asa: üç büyü sınıfını tek odakta birleştirir ve korkuyu doğrudan psişik kâbus uykusuna çevirir.",
    "weight": 5.0,
    "effects": {},
    "bonus": {
@@ -9195,7 +9195,7 @@
      "Versatile"
     ],
     "bonus": "+3 Büyü / +2 DC",
-    "ozet": "Kara Malek'in klonlama teknolojisine geçtikten sonra kulesinde bıraktığı boş filakteriden yapılma, Kaltakkıran'ın kırık yemin demiriyle kelepçelenmiş sarkaçlı asa: üç büyü sınıfını tek odakta birleştirir ve korkuyu doğrudan psişik kâbus uykusuna çevirir.",
+    "ozet": "Kara Malek'in klonlama teknolojisine geçtikten sonra kulesinde bıraktığı boş filakteriden yapılma, Hex'in kırık yemin demiriyle kelepçelenmiş sarkaçlı asa: üç büyü sınıfını tek odakta birleştirir ve korkuyu doğrudan psişik kâbus uykusuna çevirir.",
     "ozellikler": [
      {
       "ad": "Büyü odağı",
@@ -9237,7 +9237,7 @@
    "name": "Robe of the Blindspot",
    "kaynak": "katalog-1",
    "attunement": true,
-   "text": "Karanlık Elf gölge ipeğinden dokunmuş, yakasında Kara Malek'in rünü ve Kaltakkıran'ın kırık kılıç tokasını taşıyan cübbe: düşmanın algısını bükerek saldırıları saptırır ve büyücüyü neredeyse dokunulmaz kılar.",
+   "text": "Karanlık Elf gölge ipeğinden dokunmuş, yakasında Kara Malek'in rünü ve Hex'in kırık kılıç tokasını taşıyan cübbe: düşmanın algısını bükerek saldırıları saptırır ve büyücüyü neredeyse dokunulmaz kılar.",
    "weight": 4.0,
    "effects": {
     "unarmoredBase": 15
@@ -9261,7 +9261,7 @@
     "fiyatGp": null,
     "taban": "Zırhsız",
     "bonus": "AC: 15 + DEX",
-    "ozet": "Karanlık Elf gölge ipeğinden dokunmuş, yakasında Kara Malek'in rünü ve Kaltakkıran'ın kırık kılıç tokasını taşıyan cübbe: düşmanın algısını bükerek saldırıları saptırır ve büyücüyü neredeyse dokunulmaz kılar.",
+    "ozet": "Karanlık Elf gölge ipeğinden dokunmuş, yakasında Kara Malek'in rünü ve Hex'in kırık kılıç tokasını taşıyan cübbe: düşmanın algısını bükerek saldırıları saptırır ve büyücüyü neredeyse dokunulmaz kılar.",
     "ozellikler": [
      {
       "ad": "Cübbe",
@@ -9328,7 +9328,7 @@
    },
    "katalog": {
     "ref": "BOSS#3",
-    "tr": "Dağ Ezen'in Zincirli Dikilitaşı",
+    "tr": "Dağezen'in Zincirli Dikilitaşı",
     "nadirlik": "efsanevi",
     "tur": "silah",
     "yuva": "Savaş silahı (Dev Sütun / Balyoz)",
@@ -9440,7 +9440,7 @@
   },
   {
    "id": "kaltakkirans-paladin-armor",
-   "name": "Kaltakkıran's Paladin Armor",
+   "name": "Hex's Paladin Armor",
    "kaynak": "katalog-1",
    "attunement": true,
    "text": "On mühür yuvalı kadim paladin tam plakası: kıtanın on bölgesindeki Seviye 3 taşları kalıcı olarak yutarak her birinin hasar türünde tam bağışıklık ve imza boss savaş sanatı açar; 10/10 tamamlandığında taşıyıcısını neredeyse yenilmez kılar.",
@@ -9448,7 +9448,7 @@
    "effects": {},
    "katalog": {
     "ref": "BOSS#5",
-    "tr": "Kaltakkıran'ın Paladin Zırhı",
+    "tr": "Hex'in Paladin Zırhı",
     "nadirlik": "yadigar",
     "tur": "zirh",
     "yuva": "ağır",
@@ -9484,20 +9484,21 @@
      }
     ],
     "riskler": "Zırh giyiliyken bitirilen her savaş ve uzun dinlenme Kararma Sayacı'nı yükseltir; kaynaşmış taş sayısı arttıkça kararma katlanır. 50+ Kararmada iyi diyalog seçimleri kapanır, 75+ Kararmada zırhı çıkarmak WIS kurtarma zarı ister, 100 Kararmada zırh bedene kilitlenir. Ayrıca ejderha veya kadim varlıklar karşısında Üstün Varlık Çekimi (İhanet) riski doğar.",
-    "kimlerKullanamaz": "Ağır zırh eğitimi olmayan karakter STR/DEX d20 testlerinde dezavantaj alır ve büyü yapamaz; STR 15 altında yürüme hızı 10 ft düşer. Gerekli uyum yuvası (5+ taşta 2, 10 taşta 3 yuva) boşaltılmadan zırhın üst kademesi açılmaz."
+    "kimlerKullanamaz": "Ağır zırh eğitimi olmayan karakter STR/DEX d20 testlerinde dezavantaj alır ve büyü yapamaz; STR 15 altında yürüme hızı 10 ft düşer. Gerekli uyum yuvası (5+ taşta 2, 10 taşta 3 yuva) boşaltılmadan zırhın üst kademesi açılmaz.",
+    "eskiAd": "Kaltakkıran's Paladin Armor"
    }
   },
   {
    "id": "kaltakkirans-maw-chain-greatsword",
-   "name": "Kaltakkıran's Maw-Chain Greatsword",
+   "name": "Kaltakkıran",
    "kaynak": "katalog-1",
    "attunement": false,
-   "text": "Kaltakkıran'ın kırılan eski paladin yemin kılıcından dövülen ve yalnızca onun zırhıyla uyanan eklemli zincir büyük kılıç: tek vuruşta kesici, ezici ve delici hasarı birlikte indirir; zincir formuna uzayıp hedefi pençeli çenesiyle sarmalar ve kurbanın en zayıf olduğu büyü veya element enerjisini doğrudan bedenine akıtır.",
+   "text": "Hex'in kırılan eski paladin yemin kılıcından dövülen ve yalnızca onun zırhıyla uyanan eklemli zincir büyük kılıç: tek vuruşta kesici, ezici ve delici hasarı birlikte indirir; zincir formuna uzayıp hedefi pençeli çenesiyle sarmalar ve kurbanın en zayıf olduğu büyü veya element enerjisini doğrudan bedenine akıtır.",
    "weight": 13.0,
    "effects": {},
    "katalog": {
     "ref": "BOSS#6",
-    "tr": "Kaltakkıran'ın Çeneli Zincir Kılıcı",
+    "tr": "Kaltakkıran",
     "nadirlik": "efsanevi",
     "tur": "silah",
     "yuva": "Savaş silahı (Dönüşen Dev Kılıç / Zincir)",
@@ -9513,11 +9514,11 @@
     ],
     "menzil": "Erişim: 5 ft / 15 ft",
     "bonus": "+3",
-    "ozet": "Kaltakkıran'ın kırılan eski paladin yemin kılıcından dövülen ve yalnızca onun zırhıyla uyanan eklemli zincir büyük kılıç: tek vuruşta kesici, ezici ve delici hasarı birlikte indirir; zincir formuna uzayıp hedefi pençeli çenesiyle sarmalar ve kurbanın en zayıf olduğu büyü veya element enerjisini doğrudan bedenine akıtır.",
+    "ozet": "Hex'in kırılan eski paladin yemin kılıcından dövülen ve yalnızca onun zırhıyla uyanan eklemli zincir büyük kılıç: tek vuruşta kesici, ezici ve delici hasarı birlikte indirir; zincir formuna uzayıp hedefi pençeli çenesiyle sarmalar ve kurbanın en zayıf olduğu büyü veya element enerjisini doğrudan bedenine akıtır.",
     "ozellikler": [
      {
       "ad": "Zırha Kilitli Bağ",
-      "metin": "Bu kılıç yalnızca Kaltakkıran'ın Paladin Zırhı giyiliyken uyandırılıp savaşta kullanılabilir; zırhın kendi Uyum bağından beslenir ve ikinci bir Uyum yuvası harcamaz. Zırh sırtında değilken kılıcın eklemleri taş kesilir, rün hattı söner ve savaşta savrulamaz. Zırh giyiliyken +3 saldırı ve hasar bonusu verir; Heavy ve Two-Handed özelliklidir. Her isabetli saldırı 1d6 kesici (jilet çentikler) + 1d6 ezici (ağır gövde ve çene kütlesi) + 1d6 delici (pençeli uç dişleri) + 3 + STR (hedefin dirençsiz olduğu fiziksel türe yazılır) hasarı vurur.",
+      "metin": "Bu kılıç yalnızca Hex'in Paladin Zırhı giyiliyken uyandırılıp savaşta kullanılabilir; zırhın kendi Uyum bağından beslenir ve ikinci bir Uyum yuvası harcamaz. Zırh sırtında değilken kılıcın eklemleri taş kesilir, rün hattı söner ve savaşta savrulamaz. Zırh giyiliyken +3 saldırı ve hasar bonusu verir; Heavy ve Two-Handed özelliklidir. Her isabetli saldırı 1d6 kesici (jilet çentikler) + 1d6 ezici (ağır gövde ve çene kütlesi) + 1d6 delici (pençeli uç dişleri) + 3 + STR (hedefin dirençsiz olduğu fiziksel türe yazılır) hasarı vurur.",
       "durum": "planli",
       "not": "zırh bağı kancası yok; zırhsız kullanım engellenemediği için +3 ve üç fiziksel tür motora verilmedi (taban Greatsword yalın)"
      },
@@ -9546,8 +9547,9 @@
       "not": "yeni kanca ya da paket ilkeli gerekir (KATALOG-2)"
      }
     ],
-    "riskler": "Zırh giyilmeden kullanılamadığı için bu kılıcı çekmek her zaman Kararma bedelini göze almak demektir; kullanıldığı her savaş zırhın Kararma artışına +2 daha ekler. Bir hedef sarmalanmışken başka düşmana vurmak için önce sarmal bırakılmalıdır. Final Akıbeti: Yol A'da (Ölümsüz Koruyucu) zırh Kıta Ejderhası'na geçtiğinde kılıcın tüm karanlık gücü kalıcı olarak söner ve kılıç savaş dışı bir Devrim Simgesi olarak kalır; Yol B'de (Yeni Kaltakkıran) ise tam gücüyle ve 3/UD Boğucu Kıskaç yüküyle sınırsızca kullanılır.",
-    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'nı giymeyen hiç kimse bu kılıcı savaşta kullanamaz. Zırh giyiliyken dahi Martial silah yetkinliği olmayan karakter yetkinlik bonusunu ekleyemez; STR 13 altında dezavantaj alır."
+    "riskler": "Zırh giyilmeden kullanılamadığı için bu kılıcı çekmek her zaman Kararma bedelini göze almak demektir; kullanıldığı her savaş zırhın Kararma artışına +2 daha ekler. Bir hedef sarmalanmışken başka düşmana vurmak için önce sarmal bırakılmalıdır. Final Akıbeti: Yol A'da (Ölümsüz Koruyucu) zırh Kıta Ejderhası'na geçtiğinde kılıcın tüm karanlık gücü kalıcı olarak söner ve kılıç savaş dışı bir Devrim Simgesi olarak kalır; Yol B'de (Yeni Hex) ise tam gücüyle ve 3/UD Boğucu Kıskaç yüküyle sınırsızca kullanılır.",
+    "kimlerKullanamaz": "Hex'in Paladin Zırhı'nı giymeyen hiç kimse bu kılıcı savaşta kullanamaz. Zırh giyiliyken dahi Martial silah yetkinliği olmayan karakter yetkinlik bonusunu ekleyemez; STR 13 altında dezavantaj alır.",
+    "eskiAd": "Kaltakkıran's Maw-Chain Greatsword"
    }
   },
   {
@@ -13796,25 +13798,25 @@
     "nadirlik": "efsanevi",
     "tur": "sihirli",
     "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
-    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "uyumKosulu": "Hex'in Paladin Zırhı",
     "fiyatGp": null,
     "ozet": "Yanık Demirhane'nin lav kalbinden koparılan ateş mührü: her türlü ateş hasarına ve yanmaya karşı tam bağışıklık verir, etrafı lav çemberine çeviren Savaş Sanatı açar.",
     "ozellikler": [
      {
       "ad": "Temel etki",
-      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken ateş hasarına Tam Bağışıklık (Immunity) ve Burning durumuna bağışıklık kazanırsın (alev ve lav yüzeylerinin ateş hasarı 0 vurur).",
+      "metin": "Hex'in Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken ateş hasarına Tam Bağışıklık (Immunity) ve Burning durumuna bağışıklık kazanırsın (alev ve lav yüzeylerinin ateş hasarı 0 vurur).",
       "durum": "kismi",
-      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
+      "not": "KATALOG-GUC-TAM D: Hex'in Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Erimiş Örs Patlaması (1/UD, Eylem)",
       "metin": "Kendi altıgenin merkezli 15 ft yarıçapta erimiş dalga salarsın; alandaki düşmanlar DC 16 DEX kurtarma zarı atar, geçemezse 5d6 ateş hasarı alır ve 10 ft geri itilir (geçerse yarı hasar). Tüm alan 2 tur alev yüzeyine dönüşür.",
       "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "not": "zırh bağı kancası yok: güç yalnız Hex'in Paladin Zırhı giyiliyken ve kaynaşmışken (Kaltakkıran B-4 ile aynı); kaynaşma sistemi G anlatımında"
      }
     ],
     "riskler": "Zırha basıldığı an geri sökülemez ve Kararma artışını kalıcı olarak hızlandırır. Erimiş Örs Patlaması çevredeki yağ ve ağ yüzeylerini tutuşturup dostların yolunu kesebilir.",
-    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz; normal bir zırha takılmaya çalışılırsa zırh parçalanır."
+    "kimlerKullanamaz": "Hex'in Paladin Zırhı'na sahip olmayan karakter kullanamaz; normal bir zırha takılmaya çalışılırsa zırh parçalanır."
    }
   },
   {
@@ -13831,25 +13833,25 @@
     "nadirlik": "efsanevi",
     "tur": "sihirli",
     "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
-    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "uyumKosulu": "Hex'in Paladin Zırhı",
     "fiyatGp": null,
     "ozet": "Donmuş Geçit'teki ebedi buzun özü: her türlü soğuk hasarına tam bağışıklık, buzda sarsılmaz denge ve önündeki düşmanları donduran tipi konisi kazandırır.",
     "ozellikler": [
      {
       "ad": "Temel etki",
-      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken soğuk hasarına Tam Bağışıklık (Immunity) kazanır, buz ve kar yüzeylerinde zorlu arazi veya kayma (Prone) yaşamazsın (iceWalker).",
+      "metin": "Hex'in Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken soğuk hasarına Tam Bağışıklık (Immunity) kazanır, buz ve kar yüzeylerinde zorlu arazi veya kayma (Prone) yaşamazsın (iceWalker).",
       "durum": "kismi",
-      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
+      "not": "KATALOG-GUC-TAM D: Hex'in Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Kırağı Nefesi (1/UD, Eylem)",
       "metin": "Önündeki 20 ft konide dondurucu fırtına salarsın; alandaki düşmanlar DC 16 CON kurtarma zarı atar, geçemezse 5d6 soğuk hasarı alır ve 1 tur Restrained olur (geçerse yarı hasar). Konideki tüm zemin ve su altıgenleri 3 tur buz yüzeyine döner.",
       "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "not": "zırh bağı kancası yok: güç yalnız Hex'in Paladin Zırhı giyiliyken ve kaynaşmışken (Kaltakkıran B-4 ile aynı); kaynaşma sistemi G anlatımında"
      }
     ],
     "riskler": "Geri sökülemez; Kararmayı kalıcı hızlandırır. Oluşan geniş buz yüzeyi kendi takım arkadaşlarını da kaydırıp yere serebilir.",
-    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz."
+    "kimlerKullanamaz": "Hex'in Paladin Zırhı'na sahip olmayan karakter kullanamaz."
    }
   },
   {
@@ -13866,25 +13868,25 @@
     "nadirlik": "efsanevi",
     "tur": "sihirli",
     "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
-    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "uyumKosulu": "Hex'in Paladin Zırhı",
     "fiyatGp": null,
     "ozet": "Paratoner Yaylası'ndaki gök mızrağı çekirdeği: her türlü yıldırım hasarına ve su zincirine tam bağışıklık verir, gökten şimşek mızrağı indiren Savaş Sanatı açar.",
     "ozellikler": [
      {
       "ad": "Temel etki",
-      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken yıldırım hasarına Tam Bağışıklık (Immunity) kazanırsın (su×yıldırım zincir tepkimesi dahil) ve yıldırım kaynaklı tepki kesme etkileri sana işlemez.",
+      "metin": "Hex'in Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken yıldırım hasarına Tam Bağışıklık (Immunity) kazanırsın (su×yıldırım zincir tepkimesi dahil) ve yıldırım kaynaklı tepki kesme etkileri sana işlemez.",
       "durum": "kismi",
-      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
+      "not": "KATALOG-GUC-TAM D: Hex'in Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Gök Mızrağı (1/UD, Eylem)",
       "metin": "60 ft içinde görebildiğin bir altıgene gökten dev yıldırım mızrağı indirirsin; hedefteki ve 10 ft çevresindeki düşmanlar DC 16 DEX kurtarma zarı atar, geçemezse 6d6 yıldırım hasarı alır ve sonraki tur tepki (Reaction) kullanamaz (geçerse yarı hasar). Su altıgenine inerse bağlı 7 su altıgeninde zincirleme şok tetiklenir.",
       "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "not": "zırh bağı kancası yok: güç yalnız Hex'in Paladin Zırhı giyiliyken ve kaynaşmışken (Kaltakkıran B-4 ile aynı); kaynaşma sistemi G anlatımında"
      }
     ],
     "riskler": "Geri sökülemez; Kararmayı kalıcı hızlandırır. Suda tetiklenen yıldırım zinciri aynı sudaki dostlara sıçrayabilir.",
-    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz."
+    "kimlerKullanamaz": "Hex'in Paladin Zırhı'na sahip olmayan karakter kullanamaz."
    }
   },
   {
@@ -13901,25 +13903,25 @@
     "nadirlik": "efsanevi",
     "tur": "sihirli",
     "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
-    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "uyumKosulu": "Hex'in Paladin Zırhı",
     "fiyatGp": null,
     "ozet": "Yankı Kanyonu'nun kadim çan çekirdeği: gürültü hasarına ve sağırlığa tam bağışıklık kazandırır, 30 ft uzunluğunda duvar ve kalkan parçalayan şok dalgası salar.",
     "ozellikler": [
      {
       "ad": "Temel etki",
-      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken gürültü hasarına Tam Bağışıklık (Immunity) ve Deafened durumuna bağışıklık kazanırsın; ses dalgası kaynaklı zorla itilmeler seni sarsamaz.",
+      "metin": "Hex'in Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken gürültü hasarına Tam Bağışıklık (Immunity) ve Deafened durumuna bağışıklık kazanırsın; ses dalgası kaynaklı zorla itilmeler seni sarsamaz.",
       "durum": "kismi",
-      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
+      "not": "KATALOG-GUC-TAM D: Hex'in Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Kanyon Yırtığı (1/UD, Eylem)",
       "metin": "Önündeki 30 ft çizgide (10 ft genişliğinde) dev ses dalgası gönderirsin; çizgideki düşmanlar DC 16 CON kurtarma zarı atar, geçemezse 5d6 gürültü hasarı alır, 15 ft geri itilip Prone olur ve 2 tur Deafened kalır (geçerse yarı hasar). Alandaki kırılabilir duvar ve nesneler iki kat hasar alır.",
       "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "not": "zırh bağı kancası yok: güç yalnız Hex'in Paladin Zırhı giyiliyken ve kaynaşmışken (Kaltakkıran B-4 ile aynı); kaynaşma sistemi G anlatımında"
      }
     ],
     "riskler": "Geri sökülemez; Kararmayı kalıcı hızlandırır. Kanyon Yırtığı 150 ft yarıçapta tüm haritadaki uyuyan düşmanları alarma geçirir.",
-    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz."
+    "kimlerKullanamaz": "Hex'in Paladin Zırhı'na sahip olmayan karakter kullanamaz."
    }
   },
   {
@@ -13936,25 +13938,25 @@
     "nadirlik": "efsanevi",
     "tur": "sihirli",
     "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
-    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "uyumKosulu": "Hex'in Paladin Zırhı",
     "fiyatGp": null,
     "ozet": "Sülfür Bataklığı'ndaki aşındırıcı öz: her türlü asit hasarına ve zırh aşınmasına tam bağışıklık verir, düşman zırhlarını eriten asit tufanı kusar.",
     "ozellikler": [
      {
       "ad": "Temel etki",
-      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken asit hasarına Tam Bağışıklık (Immunity) kazanırsın; asit yüzeyleri ve AC düşüren aşındırma etkileri sana işlemez.",
+      "metin": "Hex'in Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken asit hasarına Tam Bağışıklık (Immunity) kazanırsın; asit yüzeyleri ve AC düşüren aşındırma etkileri sana işlemez.",
       "durum": "kismi",
-      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
+      "not": "KATALOG-GUC-TAM D: Hex'in Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Sülfür Tufanı (1/UD, Eylem)",
       "metin": "30 ft içindeki bir noktada 15 ft yarıçaplı yoğun asit patlaması açarsın; alandaki düşmanlar DC 16 DEX kurtarma zarı atar, geçemezse 5d6 asit hasarı alır ve 3 tur boyunca AC −3 cezası yer (geçerse yarı hasar, AC −1). Alan 3 tur asit yüzeyine dönüşür.",
       "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "not": "zırh bağı kancası yok: güç yalnız Hex'in Paladin Zırhı giyiliyken ve kaynaşmışken (Kaltakkıran B-4 ile aynı); kaynaşma sistemi G anlatımında"
      }
     ],
     "riskler": "Geri sökülemez; Kararmayı kalıcı hızlandırır. Oluşan asit gölü dostların da yürüyüş hattını yakar.",
-    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz."
+    "kimlerKullanamaz": "Hex'in Paladin Zırhı'na sahip olmayan karakter kullanamaz."
    }
   },
   {
@@ -13971,25 +13973,25 @@
     "nadirlik": "efsanevi",
     "tur": "sihirli",
     "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
-    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "uyumKosulu": "Hex'in Paladin Zırhı",
     "fiyatGp": null,
     "ozet": "Çürük Orman'ın spor çekirdeği: her türlü zehir hasarına ve zehirlenmeye tam bağışıklık verir, geniş alanda ölümcül zehir sporu patlatır.",
     "ozellikler": [
      {
       "ad": "Temel etki",
-      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken zehir hasarına Tam Bağışıklık (Immunity) ve Poisoned durumuna bağışıklık kazanırsın; zehir bulutları görüşünü veya nefesini etkilemez.",
+      "metin": "Hex'in Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken zehir hasarına Tam Bağışıklık (Immunity) ve Poisoned durumuna bağışıklık kazanırsın; zehir bulutları görüşünü veya nefesini etkilemez.",
       "durum": "kismi",
-      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
+      "not": "KATALOG-GUC-TAM D: Hex'in Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Veba Bulutu (1/UD, Eylem)",
       "metin": "30 ft içindeki bir noktada 15 ft yarıçapında 3 tur süren yoğun zehir bulutu oluşturursun; anında ve bulutta turuna başlayan her düşman DC 16 CON kurtarma zarı atar, geçemezse 4d6 zehir hasarı alır ve 2 tur Poisoned olur (geçerse yarı hasar). Bu bulut zehir direncini yok sayar.",
       "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "not": "zırh bağı kancası yok: güç yalnız Hex'in Paladin Zırhı giyiliyken ve kaynaşmışken (Kaltakkıran B-4 ile aynı); kaynaşma sistemi G anlatımında"
      }
     ],
     "riskler": "Geri sökülemez; Kararmayı kalıcı hızlandırır. Zehir bağışıklığı olan Construct ve Undead düşmanlar buluttan yine etkilenmez; ateşle temas ederse bulut patlayabilir.",
-    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz."
+    "kimlerKullanamaz": "Hex'in Paladin Zırhı'na sahip olmayan karakter kullanamaz."
    }
   },
   {
@@ -14007,25 +14009,25 @@
     "nadirlik": "efsanevi",
     "tur": "sihirli",
     "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
-    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "uyumKosulu": "Hex'in Paladin Zırhı",
     "fiyatGp": null,
     "ozet": "Terk Edilmiş Katedral'den sökülen düşmüş güneş kristali: her türlü ışıltı hasarına ve körlüğe tam bağışıklık sağlar, gökten yargı sütunu indirir.",
     "ozellikler": [
      {
       "ad": "Temel etki",
-      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken ışıltı hasarına Tam Bağışıklık (Immunity) ve Blinded durumuna bağışıklık kazanırsın; istenildiğinde bonus eylemle 20 ft parlak ışık açılıp kapatılabilir.",
+      "metin": "Hex'in Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken ışıltı hasarına Tam Bağışıklık (Immunity) ve Blinded durumuna bağışıklık kazanırsın; istenildiğinde bonus eylemle 20 ft parlak ışık açılıp kapatılabilir.",
       "durum": "kismi",
-      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
+      "not": "KATALOG-GUC-TAM D: Hex'in Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Altın Yargı Sütunu (1/UD, Eylem)",
       "metin": "60 ft içinde görebildiğin bir noktada 10 ft yarıçaplı, 40 ft yüksekliğinde ışıltı sütunu indirirsin (uçan hedefler dahil); düşmanlar DC 16 CON kurtarma zarı atar, geçemezse 6d6 ışıltı hasarı alır ve 2 tur Blinded olur (geçerse yarı hasar). Alandaki büyülü karanlık anında dağılır.",
       "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "not": "zırh bağı kancası yok: güç yalnız Hex'in Paladin Zırhı giyiliyken ve kaynaşmışken (Kaltakkıran B-4 ile aynı); kaynaşma sistemi G anlatımında"
      }
     ],
     "riskler": "Geri sökülemez; Kararmayı kalıcı hızlandırır. Parlak sütun gece haritalarında tüm gizlilik düzenini bozar.",
-    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz."
+    "kimlerKullanamaz": "Hex'in Paladin Zırhı'na sahip olmayan karakter kullanamaz."
    }
   },
   {
@@ -14042,25 +14044,25 @@
     "nadirlik": "efsanevi",
     "tur": "sihirli",
     "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
-    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "uyumKosulu": "Hex'in Paladin Zırhı",
     "fiyatGp": null,
     "ozet": "Kemik Ovası'nın kara alev çekirdeği: her türlü nekrotik hasarına ve maksimum can düşüşüne tam bağışıklık verir, düşmanın can tavanını törpüleyen kara dalga savurur.",
     "ozellikler": [
      {
       "ad": "Temel etki",
-      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken nekrotik hasarına Tam Bağışıklık (Immunity) kazanırsın; maksimum canını azaltan ve iyileşmeni engelleyen etkiler (noHeal) sana işlemez.",
+      "metin": "Hex'in Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken nekrotik hasarına Tam Bağışıklık (Immunity) kazanırsın; maksimum canını azaltan ve iyileşmeni engelleyen etkiler (noHeal) sana işlemez.",
       "durum": "kismi",
-      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
+      "not": "KATALOG-GUC-TAM D: Hex'in Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Kara Alev Kesiği (1/UD, Eylem)",
       "metin": "Önündeki 25 ft çizgide kara alev dalgası gönderirsin; düşmanlar DC 16 CON kurtarma zarı atar, geçemezse 5d6 nekrotik hasarı alır, 2 tur iyileşme alamaz (noHeal) ve savaş sonuna dek en yüksek canı alınan hasarın yarısı kadar azalır (geçerse yarı hasar, tavan düşmez).",
       "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "not": "zırh bağı kancası yok: güç yalnız Hex'in Paladin Zırhı giyiliyken ve kaynaşmışken (Kaltakkıran B-4 ile aynı); kaynaşma sistemi G anlatımında"
      }
     ],
     "riskler": "Geri sökülemez; Kararmayı kalıcı hızlandırır. Kara Alev Kesiği Undead düşmanlarda direnç veya bağışıklıkla karşılaşabilir.",
-    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz."
+    "kimlerKullanamaz": "Hex'in Paladin Zırhı'na sahip olmayan karakter kullanamaz."
    }
   },
   {
@@ -14077,25 +14079,25 @@
     "nadirlik": "efsanevi",
     "tur": "sihirli",
     "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
-    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "uyumKosulu": "Hex'in Paladin Zırhı",
     "fiyatGp": null,
     "ozet": "Sisli Akademi'nin kırık zihin aynası: psişik hasara, korkuya ve büyülenmeye tam bağışıklık sağlar, yakındaki düşmanların zihnini parçalayan çığlık yayar.",
     "ozellikler": [
      {
       "ad": "Temel etki",
-      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken psişik hasarına Tam Bağışıklık (Immunity) ile Charmed ve Frightened durumlarına bağışıklık kazanırsın (bu bağışıklık zırhın kendi Üstün Varlık Çekimi irade zarını ortadan kaldırmaz).",
+      "metin": "Hex'in Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken psişik hasarına Tam Bağışıklık (Immunity) ile Charmed ve Frightened durumlarına bağışıklık kazanırsın (bu bağışıklık zırhın kendi Üstün Varlık Çekimi irade zarını ortadan kaldırmaz).",
       "durum": "kismi",
-      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
+      "not": "KATALOG-GUC-TAM D: Hex'in Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Zihin Kıran Çığlık (1/UD, Eylem)",
       "metin": "20 ft çevrendeki tüm düşmanlara zihinsel şok salarsın; her düşman DC 16 INT kurtarma zarı atar, geçemezse 5d6 psişik hasarı alır, 1 tur Stunned olur ve sürdürdüğü konsantrasyon otomatik kırılır (geçerse yarı hasar, sersemlemez).",
       "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "not": "zırh bağı kancası yok: güç yalnız Hex'in Paladin Zırhı giyiliyken ve kaynaşmışken (Kaltakkıran B-4 ile aynı); kaynaşma sistemi G anlatımında"
      }
     ],
     "riskler": "Geri sökülemez; Kararmayı kalıcı hızlandırır. Zırhın kendi fısıltılarına ve ejderha karşısındaki İhanet zarlarına bağışıklık vermez.",
-    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz."
+    "kimlerKullanamaz": "Hex'in Paladin Zırhı'na sahip olmayan karakter kullanamaz."
    }
   },
   {
@@ -14112,25 +14114,25 @@
     "nadirlik": "efsanevi",
     "tur": "sihirli",
     "yuva": "Seviye 3 taş (kalıcı kaynaşma)",
-    "uyumKosulu": "Kaltakkıran'ın Paladin Zırhı",
+    "uyumKosulu": "Hex'in Paladin Zırhı",
     "fiyatGp": null,
     "ozet": "Yıkık Gözlemevi'ndeki yerçekimi çekirdeği: saf kuvvet hasarına ve zorla yer değiştirmeye tam bağışıklık verir, uzak düşmanları çekip yere çakan kütle dalgası salar.",
     "ozellikler": [
      {
       "ad": "Temel etki",
-      "metin": "Kaltakkıran'ın Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken kuvvet hasarına Tam Bağışıklık (Immunity) kazanırsın (Magic Missile, Eldritch Blast dahil) ve iraden dışında hiçbir etki seni zorla itemez, çekemez veya ışınlayamaz.",
+      "metin": "Hex'in Paladin Zırhı'na kalıcı olarak kaynaşır. Zırh giyiliyken kuvvet hasarına Tam Bağışıklık (Immunity) kazanırsın (Magic Missile, Eldritch Blast dahil) ve iraden dışında hiçbir etki seni zorla itemez, çekemez veya ışınlayamaz.",
       "durum": "kismi",
-      "not": "KATALOG-GUC-TAM D: Kaltakkıran'ın Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
+      "not": "KATALOG-GUC-TAM D: Hex'in Paladin Zırhı ya da Koruyucu Ejderha Mührü yuvasında türüne bağışıklık çalışır; ek durum bağışıklıkları ve yüzey kuralları yok"
      },
      {
       "ad": "Boss Savaş Sanatı — Yıldız Çöküşü (1/UD, Eylem)",
       "metin": "30 ft çevrendeki tüm düşmanları (havada uçanlar dahil) kendine doğru 15 ft çekersin (DC 16 STR kurtarma zarı engeller); ardından 10 ft çevrene indirdiğin yerçekimi darbesiyle alandaki tüm düşmanlar 6d6 kuvvet hasarı alır (DC 16 STR geçerse yarı) ve Prone olur (uçan düşmanlar yere çakılır).",
       "durum": "planli",
-      "not": "zırh bağı kancası yok: güç yalnız Kaltakkıran'ın Paladin Zırhı giyiliyken ve kaynaşmışken (Çeneli Zincir Kılıcı B-4 ile aynı); kaynaşma sistemi G anlatımında"
+      "not": "zırh bağı kancası yok: güç yalnız Hex'in Paladin Zırhı giyiliyken ve kaynaşmışken (Kaltakkıran B-4 ile aynı); kaynaşma sistemi G anlatımında"
      }
     ],
     "riskler": "Geri sökülemez; Kararmayı kalıcı hızlandırır. Yıldız Çöküşü tehlikeli yakın dövüş düşmanlarını doğrudan kendi çevrene toplar.",
-    "kimlerKullanamaz": "Kaltakkıran'ın Paladin Zırhı'na sahip olmayan karakter kullanamaz."
+    "kimlerKullanamaz": "Hex'in Paladin Zırhı'na sahip olmayan karakter kullanamaz."
    }
   },
   {
@@ -15518,6 +15520,58 @@
     ],
     "riskler": "Savaşta ikinci bir fincan içilemez; turda yalnızca bir yuvalı büyü harcama (SRD 5.2.1) kuralı sürer ve Slow etkisi ek bonus eylemi engeller.",
     "kimlerKullanamaz": "Herkes içebilir."
+   }
+  },
+  {
+   "id": "mucevher-ejderha-yumurtasi",
+   "name": "Gem Dragon Egg",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Beş mücevher hattından birine çatlayacak ejderha yumurtası: hangi hatta döneceğini Yumurta Taşıyıcı'nın Alignment kararları ve en sık kullandığı yetenek ve beceri zarları belirler.",
+   "effects": {},
+   "offCombat": "Hikâye eşyası: yumurta Serüven'de çatlar; savaşta etkisi yok.",
+   "katalog": {
+    "ref": "BOSS#20",
+    "tr": "Mücevher Ejderha Yumurtası",
+    "nadirlik": "efsanevi",
+    "tur": "sihirli",
+    "yuva": "Yumurta (taşınır)",
+    "fiyatGp": null,
+    "ozet": "Beş mücevher hattından birine çatlayacak ejderha yumurtası: hangi hatta döneceğini Yumurta Taşıyıcı'nın Alignment kararları ve en sık kullandığı yetenek ve beceri zarları belirler.",
+    "ozellikler": [
+     {
+      "ad": "Çatlama",
+      "metin": "Yumurta Taşıyıcı'nın Alignment kararlarına ve en sık kullandığı yetenek ve beceri zarlarına göre beş mücevher hattından birine (Alfa, Omega, Delta, Sigma, Gama) çatlar; çıkan Gem Dragon binek ya da müttefiktir, boss değildir.",
+      "durum": "planli",
+      "not": "BOSS-IMZA-GORSEL: yalnız veri ve görsel; çatlama Serüven kararına bağlı (harita/belgeler/KATALOG-F2-OZELLIKLER.md §6). Görsel şimdilik tek yumurta; rengi hatta göre ileride değişecek."
+     }
+    ]
+   }
+  },
+  {
+   "id": "kor-yumurtasi",
+   "name": "Ember Egg",
+   "kaynak": "katalog-1",
+   "attunement": false,
+   "text": "Kozmik Anka'nın Küllerden Yeniden Doğuş ateşinden kalan kor yumurtası: kabuğu hâlâ yanan gökkuşağı alevleriyle sarılıdır.",
+   "effects": {},
+   "offCombat": "Hikâye eşyası: savaştaki Ember Egg yaratığı ayrı kayıttır; eşya olarak etkisi yok.",
+   "katalog": {
+    "ref": "BOSS#21",
+    "tr": "Kor Yumurtası",
+    "nadirlik": "efsanevi",
+    "tur": "sihirli",
+    "yuva": "Yumurta (taşınır)",
+    "fiyatGp": null,
+    "ozet": "Kozmik Anka'nın Küllerden Yeniden Doğuş ateşinden kalan kor yumurtası: kabuğu hâlâ yanan gökkuşağı alevleriyle sarılıdır.",
+    "ozellikler": [
+     {
+      "ad": "Küllerden doğuş",
+      "metin": "Kozmik Anka 0 HP'ye düşünce merkezde oluşan yumurtanın kalıntısıdır; savaşta yumurta ayrı bir yaratıktır (Ember Egg, AC 22, 150 HP) ve bir tur dayanırsa Anka çatlayarak geri gelir.",
+      "durum": "planli",
+      "not": "BOSS-IMZA-GORSEL: yalnız veri ve görsel; eşya gücü tanımlı değil (harita/belgeler/KATALOG-F2-OZELLIKLER.md §3b)."
+     }
+    ]
    }
   }
  ]

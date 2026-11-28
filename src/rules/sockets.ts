@@ -2,10 +2,10 @@
  * Görev KATALOG-GUC-TAM D: mühür taşı yuvaları (zırha/kalkana/cübbeye takılan artifact; `data/yuva-kurallari.json`).
  * Taş ayrı bir kapsayıcı değil: yuvaya takılınca etkisini yuvanın eşyasını giyene verir; yuvada olmayan (gevşek) taş etkisizdir.
  * - Konaklar: giyilen SRD zırhı (`$armor`) ve kalkanı (`$shield`): kademe 1 yuva; katalog zırhı/kalkanı/cübbesi (taşınan): 1 yuva,
- *   nadirlikte kademe 2; özel konaklar (Kaltakkıran'ın Paladin Zırhı, Koruyucu Ejderha Mührü): 10 yuva, yalnız Seviye 3.
+ *   nadirlikte kademe 2; özel konaklar (Hex'in Paladin Zırhı, Koruyucu Ejderha Mührü): 10 yuva, yalnız Seviye 3.
  * - Taş kademesi ≤ yuva kademesi; Sv.1 cübbeye takılmaz (PDF); Sv.3 yalnız özel konaklarda.
  * - Etkiler: Sv.1 türüne sabit −3 (`k109.flatReduce`), Sv.2 eşya kaydının kendisi (`activeItemNames`'e girer: direnç + paket
- *   ekHasar), Sv.3 türüne bağışıklık; Kaltakkıran 5+ taşta AC +1 ve fiziksel direnç, 10 taşta AC +2 ve fiziksel bağışıklık,
+ *   ekHasar), Sv.3 türüne bağışıklık; Hex'in zırhı 5+ taşta AC +1 ve fiziksel direnç, 10 taşta AC +2 ve fiziksel bağışıklık,
  *   Hükümdar Vuruşu (silah isabetine ilk taşın türünden 1d6 / 1d8 / 2d6).
  * Saf (React, DOM, localStorage yok).
  */
