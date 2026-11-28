@@ -1,6 +1,6 @@
 # SAKATLIK — kalıcı yaralanma (ev kuralı, Serüven)
 
-Durum: **PLAN — uygulanmadı (DUR).** Kullanıcı kararı 2026-11-28 (mekanik donmasına bilinçli istisna).
+Durum: **S1 (motor) uygulandı** (kural sürümü 111, kayıt sürümü 29; bkz. §9). S2–S4 bekliyor. Kullanıcı kararı 2026-11-28 (mekanik donmasına bilinçli istisna); kararlar G1–G12 onaylandı (2026-11-28, §6'daki önerilerle; G6, G7 kullanıcı metniyle).
 Neden durduruldu: görev kuralı "15 dosyadan büyükse ya da motor çekirdeğine geniş dokunuyorsa DUR". Tam iş ≈35 dosya
 ve çekirdek (`damage-effects.ts`, `reduce.ts`, `types.ts`, `create.ts`, `battleSave.ts`) değişiyor. Aşağıda ≤15 dosyalık
 dört aşamaya bölünmüş plan, SRD okuması, taslak tablo ve KARAR GEREKİYOR listesi var. Hiçbir kod/veri değişmedi.
@@ -147,3 +147,72 @@ Genel ilke her aşamada: kodda hasar türü ya da sakatlık adıyla koşul yok, 
 ## 8. Test sonuçları
 
 Kod değişmediği için test çalıştırılmadı (typecheck/build/test: dokunulmadı; `check:harita`, `check:ses`: dokunulmadı).
+
+## 9. S1 sonucu (2026-11-28)
+
+**Sürümler** (kodlama anında birlesik okundu: kural sürümü 110, kayıt sürümü 28): kural sürümü **111** (tek sabit
+`src/battle/sakatlikSurum.ts` `SAKATLIK_VERSION`), savaş kayıt sürümü **29** (`dying.injury`; 3–28 yüklenir kalır).
+Karakter kayıt sürümü (4) değişmedi.
+
+**Ne yapıldı**
+- Veri `data/sakatlik.json` (eşik `oran` 0,5; kademeler 0,50 / 0,67 / 0,84; `turler` hasar türü → sakatlık; 10 sakatlık ×
+  3 kademe; `enCok` 3, `doluysa: enHafifArtar`). Kodda hasar türü ya da sakatlık adıyla koşul yok.
+- Ev kuralı `sakatlik` (`data/ev-kurallari.json`, varsayılan kapalı; Game Master "Ev kuralları" panelinde kendiliğinden
+  listelenir). Serüven'de varsayılan açık (G1) S2'de `seruvenBattle.ts`'te tek satır.
+- Motor `src/battle/sakatlik.ts`: `withSakatlikMarks` (savaş başı; `startBattle` sonu), `sakatlikFor` (eşik, kademe, tür,
+  G2 tekrar/sınır, azami HP ve yetenek farkı), `sakatlikPatch` + `sakatlikEffect` (reducer), `dominantType` (G4).
+- `damage-effects.ts`: `dying` dalında, yalnız `sakatlikOn` işaretli hedefte; anında ölüm, Death Ward, Relentless
+  Endurance/Rage, Knocking Out önceki gibi (Knocking Out `dying`'i düşürünce sakatlık da düşer: 1 HP'de kalır).
+- `reduce.ts` `dying`: liste `sakatliklar`, `maxHpLoss`, `abilityLoss` (+ değiştirici, save), süren etki
+  `sakatlik:<id>` (`effect_ended` + `effect_added` yolundan: Blinded/Deafened/Poisoned `grants` durum listesine girer).
+- G4 baskın tür dört yolda: silah saldırısı (`features.ts`), canavar saldırısı (`monsters.ts`), iki türlü save büyüsü ve
+  büyü saldırısı (`spells.ts`).
+- G6 hafif körlük için yeni `attackDis.ranged` (yalnız menzilli saldırı; `divine.ts` `wardSources`; başka etki kullanmıyor).
+
+**Uygulanan tablo** (§4'ün onaylı hâli; sayılar G12 TASLAK)
+
+| Sakatlık (tür) | Hafif | Orta | Ağır |
+|---|---|---|---|
+| Körlük (Radiant) | Algı + menzilli saldırı dezavantaj | Blinded | Blinded |
+| Sağırlık (Lightning, Thunder) | Algı dezavantaj ⚠ | Deafened | Deafened |
+| Solgunluk (Necrotic) | azami HP −%10 | −%20 | −%30 |
+| İç kanama (Force, G3) | azami HP −%10 | −%20 | −%30 |
+| Yara izi (Fire, Acid) | İkna dezavantaj | CHA kontrolü dezavantaj | + CHA −1 |
+| Donuk uzuv (Cold) | hız −5 ft | −10 ft | −15 ft |
+| Kırık bacak (Bludgeoning) | hız −5 ft | −10 ft | −10 ft + saldırı −1d4 |
+| Yaralı kol (Slashing, Piercing) | saldırı −1d4 | saldırı −1d4 + hasar −1d4 (G7) | saldırı dezavantaj + hasar −1d4 |
+| Zihin yarası (Psychic, G5) | WIS/INT'in yükseği −1 | −2 | −3 |
+| Zehir izi (Poison) | CON −1 | CON −2 | Poisoned + CON −2 |
+
+Azami HP düşüşü aşağı yuvarlanır, en az 1; azami HP 1'in altına inmez. Yetenek puanı 1'in altına inmez.
+
+**⚠ ve yaklaşıklar**
+- Hafif sağırlıkta "işitmeye dayalı saldırı dezavantajı" uygulanmadı: motorda işitmeye bağlı ayrı saldırı yolu yok,
+  görülmeyen hedefe saldırı zaten dezavantajlı ve dezavantaj birikmez. Yalnız Algı dezavantajı (görmeye/işitmeye ayrımı
+  yok; Algı'nın tamamı).
+- Yetenek düşüşü beceri ve saldırı bonuslarına yansımaz (mevcut `ability_drained` ile aynı yaklaşım).
+- Savaşta Greater Restoration (`drain_restored`) sakatlığın azami HP/yetenek düşüşünü de geri verir ama kaydı silmez:
+  S3'te büyü eşlemesiyle düzeltilecek.
+- Sakatlık listesi yalnız savaşçıda; savaştan sonra karaktere yazılması ve savaş başında yeniden uygulanması S2.
+- Simülasyonda ev kuralı kapalı (varsayılan); sim komut satırı anahtarı eklenmedi.
+
+**Dosyalar** (16; yeni 5): `data/sakatlik.json`, `src/battle/sakatlikSurum.ts`, `src/battle/sakatlik.ts`,
+`src/battle/sakatlik.test.ts`, `src/sim/sakatlikRegresyon.test.ts`; değişen `data/ev-kurallari.json`,
+`data/kural-surumu.json`, `src/battle/{types,damage-effects,reduce,create,divine,features,monsters,spells}.ts`,
+`src/app/battleSave.ts`; belgeler `DECISIONS.md`, `CLAUDE.md`, bu dosya. Bayat sürüm beklentisi düzeltilen üç test:
+`src/battle/ruleVersion.test.ts` (106 → 111), `src/battle/s1.test.ts` ve `src/ui/statusFx.test.ts` (27 → 29); üçü birlesik'te
+zaten başarısızdı (110 ve 28'e güncellenmemişlerdi).
+
+**Test sonuçları** (hafif doğrulama modu)
+- `src/battle/sakatlik.test.ts`: 25/25 geçti: 7 doğrulama örneği (40/25: 40 yok, 50 sakatlık, 65 ölüm; 60/60: 80 yok,
+  95 sakatlık, 120 ölüm; 60/8: 45 sakatlık), kademe, tür tablosu, işaretsiz hedef + Death Ward, ölmekteyken hasar;
+  savaş başı işareti yalnız parti kâğıdında (kâğıt düşman, canavar, parti tarafında canavar, masum işaretsiz), 110'da ve
+  ev kuralı kapalıyken kimse, kapalıyken 111 başlangıç durumu = 110; reducer (Blinded, hafif körlük, azami HP, Psychic
+  yetenek, tekrar → kademe +1, 3 sınırı); baskın tür; uçtan uca düşman saldırısı + replay; parti saldırısında kâğıt
+  düşman etkilenmez.
+- `src/sim/sakatlikRegresyon.test.ts` (3 tohum): sürüm 111 tek sınıflı savaşçılar altınla aynı; Çöl/Kale/Mağara/Orman
+  imzası **110 = 111 = altın** (MC3 altını); ev kuralı açıkken Çöl/Kale 3 tohum çökmesiz, sakatlık yalnız parti kâğıtlarında.
+- İlgili mevcut testler: `battleSave`, `ruleVersion`, `karar101`, `effects`, `s1`, `mc3`, `k52moral`, `content`,
+  `statusFx`, `katalog110`, `te99` geçti (bayat üç beklenti düzeltildikten sonra).
+- `npm run typecheck`, `npm run build`: aşağıdaki satıra bakın.
+- `check:harita`, `check:ses`: dokunulmadı. Tam `npm test`: çalıştırılmadı (hafif mod).

@@ -44,8 +44,11 @@ export type DamageEffect =
   /** Kuyruk 19: emilen hasar (iyileşme) ve hasar türüne bağlı canavar tepkisi (Freeze, Aversion to Fire, Hydra ateşi). */
   | { kind: 'absorbed'; amount: number }
   | { kind: 'trait_fx'; name: string; effect: Partial<ActiveEffect>; headsFire?: boolean }
-  /** Karakter 0 HP'ye düştü: ölüm save'lerine başlar. */
-  | { kind: 'dying' }
+  /**
+   * Karakter 0 HP'ye düştü: ölüm save'lerine başlar. Görev SAKATLIK-S1 (111+, ev kuralı `sakatlik`): artan azami HP'nin
+   * yarısı ile tamamı arasındaysa kalıcı sakatlık (`src/battle/sakatlik.ts`; alan yalnız o zaman).
+   */
+  | { kind: 'dying'; injury?: import('./sakatlik').SakatlikOlayi }
   /** Kalan hasar maksimum HP'ye eşit veya fazla: anında ölüm. */
   | { kind: 'instant_death' }
   /** 0 HP'deki karaktere hasar: başarısız ölüm save'i sayılır. */
@@ -327,7 +330,7 @@ export interface ActiveEffect {
   /** Görev B1: bu yaratığa saldırılar dezavantajlı (Blur). */
   attackedDis?: boolean;
   /** Görev B1: bu yaratığın saldırıları dezavantajlı (`melee`: yalnızca yakın dövüş; `single`: ilk saldırıdan sonra biter). */
-  attackDis?: { melee?: boolean; single?: boolean; str?: boolean; /** Görev TE99 (99+): yalnız STR/DEX'li saldırı (eğitimsiz zırh; SRD 5.2.1 s. 92). */ strDex?: boolean };
+  attackDis?: { melee?: boolean; single?: boolean; str?: boolean; /** Görev SAKATLIK-S1: yalnız menzilli saldırı (bulanık görüş). */ ranged?: boolean; /** Görev TE99 (99+): yalnız STR/DEX'li saldırı (eğitimsiz zırh; SRD 5.2.1 s. 92). */ strDex?: boolean };
   /** Görev K9d: büyü yapılamaz (eğitimsiz zırh; SRD 5.2.1 Armor Training). */
   noCast?: boolean;
   /** Görev CLERIC: Sanctuary (hedef alan düşman WIS save; başarısızsa saldırı/büyü boşa), Warding Bond (alınan hasar `bondTo`'ya da). */
@@ -885,6 +888,12 @@ export interface Combatant {
   chainDamage?: boolean;
   /** Kuyruk 19: kendi düzlemine gönderildi (Banishment tam süre, Dispel Evil and Good: Dismissal); savaştan çıktı. */
   exiled?: boolean;
+  /**
+   * Görev SAKATLIK-S1 (111+, ev kuralı `sakatlik`): savaş başında sakatlanabilir işaretli parti kâğıdı (`withSakatlikMarks`)
+   * ve kalıcı sakatlık listesi (savaşta yazılır; S2 karaktere taşır).
+   */
+  sakatlikOn?: true;
+  sakatliklar?: import('./sakatlik').SakatlikKaydi[];
   /** Kuyruk 19: yetenek puanı azalması (puan ve değiştirici farkı; Shadow Draining Swipe). */
   abilityLoss?: Partial<Record<Ability, { amount: number; mod: number }>>;
   /** Kuyruk 19: özel duyular (ft; canavar verisinden): Blindsight, Truesight, Tremorsense. */

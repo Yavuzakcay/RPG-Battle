@@ -41,6 +41,7 @@ import { helpOnlySelf } from './genel96';
 import { te99On } from './te99Surum';
 import { karar101On } from './karar101Surum';
 import { syncKarar101 } from './karar101';
+import { sakatlikEffect, sakatlikPatch } from './sakatlik';
 
 /** Yürüyüşün sonundaki düz koşuyu bulur; önceki koşu aynı yönde sürüyorsa üstüne ekler. */
 function runAfter(start: Offset, path: Offset[], before: Combatant['run']): Combatant['run'] {
@@ -383,6 +384,16 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
     const unconscious = c.conditions.includes('Unconscious') ? c.conditions : [...c.conditions, 'Unconscious'];
     if (e.kind === 'dying') {
       next = withCombatant(next, id, { life: 'dying', deathSaves: { successes: 0, failures: 0 }, conditions: unconscious });
+      // Görev SAKATLIK-S1 (111+): kalıcı sakatlık: liste, azami HP / yetenek düşüşü, süren etki `sakatlik:<id>` (kademe artışında yenilenir).
+      const inj = e.injury;
+      const hurt = inj ? next.combatants[id] : undefined;
+      if (inj && hurt) {
+        next = withCombatant(next, id, sakatlikPatch(hurt, inj));
+        const fxId = `sakatlik:${inj.id}`;
+        if (next.combatants[id]?.effects?.some((x) => x.id === fxId)) next = applyEvent(next, { type: 'effect_ended', targetId: id, effectId: fxId, name: fxId, reason: 'expired' });
+        const effect = sakatlikEffect(inj.id, inj.kademe);
+        if (effect) next = applyEvent(next, { type: 'effect_added', targetId: id, effect });
+      }
     }
     if (e.kind === 'instant_death') next = withCombatant(next, id, { life: 'dead', conditions: unconscious });
     if (e.kind === 'death_save_failed') {

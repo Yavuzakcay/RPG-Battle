@@ -1,4 +1,5 @@
 /** Canavar saldırıları: şablondan gelen saldırılar, nefes (save), Recharge ve Multiattack. */
+import { dominantType } from './sakatlik';
 import { gucOf } from './katalog109Data';
 import { saveExtraEvents, saveExtraRolls } from './katalog109Hit';
 import { katalog109On } from './katalog109Surum';
@@ -239,7 +240,7 @@ export function monsterAttackEvents(
     melee = !atk.ranged;
     damageType = dmgType ?? '';
     // KARAR101 (101+, SRD Knocking Out): yakın dövüş canavar saldırısında da (oyuncunun yönettiği çağrı/biçim; yapay zekâ bayıltmaz).
-    const fx = knockOutFx(state, actor, target, !atk.ranged, damageEffects(target, dealt, dmgType ?? '', critical, rng), rng);
+    const fx = knockOutFx(state, actor, target, !atk.ranged, damageEffects(target, dealt, dmgType ?? '', critical, rng, target.sakatlikOn ? dominantType([{ amount: adj.amount, type: dmgType }, ...extras.map((x) => ({ amount: x.applied, type: x.type }))]) : undefined), rng);
     events.push({
       type: 'attack_resolved', actorId: actor.id, targetId: target.id, label: atk.name, mode,
       reasons: sources.map((s) => s.reason), d20, natural, total, targetAc: hr?.ac ?? targetAc, hit, critical, fumble,

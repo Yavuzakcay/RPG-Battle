@@ -1,0 +1,108 @@
+{
+  "note": "Görev SAKATLIK-S1 (kural sürümü 111, ev kuralı `sakatlik`): kalıcı yaralanma tablosu. Tetik: hasar parti tarafındaki oyuncu karakterini 0 HP'ye düşürür ve artan (hasar − o anki HP) azami HP'nin `oran` katı ile 1 katı arasındaysa (1 katı ve üstü SRD anında ölüm). Kademe artanın azami HP'ye oranından (`kademeler`, en büyük `min` ≤ oran). Tür 0 HP'ye düşüren vuruşun baskın hasar türünden (`turler`; listede olmayan tür sakatlık vermez). `etki`: savaşçıya süren etki `sakatlik:<id>` olarak kopyalanan ActiveEffect alanları (grants, speedFt, checkDis, checkDisSkill, dice, attackDis, damagePenalty); `azamiHpOran`: azami HP'den düşen pay (aşağı yuvarlanır, en az 1; Greater Restoration kalıbı `maxHpLoss`); `yetenek`: yetenek puanı düşüşü (`yetenek` tek yetenek ya da `yuksek` listesindeki en yüksek; `abilityLoss`). Kademe değerleri toplamdır (kademe artınca fark uygulanır). Sınır `enCok`; aynı sakatlık tekrarında kademe +1 (en çok ağır); liste doluyken yeni türde en hafif olanın kademesi +1 (`doluysa: enHafifArtar`). Bütün sayılar TASLAK (G12, ONAY BEKLİYOR).",
+  "oran": 0.5,
+  "kademeler": [
+    { "id": "hafif", "min": 0.5 },
+    { "id": "orta", "min": 0.67 },
+    { "id": "agir", "min": 0.84 }
+  ],
+  "enCok": 3,
+  "doluysa": "enHafifArtar",
+  "turler": {
+    "radiant": "korluk",
+    "lightning": "sagirlik",
+    "thunder": "sagirlik",
+    "necrotic": "solgunluk",
+    "fire": "yara-izi",
+    "acid": "yara-izi",
+    "cold": "donuk-uzuv",
+    "bludgeoning": "kirik-bacak",
+    "slashing": "yarali-kol",
+    "piercing": "yarali-kol",
+    "psychic": "zihin-yarasi",
+    "poison": "zehir-izi",
+    "force": "ic-kanama"
+  },
+  "sakatliklar": {
+    "korluk": {
+      "tr": "Körlük", "en": "Blindness",
+      "kademe": {
+        "hafif": { "tr": "Bulanık görüş", "en": "Blurred vision", "etki": { "checkDisSkill": [{ "skill": "perception" }], "attackDis": { "ranged": true } } },
+        "orta": { "tr": "Körlük", "en": "Blindness", "etki": { "grants": ["Blinded"] } },
+        "agir": { "tr": "Tam körlük", "en": "Total blindness", "etki": { "grants": ["Blinded"] } }
+      }
+    },
+    "sagirlik": {
+      "tr": "Sağırlık", "en": "Deafness",
+      "kademe": {
+        "hafif": { "tr": "Boğuk işitme", "en": "Muffled hearing", "etki": { "checkDisSkill": [{ "skill": "perception" }] } },
+        "orta": { "tr": "Sağırlık", "en": "Deafness", "etki": { "grants": ["Deafened"] } },
+        "agir": { "tr": "Tam sağırlık", "en": "Total deafness", "etki": { "grants": ["Deafened"] } }
+      }
+    },
+    "solgunluk": {
+      "tr": "Solgunluk", "en": "Withering",
+      "kademe": {
+        "hafif": { "tr": "Hafif solgunluk", "en": "Minor withering", "azamiHpOran": 0.1 },
+        "orta": { "tr": "Solgunluk", "en": "Withering", "azamiHpOran": 0.2 },
+        "agir": { "tr": "Ağır solgunluk", "en": "Severe withering", "azamiHpOran": 0.3 }
+      }
+    },
+    "yara-izi": {
+      "tr": "Yara izi", "en": "Scar",
+      "kademe": {
+        "hafif": { "tr": "Yara izi", "en": "Scar", "etki": { "checkDisSkill": [{ "skill": "persuasion" }] } },
+        "orta": { "tr": "Belirgin yara izi", "en": "Prominent scar", "etki": { "checkDis": ["cha"] } },
+        "agir": { "tr": "Yüzde derin iz", "en": "Disfiguring scar", "etki": { "checkDis": ["cha"] }, "yetenek": { "yetenek": "cha", "miktar": 1 } }
+      }
+    },
+    "donuk-uzuv": {
+      "tr": "Donuk uzuv", "en": "Frostbitten limb",
+      "kademe": {
+        "hafif": { "tr": "Uyuşuk ayak", "en": "Numb foot", "etki": { "speedFt": -5 } },
+        "orta": { "tr": "Donuk uzuv", "en": "Frostbitten limb", "etki": { "speedFt": -10 } },
+        "agir": { "tr": "Ölü uzuv", "en": "Dead limb", "etki": { "speedFt": -15 } }
+      }
+    },
+    "kirik-bacak": {
+      "tr": "Kırık bacak", "en": "Broken leg",
+      "kademe": {
+        "hafif": { "tr": "Çatlak kemik", "en": "Cracked bone", "etki": { "speedFt": -5 } },
+        "orta": { "tr": "Kırık bacak", "en": "Broken leg", "etki": { "speedFt": -10 } },
+        "agir": { "tr": "Paramparça bacak", "en": "Shattered leg", "etki": { "speedFt": -10, "dice": { "die": "1d4", "sign": -1, "on": ["attack"] } } }
+      }
+    },
+    "yarali-kol": {
+      "tr": "Yaralı kol", "en": "Wounded arm",
+      "kademe": {
+        "hafif": { "tr": "Kesik kol", "en": "Cut arm", "etki": { "dice": { "die": "1d4", "sign": -1, "on": ["attack"] } } },
+        "orta": { "tr": "Yaralı kol", "en": "Wounded arm", "etki": { "dice": { "die": "1d4", "sign": -1, "on": ["attack"] }, "damagePenalty": { "die": "1d4" } } },
+        "agir": { "tr": "Sakat kol", "en": "Maimed arm", "etki": { "attackDis": {}, "damagePenalty": { "die": "1d4" } } }
+      }
+    },
+    "zihin-yarasi": {
+      "tr": "Zihin yarası", "en": "Mind scar",
+      "kademe": {
+        "hafif": { "tr": "Dalgın zihin", "en": "Clouded mind", "yetenek": { "yuksek": ["wis", "int"], "miktar": 1 } },
+        "orta": { "tr": "Zihin yarası", "en": "Mind scar", "yetenek": { "yuksek": ["wis", "int"], "miktar": 2 } },
+        "agir": { "tr": "Kırık zihin", "en": "Shattered mind", "yetenek": { "yuksek": ["wis", "int"], "miktar": 3 } }
+      }
+    },
+    "zehir-izi": {
+      "tr": "Zehir izi", "en": "Lingering poison",
+      "kademe": {
+        "hafif": { "tr": "Zayıf bünye", "en": "Weakened body", "yetenek": { "yetenek": "con", "miktar": 1 } },
+        "orta": { "tr": "Zehir izi", "en": "Lingering poison", "yetenek": { "yetenek": "con", "miktar": 2 } },
+        "agir": { "tr": "Kalıcı zehirlenme", "en": "Chronic poisoning", "etki": { "grants": ["Poisoned"] }, "yetenek": { "yetenek": "con", "miktar": 2 } }
+      }
+    },
+    "ic-kanama": {
+      "tr": "İç kanama", "en": "Internal bleeding",
+      "kademe": {
+        "hafif": { "tr": "İç zedelenme", "en": "Internal bruising", "azamiHpOran": 0.1 },
+        "orta": { "tr": "İç kanama", "en": "Internal bleeding", "azamiHpOran": 0.2 },
+        "agir": { "tr": "Ağır iç kanama", "en": "Severe internal bleeding", "azamiHpOran": 0.3 }
+      }
+    }
+  }
+}

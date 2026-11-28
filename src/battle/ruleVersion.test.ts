@@ -39,9 +39,9 @@ const scared = (s: BattleState): BattleState => {
 
 describe('kural sürümü', () => {
   it('yeni savaş güncel sürümle başlar (başlangıç durumunda kuralSurumu); alanı olmayan eski kayıt 1', () => {
-    expect(CURRENT_RULES).toBe(106);
+    expect(CURRENT_RULES).toBe(111); // SAKATLIK-S1: 111 (birlesik 110; test 106 ile bayattı)
     const s = field({ A: o(3, 3), B: o(4, 3) });
-    expect(s.kuralSurumu).toBe(106);
+    expect(s.kuralSurumu).toBe(111);
     const old = field({ A: o(3, 3), B: o(4, 3) }, { rules: 1 });
     expect(old.kuralSurumu).toBeUndefined();
     expect(ruleVersion(old)).toBe(1);

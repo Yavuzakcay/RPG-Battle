@@ -340,7 +340,8 @@ export function wardSources(state: BattleState, attacker: Combatant, target: Com
   // Kuyruk A6 (sürüm 35, `str`): yalnızca STR tabanlı saldırı (Ray of Enfeeblement: Finesse'te DEX seçilmişse ve büyüde değil).
   // Görev TE99 (99+, SRD 5.2.1 s. 92 "any D20 Test that involves Strength or Dexterity"): eğitimsiz zırh yalnız STR/DEX'li saldırıda.
   const t99s = te99On(state) && !!opts.notStrDex;
-  for (const e of attacker.effects ?? []) if (e.attackDis && !(t99s && e.attackDis.strDex) && (e.attackDis.str ? (opts.str ?? opts.melee) : (!e.attackDis.melee || opts.melee))) out.push({ effect: 'disadvantage', reason: e.name });
+  // Görev SAKATLIK-S1 (`ranged`): yalnız menzilli saldırı (bulanık görüş; bu alan yalnız 111+ sakatlık etkisinde).
+  for (const e of attacker.effects ?? []) if (e.attackDis && !(t99s && e.attackDis.strDex) && (e.attackDis.ranged ? opts.melee === false : e.attackDis.str ? (opts.str ?? opts.melee) : (!e.attackDis.melee || opts.melee))) out.push({ effect: 'disadvantage', reason: e.name });
   // Kuyruk A7 (sürüm 36): güneş ışığına duyarlı yaratık güneş ışığı alanında (Daylight) saldırıda dezavantajlı.
   if (attacker.traits?.includes('sunlight-sensitive') && ruleVersion(state) >= 36 && zonesAt(state, attacker.pos).some((z) => (z.spec ?? zoneSpecOf(z))?.sunlight)) out.push({ effect: 'disadvantage', reason: 'Sunlight Sensitivity' });
   // Kuyruk K64b: Magic Circle: seçilen türün silindirdeki hedefe (ters yönde dışarıdakine) saldırısı dezavantajlı.

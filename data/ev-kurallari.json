@@ -9,6 +9,7 @@
     "barutPatlama": {"default": false, "sefer": true, "tr": "Barut fıçısı patlar", "en": "Powder keg explodes"},
     "alarmKosusu": {"default": false, "sefer": true, "tr": "Alarm koşusu (haber taşıyan)", "en": "Alarm runner (messenger)"},
     "asitHavuzu": {"default": false, "sefer": true, "gizli": true, "tr": "Asit havuzu", "en": "Acid pool"},
+    "sakatlik": {"default": false, "tr": "Sakatlık: 0 HP'ye düşüren hasarın artanı azami HP'nin yarısını aşarsa kalıcı yaralanma (data/sakatlik.json; kural sürümü 111)", "en": "Lasting injury: if the excess of the damage that drops you to 0 HP exceeds half your Hit Point maximum (data/sakatlik.json; rules version 111)"},
     "moralSistemi": {"default": false, "tr": "Moral (tam mod): 0'da Çökmüş, eşik cezaları, toparlama, zafer ödülü (data/moral.json; kural sürümü 20)", "en": "Morale (full mode): Broken at 0, threshold penalties, rally, victory reward (data/moral.json; rules version 20)"},
     "karadulCemberi": {"default": false, "karakter": true, "gizli": true, "tr": "Karadul Çemberi (Druid alt sınıfı, ev kuralı): Büyüleyici Bakış, Örümcek Biçimi, Karadul Zehri, Tatlı Tuzak, Ağ Duyusu, Son Öpücük", "en": "Circle of the Black Widow (Druid subclass, house rule): Bewitching Gaze, Spider Shape, Widow's Venom, Sweet Snare, Web Sense, Final Kiss"},
     "imza_imparator": {"default": false, "karakter": true, "gizli": true, "tr": "İmza alt sınıf: İmparator (Fighter, ev kuralı; data/imza.json, kural sürümü 23)", "en": "Signature subclass: Emperor (Fighter, house rule; rules version 23)"},

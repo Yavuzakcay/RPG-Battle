@@ -7,6 +7,7 @@ import { applyDamage } from '../rules/damage';
 import type { Combatant, DamageEffect } from './types';
 import { spells } from '../data';
 import { stoneEnduranceFx } from './karar101';
+import { sakatlikFor } from './sakatlik';
 
 export function damageEffects(
   target: Combatant,
@@ -14,6 +15,8 @@ export function damageEffects(
   damageType: string,
   critical: boolean,
   rng: Rng,
+  /** Görev SAKATLIK-S1: çok türlü vuruşun baskın türü (`dominantType`); yoksa `damageType`. Yalnız sakatlık türünü seçer. */
+  injuryType?: string,
 ): { hpAfter: number; effects: DamageEffect[] } {
   const type = damageType.trim().toLowerCase();
   const effects: DamageEffect[] = [];
@@ -129,7 +132,9 @@ export function damageEffects(
         effects.push({ kind: 'death_save_failed', failures, died: failures >= 3 });
       }
     } else if (hpAfter === 0 && target.hp > 0) {
-      effects.push(applied - target.hp >= target.maxHp ? { kind: 'instant_death' } : { kind: 'dying' });
+      // Görev SAKATLIK-S1 (111+, ev kuralı; yalnız `sakatlikOn` işaretli parti kâğıdı): artan ≥ azami HP / 2 → kalıcı sakatlık.
+      const injury = target.sakatlikOn && applied - target.hp < target.maxHp ? sakatlikFor(target, applied, injuryType ?? type) : null;
+      effects.push(applied - target.hp >= target.maxHp ? { kind: 'instant_death' } : injury ? { kind: 'dying', injury } : { kind: 'dying' });
     }
   }
   return { hpAfter, effects };

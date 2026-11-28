@@ -1,4 +1,5 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
+import { withSakatlikMarks } from './sakatlik';
 import { socketParts } from '../rules/sockets';
 import { soulBondSetup } from './katalog109Ozel';
 import { KARAR104_VERSION } from './karar104Surum';
@@ -1007,7 +1008,9 @@ export function startBattle(
   const g96 = genel96On(built);
   const t99 = te99On(built);
   const final = m83 || g96 ? { ...built, combatants: Object.fromEntries(Object.entries(built.combatants).map(([k, c]) => [k, { ...c, ...(m83 ? { srd83: true as const } : {}), ...(g96 ? { srd96: true as const } : {}), ...(t99 ? { te99: true as const } : {}) }])) } : built;
-  return { state: final, events: [{ type: 'battle_started', state: final }] };
+  // Görev SAKATLIK-S1 (111+, ev kuralı `sakatlik`): parti kâğıtlarına sakatlanabilir işareti (kapalıyken durum aynen).
+  const marked = withSakatlikMarks(final);
+  return { state: marked, events: [{ type: 'battle_started', state: marked }] };
 }
 
 /**

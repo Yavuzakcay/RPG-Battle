@@ -1,4 +1,5 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
+import { dominantType } from './sakatlik';
 import { featureLevel } from './classLevel';
 import { b94On } from './b94Surum';
 import { ws92On } from './ws92Surum';
@@ -357,7 +358,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     const adjusted = amount > 0 ? adjustDamage(amount, damageType, prof94) : { amount: 0, note: null };
     const amount2 = second ? saveDamage(t, ability, save.success, second.total, !!m.halfOnSave) : 0;
     const adjusted2 = second && amount2 > 0 ? adjustDamage(amount2, second.type, profileIn(state, t, true, actor)) : { amount: 0, note: null };
-    const fx = damageEffects(t, adjusted.amount + adjusted2.amount, damageType ?? '', false, rng);
+    const fx = damageEffects(t, adjusted.amount + adjusted2.amount, damageType ?? '', false, rng, t.sakatlikOn && second ? dominantType([{ amount: adjusted.amount, type: damageType }, { amount: adjusted2.amount, type: second.type }]) : undefined);
     // Görev B3: başarısızlıkta süren etki varsa durumlar etkiyle gelir (Fear, Hypnotic Pattern).
     // Kuyruk 19: yeni eklenen başarısızlık etkisi anahtara bağlı (`failEffectGate`; Vitriolic Sphere'in gecikmeli asidi).
     const fe = m.failEffect && (!m.failEffectGate || globalRule(state, m.failEffectGate)) ? m.failEffect : undefined;
@@ -1113,7 +1114,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       const total = hit ? hr?.damage ?? 0 : miss?.amount ?? 0;
       if (hr?.events.length) { events.push(...hr.events); current = applyEvents(current, hr.events); }
       if (miss?.events.length) { events.push(...miss.events); current = applyEvents(current, miss.events); }
-      const fx = damageEffects(t, total, m.damageType ?? '', hit && res.critical, rng);
+      const fx = damageEffects(t, total, m.damageType ?? '', hit && res.critical, rng, t.sakatlikOn && hit ? dominantType([{ amount: adj.amount, type: m.damageType }, ...bonus.extras.map((x) => ({ amount: x.applied, type: x.type }))]) : undefined);
       ev = {
         type: 'attack_resolved', actorId: actor.id, targetId: t.id, label: spell.name, mode,
         reasons: sources.map((s) => s.reason), d20: res.d20.rolls, natural: res.d20.kept, total: res.total,

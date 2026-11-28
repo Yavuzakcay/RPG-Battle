@@ -9,6 +9,7 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { dominantType } from './sakatlik';
 import { resourceLevel } from './classLevel';
 import { karar104On } from './karar104Surum';
 import { b98On } from './b98Surum';
@@ -370,7 +371,7 @@ export function weaponAttackEvents(
   if (!hit) bonus = { extras: [] };
   const total = hit ? hr?.damage ?? 0 : 0;
   // KARAR101 (101+, SRD 5.2.1 s. 17 Knocking Out): yakın dövüşle 0 HP'ye düşüren saldıran bayıltmayı seçebilir.
-  const fx = knockOutFx(state, actor, target, !option.ranged, damageEffects(target, total, dmgType ?? '', result.critical, rng), rng);
+  const fx = knockOutFx(state, actor, target, !option.ranged, damageEffects(target, total, dmgType ?? '', result.critical, rng, target.sakatlikOn ? dominantType([{ amount: adjusted.amount, type: dmgType }, ...bonus.extras.map((x) => ({ amount: x.applied, type: x.type }))]) : undefined), rng);
   const attackEvent: BattleEvent = {
     type: 'attack_resolved', actorId: actor.id, targetId: target.id, label: option.label, mode,
     reasons: sources.map((s) => s.reason), d20: result.d20.rolls, natural: result.d20.kept, total: result.total,
