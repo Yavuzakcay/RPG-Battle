@@ -9,8 +9,8 @@
 | Kategori | Kayıt | Var | Genel | Yedek | Kaynak (eşlemede) |
 |---|---|---|---|---|---|
 | Büyü | 339 | 161 | 66 | 112 | efekt 221, ikon 6, yedek 112 |
-| Eşya | 449 | 449 | 0 | 0 | ikon 449 |
-| Canavar | 330 | 290 | 40 | 0 | jeton 330 |
+| Eşya | 818 | 817 | 0 | 1 | ikon 817, yedek 1 |
+| Canavar | 382 | 341 | 40 | 1 | jeton 381, yedek 1 |
 | Tür | 10 | 10 | 0 | 0 | jeton 10 |
 | Alt soy | 41 | 34 | 7 | 0 | jeton 41 |
 | Sınıf (+ Invocation, Metamagic) | 50 | 12 | 0 | 38 | jeton 12, yedek 38 |
@@ -22,9 +22,9 @@
 | Harita nesnesi | 34 | 2 | 0 | 32 | efekt 2, yedek 32 |
 | Büyü alanı (savaşta) | 36 | 30 | 1 | 5 | efekt 31, yedek 5 |
 | Zar teması | 72 | 63 | 0 | 9 | ikon 63, yedek 9 |
-| **Toplam** | **1534** | **1194** | **114** | **226** | |
+| **Toplam** | **1955** | **1613** | **114** | **228** | |
 
-Dungeondex denetimi: Dungeondex'in 1383 kaydının hepsi eşlemede, her `ref` çözülüyor (public/ dosyası ya da `yedekler` anahtarı): sorun 0. CSV 266 satır.
+Dungeondex denetimi: Dungeondex'in 1804 kaydının hepsi eşlemede, her `ref` çözülüyor (public/ dosyası ya da `yedekler` anahtarı): sorun 0. CSV 268 satır.
 
 ## Eksik ve düzeltilecek
 
@@ -32,7 +32,7 @@ Büyükten küçüğe (kayıt sayısı × oyuncunun gördüğü yer). Görsel ek
 
 | # | Eksik | Kayıt | Etki | Çözüm |
 |---|---|---|---|---|
-| 1 | Eşya ikonu | 449/449 yok | Hiçbir ekranda eşya ikonu yok (bkz. h): oluşturucu, karakter kâğıdı, savaş Eşya menüsü, Dungeondex, dükkân yalnız ad | Gemini: `public/esya/<kimlik>.webp` (öncelik: 319 sihirli eşya; nadirlik rengi çerçevede). Ara çözüm: tür glifi + nadirlik çerçevesi (eşlemede hazır) |
+| 1 | Eşya ikonu | 818/818 yok | Hiçbir ekranda eşya ikonu yok (bkz. h): oluşturucu, karakter kâğıdı, savaş Eşya menüsü, Dungeondex, dükkân yalnız ad | Gemini: `public/esya/<kimlik>.webp` (öncelik: 319 sihirli eşya; nadirlik rengi çerçevede). Ara çözüm: tür glifi + nadirlik çerçevesi (eşlemede hazır) |
 | 2 | Büyü kart görseli (savaş dışı) | 108 savaş dışı + 4 savaşta görselsiz | Dungeondex büyü kartında görsel yok; savaşta görsel üretmeyen 4 büyü (continual-flame, dancing-lights, light, wish) | Gemini: `public/buyu/<kimlik>.webp` kart ikonu; ara çözüm okul glifi |
 | 3 | Harita nesnesi sprite'ı | 32/34 emoji | Haritada nesne emoji (yazı tipine göre değişir, telefonda farklı görünür) | Gemini: `assets-ham/sprite/nesne-<ad>.png` → `npm run sprite-ice` |
 | 4 | Zar temaları | 72 tanımlı, 63 setli; 9 Alignment seti yok; 100 hedefine 28 tema tanımsız | Alignment zarları klasik görselle (3D renkleri farklı) | Gemini: 9 Alignment seti + 28 yeni tema (bkz. e) |
@@ -103,12 +103,12 @@ Eşyanın hiçbir görseli yok: `src/ui/icons.tsx` yalnız ana menünün 10 SVG 
 
 | Tür | Kayıt |
 |---|---|
-| sihirli eşya (olağandışı) | 121 |
-| sihirli eşya (nadir) | 108 |
+| sihirli eşya (nadir) | 238 |
+| sihirli eşya (olağandışı) | 198 |
+| sihirli eşya (çok nadir) | 159 |
+| sihirli eşya (efsanevi) | 91 |
 | donanım | 80 |
-| sihirli eşya (çok nadir) | 55 |
 | silah | 38 |
-| sihirli eşya (efsanevi) | 33 |
 | zırh | 12 |
 | sihirli eşya (sıradan) | 2 |
 
@@ -513,6 +513,375 @@ Eşyanın hiçbir görseli yok: `src/ui/icons.tsx` yalnız ana menünün 10 SVG 
 | `esya/wind-fan.webp` |  | 1 |
 | `esya/winged-boots.webp` |  | 1 |
 | `esya/wings-of-flying.webp` |  | 1 |
+| `esya/giantbreaker-blade.webp` |  | 1 |
+| `esya/starcleave.webp` |  | 1 |
+| `esya/crimson-maw.webp` |  | 1 |
+| `esya/mute-iron.webp` |  | 1 |
+| `esya/cinderheart-greatsword.webp` |  | 1 |
+| `esya/duelists-signet.webp` |  | 1 |
+| `esya/dirge-blade.webp` |  | 1 |
+| `esya/windpoise.webp` |  | 1 |
+| `esya/stormbrand.webp` |  | 1 |
+| `esya/whispering-rapier.webp` |  | 1 |
+| `esya/stride-scimitar.webp` |  | 1 |
+| `esya/blooddrinker.webp` |  | 1 |
+| `esya/gloomfang.webp` |  | 1 |
+| `esya/spiteful-dagger.webp` |  | 1 |
+| `esya/frostbite-dagger.webp` |  | 1 |
+| `esya/seeping-knife.webp` |  | 1 |
+| `esya/firstblood-shortsword.webp` |  | 1 |
+| `esya/vigil-halberd.webp` |  | 1 |
+| `esya/embermaw-greataxe.webp` |  | 1 |
+| `esya/breeze-glaive.webp` |  | 1 |
+| `esya/wyrmbreath-glaive.webp` |  | 1 |
+| `esya/spellbreaker-battleaxe.webp` |  | 1 |
+| `esya/dawnseal-mace.webp` |  | 1 |
+| `esya/shellbreaker-maul.webp` |  | 1 |
+| `esya/chainbreaker-warhammer.webp` |  | 1 |
+| `esya/four-seasons-flail.webp` |  | 1 |
+| `esya/shockwave-maul.webp` |  | 1 |
+| `esya/tempest-trident.webp` |  | 1 |
+| `esya/dusklight-spear.webp` |  | 1 |
+| `esya/tidecaller-trident.webp` |  | 1 |
+| `esya/homing-pike.webp` |  | 1 |
+| `esya/staff-of-the-confluence.webp` |  | 1 |
+| `esya/ashen-bone-staff.webp` |  | 1 |
+| `esya/hoarfrost-staff.webp` |  | 1 |
+| `esya/sparkweave-staff.webp` |  | 1 |
+| `esya/purging-wand-staff.webp` |  | 1 |
+| `esya/skylight-longbow.webp` |  | 1 |
+| `esya/deadeye-longbow.webp` |  | 1 |
+| `esya/forcebolt-hand-crossbow.webp` |  | 1 |
+| `esya/giant-sinew-longbow.webp` |  | 1 |
+| `esya/twinspark-greataxe.webp` |  | 1 |
+| `esya/brimstone-flail.webp` |  | 1 |
+| `esya/glacierbreak-maul.webp` |  | 1 |
+| `esya/scaldstream-battleaxe.webp` |  | 1 |
+| `esya/mirefang-scimitar.webp` |  | 1 |
+| `esya/thunderclap-mace.webp` |  | 1 |
+| `esya/webrender-longsword.webp` |  | 1 |
+| `esya/pitchtorch-club.webp` |  | 1 |
+| `esya/sparkling-handaxe.webp` |  | 1 |
+| `esya/lancers-charge-lance.webp` |  | 1 |
+| `esya/barbed-chain-whip.webp` |  | 1 |
+| `esya/sunstar-morningstar.webp` |  | 1 |
+| `esya/delvers-war-pick.webp` |  | 1 |
+| `esya/silent-needle-blowgun.webp` |  | 1 |
+| `esya/starstone-sling.webp` |  | 1 |
+| `esya/tide-sickle.webp` |  | 1 |
+| `esya/giantcore-club.webp` |  | 1 |
+| `esya/silverneedle-dart.webp` |  | 1 |
+| `esya/skyfall-heavy-crossbow.webp` |  | 1 |
+| `esya/battering-ram-staff.webp` |  | 1 |
+| `esya/stormbolt-javelin.webp` |  | 1 |
+| `esya/earthshatter-maul.webp` |  | 1 |
+| `esya/hooklash-glaive.webp` |  | 1 |
+| `esya/gale-light-hammer.webp` |  | 1 |
+| `esya/vaulting-pike.webp` |  | 1 |
+| `esya/oathshatter-warhammer.webp` |  | 1 |
+| `esya/crimson-whisper.webp` |  | 1 |
+| `esya/nightjudge-scimitar.webp` |  | 1 |
+| `esya/hellcinder-hand-crossbow.webp` |  | 1 |
+| `esya/ambushers-shortsword.webp` |  | 1 |
+| `esya/shadowveil-shortbow.webp` |  | 1 |
+| `esya/sorrowthorn-dagger.webp` |  | 1 |
+| `esya/mindrend-shortsword.webp` |  | 1 |
+| `esya/nightscout-dagger.webp` |  | 1 |
+| `esya/archmages-conduit-staff.webp` |  | 1 |
+| `esya/incandescent-ember-staff.webp` |  | 1 |
+| `esya/sovereigns-staff.webp` |  | 1 |
+| `esya/resonance-staff.webp` |  | 1 |
+| `esya/harmonic-rapier.webp` |  | 1 |
+| `esya/staff-of-arcane-benediction.webp` |  | 1 |
+| `esya/sylvan-voice-scimitar.webp` |  | 1 |
+| `esya/acidarrow-staff.webp` |  | 1 |
+| `esya/shattervow-greatsword.webp` |  | 1 |
+| `esya/marshals-banner-longsword.webp` |  | 1 |
+| `esya/banshees-wail-shortbow.webp` |  | 1 |
+| `esya/pactbound-warhammer.webp` |  | 1 |
+| `esya/scourge-of-torment-mace.webp` |  | 1 |
+| `esya/bloodrite-dagger.webp` |  | 1 |
+| `esya/unbound-balance-staff.webp` |  | 1 |
+| `esya/frenzied-blood-flail.webp` |  | 1 |
+| `esya/flame-siphon-greatsword.webp` |  | 1 |
+| `esya/frostcrescent-greatsword.webp` |  | 1 |
+| `esya/corkscrew-executioner-sword.webp` |  | 1 |
+| `esya/riftbreaker-greatsword.webp` |  | 1 |
+| `esya/whirlwind-katana.webp` |  | 1 |
+| `esya/mooncut-katana.webp` |  | 1 |
+| `esya/bloodtide-katana.webp` |  | 1 |
+| `esya/horizonlight-greatsword.webp` |  | 1 |
+| `esya/blackflame-oathblade.webp` |  | 1 |
+| `esya/golden-poise-greatsword.webp` |  | 1 |
+| `esya/cinderfrost-katana.webp` |  | 1 |
+| `esya/twin-starblades.webp` |  | 1 |
+| `esya/nebula-wing-scimitar.webp` |  | 1 |
+| `esya/stardust-flail.webp` |  | 1 |
+| `esya/meteor-jaw-war-pick.webp` |  | 1 |
+| `esya/cinderdrag-maul.webp` |  | 1 |
+| `esya/sawtooth-wheel-greataxe.webp` |  | 1 |
+| `esya/homing-forge-hammer.webp` |  | 1 |
+| `esya/homing-forge-greataxe.webp` |  | 1 |
+| `esya/shadowbloom-maul.webp` |  | 1 |
+| `esya/scarlet-anvil-maul.webp` |  | 1 |
+| `esya/bellringer-mace.webp` |  | 1 |
+| `esya/sparkforge-hammer.webp` |  | 1 |
+| `esya/blindspot-backhand-blades.webp` |  | 1 |
+| `esya/luster-twinblade.webp` |  | 1 |
+| `esya/bloodrite-trident.webp` |  | 1 |
+| `esya/skybolt-spear.webp` |  | 1 |
+| `esya/windspiral-pike.webp` |  | 1 |
+| `esya/ribbon-whip-blade.webp` |  | 1 |
+| `esya/dryleaf-handwraps.webp` |  | 1 |
+| `esya/gale-footwraps.webp` |  | 1 |
+| `esya/ember-perfume-bottle.webp` |  | 1 |
+| `esya/storm-perfume-bottle.webp` |  | 1 |
+| `esya/frost-perfume-bottle.webp` |  | 1 |
+| `esya/crimson-needle-rapier.webp` |  | 1 |
+| `esya/ravenwing-leather.webp` |  | 1 |
+| `esya/mossmantle-armor.webp` |  | 1 |
+| `esya/moonshift-hide.webp` |  | 1 |
+| `esya/sporewarden-leather.webp` |  | 1 |
+| `esya/crimson-stalker-leather.webp` |  | 1 |
+| `esya/twilight-leather.webp` |  | 1 |
+| `esya/spidersilk-armor.webp` |  | 1 |
+| `esya/corsair-captains-coat.webp` |  | 1 |
+| `esya/minstrels-favor-jerkin.webp` |  | 1 |
+| `esya/scarlet-scout-leather.webp` |  | 1 |
+| `esya/armor-of-fleetness.webp` |  | 1 |
+| `esya/shadowknight-half-plate.webp` |  | 1 |
+| `esya/venomcarapace-scale.webp` |  | 1 |
+| `esya/stormplate-scale.webp` |  | 1 |
+| `esya/serpentscale-mail.webp` |  | 1 |
+| `esya/barkweave-breastplate.webp` |  | 1 |
+| `esya/sparkmesh-chain-shirt.webp` |  | 1 |
+| `esya/mindward-half-plate.webp` |  | 1 |
+| `esya/sunburst-breastplate.webp` |  | 1 |
+| `esya/slipstream-chain-shirt.webp` |  | 1 |
+| `esya/briarwander-hide.webp` |  | 1 |
+| `esya/hellforge-plate.webp` |  | 1 |
+| `esya/plate-of-endurance.webp` |  | 1 |
+| `esya/devouring-bone-plate.webp` |  | 1 |
+| `esya/reapers-iron-plate.webp` |  | 1 |
+| `esya/marshals-crested-plate.webp` |  | 1 |
+| `esya/plate-of-devotion.webp` |  | 1 |
+| `esya/mindfortress-plate.webp` |  | 1 |
+| `esya/dwarven-anvil-splint.webp` |  | 1 |
+| `esya/scorched-iron-plate.webp` |  | 1 |
+| `esya/forcewave-chain-mail.webp` |  | 1 |
+| `esya/weavewoven-robe.webp` |  | 1 |
+| `esya/resonant-caster-robe.webp` |  | 1 |
+| `esya/robe-of-supreme-focus.webp` |  | 1 |
+| `esya/soulmender-monk-vest.webp` |  | 1 |
+| `esya/tidecaller-robe.webp` |  | 1 |
+| `esya/nimble-cat-tunic.webp` |  | 1 |
+| `esya/venomweaver-robe.webp` |  | 1 |
+| `esya/walking-bastion-shield.webp` |  | 1 |
+| `esya/deflector-knight-shield.webp` |  | 1 |
+| `esya/dreadwall-shield.webp` |  | 1 |
+| `esya/sunward-shield.webp` |  | 1 |
+| `esya/cinderback-shield.webp` |  | 1 |
+| `esya/shadecloak-greatshield.webp` |  | 1 |
+| `esya/briarvine-shield.webp` |  | 1 |
+| `esya/piercing-knight-shield.webp` |  | 1 |
+| `esya/spellmirror-greatshield.webp` |  | 1 |
+| `esya/one-eyed-mortar-shield.webp` |  | 1 |
+| `esya/flamevisage-greatshield.webp` |  | 1 |
+| `esya/barbed-monolith-shield.webp` |  | 1 |
+| `esya/raptor-feather-coat.webp` |  | 1 |
+| `esya/bramble-iron-plate.webp` |  | 1 |
+| `esya/silentblade-scale.webp` |  | 1 |
+| `esya/crimson-fiend-plate.webp` |  | 1 |
+| `esya/royal-remnant-plate.webp` |  | 1 |
+| `esya/vigil-shroud-robe.webp` |  | 1 |
+| `esya/verdigris-bastion-plate.webp` |  | 1 |
+| `esya/spellblade-coat.webp` |  | 1 |
+| `esya/primordial-knight-plate.webp` |  | 1 |
+| `esya/solitude-knight-plate.webp` |  | 1 |
+| `esya/abandoned-phylactery-pendulum.webp` |  | 1 |
+| `esya/robe-of-the-blindspot.webp` |  | 1 |
+| `esya/mountain-crushers-chained-monolith.webp` |  | 1 |
+| `esya/champions-crag-harness.webp` |  | 1 |
+| `esya/kaltakkirans-paladin-armor.webp` |  | 1 |
+| `esya/kaltakkirans-maw-chain-greatsword.webp` |  | 1 |
+| `esya/vigilant-drake-helm.webp` |  | 1 |
+| `esya/focus-surge-helm.webp` |  | 1 |
+| `esya/shadowtracker-hood.webp` |  | 1 |
+| `esya/weavebound-circlet.webp` |  | 1 |
+| `esya/embercrown-hood.webp` |  | 1 |
+| `esya/apex-stalker-helm.webp` |  | 1 |
+| `esya/crimson-fury-circlet.webp` |  | 1 |
+| `esya/stormsong-hat.webp` |  | 1 |
+| `esya/diadem-of-spellstrike.webp` |  | 1 |
+| `esya/dawnmender-circlet.webp` |  | 1 |
+| `esya/mindshield-helm.webp` |  | 1 |
+| `esya/quickwit-cowl.webp` |  | 1 |
+| `esya/sparkcrest-circlet.webp` |  | 1 |
+| `esya/shadowstep-cloak.webp` |  | 1 |
+| `esya/weavefold-cloak.webp` |  | 1 |
+| `esya/stormwing-cloak.webp` |  | 1 |
+| `esya/fleshrender-cloak.webp` |  | 1 |
+| `esya/shadeblood-mantle.webp` |  | 1 |
+| `esya/frostmist-cloak.webp` |  | 1 |
+| `esya/cindermoth-cloak.webp` |  | 1 |
+| `esya/thunderskin-cloak.webp` |  | 1 |
+| `esya/steamshell-cloak.webp` |  | 1 |
+| `esya/trailblazer-cloak.webp` |  | 1 |
+| `esya/menders-mantle.webp` |  | 1 |
+| `esya/soulcatcher-gauntlets.webp` |  | 1 |
+| `esya/compass-gloves.webp` |  | 1 |
+| `esya/blazing-fist-gauntlets.webp` |  | 1 |
+| `esya/spellquick-gloves.webp` |  | 1 |
+| `esya/daredevil-bracers.webp` |  | 1 |
+| `esya/skythunder-gloves.webp` |  | 1 |
+| `esya/slingmaster-gloves.webp` |  | 1 |
+| `esya/luminous-gauntlets.webp` |  | 1 |
+| `esya/twinhand-gloves.webp` |  | 1 |
+| `esya/winterclaw-gloves.webp` |  | 1 |
+| `esya/warding-healer-gloves.webp` |  | 1 |
+| `esya/ichorous-gloves.webp` |  | 1 |
+| `esya/dexterous-silk-gloves.webp` |  | 1 |
+| `esya/sparkhand-gloves.webp` |  | 1 |
+| `esya/darkstep-boots.webp` |  | 1 |
+| `esya/boots-of-unyielding.webp` |  | 1 |
+| `esya/frostspike-boots.webp` |  | 1 |
+| `esya/skyvault-boots.webp` |  | 1 |
+| `esya/rushstrike-boots.webp` |  | 1 |
+| `esya/stormstep-boots.webp` |  | 1 |
+| `esya/steadyfocus-boots.webp` |  | 1 |
+| `esya/springvault-boots.webp` |  | 1 |
+| `esya/waterskipper-sandals.webp` |  | 1 |
+| `esya/windstep-sandals.webp` |  | 1 |
+| `esya/sparkstride-boots.webp` |  | 1 |
+| `esya/mirestrider-boots.webp` |  | 1 |
+| `esya/starstone-crown.webp` |  | 1 |
+| `esya/silvertear-mask.webp` |  | 1 |
+| `esya/pale-blood-mask.webp` |  | 1 |
+| `esya/fungal-crown.webp` |  | 1 |
+| `esya/snow-witch-hat.webp` |  | 1 |
+| `esya/shadowspark-ring.webp` |  | 1 |
+| `esya/high-command-ring.webp` |  | 1 |
+| `esya/gamblers-edge-ring.webp` |  | 1 |
+| `esya/dazzling-halo-ring.webp` |  | 1 |
+| `esya/snowburst-ring.webp` |  | 1 |
+| `esya/searing-acid-ring.webp` |  | 1 |
+| `esya/lightcall-ring.webp` |  | 1 |
+| `esya/spellstrike-ring.webp` |  | 1 |
+| `esya/eversight-shadow-ring.webp` |  | 1 |
+| `esya/whispering-promise-ring.webp` |  | 1 |
+| `esya/sparkswall-ring.webp` |  | 1 |
+| `esya/flinging-ring.webp` |  | 1 |
+| `esya/leaping-current-ring.webp` |  | 1 |
+| `esya/elemental-infusion-ring.webp` |  | 1 |
+| `esya/venomthorn-ring.webp` |  | 1 |
+| `esya/locksmiths-ring.webp` |  | 1 |
+| `esya/rootgrip-ring.webp` |  | 1 |
+| `esya/fracture-ring.webp` |  | 1 |
+| `esya/lifespring-amulet.webp` |  | 1 |
+| `esya/spellwell-amulet.webp` |  | 1 |
+| `esya/rebirth-idol-amulet.webp` |  | 1 |
+| `esya/devouts-medallion.webp` |  | 1 |
+| `esya/spellspark-pendant.webp` |  | 1 |
+| `esya/subjugation-pendant.webp` |  | 1 |
+| `esya/feyward-amulet.webp` |  | 1 |
+| `esya/brandbreaker-amulet.webp` |  | 1 |
+| `esya/venomkiss-pendant.webp` |  | 1 |
+| `esya/torment-conduit-amulet.webp` |  | 1 |
+| `esya/clearmind-pendant.webp` |  | 1 |
+| `esya/miststep-pendant.webp` |  | 1 |
+| `esya/dreadwing-charm.webp` |  | 1 |
+| `esya/silverthread-locket.webp` |  | 1 |
+| `esya/emberheart-talisman.webp` |  | 1 |
+| `esya/ember-sigil-stone.webp` |  | 1 |
+| `esya/frost-sigil-stone.webp` |  | 1 |
+| `esya/storm-sigil-stone.webp` |  | 1 |
+| `esya/stone-sigil-stone.webp` |  | 1 |
+| `esya/venom-sigil-stone.webp` |  | 1 |
+| `esya/masterwork-sigil-stone.webp` |  | 1 |
+| `esya/umbral-sigil-stone.webp` |  | 1 |
+| `esya/radiant-sigil-stone.webp` |  | 1 |
+| `esya/aether-core-stone.webp` |  | 1 |
+| `esya/mounting-of-power.webp` |  | 1 |
+| `esya/mystical-mounting.webp` |  | 1 |
+| `esya/ancient-imbuement-relic.webp` |  | 1 |
+| `esya/cracked-elemental-stone-fire.webp` |  | 1 |
+| `esya/cracked-elemental-stone-cold.webp` |  | 1 |
+| `esya/cracked-elemental-stone-lightning.webp` |  | 1 |
+| `esya/cracked-elemental-stone-thunder.webp` |  | 1 |
+| `esya/cracked-elemental-stone-acid.webp` |  | 1 |
+| `esya/cracked-elemental-stone-poison.webp` |  | 1 |
+| `esya/cracked-elemental-stone-radiant.webp` |  | 1 |
+| `esya/cracked-elemental-stone-necrotic.webp` |  | 1 |
+| `esya/cracked-elemental-stone-psychic.webp` |  | 1 |
+| `esya/cracked-elemental-stone-force.webp` |  | 1 |
+| `esya/awakened-elemental-stone-fire.webp` |  | 1 |
+| `esya/awakened-elemental-stone-cold.webp` |  | 1 |
+| `esya/awakened-elemental-stone-lightning.webp` |  | 1 |
+| `esya/awakened-elemental-stone-thunder.webp` |  | 1 |
+| `esya/awakened-elemental-stone-acid.webp` |  | 1 |
+| `esya/awakened-elemental-stone-poison.webp` |  | 1 |
+| `esya/awakened-elemental-stone-radiant.webp` |  | 1 |
+| `esya/awakened-elemental-stone-necrotic.webp` |  | 1 |
+| `esya/awakened-elemental-stone-psychic.webp` |  | 1 |
+| `esya/awakened-elemental-stone-force.webp` |  | 1 |
+| `esya/ember-core.webp` |  | 1 |
+| `esya/frost-heart.webp` |  | 1 |
+| `esya/storm-spire.webp` |  | 1 |
+| `esya/resonance-seal.webp` |  | 1 |
+| `esya/dissolution-drop.webp` |  | 1 |
+| `esya/venom-essence.webp` |  | 1 |
+| `esya/blinding-sun-shard.webp` |  | 1 |
+| `esya/sepulcher-orb.webp` |  | 1 |
+| `esya/whisper-crystal.webp` |  | 1 |
+| `esya/void-fracture.webp` |  | 1 |
+| `yedek:esya-aksesuar` | 💍 | 1 |
+| `esya/sinkhole-orb.webp` |  | 1 |
+| `esya/sparkburst-flask.webp` |  | 1 |
+| `esya/rimeburst-orb.webp` |  | 1 |
+| `esya/flashblind-capsule.webp` |  | 1 |
+| `esya/websac-bomb.webp` |  | 1 |
+| `esya/shrapnel-nailbomb.webp` |  | 1 |
+| `esya/tremor-sphere.webp` |  | 1 |
+| `esya/dreadcenser-bomb.webp` |  | 1 |
+| `esya/haste-spore-pod.webp` |  | 1 |
+| `esya/armor-piercing-canister.webp` |  | 1 |
+| `esya/enthralling-mist-vial.webp` |  | 1 |
+| `esya/cinder-cluster-bomb.webp` |  | 1 |
+| `esya/watersplash-arrow.webp` |  | 1 |
+| `esya/steamveil-arrow.webp` |  | 1 |
+| `esya/hoarfrost-arrow.webp` |  | 1 |
+| `esya/roaring-knockback-arrow.webp` |  | 1 |
+| `esya/blightbone-arrow.webp` |  | 1 |
+| `esya/arcing-bolt-arrow.webp` |  | 1 |
+| `esya/splitflight-arrow.webp` |  | 1 |
+| `esya/transposition-arrow.webp` |  | 1 |
+| `esya/spellsever-arrow.webp` |  | 1 |
+| `esya/knockdown-blunt-arrow.webp` |  | 1 |
+| `esya/blessed-mending-arrow.webp` |  | 1 |
+| `esya/shadowpierce-arrow.webp` |  | 1 |
+| `esya/oil-of-precision.webp` |  | 1 |
+| `esya/oil-of-combustion.webp` |  | 1 |
+| `esya/magebane-venom.webp` |  | 1 |
+| `esya/arsonists-tincture.webp` |  | 1 |
+| `esya/hoarfrost-coating.webp` |  | 1 |
+| `esya/oil-of-hexing.webp` |  | 1 |
+| `esya/drowsleep-venom.webp` |  | 1 |
+| `esya/crawler-paralytic.webp` |  | 1 |
+| `esya/crimson-wyrm-toxin.webp` |  | 1 |
+| `esya/ironhide-armour-potion.webp` |  | 1 |
+| `esya/spellward-armour-potion.webp` |  | 1 |
+| `esya/nimble-tumble-potion.webp` |  | 1 |
+| `esya/stoneskin-draught.webp` |  | 1 |
+| `esya/strong-will-draught.webp` |  | 1 |
+| `esya/angelic-reprieve-potion.webp` |  | 1 |
+| `esya/elixir-of-bloodlust.webp` |  | 1 |
+| `esya/elixir-of-vigilance.webp` |  | 1 |
+| `esya/elixir-of-viciousness.webp` |  | 1 |
+| `esya/elixir-of-battlemage-focus.webp` |  | 1 |
+| `esya/elixir-of-peerless-focus.webp` |  | 1 |
+| `esya/emerald-tea-brew.webp` |  | 1 |
+| `esya/mucevher-ejderha-yumurtasi.webp` |  | 1 |
+| `esya/kor-yumurtasi.webp` |  | 1 |
 | `esya/dagger.webp` |  | 1 |
 | `esya/handaxe.webp` |  | 1 |
 | `esya/javelin.webp` |  | 1 |
@@ -568,7 +937,7 @@ Tür `src/rules/itemCategory.ts` (`itemKind`: SRD sihirli eşya türü + ad söz
 
 ## (c) Canavarlar (330)
 
-Jeton: `public/monsters/<kimlik>.webp` (256×256; `monsterAvatar`). **330/330 dosyası var, silüet ya da yer tutucu yok** (yer tutucu baş harfli daire yalnız Game Master'ın eklediği özel canavarda). Klasör 352 dosya = 330 ana + 22 `-uyku`; çözülmüş piksel özdeşliğiyle 316 farklı görüntü.
+Jeton: `public/monsters/<kimlik>.webp` (256×256; `monsterAvatar`). **381/330 dosyası var, silüet ya da yer tutucu yok** (yer tutucu baş harfli daire yalnız Game Master'ın eklediği özel canavarda). Klasör 352 dosya = 330 ana + 22 `-uyku`; çözülmüş piksel özdeşliğiyle 316 farklı görüntü.
 
 **Genel (40):** ejderhaların dört yaşı (wyrmling, young, adult, ancient) aynı görüntü, 10 renk: black (4), blue (4), brass (4), bronze (4), copper (4), gold (4), green (4), red (4), silver (4), white (4). Uyuyan varyant (`-uyku`, 22): `adult-gold-dragon`, `adult-red-dragon`, `ancient-gold-dragon`, `ancient-red-dragon`, `bandit-captain`, `bandit`, `brown-bear`, `dire-wolf`, `goblin-warrior`, `gold-dragon-wyrmling`, `hell-hound`, `hill-giant`, `hobgoblin-warrior`, `minotaur-of-baphomet`, `ogre`, `owlbear`, `red-dragon-wyrmling`, `troll`, `wolf`, `wyvern`, `young-gold-dragon`, `young-red-dragon`.
 
@@ -584,9 +953,9 @@ Jeton: `public/monsters/<kimlik>.webp` (256×256; `monsterAvatar`). **330/330 do
 ## (d) Tür (10), alt soy (41), sınıf (12), alt sınıf (120)
 
 - **Tür:** 10/10 jeton (`characters/<tür>-<male|female>-<sınıf>.webp`, 216 sınıf-genel jeton = 9 tür × 2 cinsiyet × 12 sınıf; Dragonborn'da sınıf-genel jeton yok (`data/jeton-genel.json`), temsilci Gariban; Gariban `-GR` 240). Eşlemede temsilci jeton erkek Fighter; ırk ölçeği `token-sizes.json` `race` (Halfling/Gnome 0,5 … Goliath 1,4).
-- **Alt soy:** 41 = 38 tür soyu + 3 Göksel Uyanış; ayrı jeton yok, görünüm ırk jetonuna katman (Kuyruk AS1c: `lineageLook`, `Avatar.look`). Kayda özel görünüm **34**, ırk tabanıyla aynı **7** (hepsi `alt-soy-gorunum.json` `orijinal: true` ya da bilinçli boyasız: `elf/wood-elf`, `gnome/forest-gnome`, `gnome/rock-gnome`, `halfling/slender`, `human/khadyrga`, `orc/wildwood`, `tiefling/infernal`).
+- **Alt soy:** 41 = 38 tür soyu + 3 Göksel Uyanış; ayrı jeton yok, görünüm ırk jetonuna katman (Kuyruk AS1c: `lineageLook`, `Avatar.look`). Kayda özel görünüm **34**, ırk tabanıyla aynı **7** (hepsi `alt-soy-gorunum.json` `orijinal: true` ya da bilinçli boyasız: `elf/wood-elf`, `gnome/forest-gnome`, `goliath/stone`, `halfling/slender`, `human/khadyrga`, `orc/wildwood`, `tiefling/infernal`).
   - Human ten tonları (AS1b/AS1c): 3 ton (Orijinal boyasız, Koyu, Altın), kültür eşlemesi Tenhausser → Koyu, Khadyrga → Orijinal, Saf Kent → Altın, Sur Dışı üçü (varsayılan Orijinal) + Sürgün; ten maskesi `public/characters/maske/human-*`.
-  - Kanat: `data/kanat-esleme.json` 3 slot (Tiefling Winged, Celestial Kırık Kanat 3+, Dragonborn 5+); Dragonborn kanat sürümü KW2: taban `dragonborn.webp` + zar + pençe katmanı, soy rengine göre palet; 4 jeton kendi çiziminde kanatlı (`kanatsiz`). `public/kanat/` 6 görsel; `melek-acik.webp` hiçbir slota bağlı değil (kullanılmayan).
+  - Kanat: `data/kanat-esleme.json` 3 slot (Tiefling Winged, Celestial Kırık Kanat 3+, Dragonborn 5+); Dragonborn kanat sürümü KW2: taban `dragonborn.webp` + zar + pençe katmanı, soy rengine göre palet; 4 jeton kendi çiziminde kanatlı (`kanatsiz`). `public/kanat/` 7 görsel; `melek-acik.webp` hiçbir slota bağlı değil (kullanılmayan).
   - Ayrıntı: aşağıdaki tablo (görünüm parçaları).
 
 | Alt soy | Durum | Görünüm |
@@ -601,20 +970,20 @@ Jeton: `public/monsters/<kimlik>.webp` (256×256; `monsterAvatar`). **330/330 do
 | `dragonborn/red` | var | soy rengi, kanat 5+. seviye |
 | `dragonborn/silver` | var | soy rengi, kanat 5+. seviye |
 | `dragonborn/white` | var | soy rengi, kanat 5+. seviye |
-| `dwarf/crag` | var | CSS filtresi |
+| `dwarf/crag` | var | soy rengi |
 | `dwarf/knoll` | var | oran 1.04×1 |
-| `dwarf/undervault` | var | CSS filtresi |
+| `dwarf/undervault` | var | soy rengi |
 | `elf/drow` | var | soy rengi |
 | `elf/high-elf` | var | soy rengi |
 | `elf/wood-elf` | genel | orijinal görünüm (ırk tabanı; kullanıcı kararı) |
 | `gnome/forest-gnome` | genel | orijinal görünüm (ırk tabanı; kullanıcı kararı) |
-| `gnome/rock-gnome` | genel | orijinal görünüm (ırk tabanı; kullanıcı kararı) |
+| `gnome/rock-gnome` | var | soy rengi |
 | `gnome/subterranean` | var | soy rengi |
 | `goliath/cloud` | var | soy rengi |
 | `goliath/fire` | var | soy rengi |
 | `goliath/frost` | var | soy rengi |
 | `goliath/hill` | var | soy rengi |
-| `goliath/stone` | var | soy rengi |
+| `goliath/stone` | genel | orijinal görünüm (ırk tabanı; kullanıcı kararı) |
 | `goliath/storm` | var | soy rengi |
 | `halfling/slender` | genel | orijinal görünüm (ırk tabanı; kullanıcı kararı) |
 | `halfling/sturdy` | var | oran 1.07×0.93 |
@@ -622,9 +991,9 @@ Jeton: `public/monsters/<kimlik>.webp` (256×256; `monsterAvatar`). **330/330 do
 | `human/khadyrga` | genel | orijinal görünüm (ırk tabanı; kullanıcı kararı) |
 | `human/pure-city` | var | ten tonu Altın |
 | `human/outwall` | var | ten tonu seçilebilir (Orijinal, Koyu, Altın) |
-| `orc/glacier` | var | CSS filtresi |
+| `orc/glacier` | var | soy rengi |
 | `orc/wildwood` | genel | orijinal görünüm (ırk tabanı; kullanıcı kararı) |
-| `orc/fen` | var | CSS filtresi |
+| `orc/fen` | var | soy rengi |
 | `tiefling/abyssal` | var | soy rengi |
 | `tiefling/chthonic` | var | soy rengi |
 | `tiefling/infernal` | genel | orijinal görünüm (ırk tabanı; kullanıcı kararı) |
@@ -634,7 +1003,7 @@ Jeton: `public/monsters/<kimlik>.webp` (256×256; `monsterAvatar`). **330/330 do
 | `celestial/kirik-kanat` | var | kanat (celestial-kirik-kanat) |
 
 - **Sınıf:** 12/12 sınıf-genel jeton. Aynı Dungeondex kategorisindeki 28 Invocation ve 10 Metamagic görselsiz (glif; bkz. g).
-- **Alt sınıf:** 120 (jeton tabloları `data/<sınıf>-jeton.json`; Barış Alanı kaldırıldı, Birlik Manastırı hücresini paylaşırdı). **Gerçek jeton 120/120, yedek 0**; her alt sınıfın kendi hücresi ve 10 tür × izinli cinsiyet jetonu var (cinsiyet kısıtı: Karadul yalnız kadın, İmparator yalnız erkek; ikinci form: Pehlivan 10+). **İçerik eksik 0/119** bu ortamda (bulut: `icerik/` yok, fikstür 12 SRD + 12 bizim yüklü); tarayıcıda `icerik/` yoksa yalnız 12 bizim alt sınıf yüklenir (108/120 "içerik eksik"), jeton yine çözülür (jeton tablosu içerikten bağımsız).
+- **Alt sınıf:** 120 (jeton tabloları `data/<sınıf>-jeton.json`; Barış Alanı kaldırıldı, Birlik Manastırı hücresini paylaşırdı). **Gerçek jeton 120/120, yedek 0**; her alt sınıfın kendi hücresi ve 10 tür × izinli cinsiyet jetonu var (cinsiyet kısıtı: Karadul yalnız kadın, İmparator yalnız erkek; ikinci form: Pehlivan 10+). **İçerik eksik 0/120** bu ortamda (yerel `icerik/`); tarayıcıda `icerik/` yoksa yalnız 12 bizim alt sınıf yüklenir (108/120 "içerik eksik"), jeton yine çözülür (jeton tablosu içerikten bağımsız).
 
 ## (e) Durumlar, yüzeyler, nesneler, alanlar, zar temaları
 
@@ -701,7 +1070,7 @@ Bütün glifler eşlemenin `yedekler` tablosunda (tek kaynak); galeri ve vitrin 
 
 ## Öneri (sıra)
 
-1. Eşya ikonları (449; önce 319 sihirli eşya ve 38 silah): Gemini, 128 px saydam, `public/esya/<kimlik>.webp`; eşleme betiği dosyayı görünce `kaynak: ikon` yapar (yeniden `npm run dd-gorsel`).
+1. Eşya ikonları (818; önce 319 sihirli eşya ve 38 silah): Gemini, 128 px saydam, `public/esya/<kimlik>.webp`; eşleme betiği dosyayı görünce `kaynak: ikon` yapar (yeniden `npm run dd-gorsel`).
 2. Görselsiz büyülerin kart ikonları (savaş dışı 108 + savaşta 4): `public/buyu/<kimlik>.webp` (betik görünce `kaynak: ikon`).
 3. Harita nesnesi sprite'ları (32 emoji): mevcut `nesne-<ad>` hattı (`npm run sprite-ice`).
 4. Zar: 9 Alignment seti, sonra 100 hedefine 28 tema (önce kimlik listesi kullanıcıdan).

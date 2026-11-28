@@ -1917,6 +1917,150 @@
    ]
   },
   {
+   "dosya": "katalog-imza-03.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "not": "IMZA-IKON-BAGLA: Hex taşları Sv.3 (çerçeveli mühür), hücre 1–10 element sırası Ateş, Soğuk, Yıldırım, Gürültü, Asit, Zehir, Işıltı, Nekrotik, Psişik, Kuvvet; 11–16 boş.",
+   "ogeler": [
+    {
+     "id": "ember-core",
+     "ad": "Ember Core"
+    },
+    {
+     "id": "frost-heart",
+     "ad": "Frost Heart"
+    },
+    {
+     "id": "storm-spire",
+     "ad": "Storm Spire"
+    },
+    {
+     "id": "resonance-seal",
+     "ad": "Resonance Seal"
+    },
+    {
+     "id": "dissolution-drop",
+     "ad": "Dissolution Drop"
+    },
+    {
+     "id": "venom-essence",
+     "ad": "Venom Essence"
+    },
+    {
+     "id": "blinding-sun-shard",
+     "ad": "Blinding Sun Shard"
+    },
+    {
+     "id": "sepulcher-orb",
+     "ad": "Sepulcher Orb"
+    },
+    {
+     "id": "whisper-crystal",
+     "ad": "Whisper Crystal"
+    },
+    {
+     "id": "void-fracture",
+     "ad": "Void Fracture"
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-imza-04.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "not": "IMZA-IKON-BAGLA: Hex taşları Sv.2 (tel sarılı uyanmış element taşı), aynı element sırası; 11–16 boş.",
+   "ogeler": [
+    {
+     "id": "awakened-elemental-stone-fire",
+     "ad": "Awakened Elemental Stone (Fire)"
+    },
+    {
+     "id": "awakened-elemental-stone-cold",
+     "ad": "Awakened Elemental Stone (Cold)"
+    },
+    {
+     "id": "awakened-elemental-stone-lightning",
+     "ad": "Awakened Elemental Stone (Lightning)"
+    },
+    {
+     "id": "awakened-elemental-stone-thunder",
+     "ad": "Awakened Elemental Stone (Thunder)"
+    },
+    {
+     "id": "awakened-elemental-stone-acid",
+     "ad": "Awakened Elemental Stone (Acid)"
+    },
+    {
+     "id": "awakened-elemental-stone-poison",
+     "ad": "Awakened Elemental Stone (Poison)"
+    },
+    {
+     "id": "awakened-elemental-stone-radiant",
+     "ad": "Awakened Elemental Stone (Radiant)"
+    },
+    {
+     "id": "awakened-elemental-stone-necrotic",
+     "ad": "Awakened Elemental Stone (Necrotic)"
+    },
+    {
+     "id": "awakened-elemental-stone-psychic",
+     "ad": "Awakened Elemental Stone (Psychic)"
+    },
+    {
+     "id": "awakened-elemental-stone-force",
+     "ad": "Awakened Elemental Stone (Force)"
+    }
+   ]
+  },
+  {
+   "dosya": "katalog-imza-05.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "not": "IMZA-IKON-BAGLA: Hex taşları Sv.1 (ham çatlak element taşı), aynı element sırası; 11–16 boş.",
+   "ogeler": [
+    {
+     "id": "cracked-elemental-stone-fire",
+     "ad": "Cracked Elemental Stone (Fire)"
+    },
+    {
+     "id": "cracked-elemental-stone-cold",
+     "ad": "Cracked Elemental Stone (Cold)"
+    },
+    {
+     "id": "cracked-elemental-stone-lightning",
+     "ad": "Cracked Elemental Stone (Lightning)"
+    },
+    {
+     "id": "cracked-elemental-stone-thunder",
+     "ad": "Cracked Elemental Stone (Thunder)"
+    },
+    {
+     "id": "cracked-elemental-stone-acid",
+     "ad": "Cracked Elemental Stone (Acid)"
+    },
+    {
+     "id": "cracked-elemental-stone-poison",
+     "ad": "Cracked Elemental Stone (Poison)"
+    },
+    {
+     "id": "cracked-elemental-stone-radiant",
+     "ad": "Cracked Elemental Stone (Radiant)"
+    },
+    {
+     "id": "cracked-elemental-stone-necrotic",
+     "ad": "Cracked Elemental Stone (Necrotic)"
+    },
+    {
+     "id": "cracked-elemental-stone-psychic",
+     "ad": "Cracked Elemental Stone (Psychic)"
+    },
+    {
+     "id": "cracked-elemental-stone-force",
+     "ad": "Cracked Elemental Stone (Force)"
+    }
+   ]
+  },
+  {
    "dosya": "katalog-duzeltme-01.jpg",
    "kolon": 4,
    "satir": 4,
