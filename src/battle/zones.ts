@@ -11,6 +11,7 @@
  *   Zorlu arazi birikmez: altıgen maliyeti alanların ve zeminin en büyüğü.
  * - Dokunulamaz çağrılar (Flaming Sphere, ruh sürüsü) alanlardan etkilenmez.
  */
+import { katalog109On } from './katalog109Surum';
 import { sourceDown } from './sourceDown';
 import { b94On } from './b94Surum';
 import { isPlantZone, soyPlantWalker } from './altSoySurum';
@@ -493,8 +494,26 @@ export function profileIn(state: BattleState, c: Combatant, spell = false,
   const pr = damageProfile(c);
   const p0 = source && overcomesDefenses(state, source) ? { ...pr, resistances: pr.resistances.filter((x) => !BPS.includes(x)) } : pr;
   // Kuyruk P11 (sözde tür `buyu`: paket `direnc.hasarKaynagi: buyu`): büyü hasarının her türüne direnç.
-  const p = spell && ruleVersion(state) >= 42 && p0.resistances.includes('buyu') ? { ...p0, resistances: [...new Set([...p0.resistances, ...SPELL_RESIST_ALL])] } : p0;
+  const p1 = spell && ruleVersion(state) >= 42 && p0.resistances.includes('buyu') ? { ...p0, resistances: [...new Set([...p0.resistances, ...SPELL_RESIST_ALL])] } : p0;
+  // Görev KATALOG-GUC-TAM (109+): hasarı verenin direnç delmesi (Ten Seals Core, Cosmic Star Flame, Mothraq zehri; `k109.pierceResist`).
+  const p2 = source && katalog109On(state) ? pierced(p1, source) : p1;
+  // Görev KATALOG-GUC-TAM (109+): direnç kaybı (Delta Yetişkin nefesi; `k109.noResist`).
+  const p = katalog109On(state) && c.effects?.some((e) => e.k109?.noResist) ? { ...p2, resistances: [] } : p2;
   return c.pos && silencedAt(state, c.pos) && !p.immunities.includes('thunder') ? { ...p, immunities: [...p.immunities, 'thunder'] } : p;
+}
+
+/** Görev KATALOG-GUC-TAM (109+): kaynağın `pierceResist` etkileri: türlerin direnci yok, bağışıklık dirence iner ya da yok sayılır. */
+function pierced<P extends { resistances: string[]; immunities: string[] }>(p: P, source: Combatant): P {
+  let out = p;
+  for (const e of source.effects ?? []) {
+    const pr = e.k109?.pierceResist;
+    if (!pr) continue;
+    const hit = (t: string) => !pr.types || pr.types.includes(t);
+    const moved = pr.immuneToResist && !pr.ignoreImmune ? out.immunities.filter(hit) : [];
+    out = { ...out, resistances: [...out.resistances.filter((t) => !hit(t)), ...moved],
+      immunities: pr.ignoreImmune || pr.immuneToResist ? out.immunities.filter((t) => !hit(t)) : out.immunities };
+  }
+  return out;
 }
 
 /** Altıgen sessiz mi (Silence): sözlü bileşenli büyü yapılamaz. */

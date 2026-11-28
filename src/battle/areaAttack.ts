@@ -7,6 +7,8 @@
  * - `areaSaveEvents`: hasar bir kez atılır (SRD: bütün hedefler için aynı zar), her hedef ayrı save yapar (elle zarda
  *   her hedef için ayrı istek), başarıda yarım hasar; hasar alanın tepkisi (Hellish Rebuke) her hedeften sonra.
  */
+import { katalog109On } from './katalog109Surum';
+import { saveExtraEvents, saveExtraRolls } from './katalog109Hit';
 import { isBurrowed } from './burrow';
 import { breathOf } from './breath';
 import { a2AreaDamage } from './ridersA2';
@@ -126,6 +128,8 @@ export function areaSaveEvents(state: BattleState, actor: Combatant, pick0: Area
   const cw = cuttingWordsDamage(applyEvents(state, events), actor, damage0.total, pick.reached.map((x) => x.c), save.label, rng);
   events.push(...cw.events);
   const damage = { ...damage0, total: cw.total };
+  // Görev KATALOG-GUC-TAM (109+): canavar alan saldırısının ikinci hasar türü (zar bir kez).
+  const extraRolls = save.monster && katalog109On(state) && pick.reached.length > 0 ? saveExtraRolls(state, actor, save.monster.attackName, rng) : [];
   let current = applyEvents(state, events);
   for (const { c, cover } of pick.reached) {
     const t = current.combatants[c.id];
@@ -159,6 +163,7 @@ export function areaSaveEvents(state: BattleState, actor: Combatant, pick0: Area
       if (effect && fx.hpAfter > 0) local.push(timedCondition(current, t.id, effect, actor.id, `${actor.name}: ${save.label}`));
       local.push(...riderConditionEvents(current, actor, { ...t, hp: fx.hpAfter }, riderOf(formMonsterId(actor), save.monster.attackName), save.monster.attackName, rng));
     }
+    if (extraRolls.length) local.push(...saveExtraEvents({ ...t, hp: fx.hpAfter }, save.label, extraRolls, r.success, !!save.halfOnSave));
     events.push(...local);
     current = applyEvents(current, local);
     // Hasar alanın tepkisi (Hellish Rebuke; Görev R1).

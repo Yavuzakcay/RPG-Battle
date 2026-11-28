@@ -89,3 +89,79 @@ describe('Grup 1: canavar aurası', () => {
     expect(passiveAuraOf(s, C(s, 'A')).saveBonus).toBe(0);
   });
 });
+
+describe('Grup 2: saldırı ekleri ve pasifler', () => {
+  const foe = (id: string, col: number, p: Partial<Combatant> = {}) => mk(id, { ownerId: 'p1', hp: 200, maxHp: 200, pos: { col, row: 3 }, ...p });
+
+  it('A2 ekleri yalnız 109: Tail 20 ft itme, Roar 30 ft itme + 8d8 thunder', async () => {
+    const { a2Of } = await import('./ridersA2');
+    const { saveExtraRolls } = await import('./katalog109Hit');
+    const s = arena109('tutsak-dragon', [foe('A', 6)]);
+    expect(a2Of(s, 'tutsak-dragon', 'Tail')?.push).toEqual({ mode: 'push', ft: 20 });
+    expect(a2Of({ kuralSurumu: 108 }, 'tutsak-dragon', 'Tail')).toBeUndefined();
+    expect(saveExtraRolls(s, C(s, 'D'), 'Continent Roar Breath', () => 0.5)[0]).toMatchObject({ type: 'thunder' });
+    expect(saveExtraRolls({ ...s, kuralSurumu: 108 }, C(s, 'D'), 'Continent Roar Breath', () => 0.5)).toEqual([]);
+  });
+
+  it('direnç delme: Ten Seals Core bağışıklığı da yok sayar; Anka ateş bağışıklığını dirence indirir', async () => {
+    const { profileIn } = await import('./zones');
+    const s = arena109('dragon-of-hexonia-a', [foe('A', 8, { resistances: ['force'], immunities: ['radiant'] })]);
+    const p = profileIn(s, C(s, 'A'), false, C(s, 'D'));
+    expect(p.resistances).not.toContain('force');
+    expect(p.immunities).not.toContain('radiant');
+    expect(profileIn({ ...s, kuralSurumu: 108 }, C(s, 'A'), false, C(s, 'D')).immunities).toContain('radiant');
+    const a = arena109('kozmik-anka', [foe('A', 8, { immunities: ['fire'] })]);
+    const pa = profileIn(a, C(a, 'A'), false, C(a, 'D'));
+    expect(pa.immunities).not.toContain('fire');
+    expect(pa.resistances).toContain('fire');
+  });
+
+  it('zorla harekete bağışık (Gongar): itme olayı yok', async () => {
+    const { forcedMove } = await import('./motion');
+    const s = arena109('gongar', [foe('A', 4)]);
+    expect(forcedMove(s, 'D', 'push', 15, 'A', () => 0.5, { origin: { col: 4, row: 3 } })).toEqual([]);
+  });
+
+  it('iyileşme çarpanı ve mühür: healed olayında yarı / hiç', () => {
+    const s = arena109('cerbones', [foe('A', 8, { hp: 100 })]);
+    const half = applyEvents(s, [{ type: 'effect_added', targetId: 'A', effect: { id: 'h', name: 'h', sourceId: 'D', k109: { healMult: 0.5 } } },
+      { type: 'healed', actorId: 'A', targetId: 'A', label: 'x', amount: 20, targetHpAfter: 120 }]);
+    expect(C(half, 'A').hp).toBe(110);
+    const sealed = applyEvents(s, [{ type: 'effect_added', targetId: 'A', effect: { id: 'h', name: 'h', sourceId: 'D', k109: { sealed: true } } },
+      { type: 'healed', actorId: 'A', targetId: 'A', label: 'x', amount: 20, targetHpAfter: 120 }]);
+    expect(C(sealed, 'A').hp).toBe(100);
+  });
+
+  it('yakın dövüşte karşı hasar ve Star Mark', async () => {
+    const { retaliateEvents, starMarkEvents } = await import('./katalog109');
+    const s0 = arena109('hydraxe', [foe('A', 4, { conditions: ['Invisible'] })]);
+    const s = applyEvents(s0, [{ type: 'effect_added', targetId: 'D', effect: { id: 'r', name: 'r', sourceId: 'D', k109: { meleeRetaliate: { dice: '1d8', type: 'acid' } } } },
+      { type: 'effect_added', targetId: 'A', effect: { id: 'm', name: 'Star Mark', sourceId: 'D', k109: { starMark: true } } }]);
+    expect(retaliateEvents(s, 'A', 'D', { melee: true, hit: true }, () => 0.5)).toHaveLength(1);
+    expect(retaliateEvents(s, 'A', 'D', { melee: false, hit: true }, () => 0.5)).toHaveLength(0);
+    expect(starMarkEvents(s).some((e) => e.type === 'map_effect' && e.removeCondition === 'Invisible')).toBe(true);
+  });
+
+  it('Storm Lightning 3 hedefe (tek şarj); 108 tek hedef', async () => {
+    const { monsterAttackEvents } = await import('./monsters');
+    const run = (v: number) => {
+      const s = arena109('ocean-nightmare', [foe('A', 8), foe('B', 9), foe('E', 10)], v);
+      const i = C(s, 'D').attacks.findIndex((a) => a.name === 'Storm Lightning');
+      const st = { ...s, combatants: { ...s.combatants, D: { ...C(s, 'D'), rechargeUsed: [] } } };
+      const r = monsterAttackEvents(st, C(st, 'D'), C(st, 'A'), i, () => 0.3);
+      if (!r.ok) throw new Error(r.error);
+      return r.events;
+    };
+    expect(run(CURRENT_RULES).filter((e) => e.type === 'save_resolved')).toHaveLength(3);
+    expect(run(CURRENT_RULES).filter((e) => e.type === 'recharge_used')).toHaveLength(1);
+    expect(run(108).filter((e) => e.type === 'save_resolved')).toHaveLength(1);
+  });
+
+  it('Continent Tail: hedefin 15 ft çevresi savrulur ve Prone', async () => {
+    const { a2Events } = await import('./ridersA2');
+    const s = arena109('dragon-of-hexonia-a', [foe('A', 9), foe('B', 10)]);
+    const ev = a2Events(s, C(s, 'D'), C(s, 'A'), 'Continent Tail', () => 0.5);
+    expect(ev.filter((e) => e.type === 'condition_changed' && e.condition === 'Prone')).toHaveLength(2);
+    expect(ev.some((e) => e.type === 'pushed')).toBe(true);
+  });
+});

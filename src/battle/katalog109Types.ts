@@ -29,6 +29,8 @@ export interface K109Fx {
   scale?: boolean;
   /** Armor's Betrayal: bu yaratığa saldırısı dezavantajlı, bu yaratığın ona saldırısı avantajlı. */
   betrayedBy?: string;
+  /** Dirençler bu etki süresince yok (Delta Yetişkin nefesi). */
+  noResist?: boolean;
   /** Hunter Soul Bond: bağlı yaratığın (Avcı) aldığı hasarın yarısını bu yaratık üstlenir (60 ft içinde). */
   soulBondOf?: string;
   /** Soul Bond'un Avcı tarafı: konsantrasyon save'leri avantajlı. */
@@ -75,6 +77,8 @@ export interface K109Faz {
   oncelik?: string[];
   /** Tur başı bossun çevresindekilere hasar. */
   turBasiHasar?: { radiusFt: number; dice: string; type: string };
+  /** Faz etkisine eklenen süren etki alanları (`hitDie`, `k109`…). */
+  etki?: Record<string, unknown>;
 }
 
 export interface K109Monster {

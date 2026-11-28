@@ -50,6 +50,8 @@ export type AuraEffect =
    * çekme (`ft`; K53 zorla hareket) ve durum temizleme (`conditions`: Frightened, Invisible…; isteğe bağlı hasar zarı).
    */
   | { kind: 'pull'; ft: number }
+  /** Pasif: aldığı iyileşme bu katsayıyla (Cerbones Faz 2; en düşüğü). */
+  | { kind: 'healMult'; mult: number }
   | { kind: 'cleanse'; conditions: string[]; dice?: string; type?: string };
 export interface AuraSpec {
   id: string;
@@ -116,14 +118,15 @@ export function strongest(list: Array<{ owner: Combatant; spec: AuraSpec }>): Ar
 }
 
 /** Pasif aura alanları (syncAuras): save bonusu, durum bağışıklığı, can yenileyemez, ölüm save dezavantajı. */
-export function passiveAuraOf(state: BattleState, v: Combatant): { saveBonus: number; immune: string[]; noHeal: boolean; deathDis: boolean; deathAdv: boolean; resist: string[]; saveDis: boolean } {
+export function passiveAuraOf(state: BattleState, v: Combatant): { saveBonus: number; immune: string[]; noHeal: boolean; deathDis: boolean; deathAdv: boolean; resist: string[]; saveDis: boolean; healMult: number } {
   const list = strongest(aurasOn(state, v).filter((x) => x.spec.trigger === 'passive'));
-  const out = { saveBonus: 0, immune: [] as string[], noHeal: false, deathDis: false, deathAdv: false, resist: [] as string[], saveDis: false };
+  const out = { saveBonus: 0, immune: [] as string[], noHeal: false, deathDis: false, deathAdv: false, resist: [] as string[], saveDis: false, healMult: 1 };
   for (const { spec } of list) {
     const e = spec.effect;
     if (e.kind === 'saveBonus') out.saveBonus = Math.max(out.saveBonus, e.amount);
     else if (e.kind === 'conditionImmune') out.immune = [...new Set([...out.immune, ...e.conditions])];
     else if (e.kind === 'noHeal') out.noHeal = true;
+    else if (e.kind === 'healMult') out.healMult = Math.min(out.healMult, e.mult);
     else if (e.kind === 'resist') out.resist = [...new Set([...out.resist, ...e.types])];
     else if (e.kind === 'saveDis') out.saveDis = true;
     else if (e.kind === 'deathSaveDis') out.deathDis = true;

@@ -158,6 +158,36 @@
     "tekrar": {
      "Eldritch Tentacle": 4
     }
+   },
+   "ekler": {
+    "Cosmic Fling": {
+     "push": {
+      "mode": "push",
+      "ft": 90
+     },
+     "tur": "itme"
+    },
+    "Void-Lightning Strike": {
+     "dropConc": true,
+     "tur": "süre"
+    }
+   },
+   "saveEk": {
+    "Cosmic Fling": [
+     {
+      "dice": "3d8",
+      "type": "force"
+     }
+    ],
+    "Void-Lightning Strike": [
+     {
+      "dice": "4d10",
+      "type": "psychic"
+     }
+    ]
+   },
+   "hedefSayisi": {
+    "Void-Lightning Strike": 3
    }
   },
   "ocean-nightmare": {
@@ -218,7 +248,22 @@
      },
      "cesaret": 0
     }
-   ]
+   ],
+   "ekler": {
+    "Fling": {
+     "push": {
+      "mode": "push",
+      "ft": 60
+     },
+     "tur": "itme"
+    }
+   },
+   "hedefSayisi": {
+    "Storm Lightning": 3
+   },
+   "pasif": {
+    "freeMove": true
+   }
   },
   "ocean-nightmare-open-sea": {
    "auralar": [
@@ -278,7 +323,22 @@
      },
      "cesaret": 0
     }
-   ]
+   ],
+   "ekler": {
+    "Fling": {
+     "push": {
+      "mode": "push",
+      "ft": 60
+     },
+     "tur": "itme"
+    }
+   },
+   "hedefSayisi": {
+    "Storm Lightning": 3
+   },
+   "pasif": {
+    "freeMove": true
+   }
   },
   "kozmik-anka": {
    "auralar": [
@@ -325,7 +385,42 @@
      },
      "cesaret": 0
     }
-   ]
+   ],
+   "ekler": {
+    "Cosmic Beak": {
+     "effect": {
+      "name": "Star Mark",
+      "sure": "rounds:1",
+      "icon": "✴",
+      "k109": {
+       "starMark": true
+      }
+     },
+     "tur": "süre"
+    },
+    "Starfire Talons": {
+     "effect": {
+      "name": "Star Mark",
+      "sure": "rounds:1",
+      "icon": "✴",
+      "k109": {
+       "starMark": true
+      }
+     },
+     "tur": "süre"
+    }
+   },
+   "pasif": {
+    "k109": {
+     "pierceResist": {
+      "types": [
+       "fire",
+       "radiant"
+      ],
+      "immuneToResist": true
+     }
+    }
+   }
   },
   "kozmik-anka-savas": {
    "auralar": [
@@ -372,7 +467,42 @@
      },
      "cesaret": 0
     }
-   ]
+   ],
+   "ekler": {
+    "Cosmic Beak": {
+     "effect": {
+      "name": "Star Mark",
+      "sure": "rounds:1",
+      "icon": "✴",
+      "k109": {
+       "starMark": true
+      }
+     },
+     "tur": "süre"
+    },
+    "Starfire Talons": {
+     "effect": {
+      "name": "Star Mark",
+      "sure": "rounds:1",
+      "icon": "✴",
+      "k109": {
+       "starMark": true
+      }
+     },
+     "tur": "süre"
+    }
+   },
+   "pasif": {
+    "k109": {
+     "pierceResist": {
+      "types": [
+       "fire",
+       "radiant"
+      ],
+      "immuneToResist": true
+     }
+    }
+   }
   },
   "dragon-of-hexonia-a": {
    "auralar": [
@@ -415,7 +545,47 @@
      },
      "cesaret": 0
     }
-   ]
+   ],
+   "ekler": {
+    "Continent-Shaper Claw": {
+     "effect": {
+      "name": "Kıta Pençesi",
+      "sure": "rounds:1",
+      "ac": -3
+     },
+     "tur": "süre"
+    },
+    "Continent Tail": {
+     "splash": {
+      "radiusFt": 15,
+      "pushFt": 40,
+      "prone": true
+     },
+     "tur": "itme"
+    },
+    "Continent Judgment Breath": {
+     "zeroHp": {
+      "dies": true
+     },
+     "tur": "0 HP"
+    }
+   },
+   "saveEk": {
+    "Continent Judgment Breath": [
+     {
+      "dice": "20d10",
+      "type": "radiant"
+     }
+    ]
+   },
+   "pasif": {
+    "k109": {
+     "pierceResist": {
+      "ignoreImmune": true
+     },
+     "forcedImmune": true
+    }
+   }
   },
   "dragon-of-hexonia-b": {
    "auralar": [
@@ -458,7 +628,47 @@
      },
      "cesaret": 0
     }
-   ]
+   ],
+   "ekler": {
+    "Continent-Shaper Claw": {
+     "effect": {
+      "name": "Kıta Pençesi",
+      "sure": "rounds:1",
+      "ac": -3
+     },
+     "tur": "süre"
+    },
+    "Continent Tail": {
+     "splash": {
+      "radiusFt": 15,
+      "pushFt": 40,
+      "prone": true
+     },
+     "tur": "itme"
+    },
+    "Continent Judgment Breath": {
+     "zeroHp": {
+      "dies": true
+     },
+     "tur": "0 HP"
+    }
+   },
+   "saveEk": {
+    "Continent Judgment Breath": [
+     {
+      "dice": "20d10",
+      "type": "radiant"
+     }
+    ]
+   },
+   "pasif": {
+    "k109": {
+     "pierceResist": {
+      "ignoreImmune": true
+     },
+     "forcedImmune": true
+    }
+   }
   },
   "sigmadrake": {
    "auralar": [
@@ -497,7 +707,313 @@
      },
      "cesaret": 0
     }
-   ]
+   ],
+   "ekler": {
+    "Psychic Breath": {
+     "effect": {
+      "name": "Zihin Kırılması",
+      "sure": "rounds:1",
+      "grants": [
+       "Stunned"
+      ],
+      "k109": {
+       "noResist": true
+      }
+     },
+     "tur": "nefes"
+    }
+   }
+  },
+  "hydraxe": {
+   "ekler": {
+    "Bite": {
+     "corrode": {
+      "armor": true
+     },
+     "tur": "aşındırma"
+    }
+   },
+   "faz2": {
+    "etki": {
+     "k109": {
+      "meleeRetaliate": {
+       "dice": "1d8",
+       "type": "acid"
+      }
+     }
+    }
+   }
+  },
+  "cimbombom": {
+   "ekler": {
+    "Bite": {
+     "effect": {
+      "name": "Yanma",
+      "sure": "rounds:10",
+      "icon": "🔥",
+      "ongoing": {
+       "dice": "2d6",
+       "type": "fire",
+       "save": "dex",
+       "dc": 21,
+       "extinguish": true
+      }
+     },
+     "tur": "süre"
+    }
+   }
+  },
+  "wolfgang": {
+   "ekler": {
+    "Claw": {
+     "effect": {
+      "name": "Ayaz Pençesi",
+      "sure": "sourceTurnStart",
+      "speedMult": 0.5
+     },
+     "tur": "hız"
+    }
+   }
+  },
+  "cerbones": {
+   "ekler": {
+    "Crematorium Breath": {
+     "effect": {
+      "name": "Krematoryum",
+      "sure": "rounds:1",
+      "noHeal": true
+     },
+     "tur": "süre"
+    }
+   },
+   "faz2": {
+    "auralar": [
+     {
+      "id": "cremation-halve",
+      "name": "Krematoryum Gölgesi",
+      "radius": 2,
+      "filter": "enemies",
+      "trigger": "passive",
+      "effect": {
+       "kind": "healMult",
+       "mult": 0.5
+      },
+      "cesaret": 0
+     }
+    ],
+    "etki": {
+     "hitDie": "1d8",
+     "hitType": "necrotic"
+    }
+   }
+  },
+  "mothraq": {
+   "pasif": {
+    "k109": {
+     "pierceResist": {
+      "types": [
+       "poison"
+      ]
+     }
+    }
+   }
+  },
+  "gongar": {
+   "pasif": {
+    "k109": {
+     "forcedImmune": true
+    }
+   }
+  },
+  "kongark": {
+   "pasif": {
+    "k109": {
+     "forcedImmune": true
+    }
+   }
+  },
+  "tutsak-dragon": {
+   "ekler": {
+    "Tail": {
+     "push": {
+      "mode": "push",
+      "ft": 20
+     },
+     "tur": "itme"
+    },
+    "Continent Roar Breath": {
+     "push": {
+      "mode": "push",
+      "ft": 30
+     },
+     "tur": "itme"
+    }
+   },
+   "saveEk": {
+    "Continent Roar Breath": [
+     {
+      "dice": "8d8",
+      "type": "thunder"
+     }
+    ]
+   }
+  },
+  "omeglet": {
+   "ekler": {
+    "Necrotic Breath": {
+     "effect": {
+      "name": "İyileşme yok",
+      "sure": "rounds:1",
+      "noHeal": true
+     },
+     "tur": "nefes"
+    }
+   }
+  },
+  "omegyr": {
+   "ekler": {
+    "Necrotic Breath": {
+     "effect": {
+      "name": "İyileşme yok",
+      "sure": "rounds:1",
+      "noHeal": true
+     },
+     "tur": "nefes"
+    }
+   }
+  },
+  "omegadrake": {
+   "ekler": {
+    "Necrotic Breath": {
+     "effect": {
+      "name": "İyileşme yok",
+      "sure": "rounds:1",
+      "noHeal": true
+     },
+     "tur": "nefes"
+    }
+   }
+  },
+  "deltlet": {
+   "ekler": {
+    "Psychic Breath": {
+     "effect": {
+      "name": "Zihin Sarsıntısı",
+      "sure": "rounds:1",
+      "dice": {
+       "die": "1d4",
+       "sign": -1,
+       "on": [
+        "attack",
+        "save",
+        "check"
+       ]
+      }
+     },
+     "tur": "nefes"
+    }
+   }
+  },
+  "deltyr": {
+   "ekler": {
+    "Psychic Breath": {
+     "effect": {
+      "name": "Zihin Sarsıntısı",
+      "sure": "rounds:1",
+      "dice": {
+       "die": "1d6",
+       "sign": -1,
+       "on": [
+        "attack",
+        "save",
+        "check"
+       ]
+      }
+     },
+     "tur": "nefes"
+    }
+   }
+  },
+  "alphlet": {
+   "ekler": {
+    "Thunder Breath": {
+     "push": {
+      "mode": "push",
+      "ft": 10
+     },
+     "tur": "nefes"
+    }
+   }
+  },
+  "alphyr": {
+   "ekler": {
+    "Thunder Breath": {
+     "push": {
+      "mode": "push",
+      "ft": 15
+     },
+     "tur": "nefes"
+    }
+   }
+  },
+  "alphadrake": {
+   "ekler": {
+    "Thunder Breath": {
+     "push": {
+      "mode": "push",
+      "ft": 30
+     },
+     "dropConc": true,
+     "tur": "nefes"
+    }
+   }
+  },
+  "gamlet": {
+   "ekler": {
+    "Force Breath": {
+     "push": {
+      "mode": "pull",
+      "ft": 10,
+      "adjacent": false
+     },
+     "tur": "nefes"
+    }
+   }
+  },
+  "gammyr": {
+   "ekler": {
+    "Force Breath": {
+     "push": {
+      "mode": "pull",
+      "ft": 15
+     },
+     "effect": {
+      "name": "Yerçekimi",
+      "sure": "sourceTurnStart",
+      "speedZero": true
+     },
+     "tur": "nefes"
+    }
+   }
+  },
+  "gammadrake": {
+   "ekler": {
+    "Force Breath": {
+     "push": {
+      "mode": "pull",
+      "ft": 30
+     },
+     "effect": {
+      "name": "Yerçekimi",
+      "sure": "sourceTurnStart",
+      "speedZero": true,
+      "grants": [
+       "Prone"
+      ]
+     },
+     "tur": "nefes"
+    }
+   }
   }
  }
 }

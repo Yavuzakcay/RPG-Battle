@@ -100,7 +100,9 @@ export function damageEffects(
     // Kuyruk 19: Cloud of Insects (efsanevi eylem): konsantrasyon save'ine dezavantaj.
     const roll = rollD20(concMode(target), rollTag(rng, { kind: 'save', by: target.id, bonus: target.saves.con }));
     // Konsantrasyon CON save'i de save: zar eklentileri (Bless) eklenir.
-    const extra = rollExtras(saveDice(target, 'con'), 'save', rollTag(rng, { by: target.id }));
+    // Görev KATALOG-GUC-TAM (109; Star Mark): konsantrasyon bonus zarı yok (yalnız eksiler kalır).
+    const marked = !!target.effects?.some((e) => e.k109?.starMark);
+    const extra = rollExtras(marked ? saveDice(target, 'con').filter((d) => d.sign < 0) : saveDice(target, 'con'), 'save', rollTag(rng, { by: target.id }));
     const total = roll.kept + target.saves.con + extrasTotal(extra);
     effects.push({ kind: 'concentration', spell: target.concentration.spell, dc, natural: roll.kept, total, success: total >= dc, ...(extra.length ? { extra } : {}) });
   }
@@ -136,6 +138,7 @@ export function damageEffects(
 /** Konsantrasyon kurtulmasının kipi: Cloud of Insects dezavantajı, Görev P7 paket koruması avantajı (ikisi birden: normal). */
 function concMode(t: Combatant): 'advantage' | 'disadvantage' | 'normal' {
   const dis = !!t.effects?.some((e) => e.concDis);
-  const adv = !!t.effects?.some((e) => e.concAdv);
+  // Görev KATALOG-GUC-TAM (109; Star Mark): konsantrasyon avantajı yok.
+  const adv = !!t.effects?.some((e) => e.concAdv) && !t.effects?.some((e) => e.k109?.starMark);
   return dis === adv ? 'normal' : dis ? 'disadvantage' : 'advantage';
 }

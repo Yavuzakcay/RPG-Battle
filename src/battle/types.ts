@@ -847,6 +847,8 @@ export interface Combatant {
   /** Kuyruk K53 S5: pasif auralardan (syncAuras): durum bağışıklığı, can yenileyemez, ölüm save dezavantajı. */
   auraImmune?: string[];
   auraNoHeal?: true;
+  /** Görev KATALOG-GUC-TAM (109): pasif aura iyileşme çarpanı (`auraCore` `healMult`). */
+  auraHealMult?: number;
   auraDeathDis?: true;
   /** Kuyruk K54: aura ölüm save avantajı (Dar Gün Aurası). */
   auraDeathAdv?: true;
