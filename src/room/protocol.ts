@@ -25,7 +25,8 @@ export interface SurumBilgisi {
   kuralSurumu: number;
 }
 
-export type RedNedeni = 'surum' | 'anahtar' | 'dolu' | 'kilitli' | 'kapali';
+/** Görev ODA-5: `onay` = Game Master katılımı reddetti (katılım onayı açıkken). */
+export type RedNedeni = 'surum' | 'anahtar' | 'dolu' | 'kilitli' | 'kapali' | 'onay';
 export type Asama = 'lobi' | 'kurulum' | 'savas' | 'bitti';
 
 /** Görev ODA-4: kopan üye için Game Master kararı (bekle / yapay zekâ oynasın / GM oynasın). */
@@ -62,6 +63,8 @@ export type IstemciMesaji =
 export type HostMesaji =
   | { t: 'kabul'; istemciId: string; anahtar: string; rol: Rol; karakterler: string[] }
   | { t: 'red'; neden: RedNedeni; ayrinti?: string }
+  /** Görev ODA-5 (madde 7): katılım onayı açık; Game Master'ın kararı bekleniyor. */
+  | { t: 'onay_bekle' }
   | ({ t: 'oda_durumu' } & OdaOzeti)
   /**
    * Eşitleme tabanı: `durum` yoksa `olaylar` tam günlüktür (seq 0'dan); varsa `durum` ilk `tabanSeq` olayın sonucudur.
@@ -96,7 +99,7 @@ const arr = (v: unknown): v is unknown[] => Array.isArray(v);
 const obj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 const opt = <T>(v: unknown, f: (x: unknown) => x is T): boolean => v === undefined || f(v);
 const ROLLER: readonly string[] = ['host', 'oyuncu', 'izleyici'];
-const REDLER: readonly string[] = ['surum', 'anahtar', 'dolu', 'kilitli', 'kapali'];
+const REDLER: readonly string[] = ['surum', 'anahtar', 'dolu', 'kilitli', 'kapali', 'onay'];
 const ASAMALAR: readonly string[] = ['lobi', 'kurulum', 'savas', 'bitti'];
 const KARARLAR: readonly string[] = ['bekle', 'yz', 'gm'];
 const strArr = (v: unknown): v is string[] => arr(v) && v.every(str);
@@ -115,6 +118,7 @@ const DENETIM: Record<string, (m: Record<string, unknown>) => boolean> = {
   nabiz: () => true,
   kabul: (m) => str(m.istemciId) && str(m.anahtar) && ROLLER.includes(m.rol as string) && strArr(m.karakterler),
   red: (m) => REDLER.includes(m.neden as string) && opt(m.ayrinti, str),
+  onay_bekle: () => true,
   oda_durumu: (m) => str(m.ad) && str(m.gmAdi) && ASAMALAR.includes(m.asama as string)
     && arr(m.uyeler) && m.uyeler.every((u) => obj(u) && str(u.istemciId) && str(u.ad) && ROLLER.includes(u.rol as string) && typeof u.bagli === 'boolean' && strArr(u.karakterler))
     && arr(m.kurallarOzeti) && str(m.hpGorunurluk) && str(m.zarModu) && strArr(m.yzKarakterler),

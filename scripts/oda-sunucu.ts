@@ -10,9 +10,8 @@
  */
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { existsSync, readFileSync, statSync } from 'node:fs';
-import { networkInterfaces } from 'node:os';
 import { extname, join, normalize, resolve, sep } from 'node:path';
-import { odaAktarici, ODA_YOLU } from '../src/room/aktariciNode';
+import { adresYaniti, odaAktarici, ODA_ADRES_YOLU, ODA_YOLU, yerelAdresler } from '../src/room/aktariciNode';
 
 const arg = (ad: string): string | undefined => { const i = process.argv.indexOf(ad); return i >= 0 ? process.argv[i + 1] : undefined; };
 const PORT = Number(arg('--port') ?? process.env.PORT ?? 5180);
@@ -34,6 +33,8 @@ const TUR: Record<string, string> = {
 
 function sun(req: IncomingMessage, res: ServerResponse): void {
   const yol = decodeURIComponent((req.url ?? '/').split('?')[0] ?? '/');
+  // Görev ODA-5 (madde 6): oda lobisi telefonlara bu sunucunun yerel ağ adresini gösterir.
+  if (yol === ODA_ADRES_YOLU) { res.setHeader('Content-Type', 'application/json; charset=utf-8'); res.setHeader('Cache-Control', 'no-store'); res.end(adresYaniti(PORT)); return; }
   let dosya = normalize(join(DIST, yol));
   if (!dosya.startsWith(DIST + sep) && dosya !== DIST) { res.statusCode = 403; res.end(); return; }
   if (!existsSync(dosya) || statSync(dosya).isDirectory()) dosya = existsSync(join(dosya, 'index.html')) ? join(dosya, 'index.html') : join(DIST, 'index.html');
@@ -48,9 +49,7 @@ function sun(req: IncomingMessage, res: ServerResponse): void {
   }
 }
 
-const adresler = (): string[] => Object.values(networkInterfaces()).flat()
-  .filter((a): a is NonNullable<typeof a> => !!a && a.family === 'IPv4' && !a.internal)
-  .map((a) => a.address);
+const adresler = yerelAdresler;
 
 const server = createServer(sun);
 const ak = odaAktarici(server);

@@ -2,6 +2,35 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## ODA-5: çevrimiçi oda O5 hazırlığı, katılım adresi, katılım onayı, aktarıcıda hız sınırı, Supabase yer tutucusu (2026-11-28; kural sürümü, kayıt sürümü, `ODA_SURUM` 2 ve `ODA_PROTOKOL` 1 değişmedi)
+
+- **Kapsam (kullanıcı kararı):** Supabase ve Google OAuth bu görevde yok; hesap bağlama sonraya. `src/room/adapters/supabase.ts` yalnız
+  yer tutucu: `SupabaseSecenek` (url, anon anahtar ortam ayarından, kanal öneki, parçalama eşiği), `supabaseBaglantisi()` tam
+  `RoomTransport` arayüzüyle döner ama `katil` `BaglantiHatasi('kapali')` fırlatır; `supabaseHazir = false`. SDK içe aktarılmaz;
+  uygulama bu dosyayı içe aktarmıyor (`baglantiSec('supabase')` eskisi gibi `kapali`). O5 planı dosyanın başında.
+- **Madde 6 (yerel ağda uygulama oda sunucusundan):** oda sunucusu (`scripts/oda-sunucu.ts`) ve geliştirme/önizleme sunucusu
+  (`vite.config.ts` `adresUcu`) `GET /oda/adres` → `{ adresler: ["http://<ip>:<port>"] }` (`aktariciNode.ts` `yerelAdresler`,
+  `adresYaniti`). GM lobisi yerel ağ bağlantısında bunu okuyup telefonlara `http://<ip>:<port>/?oda=<kod>` gösterir (seçilebilir metin;
+  QR terminalde kalır). Bağlantı sekmeye düştüyse ve sayfa http(s) ise "oda sunucusundan açılmadı" uyarısı. `?oda=<kod>` ile açılan
+  uygulama doğrudan "Odaya katıl"a gider, kod hazır (`App.tsx` ilk ekran, `OdaKodlaKatil`). APK cleartext izni ayrı karar (O1 kararı 6
+  aynen: telefonda tarayıcı).
+- **Madde 7 (katılım onayı):** `OdaHost.katilimOnayi` (varsayılan kapalı; lobide "Katılım onayı iste", sayfa başına, oda kaydına
+  yazılmaz): açıkken bilinmeyen `istemciId`'nin `katil`'i bekletilir, adaya `onay_bekle` (oyuncuda "Game Master onayı bekleniyor…"),
+  GM lobisinde "Katılmak isteyenler: Kabul / Ret"; ret `red{neden:'onay'}`. Anahtarıyla dönen eski üye onaysız; onay kapatılınca
+  bekleyenler kabul edilir. Savaş sürerken yeni katılan yalnız izleyici (O1'den beri). İnternet odasında (O5) varsayılan açık olacak.
+  Bilinen sınır: onay beklerken bağlantısı kopan adayı aktarıcı host'a bildirmez; GM sonradan kabul ederse üye bağlı görünür, ilk
+  mesajında düzelir.
+- **Madde 7 (hız sınırı, aktarıcı):** kaynak (node'da uzak IP; `AktariciSoket.kaynak`) başına son 60 sn'de en çok 20 oyuncu katılım
+  denemesi (6 haneli kodu tarayarak odaya düşmeyi yavaşlatır), fazlasına `{k:'hiz'}` + kapanış; istemcide `BaglantiHatasi('hiz')` ve "Çok
+  fazla deneme" iletisi. Oyuncu bağlantısı başına saniyede 60 mesaj (kova 180); taşan mesaj atılır, kovanın üç katı taşmada bağlantı
+  kapanır. Host bağlantısı sınırsız (komut başına yayın; düşen yayın boşluk açardı). Yeniden bağlanma aralığı bu yüzden 2 → 4 sn
+  (dakikada 15 deneme, 3 dakika).
+- **Protokol:** `onay_bekle`, `red.neden` `onay` eklendi; aynı build şartı sürdüğü için protokol sürümü 1 kaldı.
+- **Testler:** `src/room/o5.test.ts` (hız sınırı saatli, mesaj kovası, host sınırsız, katılım onayı kabul/ret/eski üye/kapatma, Supabase
+  yer tutucusu, yeni mesajlar). Ağ e2e O5 adımlarıyla: GM lobisinde `…/?oda=<kod>` katılım adresi, Bora bu adresten gelir (kod hazır).
+  Sekme e2e (O1) de geçti; geliştirme sunucusunda `/oda/adres` elle denendi.
+- **Ana parça:** 462,24 → 462,30 kB (`App.tsx` `?oda=` yönlendirmesi).
+
 ## ODA-4: çevrimiçi oda O4, kopma/yeniden bağlanma, GM karar menüsü, Wake Lock, savaş sonucunun karaktere dönüşü (2026-11-28; kural sürümü 108, kayıt sürümü 28, `ODA_SURUM` 2 ve `ODA_PROTOKOL` 1 değişmedi)
 
 - **Eksik olayla yakalama:** `katil` yeniden girişte `sonSeq` + `donem` taşır; host aynı dönemdeyse yalnız eksik `olaylar` (eşitse `ozet`)

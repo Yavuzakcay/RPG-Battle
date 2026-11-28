@@ -18,6 +18,8 @@ import { dinleyiciler, type BaglantiDurumu, type Rol, type RoomTransport, type Z
 export type IstemciOlayi =
   | { tur: 'kabul'; anahtar: string; rol: Rol }
   | { tur: 'red'; neden: RedNedeni; ayrinti?: string }
+  /** Görev ODA-5: Game Master'ın katılım onayı bekleniyor. */
+  | { tur: 'onay_bekle' }
   | { tur: 'oda' }
   /** Savaş durumu değişti. `sifirlandi`: anlık kuruldu (yeni oturum); değilse `yeni` olaylar eklendi. */
   | { tur: 'savas'; sifirlandi: boolean; yeni: BattleEvent[] }
@@ -163,6 +165,7 @@ export class OdaIstemci {
         this.ol.yay({ tur: 'kabul', anahtar: m.anahtar, rol: m.rol });
         return;
       case 'red': this.ol.yay({ tur: 'red', neden: m.neden, ...(m.ayrinti ? { ayrinti: m.ayrinti } : {}) }); return;
+      case 'onay_bekle': this.ol.yay({ tur: 'onay_bekle' }); return;
       case 'oda_durumu': {
         const { t: _t, ...oda } = m;
         this.oda = oda;

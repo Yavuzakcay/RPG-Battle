@@ -58,7 +58,9 @@ export type HostOlayi =
   | { tur: 'istemler' }
   | { tur: 'yetkisiz'; istemciId: string; sayi: number }
   /** Görev ODA-4: üyenin bağlantısı ya da kararı değişti. */
-  | { tur: 'karar'; istemciId: string };
+  | { tur: 'karar'; istemciId: string }
+  /** Görev ODA-5: katılım onayı açıkken yeni biri katılmak istiyor (ya da istek kapandı). */
+  | { tur: 'katilim' };
 
 export interface HostSecenek {
   transport: RoomTransport;
@@ -82,6 +84,11 @@ export interface HostSecenek {
   donemTabani?: number;
   /** Görev ODA-4: diriltilen odanın üyeleri (anahtarlarıyla; hepsi kopuk başlar). */
   oncekiUyeler?: readonly KayitliUye[];
+  /**
+   * Görev ODA-5 (madde 7): yeni üyenin katılımı Game Master'ın onayına bağlı (anahtarıyla dönen eski üye onaysız).
+   * Yerel ağda varsayılan kapalı; internet odasında (Supabase) açık olacak.
+   */
+  katilimOnayi?: boolean;
   /** Görev ODA-4 (madde 8): savaş bitince kopyanın yeni durumu (`applyBattleResult`); null: savaşta değil. */
   sonuc?: (kopya: SavedCharacter, state: BattleState) => unknown;
 }
@@ -110,6 +117,10 @@ export class OdaHost {
   private donem: number;
   /** Görev ODA-4: gönderilmeyi bekleyen savaş sonuçları (kopuk üye döndüğünde). */
   private readonly sonuclar = new Map<string, Array<{ karakterId: string; durum: unknown; kimlik: string }>>();
+  /** Görev ODA-5: onay bekleyen katılımlar (istemciId → istek). */
+  private readonly bekleyenKatilim = new Map<string, { ad: string; m: IstemciMesaji & { t: 'katil' }; bag?: string }>();
+  /** Görev ODA-5: katılım onayı açık mı. */
+  katilimOnayi: boolean;
   private yayinSayaci = 0;
   private taban: { seq: number; durum: BattleState } | null = null;
   private oda: OdaBilgisi;
@@ -121,6 +132,7 @@ export class OdaHost {
     this.kod = s.kod;
     this.oda = s.oda;
     this.donem = s.donemTabani ?? 0;
+    this.katilimOnayi = s.katilimOnayi ?? false;
     for (const u of s.oncekiUyeler ?? []) {
       this.uyeler.set(u.istemciId, { istemciId: u.istemciId, ad: u.ad, anahtar: u.anahtar, rol: u.rol, bagli: false, kopyalar: new Map(u.kopyalar.map((k) => [k.id, k])) });
     }
@@ -326,6 +338,28 @@ export class OdaHost {
     await this.s.transport.ayril();
   }
 
+  /** Görev ODA-5: onay bekleyen katılımlar. */
+  katilimIstekleri(): Array<{ istemciId: string; ad: string }> {
+    return [...this.bekleyenKatilim.entries()].map(([istemciId, x]) => ({ istemciId, ad: x.ad }));
+  }
+
+  /** Görev ODA-5: Game Master bekleyen katılımı kabul eder ya da reddeder (`red{onay}`). */
+  katilimKarar(istemciId: string, kabul: boolean): void {
+    const x = this.bekleyenKatilim.get(istemciId);
+    if (!x) return;
+    this.bekleyenKatilim.delete(istemciId);
+    if (kabul) this.katilim(istemciId, x.m, x.bag, true);
+    else this.reddet(istemciId, { t: 'red', neden: 'onay' }, x.bag);
+    this.s.olay?.({ tur: 'katilim' });
+  }
+
+  /** Katılım onayını aç/kapa; kapatınca bekleyenler kabul edilir. */
+  katilimOnayiAyarla(acik: boolean): void {
+    this.katilimOnayi = acik;
+    if (!acik) for (const id of [...this.bekleyenKatilim.keys()]) this.katilimKarar(id, true);
+    this.s.olay?.({ tur: 'katilim' });
+  }
+
   // ---- iç ----
 
   private gonder(m: HostMesaji, kime?: string, bag?: string): void {
@@ -426,12 +460,19 @@ export class OdaHost {
     this.yurutucu({ istemciId: u.istemciId, istekId, cmd, ctx: y.ctx, ownerId: y.ownerId });
   }
 
-  private katilim(kimden: string, m: IstemciMesaji & { t: 'katil' }, bag?: string): void {
+  private katilim(kimden: string, m: IstemciMesaji & { t: 'katil' }, bag?: string, onaylandi = false): void {
     if (m.istemciId !== kimden) { this.bozuk++; return; }
     const fark = surumUyusmazligi(this.s.surum, m);
     if (fark) { this.reddet(kimden, { t: 'red', neden: 'surum', ayrinti: fark }, bag); return; }
     const eski = this.uyeler.get(kimden);
     if (eski && m.anahtar !== eski.anahtar) { this.reddet(kimden, { t: 'red', neden: 'anahtar' }, bag); return; }
+    // Görev ODA-5 (madde 7): yeni üye onay bekler (aynı kimliğin yeni denemesi eskisinin yerini alır).
+    if (!eski && this.katilimOnayi && !onaylandi) {
+      this.bekleyenKatilim.set(kimden, { ad: m.ad.trim().slice(0, 40) || '?', m, ...(bag ? { bag } : {}) });
+      this.gonder({ t: 'onay_bekle' }, kimden, bag);
+      this.s.olay?.({ tur: 'katilim' });
+      return;
+    }
     const ad = m.ad.trim().slice(0, 40) || '?';
     const u: HostUye = eski
       ? { ...eski, ad, bagli: true }

@@ -6,7 +6,19 @@
 import type { IncomingMessage, Server } from 'node:http';
 import type { Duplex } from 'node:stream';
 import { WebSocketServer, type WebSocket } from 'ws';
-import { Aktarici } from './aktarici';
+import { networkInterfaces } from 'node:os';
+import { Aktarici, type HizSiniri } from './aktarici';
+
+/** Görev ODA-5 (madde 6): katılım adresi uç noktası (oda lobisi telefonlara gösterir). */
+export const ODA_ADRES_YOLU = '/oda/adres';
+
+/** Bu bilgisayarın yerel ağ (IPv4, iç olmayan) adresleri. */
+export const yerelAdresler = (): string[] => Object.values(networkInterfaces()).flat()
+  .filter((a): a is NonNullable<typeof a> => !!a && a.family === 'IPv4' && !a.internal)
+  .map((a) => a.address);
+
+/** `GET /oda/adres` yanıtı: telefonların uygulamayı açacağı `http://<ip>:<port>` adresleri. */
+export const adresYaniti = (port: number): string => JSON.stringify({ adresler: yerelAdresler().map((ip) => `http://${ip}:${port}`) });
 
 export const ODA_YOLU = '/oda';
 
@@ -20,9 +32,9 @@ export interface NodeAktarici {
 /**
  * `server`'a aktarıcıyı takar. `nabizMs`'de bir ping; yanıt vermeyen soket düşürülür (kopma algısı: 2 × nabız).
  */
-export function odaAktarici(server: Server, o: { yol?: string; nabizMs?: number } = {}): NodeAktarici {
+export function odaAktarici(server: Server, o: { yol?: string; nabizMs?: number; hiz?: HizSiniri } = {}): NodeAktarici {
   const yol = o.yol ?? ODA_YOLU;
-  const core = new Aktarici();
+  const core = new Aktarici(undefined, o.hiz);
   const wss = new WebSocketServer({ noServer: true, maxPayload: 8 * 1024 * 1024 });
   let sayi = 0;
   const canli = new WeakMap<WebSocket, boolean>();
@@ -32,8 +44,9 @@ export function odaAktarici(server: Server, o: { yol?: string; nabizMs?: number 
     wss.handleUpgrade(req, socket, head, (ws) => wss.emit('connection', ws, req));
   };
   server.on('upgrade', yukselt);
-  wss.on('connection', (ws: WebSocket) => {
-    const soket = { id: `b${++sayi}`, gonder: (v: string) => ws.send(v), kapat: () => ws.close() };
+  wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
+    // Görev ODA-5: hız sınırı anahtarı uzak adres.
+    const soket = { id: `b${++sayi}`, kaynak: req.socket.remoteAddress ?? undefined, gonder: (v: string) => ws.send(v), kapat: () => ws.close() };
     canli.set(ws, true);
     core.baglandi(soket);
     ws.on('pong', () => canli.set(ws, true));

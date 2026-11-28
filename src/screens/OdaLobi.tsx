@@ -17,7 +17,7 @@ import { kodGecerli, kodTemizle } from '../room/code';
 import type { OdaIstemci } from '../room/client';
 import {
   aktifHost, aktifHostTuru, aktifIstemci, cevrimiciAc, cevrimiciKapat, diriltilebilir, hostAbone, hostDirilt, hostOdaGuncelle, istemciAyril, izleme, kodlaKatil,
-  savasSonuclari, sonucKapat, sonucSorusuz, sonucUygula, istemciBaglantisi,
+  savasSonuclari, sonucKapat, sonucSorusuz, sonucUygula, istemciBaglantisi, katilimAdresleri, katilimOnayi, katilimOnayiAyarla,
 } from './odaCanli';
 
 const useYenile = (): (() => void) => { const [, set] = useState(0); return () => set((n) => n + 1); };
@@ -54,6 +54,11 @@ export function OdaCevrimiciPanel(props: { room: Oda; onChange: (fn: (o: Oda) =>
   };
   const kapat = async () => { await cevrimiciKapat(); change.current(clearOnlineCopies); };
   const uyeler = host ? [...host.uyeler.values()] : [];
+  // Görev ODA-5 (madde 6): telefonların açacağı adres (oda sunucusunun yerel ağ adresi + `?oda=<kod>`).
+  const [adresler, setAdresler] = useState<string[]>([]);
+  const kod = host?.kod ?? '';
+  useEffect(() => { if (kod && tur === 'yerel-ag') void katilimAdresleri(kod).then(setAdresler); else setAdresler([]); }, [kod, tur]);
+  const istekler = host?.katilimIstekleri() ?? [];
   return (
     <section className="panel oda-cevrimici" data-testid="oda-cevrimici">
       <h2>{C.title}</h2>
@@ -63,6 +68,23 @@ export function OdaCevrimiciPanel(props: { room: Oda; onChange: (fn: (o: Oda) =>
       {host && (
         <>
           <p className="oda-kod">{C.code}: <strong data-testid="oda-kod">{host.kod}</strong> <small className="mute">{C.stage[host.asama] ?? host.asama}{tur ? ` · ${C.transport[tur] ?? tur}` : ''}</small></p>
+          {adresler.length > 0 && <p className="mute oda-adres" data-testid="oda-adres">{C.joinUrl} {adresler.map((a) => <code key={a}>{a}</code>)}</p>}
+          {tur === 'sekme' && /^https?:$/.test(location.protocol) && <p className="mute">{C.notServer}</p>}
+          <label className="oda-onay"><input type="checkbox" checked={katilimOnayi()} onChange={(e: { target: { checked: boolean } }) => { katilimOnayiAyarla(e.target.checked); yenile(); }} /> {C.approvalToggle}</label>
+          {istekler.length > 0 && (
+            <>
+              <h3>{C.joinRequests}</h3>
+              <ul className="oda-list" data-testid="oda-katilim-istekleri">
+                {istekler.map((x) => (
+                  <li key={x.istemciId} className="oda-card">
+                    <div className="oda-card-text"><strong>{x.ad}</strong></div>
+                    <button type="button" className="cta" onClick={() => { host?.katilimKarar(x.istemciId, true); yenile(); }}>{C.accept}</button>
+                    <button type="button" className="ghost" onClick={() => { host?.katilimKarar(x.istemciId, false); yenile(); }}>{C.reject}</button>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
           <h3>{C.members}</h3>
           {uyeler.length === 0 && <p className="empty-state">{C.noMembers}</p>}
           <ul className="oda-list">
@@ -92,7 +114,8 @@ function kimlikYaz(k: SekmeKimligi): void { try { sessionStorage.setItem(KIMLIK,
 export function OdaKodlaKatil(props: { characters: SavedCharacter[]; onWatch: (w: SessionWatch) => void; /** Görev ODA-4: savaş sonucunu karakter deposuna yazar. */ onCharacters?: (list: SavedCharacter[]) => void; /** Bütün karakterler (sonuç yazılırken liste bozulmasın). */ allCharacters?: SavedCharacter[] }) {
   const C = t().odaCevrimici, O = t().oda;
   const yenile = useYenile();
-  const [kod, setKod] = useState('');
+  // Görev ODA-5 (madde 6): katılım adresindeki kod (`?oda=123456`) hazır gelir.
+  const [kod, setKod] = useState(() => { try { return kodTemizle(new URLSearchParams(location.search).get('oda') ?? ''); } catch { return ''; } });
   const [ad, setAd] = useState(() => props.characters[0]?.sheet.name ?? '');
   const [hata, setHata] = useState<string | null>(null);
   const [bilgi, setBilgi] = useState<string | null>(null);
@@ -109,7 +132,8 @@ export function OdaKodlaKatil(props: { characters: SavedCharacter[]; onWatch: (w
     if (o.tur === 'karakter_red') setHata(C.charRejected[o.neden] ?? o.neden);
     if (o.tur === 'kapandi') setHata(C.closed);
     if (o.tur === 'baglanti' && o.d.tur === 'koptu') setHata(C.reconnecting);
-    if (o.tur === 'kabul') setHata(null);
+    if (o.tur === 'kabul') { setHata(null); setBilgi(null); }
+    if (o.tur === 'onay_bekle') setBilgi(C.approvalWait);
     // Savaş başlayınca (yeni anlık) izlemeye geç.
     if (o.tur === 'savas' && o.sifirlandi && c.durum) onWatch.current(izleme);
     yenile();
@@ -124,7 +148,7 @@ export function OdaKodlaKatil(props: { characters: SavedCharacter[]; onWatch: (w
       kimlikYaz({ ...kim, istemciId: yeni.istemciId });
       setC(yeni);
     } catch (e) {
-      setHata(e instanceof BaglantiHatasi && e.neden === 'oda_yok' ? C.noRoom : C.openFailed);
+      setHata(e instanceof BaglantiHatasi && e.neden === 'oda_yok' ? C.noRoom : e instanceof BaglantiHatasi && e.neden === 'hiz' ? C.rateLimited : C.openFailed);
     }
     setBekliyor(false);
   };
