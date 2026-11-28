@@ -1156,6 +1156,8 @@
     "elixir-of-battlemage-focus": {"kaynak":"ikon","ref":"esya/elixir-of-battlemage-focus.webp","durum":"var","ad":"Elixir of Battlemage Focus","nadirlikRengi":"#a259ff"},
     "elixir-of-peerless-focus": {"kaynak":"ikon","ref":"esya/elixir-of-peerless-focus.webp","durum":"var","ad":"Elixir of Peerless Focus","nadirlikRengi":"#4caf50"},
     "emerald-tea-brew": {"kaynak":"ikon","ref":"esya/emerald-tea-brew.webp","durum":"var","ad":"Emerald Tea Brew","nadirlikRengi":"#f0a020"},
+    "mucevher-ejderha-yumurtasi": {"kaynak":"ikon","ref":"esya/mucevher-ejderha-yumurtasi.webp","durum":"var","ad":"Gem Dragon Egg","nadirlikRengi":"#f0a020"},
+    "kor-yumurtasi": {"kaynak":"ikon","ref":"esya/kor-yumurtasi.webp","durum":"var","ad":"Ember Egg","nadirlikRengi":"#f0a020"},
     "dagger": {"kaynak":"ikon","ref":"esya/dagger.webp","durum":"var","ad":"Dagger"},
     "handaxe": {"kaynak":"ikon","ref":"esya/handaxe.webp","durum":"var","ad":"Handaxe"},
     "javelin": {"kaynak":"ikon","ref":"esya/javelin.webp","durum":"var","ad":"Javelin"},
